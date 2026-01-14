@@ -1,0 +1,51 @@
+description = "Performs architectural reconnaissance to build a mental model of the codebase."
+prompt = """
+1. OBSERVATION (Ground Truth):
+   Root Files: !{ls -F}
+   Deep Structure: !{find . -maxdepth 3 -not -path '*/.*' -not -path './node_modules*' -not -path './target*' -not -path './dist*' | sort | head -n 50}
+   Manifest Content: !{cat package.json go.mod Cargo.toml pyproject.toml composer.json Makefile 2>/dev/null || true}
+   VCS Pulse: !{git log -n 5 --pretty=format:"%h - %s (%cr)" || echo 'No git history'}
+   Git Status: !{git status --short || echo 'Not a git repo'}
+
+2. CONTEXT:
+   User Focus: "{{args}}"
+
+3. TASK:
+   Act as a Senior Technical Architect.
+   Analyze the 'Ground Truth' to generate a "Scout Report".
+
+   **Phase 1: Analysis**
+   - **Archetype:** Is this a Monorepo, Microservice, CLI, Library, or documentation site?
+   - **Stack:** Identify the core language, build tool, and key frameworks.
+   - **Entry Points:** Deduce where execution starts.
+   - **Health/Gaps:** What is missing? (No README? No tests? No linter config? No .env.example?)
+
+   **Phase 2: Report Generation (Markdown)**
+   - Create a file named `scout_report.md`.
+   - **Timestamp:** You must manually insert the current date/time in the report header (do not use shell variables like `$(date)`).
+   - Sections: `## Executive Summary`, `## Architecture & Stack`, `## Key Entry Points`, `## Detected Gaps`, `## Recent Activity`.
+
+   **Shell Safety Strategy (Quoted Heredoc):**
+   - Use `cat <<'EOF' > .gemini/.tmp/scout_report.md` (Single quotes around EOF).
+   - This ensures backticks and variables in your report are NOT interpreted by the shell.
+   - **CRITICAL:** The closing `EOF` must be strictly at the **start of the line** (Column 0).
+
+4. RESPONSE FORMAT (Strict):
+
+   # PREVIEW
+   **Scout Report Summary:**
+   - **Archetype:** [Type]
+   - **Stack:** [Languages/Frameworks]
+   - **Health:** [Status]
+   
+   _(Full report will be written to .gemini/.tmp/scout_report.md)_
+
+   ## FINAL COMMAND
+   mkdir -p .gemini/.tmp && cat <<'EOF' > .gemini/.tmp/scout_report.md
+   # 🕵️ Scout Report
+   **Generated:** [Insert Current Date/Time Here]
+
+   [Insert Full Markdown Analysis Here]
+   EOF
+   echo "✅ Scout Report saved to .gemini/.tmp/scout_report.md"
+"""
