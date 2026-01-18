@@ -13,21 +13,18 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 stage_setup() {
-  log_step "Staging Polyglot Environment"
+  log_step "Staging Versioned Environment"
 
   rm -rf .gemini
-  mkdir -p api/server src/data
+  mkdir -p api src
 
-  echo -e "module senior-app/api\n\ngo 1.21" > api/go.mod
-  echo 'package main; import "github.com/gin-gonic/gin"' > api/server/main.go
+  echo -e "module app\n\ngo 1.22.0" > go.mod
 
-  echo '{"name": "tooling", "devDependencies": {"webpack": "5.0"}}' > package.json
+  echo '{"name": "app", "engines": {"node": ">=20.0.0"}, "dependencies": {"react": "^18.2.0"}}' > package.json
 
-  echo 'import pandas as pd' > src/data/analysis.py
-
-  touch Makefile Dockerfile
+  echo "FROM python:3.11-slim" > Dockerfile
   
-  log_info "Environment staged: Go (API), Python (Data), Webpack (Tooling)"
+  log_info "Staged: Go 1.22, Node 20+, Python 3.11"
 }
 
 stage_verify() {
@@ -39,35 +36,35 @@ stage_verify() {
     return 1
   fi
 
-  local has_go=$(grep -Ei "Go|Gin" "$report_file" || true)
-  local has_py=$(grep -Ei "Python|Pandas" "$report_file" || true)
-  local has_infra=$(grep -Ei "Docker|Makefile" "$report_file" || true)
+  local has_go=$(grep -E "Go.*1\.22" "$report_file" || true)
+  local has_node=$(grep -E "Node.*20" "$report_file" || true)
+  local has_py=$(grep -E "Python.*3\.11" "$report_file" || true)
 
-  log_step "Report Metadata Analysis"
+  log_step "Version Detection Analysis"
   
   if [ -n "$has_go" ]; then
-    echo -e "${GREY}│${NC}   Go Detected:     ${GREEN}YES${NC}"
+    echo -e "${GREY}│${NC}   Go 1.22:       ${GREEN}DETECTED${NC}"
   else
-    echo -e "${GREY}│${NC}   Go Detected:     ${RED}NO${NC}"
+    echo -e "${GREY}│${NC}   Go 1.22:       ${RED}MISSING${NC}"
+  fi
+
+  if [ -n "$has_node" ]; then
+    echo -e "${GREY}│${NC}   Node 20+:      ${GREEN}DETECTED${NC}"
+  else
+    echo -e "${GREY}│${NC}   Node 20+:      ${RED}MISSING${NC}"
   fi
 
   if [ -n "$has_py" ]; then
-    echo -e "${GREY}│${NC}   Python Detected: ${GREEN}YES${NC}"
+    echo -e "${GREY}│${NC}   Python 3.11:   ${GREEN}DETECTED${NC}"
   else
-    echo -e "${GREY}│${NC}   Python Detected: ${RED}NO${NC}"
+    echo -e "${GREY}│${NC}   Python 3.11:   ${RED}MISSING${NC}"
   fi
 
-  if [ -n "$has_infra" ]; then
-    echo -e "${GREY}│${NC}   Infra Detected:  ${GREEN}YES${NC}"
-  else
-    echo -e "${GREY}│${NC}   Infra Detected:  ${RED}NO${NC}"
-  fi
-
-  if [ -z "$has_go" ] || [ -z "$has_py" ]; then
-    log_fail "Scout failed to identify the polyglot nature of the stack."
+  if [ -z "$has_go" ] || [ -z "$has_node" ] || [ -z "$has_py" ]; then
+    log_fail "Scout failed to identify specific engine versions."
   return 1
   fi
 
-  log_info "Scout Report validated successfully."
+  log_info "Scout Report captured correct version constraints."
   return 0
 }
