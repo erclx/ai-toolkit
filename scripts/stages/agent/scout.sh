@@ -1,67 +1,70 @@
 #!/bin/bash
+set -e
+set -o pipefail
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+WHITE='\033[1;37m'
+GREY='\033[0;90m'
+NC='\033[0m'
+
+log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
+log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
+log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 stage_setup() {
-git init -q
-  mkdir -p src api docs .gemini
+  log_step "Staging Versioned Environment"
 
-  echo 'package main; import "github.com/gin-gonic/gin"; func main() { r := gin.Default(); r.Run() }' > api/server.go
-  echo -e "module senior-app/api\n\ngo 1.21" > api/go.mod
+  rm -rf .gemini
+  mkdir -p api src
 
-  echo '{"name": "senior-app", "version": "1.0.0", "scripts": {"build": "webpack"}}' > package.json
+  echo -e "module app\n\ngo 1.22.0" > go.mod
 
-  echo 'import pandas as pd; print("Data Analysis Mode")' > src/main.py
+  echo '{"name": "app", "engines": {"node": ">=20.0.0"}, "dependencies": {"react": "^18.2.0"}}' > package.json
+
+  echo "FROM python:3.11-slim" > Dockerfile
   
-  echo "# Setup\nRun 'make install' to begin." > docs/setup.md
-
-  cat <<'EOF' > MISSION.md
-# MISSION: ARCHITECTURAL SCOUT
-Your goal is to analyze this repository and identify the tech stack.
-
-## REQUIRED ACTION
-1. Scan the codebase using basic shell commands (ls, cat, find, grep).
-2. **CREATE** the directory `.gemini` if it doesn't exist (run `mkdir -p .gemini`).
-3. Generate a summary report analyzing the frameworks and languages found.
-4. **SAVE** the report to `.gemini/scout_report.md`.
-
-## TECH STACK TO DETECT
-- Look for: Gin (Go), Pandas (Python), Webpack (Node.js)
-- Check file extensions: .go, .py, .js, .json
-- Examine manifest files: go.mod, package.json
-
-## SUCCESS CRITERIA
-- The file `.gemini/scout_report.md` MUST exist after execution.
-- The report MUST mention the specific frameworks found (Gin, Pandas, Webpack, Go 1.21).
-- Use simple file writing: `mkdir -p .gemini && cat > .gemini/scout_report.md << 'EOF'`
-
-## CONSTRAINTS
-- DO NOT use "skills" or advanced tool activations.
-- ONLY use basic shell commands.
-- Ensure the `.gemini` directory exists before writing the report.
-EOF
-
-git add . && git commit -m "initial project structure" -q
+  log_info "Staged: Go 1.22, Node 20+, Python 3.11"
 }
 
 stage_verify() {
   local log_file=$1
-  local report_file=".gemini/scout_report.md"
+  local report_file=".gemini/.tmp/scout_report.md"
   
   if [ ! -f "$report_file" ]; then
-    echo -e "${GREY}│${NC} ${RED}✗${NC} ${WHITE}Failure:${NC} No report file found at $report_file"
+    log_fail "Report artifact missing at $report_file"
     return 1
   fi
 
-  local tech_stack=$(grep -Ei "Gin|Pandas|Webpack|Go 1.21" "$report_file" | xargs)
-  local file_size=$(du -h "$report_file" | cut -f1)
+  local has_go=$(grep -E "Go.*1\.22" "$report_file" || true)
+  local has_node=$(grep -E "Node.*20" "$report_file" || true)
+  local has_py=$(grep -E "Python.*3\.11" "$report_file" || true)
+
+  log_step "Version Detection Analysis"
   
-  echo -e "${GREY}│${NC} ${CYAN}i${NC} ${WHITE}Report Artifact:${NC}"
-  echo -e "${GREY}│${NC}   Size: ${GREY}${file_size}${NC}"
-  echo -e "${GREY}│${NC}   Stack: ${YELLOW}${tech_stack:-None}${NC}"
-  
-  if [ -n "$tech_stack" ]; then
-    return 0
+  if [ -n "$has_go" ]; then
+    echo -e "${GREY}│${NC}   Go 1.22:       ${GREEN}DETECTED${NC}"
+  else
+    echo -e "${GREY}│${NC}   Go 1.22:       ${RED}MISSING${NC}"
   fi
-  
-  echo -e "${GREY}│${NC} ${RED}✗${NC} Report existed but missed key tech stack details."
+
+  if [ -n "$has_node" ]; then
+    echo -e "${GREY}│${NC}   Node 20+:      ${GREEN}DETECTED${NC}"
+  else
+    echo -e "${GREY}│${NC}   Node 20+:      ${RED}MISSING${NC}"
+  fi
+
+  if [ -n "$has_py" ]; then
+    echo -e "${GREY}│${NC}   Python 3.11:   ${GREEN}DETECTED${NC}"
+  else
+    echo -e "${GREY}│${NC}   Python 3.11:   ${RED}MISSING${NC}"
+  fi
+
+  if [ -z "$has_go" ] || [ -z "$has_node" ] || [ -z "$has_py" ]; then
+    log_fail "Scout failed to identify specific engine versions."
   return 1
+  fi
+
+  log_info "Scout Report captured correct version constraints."
+  return 0
 }
