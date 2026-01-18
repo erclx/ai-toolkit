@@ -9,20 +9,21 @@ Remote URL:
 Current Branch:
 !{git branch --show-current || echo "unknown_branch"}
 
-Recent Commits (vs main):
+Recent Commits (Issue ID extraction):
 !{git log main..HEAD --oneline -n 20 || echo "No commits found"}
 
-Diff Stats:
+Diff Stats (Scope inference):
 !{git diff main..HEAD --stat | tail -n 20 || echo "No diff stats"}
 
-Raw Diff (First 100 lines):
+Raw Diff (Context & Testing verification):
 !{git diff main..HEAD | head -n 100 || echo "No diff content"}
 
 ---
 
 # 2. ROLE & CONTEXT
 
-You are a Senior Software Architect specializing in documentation-driven code reviews.
+You are a Senior Software Architect writing documentation-driven PRs.
+You prioritize "Documenting Reality" over "Future Promises."
 User Notes: {{args}}
 
 ---
@@ -31,21 +32,22 @@ User Notes: {{args}}
 
 ## Must Do:
 
-- **Pre-flight Check:** Block execution if 'Remote URL' is "NO_REMOTE_CONFIGURED".
-- **Title Format:** Use `<Type>: <Subject>` (e.g., "Feat: Implement Auth Provider").
-- **Body Structure:** Use headers: `## Summary`, `## Key Changes`, `## Testing`.
-- **Heredoc Protocol:** - Write the PR body to `.gemini/pr_body.md`.
-    - Use `cat <<'EOF' > .gemini/pr_body.md` to prevent shell expansion.
-    - Ensure the closing `EOF` is on its own line with zero leading whitespace.
-- **GitHub CLI:** Use `gh pr create --title "[Title]" --body-file .gemini/pr_body.md --draft`.
-- **Escaping:** Escape all double quotes in the title as \".
+- **Title Format:** `<type>(<scope>): <subject>` (Strictly lowercase, max 72 chars).
+- **Scope Inference:** Extract scope from `Diff Stats` (e.g., `src/auth` -> `auth`). Use `core` if ambiguous.
+- **Breaking Changes:** Insert `!` before colon if commit log contains "BREAKING CHANGE".
+- **Issue Linking:** If commit log has `#123`, add `Ref: #123` to the **Summary** section.
+- **Body Headers:** Use exactly: `## Summary`, `## Key Changes`, `## Technical Context`, `## Testing`.
+- **Visuals:** Append `## 📸 Visuals` section ONLY if `Diff Stats` shows UI files (.css, .tsx, .vue, etc).
+- **Testing Integrity:** Check `Diff Stats`. If test files exist, describe coverage. If NOT, write "Manual verification: <specific local check>". Do NOT write "Tests will be added".
+- **File Writing:** Write PR body to `.gemini/.tmp/pr_body.md` using a single heredoc command.
+- **Quoting:** Use double quotes for the title string and escape internal quotes as \".
 
 ## Must NOT Do:
 
-- Use emojis in the PR title.
-- Indent the closing `EOF` tag.
-- Include conversational filler or "Here is the command".
-- Assume the existence of a `.gemini` folder; create it if needed.
+- **No Capitalization in Title:** `feat:`, not `Feat:`.
+- **No Emojis:** Do not use emojis in title or body.
+- **No "Ref: None":** Omit the reference line entirely if no issue ID is found.
+- **No Conversational Text:** Do not output "Here is your PR".
 
 ---
 
@@ -53,47 +55,31 @@ User Notes: {{args}}
 
    # PREVIEW
 
-**Title:** <Generated Title>
-**Branch:** <Current Branch>
-**Files Impacted:** <count from Diff Stats>
-   
-**Description Summary:**
-<One sentence overview of the changes>
+**Title:** <type>(<scope>): <subject>
+**Linked Issue:** <IssueID or "None">
+**Visuals Section:** <YES|NO>
+**Summary:** <one sentence>
    
 ## FINAL COMMAND
 
 ```bash
-# Ensure directory exists
-mkdir -p .gemini
-
-# Write PR body
-cat <<'EOF' > .gemini/pr_body.md
+mkdir -p .gemini/.tmp && (cat <<'EOF' > .gemini/.tmp/pr_body.md
 ## Summary
-<content>
+<concise overview>
+<Ref: #123 if applicable>
 
 ## Key Changes
-- <change>
+- <high-level logical change>
+- <high-level logical change>
+
+## Technical Context
+- <architectural decisions or trade-offs>
 
 ## Testing
-- <test_details>
+- <If tests in diff: "Added unit tests for X to cover Y">
+- <If no tests: "Manual verification: validated X behavior via local execution">
+
+<## 📸 Visuals if UI files detected>
 EOF
-
-# Create the Draft PR
-gh pr create --title "<Type>: <Subject>" --body-file .gemini/pr_body.md --draft
-```
-   
----
-
-**Note:** If 'Remote URL' is missing, output the following:
-
-# PREVIEW
-
-**Status:** Error
-**Reason:** Git remote 'origin' not found.
-
-## FINAL COMMAND
-
-```bash
-echo "Error: No git remote configured. PR cannot be created."
-```
+) && gh pr create --title "<type>(<scope>): <subject>" --body-file .gemini/.tmp/pr_body.md --draft
 """

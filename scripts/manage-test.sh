@@ -128,6 +128,7 @@ main() {
   
   cat <<EOF > "$SANDBOX/.gitignore"
 .test_log
+.gemini/.tmp/
 EOF
 
   (cd "$SANDBOX" && stage_setup)
