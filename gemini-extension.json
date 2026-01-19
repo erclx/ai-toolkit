@@ -1,7 +1,7 @@
 {
-  "name": "erclx-core",
+  "name": "core-toolkit",
   "version": "0.1.0",
-  "description": "Eric's Principal Architect Toolkit",
+  "description": "Senior Principal Architect Utility Suite",
   "contextFileName": "GEMINI.md",
   "commandsDir": "commands"
 }
