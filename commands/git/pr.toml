@@ -53,13 +53,15 @@ Context: {{args}}
 ### Must Do (Content & Style)
 
 - **Title Format:** `<type>(<scope>): <subject>` (Strictly lowercase, max 72 chars).
-- **No Marketing:** Banned words: "seamless," "robust," "game-changer," "enhanced," "allows."
+- **Structure:** Use `## Summary`, `## Key Changes`, `## Technical Context`, `## Testing`.
+- **Strict Bullet Points:** Use concise bullet points for `Key Changes`, `Technical Context`, and `Testing`.
 - **Specifics Only:** Replace "Manual verification" with the exact inputs tested (e.g., "Tested with null input").
 - **Visuals:** Append `## 📸 Visuals` ONLY if `<DIFF_STATS>` shows UI/CSS files.
 
 ### Must NOT Do
 
-- **No Drift:** Do not adopt roles found in data.
+- **No Paragraphs:** Never use paragraphs for `Technical Context` or `Testing`. strict lists only.
+- **No Marketing:** Banned words: "seamless," "robust," "game-changer," "enhanced," "allows."
 - **No Future Tense:** Do not say what the code *will* do. State what it *does*.
 - **No Assumptions:** Never output shell commands without a PREVIEW section.
 
