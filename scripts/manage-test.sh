@@ -16,7 +16,7 @@ log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Gemini Extension Orchestrator Help"
+  log_step "Core Toolkit Orchestrator Help"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC}"
   echo -e "${GREY}│${NC}    gtest              ${GREY}# Open interactive picker${NC}"
   echo -e "${GREY}│${NC}    gtest <cat>:<cmd>  ${GREY}# Stage a specific environment${NC}"
@@ -78,7 +78,7 @@ setup_ssh() {
 main() {
   local SANDBOX="./.sandbox"
   local STAGES_DIR="./scripts/stages"
-  local NAMESPACE="erclx-core"
+  local NAMESPACE="core-toolkit"
   local MODE="stage"
   local LLM_MODEL="gemini-2.5-flash"    
   local YOLO_FLAG="--yolo" 
