@@ -1,4 +1,4 @@
-description = "Analyzes staged changes to generate a conventional commit message"
+description = "Analyzes staged changes to generate a specific, conventional commit message"
 
 prompt = """
 ## 1. OBSERVATION [UNTRUSTED]
@@ -23,7 +23,7 @@ prompt = """
 </GIT_DIFF_SUMMARY>
 
 <GIT_DIFF_RAW>
-!{git diff --cached | head -n 50 || echo "NO_DIFF"}
+!{git diff --cached | head -n 100 || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 
@@ -31,7 +31,8 @@ prompt = """
 
 ## 2. ROLE & CONTEXT
 
-You are a Senior Git Maintainer who writes atomic, semantic commit messages.
+You are a Senior Git Maintainer. You despise generic messages like "update code."
+You write atomic messages that describe the *specific mechanism* changed.
 Context: {{args}}
 
 ---
@@ -41,16 +42,16 @@ Context: {{args}}
 ### Must Do (Analysis & Logic)
 
 - **Data Isolation:** Only use content inside XML tags.
-- **Contextual Scoping:** Check `<SCOUT_REPORT>` for "Directory Structure".
-    - If **Monorepo**: Scope = Package Name (e.g., `packages/ui` -> `ui`).
-    - If **Monolith**: Scope = Feature Folder (e.g., `src/auth` -> `auth`).
+- **Contextual Scoping:** Check `<SCOUT_REPORT>` for directory structure.
+    - **Rule:** Use the immediate parent directory name.
+    - **Constraint:** Prefer single words (e.g., `auth`, not `auth-system`).
 - **Deep Analysis:** Focus on `<GIT_DIFF_RAW>` to identify the specific "what" and "why".
 
 ### Must Do (Syntax & Hygiene)
 
-- **Strict Format:** `<type>(<scope>): <subject>` (e.g., `feat(auth): fix login bug`).
-- **Lowercasing:** Force **100% lowercase**. Convert acronyms/constants (e.g., `API` -> `api`).
-- **Brevity:** Keep subject under 50 characters; absolute max 72.
+- **Strict Format:** `<type>(<scope>): <subject>`
+- **Lowercasing:** Force **100% lowercase**.
+- **Specificity:** Prioritize technical specificity over extreme brevity. Use up to 72 chars if needed to explain the "what".
 - **Quoting:** Use double quotes for the message and escape internal quotes as \".
 
 ### Must NOT Do
@@ -69,6 +70,7 @@ Context: {{args}}
 
 - **Type:** <type>
 - **Scope:** <scope>
+- **Context:** <Briefly explain the specific mechanism changed>
 - **Message:** `<type>(<scope>): <subject>`
 - **Length:** <count>/72 (Target: 50)
 

@@ -9,10 +9,10 @@ WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
 
-log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
+log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
+log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
 log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
-log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
+log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -76,12 +76,22 @@ setup_ssh() {
 }
 
 main() {
-  local SANDBOX="./.sandbox"
-  local STAGES_DIR="./scripts/stages"
+  local SCRIPT_DIR
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local PROJECT_ROOT
+  PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+  
+  local SANDBOX="$PROJECT_ROOT/.sandbox"
+  local STAGES_DIR="$PROJECT_ROOT/scripts/stages"
   local NAMESPACE="core-toolkit"
   local MODE="stage"
   local LLM_MODEL="gemini-2.5-flash"    
   local YOLO_FLAG="--yolo" 
+
+  if [ ! -d "$STAGES_DIR" ]; then
+    echo -e "${GREY}┌${NC}"
+    log_error "Stages directory not found at: $STAGES_DIR"
+  fi
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
@@ -95,10 +105,27 @@ main() {
   fi
 
   if [ -z "$1" ]; then
-    local categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
+    local categories=()
+    if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
+      categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
+    fi
+
+    if [ ${#categories[@]} -eq 0 ]; then
+      log_error "No stage categories found in $STAGES_DIR"
+    fi
+
     select_option "Select category:" "${categories[@]}"
     local category=$SELECTED_OPT
-    local commands=($(ls "$STAGES_DIR/$category/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
+    
+    local commands=()
+    if ls "$STAGES_DIR/$category/"*.sh >/dev/null 2>&1; then
+      commands=($(ls "$STAGES_DIR/$category/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
+    fi
+
+    if [ ${#commands[@]} -eq 0 ]; then
+      log_error "No stage scripts found in $category"
+    fi
+
     select_option "Select command:" "${commands[@]}"
     local command=$SELECTED_OPT
   else
