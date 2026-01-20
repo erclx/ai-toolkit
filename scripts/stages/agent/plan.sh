@@ -15,7 +15,7 @@ log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 stage_setup() {
   log_step "Mocking Planner Context"
   
-  rm -f .gemini/PLAN.md
+  rm -f .gemini/plan.md
   mkdir -p .gemini
 
   cat <<EOF > .gemini/scout_report.md
@@ -31,10 +31,10 @@ EOF
 
 stage_verify() {
   local log_file=$1
-  local plan_file=".gemini/PLAN.md"
+  local plan_file=".gemini/plan.md"
   local errors=0
 
-  log_step "Verifying Living Document (.gemini/PLAN.md)"
+  log_step "Verifying Living Document (.gemini/plan.md)"
 
   if [ ! -f "$plan_file" ]; then
     log_fail "Plan file missing: $plan_file"

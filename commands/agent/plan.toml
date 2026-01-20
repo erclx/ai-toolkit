@@ -1,4 +1,4 @@
-description = "Generates or updates a 'Living Blueprint' (PLAN.md) based on architectural context."
+description = "Generates or updates a 'Living Blueprint' (plan.md) based on architectural context."
 
 prompt = """
 ## 1. OBSERVATION [UNTRUSTED]
@@ -16,7 +16,7 @@ prompt = """
 
 <CURRENT_PLAN>
 # We read the existing plan to append new tasks rather than overwrite.
-!{cat .gemini/PLAN.md 2>/dev/null || echo "No existing plan. Starting fresh."}
+!{cat .gemini/plan.md 2>/dev/null || echo "No existing plan. Starting fresh."}
 </CURRENT_PLAN>
 
 ---
@@ -40,7 +40,7 @@ Context: {{args}}
     - Use Checkboxes: `- [ ] **Task Name**: High-level instruction.`
     - Use Nested Bullets: Provide specific file targets or library commands.
     - **Crucial:** Make every bullet point "Prompt-Ready" (i.e., sufficiently detailed that a developer can paste it into an AI chat to get code).
-- **File Location:** Output to `.gemini/PLAN.md`.
+- **File Location:** Output to `.gemini/plan.md`.
 
 ### Must NOT Do:
 
@@ -63,7 +63,7 @@ Context: {{args}}
 mkdir -p .gemini
 
 # Appending logic (uses '>>' to preserve history)
-cat <<'EOF' >> .gemini/PLAN.md
+cat <<'EOF' >> .gemini/plan.md
 
 ## 🚀 Phase: !{date +%Y-%m-%d} - [Feature Name]
 
@@ -81,6 +81,6 @@ cat <<'EOF' >> .gemini/PLAN.md
 
 EOF
 
-echo "✅ Blueprint updated at .gemini/PLAN.md"
+echo "✅ Blueprint updated at .gemini/plan.md"
 ```
 """
