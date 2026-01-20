@@ -1,6 +1,7 @@
 # Tooling
 .gemini/.tmp/
 .gemini/checkpoints/
+.gemini/settings.json
 
 # Deps
 node_modules/
