@@ -13,7 +13,7 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 use_anchor() {
-  export ANCHOR_REPO="vite-react"
+  export ANCHOR_REPO="vite-react-template"
 }
 
 stage_setup() {
