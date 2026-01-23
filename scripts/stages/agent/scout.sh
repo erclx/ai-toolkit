@@ -18,7 +18,6 @@ use_anchor() {
 
 stage_setup() {
   log_step "Refining Anchor Environment ($ANCHOR_REPO)"
-  rm -rf .gemini
   
   if [ "$ANCHOR_REPO" == "uv-python-template" ]; then
     echo "3.12.0" > .python-version
