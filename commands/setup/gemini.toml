@@ -34,8 +34,10 @@ ensure_ignore() {
   fi
 
   if ! grep -qF "$category" "$file"; then
-        [ -s "$file" ] && [ "$(tail -c1 "$file" | wc -l)" -eq 0 ] && echo "" >> "$file"
-    echo -e "\\n$category" >> "$file"
+    if [ -s "$file" ]; then
+      echo "" >> "$file"
+    fi
+    echo "$category" >> "$file"
   fi
 
   if ! grep -qF "$pattern" "$file"; then
@@ -62,7 +64,7 @@ main() {
   fi
 
   if [ ! -f "$settings_file" ]; then
-    echo "{}" > "$settings_file"
+    echo -e "{\\n  \\"model\\": {\\n    \\"name\\": \\"gemini-2.5-flash\\"\\n  }\\n}" > "$settings_file"
     log_add "Created $settings_file"
   else
     log_info "$settings_file exists"
