@@ -35,20 +35,22 @@ Context: {{args}}
 ### Must Do:
 
 - **Analyze Context:**
-    - Read `<SCOUT_REPORT>` to extract the **Package Manager**, **Testing Framework**, and **Styling Engine**.
+  - Read `<SCOUT_REPORT>` to extract the **Package Manager**, **Testing Framework**, **Styling Engine**, and **Primary Language**.
 - **Generate `.cursorrules`:**
-    - **Source of Truth:** Use the existing `GEMINI.md` file on disk as the base. Do NOT re-echo its content in the shell script. Use `cat` to copy it.
+  - **Source of Truth:** Use the existing `GEMINI.md` file on disk as the base. Do NOT re-echo its content.
     - **Append Context:** Append a "Project Reality" section summarizing the findings from the Scout.
 - **Generate `.cursor/rules/*.mdc`:**
     - Create specific rule files for **Tooling Enforcement**.
     - **`package-manager.mdc`**: Enforce the detected manager (e.g., "Always use `bun install`").
-    - **`tech-stack.mdc`**: Enforce the detected framework versions (e.g., "Use Tailwind v4 syntax").
+  - **`tech-stack.mdc`**: 
+      - Enforce the detected framework versions.
+      - **Crucial:** Set `globs` to match ONLY the project's language (e.g., `**/*.{ts,tsx}` for React, `**/*.py` for Python). Do NOT include unused extensions.
 - **Output Strategy:** Use a single shell script.
 
 ### Must NOT Do:
 
-- **No Hallucinated Content:** Do not rewrite the Constitution text inside the script. Use file redirection (`cat GEMINI.md > .cursorrules`).
-- **No Overwrite Danger:** Ensure directories exist before writing.
+- **No Hallucinated Content:** Do not rewrite the Constitution text inside the script. Use file redirection.
+- **No Mixed Globs:** Do not put `.py` globs in a Node.js project, or vice versa.
 
 ---
 
@@ -99,7 +101,7 @@ EOF
 cat <<'EOF' > .cursor/rules/tech-stack.mdc
 ---
 description: [Framework] coding standards
-globs: **/*.{ts,tsx,js,jsx,py}
+globs: [Comma-separated extensions matching Scout Language, e.g. **/*.ts, **/*.tsx]
 ---
 # [Framework] Standards
 
