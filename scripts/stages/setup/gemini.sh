@@ -20,9 +20,7 @@ stage_setup() {
   
   : > .gitignore
   : > .geminiignore
-  
-  rm -rf .gemini
-  
+   
   log_info "Environment staged with manifest files"
 }
 
