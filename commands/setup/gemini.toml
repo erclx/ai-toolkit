@@ -96,7 +96,7 @@ You have NO access to the user's file system.
 
 ### Must Do:
 
-- **Staged Execution:** Write the content of `<DATA_CONTEXT>` to `.gemini/.tmp/init.sh` using a heredoc.
+- **Staged Execution:** Write the content of `<DATA_CONTEXT>` to `.gemini/.tmp/gemini-setup.sh` using a heredoc.
 - **Permission:** Ensure the script is executable (`chmod +x`).
 - **Execute:** Run the script immediately after creation.
 - **Quoting:** Use single quotes `'EOF'` for the heredoc delimiter to prevent variable expansion during staging.
@@ -113,15 +113,15 @@ You have NO access to the user's file system.
    # PREVIEW
 
 - **Status:** [Ready]
-- **Action:** [Staging and Executing init.sh]
+- **Action:** [Staging and Executing gemini-setup.sh]
 
 # FINAL COMMAND
 
 ```bash
 mkdir -p .gemini/.tmp && \\
-cat << 'EOF' > .gemini/.tmp/init.sh
+cat << 'EOF' > .gemini/.tmp/gemini-setup.sh
 [Insert Exact Content of DATA_CONTEXT here]
 EOF
-chmod +x .gemini/.tmp/init.sh && ./.gemini/.tmp/init.sh
+chmod +x .gemini/.tmp/gemini-setup.sh && ./.gemini/.tmp/gemini-setup.sh
 ```
 """
