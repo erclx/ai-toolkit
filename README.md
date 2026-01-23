@@ -2,29 +2,28 @@
 
 A high-fidelity Gemini extension for Senior Principal Architects. This toolkit provides automated reconnaissance, atomic commits, and evidence-based PR generation.
 
-## 🏗️ Architecture: The Ghost Folder
+## Architecture: The Ghost Folder
 
-This toolkit utilizes a **Ghost Folder** pattern to maintain project state without polluting your source code. 
+This toolkit utilizes a **Ghost Folder** pattern to maintain project state without polluting your source code.
 
+* **`.gemini/.tmp/`**: Acts as the "AI Brain."
+* **Persistence**: While the AI session resets, the `scout_report.md` stored here ensures the agent retains "Architectural Memory" of your tech stack, versions, and gaps.
+* **Security**: All temporary artifacts are strictly ignored via `.geminiignore`.
 
+## Installation
 
-- **`.gemini/.tmp/`**: Acts as the "AI Brain." 
-- **Persistence**: While the AI session resets, the `scout_report.md` stored here ensures the agent retains "Architectural Memory" of your tech stack, versions, and gaps.
-- **Security**: All temporary artifacts are strictly ignored via `.geminiignore`.
+1. git clone <repo_url>
+2. gemini extensions link .
 
-## 🚀 Installation
+## Commands
 
-1. `git clone <repo_url>`
-2. `gemini extensions link .`
+* `/gemini-cli-toolkit.setup:gemini` - Scaffold project infrastructure and security rules.
+* `/gemini-cli-toolkit.agent:scout` - Perform deep architectural reconnaissance and audit.
+* `/gemini-cli-toolkit.agent:plan` - Generate or update the Living Blueprint.
+* `/gemini-cli-toolkit.git:commit` - Generate semantic, conventional commit messages.
+* `/gemini-cli-toolkit.git:pr` - Create documentation-driven PR drafts.
 
-## 🛠️ Commands
-
-- `/gemini-cli-toolkit.setup:init` - Scaffold project infrastructure and security rules.
-- `/gemini-cli-toolkit.agent:scout` - Perform deep architectural reconnaissance and audit.
-- `/gemini-cli-toolkit.git:commit` - Generate semantic, conventional commit messages.
-- `/gemini-cli-toolkit.git:pr` - Create documentation-driven PR drafts.
-
-## 📜 Principles
+## Principles
 
 1. **Document Reality**: We document what is actually in the code, not what we hope will be there.
 2. **Signal over Noise**: Metadata is filtered to ensure the AI focuses on load-bearing architectural decisions.
