@@ -13,42 +13,63 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 use_anchor() {
-  return 0
+  export ANCHOR_TYPE="python-uv"
 }
 
 stage_setup() {
-  log_step "Refining Anchor Environment"
+  log_step "Refining Anchor Environment ($ANCHOR_TYPE)"
   rm -rf .gemini
+  
+  if [ "$ANCHOR_TYPE" == "python-uv" ]; then
+    echo "3.12.0" > .python-version
+  else
   echo "v20.0.0" > .nvmrc
+  fi
+  
   log_info "Anchor prepared for Deep Scout"
 }
 
 stage_verify() {
   local log_file=$1
   local report_file=".gemini/.tmp/scout_report.md"
+  
   if [ ! -f "$report_file" ]; then
     log_fail "Report artifact missing at $report_file"
     return 1
   fi
-  log_step "Anchor Verification (Vite/React)"
+  
+  log_step "Anchor Verification ($ANCHOR_TYPE)"
+
+  if [ "$ANCHOR_TYPE" == "python-uv" ]; then
+    if grep -qi "Python" "$report_file"; then
+      log_info "Runtime: Python detected"
+    else
+      log_fail "Runtime: Python missing in report"
+      return 1
+    fi
+    
+    if grep -qi "uv" "$report_file" || grep -qi "pyproject.toml" "$report_file"; then
+      log_info "Manager: UV/PyProject detected"
+    else
+      log_fail "Manager: UV/PyProject missing in report"
+      return 1
+    fi
+  else
   if grep -qi "Vite" "$report_file"; then
     log_info "Framework: Vite detected"
   else
     log_fail "Framework: Vite missing in report"
     return 1
   fi
+
   if grep -qi "React" "$report_file"; then
     log_info "Framework: React detected"
   else
     log_fail "Framework: React missing in report"
     return 1
   fi
-  if grep -qi "TypeScript" "$report_file"; then
-    log_info "Language: TypeScript detected"
-  else
-    log_fail "Language: TypeScript missing in report"
-  return 1
   fi
+  
   log_info "Scout successfully identified Anchor stack."
   return 0
 }

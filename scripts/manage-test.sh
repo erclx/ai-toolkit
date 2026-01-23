@@ -65,13 +65,23 @@ select_option() {
 }
 
 clone_anchor() {
-  local repo_url="https://github.com/erclx/vite-react-template"
-  log_step "Cloning Anchor Repository"
+  local type=${ANCHOR_TYPE:-"vite-react"}
+  local repo_url=""
+  
+  if [ "$type" == "python-uv" ]; then
+    repo_url="https://github.com/erclx/uv-python-template"
+  else
+    repo_url="https://github.com/erclx/vite-react-template"
+  fi
+
+  log_step "Cloning Anchor Repository ($type)"
+  
   if [ -d "$SANDBOX" ]; then
     rm -rf "$SANDBOX"
   fi
+  
   git clone --depth 1 "$repo_url" "$SANDBOX"
-  log_info "Anchor cloned: Vite React Template"
+  log_info "Anchor cloned: $repo_url"
 }
 
 setup_ssh() {
@@ -169,6 +179,7 @@ main() {
   log_step "Provisioning $category:$command"
   
   if [[ "$(type -t use_anchor)" == "function" ]]; then
+    use_anchor
     clone_anchor
   else
     if [ -d "$SANDBOX" ]; then
