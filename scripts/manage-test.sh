@@ -64,6 +64,20 @@ select_option() {
   export SELECTED_OPT="${options[$cur]}"
 }
 
+clone_anchor() {
+  local repo_name=${ANCHOR_REPO:-"vite-react-template"}
+  local repo_url="https://github.com/erclx/$repo_name"
+
+  log_step "Cloning Anchor Repository ($repo_name)"
+  
+  if [ -d "$SANDBOX" ]; then
+    rm -rf "$SANDBOX"
+  fi
+  
+  git clone --depth 1 "$repo_url" "$SANDBOX"
+  log_info "Anchor cloned: $repo_url"
+}
+
 setup_ssh() {
   log_step "Security Authentication"
   if [ -z "$SSH_AUTH_SOCK" ]; then
@@ -96,8 +110,14 @@ main() {
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
   fi
-
-  echo -e "${GREY}┌${NC}"
+  
+  if [[ "$PWD" == *".sandbox"* ]]; then
+    echo -e "${GREY}┌${NC}"
+    log_warn "Detected execution inside .sandbox. Switching to project root..."
+    cd "$PROJECT_ROOT" || log_error "Failed to switch to project root."
+  else
+    echo -e "${GREY}┌${NC}"
+  fi
 
   if [[ "$1" == "test" ]]; then
     MODE="test"
@@ -151,12 +171,20 @@ main() {
   [ "$category" == "git" ] && [ "$command" == "pr" ] && setup_ssh
 
   log_step "Provisioning $category:$command"
-  rm -rf "$SANDBOX" && mkdir -p "$SANDBOX"
   
+  if [[ "$(type -t use_anchor)" == "function" ]]; then
+    use_anchor
+    clone_anchor
+  else
+    if [ -d "$SANDBOX" ]; then
+        rm -rf "$SANDBOX"
+    fi
+    mkdir -p "$SANDBOX"
   cat <<EOF > "$SANDBOX/.gitignore"
 .test_log
 .gemini/.tmp/
 EOF
+  fi
 
   (cd "$SANDBOX" && stage_setup)
   log_info "Sandbox ready"

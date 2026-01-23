@@ -12,50 +12,37 @@ log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
+use_anchor() {
+  export ANCHOR_REPO="vite-react-template"
+}
+
 stage_setup() {
-  log_step "Mocking Planner Context"
-  
-  rm -f .gemini/plan.md
-  mkdir -p .gemini
-
-  cat <<EOF > .gemini/scout_report.md
+  log_step "Injecting Planner Context"
+  mkdir -p .gemini/.tmp
+  cat <<EOF > .gemini/.tmp/scout_report.md
 # Scout Report
-- Framework: Next.js (App Router)
+- Archetype: Vite React
+- Framework: React 18
 - Language: TypeScript
-- Database: Prisma
-- State: Server Actions
+- State: Local
 EOF
-
-  log_info "Cleaned previous plan & injected context"
+  rm -f src/components/header.tsx
+  log_info "Context injected. 'header.tsx' removed to trigger planning."
 }
 
 stage_verify() {
   local log_file=$1
   local plan_file=".gemini/plan.md"
-  local errors=0
-
-  log_step "Verifying Living Document (.gemini/plan.md)"
-
   if [ ! -f "$plan_file" ]; then
     log_fail "Plan file missing: $plan_file"
-    errors=$((errors + 1))
-  else
-    log_info "Plan file created successfully"
+    return 1
   fi
-
-  if grep -qi "App Router" "$plan_file" 2>/dev/null; then
-    log_info "Context Awareness: Found 'App Router'"
+  log_step "Plan Verification"
+  if grep -qi "header" "$plan_file" || grep -qi "components" "$plan_file"; then
+    log_info "Planner correctly identified missing UI component"
   else
-    log_fail "Context Missing: 'App Router' not found in plan"
-    errors=$((errors + 1))
+    log_fail "Planner failed to suggest creating components"
+    return 1
   fi
-
-  if grep -qi "Prisma" "$plan_file" 2>/dev/null; then
-    log_info "Context Awareness: Found 'Prisma'"
-  else
-    log_fail "Context Missing: 'Prisma' not found in plan"
-    errors=$((errors + 1))
-  fi
-
-  return $errors
+  return 0
 }
