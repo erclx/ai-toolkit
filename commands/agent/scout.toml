@@ -49,7 +49,7 @@ Context: {{args}}
 - **Flag Paradigm Shifts:** Identify major version jumps (e.g., Tailwind v4, React 19, Python uv).
 - **Triangulate Versions:** Use `engines`, `docker` base images, and dependencies (`.nvmrc`, `.python-version`) to pinpoint runtimes.
 - **Define Contracts:** Explicitly state the Package Manager, Styling Engine, Import Strategy, and Test Strategy.
-- **Map Workflows:** Map lifecycle intents (Dev, Build, Verify) to specific shell commands found in `scripts` or `justfile`.
+- **Map Workflows:** Map lifecycle intents (Dev, Build, Verify) to their **Package Manager Script** (e.g., `bun run build`) if defined in `package.json`. Fallback to shell scripts only if no npm/bun script exists.
 - **Generate Report:** Create a Markdown file at `.gemini/.tmp/scout_report.md`.
 - Use double quotes for all string arguments.
 
