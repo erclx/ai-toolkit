@@ -27,7 +27,7 @@ prompt = """
 # READING FULL CONFIGURATION FILES (Depth 3).
 # Excludes lockfiles (*.lock, *.sum) to prevent context flooding.
 # Uses '*config.*' to capture framework configs (vite, eslint, tsconfig, etc) without hardcoding.
-!{find . -maxdepth 3 -type f \\( -name "package.json" -o -name "Cargo.toml" -o -name "pyproject.toml" -o -name "requirements.txt" -o -name "setup.py" -o -name "pom.xml" -o -name "Dockerfile" -o -name "Makefile" -o -name ".editorconfig" -o -name ".nvmrc" -o -name ".node-version" -o -name "*.tf" -o -name "*config.*" \\) -not -name "package-lock.json" -not -name "yarn.lock" -not -name "*.lock" -exec echo "--- START {} ---" \\; -exec cat {} \\; -exec echo "--- END {} ---" \\;}
+!{find . -maxdepth 3 -type f \\( -name "package.json" -o -name "Cargo.toml" -o -name "pyproject.toml" -o -name "requirements.txt" -o -name "setup.py" -o -name "pom.xml" -o -name "Dockerfile" -o -name "Makefile" -o -name ".editorconfig" -o -name ".nvmrc" -o -name ".node-version" -o -name ".python-version" -o -name "*.tf" -o -name "*config.*" \\) -not -name "package-lock.json" -not -name "yarn.lock" -not -name "*.lock" -exec echo "--- START {} ---" \\; -exec cat {} \\; -exec echo "--- END {} ---" \\;}
 </MANIFEST_DNA>
 
 ---
