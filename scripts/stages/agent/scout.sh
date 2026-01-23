@@ -13,14 +13,14 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 use_anchor() {
-  export ANCHOR_TYPE="python-uv"
+  export ANCHOR_REPO="vite-react"
 }
 
 stage_setup() {
-  log_step "Refining Anchor Environment ($ANCHOR_TYPE)"
+  log_step "Refining Anchor Environment ($ANCHOR_REPO)"
   rm -rf .gemini
   
-  if [ "$ANCHOR_TYPE" == "python-uv" ]; then
+  if [ "$ANCHOR_REPO" == "uv-python-template" ]; then
     echo "3.12.0" > .python-version
   else
   echo "v20.0.0" > .nvmrc
@@ -38,9 +38,9 @@ stage_verify() {
     return 1
   fi
   
-  log_step "Anchor Verification ($ANCHOR_TYPE)"
+  log_step "Anchor Verification ($ANCHOR_REPO)"
 
-  if [ "$ANCHOR_TYPE" == "python-uv" ]; then
+  if [ "$ANCHOR_REPO" == "uv-python-template" ]; then
     if grep -qi "Python" "$report_file"; then
       log_info "Runtime: Python detected"
     else
@@ -65,7 +65,7 @@ stage_verify() {
   if grep -qi "React" "$report_file"; then
     log_info "Framework: React detected"
   else
-    log_fail "Framework: React missing in report"
+      log_fail "Framework: React missing in report"
     return 1
   fi
   fi

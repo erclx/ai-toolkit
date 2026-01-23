@@ -65,16 +65,10 @@ select_option() {
 }
 
 clone_anchor() {
-  local type=${ANCHOR_TYPE:-"vite-react"}
-  local repo_url=""
-  
-  if [ "$type" == "python-uv" ]; then
-    repo_url="https://github.com/erclx/uv-python-template"
-  else
-    repo_url="https://github.com/erclx/vite-react-template"
-  fi
+  local repo_name=${ANCHOR_REPO:-"vite-react-template"}
+  local repo_url="https://github.com/erclx/$repo_name"
 
-  log_step "Cloning Anchor Repository ($type)"
+  log_step "Cloning Anchor Repository ($repo_name)"
   
   if [ -d "$SANDBOX" ]; then
     rm -rf "$SANDBOX"

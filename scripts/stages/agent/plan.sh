@@ -13,7 +13,7 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 use_anchor() {
-  export ANCHOR_TYPE="vite-react"
+  export ANCHOR_REPO="vite-react-template"
 }
 
 stage_setup() {
@@ -26,8 +26,8 @@ stage_setup() {
 - Language: TypeScript
 - State: Local
 EOF
-  rm -f src/components/Header.tsx
-  log_info "Context injected. 'Header.tsx' removed to trigger planning."
+  rm -f src/components/header.tsx
+  log_info "Context injected. 'header.tsx' removed to trigger planning."
 }
 
 stage_verify() {
@@ -38,7 +38,7 @@ stage_verify() {
     return 1
   fi
   log_step "Plan Verification"
-  if grep -qi "Header" "$plan_file" || grep -qi "components" "$plan_file"; then
+  if grep -qi "header" "$plan_file" || grep -qi "components" "$plan_file"; then
     log_info "Planner correctly identified missing UI component"
   else
     log_fail "Planner failed to suggest creating components"
