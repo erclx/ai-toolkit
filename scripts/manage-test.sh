@@ -10,8 +10,11 @@ GREY='\033[0;90m'
 NC='\033[0m'
 
 log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
+
 log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
+
 log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
+
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 show_help() {
@@ -38,6 +41,7 @@ select_option() {
   local count=${#options[@]}
   echo -e "${GREY}│${NC}"
   echo -ne "${GREEN}◆${NC} ${prompt_text}\n"
+  
   while true; do
     for i in "${!options[@]}"; do
       if [ $i -eq $cur ]; then
@@ -46,6 +50,7 @@ select_option() {
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}"
       fi
     done
+    
     read -rsn1 key
     case "$key" in
       $'\x1b')
@@ -59,6 +64,7 @@ select_option() {
     esac
     echo -ne "\033[${count}A"
   done
+  
   echo -ne "\033[1A\r\033[K\r\033[${count}A\r\033[K"
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   export SELECTED_OPT="${options[$cur]}"
@@ -80,6 +86,7 @@ clone_anchor() {
 
 setup_ssh() {
   log_step "Security Authentication"
+  
   if [ -z "$SSH_AUTH_SOCK" ]; then
     eval "$(ssh-agent -s)" > /dev/null
     ssh-add ~/.ssh/id_rsa
@@ -180,11 +187,21 @@ main() {
         rm -rf "$SANDBOX"
     fi
     mkdir -p "$SANDBOX"
+    
   cat <<EOF > "$SANDBOX/.gitignore"
 .test_log
 .gemini/.tmp/
 EOF
   fi
+
+  mkdir -p "$SANDBOX/.gemini"
+  cat <<EOF > "$SANDBOX/.gemini/settings.json"
+{
+  "model": {
+    "name": "$LLM_MODEL"
+  }
+}
+EOF
 
   (cd "$SANDBOX" && stage_setup)
   log_info "Sandbox ready"
