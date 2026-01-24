@@ -84,6 +84,25 @@ clone_anchor() {
   log_info "Anchor cloned: $repo_url"
 }
 
+provision_assets() {
+  local archetype="react" 
+  if [[ "$ANCHOR_REPO" == *"python"* ]]; then
+      archetype="python"
+  fi
+  
+  log_step "Provisioning assets for $archetype"
+  
+  local asset_dir="$PROJECT_ROOT/scripts/assets/$archetype"
+  if [ ! -d "$asset_dir" ]; then
+      log_error "Asset directory not found for archetype: $archetype"
+  fi
+  
+  cp "$asset_dir/GEMINI.md" "$SANDBOX/GEMINI.md"
+  mkdir -p "$SANDBOX/.gemini/.tmp"
+  cp "$asset_dir/scout-report.md" "$SANDBOX/.gemini/.tmp/scout-report.md"
+  log_info "Assets provisioned for $archetype"
+}
+
 setup_ssh() {
   log_step "Security Authentication"
   
@@ -182,6 +201,7 @@ main() {
   if [[ "$(type -t use_anchor)" == "function" ]]; then
     use_anchor
     clone_anchor
+    provision_assets
   else
     if [ -d "$SANDBOX" ]; then
         rm -rf "$SANDBOX"
