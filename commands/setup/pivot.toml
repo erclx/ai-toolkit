@@ -10,7 +10,7 @@ prompt = """
 
 <DATA_CONTEXT>
 <SCOUT_REPORT>
-!{cat .gemini/.tmp/scout_report.md 2>/dev/null || echo "NO_SCOUT_REPORT"}
+!{cat .gemini/.tmp/scout-report.md 2>/dev/null || echo "NO_SCOUT_REPORT"}
 </SCOUT_REPORT>
 
 <PACKAGE_JSON>

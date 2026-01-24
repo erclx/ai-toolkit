@@ -11,7 +11,7 @@ prompt = """
 
 <SCOUT_CONTEXT>
 # The Planner MUST align with the architecture discovered by the Scout.
-!{if [ -f .gemini/.tmp/scout_report.md ]; then cat .gemini/.tmp/scout_report.md; else echo "CRITICAL: Scout Report missing. Architecture unknown."; fi}
+!{if [ -f .gemini/.tmp/scout-report.md ]; then cat .gemini/.tmp/scout-report.md; else echo "CRITICAL: Scout Report missing. Architecture unknown."; fi}
 </SCOUT_CONTEXT>
 
 <CURRENT_PLAN>

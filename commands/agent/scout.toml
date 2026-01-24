@@ -50,7 +50,7 @@ Context: {{args}}
 - **Triangulate Versions:** Use `engines`, `docker` base images, and dependencies (`.nvmrc`, `.python-version`) to pinpoint runtimes.
 - **Define Contracts:** Explicitly state the Package Manager, Styling Engine, Import Strategy, and Test Strategy.
 - **Map Workflows:** Map lifecycle intents (Dev, Build, Verify) to their **Package Manager Script** (e.g., `bun run build`) if defined in `package.json`. Fallback to shell scripts only if no npm/bun script exists.
-- **Generate Report:** Create a Markdown file at `.gemini/.tmp/scout_report.md`.
+- **Generate Report:** Create a Markdown file at `.gemini/.tmp/scout-report.md`.
 - Use double quotes for all string arguments.
 
 ### Must NOT Do:
@@ -73,7 +73,7 @@ Context: {{args}}
 
 ```bash
 mkdir -p .gemini/.tmp && \\
-{ cat <<'GEMINI_REPORT_END' > .gemini/.tmp/scout_report.md
+{ cat <<'GEMINI_REPORT_END' > .gemini/.tmp/scout-report.md
 # 🕵️ Deep Scout Report: !{date +%Y-%m-%d}
 
 ## 1. Executive Summary
@@ -107,6 +107,6 @@ mkdir -p .gemini/.tmp && \\
 - [Technical Observation 1]
 - [Technical Observation 2]
 GEMINI_REPORT_END
-} && echo "Report saved to: .gemini/.tmp/scout_report.md"
+} && echo "Report saved to: .gemini/.tmp/scout-report.md"
 ```
 """

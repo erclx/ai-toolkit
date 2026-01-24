@@ -25,7 +25,7 @@ git config user.name "Senior Architect"
   git push origin --delete feature/string-utils -q 2>/dev/null || true
 
   mkdir -p .gemini/.tmp
-  cat <<EOF > .gemini/.tmp/scout_report.md
+  cat <<EOF > .gemini/.tmp/scout-report.md
 # Scout Report
 - Archetype: Node.js/JavaScript
 - Framework: Vanilla JS
@@ -50,7 +50,7 @@ EOF
 
 stage_verify() {
   local log_file=$1
-  local body_file=".gemini/.tmp/pr_body.md"
+  local body_file=".gemini/.tmp/pr-body.md"
 
   log_step "PR Artifact Validation"
 

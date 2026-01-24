@@ -22,7 +22,7 @@ stage_setup() {
   mkdir -p .gemini/.tmp
 
   # Inject a Scout Report that confirms we are currently on Vite/React
-  cat <<EOF > .gemini/.tmp/scout_report.md
+  cat <<EOF > .gemini/.tmp/scout-report.md
 # Scout Report
 - Archetype: Vite React
 - Framework: React 19
