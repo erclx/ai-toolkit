@@ -30,7 +30,7 @@ stage_setup() {
 
 stage_verify() {
   local log_file=$1
-  local report_file=".gemini/.tmp/scout_report.md"
+  local report_file=".gemini/.tmp/scout-report.md"
   
   if [ ! -f "$report_file" ]; then
     log_fail "Report artifact missing at $report_file"

@@ -19,7 +19,7 @@ use_anchor() {
 stage_setup() {
   log_step "Injecting Planner Context"
   mkdir -p .gemini/.tmp
-  cat <<EOF > .gemini/.tmp/scout_report.md
+  cat <<EOF > .gemini/.tmp/scout-report.md
 # Scout Report
 - Archetype: Vite React
 - Framework: React 18

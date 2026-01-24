@@ -7,7 +7,7 @@ A high-fidelity Gemini extension for Senior Principal Architects. This toolkit p
 This toolkit utilizes a **Ghost Folder** pattern to maintain project state without polluting your source code.
 
 * **`.gemini/.tmp/`**: Acts as the "AI Brain."
-* **Persistence**: While the AI session resets, the `scout_report.md` stored here ensures the agent retains "Architectural Memory" of your tech stack, versions, and gaps.
+* **Persistence**: While the AI session resets, the `scout-report.md` stored here ensures the agent retains "Architectural Memory" of your tech stack, versions, and gaps.
 * **Security**: All temporary artifacts are strictly ignored via `.geminiignore`.
 
 ## Installation
