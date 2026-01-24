@@ -92,12 +92,13 @@ provision_assets() {
   
   log_step "Provisioning assets for $archetype"
   
+  cp "$PROJECT_ROOT/scripts/assets/constitution/GEMINI.md" "$SANDBOX/GEMINI.md"
+
   local asset_dir="$PROJECT_ROOT/scripts/assets/$archetype"
   if [ ! -d "$asset_dir" ]; then
       log_error "Asset directory not found for archetype: $archetype"
   fi
   
-  cp "$asset_dir/GEMINI.md" "$SANDBOX/GEMINI.md"
   mkdir -p "$SANDBOX/.gemini/.tmp"
   cp "$asset_dir/scout-report.md" "$SANDBOX/.gemini/.tmp/scout-report.md"
   log_info "Assets provisioned for $archetype"
