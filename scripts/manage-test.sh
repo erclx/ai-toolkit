@@ -206,6 +206,18 @@ EOF
   (cd "$SANDBOX" && stage_setup)
   log_info "Sandbox ready"
 
+  if [ -d "$SANDBOX/.git" ]; then
+    (
+      cd "$SANDBOX"
+      git add .
+      if ! git diff --staged --quiet; then
+        log_step "Staging environment changes"
+        git commit -m 'chore(sandbox): tooling setup and environment staging' --no-verify &> /dev/null
+        log_info "Git state clean"
+      fi
+    )
+  fi
+
   if [[ "$MODE" == "test" ]]; then
     log_step "Auto-Testing /$NAMESPACE.$category:$command"
     cd "$SANDBOX"
