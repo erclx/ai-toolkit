@@ -46,6 +46,13 @@ stage_verify() {
        return 1
     fi
 
+  if grep -q "Zen of Gemini" "$cursor_rules" && grep -q "Core Laws" "$cursor_rules"; then
+     log_info "Global: Universal Constitution merged correctly."
+  else
+     log_fail "Global: Constitution missing or malformed."
+     return 1
+  fi
+
     if grep -q "Project Reality" "$cursor_rules"; then
        log_info "Global: Scout Reality section appended."
     else
@@ -54,32 +61,46 @@ stage_verify() {
     fi
 
   if [[ "$ANCHOR_REPO" == *"python"* ]]; then
-    
-    if grep -q "Vite + React + Bun Template" "$cursor_rules" || grep -q "UV Python Template" "$cursor_rules"; then
-       log_info "Global: Common Constitution merged."
-  else
-       log_fail "Global: Common Constitution missing."
-    return 1
-  fi
-
-    if grep -q "bun" "$pkg_rule" && grep -q "NEVER use npm" "$pkg_rule"; then
-       log_info "Rule: Package Manager enforces Bun."
+    if grep -q "uv" "$pkg_rule" && grep -q "ALWAYS use uv" "$pkg_rule"; then
+       log_info "Rule (Python): Package Manager enforces UV."
     else
-       log_fail "Rule: Package Manager incorrect (Expected Bun)."
+       log_fail "Rule (Python): Package Manager incorrect (Expected UV)."
        return 1
     fi
 
-    if grep -iq "Tailwind" "$tech_rule" && grep -q "4" "$tech_rule"; then
-       log_info "Rule: Tailwind v4 paradigm detected."
+    if grep -q "Python" "$tech_rule" || grep -q "FastAPI" "$tech_rule"; then
+       log_info "Rule (Python): Tech Stack identified Python."
     else
-       log_fail "Rule: Failed to detect Tailwind v4."
+       log_fail "Rule (Python): Tech Stack missing Python context."
+       return 1
+    fi
+
+    if grep -q "\.py" "$tech_rule"; then
+       log_info "Rule (Python): Globs correctly set for .py files."
+  else
+       log_fail "Rule (Python): Globs incorrect (Expected .py)."
+    return 1
+  fi
+
+  else
+    if grep -q "bun" "$pkg_rule" && grep -q "NEVER use npm" "$pkg_rule"; then
+       log_info "Rule (React): Package Manager enforces Bun."
+    else
+       log_fail "Rule (React): Package Manager incorrect (Expected Bun)."
+       return 1
+    fi
+
+    if grep -iq "Tailwind" "$tech_rule"; then
+       log_info "Rule (React): Tailwind paradigm detected."
+    else
+       log_fail "Rule (React): Failed to detect Tailwind."
        return 1
     fi
     
     if grep -q "\.tsx" "$tech_rule"; then
-       log_info "Rule: Globs correctly set for TSX files."
+       log_info "Rule (React): Globs correctly set for TSX files."
     else
-       log_fail "Rule: Globs incorrect (Expected .tsx)."
+       log_fail "Rule (React): Globs incorrect (Expected .tsx)."
        return 1
     fi
   fi
