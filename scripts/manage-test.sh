@@ -189,7 +189,7 @@ main() {
     mkdir -p "$SANDBOX"
     
   cat <<EOF > "$SANDBOX/.gitignore"
-.test_log
+.test-log
 .gemini/.tmp/
 EOF
   fi
@@ -209,10 +209,10 @@ EOF
   if [[ "$MODE" == "test" ]]; then
     log_step "Auto-Testing /$NAMESPACE.$category:$command"
     cd "$SANDBOX"
-    gemini --model "$LLM_MODEL" $YOLO_FLAG "/$NAMESPACE.$category:$command" | tee .test_log
+    gemini --model "$LLM_MODEL" $YOLO_FLAG "/$NAMESPACE.$category:$command" | tee .test-log
     
     log_step "Validation"
-    if stage_verify ".test_log"; then
+    if stage_verify ".test-log"; then
       log_info "Assertion Passed: Verification Hook Succeeded"
     else
       log_error "Assertion Failed: Stage verification failed"
