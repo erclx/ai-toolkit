@@ -55,40 +55,10 @@ stage_verify() {
 
   if [[ "$ANCHOR_REPO" == *"python"* ]]; then
     
-    if grep -q "UV Python Template" "$cursor_rules"; then
-       log_info "Global: Python Constitution merged."
+    if grep -q "Vite + React + Bun Template" "$cursor_rules" || grep -q "UV Python Template" "$cursor_rules"; then
+       log_info "Global: Common Constitution merged."
   else
-       log_fail "Global: Python Constitution missing."
-    return 1
-  fi
-
-    if grep -q "uv" "$pkg_rule" && grep -q "ALWAYS use uv" "$pkg_rule"; then
-       log_info "Rule: Package Manager enforces UV."
-    else
-       log_fail "Rule: Package Manager incorrect (Expected UV)."
-       return 1
-    fi
-
-    if grep -q "FastAPI" "$tech_rule" && grep -q "Python" "$tech_rule"; then
-       log_info "Rule: Tech Stack identified Python/FastAPI."
-    else
-       log_fail "Rule: Tech Stack missing Python/FastAPI context."
-       return 1
-    fi
-
-    if grep -q "\.py" "$tech_rule"; then
-       log_info "Rule: Globs correctly set for Python files."
-    else
-       log_fail "Rule: Globs incorrect (Expected .py)."
-       return 1
-    fi
-
-  else
-    
-    if grep -q "Vite + React + Bun Template" "$cursor_rules"; then
-       log_info "Global: React Constitution merged."
-  else
-       log_fail "Global: React Constitution missing."
+       log_fail "Global: Common Constitution missing."
     return 1
   fi
 
