@@ -18,31 +18,36 @@ use_anchor() {
 
 stage_setup() {
   log_step "Injecting Planner Context"
-  mkdir -p .gemini/.tmp
-  cat <<EOF > .gemini/.tmp/scout-report.md
-# Scout Report
-- Archetype: Vite React
-- Framework: React 18
-- Language: TypeScript
-- State: Local
-EOF
+
   rm -f src/components/header.tsx
-  log_info "Context injected. 'header.tsx' removed to trigger planning."
+
+  log_info "Context injected (Map + Law). 'header.tsx' removed to trigger planning."
 }
 
 stage_verify() {
   local log_file=$1
   local plan_file=".gemini/plan.md"
+  
+  log_step "Plan Verification"
+
   if [ ! -f "$plan_file" ]; then
     log_fail "Plan file missing: $plan_file"
     return 1
   fi
-  log_step "Plan Verification"
+
   if grep -qi "header" "$plan_file" || grep -qi "components" "$plan_file"; then
     log_info "Planner correctly identified missing UI component"
   else
     log_fail "Planner failed to suggest creating components"
     return 1
   fi
+
+  if grep -qi "Rule" "$plan_file" || grep -qi "GEMINI.md" "$plan_file" || grep -qi "CQS" "$plan_file"; then
+      log_info "Planner correctly linked tasks to Governance Rules (Deep Linking)"
+  else
+      log_fail "Planner failed to link tasks to GEMINI.md rules."
+      return 1
+  fi
+
   return 0
 }
