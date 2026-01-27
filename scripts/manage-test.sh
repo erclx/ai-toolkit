@@ -54,9 +54,13 @@ select_option() {
     read -rsn1 key
     case "$key" in
       $'\x1b')
-        read -rsn2 key
+        if read -rsn2 -t 0.001 key; then
         if [[ "$key" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
         if [[ "$key" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
+        else
+          echo -ne "\033[${count}A\033[J"
+          log_error "Selection cancelled"
+        fi
         ;;
       "k") cur=$(( (cur - 1 + count) % count ));;
       "j") cur=$(( (cur + 1) % count ));;
@@ -72,7 +76,7 @@ select_option() {
 
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
-  local repo_url="https://github.com/erclx/$repo_name"
+  local repo_url="git@github.com:erclx/$repo_name.git"
 
   log_step "Cloning Anchor Repository ($repo_name)"
   
@@ -81,7 +85,14 @@ clone_anchor() {
   fi
   
   git clone --depth 1 "$repo_url" "$SANDBOX"
-  log_info "Anchor cloned: $repo_url"
+  rm -rf "$SANDBOX/.git"
+  (
+    cd "$SANDBOX"
+    git init > /dev/null
+    git add .
+    git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify > /dev/null
+  )
+  log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
 }
 
 provision_assets() {
@@ -208,11 +219,17 @@ main() {
         rm -rf "$SANDBOX"
     fi
     mkdir -p "$SANDBOX"
-    
+
   cat <<EOF > "$SANDBOX/.gitignore"
 .test-log
 .gemini/.tmp/
 EOF
+    (
+      cd "$SANDBOX"
+      git init > /dev/null
+      git add .gitignore > /dev/null 2> /dev/null
+      git commit -m "feat(sandbox): initial empty sandbox setup" --no-verify > /dev/null
+    )
   fi
 
   mkdir -p "$SANDBOX/.gemini"
@@ -227,17 +244,13 @@ EOF
   (cd "$SANDBOX" && stage_setup)
   log_info "Sandbox ready"
 
-  if [ -d "$SANDBOX/.git" ]; then
-    (
-      cd "$SANDBOX"
-      git add .
-      if ! git diff --staged --quiet; then
-        log_step "Staging environment changes"
-        git commit -m 'chore(sandbox): tooling setup and environment staging' --no-verify &> /dev/null
-        log_info "Git state clean"
-      fi
-    )
-  fi
+  log_step "Staging environment changes"
+  (
+    cd "$SANDBOX"
+    git add . > /dev/null 2> /dev/null
+    git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
+  )
+  log_info "Git state clean after setup"
 
   if [[ "$MODE" == "test" ]]; then
     log_step "Auto-Testing /$NAMESPACE.$category:$command"
