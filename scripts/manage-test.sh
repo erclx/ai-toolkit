@@ -215,11 +215,17 @@ main() {
         rm -rf "$SANDBOX"
     fi
     mkdir -p "$SANDBOX"
-    
+
   cat <<EOF > "$SANDBOX/.gitignore"
 .test-log
 .gemini/.tmp/
 EOF
+    (
+      cd "$SANDBOX"
+      git init > /dev/null
+      git add .gitignore > /dev/null 2> /dev/null
+      git commit -m "feat(sandbox): initial empty sandbox setup" --no-verify > /dev/null
+    )
   fi
 
   mkdir -p "$SANDBOX/.gemini"
@@ -237,7 +243,7 @@ EOF
   log_step "Staging environment changes"
   (
     cd "$SANDBOX"
-    git add . > /dev/null
+    git add . > /dev/null 2> /dev/null
     git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
   )
   log_info "Git state clean after setup"
