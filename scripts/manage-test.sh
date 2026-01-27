@@ -234,7 +234,13 @@ EOF
   (cd "$SANDBOX" && stage_setup)
   log_info "Sandbox ready"
 
-
+  log_step "Staging environment changes"
+  (
+    cd "$SANDBOX"
+    git add . > /dev/null
+    git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
+  )
+  log_info "Git state clean after setup"
 
   if [[ "$MODE" == "test" ]]; then
     log_step "Auto-Testing /$NAMESPACE.$category:$command"
