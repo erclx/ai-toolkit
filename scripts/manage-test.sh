@@ -72,7 +72,7 @@ select_option() {
 
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
-  local repo_url="https://github.com/erclx/$repo_name"
+  local repo_url="git@github.com:erclx/$repo_name.git"
 
   log_step "Cloning Anchor Repository ($repo_name)"
   
