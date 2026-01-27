@@ -81,7 +81,14 @@ clone_anchor() {
   fi
   
   git clone --depth 1 "$repo_url" "$SANDBOX"
-  log_info "Anchor cloned: $repo_url"
+  rm -rf "$SANDBOX/.git"
+  (
+    cd "$SANDBOX"
+    git init > /dev/null
+    git add .
+    git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify > /dev/null
+  )
+  log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
 }
 
 provision_assets() {
@@ -227,17 +234,7 @@ EOF
   (cd "$SANDBOX" && stage_setup)
   log_info "Sandbox ready"
 
-  if [ -d "$SANDBOX/.git" ]; then
-    (
-      cd "$SANDBOX"
-      git add .
-      if ! git diff --staged --quiet; then
-        log_step "Staging environment changes"
-        git commit -m 'chore(sandbox): tooling setup and environment staging' --no-verify &> /dev/null
-        log_info "Git state clean"
-      fi
-    )
-  fi
+
 
   if [[ "$MODE" == "test" ]]; then
     log_step "Auto-Testing /$NAMESPACE.$category:$command"
