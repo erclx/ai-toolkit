@@ -35,12 +35,12 @@ EOF
 
 stage_verify() {
   local log_file=$1
-  local audit_file=".gemini/.tmp/tone-audit.md"
+  local target_file="garbage-prose.md"
   
-  log_step "Verifying Tone Refactoring"
+  log_step "Verifying Tone Refactoring (Diff-First Protocol)"
 
-  if [ ! -f "$audit_file" ]; then
-    log_fail "Audit artifact missing at $audit_file"
+  if [ ! -f "$target_file" ]; then
+    log_fail "Target file missing: $target_file"
     return 1
   fi
 
@@ -48,21 +48,29 @@ stage_verify() {
   local banned=("delve" "modern" "cutting-edge" "leverage" "excited to" "game-changing" "seamlessly" "robust" "performant" "innovative" "utilize" "mission-critical")
 
   for word in "${banned[@]}"; do
-    if grep -qi "$word" "$audit_file"; then
-      log_fail "Failure: Banned term '$word' survived the audit."
+    if grep -qi "$word" "$target_file"; then
+      log_fail "Failure: Banned term '$word' survived in $target_file."
       violations=$((violations + 1))
     fi
   done
 
-  if grep -q "diff --color=always" "$log_file" || grep -q "diff" "$log_file"; then
-     log_info "UX: Diff command detected in output."
+  if grep -q "diff -u" "$log_file"; then
+      log_info "UX: Visual Unified Diff confirmed in logs."
   else
-     log_fail "UX: Diff command missing."
+      log_fail "UX: 'diff -u' command missing. User requested Diff-First."
+      violations=$((violations + 1))
+  fi
+
+
+  if grep -q "Updated .*garbage-prose.md" "$log_file"; then
+      log_info "Logic: Smart Overwrite applied successfully."
+  else
+      log_fail "Logic: Auto-apply failed (Expected 'Updated' message for clean file)."
      violations=$((violations + 1))
   fi
 
   if [ "$violations" -eq 0 ]; then
-    log_info "Success: All 'AI Tells' purged and Diff provided."
+    log_info "Success: Prose refactored with visual diff."
     return 0
   else
     return 1
