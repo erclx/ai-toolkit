@@ -28,20 +28,20 @@ All notable changes to this project will be documented in this file.
 EOF
   
   git add CHANGELOG.md
-  git commit -m "chore: init changelog" -q
+  git commit -m "chore(write): init changelog" -q
   git tag v1.0.0
 
   touch auth.js
   git add auth.js
-  git commit -m "feat: added login page 🚀" -q
+  git commit -m "feat(write): added login page" -q
   
   touch api.js
   git add api.js
-  git commit -m "fix: bug in api" -q
+  git commit -m "fix(write): bug in api" -q
   
   echo "node_modules" >> .gitignore
   git add .gitignore
-  git commit -m "chore: update gitignore rules" -q
+  git commit -m "chore(write): update gitignore rules" -q
   
   log_info "Environment ready: v1.0.0 + Feature + Fix + Noise"
 }
