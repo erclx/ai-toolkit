@@ -17,12 +17,11 @@ This toolkit utilizes a **Ghost Folder** pattern to maintain project state witho
 
 ## Commands
 
-- `/gemini-cli-toolkit.setup:gemini` - Scaffold project infrastructure and security rules.
 - `/gemini-cli-toolkit.agent:scout` - Perform deep architectural reconnaissance and audit.
-- `/gemini-cli-toolkit.write:changelog` - Generates a semantic changelog entry based on git history.
-
 - `/gemini-cli-toolkit.git:commit` - Generate semantic, conventional commit messages.
 - `/gemini-cli-toolkit.git:pr` - Create documentation-driven PR drafts.
+- `/gemini-cli-toolkit.setup:gemini` - Scaffold project infrastructure and security rules.
+- `/gemini-cli-toolkit.write:changelog` - Generates a semantic changelog entry based on git history.
 
 ## Principles
 
