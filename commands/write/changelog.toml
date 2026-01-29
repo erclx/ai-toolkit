@@ -11,15 +11,15 @@ prompt = """
 
 <DATA_CONTEXT>
 <LATEST_TAG>
-!{git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0"}
+!{git describe --tags --abbrev=0 2>/dev/null || echo "No tags found"}
 </LATEST_TAG>
 
 <NEW_COMMITS>
-!{git log --pretty=format:"%h %s" --no-merges $(git describe --tags --abbrev=0 2>/dev/null)..HEAD 2>/dev/null || git log --pretty=format:"%h %s" --no-merges}
+!{TAG=$(git describe --tags --abbrev=0 2>/dev/null); if [ -n "$TAG" ]; then git log --pretty=format:"%h %s" --no-merges "$TAG"..HEAD; else git log --pretty=format:"%h %s" --no-merges; fi}
 </NEW_COMMITS>
 
 <CURRENT_CHANGELOG_HEAD>
-!{head -n 20 CHANGELOG.md 2>/dev/null || echo "# Changelog\n\nNo history yet."}
+!{head -n 50 CHANGELOG.md 2>/dev/null || echo "# Changelog\n\nNo history yet."}
 </CURRENT_CHANGELOG_HEAD>
 </DATA_CONTEXT>
 
@@ -29,6 +29,7 @@ prompt = """
 
 You are a Senior Release Manager and Technical Auditor.
 You curate history for human consumption, rejecting "Git Dumps."
+**Your Priority:** Filter out noise. Users do not care about internal plumbing.
 You strictly adhere to **Semantic Versioning** and the **Keep a Changelog** standard.
 Context: {{args}}
 
@@ -38,18 +39,23 @@ Context: {{args}}
 
 ### Must Do:
 
-- **Partial Generation:** Output **ONLY** the new semantic version entry block (Header + Categories).
-- **Do NOT** output the existing history or the file header.
+- **Header Logic:** Check context ({{args}}). If it contains "unreleased", "draft", or "pending", you **MUST** use `## [Unreleased]` as the header. Do NOT invent a new version number.
+- **Deduplication:** Compare `<NEW_COMMITS>` against `<CURRENT_CHANGELOG_HEAD>`. Do not generate items that are already listed in the file.
+- **Partial Generation:** Output **ONLY** the new entry block (Header + Categories).
 - **Ventilated Prose:** Use one sentence per line for descriptions.
 - **Markdown Hygiene:** Preserve blank lines between headers.
-- **Link Definition:** Include the reference link for this new version at the very bottom of your block.
+
+### Must NOT Do:
+
+- **No Link Definitions:** Do NOT generate version comparison links (e.g. `[1.0.0]: ...`).
+- **No Internal Plumbing:** Ignore `.gitignore`, `eslint`, `prettier`, or internal CI scripts unless they affect the user.
+- **No Emojis:** Strictly forbidden.
 
 ### Style & Tone Guidelines
 
 - **Scope Prefixes:** Use bold prefixes (e.g., `- **Auth:** Fixed...`).
 - **Value-Based:** Describe impact, not implementation.
-- **ISO Dates:** `YYYY-MM-DD`.
-- **No Emojis:** Strictly forbidden.
+- **ISO Dates:** `YYYY-MM-DD` (Only for versioned releases, not Unreleased).
 - **Categories:** `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
 
 ---
@@ -58,8 +64,7 @@ Context: {{args}}
 
 # PREVIEW
 
-- **Version:** [Target Version]
-- **Type:** [Patch/Minor/Major]
+- **Version:** [Target Version or "Unreleased"]
 - **Auditor Note:** [Reasoning]
 
 # FINAL COMMAND
@@ -69,14 +74,19 @@ NEW_ENTRY=".gemini/.tmp/new_entry.md"
 DRAFT=".gemini/.tmp/changelog_draft.md"
 mkdir -p .gemini/.tmp
 
-# 1. Capture the AI's new entry
 cat <<'EOF' > "$NEW_ENTRY"
 [New Markdown Entry]
 EOF
 
 SPLIT_LINE=$(grep -n "^## \\[" CHANGELOG.md 2>/dev/null | head -n 1 | cut -d: -f1)
+NEW_HEADER=$(head -n 1 "$NEW_ENTRY" | tr -d '\r')
+OLD_HEADER=$(sed "${SPLIT_LINE}q;d" CHANGELOG.md 2>/dev/null | tr -d '\r')
 
-if [ -z "$SPLIT_LINE" ]; then
+if [ "$NEW_HEADER" == "$OLD_HEADER" ] && [ -n "$SPLIT_LINE" ]; then
+    head -n "$SPLIT_LINE" CHANGELOG.md > "$DRAFT"
+    tail -n +2 "$NEW_ENTRY" >> "$DRAFT"
+    tail -n +$((SPLIT_LINE + 1)) CHANGELOG.md >> "$DRAFT"
+elif [ -z "$SPLIT_LINE" ]; then
     if [ -f CHANGELOG.md ]; then
         cat CHANGELOG.md > "$DRAFT"
         echo "" >> "$DRAFT"
@@ -88,10 +98,8 @@ if [ -z "$SPLIT_LINE" ]; then
     fi
 else
     head -n $((SPLIT_LINE - 1)) CHANGELOG.md > "$DRAFT"
-    
     cat "$NEW_ENTRY" >> "$DRAFT"
-    echo "" >> "$DRAFT" # Safe spacing
-    
+    echo "" >> "$DRAFT"
     tail -n +$SPLIT_LINE CHANGELOG.md >> "$DRAFT"
 fi
 

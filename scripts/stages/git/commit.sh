@@ -8,7 +8,7 @@ git config user.email "architect@erclx.com"
 git config user.name "Senior Architect"
 
 echo 'export const MAX_CONNECTIONS = "5";' > config.js
-git add . && git commit -m "feat: initial config" -q
+git add . && git commit -m "feat(git): initial config" -q
 
 echo 'export const MAX_CONNECTIONS = 5;' > config.js
 git add config.js

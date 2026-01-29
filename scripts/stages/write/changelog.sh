@@ -23,28 +23,34 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2024-01-01
 
 ### Added
+
 - **Core:** Initial release of the system.
 EOF
   
   git add CHANGELOG.md
-  git commit -m "chore: init changelog" -q
+  git commit -m "chore(write): init changelog" -q
+  git tag v1.0.0
 
   touch auth.js
   git add auth.js
-  git commit -m "feat: added login page 🚀" -q
+  git commit -m "feat(write): added login page" -q
   
   touch api.js
   git add api.js
-  git commit -m "fix: bug in api" -q
+  git commit -m "fix(write): bug in api" -q
   
-  log_info "Environment ready: v1.0.0 + 2 new commits"
+  echo "node_modules" >> .gitignore
+  git add .gitignore
+  git commit -m "chore(write): update gitignore rules" -q
+  
+  log_info "Environment ready: v1.0.0 + Feature + Fix + Noise"
 }
 
 stage_verify() {
   local log_file=$1
   local target_file="CHANGELOG.md"
    
-  log_step "Verifying Changelog Auditor (Stitching Strategy)"
+  log_step "Verifying Changelog Auditor"
 
   if [ ! -f "$target_file" ]; then
     log_fail "Target file missing: $target_file"
@@ -70,6 +76,13 @@ stage_verify() {
       violations=$((violations + 1))
   fi
 
+  if grep -qi "gitignore" "$target_file"; then
+      log_fail "Noise: Internal plumbing (.gitignore) leaked into the changelog."
+      violations=$((violations + 1))
+  else
+      log_info "Noise: Internal plumbing correctly filtered out."
+  fi
+
   if grep -q "diff -u" "$log_file"; then
       log_info "UX: Visual Unified Diff confirmed."
   else
@@ -77,15 +90,15 @@ stage_verify() {
       violations=$((violations + 1))
   fi
 
-  if grep -q "Updated .*CHANGELOG.md" "$log_file"; then
+  if grep -q "CHANGELOG.md updated" "$log_file"; then
       log_info "Logic: Smart Overwrite applied successfully."
   else
-      log_fail "Logic: Auto-apply failed (Expected update)."
+      log_fail "Logic: Auto-apply failed (Expected 'CHANGELOG.md updated')."
       violations=$((violations + 1))
   fi
 
   if [ "$violations" -eq 0 ]; then
-    log_info "Success: Changelog surgically updated."
+    log_info "Success: Changelog verified (Clean, Surgical, Low-Noise)."
     return 0
   else
     return 1
