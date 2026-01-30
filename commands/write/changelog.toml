@@ -17,10 +17,6 @@ prompt = """
 <NEW_COMMITS>
 !{TAG=$(git describe --tags --abbrev=0 2>/dev/null); if [ -n "$TAG" ]; then git log --pretty=format:"%h %s" --no-merges "$TAG"..HEAD; else git log --pretty=format:"%h %s" --no-merges; fi}
 </NEW_COMMITS>
-
-<CURRENT_CHANGELOG_HEAD>
-!{head -n 50 CHANGELOG.md 2>/dev/null || echo "# Changelog\n\nNo history yet."}
-</CURRENT_CHANGELOG_HEAD>
 </DATA_CONTEXT>
 
 ---
@@ -39,11 +35,21 @@ Context: {{args}}
 
 ### Must Do:
 
+- **Initialization (Probe & React):** You MUST first attempt to read `CHANGELOG.md`. If the tool reports it missing, you MUST create it. If it exists, you MUST edit it to append/insert the entry.
 - **Header Logic:** Check context ({{args}}). If it contains "unreleased", "draft", or "pending", you **MUST** use `## [Unreleased]` as the header. Do NOT invent a new version number.
-- **Deduplication:** Compare `<NEW_COMMITS>` against `<CURRENT_CHANGELOG_HEAD>`. Do not generate items that are already listed in the file.
-- **Partial Generation:** Output **ONLY** the new entry block (Header + Categories).
+- **Deduplication:** Compare `<NEW_COMMITS>` against the file content you read. Do not generate items that are already listed.
+- **Immutable History:** Do not edit, reformat, or remove entries under existing released version headers (e.g., `## [1.0.0]`). You have full authority to create new headers or modify the top-most section (`[Unreleased]` or new version).
 - **Ventilated Prose:** Use one sentence per line for descriptions.
-- **Markdown Hygiene:** Preserve blank lines between headers.
+- **Markdown Hygiene:** Strict Vertical Whitespace. You **MUST** separate headers from lists with a blank line.
+  - **BAD:** `### Added\n- Item`
+  - **GOOD:** `### Added\n\n- Item`
+
+### Execution Order:
+
+1. **Probe:** Call the read file tool on `CHANGELOG.md` to check its state (Exists vs Missing).
+2. **Preview:** Output the `# PREVIEW` section to explain your plan.
+3. **Action:** Output the `# ACTION` header.
+4. **Tool Use:** Call the correct tool (edit or create) to apply the changes.
 
 ### Must NOT Do:
 
@@ -65,54 +71,9 @@ Context: {{args}}
 # PREVIEW
 
 - **Version:** [Target Version or "Unreleased"]
-- **Auditor Note:** [Reasoning]
+- **Auditor Note:** [Reasoning for inclusion/exclusion]
 
-# FINAL COMMAND
+# ACTION
 
-```bash
-NEW_ENTRY=".gemini/.tmp/new_entry.md"
-DRAFT=".gemini/.tmp/changelog_draft.md"
-mkdir -p .gemini/.tmp
-
-cat <<'EOF' > "$NEW_ENTRY"
-[New Markdown Entry]
-EOF
-
-SPLIT_LINE=$(grep -n "^## \\[" CHANGELOG.md 2>/dev/null | head -n 1 | cut -d: -f1)
-NEW_HEADER=$(head -n 1 "$NEW_ENTRY" | tr -d '\r')
-OLD_HEADER=$(sed "${SPLIT_LINE}q;d" CHANGELOG.md 2>/dev/null | tr -d '\r')
-
-if [ "$NEW_HEADER" == "$OLD_HEADER" ] && [ -n "$SPLIT_LINE" ]; then
-    head -n "$SPLIT_LINE" CHANGELOG.md > "$DRAFT"
-    tail -n +2 "$NEW_ENTRY" >> "$DRAFT"
-    tail -n +$((SPLIT_LINE + 1)) CHANGELOG.md >> "$DRAFT"
-elif [ -z "$SPLIT_LINE" ]; then
-    if [ -f CHANGELOG.md ]; then
-        cat CHANGELOG.md > "$DRAFT"
-        echo "" >> "$DRAFT"
-        cat "$NEW_ENTRY" >> "$DRAFT"
-    else
-        echo "# Changelog" > "$DRAFT"
-        echo "" >> "$DRAFT"
-        cat "$NEW_ENTRY" >> "$DRAFT"
-    fi
-else
-    head -n $((SPLIT_LINE - 1)) CHANGELOG.md > "$DRAFT"
-    cat "$NEW_ENTRY" >> "$DRAFT"
-    echo "" >> "$DRAFT"
-    tail -n +$SPLIT_LINE CHANGELOG.md >> "$DRAFT"
-fi
-
-echo "🔍 Changelog Diff:"
-diff -u --color=always CHANGELOG.md "$DRAFT" || true
-echo ""
-
-if git diff --quiet HEAD -- CHANGELOG.md 2>/dev/null; then
-    mv "$DRAFT" CHANGELOG.md
-    echo "✅ CHANGELOG.md updated (Use 'git restore CHANGELOG.md' to undo)"
-else
-    echo "⚠️  File has uncommitted changes. Auto-apply aborted."
-    echo "📋 Draft saved to: $DRAFT"
-fi
-```
+- **Edit Tool Call:**
 """

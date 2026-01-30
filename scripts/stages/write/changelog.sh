@@ -20,6 +20,8 @@ stage_setup() {
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
 ## [1.0.0] - 2024-01-01
 
 ### Added
@@ -28,20 +30,20 @@ All notable changes to this project will be documented in this file.
 EOF
   
   git add CHANGELOG.md
-  git commit -m "chore(write): init changelog" -q
+  git commit -m "chore(docs): init changelog" -q
   git tag v1.0.0
 
   touch auth.js
   git add auth.js
-  git commit -m "feat(write): added login page" -q
+  git commit -m "feat(api): added login page" -q
   
   touch api.js
   git add api.js
-  git commit -m "fix(write): bug in api" -q
+  git commit -m "fix(api): bug in api" -q
   
   echo "node_modules" >> .gitignore
   git add .gitignore
-  git commit -m "chore(write): update gitignore rules" -q
+  git commit -m "chore(gitignore): update gitignore rules" -q
   
   log_info "Environment ready: v1.0.0 + Feature + Fix + Noise"
 }
@@ -83,17 +85,17 @@ stage_verify() {
       log_info "Noise: Internal plumbing correctly filtered out."
   fi
 
-  if grep -q "diff -u" "$log_file"; then
-      log_info "UX: Visual Unified Diff confirmed."
+  if grep -qi "Added .* login page" "$target_file"; then
+      log_info "Content: New feature entry found (Login Page)."
   else
-      log_fail "UX: 'diff -u' command missing."
+      log_fail "Content: Feature entry missing (Expected 'login page')."
       violations=$((violations + 1))
   fi
 
-  if grep -q "CHANGELOG.md updated" "$log_file"; then
-      log_info "Logic: Smart Overwrite applied successfully."
+  if grep -qi "Fixed .* bug in api" "$target_file"; then
+      log_info "Content: New fix entry found (API Bug)."
   else
-      log_fail "Logic: Auto-apply failed (Expected 'CHANGELOG.md updated')."
+      log_fail "Content: Fix entry missing (Expected 'bug in api')."
       violations=$((violations + 1))
   fi
 
