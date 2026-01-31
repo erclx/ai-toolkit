@@ -5,3 +5,6 @@
 # Infrastructure
 /.sandbox/
 /.git/
+
+# Tooling
+/.gemini/.tmp/

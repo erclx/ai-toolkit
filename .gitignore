@@ -5,6 +5,6 @@
 # Infrastructure
 /.sandbox/
 
-# AI Tooling
+# Tooling
 /.gemini/
 !/.gemini/settings.json
