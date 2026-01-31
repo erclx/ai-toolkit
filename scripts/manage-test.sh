@@ -241,9 +241,13 @@ EOF
 }
 EOF
 
-  (cd "$SANDBOX" && stage_setup)
+  pushd "$SANDBOX" > /dev/null
+  stage_setup
+  popd > /dev/null
+  
   log_info "Sandbox ready"
 
+  if [ -z "$GEMINI_SKIP_AUTO_COMMIT" ]; then
   log_step "Staging environment changes"
   (
     cd "$SANDBOX"
@@ -251,6 +255,9 @@ EOF
     git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
   )
   log_info "Git state clean after setup"
+  else
+    log_info "Skipping auto-commit (Requested by stage)"
+  fi
 
   if [[ "$MODE" == "test" ]]; then
     log_step "Auto-Testing /$NAMESPACE.$category:$command"
