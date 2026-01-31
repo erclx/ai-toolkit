@@ -99,6 +99,6 @@ mkdir -p .gemini/.tmp && (cat <<'EOF' > .gemini/.tmp/pr-body.md
 
 <## 📸 Visuals (if applicable)>
 EOF
-) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md --draft
+) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md --draft && rm .gemini/.tmp/pr-body.md
 ```
 """
