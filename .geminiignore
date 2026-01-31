@@ -1,20 +1,7 @@
-# Tooling
-.gemini/.tmp/
-.gemini/checkpoints/
-.gemini/settings.json
-
-# Deps
-node_modules/
-package-lock.json
-pnpm-lock.yaml
-bun.lockb
-
-# Build
-dist/
-build/
-.next/
-
-# Secrets
+# Secrets 
 .env
-*.pem
-*.key
+.env.*
+
+# Infrastructure
+/.sandbox/
+/.git/
