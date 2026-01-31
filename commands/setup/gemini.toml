@@ -24,7 +24,7 @@ Context: You see the current content of the files in the OBSERVATION section.
 ### Must Do:
 
 - **Analyze:** Review the file contents provided above.
-- **Settings Policy (Strict):** Check `Settings Content`. If `.gemini/settings.json` exists and contains JSON, **DO NOT TOUCH IT**.
+- **Settings Policy (Strict):** Check `Settings Content`. If `.gemini/settings.json` exists and contains **VALID JSON**, **DO NOT TOUCH IT**.
 - **Ignore Policy (Structure):** For `.gitignore` and `.geminiignore`, enforce the Header + Rule structure.
   - If a rule is missing, append the Header + Rule.
   - If a rule exists (e.g., `/.git/`) but the Header (`# Infrastructure`) is missing, **INSERT** the header above the rule.
@@ -33,13 +33,14 @@ Context: You see the current content of the files in the OBSERVATION section.
   - Use `create_file` ONLY if the file is **missing OR empty**. 
   - Use `edit_file` to append or insert if the file **exists AND has content**.
 - **EOF Hygiene:** Ensure files end with exactly one newline character. Avoid stacking multiple newlines at the end of the file.
+- **Final Check:** After adding/editing, verify the file structure. If **EOF hygiene** is violated (e.g., >1 newline) or **Category Spacing** is missing, perform a corrective edit immediately.
 
 ### Architecture Rules:
 
 1. **.gitignore (Whitelist Strategy):**
    - Header: `# Tooling`
    - Rule: `/.gemini/` (Ignore the folder)
-   - Rule: `!/.gemini/settings.json` (Whitelist the config)
+   - Rule: `!/.gemini/settings.json` (Whitelist the config). **CRITICAL:** This whitelist rule MUST appear **AFTER** the `/.gemini/` ignore rule to function correctly.
 
 2. **.geminiignore (Brain Isolation):**
    - Header: `# Infrastructure` -> Rule: `/.git/`
