@@ -33,6 +33,13 @@ ensure_ignore() {
     log_add "Created $file"
   fi
 
+  if [ -s "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
+    echo "" >> "$file"
+  fi
+
+  # Lazy Evaluation: Only check for header if the item is strictly missing
+  if ! grep -qF "$pattern" "$file"; then
+    # Item is missing, so we proceed to check/add header
   if ! grep -qF "$category" "$file"; then
     if [ -s "$file" ]; then
       echo "" >> "$file"
@@ -40,7 +47,6 @@ ensure_ignore() {
     echo "$category" >> "$file"
   fi
 
-  if ! grep -qF "$pattern" "$file"; then
     echo "$pattern" >> "$file"
     log_add "Added $pattern to $file"
   else
@@ -70,13 +76,15 @@ main() {
     log_info "$settings_file exists"
   fi
 
-  log_step "Ignore Rules"
+  log_step "Ignore Rules (Zero-Trust Architecture)"
 
-  ensure_ignore ".gitignore" "Tooling" "$tmp_dir/"
-  ensure_ignore ".gitignore" "Tooling" "$settings_file"
+  # .gitignore: Whitelist Strategy (Recursive, no leading slash)
+  ensure_ignore ".gitignore" "Tooling" "$gemini_dir/"
+  ensure_ignore ".gitignore" "Tooling" "!$settings_file"
   
+  # .geminiignore: Infrastructure & Brain Isolation (Recursive)
+  ensure_ignore ".geminiignore" "Infrastructure" ".git/"
   ensure_ignore ".geminiignore" "Tooling" "$tmp_dir/"
-  ensure_ignore ".geminiignore" "Tooling" "$settings_file"
 
   echo -e "${GREY}└${NC}\\n"
   echo -e "${GREEN}✓ Gemini environment initialized${NC}"
@@ -101,6 +109,7 @@ You have NO access to the user's file system.
 - **Staged Execution:** Write the content of `<DATA_CONTEXT>` to `.gemini/.tmp/gemini-setup.sh` using a heredoc.
 - **Permission:** Ensure the script is executable (`chmod +x`).
 - **Execute:** Run the script immediately after creation.
+- **Cleanup:** Remove the script after execution.
 - **Quoting:** Use single quotes `'EOF'` for the heredoc delimiter to prevent variable expansion during staging.
 
 ### Must NOT Do:
@@ -115,7 +124,7 @@ You have NO access to the user's file system.
    # PREVIEW
 
 - **Status:** [Ready]
-- **Action:** [Staging and Executing gemini-setup.sh]
+- **Action:** [Staging, Executing, and Cleaning up gemini-setup.sh]
 
 # FINAL COMMAND
 
@@ -124,6 +133,6 @@ mkdir -p .gemini/.tmp && \\
 cat << 'EOF' > .gemini/.tmp/gemini-setup.sh
 [Insert Exact Content of DATA_CONTEXT here]
 EOF
-chmod +x .gemini/.tmp/gemini-setup.sh && ./.gemini/.tmp/gemini-setup.sh
+chmod +x .gemini/.tmp/gemini-setup.sh && ./.gemini/.tmp/gemini-setup.sh && rm .gemini/.tmp/gemini-setup.sh
 ```
 """
