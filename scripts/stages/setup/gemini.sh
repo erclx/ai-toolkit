@@ -19,9 +19,11 @@ stage_setup() {
   echo '# My Project' > README.md
   
   : > .gitignore
-  : > .geminiignore
+  
+
+  echo ".git/" > .geminiignore
    
-  log_info "Environment staged with manifest files"
+  log_info "Environment staged with manifest files & pre-seeded ignore"
 }
 
 stage_verify() {
@@ -36,29 +38,50 @@ stage_verify() {
     errors=$((errors + 1))
     fi
 
-  if [ -f .gitignore ] && grep -qF ".gemini/.tmp/" .gitignore; then
-    log_info "SUCCESS: .gitignore updated."
+  if [ -f ".gemini/settings.json" ]; then
+    log_info "SUCCESS: .gemini/settings.json created."
   else
-    log_fail "FAILURE: .gitignore update failed."
+    log_fail "FAILURE: .gemini/settings.json missing."
     errors=$((errors + 1))
   fi
 
-  if [ -f .geminiignore ] && grep -qF ".gemini/.tmp/" .geminiignore; then
-    log_info "SUCCESS: .geminiignore updated."
+  if [ -f .gitignore ]; then
+    if grep -qF ".gemini/" .gitignore; then
+      log_info "SUCCESS: .gitignore ignores .gemini/"
     else
-    log_fail "FAILURE: .geminiignore update failed."
+      log_fail "FAILURE: .gitignore missing .gemini/ ignore"
     errors=$((errors + 1))
+  fi
+
+    if grep -qF "!.gemini/settings.json" .gitignore; then
+      log_info "SUCCESS: .gitignore whitelists settings.json"
+    else
+      log_fail "FAILURE: .gitignore missing whitelist rule"
+      errors=$((errors + 1))
+    fi
+  fi
+
+  if [ -f .geminiignore ]; then
+    if grep -qF ".gemini/.tmp/" .geminiignore; then
+      log_info "SUCCESS: .geminiignore ignores .tmp (Brain Isolation)"
+    else
+      log_fail "FAILURE: .geminiignore missing .tmp ignore"
+      errors=$((errors + 1))
+    fi
+
+    if grep -qF ".git/" .geminiignore; then
+      log_info "SUCCESS: Pre-existing .git/ entry preserved."
+    else
+      log_fail "FAILURE: Pre-existing .git/ entry was lost!"
+      errors=$((errors + 1))
+    fi
   fi
 
   local line_count
-  line_count=$(grep -c ".gemini/.tmp/" .gitignore 2>/dev/null || echo 0)
+  line_count=$(grep -c ".gemini/" .gitignore 2>/dev/null || echo 0)
   if [ "$line_count" -gt 1 ]; then
     log_fail "FAILURE: Idempotency breach (Duplicate entries: $line_count)."
     errors=$((errors + 1))
-  fi
-
-  if [ -f ".gemini/.tmp/.gitkeep" ]; then
-    log_info "SUCCESS: .gitkeep secured."
     fi
 
   return $errors
