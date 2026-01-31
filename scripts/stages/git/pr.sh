@@ -23,7 +23,7 @@ git config user.email "architect@erclx.com"
 git config user.name "Senior Architect"
 
   git remote add origin "git@github.com:erclx/${ANCHOR_REPO}.git"
-
+  git push --force origin HEAD:main
   git push origin --delete feature/string-utils -q 2>/dev/null || true
 
   mkdir -p .gemini/.tmp
