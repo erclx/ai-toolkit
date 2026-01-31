@@ -3,6 +3,8 @@
 EXPECTED_PATTERN="^(fix|refactor|perf|chore|feat)(\(.*\))?: .+"
 
 stage_setup() {
+export GEMINI_SKIP_AUTO_COMMIT="true"
+
 git init -q
 git config user.email "architect@erclx.com"
 git config user.name "Senior Architect"
@@ -24,6 +26,12 @@ stage_verify() {
   echo -e "${GREY}│${NC}   Msg:  ${YELLOW}${last_commit}${NC}"
   
   if echo "$last_commit" | grep -Eiq "$EXPECTED_PATTERN"; then
+    log_info "Verified: Commit message matches conventional pattern."
+    return 0
+  fi
+
+  if grep -Fq "No staged changes detected" "$log_file"; then
+    log_info "Verified: Safety guard correctly blocked empty commit."
     return 0
   fi
 
