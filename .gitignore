@@ -1,10 +1,10 @@
-# System
-*.gemini-bus.sock
+# Secrets
+.env
+.env.*
 
-# Test
+# Infrastructure
 /.sandbox/
 
-# Tooling
-.gemini/.tmp/
-.gemini/checkpoints/
-.gemini/settings.json
+# AI Tooling
+/.gemini/
+!/.gemini/settings.json
