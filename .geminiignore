@@ -3,5 +3,8 @@
 .env.*
 
 # Infrastructure
-/.sandbox/
-/.git/
+.sandbox/
+.git/
+
+# Tooling
+.gemini/.tmp/

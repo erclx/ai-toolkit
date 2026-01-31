@@ -3,8 +3,8 @@
 .env.*
 
 # Infrastructure
-/.sandbox/
+.sandbox/
 
-# AI Tooling
-/.gemini/
-!/.gemini/settings.json
+# Tooling
+.gemini/
+!.gemini/settings.json
