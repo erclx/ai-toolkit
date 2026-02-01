@@ -135,7 +135,7 @@ main() {
   
   local SANDBOX="$PROJECT_ROOT/.sandbox"
   local STAGES_DIR="$PROJECT_ROOT/scripts/stages"
-  local NAMESPACE="gemini-cli-toolkit"
+  local NAMESPACE="ai-toolkit"
   local MODE="stage"
   local LLM_MODEL="gemini-2.5-flash"    
   local YOLO_FLAG="--yolo" 
