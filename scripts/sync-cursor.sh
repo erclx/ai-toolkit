@@ -32,20 +32,20 @@ main() {
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   local PROJECT_ROOT
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-  local ASSETS_SOURCE="$PROJECT_ROOT/assets/cursor"
+  local ASSETS_SOURCE="$PROJECT_ROOT/scripts/assets/cursor"
   local LOCAL_TARGET="$PROJECT_ROOT/.cursor"
 
 echo -e "${GREY}┌${NC}"
   log_step "Mirroring Pattern"
 
   if [ ! -d "$ASSETS_SOURCE" ]; then
-    log_error "Source directory $ASSETS_SOURCE not found"
+    log_error "Source directory missing: $ASSETS_SOURCE"
   fi
 
 mkdir -p "$LOCAL_TARGET"
-    cp -R "$ASSETS_SOURCE"/* "$LOCAL_TARGET/"
+  cp -a "$ASSETS_SOURCE/." "$LOCAL_TARGET/"
 
-  log_info "Mirror complete: assets/cursor/* -> .cursor/"
+  log_info "Mirror complete: scripts/assets/cursor -> .cursor"
   echo -e "${GREY}└${NC}\n"
 echo -e "${GREEN}✓ Local environment synchronized${NC}"
 }
