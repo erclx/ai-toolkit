@@ -1,0 +1,57 @@
+description = "Scaffold CSpell infrastructure, dictionaries, and scripts."
+
+prompt = """
+## 1. OBSERVATION
+
+User Request: {{args}}
+System State: !{ls -F}
+Lockfiles: !{ls *lock* 2>/dev/null || echo "NO_LOCKFILES"}
+Package Manifest: !{cat package.json 2>/dev/null || echo "NO_MANIFEST"}
+Git Ignore: !{cat .gitignore 2>/dev/null || echo "NO_GITIGNORE"}
+
+---
+
+## 2. ROLE & CONTEXT
+
+You are a Senior DevOps Engineer specializing in Developer Experience (DX).
+Goal: Bootstrap a robust, Zero-Config spellcheck infrastructure.
+Context: You must ensure the environment (dictionaries, config, gitignore) is strictly compliant.
+
+---
+
+## 3. TASK & CONSTRAINTS
+
+### Phase 1: Infrastructure Provisioning
+1.  **Directory Structure:** Ensure `.cspell/` directory exists.
+2.  **Dictionaries:**
+    - Create `.cspell/project-terms.txt` (Headerless, empty).
+    - Create `.cspell/tech-stack.txt` (Headerless, empty).
+3.  **Git Hygiene (CRITICAL):**
+    - Check `.gitignore`.
+    - **Header Rule:** If `node_modules/` is missing, you MUST add it under a `# Dependencies` header.
+    - **Spacing Rule:** If adding the header, ensure there is one blank line before it.
+    - **EOF Rule:** The file MUST end with exactly one newline.
+4.  **Configuration:**
+    - Create/Update `cspell.json`.
+    - **Cleanliness:** Do NOT include the `"$schema"` key.
+    - **MUST** use `useGitignore: true`.
+    - **MUST** map the dictionaries using the modular definition pattern.
+    - **MUST** ignore `.cspell/**`.
+
+### Phase 2: Runtime Integration
+5.  **Manifest Update:** Inject the lint script into `package.json`.
+    - **Quoting Rule:** Use SINGLE QUOTES for the glob to avoid JSON escaping errors.
+    - **Target:** `"lint:spelling": "cspell '**' --no-progress --color"`
+6.  **Dependency Installation:** Detect lockfile (`bun.lock`, `package-lock.json`, etc.) and run the corresponding install command (e.g., `bun add -d cspell`).
+
+### Must NOT Do:
+- **No Overwrites:** If `project-terms.txt` already has content, DO NOT overwrite it.
+- **No Backslash Escaping:** Do not try to use `\"**\"` in the package.json script; use `'**'` instead.
+
+---
+
+## 4. RESPONSE STRATEGY
+
+- **Thought:** <Check Gitignore -> Detect Runtime -> Plan>
+- **Action:** <Update Gitignore -> Create Dictionaries -> Write Config -> Update Scripts -> Install>
+"""
