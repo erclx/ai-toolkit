@@ -16,4 +16,3 @@ bun.lock
 # Dictionary 
 .cspell/
 cspell.json
-package.json
