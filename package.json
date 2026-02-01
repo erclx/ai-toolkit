@@ -4,6 +4,7 @@
   "private": true,
   "description": "Infrastructure and quality tooling for the Gemini Toolkit",
   "scripts": {
+    "sync:cursor": "./scripts/sync-cursor.sh",
     "lint:spelling": "cspell \"**\" --no-progress --color"
   },
   "devDependencies": {
