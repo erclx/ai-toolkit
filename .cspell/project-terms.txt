@@ -1,11 +1,16 @@
+agentic
 arch
 changelog
+codenames
 conventionals
 e2e
 erclx
 geminiignore
 gtest
+headerless
+lockfiles
 logicgate
 oneline
 scoutreport
+ssot
 yolo

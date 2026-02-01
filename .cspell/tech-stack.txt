@@ -1,10 +1,16 @@
 cspell
+fastapi
 gitattributes
 heredoc
+mypy
 nvmrc
 pip
 pnpm
+pycache
+pydantic
 pyproject
+pytest
 uv
+uvicorn
 vite
 vitest
