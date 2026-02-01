@@ -6,5 +6,13 @@
 .sandbox/
 .git/
 
+# Dependencies
+node_modules/
+bun.lock
+
 # Tooling
 .gemini/.tmp/
+
+# Dictionary 
+.cspell/
+cspell.json

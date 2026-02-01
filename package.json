@@ -1,0 +1,12 @@
+{
+  "name": "gemini-cli-toolkit-tooling",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Infrastructure and quality tooling for the Gemini Toolkit",
+  "scripts": {
+    "lint:spelling": "cspell \"**\" --no-progress --color"
+  },
+  "devDependencies": {
+    "cspell": "^8.17.1"
+  }
+}
