@@ -12,7 +12,3 @@ bun.lock
 
 # Tooling
 .gemini/.tmp/
-
-# Dictionary 
-.cspell/
-cspell.json
