@@ -4,8 +4,10 @@ This Gemini extension helps you with automated reconnaissance, atomic commits, a
 
 ## Installation
 
-1. git clone https://github.com/erclx/gemini-cli-toolkit.git
-2. gemini extensions link .
+```bash
+git clone https://github.com/erclx/gemini-cli-toolkit.git
+gemini extensions link .
+```
 
 ## Commands
 
