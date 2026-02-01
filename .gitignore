@@ -5,6 +5,10 @@
 # Infrastructure
 .sandbox/
 
+# Dependencies
+node_modules/
+bun.lock
+
 # Tooling
 .gemini/
 !.gemini/settings.json
