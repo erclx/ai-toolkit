@@ -69,7 +69,7 @@ select_option() {
     echo -ne "\033[${count}A"
   done
   
-  echo -ne "\033[1A\r\033[K\r\033[${count}A\r\033[K"
+  echo -ne "\033[2A\033[J"
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   export SELECTED_OPT="${options[$cur]}"
 }

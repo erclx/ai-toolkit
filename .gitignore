@@ -10,5 +10,5 @@ node_modules/
 bun.lock
 
 # Tooling
-.gemini/
+.gemini/*
 !.gemini/settings.json
