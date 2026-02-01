@@ -1,10 +1,10 @@
 # AI Core Toolkit
 
-A high-fidelity Gemini extension for Senior Principal Architects. This toolkit provides automated reconnaissance, atomic commits, and evidence-based PR generation.
+This Gemini extension helps you with automated reconnaissance, atomic commits, and evidence-based PR generation.
 
 ## Installation
 
-1. git clone <repo_url>
+1. git clone https://github.com/erclx/gemini-cli-toolkit.git
 2. gemini extensions link .
 
 ## Commands
