@@ -1,6 +1,6 @@
 # AI Core Toolkit
 
-This Gemini extension helps you with automated reconnaissance, atomic commits, and evidence-based PR generation.
+This Gemini extension provides tools for common software development tasks, including codebase understanding, consistent commit practices, and pull request description generation.
 
 ## Installation
 
