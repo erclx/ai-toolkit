@@ -1,0 +1,11 @@
+arch
+changelog
+conventionals
+e2e
+erclx
+geminiignore
+gtest
+logicgate
+oneline
+scoutreport
+yolo

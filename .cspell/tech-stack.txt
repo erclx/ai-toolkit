@@ -1,0 +1,10 @@
+cspell
+gitattributes
+heredoc
+nvmrc
+pip
+pnpm
+pyproject
+uv
+vite
+vitest

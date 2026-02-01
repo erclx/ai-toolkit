@@ -1,0 +1,19 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "useGitignore": true,
+  "dictionaryDefinitions": [
+    {
+      "name": "project-terms",
+      "path": "./.cspell/project-terms.txt",
+      "addWords": true
+    },
+    {
+      "name": "tech-stack",
+      "path": "./.cspell/tech-stack.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": ["project-terms", "tech-stack"],
+  "ignorePaths": [".cspell/**"]
+}
