@@ -27,24 +27,25 @@ Context: You see the current content of the files in the OBSERVATION section.
 - **Settings Policy (Strict):** Check `Settings Content`. If `.gemini/settings.json` exists and contains **VALID JSON**, **DO NOT TOUCH IT**.
 - **Ignore Policy (Structure):** For `.gitignore` and `.geminiignore`, enforce the Header + Rule structure.
   - If a rule is missing, append the Header + Rule.
-  - If a rule exists (e.g., `/.git/`) but the Header (`# Infrastructure`) is missing, **INSERT** the header above the rule.
-- **Category Spacing:** Ensure there is a blank line separating different categories (headers) to maintain readability.
+  - If a rule exists (e.g., `.git/`) but the Header (`# Infrastructure`) is missing, **INSERT** the header above the rule.
+- **Category Spacing:** - Insert a blank line **BEFORE** a new Category Header (unless it's the start of the file).
+  - **NO** blank line between a Category Header and its first Rule (The header must "hug" the content).
 - **Tool Use:** - Check if file exists in `System State`. 
   - Use `create_file` ONLY if the file is **missing OR empty**. 
   - Use `edit_file` to append or insert if the file **exists AND has content**.
 - **EOF Hygiene:** Ensure files end with exactly one newline character. Avoid stacking multiple newlines at the end of the file.
-- **Final Check:** After adding/editing, verify the file structure. If **EOF hygiene** is violated (e.g., >1 newline) or **Category Spacing** is missing, perform a corrective edit immediately.
+- **Final Check:** After adding/editing, verify the file structure. If **EOF hygiene** is violated (e.g., >1 newline) or **Category Spacing** is incorrect, perform a corrective edit immediately.
 
 ### Architecture Rules:
 
 1. **.gitignore (Whitelist Strategy):**
    - Header: `# Tooling`
-   - Rule: `/.gemini/` (Ignore the folder)
-   - Rule: `!/.gemini/settings.json` (Whitelist the config). **CRITICAL:** This whitelist rule MUST appear **AFTER** the `/.gemini/` ignore rule to function correctly.
+   - Rule: `.gemini/*` (Ignore contents recursively but keep dir open). **CRITICAL:** Use `/*` so the directory remains traversable.
+   - Rule: `!.gemini/settings.json` (Whitelist the config). **CRITICAL:** This whitelist rule MUST appear **AFTER** the `.gemini/*` rule.
 
 2. **.geminiignore (Brain Isolation):**
-   - Header: `# Infrastructure` -> Rule: `/.git/`
-   - Header: `# Tooling` -> Rule: `/.gemini/.tmp/` (Prevent AI self-reading)
+   - Header: `# Infrastructure` -> Rule: `.git/`
+   - Header: `# Tooling` -> Rule: `.gemini/.tmp/` (Prevent AI self-reading)
 
 3. **Configuration:**
    - Default: `{"model": {"name": "gemini-2.5-flash"}}` (Only create if missing).
