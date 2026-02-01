@@ -12,10 +12,10 @@ gemini extensions link .
 
 ## Commands
 
-- `/ai-toolkit.arch:scout` - Deep architectural reconnaissance to determine stack, intent, and health.
-- `/ai-toolkit.git:commit` - Analyzes staged changes to generate a specific, conventional commit message.
-- `/ai-toolkit.git:pr` - Generates a documentation-driven PR description and opens a draft.
-- `/ai-toolkit.lint:spelling` - Agentic session to triage spellcheck errors and update dictionaries.
-- `/ai-toolkit.setup:cspell` - Scaffold CSpell infrastructure, dictionaries, and scripts.
-- `/ai-toolkit.setup:gemini` - Agentic session to scaffold Gemini configuration.
-- `/ai-toolkit.write:changelog` - Generates a semantic changelog entry based on git history.
+- `/ai-toolkit.arch:scout` - Understand the project's structure, technologies used, and overall status.
+- `/ai-toolkit.git:commit` - Analyzes staged changes and generates a clear, conventional commit message.
+- `/ai-toolkit.git:pr` - Creates a pull request description based on its changes and opens it as a draft.
+- `/ai-toolkit.lint:spelling` - Fixes spelling mistakes and updates the project's spellcheck dictionary.
+- `/ai-toolkit.setup:cspell` - Sets up CSpell (a spell checker) for the project, including its configuration and custom dictionaries.
+- `/ai-toolkit.setup:gemini` - Sets up the basic configuration files for Gemini.
+- `/ai-toolkit.write:changelog` - Automatically creates a new entry for the project's changelog based on its recent git commits.
