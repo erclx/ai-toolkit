@@ -5,7 +5,8 @@ This Gemini extension helps you with automated reconnaissance, atomic commits, a
 ## Installation
 
 ```bash
-git clone https://github.com/erclx/gemini-cli-toolkit.git
+git clone git@github.com:erclx/ai-toolkit.git
+cd ai-toolkit
 gemini extensions link .
 ```
 
