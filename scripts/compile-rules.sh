@@ -9,7 +9,7 @@ GREY='\033[0;90m'
 NC='\033[0m'
 
 log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-log_error() { echo -e "${GREEY}│${NC} ${RED}✗${NC} $1"; exit 1; }
+log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 SCRIPT_DIR=""
@@ -40,7 +40,9 @@ validate_paths() {
 build_rule_payload() {
   log_step "Building Payload"
   PAYLOAD_FILE=$(mktemp)
-  echo "mkdir -p .cursor/rules" > "$PAYLOAD_FILE"
+  
+  echo "echo '📦 Installing Governance Rules...'" > "$PAYLOAD_FILE"
+  echo "mkdir -p .cursor/rules" >> "$PAYLOAD_FILE"
 
   for rule_file in "$RULES_DIR"/*.mdc; do
     if [ -f "$rule_file" ]; then
@@ -54,9 +56,12 @@ build_rule_payload() {
       
       echo "" >> "$PAYLOAD_FILE"
       echo "GEMINI_RULE_EOF" >> "$PAYLOAD_FILE"
+      
+      echo "echo '  + .cursor/rules/$filename'" >> "$PAYLOAD_FILE"
       log_info "Bundled $filename"
     fi
   done
+  
   echo "" >> "$PAYLOAD_FILE"
   echo "echo '✅ Governance rules installed successfully.'" >> "$PAYLOAD_FILE"
 }
