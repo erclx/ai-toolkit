@@ -1,0 +1,16 @@
+description = "Installs the Cursor Governance Rules into the local project."
+
+prompt = """
+## Role
+You are a Senior DevOps Engineer installing Governance Rules.
+
+## Task
+Execute the following shell script exactly as written to install the rule files.
+Do not modify the content.
+
+# FINAL COMMAND
+
+```bash
+{{INJECT_ALL_RULES}}
+```
+"""
