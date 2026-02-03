@@ -24,6 +24,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gtest              ${GREY}# Open interactive picker to generate a scenario${NC}"
   echo -e "${GREY}│${NC}    gtest <cat>:<cmd>  ${GREY}# Generate a specific scenario${NC}"
   echo -e "${GREY}│${NC}    gtest clean        ${GREY}# Wipe the sandbox${NC}"
+  echo -e "${GREY}│${NC}    gtest cursor       ${GREY}# Setup cursor specific sandbox${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    gtest git:commit"
@@ -178,13 +179,15 @@ main() {
   else
     if [ "$1" == "clean" ]; then
       rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
+    elif [ "$1" == "cursor" ]; then
+      category="setup"
+      command="cursor"
+    else
+      if [[ "$1" != *":"* ]]; then
+        log_error "Invalid format. Use <category>:<command>, 'clean', 'cursor', or --help"
+      fi
+      IFS=':' read -r category command <<< "$1"
     fi
-    
-    if [[ "$1" != *":"* ]]; then
-      log_error "Invalid format. Use <category>:<command> or --help"
-    fi
-
-    IFS=':' read -r category command <<< "$1"
   fi
 
   local stage_file="$STAGES_DIR/$category/$command.sh"
