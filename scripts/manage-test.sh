@@ -188,7 +188,7 @@ main() {
     local command=$SELECTED_OPT
   else
     if [ "$1" == "clean" ]; then
-      rm -rf "$SANDBOX" && log_info "Cleaned." && echo -e "${GREY}└${NC}" && exit 0
+      rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
     fi
     
     if [[ "$1" != *":"* ]]; then
