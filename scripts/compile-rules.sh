@@ -29,7 +29,7 @@ for rule_file in "$RULES_DIR"/*.mdc; do
         
         file_content=$(cat "$rule_file")
         INJECTED_CONTENT+="$file_content"$'\n'
-        INJECTED_CONTENT+="GEMINI_RULE_EOF"
+        INJECTED_CONTENT+="GEMINI_RULE_EOF"$'\n'
     fi
 done
 
