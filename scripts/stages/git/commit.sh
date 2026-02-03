@@ -15,30 +15,3 @@ git add . && git commit -m "feat(git): initial config" -q
 echo 'export const MAX_CONNECTIONS = 5;' > config.js
 git add config.js
 }
-
-stage_verify() {
-  local log_file=$1
-  local last_commit=$(git log -1 --pretty=%B 2>/dev/null || true)
-  local last_hash=$(git rev-parse --short HEAD 2>/dev/null || true)
-
-  echo -e "${GREY}│${NC} ${CYAN}i${NC} ${WHITE}Verification Data:${NC}"
-  echo -e "${GREY}│${NC}   Hash: ${GREY}${last_hash}${NC}"
-  echo -e "${GREY}│${NC}   Msg:  ${YELLOW}${last_commit}${NC}"
-  
-  if echo "$last_commit" | grep -Eiq "$EXPECTED_PATTERN"; then
-    log_info "Verified: Commit message matches conventional pattern."
-    return 0
-  fi
-
-  if grep -Fq "No staged changes detected" "$log_file"; then
-    log_info "Verified: Safety guard correctly blocked empty commit."
-    return 0
-  fi
-
-  if grep -Eiq "$EXPECTED_PATTERN" "$log_file"; then
-    echo -e "${GREY}│${NC} ${YELLOW}!${NC} Found pattern in AI logs, but not in Git history."
-    return 0
-  fi
-
-  return 1
-}

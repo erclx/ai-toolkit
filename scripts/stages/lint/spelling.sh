@@ -43,33 +43,3 @@ EOF
   
   log_info "Environment staged: README.md has 3 unknown words (pydantic, scoutreport, typooo)"
 }
-
-stage_verify() {
-  local log_file=$1
-  local errors=0
-
-  log_step "Verifying Dictionary Updates"
-
-  if grep -q "pydantic" ".cspell/tech-stack.txt"; then
-    log_info "SUCCESS: 'pydantic' correctly categorized into tech-stack.txt"
-  else
-    log_fail "FAILURE: 'pydantic' missing from tech-stack.txt"
-    errors=$((errors + 1))
-  fi
-
-  if grep -q "scoutreport" ".cspell/project-terms.txt"; then
-    log_info "SUCCESS: 'scoutreport' correctly categorized into project-terms.txt"
-  else
-    log_fail "FAILURE: 'scoutreport' missing from project-terms.txt"
-    errors=$((errors + 1))
-  fi
-
-  if grep -q "typooo" ".cspell/project-terms.txt" || grep -q "typooo" ".cspell/tech-stack.txt"; then
-     log_fail "FAILURE: 'typooo' was incorrectly added to a dictionary."
-     errors=$((errors + 1))
-  else
-     log_info "SUCCESS: 'typooo' was correctly rejected/ignored."
-  fi
-
-  return $errors
-}

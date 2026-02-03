@@ -21,14 +21,12 @@ show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Core Toolkit Orchestrator Help"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC}"
-  echo -e "${GREY}│${NC}    gtest              ${GREY}# Open interactive picker${NC}"
-  echo -e "${GREY}│${NC}    gtest <cat>:<cmd>  ${GREY}# Stage a specific environment${NC}"
-  echo -e "${GREY}│${NC}    gtest test <args>  ${GREY}# Run automated E2E test${NC}"
+  echo -e "${GREY}│${NC}    gtest              ${GREY}# Open interactive picker to generate a scenario${NC}"
+  echo -e "${GREY}│${NC}    gtest <cat>:<cmd>  ${GREY}# Generate a specific scenario${NC}"
   echo -e "${GREY}│${NC}    gtest clean        ${GREY}# Wipe the sandbox${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    gtest git:commit"
-  echo -e "${GREY}│${NC}    gtest test git:pr"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -136,9 +134,7 @@ main() {
   local SANDBOX="$PROJECT_ROOT/.sandbox"
   local STAGES_DIR="$PROJECT_ROOT/scripts/stages"
   local NAMESPACE="ai-toolkit"
-  local MODE="stage"
-  local LLM_MODEL="gemini-2.5-flash"    
-  local YOLO_FLAG="--yolo" 
+  local LLM_MODEL="gemini-2.5-flash"
 
   if [ ! -d "$STAGES_DIR" ]; then
     echo -e "${GREY}┌${NC}"
@@ -156,13 +152,8 @@ main() {
   else
     echo -e "${GREY}┌${NC}"
   fi
-
-  if [[ "$1" == "test" ]]; then
-    MODE="test"
-    shift
-  fi
-
-  if [ -z "$1" ]; then
+  
+    if [ -z "$1" ]; then
     local categories=()
     if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
       categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
@@ -188,7 +179,7 @@ main() {
     local command=$SELECTED_OPT
   else
     if [ "$1" == "clean" ]; then
-      rm -rf "$SANDBOX" && log_info "Cleaned." && echo -e "${GREY}└${NC}" && exit 0
+      rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
     fi
     
     if [[ "$1" != *":"* ]]; then
@@ -221,7 +212,6 @@ main() {
     mkdir -p "$SANDBOX"
 
   cat <<EOF > "$SANDBOX/.gitignore"
-.test-log
 .gemini/.tmp/
 EOF
     (
@@ -259,22 +249,8 @@ EOF
     log_info "Skipping auto-commit (Requested by stage)"
   fi
 
-  if [[ "$MODE" == "test" ]]; then
-    log_step "Auto-Testing /$NAMESPACE.$category:$command"
-    cd "$SANDBOX"
-    gemini --model "$LLM_MODEL" $YOLO_FLAG "/$NAMESPACE.$category:$command" | tee .test-log
-    
-    log_step "Validation"
-    if stage_verify ".test-log"; then
-      log_info "Assertion Passed: Verification Hook Succeeded"
-    else
-      log_error "Assertion Failed: Stage verification failed"
-    fi
-  fi
-
   echo -e "${GREY}└${NC}\n"
-  [ "$MODE" == "stage" ] && echo -e "${GREEN}✓ Ready: ${WHITE}cd $SANDBOX && gemini /$NAMESPACE.$category:$command${NC}"
-  [ "$MODE" == "test" ] && echo -e "${GREEN}✓ Auto-test complete${NC}"
+  echo -e "${GREEN}✓ Ready: ${WHITE}cd $SANDBOX && gemini /$NAMESPACE.$category:$command${NC}"
 }
 
 main "$@"

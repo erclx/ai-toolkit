@@ -49,38 +49,3 @@ EOF
   
   log_info "Anchor environment prepared with feature branch and context"
 }
-
-stage_verify() {
-  local log_file=$1
-  local body_file=".gemini/.tmp/pr-body.md"
-
-  log_step "PR Artifact Validation"
-
-  if [ ! -f "$body_file" ]; then
-    log_fail "PR body artifact missing at $body_file"
-    return 1
-  fi
-
-  if grep -qi "Node" "$body_file" || grep -qi "JavaScript" "$body_file" || grep -qi "slugify" "$body_file"; then
-    log_info "Description verified: Correct architectural context detected"
-  else
-    log_fail "Description failed: Missing context from Scout Report or utils.js"
-    return 1
-  fi
-  
-  if grep -iq "gh pr create" "$log_file"; then
-    log_info "Command verified: Intent to use GitHub CLI detected"
-  else
-    log_fail "Command failed: No 'gh pr create' execution found in logs"
-    return 1
-  fi
-
-  if grep -Fiq "rm .gemini/.tmp/pr-body.md" "$log_file"; then
-    log_info "Cleanup verified: Deletion command detected"
-  else
-    log_fail "Cleanup failed: No deletion command found"
-    return 1
-  fi
-
-  return 0
-}
