@@ -1,6 +1,7 @@
 # AI Core Toolkit
 
-This Gemini extension provides tools for common software development tasks, including codebase understanding, consistent commit practices, and pull request description generation.
+This extension transforms any codebase into a high-governance environment. 
+It delivers a suite of utilities for deep codebase understanding, semantic versioning, and automated project discovery.
 
 ## Installation
 
@@ -10,12 +11,36 @@ cd ai-toolkit
 gemini extensions link .
 ```
 
+## Setup
+
+Install governance rules:
+
+```bash
+/ai-toolkit.setup:rules
+```
+
 ## Commands
 
-- `/ai-toolkit.arch:scout` - Understand the project's structure, technologies used, and overall status.
-- `/ai-toolkit.git:commit` - Analyzes staged changes and generates a clear, conventional commit message.
-- `/ai-toolkit.git:pr` - Creates a pull request description based on its changes and opens it as a draft.
-- `/ai-toolkit.lint:spelling` - Fixes spelling mistakes and updates the project's spellcheck dictionary.
-- `/ai-toolkit.setup:cspell` - Sets up CSpell (a spell checker) for the project, including its configuration and custom dictionaries.
-- `/ai-toolkit.setup:gemini` - Sets up the basic configuration files for Gemini.
-- `/ai-toolkit.write:changelog` - Automatically creates a new entry for the project's changelog based on its recent git commits.
+### Architecture & Discovery
+
+- `/ai-toolkit.arch:scout` - Deep architectural reconnaissance to determine stack, intent, and health.
+- `/ai-toolkit.setup:rules` - Installs Cursor governance rules into the local project.
+- `/ai-toolkit.setup:cursor` - Prepares sandbox environment with governance rules for testing.
+
+### Versioning & Writing
+
+- `/ai-toolkit.git:commit` - Analyzes staged changes to generate atomic, lowercase conventional commits.
+- `/ai-toolkit.git:pr` - Generates a documentation-driven PR description and opens a draft.
+- `/ai-toolkit.write:changelog` - Curates release history, filtering out internal noise for human consumption.
+
+### Quality & Linting
+
+- `/ai-toolkit.lint:spelling` - Agentic session to triage spellcheck errors and update dictionaries.
+- `/ai-toolkit.setup:cspell` - Scaffolds CSpell infrastructure, modular dictionaries, and git hygiene.
+- `/ai-toolkit.setup:gemini` - Configures the .gemini infrastructure using a "Zero-Trust" architecture.
+
+## Patterns
+
+- **Ghost Folder:** State is isolated in `.gemini/.tmp/`.
+- **Zero-Bloat:** Commands prioritize technical density over narrative fluff.
+- **Atomic History:** Commits and PRs are treated as immutable technical records.
