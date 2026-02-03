@@ -244,7 +244,7 @@ EOF
   )
   log_info "Git state clean after setup"
   else
-    log_info "Skipping auto-commit (Requested by stage)"
+    log_info "Skipping auto-commit"
   fi
 
   select_option "Open sandbox in Cursor?" "Yes" "No"
@@ -257,7 +257,7 @@ EOF
          log_info "Sandbox Path: $SANDBOX"
      fi
   else
-     echo -e "${GREY}│${NC}  ${GREY}Skipped.${NC}"
+     echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
   fi
 
   echo -e "${GREY}└${NC}\n"
