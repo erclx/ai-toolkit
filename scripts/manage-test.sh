@@ -124,35 +124,9 @@ setup_ssh() {
   fi
 }
 
-main() {
-  local SCRIPT_DIR
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  local PROJECT_ROOT
-  PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-  
-  local SANDBOX="$PROJECT_ROOT/.sandbox"
-  local STAGES_DIR="$PROJECT_ROOT/scripts/stages"
-  local NAMESPACE="ai-toolkit"
-  local LLM_MODEL="gemini-2.5-flash"
-
-  if [ ! -d "$STAGES_DIR" ]; then
-    echo -e "${GREY}┌${NC}"
-    log_error "Stages directory not found at: $STAGES_DIR"
-  fi
-
-  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    show_help
-  fi
-  
-  if [[ "$PWD" == *".sandbox"* ]]; then
-    echo -e "${GREY}┌${NC}"
-    log_warn "Detected execution inside .sandbox. Switching to project root..."
-    cd "$PROJECT_ROOT" || log_error "Failed to switch to project root."
-  else
-    echo -e "${GREY}┌${NC}"
-  fi
-  
-    if [ -z "$1" ]; then
+resolve_command_and_category() {
+  local input_arg="$1"
+  if [ -z "$input_arg" ]; then
     local categories=()
     if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
       categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
@@ -163,44 +137,62 @@ main() {
     fi
 
     select_option "Select category:" "${categories[@]}"
-    local category=$SELECTED_OPT
+    _CATEGORY=$SELECTED_OPT
     
     local commands=()
-    if ls "$STAGES_DIR/$category/"*.sh >/dev/null 2>&1; then
-      commands=($(ls "$STAGES_DIR/$category/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
+    if ls "$STAGES_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
+      commands=($(ls "$STAGES_DIR/$_CATEGORY/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
     fi
 
     if [ ${#commands[@]} -eq 0 ]; then
-      log_error "No stage scripts found in $category"
+      log_error "No stage scripts found in $_CATEGORY"
     fi
 
     select_option "Select command:" "${commands[@]}"
-    local command=$SELECTED_OPT
+    _COMMAND=$SELECTED_OPT
   else
-    if [ "$1" == "clean" ]; then
+    if [ "$input_arg" == "clean" ]; then
       rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
-    elif [ "$1" == "cursor" ]; then
-      category="setup"
-      command="cursor"
+    elif [ "$input_arg" == "cursor" ]; then
+      _CATEGORY="setup"
+      _COMMAND="cursor"
     else
-      if [[ "$1" != *":"* ]]; then
+      if [[ "$input_arg" != *":"* ]]; then
         log_error "Invalid format. Use <category>:<command>, 'clean', 'cursor', or --help"
       fi
-      IFS=':' read -r category command <<< "$1"
+      IFS=':' read -r _CATEGORY _COMMAND <<< "$input_arg"
     fi
   fi
+}
 
-  local stage_file="$STAGES_DIR/$category/$command.sh"
+initialize_sandbox_environment() {
+  local current_category="$1"
+  local current_command="$2"
+
+  if [ ! -d "$STAGES_DIR" ]; then
+    echo -e "${GREY}┌${NC}"
+    log_error "Stages directory not found at: $STAGES_DIR"
+  fi
+
+  if [[ "$PWD" == *".sandbox"* ]]; then
+    echo -e "${GREY}┌${NC}"
+    log_warn "Detected execution inside .sandbox. Switching to project root..."
+    cd "$PROJECT_ROOT" || log_error "Failed to switch to project root."
+  else
+    echo -e "${GREY}┌${NC}"
+  fi
+
+  local stage_file="$STAGES_DIR/$current_category/$current_command.sh"
   
   if [ ! -f "$stage_file" ]; then
-    log_error "Stage script not found: $category/$command"
+    log_error "Stage script not found: $current_category/$current_command"
   fi
 
   source "$stage_file"
 
-  [ "$category" == "git" ] && [ "$command" == "pr" ] && setup_ssh
+  [ "$current_category" == "git" ] && [ "$current_command" == "pr" ] && setup_ssh
 
-  log_step "Provisioning $category:$command"
+  log_step "Provisioning $current_category:$current_command"
   
   if [[ "$(type -t use_anchor)" == "function" ]]; then
     use_anchor
@@ -231,7 +223,9 @@ EOF
   }
 }
 EOF
+}
 
+execute_stage_and_commit() {
   pushd "$SANDBOX" > /dev/null
   stage_setup
   popd > /dev/null
@@ -239,16 +233,22 @@ EOF
   log_info "Sandbox ready"
 
   if [ -z "$GEMINI_SKIP_AUTO_COMMIT" ]; then
-  log_step "Staging environment changes"
-  (
-    cd "$SANDBOX"
-    git add . > /dev/null 2> /dev/null
-    git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
-  )
-  log_info "Git state clean after setup"
+    log_step "Staging environment changes"
+    (
+      cd "$SANDBOX"
+      git add . > /dev/null 2> /dev/null
+      git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
+    )
+    log_info "Git state clean after setup"
   else
     log_info "Skipping auto-commit"
   fi
+}
+
+handle_post_execution_prompt() {
+  local current_category="$1"
+  local current_command="$2"
+  local current_namespace="$3"
 
   select_option "Open sandbox in Cursor?" "Yes" "No"
   if [ "$SELECTED_OPT" == "Yes" ]; then
@@ -264,7 +264,33 @@ EOF
   fi
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Ready: ${WHITE}cd $SANDBOX && gemini /$NAMESPACE.$category:$command${NC}"
+  echo -e "${GREEN}✓ Ready: ${WHITE}cd $SANDBOX && gemini /$current_namespace.$current_category:$current_command${NC}"
+}
+
+main() {
+  local SCRIPT_DIR
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local PROJECT_ROOT
+  PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+  
+  local SANDBOX="$PROJECT_ROOT/.sandbox"
+  local STAGES_DIR="$PROJECT_ROOT/scripts/stages"
+  local NAMESPACE="ai-toolkit"
+  local LLM_MODEL="gemini-2.5-flash"
+
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+  fi
+  
+  resolve_command_and_category "$1"
+  local category="$_CATEGORY"
+  local command="$_COMMAND"
+
+  initialize_sandbox_environment "$category" "$command"
+
+  execute_stage_and_commit
+
+  handle_post_execution_prompt "$category" "$command" "$NAMESPACE"
 }
 
 main "$@"
