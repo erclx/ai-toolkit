@@ -250,17 +250,19 @@ handle_post_execution_prompt() {
   local current_command="$2"
   local current_namespace="$3"
 
-  select_option "Open sandbox in Cursor?" "Yes" "No"
-  if [ "$SELECTED_OPT" == "Yes" ]; then
-     if command -v cursor &> /dev/null; then
-         log_info "Opening Cursor..."
-         cursor "$SANDBOX"
-     else
-         log_warn "Cursor CLI command 'cursor' not found."
-         log_info "Sandbox Path: $SANDBOX"
-     fi
-  else
-     echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
+  if [ "$current_category" == "setup" ] && [ "$current_command" == "cursor" ]; then
+    select_option "Open sandbox in Cursor?" "Yes" "No"
+    if [ "$SELECTED_OPT" == "Yes" ]; then
+       if command -v cursor &> /dev/null; then
+           log_info "Opening Cursor..."
+           cursor "$SANDBOX"
+       else
+           log_warn "Cursor CLI command 'cursor' not found."
+           log_info "Sandbox Path: $SANDBOX"
+       fi
+    else
+       echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
+    fi
   fi
 
   echo -e "${GREY}└${NC}\n"
