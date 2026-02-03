@@ -64,6 +64,10 @@ select_option() {
       "k") cur=$(( (cur - 1 + count) % count ));;
       "j") cur=$(( (cur + 1) % count ));;
       "") break ;;
+      "q")
+        echo -ne "\033[${count}A\033[J"
+        log_error "Selection cancelled"
+        ;;
     esac
     echo -ne "\033[${count}A"
   done
