@@ -101,8 +101,6 @@ provision_assets() {
   
   log_step "Provisioning assets for $archetype"
   
-  cp "$PROJECT_ROOT/scripts/assets/constitution/GEMINI.md" "$SANDBOX/GEMINI.md"
-
   local asset_dir="$PROJECT_ROOT/scripts/assets/$archetype"
   if [ ! -d "$asset_dir" ]; then
       log_error "Asset directory not found for archetype: $archetype"
@@ -247,6 +245,19 @@ EOF
   log_info "Git state clean after setup"
   else
     log_info "Skipping auto-commit (Requested by stage)"
+  fi
+
+  select_option "Open sandbox in Cursor?" "Yes" "No"
+  if [ "$SELECTED_OPT" == "Yes" ]; then
+     if command -v cursor &> /dev/null; then
+         log_info "Opening Cursor..."
+         cursor "$SANDBOX"
+     else
+         log_warn "Cursor CLI command 'cursor' not found."
+         log_info "Sandbox Path: $SANDBOX"
+     fi
+  else
+     echo -e "${GREY}│${NC}  ${GREY}Skipped.${NC}"
   fi
 
   echo -e "${GREY}└${NC}\n"
