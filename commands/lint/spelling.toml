@@ -5,7 +5,9 @@ prompt = """
 
 User Request: {{args}}
 System State: !{ls -F}
-Package Manifest: !{cat package.json 2>/dev/null || echo "NO_MANIFEST"}
+<SCOUT_REPORT>
+!{cat .gemini/.tmp/scout-report.md 2>/dev/null || echo "NO_SCOUT_REPORT_FOUND"}
+</SCOUT_REPORT>
 Project Terms: !{cat .cspell/project-terms.txt 2>/dev/null || echo "FILE_MISSING"}
 Tech Stack: !{cat .cspell/tech-stack.txt 2>/dev/null || echo "FILE_MISSING"}
 
@@ -15,22 +17,24 @@ Tech Stack: !{cat .cspell/tech-stack.txt 2>/dev/null || echo "FILE_MISSING"}
 
 You are a Senior DevOps Engineer specializing in Quality Assurance.
 Goal: Analyze spellcheck errors and intelligently update the dictionaries.
-Context: You have the package manifest (to find the lint script) and the current dictionary files.
+Context: You have the Scout Report to determine the runtime (Node/Python) and available scripts.
 
 ---
 
 ## 3. TASK & CONSTRAINTS
 
 ### Phase 1: Execution & Analysis
-1.  **Identify Script:** Look at `Package Manifest` for a spellcheck script (e.g., `lint:spelling`, `spellcheck`).
-2.  **Execute:** Run the script defined in the manifest (e.g., `bun run lint:spelling`). Parse the standard output for 'Unknown word' messages.
+1.  **Determine Command:** Read `<SCOUT_REPORT>` to find the "Check" or "Lint" workflow.
+    -   **Node/Bun:** Check if a spelling script exists. If not, fallback to Direct Invocation: `bun x cspell "**" --no-progress` or `npx cspell "**" --no-progress`.
+    -   **Python:** Check for `cspell` config. Fallback: `cspell "**" --no-progress`.
+2.  **Execute:** Run the determined command.
 3.  **Parse:** Identify "Unknown word" errors from the output.
 
 ### Phase 2: Preview & Planning (MANDATORY)
 4.  **Categorize:** Group "Unknown words" into:
-    - **Tech Stack:** (Libraries, tools, frameworks, e.g., "pydantic", "fastapi")
-    - **Project Terms:** (Internal jargon, codenames, e.g., "scoutreport", "gemini")
-    - **Suspected Typos:** (Obvious errors, e.g., "pydanttic", "functionn")
+    -   **Tech Stack:** (Libraries, tools, frameworks, e.g., "pydantic", "fastapi")
+    -   **Project Terms:** (Internal jargon, codenames, e.g., "scoutreport", "gemini")
+    -   **Suspected Typos:** (Obvious errors, e.g., "pydanttic", "functionn")
 5.  **Deduplicate:** Filter out words already in the existing files.
 6.  **User Review:** **Output a markdown table/list** showing exactly what you plan to add and what you will ignore.
 
@@ -46,7 +50,7 @@ Context: You have the package manifest (to find the lint script) and the current
 
 ## 4. RESPONSE STRATEGY
 
-- **Thought:** <Identify script -> Run -> Analyze results>
+- **Thought:** <Analyze Scout Report -> Determine Script -> Run -> Analyze results>
 - **Preview:** <Display the plan: Words to Add vs. Typos to Reject>
 - **Action:** <Call edit_file to update dictionaries>
 """
