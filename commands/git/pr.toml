@@ -23,15 +23,15 @@ prompt = """
 </CURRENT_BRANCH>
 
 <COMMIT_LOG>
-!{git log main..HEAD --oneline -n 20 || echo "NO_COMMITS"}
+!{git log main..HEAD --oneline || echo "NO_COMMITS"}
 </COMMIT_LOG>
 
 <DIFF_STATS>
-!{git diff main..HEAD --stat | tail -n 20 || echo "NO_STATS"}
+!{git diff main..HEAD --stat || echo "NO_STATS"}
 </DIFF_STATS>
 
 <GIT_DIFF_RAW>
-!{git diff main..HEAD | head -n 100 || echo "NO_DIFF"}
+!{git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 

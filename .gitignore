@@ -7,7 +7,6 @@
 
 # Dependencies
 node_modules/
-bun.lock
 
 # Tooling
 .cursor/rules/

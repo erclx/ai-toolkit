@@ -27,7 +27,7 @@ prompt = """
 </GIT_DIFF_SUMMARY>
 
 <GIT_DIFF_RAW>
-!{git diff --cached | head -n 100 || echo "NO_DIFF"}
+!{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' | head -n 2000 || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 
