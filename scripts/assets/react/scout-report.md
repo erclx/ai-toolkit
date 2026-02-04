@@ -1,51 +1,27 @@
-# 🕵️ Deep Scout Report: 2026-01-23
+# 🕵️ Deep Scout Report: 2026-02-04
 
-## 1. Executive Summary
-- **Intent:** Template
-- **Status:** Initialized/Starter Kit
-- **Risk:** Low (Standard template, recent major versions of frameworks)
+## 0. Identity & Intent
+- **Name:** Vite + React + Bun Template
+- **Description:** A React starter with Zod runtime validation, automated releases, and pre-configured quality gates.
+- **Domain:** Generic Web Application
 
-## 2. Architecture & Environment
-- **Archetype:** TypeScript/React/Vite Template
-- **Runtime:** Node 20.0.0
+## 1. Executive Identification
+- **Archetype:** Template
+- **Runtime:** Node.js (via Bun) / TypeScript / React
 - **Manager:** bun
-- **Frameworks:**
-  - React: 19.2.0
-  - Vite: 7.2.4
-  - Tailwind CSS: 4.1.18
-  - Tanstack Query: 5.90.16
-  - Vitest: 4.0.16
-  - TypeScript: ~5.9.3
-  - ESLint: 9.39.2
-- **Paradigm Shifts:**
-  - React 19 (Major version)
-  - Tailwind CSS 4 (Major version)
-  - ESLint 9 (Flat Config)
-  - Vitest 4 (Major version)
 
-## 3. Workflows & Constraints
-- **Lifecycle:**
-  - **Dev:** `bun run dev`
-  - **Build:** `bun run build`
-  - **Verify:** `bun run verify`
-  - **Test:** `bun run test`
-- **Contracts:**
-  - **Styling:** Tailwind CSS (v4)
-  - **Testing:** Vitest (Colocated with `**/*.test.{ts,tsx}`), JSDOM environment, React Testing Library.
-  - **Imports:** Absolute (`@/*` mapping to `./src/*`)
-  - **Strictness:** TypeScript Strict (`strict: true` in tsconfig)
+## 2. Structural Topology
+- **Core/Kernel:** `src/`
+- **Interface:** `src/`
 
-## 4. Directory Structure
-- Standard Vite/React project structure.
-- `src` directory contains `components`, `config`, `features`, `hooks`, `lib`, `test`, `utils`.
-- Dedicated `scripts` directory for various utility shell scripts.
-- `.vscode` for editor-specific settings.
-- `.husky` for Git hooks.
-- ESLint configuration using flat config (`eslint.config.js`).
+## 3. Engineering Contracts
+- **Testing:** Vitest with jsdom
+- **Styling:** Tailwind CSS v4
+- **State:** React Local State / Context (default)
 
-## 5. Observations
-- Project is configured as a private module (`"private": true`).
-- Uses Bun as the package manager (indicated by `bun.lock`).
-- Utilizes new ESLint flat configuration.
-- `lint-staged` and `commitlint` are set up for code quality and commit message conventions.
-- `cspell` is used for spell checking.
+## 4. Workflows
+- **Dev:** `bun run dev`
+- **Build:** `bun run build`
+- **Test:** `bun run test`
+- **Check:** `bun run verify`
+
