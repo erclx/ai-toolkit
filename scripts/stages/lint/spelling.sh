@@ -15,6 +15,8 @@ log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 stage_setup() {
   log_step "Staging Brownfield Environment for Fixer"
 
+  inject_scout_report "brownfield-js"
+
   mkdir -p .cspell
   echo "gemini" > .cspell/project-terms.txt
   echo "bun" > .cspell/tech-stack.txt
@@ -38,8 +40,12 @@ EOF
 
   echo "We use pydantic for the scoutreport. Also typooo." > README.md
 
-  log_step "Installing CSpell (Simulating existing env)"
-  bun add -d cspell > /dev/null 2>&1 || npm install -D cspell > /dev/null 2>&1
+  log_step "Installing CSpell"
+  if command -v bun &> /dev/null; then
+      bun add -d cspell > /dev/null 2>&1
+  else
+      npm install -D cspell > /dev/null 2>&1
+  fi
   
   log_info "Environment staged: README.md has 3 unknown words (pydantic, scoutreport, typooo)"
 }

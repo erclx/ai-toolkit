@@ -77,6 +77,20 @@ select_option() {
   export SELECTED_OPT="${options[$cur]}"
 }
 
+inject_scout_report() {
+  local archetype=${1:-"react"}
+  local source_file="$PROJECT_ROOT/scripts/assets/scout-reports/$archetype.md"
+  
+  if [ ! -f "$source_file" ]; then
+      log_warn "Scout report asset not found: $archetype.md"
+      return 1
+  fi
+  
+  mkdir -p "$SANDBOX/.gemini/.tmp"
+  cp "$source_file" "$SANDBOX/.gemini/.tmp/scout-report.md"
+  log_info "Injected Context: Scout Report ($archetype)"
+}
+
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
   local repo_url="git@github.com:erclx/$repo_name.git"
@@ -105,15 +119,7 @@ provision_assets() {
   fi
   
   log_step "Provisioning assets for $archetype"
-  
-  local asset_dir="$PROJECT_ROOT/scripts/assets/$archetype"
-  if [ ! -d "$asset_dir" ]; then
-      log_error "Asset directory not found for archetype: $archetype"
-  fi
-  
-  mkdir -p "$SANDBOX/.gemini/.tmp"
-  cp "$asset_dir/scout-report.md" "$SANDBOX/.gemini/.tmp/scout-report.md"
-  log_info "Assets provisioned for $archetype"
+  inject_scout_report "$archetype"
 }
 
 setup_ssh() {
