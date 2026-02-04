@@ -15,6 +15,8 @@ log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 stage_setup() {
   log_step "Setting up Changelog Environment"
 
+  inject_scout_report "stable-library"
+
   cat <<'EOF' > CHANGELOG.md
 # Changelog
 
@@ -35,15 +37,15 @@ EOF
 
   touch auth.js
   git add auth.js
-  git commit -m "feat(api): added login page" -q
+  git commit -m "feat(auth): add jwt validation logic" -q
   
   touch api.js
   git add api.js
-  git commit -m "fix(api): bug in api" -q
+  git commit -m "fix(api): patch buffer overflow in handler" -q
   
   echo "node_modules" >> .gitignore
   git add .gitignore
   git commit -m "chore(gitignore): update gitignore rules" -q
   
-  log_info "Environment ready: v1.0.0 + Feature + Fix + Noise"
+  log_info "Environment ready: v1.0.0 + Feature + Security Fix + Noise"
 }
