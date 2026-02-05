@@ -6,7 +6,6 @@
   "scripts": {
     "build:docs": "./scripts/compile-docs.sh",
     "build:rules": "./scripts/compile-rules.sh",
-    "sync:cursor": "./scripts/sync-cursor.sh",
     "lint:spelling": "cspell \"**\" --no-progress --color"
   },
   "devDependencies": {
