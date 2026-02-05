@@ -4,6 +4,7 @@ gitattributes
 heredoc
 mypy
 nvmrc
+nullglob
 pip
 pnpm
 pycache
