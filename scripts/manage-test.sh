@@ -182,7 +182,7 @@ initialize_sandbox_environment() {
   
   if [[ "$(type -t use_anchor)" == "function" ]]; then
     use_anchor
-
+    clone_anchor
   else
     if [ -d "$SANDBOX" ]; then
         rm -rf "$SANDBOX"
