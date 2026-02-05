@@ -77,6 +77,21 @@ select_option() {
   export SELECTED_OPT="${options[$cur]}"
 }
 
+inject_anchor_context() {
+  local anchors_dir="$PROJECT_ROOT/scripts/assets/anchors"
+  local target="$SANDBOX/GEMINI.md"
+  
+  local anchor_name="${ANCHOR_REPO%-template}"
+  local anchor_source="$anchors_dir/${anchor_name}.md"
+
+  if [ -f "$anchor_source" ]; then
+    cp "$anchor_source" "$target"
+    log_info "Injected Identity Anchor: $(basename "$anchor_source")"
+  else
+    log_warn "No specific identity anchor found for ${anchor_name} (derived from ${ANCHOR_REPO}). Skipping injection."
+  fi
+}
+
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
   local repo_url="git@github.com:erclx/$repo_name.git"
@@ -96,6 +111,8 @@ clone_anchor() {
     git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify > /dev/null
   )
   log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
+  
+  inject_anchor_context
 }
 
 setup_ssh() {
@@ -235,7 +252,7 @@ handle_post_execution_prompt() {
   local current_command="$2"
   local current_namespace="$3"
 
-  if [ "$current_category" == "setup" ] && [ "$current_command" == "cursor" ]; then
+  if [ "$current_category" == "infra" ] && [ "$current_command" == "cursor" ]; then
     select_option "Open sandbox in Cursor?" "Yes" "No"
     if [ "$SELECTED_OPT" == "Yes" ]; then
        if command -v cursor &> /dev/null; then
