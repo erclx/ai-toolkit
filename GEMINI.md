@@ -1,67 +1,75 @@
-# AI Toolkit
+# AI Toolkit - Gemini CLI Extension
 
-The AI core toolkit transforms any codebase into a high-governance environment.
-This extension provides infrastructure for automated governance, semantic versioning, and architectural discovery.
-
----
-
-## Key features
-
-- **Architectural reconnaissance:** Map project topology, stack intent, and health metrics.
-- **Governance management:** Install and test project-specific Cursor rules.
-- **Version control automation:** Generate atomic, lowercase conventional commits and PR descriptions.
-- **Release management:** Curate semantic changelogs by filtering internal technical noise.
-- **Quality assurance:** Agentic spell-checking and dictionary management via CSpell.
-- **Infrastructure setup:** Configure zero-trust `.gemini` environments and CSpell scaffolding.
+The AI Toolkit is a Gemini CLI extension built for codebase governance and automation.
+It automates Git operations, enforces code standards, and manages sandboxed testing environments.
 
 ---
 
-## Operations
+## Installation and setup
 
-The toolkit uses shell scripts orchestrated by the Gemini CLI.
+### Install the extension
 
-### Core scripts
-
-- **Build rules:** Compile governance rules for local use.
+Link the toolkit to your Gemini CLI:
 
 ```bash
-bun run build:rules
+git clone git@github.com:erclx/ai-toolkit.git
+cd ai-toolkit
+gemini extensions link .
 
 ```
 
-- **Lint spelling:** Execute spell-check across the codebase.
+### Apply governance rules
+
+Install the project rules:
 
 ```bash
-bun run lint:spelling
+/ai-toolkit.setup:rules
 
 ```
 
-### Command execution
+### Build and lint scripts
 
-Invoke tools via the Gemini CLI using the standard namespace pattern:
-`gemini /ai-toolkit.<category>:<command>`
+| Command | Action |
+| --- | --- |
+| `npm run build:docs` | Compiles documentation |
+| `npm run build:rules` | Compiles governance rules |
+| `npm run lint:spelling` | Checks spelling across the project |
+
+---
+
+## Testing and sandboxing
+
+The toolkit manages test environments through sandboxing to keep your main system clean.
+
+- **Management**: The `scripts/manage-test.sh` script handles sandbox creation.
+- **Stages**: Commands run in predefined sequences found in `scripts/stages`.
+- **Environment**: Sandboxes use `gemini-2.5-flash` as the default model.
+- **Context**: Use "anchor" repositories to provide specific starting points for tests.
 
 ---
 
 ## Development conventions
 
-### Technical standards
+### Commit message format
 
-- **Zero-bloat:** Prioritize technical density and efficiency over narrative fluff.
-- **Ghost folder:** Isolate project state within `.gemini/.tmp/` to prevent context pollution.
-- **Immutable history:** Treat commits and PRs as permanent technical records.
+Use the conventional commit format with a strict lowercase requirement.
 
-### Git workflow
+- **Template**: `<type>(<scope>): <subject>`
+- **Casing**: Use 100% lowercase for the entire message.
+- **Scope**: Use a directory name or system component (e.g., `scripts`).
+- **Limit**: Keep subjects under 72 characters and do not use trailing periods.
 
-- **Analysis:** Staged changes are analyzed to ensure commit specificity.
-- **Conventional commits:** Use strictly lowercase, scoped messages: `type(scope): subject`.
-- **Documentation-driven PRs:** Document only what exists in the code today.
+### Core engineering principles
 
----
+- **Zero bloat**: Implement only what you need now.
+- **Zero comments**: Code must be self-explanatory.
+- **Why over what**: Use comments only to explain intent, not logic.
+- **Native first**: Avoid adding dependencies if native platform tools exist.
+- **Idempotency**: Ensure scripts are safe to run multiple times.
+- **Temporary state**: Store all transient data in `.gemini/.tmp/`.
 
-## Project structure
+### AI communication standards
 
-- `commands/`: TOML configurations for the Gemini CLI.
-- `scripts/`: Implementation logic via shell stages.
-- `gemini-extension.json`: Extension metadata and context anchoring.
-- `.geminiignore`: Whitelist and isolation rules for AI agents.
+- Use the imperative voice for all descriptions.
+- Use ventilated prose (one sentence per line).
+- Avoid emojis and marketing language.
