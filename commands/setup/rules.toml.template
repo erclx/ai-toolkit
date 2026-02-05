@@ -40,13 +40,6 @@ Context: You are installing the official project governance rules.
 
 ## 4. RESPONSE FORMAT
 
-# PREVIEW
-
-- **Status:** Installing
-- **Analysis:** Injecting governance rules into .cursor/rules/
-
-# FINAL COMMAND
-
 ```bash
 {{INJECT_ALL_RULES}}
 ```

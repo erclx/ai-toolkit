@@ -40,13 +40,6 @@ Context: You are installing the official project reference documentation (The "L
 
 ## 4. RESPONSE FORMAT
 
-# PREVIEW
-
-- **Status:** Installing
-- **Analysis:** Injecting reference docs into docs/
-
-# FINAL COMMAND
-
 ```bash
 echo '📦 Installing Assets...'
 mkdir -p docs
