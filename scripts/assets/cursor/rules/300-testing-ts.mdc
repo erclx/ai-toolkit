@@ -1,0 +1,24 @@
+---
+description: Enforce testing standards, AAA pattern, and behavioral verification
+globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
+alwaysApply: false
+priority: 300
+---
+
+# TESTING STANDARDS
+
+## HARD REQUIREMENTS
+
+- **AAA Pattern:** Structure all tests strictly with "Arrange", "Act", and "Assert" comments.
+- **Behavioral Testing:** Test user-visible behavior (what happens), not implementation details (how it works).
+- **Descriptive Titles:** Use `test("verb noun context")` format (e.g., `test("renders submit button when disabled")`).
+- **Isolation:** Each test must be independent; clean up mocks and DOM after every test.
+- **Interaction:** Use `userEvent` (from `@testing-library/user-event`) over `fireEvent` for realistic user simulation.
+- **Query Priority:** Select elements by accessibility roles (`getByRole`) first, then semantic text, never by CSS selectors.
+
+## NEGATIVE CONSTRAINTS
+
+- **No Snapshots:** Do not use `toMatchSnapshot()`. They are brittle and encourage lazy verification. Assert specific values.
+- **No Implementation leaks:** Do not test private functions or internal state directly; test the public interface.
+- **No Conditional Logic:** Tests must have a single execution path (no `if`, `for` loops inside tests).
+- **No Real Network Calls:** All external API calls must be mocked (e.g., MSW or Vitest mocks).
