@@ -57,7 +57,7 @@ select_option() {
         if [[ "$key" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
         if [[ "$key" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
-          echo -ne "\033[${count}A\033[J"
+          echo -ne "\033[$((count + 1))A\033[J"
           log_error "Selection cancelled"
         fi
         ;;
@@ -65,14 +65,14 @@ select_option() {
       "j") cur=$(( (cur + 1) % count ));;
       "") break ;;
       "q")
-        echo -ne "\033[${count}A\033[J"
+        echo -ne "\033[$((count + 1))A\033[J"
         log_error "Selection cancelled"
         ;;
     esac
     echo -ne "\033[${count}A"
   done
   
-  echo -ne "\033[2A\033[J"
+  echo -ne "\033[$((count + 1))A\033[J"
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   export SELECTED_OPT="${options[$cur]}"
 }
