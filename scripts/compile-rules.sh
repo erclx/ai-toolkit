@@ -30,8 +30,8 @@ main() {
   "$ENGINE_SCRIPT" \
     "$PROJECT_ROOT/scripts/assets/cursor/rules" \
     ".cursor/rules" \
-    "$PROJECT_ROOT/commands/setup/rules.toml.template" \
-    "$PROJECT_ROOT/commands/setup/rules.toml" \
+    "$PROJECT_ROOT/scripts/assets/templates/rules.toml.template" \
+    "$PROJECT_ROOT/commands/gov/rules.toml" \
     "{{INJECT_ALL_RULES}}" \
     ".mdc"
 
