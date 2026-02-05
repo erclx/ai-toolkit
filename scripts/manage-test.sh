@@ -157,7 +157,7 @@ resolve_command_and_category() {
     if [ "$input_arg" == "clean" ]; then
       rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
     elif [ "$input_arg" == "cursor" ]; then
-      _CATEGORY="setup"
+      _CATEGORY="infra"
       _COMMAND="cursor"
     else
       if [[ "$input_arg" != *":"* ]]; then
