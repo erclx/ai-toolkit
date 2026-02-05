@@ -30,8 +30,8 @@ main() {
   "$ENGINE_SCRIPT" \
     "$PROJECT_ROOT/scripts/assets/docs" \
     "docs" \
-    "$PROJECT_ROOT/commands/setup/docs.toml.template" \
-    "$PROJECT_ROOT/commands/setup/docs.toml" \
+    "$PROJECT_ROOT/scripts/assets/templates/docs.toml.template" \
+    "$PROJECT_ROOT/commands/gov/docs.toml" \
     "{{INJECT_DOCS}}" \
     ".md"
 
