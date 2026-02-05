@@ -174,6 +174,57 @@ priority: 300
 GEMINI_EOF
 echo '  + .cursor/rules/300-testing-ts.mdc'
 
+cat << 'GEMINI_EOF' > .cursor/rules/900-workflow-node.mdc
+---
+description: Enforce_strict_development_lifecycle_and_agent_protocols
+alwaysApply: true
+priority: 900
+---
+
+# WORKFLOW STANDARDS
+
+## AGENT OPERATING PROCEDURE
+
+### 1. Planning Phase
+
+- Analyze the request and output a concise, numbered implementation plan.
+- Identify strictly necessary file creations, modifications, and deletions.
+- Wait for user confirmation before executing complex or destructive actions.
+
+### 2. Execution Phase
+
+- Implement changes iteratively, focusing on one logical concern at a time.
+- Apply the \"Zero-Bloat\" principle to all code changes.
+- Ensure all new files adhere to strict file hygiene (one newline at EOF).
+
+### 3. Verification Phase
+
+- Run the full verification suite using `bun run verify` to ensure type safety and test passing.
+- Execute `bun run build` to confirm production build stability.
+- Resolve all errors revealed by these commands immediately before proceeding.
+
+### 4. Quality Assurance Phase
+
+- Enforce code style and formatting using `bun run lint:fix`.
+- Check for spelling errors using `bun run spell`.
+- Manually review changes against the \"Zero-Comment\" and \"Ventilated Prose\" policies.
+
+### 5. Delivery Phase
+
+- Generate a Conventional Commit message using the defined format.
+- Ensure the commit subject is strictly lowercase and under 72 characters.
+- Do not use trailing periods in commit subjects.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not modify code without a preceding plan step.
+- Do not commit code that fails the `bun run verify` check.
+- Do not leave \"TODO\" comments; implement the logic or reject the feature.
+- Do not use `git add .` blindly; stage only relevant files.
+- Do not bypass the `lint:fix` step; style consistency is mandatory.
+GEMINI_EOF
+echo '  + .cursor/rules/900-workflow-node.mdc'
+
 echo '✅ Installation complete.'
 
 ```
