@@ -5,9 +5,6 @@ prompt = """
 
 User Request: {{args}}
 System State: !{ls -F}
-<SCOUT_REPORT>
-!{cat .gemini/.tmp/scout-report.md 2>/dev/null || echo "NO_SCOUT_REPORT_FOUND"}
-</SCOUT_REPORT>
 Project Terms: !{cat .cspell/project-terms.txt 2>/dev/null || echo "FILE_MISSING"}
 Tech Stack: !{cat .cspell/tech-stack.txt 2>/dev/null || echo "FILE_MISSING"}
 
@@ -17,14 +14,13 @@ Tech Stack: !{cat .cspell/tech-stack.txt 2>/dev/null || echo "FILE_MISSING"}
 
 You are a Senior DevOps Engineer specializing in Quality Assurance.
 Goal: Analyze spellcheck errors and intelligently update the dictionaries.
-Context: You have the Scout Report to determine the runtime (Node/Python) and available scripts.
 
 ---
 
 ## 3. TASK & CONSTRAINTS
 
 ### Phase 1: Execution & Analysis
-1.  **Determine Command:** Read `<SCOUT_REPORT>` to find the "Check" or "Lint" workflow.
+1.  **Determine Command:**
     -   **Node/Bun:** Check if a spelling script exists. If not, fallback to Direct Invocation: `bun x cspell "**" --no-progress` or `npx cspell "**" --no-progress`.
     -   **Python:** Check for `cspell` config. Fallback: `cspell "**" --no-progress`.
 2.  **Execute:** Run the determined command.
@@ -50,7 +46,6 @@ Context: You have the Scout Report to determine the runtime (Node/Python) and av
 
 ## 4. RESPONSE STRATEGY
 
-- **Thought:** <Analyze Scout Report -> Determine Script -> Run -> Analyze results>
 - **Preview:** <Display the plan: Words to Add vs. Typos to Reject>
 - **Action:** <Call edit_file to update dictionaries>
 """

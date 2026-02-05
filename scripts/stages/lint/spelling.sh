@@ -15,8 +15,6 @@ log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 stage_setup() {
   log_step "Staging Brownfield Environment for Fixer"
 
-  inject_scout_report "brownfield-js"
-
   mkdir -p .cspell
   echo "gemini" > .cspell/project-terms.txt
   echo "bun" > .cspell/tech-stack.txt
