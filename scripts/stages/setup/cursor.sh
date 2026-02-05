@@ -21,6 +21,8 @@ stage_setup() {
 
   local rules_source="$PROJECT_ROOT/scripts/assets/cursor/rules"
   local rules_target=".cursor/rules"
+  local docs_source="$PROJECT_ROOT/scripts/assets/docs"
+  local docs_target="docs"
 
   if [ -d "$rules_source" ]; then
     mkdir -p "$rules_target"
@@ -28,14 +30,21 @@ stage_setup() {
     log_info "Governance rules injected from Source of Truth"
   else
     log_warn "Source rules not found at $rules_source. Skipping injection."
-    log_info "Tip: Create a rule in scripts/assets/cursor/rules/ to test this stage."
+  fi
+
+  if [ -d "$docs_source" ]; then
+    mkdir -p "$docs_target"
+    cp -r "$docs_source/." "$docs_target/"
+    log_info "Reference documentation injected from Source of Truth"
+  else
+    log_warn "Source docs not found at $docs_source. Skipping injection."
   fi
 
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC} ${WHITE}MANUAL VERIFICATION REQUIRED:${NC}"
   echo -e "${GREY}│${NC} 1. Open the sandbox: ${WHITE}cursor .sandbox${NC}"
-  echo -e "${GREY}│${NC} 2. Open a file (e.g., src/App.tsx) and verify the rules are active."
-  echo -e "${GREY}│${NC} 3. Check .sandbox/.cursor/rules to see the injected files."
+  echo -e "${GREY}│${NC} 2. Verify rules in ${WHITE}.cursor/rules/${NC}"
+  echo -e "${GREY}│${NC} 3. Verify docs in ${WHITE}docs/${NC}"
   echo -e "${GREY}│${NC}"
   
   log_info "Scenario ready."
