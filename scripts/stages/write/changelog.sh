@@ -13,11 +13,9 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 stage_setup() {
-  log_step "Setting up Changelog Environment"
-
-  inject_scout_report "stable-library"
-
-  cat <<'EOF' > CHANGELOG.md
+    log_step "Setting up Changelog Environment"
+  
+    cat <<'EOF' > CHANGELOG.md
 # Changelog
 
 All notable changes to this project will be documented in this file.

@@ -22,8 +22,6 @@ Install the governance rules:
 ## Commands
 
 ### Architecture and discovery
-
-- `/ai-toolkit.arch:scout` - Scan architecture to define stack, intent, and health.
 - `/ai-toolkit.setup:rules` - Install Cursor governance rules in the local project.
 - `/ai-toolkit.setup:cursor` - Create a sandbox to test governance rules.
 

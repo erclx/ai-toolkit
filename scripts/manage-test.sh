@@ -77,20 +77,6 @@ select_option() {
   export SELECTED_OPT="${options[$cur]}"
 }
 
-inject_scout_report() {
-  local archetype=${1:-"react"}
-  local source_file="$PROJECT_ROOT/scripts/assets/scout-reports/$archetype.md"
-  
-  if [ ! -f "$source_file" ]; then
-      log_warn "Scout report asset not found: $archetype.md"
-      return 1
-  fi
-  
-  mkdir -p "$SANDBOX/.gemini/.tmp"
-  cp "$source_file" "$SANDBOX/.gemini/.tmp/scout-report.md"
-  log_info "Injected Context: Scout Report ($archetype)"
-}
-
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
   local repo_url="git@github.com:erclx/$repo_name.git"
@@ -110,16 +96,6 @@ clone_anchor() {
     git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify > /dev/null
   )
   log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
-}
-
-provision_assets() {
-  local archetype="react" 
-  if [[ "$ANCHOR_REPO" == *"python"* ]]; then
-      archetype="python"
-  fi
-  
-  log_step "Provisioning assets for $archetype"
-  inject_scout_report "$archetype"
 }
 
 setup_ssh() {
@@ -206,8 +182,7 @@ initialize_sandbox_environment() {
   
   if [[ "$(type -t use_anchor)" == "function" ]]; then
     use_anchor
-    clone_anchor
-    provision_assets
+
   else
     if [ -d "$SANDBOX" ]; then
         rm -rf "$SANDBOX"

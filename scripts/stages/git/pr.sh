@@ -26,15 +26,6 @@ git config user.name "Senior Architect"
   git push --force origin HEAD:main
   git push origin --delete feature/string-utils -q 2>/dev/null || true
 
-  mkdir -p .gemini/.tmp
-  cat <<EOF > .gemini/.tmp/scout-report.md
-# Scout Report
-- Archetype: Node.js/JavaScript
-- Framework: Vanilla JS
-- Manager: npm
-- Intent: Utility Library
-EOF
-
   git checkout -b feature/string-utils -q
 
   cat <<'EOF' >> utils.js
