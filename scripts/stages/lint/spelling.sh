@@ -15,7 +15,28 @@ log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 stage_setup() {
   log_step "Staging Brownfield Environment for Fixer"
 
-  echo "We use pydantic for the. Also typooo." > README.md
+  mkdir -p .cspell
+  echo "gemini" > .cspell/project-terms.txt
+  echo "bun" > .cspell/tech-stack.txt
+
+  cat <<EOF > cspell.json
+{
+  "version": "0.2",
+  "language": "en",
+  "dictionaryDefinitions": [
+    { "name": "project-terms", "path": "./.cspell/project-terms.txt", "addWords": true },
+    { "name": "tech-stack", "path": "./.cspell/tech-stack.txt", "addWords": true }
+  ],
+  "dictionaries": ["project-terms", "tech-stack"],
+  "ignorePaths": [".cspell/**"]
+}
+EOF
+
+  echo '{"name": "test-project", "scripts": {"lint:spelling": "cspell '\''**'\'' --no-progress"}}' > package.json
+  touch bun.lock
+
+
+  echo "We use pydantic for the scoutreport. Also typooo." > README.md
 
   log_step "Installing CSpell"
   if command -v bun &> /dev/null; then
