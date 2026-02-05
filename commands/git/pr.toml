@@ -71,7 +71,6 @@ Context: {{args}}
    # PREVIEW
 
 - **Title:** <type>(<scope>): <subject>
-- **Context:** <Matched Scout Archetype or "N/A">
 - **Files Changed:** <count>
    
 # FINAL COMMAND
@@ -86,7 +85,6 @@ mkdir -p .gemini/.tmp && (cat <<'EOF' > .gemini/.tmp/pr-body.md
 - <Imperative verb> <component>
 
 ## Technical Context
-- <Gap from Scout Report (if any else omit)>
 - <Brief technical reasoning (1 line max)>
 
 ## Testing
