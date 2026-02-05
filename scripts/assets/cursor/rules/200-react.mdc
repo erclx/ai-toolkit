@@ -1,0 +1,25 @@
+---
+description: Enforce React architecture, component patterns, and hook discipline
+globs: "**/*.tsx,**/*.ts"
+alwaysApply: false
+priority: 200
+---
+
+# REACT ARCHITECTURE STANDARDS
+
+## HARD REQUIREMENTS
+
+- **Functional Components:** Use functional components exclusively with named exports (no default exports).
+- **Hook Extraction:** Extract complex logic (> 10 lines) and `useEffect` chains into custom hooks (e.g., `useUserLogic.ts`).
+- **Prop Interface:** Define strict TypeScript interfaces for Props immediately above the component.
+- **Fragment Hygiene:** Use shorthand `<>` fragments unless the fragment requires a `key`.
+- **Event Handling:** Use `handle{EventName}` prefix for handlers (e.g., `handleClick`) and `on{EventName}` for props.
+- **Composition:** Prefer component composition (children prop) over prop drilling or complex conditional rendering.
+
+## NEGATIVE CONSTRAINTS
+
+- **No Class Components:** Strictly forbidden.
+- **No Inline Styles:** Use utility classes (Tailwind) or CSS Modules; never logic-bound `style={{ ... }}` objects.
+- **No UseEffect for Derived State:** If state can be calculated from props or other state during render, do NOT use `useEffect`. Use `useMemo` only if expensive.
+- **No Index Keys:** Do not use array index as `key` in lists; use stable unique IDs.
+- **No Prop Spreading:** Avoid `{...props}` into DOM elements unless creating a generic wrapper; explicit props are safer.
