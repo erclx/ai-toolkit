@@ -29,13 +29,6 @@ bun run build:rules
 
 ```
 
-- **Sync assets:** Synchronize Cursor configuration assets.
-
-```bash
-bun run sync:cursor
-
-```
-
 - **Lint spelling:** Execute spell-check across the codebase.
 
 ```bash
