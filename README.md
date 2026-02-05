@@ -1,7 +1,7 @@
-# AI Core Toolkit
+# AI Toolkit
 
-This extension transforms any codebase into a high-governance environment. 
-It delivers a suite of utilities for deep codebase understanding, semantic versioning, and automated project discovery.
+Add governance to your codebase.
+Use these tools to understand your project, manage versions, and automate discovery.
 
 ## Installation
 
@@ -13,7 +13,7 @@ gemini extensions link .
 
 ## Setup
 
-Install governance rules:
+Install the governance rules:
 
 ```bash
 /ai-toolkit.setup:rules
@@ -21,26 +21,26 @@ Install governance rules:
 
 ## Commands
 
-### Architecture & Discovery
+### Architecture and discovery
 
-- `/ai-toolkit.arch:scout` - Deep architectural reconnaissance to determine stack, intent, and health.
-- `/ai-toolkit.setup:rules` - Installs Cursor governance rules into the local project.
-- `/ai-toolkit.setup:cursor` - Prepares sandbox environment with governance rules for testing.
+- `/ai-toolkit.arch:scout` - Scan architecture to define stack, intent, and health.
+- `/ai-toolkit.setup:rules` - Install Cursor governance rules in the local project.
+- `/ai-toolkit.setup:cursor` - Create a sandbox to test governance rules.
 
-### Versioning & Writing
+### Versioning and writing
 
-- `/ai-toolkit.git:commit` - Analyzes staged changes to generate atomic, lowercase conventional commits.
-- `/ai-toolkit.git:pr` - Generates a documentation-driven PR description and opens a draft.
-- `/ai-toolkit.write:changelog` - Curates release history, filtering out internal noise for human consumption.
+- `/ai-toolkit.git:commit` - Read staged changes to write atomic conventional commits.
+- `/ai-toolkit.git:pr` - Write a documentation-focused PR description and open a draft.
+- `/ai-toolkit.write:changelog` - Build a clean release history for humans.
 
-### Quality & Linting
+### Quality and linting
 
-- `/ai-toolkit.lint:spelling` - Agentic session to triage spellcheck errors and update dictionaries.
-- `/ai-toolkit.setup:cspell` - Scaffolds CSpell infrastructure, modular dictionaries, and git hygiene.
-- `/ai-toolkit.setup:gemini` - Configures the .gemini infrastructure using a "Zero-Trust" architecture.
+- `/ai-toolkit.lint:spelling` - Fix spelling errors and update dictionaries.
+- `/ai-toolkit.setup:cspell` - Set up CSpell, modular dictionaries, and git hygiene.
+- `/ai-toolkit.setup:gemini` - Configure the .gemini folder with zero-trust architecture.
 
 ## Patterns
 
-- **Ghost Folder:** State is isolated in `.gemini/.tmp/`.
-- **Zero-Bloat:** Commands prioritize technical density over narrative fluff.
-- **Atomic History:** Commits and PRs are treated as immutable technical records.
+- **Ghost folder:** Isolate state in `.gemini/.tmp/`.
+- **Zero-bloat:** Prioritize technical density over narrative.
+- **Atomic history:** Treat commits and PRs as immutable records.

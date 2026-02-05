@@ -1,7 +1,7 @@
 {
   "name": "ai-toolkit",
   "version": "0.1.0",
-  "description": "Senior Principal Architect Utility Suite",
+  "description": "Automated governance, versioning, and discovery tools.",
   "contextFileName": "GEMINI.md",
   "commandsDir": "commands"
 }
