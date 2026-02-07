@@ -1,5 +1,5 @@
 ---
-description: Enforce_strict_node_workflow_and_verification_loops
+description: Enforce_strict_node_workflow_verification_and_staging_handoff
 globs: "package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 alwaysApply: false
 priority: 900
@@ -23,28 +23,30 @@ priority: 900
 
 ### 3. Verification Phase (Fail-Fast Sequence)
 
-- **Step 1 (Lint):** Run `bun run lint:fix` to catch syntax errors immediately.
+- **Step 1 (Hygiene):** Run `bun run format` to enforce style, THEN `bun run lint:fix`.
 - **Step 2 (Types):** Run `bun run typecheck` to ensure contract safety.
 - **Step 3 (Test):** Run `bun run test` to verify logic isolation.
 - **Step 4 (Build):** Run `bun run build` to validate the full bundle chain.
+- **Correction:** If any step fails, stop and fix immediately.
 
-### 4. Delivery Phase
+### 4. Handoff Phase (The Stage-Gate)
 
-- Stage specific files using `git add <file>` (never use dot).
-- Execute the commit using `git commit -m "type(scope): subject"`.
-- Ensure the commit subject is strictly lowercase and under 72 characters.
+- **Stage:** Use `git add <file>` for the verified files (never use dot).
+- **Status:** Run `git status` to confirm the staging area is correct.
+- **STOP:** Do **NOT** commit.
+- **Signal:** Inform the user that verification passed and files are staged for review.
 
 ## DEFINITION OF DONE
 
-- Linting and Formatting must pass.
+- Formatting and Linting must pass.
 - TypeScript compilation must succeed.
 - Tests must pass.
 - Build must succeed.
-- Changes must be **COMMITTED** to git.
+- Files are **STAGED** (Green in git status).
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not stop at code generation; you MUST Verify and Commit.
+- Do not stop at code generation; you MUST Verify and Stage.
 - Do not run a heavy "verify-all" script if a faster "lint" script fails first.
-- Do not commit code that fails the Build step.
+- **Do not execute `git commit`.** This is a human-only privilege.
 - Do not leave "TODO" comments; implement the logic or reject the feature.
