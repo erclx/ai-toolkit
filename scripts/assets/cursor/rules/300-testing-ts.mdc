@@ -1,5 +1,5 @@
 ---
-description: Enforce testing standards, AAA pattern, and behavioral verification
+description: Enforce_testing_standards_and_framework_isolation
 globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
 alwaysApply: false
 priority: 300
@@ -9,16 +9,19 @@ priority: 300
 
 ## HARD REQUIREMENTS
 
-- **AAA Pattern:** Structure all tests strictly with "Arrange", "Act", and "Assert" comments.
-- **Behavioral Testing:** Test user-visible behavior (what happens), not implementation details (how it works).
-- **Descriptive Titles:** Use `test("verb noun context")` format (e.g., `test("renders submit button when disabled")`).
-- **Isolation:** Each test must be independent; clean up mocks and DOM after every test.
-- **Interaction:** Use `userEvent` (from `@testing-library/user-event`) over `fireEvent` for realistic user simulation.
-- **Query Priority:** Select elements by accessibility roles (`getByRole`) first, then semantic text, never by CSS selectors.
+- Use Vitest for unit and integration tests.
+- Co-locate unit tests with their respective components.
+- Use Playwright strictly for end-to-end tests.
+- Place all Playwright tests within the `e2e/` directory.
+- Structure tests using the Arrange, Act, Assert (AAA) pattern.
+- Test user-visible behavior rather than implementation details.
+- Use `userEvent` for realistic interaction simulation in Vitest.
+- Select elements by accessibility roles first.
 
 ## NEGATIVE CONSTRAINTS
 
-- **No Snapshots:** Do not use `toMatchSnapshot()`. They are brittle and encourage lazy verification. Assert specific values.
-- **No Implementation leaks:** Do not test private functions or internal state directly; test the public interface.
-- **No Conditional Logic:** Tests must have a single execution path (no `if`, `for` loops inside tests).
-- **No Real Network Calls:** All external API calls must be mocked (e.g., MSW or Vitest mocks).
+- Do not use `toMatchSnapshot` for verification.
+- Do not test private functions or internal state directly.
+- Do not make real network calls in unit tests; use mocks.
+- Do not place Playwright tests inside the `src/` directory.
+- Do not use conditional logic or loops within test bodies.

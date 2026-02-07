@@ -1,5 +1,5 @@
 ---
-description: Enforce strict TypeScript and modern syntax standards
+description: Enforce_strict_TypeScript_and_modern_syntax_standards
 globs: "**/*.ts,**/*.tsx"
 alwaysApply: false
 priority: 100
@@ -9,17 +9,17 @@ priority: 100
 
 ## HARD REQUIREMENTS
 
-- **Strict Typing:** All variables, arguments, and return types must be explicitly typed or strictly inferred.
-- **Interfaces:** Use `interface` for all object definitions and public API contracts (extensibility).
-- **Type Guards:** Use `unknown` instead of `any` for uncertain data, forcing proper type narrowing/validation.
-- **Async Hygiene:** All promises must be handled via `await` or explicitly returned; no floating promises.
-- **Immutability:** Prefer `readonly` properties and `ReadonlyArray` for data that should not change.
-- **Path Aliases:** Use absolute imports (e.g., `@/components/`) over relative paths (`../../`).
+- Enforce explicit types or strict inference for all variables and arguments.
+- Use `interface` for all object definitions and public API contracts.
+- Use `unknown` instead of `any` for uncertain data to force validation.
+- Handle all promises via `await` or return them explicitly.
+- Prefer `readonly` properties and `ReadonlyArray` for immutable data.
+- Use absolute imports over relative paths.
 
 ## NEGATIVE CONSTRAINTS
 
-- **No ANY:** Rejection of the `any` type is absolute. Use `unknown` or generic constraints.
-- **No Enums:** Do not use TypeScript `enum`. Use constant objects (`as const`) or String Literal Unions.
-- **No Hungarian Notation:** Do not prefix interfaces with `I` (e.g., `IUser`) or types with `T`.
-- **No Loose Nulls:** Do not use `!` (non-null assertion) unless absolutely necessary; prefer optional chaining `?.`.
-- **No Namespaces:** Do not use `namespace`; use ES6 modules (import/export).
+- Reject the `any` type absolutely; use generic constraints if necessary.
+- Do not use TypeScript `enum`; use constant objects or union types.
+- Do not prefix interfaces with `I` or types with `T`.
+- Do not use non-null assertions (`!`) unless absolutely necessary.
+- Do not use `namespace`; use ES6 modules.
