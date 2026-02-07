@@ -1,5 +1,5 @@
 ---
-description: Enforce React architecture, component patterns, and hook discipline
+description: Enforce_React_architecture_and_component_patterns
 globs: "**/*.tsx,**/*.ts"
 alwaysApply: false
 priority: 200
@@ -9,17 +9,22 @@ priority: 200
 
 ## HARD REQUIREMENTS
 
-- **Functional Components:** Use functional components exclusively with named exports (no default exports).
-- **Hook Extraction:** Extract complex logic (> 10 lines) and `useEffect` chains into custom hooks (e.g., `useUserLogic.ts`).
-- **Prop Interface:** Define strict TypeScript interfaces for Props immediately above the component.
-- **Fragment Hygiene:** Use shorthand `<>` fragments unless the fragment requires a `key`.
-- **Event Handling:** Use `handle{EventName}` prefix for handlers (e.g., `handleClick`) and `on{EventName}` for props.
-- **Composition:** Prefer component composition (children prop) over prop drilling or complex conditional rendering.
+- Enforce `kebab-case` naming for all files including components.
+- Import environment variables strictly from the validated configuration module.
+- Co-locate domain logic, components, and hooks within the `src/features/` directory.
+- Restrict the `src/components/` directory to generic, domain-agnostic UI elements.
+- Encapsulate all data fetching logic within custom hooks or query libraries.
+- Use functional components exclusively with named exports.
+- Extract complex logic and effect chains into custom hooks.
+- Define strict TypeScript interfaces for props immediately above the component.
 
 ## NEGATIVE CONSTRAINTS
 
-- **No Class Components:** Strictly forbidden.
-- **No Inline Styles:** Use utility classes (Tailwind) or CSS Modules; never logic-bound `style={{ ... }}` objects.
-- **No UseEffect for Derived State:** If state can be calculated from props or other state during render, do NOT use `useEffect`. Use `useMemo` only if expensive.
-- **No Index Keys:** Do not use array index as `key` in lists; use stable unique IDs.
-- **No Prop Spreading:** Avoid `{...props}` into DOM elements unless creating a generic wrapper; explicit props are safer.
+- Do not use PascalCase for filenames.
+- Do not access `import.meta.env` or `process.env` directly.
+- Do not place domain-specific logic in the shared components folder.
+- Do not fetch data directly inside `useEffect`.
+- Do not use class components.
+- Do not use inline styles; leverage Tailwind utility classes.
+- Do not use `useEffect` for derived state; use `useMemo`.
+- Do not spread props into DOM elements without a specific generic wrapper.
