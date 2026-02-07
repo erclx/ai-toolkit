@@ -72,5 +72,4 @@ stage_setup() {
   fi
 
   echo -e "${GREY}│${NC}"
-  log_info "Scenario ready."
 }
