@@ -4,6 +4,7 @@ set -o pipefail
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[0;33m'
 WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
@@ -48,11 +49,27 @@ stage_setup() {
     log_warn "Source docs not found at $docs_source. Skipping injection."
   fi
 
+  log_step "Provisioning Dependencies"
+
+  if [ -f "package.json" ]; then
+  if command -v bun &> /dev/null; then
+      log_info "Detected Node project. Running bun install..."
+    bun install
+      log_info "Dependencies installed"
+    else
+      log_warn "package.json found but bun missing"
+    fi
+  elif [ -f "pyproject.toml" ] || [ -f "uv.lock" ]; then
+    if command -v uv &> /dev/null; then
+      log_info "Detected Python project. Running uv sync..."
+      uv sync
+      log_info "Dependencies synced"
+  else
+      log_warn "Python manifest found but uv missing"
+    fi
+  else
+    log_info "No manifest detected. Skipping install."
+  fi
+
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}MANUAL VERIFICATION REQUIRED:${NC}"
-  echo -e "${GREY}│${NC} 1. Open the sandbox: ${WHITE}cursor .sandbox${NC}"
-  echo -e "${GREY}│${NC} 2. Verify files listed above exist in the sandbox.${NC}"
-  echo -e "${GREY}│${NC}"
-  
-  log_info "Scenario ready."
 }

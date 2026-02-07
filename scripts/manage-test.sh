@@ -10,11 +10,8 @@ GREY='\033[0;90m'
 NC='\033[0m'
 
 log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-
 log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
-
 log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
-
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 show_help() {
@@ -57,7 +54,7 @@ select_option() {
         if [[ "$key" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
         if [[ "$key" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
-          echo -ne "\033[${count}A\033[J"
+          echo -ne "\033[$((count + 1))A\033[J"
           log_error "Selection cancelled"
         fi
         ;;
@@ -65,31 +62,16 @@ select_option() {
       "j") cur=$(( (cur + 1) % count ));;
       "") break ;;
       "q")
-        echo -ne "\033[${count}A\033[J"
+        echo -ne "\033[$((count + 1))A\033[J"
         log_error "Selection cancelled"
         ;;
     esac
     echo -ne "\033[${count}A"
   done
   
-  echo -ne "\033[2A\033[J"
+  echo -ne "\033[$((count + 1))A\033[J"
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   export SELECTED_OPT="${options[$cur]}"
-}
-
-inject_anchor_context() {
-  local anchors_dir="$PROJECT_ROOT/scripts/assets/anchors"
-  local target="$SANDBOX/GEMINI.md"
-  
-  local anchor_name="${ANCHOR_REPO%-template}"
-  local anchor_source="$anchors_dir/${anchor_name}.md"
-
-  if [ -f "$anchor_source" ]; then
-    cp "$anchor_source" "$target"
-    log_info "Injected Identity Anchor: $(basename "$anchor_source")"
-  else
-    log_warn "No specific identity anchor found for ${anchor_name} (derived from ${ANCHOR_REPO}). Skipping injection."
-  fi
 }
 
 clone_anchor() {
@@ -111,8 +93,6 @@ clone_anchor() {
     git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify > /dev/null
   )
   log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
-  
-  inject_anchor_context
 }
 
 setup_ssh() {
@@ -232,8 +212,6 @@ execute_stage_and_commit() {
   stage_setup
   popd > /dev/null
   
-  log_info "Sandbox ready"
-
   if [ -z "$GEMINI_SKIP_AUTO_COMMIT" ]; then
     log_step "Staging environment changes"
     (
@@ -268,7 +246,7 @@ handle_post_execution_prompt() {
   fi
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Ready: ${WHITE}cd $SANDBOX && gemini /$current_namespace.$current_category:$current_command${NC}"
+  echo -e "${GREEN}✓ Sandbox Ready${NC}"
 }
 
 main() {
@@ -276,6 +254,11 @@ main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   local PROJECT_ROOT
   PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+  if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
+     echo -e "${GREY}┌${NC}"
+     log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
+  fi
   
   local SANDBOX="$PROJECT_ROOT/.sandbox"
   local STAGES_DIR="$PROJECT_ROOT/scripts/stages"

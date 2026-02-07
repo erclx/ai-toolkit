@@ -1,3 +1,4 @@
+Pushback
 agentic
 arch
 changelog
@@ -11,6 +12,8 @@ headerless
 lockfiles
 logicgate
 oneline
+sandboxed
+sandboxing
 scoutreport
 ssot
 yolo
