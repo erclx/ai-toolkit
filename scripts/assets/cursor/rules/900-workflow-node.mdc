@@ -11,42 +11,34 @@ priority: 900
 
 ### 1. Planning Phase
 
-- Analyze the request and output a concise, numbered implementation plan.
-- Identify strictly necessary file creations, modifications, and deletions.
-- Wait for user confirmation before executing complex or destructive actions.
+- Analyze the request and output a numbered implementation plan.
+- Identify strictly necessary file creations and modifications.
+- Wait for user confirmation before executing destructive actions.
 
 ### 2. Execution Phase
 
-- Implement changes iteratively, focusing on one logical concern at a time.
-- Apply the "Zero-Bloat" principle to all code changes.
-- Ensure all new files adhere to strict file hygiene (one newline at EOF).
+- Implement changes iteratively focusing on one logical concern.
+- Apply the Zero-Bloat principle to all code changes.
+- Ensure all new files adhere to strict file hygiene.
 
 ### 3. Verification Phase (Fail-Fast Sequence)
 
-- **Step 1 (Hygiene):** Run `bun run format` to enforce style, THEN `bun run lint:fix`.
-- **Step 2 (Types):** Run `bun run typecheck` to ensure contract safety.
-- **Step 3 (Test):** Run `bun run test` to verify logic isolation.
-- **Step 4 (Build):** Run `bun run build` to validate the full bundle chain.
-- **Correction:** If any step fails, stop and fix immediately.
+- **Step 1 (Style Compliance):** Execute `bun run format`. Stop immediately if it fails.
+- **Step 2 (Static Analysis):** Execute `bun run lint:fix`. Stop immediately if it fails.
+- **Step 3 (Type Safety):** Execute `bun run typecheck`. Stop immediately if it fails.
+- **Step 4 (Logic Verification):** Execute `bun run test`. Stop immediately if it fails.
+- **Step 5 (Integration):** Execute `bun run build`. Stop immediately if it fails.
 
-### 4. Handoff Phase (The Stage-Gate)
+### 4. Handoff Phase
 
-- **Stage:** Use `git add <file>` for the verified files (never use dot).
-- **Status:** Run `git status` to confirm the staging area is correct.
-- **STOP:** Do **NOT** commit.
-- **Signal:** Inform the user that verification passed and files are staged for review.
-
-## DEFINITION OF DONE
-
-- Formatting and Linting must pass.
-- TypeScript compilation must succeed.
-- Tests must pass.
-- Build must succeed.
-- Files are **STAGED** (Green in git status).
+- Stage verified files using `git add` individually.
+- Confirm the staging area status with `git status`.
+- Signal completion to the user without committing.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not stop at code generation; you MUST Verify and Stage.
-- Do not run a heavy "verify-all" script if a faster "lint" script fails first.
-- **Do not execute `git commit`.** This is a human-only privilege.
-- Do not leave "TODO" comments; implement the logic or reject the feature.
+- Do not run the heavy `bun run check` script first; use the fail-fast sequence.
+- Do not modify code without a preceding plan step.
+- Do not commit code that fails any verification step.
+- Do not execute `git commit` as an agent.
+- Do not proceed to the next step if the previous one fails.
