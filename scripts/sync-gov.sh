@@ -13,9 +13,11 @@ log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
 log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
 
+ENGINE_SCRIPT="scripts/build/compiler.sh"
+
 check_dependencies() {
-  if [ ! -f "scripts/compile-rules.sh" ] || [ ! -f "scripts/compile-docs.sh" ]; then
-    log_error "Compiler scripts not found in scripts/"
+  if [ ! -f "$ENGINE_SCRIPT" ]; then
+    log_error "Compiler engine not found at: $ENGINE_SCRIPT"
   fi
 }
 
@@ -23,10 +25,24 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  log_step "Syncing Governance Layer"
+  
+  log_step "Compiling Governance Rules"
+  "$ENGINE_SCRIPT" \
+    "scripts/assets/cursor/rules" \
+    ".cursor/rules" \
+    "scripts/assets/templates/rules.toml.template" \
+    "commands/gov/rules.toml" \
+    "{{INJECT_ALL_RULES}}" \
+    ".mdc"
 
-  ./scripts/compile-rules.sh
-  ./scripts/compile-docs.sh
+  log_step "Compiling Project Documentation"
+  "$ENGINE_SCRIPT" \
+    "scripts/assets/docs" \
+    "docs" \
+    "scripts/assets/templates/docs.toml.template" \
+    "commands/gov/docs.toml" \
+    "{{INJECT_DOCS}}" \
+    ".md"
 
   log_step "Staging Artifacts"
 
@@ -44,7 +60,7 @@ main() {
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Governance artifacts staged${NC}"
-  echo -e "${GREY}  To finish: git add scripts/assets/ && git commit${NC}"
+  echo -e "${GREY}  Next: git add scripts/assets/ && git commit${NC}"
 }
 
 main "$@"
