@@ -31,8 +31,7 @@ Install the project rules:
 
 | Command | Action |
 | --- | --- |
-| `npm run build:docs` | Compiles documentation |
-| `npm run build:rules` | Compiles governance rules |
+| `npm run sync` | Compiles governance rules and documentation |
 | `npm run lint:spelling` | Checks spelling across the project |
 
 ---
