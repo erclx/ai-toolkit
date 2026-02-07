@@ -10,11 +10,8 @@ GREY='\033[0;90m'
 NC='\033[0m'
 
 log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-
 log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
-
 log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
-
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 show_help() {
@@ -215,8 +212,6 @@ execute_stage_and_commit() {
   stage_setup
   popd > /dev/null
   
-  log_info "Sandbox ready"
-
   if [ -z "$GEMINI_SKIP_AUTO_COMMIT" ]; then
     log_step "Staging environment changes"
     (
@@ -251,7 +246,7 @@ handle_post_execution_prompt() {
   fi
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Ready: ${WHITE}cd $SANDBOX && gemini /$current_namespace.$current_category:$current_command${NC}"
+  echo -e "${GREEN}✓ Sandbox Ready${NC}"
 }
 
 main() {
@@ -259,6 +254,11 @@ main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   local PROJECT_ROOT
   PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+  if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
+     echo -e "${GREY}┌${NC}"
+     log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
+  fi
   
   local SANDBOX="$PROJECT_ROOT/.sandbox"
   local STAGES_DIR="$PROJECT_ROOT/scripts/stages"
