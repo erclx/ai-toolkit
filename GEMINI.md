@@ -31,8 +31,8 @@ Install the project rules:
 
 | Command | Action |
 | --- | --- |
-| `npm run sync` | Compiles governance rules and documentation |
-| `npm run lint:spelling` | Checks spelling across the project |
+| `bun run sync` | Compiles governance rules and documentation |
+| `bun run lint:spelling` | Checks spelling across the project |
 
 ---
 
