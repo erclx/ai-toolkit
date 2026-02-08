@@ -1,11 +1,11 @@
 ---
-description: enforce vite-react-template architecture and component patterns
+description: enforce opinionated react architecture and component patterns
 globs: "**/*.tsx,**/*.ts"
 alwaysApply: false
 priority: 200
 ---
 
-# REACT TEMPLATE ARCHITECTURE
+# REACT ARCHITECTURE STANDARDS
 
 ## HARD REQUIREMENTS
 
