@@ -3,6 +3,7 @@ fastapi
 gitattributes
 heredoc
 mypy
+nextjs
 nvmrc
 nullglob
 pip
