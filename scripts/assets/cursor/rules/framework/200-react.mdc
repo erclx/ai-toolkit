@@ -17,6 +17,7 @@ priority: 200
 - Use functional components exclusively with named exports.
 - Extract complex logic and effect chains into custom hooks.
 - Define strict TypeScript interfaces for props immediately above the component.
+- Prioritize semantic HTML (`<main>`, `<section>`, `<button>`) over generic `<div>` wrappers.
 
 ## NEGATIVE CONSTRAINTS
 
