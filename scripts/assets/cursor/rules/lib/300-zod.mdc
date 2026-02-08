@@ -1,0 +1,23 @@
+---
+description: enforce zod schema validation and type inference standards
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+priority: 300
+---
+
+# ZOD VALIDATION STANDARDS
+
+## HARD REQUIREMENTS
+
+- Define strict schemas for all API responses, form inputs, and environment variables.
+- Use `z.infer<typeof Schema>` to generate TypeScript types from schemas (Single Source of Truth).
+- Co-locate schemas with the data consuming functions or in `src/schemas/` if shared.
+- Use `.parse()` for strict validation where failure should block execution (e.g., env vars).
+- Use `.safeParse()` for runtime data where graceful error handling is required (e.g., forms).
+
+## NEGATIVE CONSTRAINTS
+
+- Do not manually type interfaces that duplicate Zod schemas; infer them.
+- Do not use `z.any()` unless validating a truly unknown external blob; prefer `z.unknown()`.
+- Do not use loose validation (e.g., `z.string()`) for specific formats (emails, UUIDs); use specific validators.
+- Do not export the Zod schema if only the inferred type is needed publicly.
