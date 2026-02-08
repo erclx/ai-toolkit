@@ -46,146 +46,22 @@ Context: You are installing the official project reference documentation (The "L
 echo '📦 Installing Assets...'
 mkdir -p docs
 
-cat << 'GEMINI_EOF' > docs/coding-standards.md
-# CODING STANDARDS REFERENCE
-
-## STATUS
-
-- **Version**: 1.0.0
-- **Owner**: System Architect
-- **Last Updated**: 2026-02-05
-
-## PRINCIPLES
-
-- **Type Safety**: TypeScript strict mode is non-negotiable; explicit types are required for all boundaries.
-- **Immutability**: Prefer `const` and immutable data structures; avoid side effects in functions.
-- **Readability**: Prioritize \"Scan-ability\" over \"Cleverness\"; use guard clauses to reduce nesting.
-- **Modularity**: Adhere to the Single Responsibility Principle; keep components and functions small (~100 lines max).
-- **Export Strategy**: Use **Named Exports** exclusively to enforce consistent naming across imports.
-
-## COMMANDS
-
-```bash
-# Analyze code for pattern violations
-bun run lint
-
-# Automatically fix formatting and auto-fixable lint errors
-bun run lint --fix
-
-# Type check without emitting files
-tsc --noEmit
-```
-
-## EXAMPLES
-
-### 1. Component Definition
-
-#### ✅ Correct Pattern
-
-```tsx
-interface ButtonProps {
-  label: string;
-  onClick: () => void;
-  variant?: 'primary' | 'secondary';
-}
-
-export const Button = ({ label, onClick, variant = 'primary' }: ButtonProps) => {
-  return (
-    <button className={`btn-${variant}`} onClick={onClick}>
-      {label}
-    </button>
-  );
-};
-```
-
-#### ❌ Incorrect Pattern
-
-```tsx
-// Avoid default exports and \"any\" typing
-export default function Button(props: any) {
-  return <button onClick={props.click}>{props.text}</button>;
-}
-```
-
-### 2. Control Flow (Guard Clauses)
-
-#### ✅ Correct Pattern
-
-```typescript
-export const processUser = (user: User | null): string => {
-  if (!user) {
-    return 'Guest';
-  }
-
-  if (!user.isActive) {
-    return 'Inactive';
-  }
-
-  return user.name;
-};
-```
-
-#### ❌ Incorrect Pattern
-
-```typescript
-export const processUser = (user: User | null): string => {
-  if (user) {
-    if (user.isActive) {
-      return user.name;
-    } else {
-      return 'Inactive';
-    }
-  } else {
-    return 'Guest';
-  }
-};
-```
-
-### 3. Naming Conventions
-
-#### ✅ Correct Pattern
-
-```typescript
-const isAuthenticationValid = true;
-const maxRetryCount = 3;
-const fetchUserData = async () => {};
-```
-
-#### ❌ Incorrect Pattern
-
-```typescript
-// Avoid vague or Hungarian notation
-const valid = true;
-const intCount = 3;
-const getUser = async () => {}; // \"get\" implies synchronous access; \"fetch\" implies async
-```
-
-## CONSTRAINTS
-
-- **No `any`**: The use of `any` is strictly prohibited. Use `unknown` or specific generics if necessary.
-- **No Console Logs**: Production code must not contain `console.log`. Use a proper logger.
-- **No Magic Numbers**: Extract raw numbers and strings into named constants.
-- **Comments**: Do not comment \"what\" the code does (logic). Only comment \"why\" it does it (intent/business context).
-- **File Hygiene**: All files must end with exactly one newline.
-GEMINI_EOF
-echo '  + docs/coding-standards.md'
-
 cat << 'GEMINI_EOF' > docs/conventional-commits.md
 # CONVENTIONAL COMMITS REFERENCE
 
 ## STATUS
 
-- **Version**: 1.0.0
+- **Current**: 1.0.0
 - **Owner**: Release Manager
-- **Last Updated**: 2026-02-05
+- **Last Updated**: 2026-02-08
 
 ## PRINCIPLES
 
-- **Atomic Structure**: One commit per logical change. If you can't describe it in one sentence, split the commit.
-- **Semantic Types**: Use standard types (`feat`, `fix`, `chore`, `refactor`, `docs`, `perf`, `test`) to drive automated versioning.
-- **Lowercase Enforcement**: The entire subject line must be lowercase to ensure visual consistency in logs.
-- **Imperative Mood**: Write as if giving a command (e.g., \"add field\" not \"added field\").
-- **Scope Specificity**: Use single-word scopes that map to the directory or component modified.
+- Structure commits atomically, ensuring one logical change per commit.
+- Use standard semantic types (`feat`, `fix`, `chore`, `refactor`, `docs`, `perf`, `test`) to drive automated versioning.
+- Enforce lowercase subject lines to ensure visual consistency in logs.
+- Write subject lines in the imperative mood (e.g., \"add field\" not \"added field\").
+- Use single-word scopes that map to the directory or component modified.
 
 ## COMMANDS
 
@@ -229,12 +105,86 @@ docs(readme): update installation guide.
 
 ## CONSTRAINTS
 
-- **Subject Length**: Maximum 72 characters.
-- **No Filler**: Avoid words like \"updates\", \"changes\", \"tweaks\" in the subject. Be specific (e.g., \"resize\", \"rename\", \"delete\").
-- **No WIP**: Do not commit \"work in progress\" to shared branches. Squash them locally first.
-- **Body Requirement**: If the change is complex, add a body paragraph separated by a blank line.
+- Limit subject lines to a maximum of 72 characters.
+- Avoid filler words like \"updates\", \"changes\", or \"tweaks\" in the subject.
+- Do not commit \"work in progress\" to shared branches; squash them locally first.
+- Add a body paragraph separated by a blank line for complex changes.
 GEMINI_EOF
 echo '  + docs/conventional-commits.md'
+
+cat << 'GEMINI_EOF' > docs/pull-request.md
+# PULL REQUESTS REFERENCE
+
+## STATUS
+
+- **Current**: 1.0.1
+- **Owner**: Lead Engineer
+- **Last Updated**: 2026-02-08
+
+## PRINCIPLES
+
+- Document *only* what currently exists in the code in PR descriptions; reject future promises or \"work in progress\" narratives.
+- Write all bullet points and titles in the imperative mood (e.g., \"Add handler\" not \"Added handler\").
+- Exclude meta-commentary or conversational filler (e.g., \"This PR,\" \"I have,\" \"Included are\").
+- Treat code diffs as raw data; descriptions must objectively reflect the diff without marketing adjectives (e.g., \"robust,\" \"seamless\").
+
+## COMMANDS
+
+```bash
+# generate PR description using the git agent
+gemini /commands/git/pr.toml
+
+# Manual creation via GitHub CLI (adhering to standards)
+gh pr create --title \"type(scope): subject\" --body-file .gemini/.tmp/pr-body.md --draft
+```
+
+## EXAMPLES
+
+### ✅ Correct Pattern
+
+```markdown
+## Summary
+Implement JWT validation middleware to secure API endpoints.
+
+## Key Changes
+- Add `validateToken` function to `auth/middleware.ts`
+- Inject middleware into `/api/v1/user` routes
+- Update error handling to return 401 on invalid signatures
+
+## Technical Context
+- Uses `jose` library for stateless verification to reduce db load
+
+## Testing
+- `npm test tests/auth/middleware.test.ts`
+- Verified expired token returns 401 via Postman
+```
+
+### ❌ Incorrect Pattern
+
+```markdown
+## Summary
+This PR updates the auth system to be more robust and seamless. I worked hard on this.
+
+## Key Changes
+- I added a new file for validation
+- Changed the routes
+- Fixed some bugs that were annoying
+
+## Technical Context
+- It is a game-changer for our security.
+
+## Testing
+- Tested locally.
+```
+
+## CONSTRAINTS
+
+- MUST follow `<type>(<scope>): <subject>` title format (strictly lowercase, max 72 chars).
+- FORBIDDEN words include \"robust,\" \"seamless,\" \"enhanced,\" \"allows,\" and \"game-changer.\"
+- MUST ONLY include visuals if `<DIFF_STATS>` indicates changes to UI/CSS files.
+- FORBIDDEN to use past tense in summary or key changes (e.g., \"Added\" -> \"Add\").
+GEMINI_EOF
+echo '  + docs/pull-request.md'
 
 echo '✅ Installation complete.'
 
