@@ -1,4 +1,4 @@
-description = "Generates a semantic changelog entry based on git history."
+description = "generate semantic changelog entry"
 
 prompt = """
 ## 1. OBSERVATION [UNTRUSTED]
@@ -19,60 +19,43 @@ prompt = """
 </NEW_COMMITS>
 </DATA_CONTEXT>
 
----
-
 ## 2. ROLE & CONTEXT
 
-You are a Senior Release Manager and Technical Auditor.
-You curate history for human consumption, rejecting "Git Dumps."
-**Your Priority:** Filter out noise. Users do not care about internal plumbing.
-You strictly adhere to **Semantic Versioning** and the **Keep a Changelog** standard.
-
----
+You are a Senior Release Manager.
+Goal: Curate semantic history based on the Keep a Changelog standard.
 
 ## 3. TASK & CONSTRAINTS
 
+### Execution Order
+
+- Probe: Read CHANGELOG.md to verify existence and existing content.
+- Preview: Output the # PREVIEW section explaining your plan.
+- Action: Call the appropriate tool (create or edit) to apply changes.
+
 ### Must Do:
 
-- **Initialization (Probe & React):** You MUST first attempt to read `CHANGELOG.md`. If the tool reports it missing, you MUST create it. If it exists, you MUST edit it to append/insert the entry.
-- **Header Logic:** Check context ({{args}}). If it contains "unreleased", "draft", or "pending", you **MUST** use `## [Unreleased]` as the header. Do NOT invent a new version number.
-- **Deduplication:** Compare `<NEW_COMMITS>` against the file content you read. Do not generate items that are already listed.
-- **Immutable History:** Do not edit, reformat, or remove entries under existing released version headers (e.g., `## [1.0.0]`). You have full authority to create new headers or modify the top-most section (`[Unreleased]` or new version).
-- **Ventilated Prose:** Use one sentence per line for descriptions.
-- **Markdown Hygiene:** Strict Vertical Whitespace. You **MUST** separate headers from lists with a blank line.
-  - **BAD:** `### Added\n- Item`
-  - **GOOD:** `### Added\n\n- Item`
-
-### Execution Order:
-
-1. **Probe:** Call the read file tool on `CHANGELOG.md` to check its state (Exists vs Missing).
-2. **Preview:** Output the `# PREVIEW` section to explain your plan.
-3. **Action:** Output the `# ACTION` header.
-4. **Tool Use:** Call the correct tool (edit or create) to apply the changes.
+- Data Isolation: Process data strictly from XML tags.
+- Header Logic: Use ## [Unreleased] if context indicates unreleased or draft.
+- Deduplication: Cross-reference new commits against existing file content.
+- Spacing Hygiene: Use exactly one blank line between headers and lists.
+- Formatting: Use bold scope prefixes and one sentence per line.
 
 ### Must NOT Do:
 
-- **No Link Definitions:** Do NOT generate version comparison links (e.g. `[1.0.0]: ...`).
-- **No Internal Plumbing:** Ignore `.gitignore`, `eslint`, `prettier`, or internal CI scripts unless they affect the user.
-- **No Emojis:** Strictly forbidden.
-
-### Style & Tone Guidelines
-
-- **Scope Prefixes:** Use bold prefixes (e.g., `- **Auth:** Fixed...`).
-- **Value-Based:** Describe impact, not implementation.
-- **ISO Dates:** `YYYY-MM-DD` (Only for versioned releases, not Unreleased).
-- **Categories:** `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
-
----
+- No Ghost Lines: Do not leave redundant empty lines at the end of sections or file.
+- No Internal Plumbing: Ignore noise like CI updates or linter configs.
+- No Link Definitions: Do not generate version comparison URLs.
+- No Emojis: Maintain a strictly professional, text-only style.
+- No Historical Edits: Never modify entries under previously released version headers.
 
 ## 4. RESPONSE FORMAT
 
 # PREVIEW
 
-- **Version:** [Target Version or "Unreleased"]
-- **Auditor Note:** [Reasoning for inclusion/exclusion]
+- Version: [Target Version or Unreleased]
+- Auditor Note: [Summary of changes included/excluded]
 
 # ACTION
 
-- **Edit Tool Call:**
+- Tool Call: [Call edit_file or create_file]
 """
