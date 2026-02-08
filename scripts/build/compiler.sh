@@ -38,11 +38,11 @@ build_payload() {
   echo "mkdir -p $TARGET_DIR_NAME" >> "$payload_file"
   
   local count=0
-  shopt -s nullglob
-  for file in "$SOURCE_DIR"/*"$EXTENSION"; do
-    if [ -f "$file" ]; then
+  
+  while IFS= read -r file; do
       local filename
       filename=$(basename "$file")
+      local rel_path="${file#$SOURCE_DIR/}"
       
       echo "" >> "$payload_file"
       echo "cat << 'GEMINI_EOF' > $TARGET_DIR_NAME/$filename" >> "$payload_file"
@@ -51,11 +51,9 @@ build_payload() {
       echo "GEMINI_EOF" >> "$payload_file"
       
       echo "echo '  + $TARGET_DIR_NAME/$filename'" >> "$payload_file"
-      log_info "$filename"
+      log_info "$rel_path"
       count=$((count + 1))
-    fi
-  done
-  shopt -u nullglob
+  done < <(find "$SOURCE_DIR" -type f -name "*$EXTENSION" | sort)
   
   echo "" >> "$payload_file"
   echo "echo '✅ Installation complete.'" >> "$payload_file"
