@@ -1,5 +1,5 @@
 ---
-description: Enforce_strict_TypeScript_and_modern_syntax_standards
+description: enforce strict typescript and modern syntax standards
 globs: "**/*.ts,**/*.tsx"
 alwaysApply: false
 priority: 100
