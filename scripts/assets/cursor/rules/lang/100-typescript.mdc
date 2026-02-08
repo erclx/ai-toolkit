@@ -1,5 +1,5 @@
 ---
-description: enforce strict typescript and modern syntax standards
+description: enforce strict typescript and template syntax standards
 globs: "**/*.ts,**/*.tsx"
 alwaysApply: false
 priority: 100
@@ -9,17 +9,16 @@ priority: 100
 
 ## HARD REQUIREMENTS
 
-- Enforce explicit types or strict inference for all variables and arguments.
-- Use `interface` for all object definitions and public API contracts.
-- Use `unknown` instead of `any` for uncertain data to force validation.
-- Handle all promises via `await` or return them explicitly.
-- Prefer `readonly` properties and `ReadonlyArray` for immutable data.
-- Use absolute imports over relative paths.
+- Enforce explicit types or strict inference using `unknown` over `any`.
+- Use `interface` for all object definitions and props.
+- Use `Promise.all()` for independent operations to avoid serial waterfalls.
+- Prefer `readonly` properties for data objects.
+- Use absolute imports mapping `@/` to `src/`.
 
 ## NEGATIVE CONSTRAINTS
 
-- Reject the `any` type absolutely; use generic constraints if necessary.
-- Do not use TypeScript `enum`; use constant objects or union types.
-- Do not prefix interfaces with `I` or types with `T`.
-- Do not use non-null assertions (`!`) unless absolutely necessary.
-- Do not use `namespace`; use ES6 modules.
+- Reject the `any` type absolutely.
+- Do not use `enum`; use constant objects or unions.
+- Do not use `return await` inside try/catch blocks.
+- Do not use non-null assertions.
+- Do not prefix interfaces with `I`.
