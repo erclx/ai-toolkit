@@ -1,0 +1,23 @@
+---
+description: enforce code security and secret management standards
+alwaysApply: true
+priority: 800
+---
+
+# SECURITY STANDARDS
+
+## HARD REQUIREMENTS
+
+- Import secrets strictly from the environment configuration module (e.g., `src/config/env.ts`).
+- Validate all external inputs (API params, URL queries) using a schema library (Zod) before use.
+- Add `rel="noopener noreferrer"` to all external links (`<a target="_blank">`).
+- Sanitize all data rendered via `dangerouslySetInnerHTML` or equivalent raw HTML directives.
+- Use `npm audit` or `bun pm trust` to verify new dependencies before installation.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not commit hardcoded secrets, keys, or tokens (detect via high-entropy string patterns).
+- Do not use `eval()` or `new Function()` execution patterns.
+- Do not expose internal error stack traces to the client-side console in production.
+- Do not use `Math.random()` for cryptographic operations; use `crypto.getRandomValues()`.
+- Do not disable ESLint security rules (e.g., `eslint-disable-next-line`) without a written justification.
