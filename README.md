@@ -25,17 +25,15 @@ Install the governance rules:
 - `/ai-toolkit.setup:rules` - Install Cursor governance rules in the local project.
 - `/ai-toolkit.setup:cursor` - Create a sandbox to test governance rules.
 
-### Versioning and writing
+### Versioning and git
 
 - `/ai-toolkit.git:commit` - Read staged changes to write atomic conventional commits.
 - `/ai-toolkit.git:pr` - Write a documentation-focused PR description and open a draft.
-- `/ai-toolkit.write:changelog` - Build a clean release history for humans.
+- `/ai-toolkit.git:changelog` - Build a clean release history for humans.
 
 ### Quality and linting
 
 - `/ai-toolkit.lint:spelling` - Fix spelling errors and update dictionaries.
-- `/ai-toolkit.setup:cspell` - Set up CSpell, modular dictionaries, and git hygiene.
-- `/ai-toolkit.setup:gemini` - Configure the .gemini folder with zero-trust architecture.
 
 ## Patterns
 
