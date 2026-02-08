@@ -3,6 +3,9 @@ fastapi
 gitattributes
 heredoc
 mypy
+nextjs
+noopener
+noreferrer
 nvmrc
 nullglob
 pip
