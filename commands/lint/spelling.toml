@@ -1,4 +1,4 @@
-description = "Agentic session to triage spellcheck errors and update dictionaries."
+description = "triage spellcheck errors and update dictionaries"
 
 prompt = """
 ## 1. OBSERVATION
@@ -8,44 +8,37 @@ System State: !{ls -F}
 Project Terms: !{cat .cspell/project-terms.txt 2>/dev/null || echo "FILE_MISSING"}
 Tech Stack: !{cat .cspell/tech-stack.txt 2>/dev/null || echo "FILE_MISSING"}
 
----
-
 ## 2. ROLE & CONTEXT
 
 You are a Senior DevOps Engineer specializing in Quality Assurance.
 Goal: Analyze spellcheck errors and intelligently update the dictionaries.
 
----
-
 ## 3. TASK & CONSTRAINTS
 
 ### Phase 1: Execution & Analysis
-1.  **Determine Command:**
-    -   **Node/Bun:** Check if a spelling script exists. If not, fallback to Direct Invocation: `bun x cspell "**" --no-progress` or `npx cspell "**" --no-progress`.
-    -   **Python:** Check for `cspell` config. Fallback: `cspell "**" --no-progress`.
-2.  **Execute:** Run the determined command.
-3.  **Parse:** Identify "Unknown word" errors from the output.
 
-### Phase 2: Preview & Planning (MANDATORY)
-4.  **Categorize:** Group "Unknown words" into:
-    -   **Tech Stack:** (Libraries, tools, frameworks, e.g., "pydantic", "fastapi")
-    -   **Project Terms:** (Internal jargon, codenames, e.g., "scoutreport", "gemini")
-    -   **Suspected Typos:** (Obvious errors, e.g., "pydanttic", "functionn")
-5.  **Deduplicate:** Filter out words already in the existing files.
-6.  **User Review:** **Output a markdown table/list** showing exactly what you plan to add and what you will ignore.
+- Determine Command: Prioritize existing project scripts (e.g., `npm run lint:spelling`) over global cspell.
+- Execute: Run the detected spelling check command on all relevant files.
+- Parse: Identify unknown word errors from the command output.
+
+### Phase 2: Preview & Planning
+
+- Categorize: Group words into Tech Stack, Project Terms, or Suspected Typos.
+- Deduplicate: Filter out words already present in existing dictionaries.
+- User Review: Output a markdown table showing planned additions and ignored typos.
 
 ### Phase 3: Action
-7.  **Apply:** Use `edit_file` to append the new words to the respective `.txt` files.
-8.  **Sort:** Ensure the final list in the file is strictly ALPHABETICAL (A-Z).
+
+- Apply: Use edit_file to append new words to the correct .txt files.
+- Sort: Ensure final dictionary lists are strictly alphabetical (A-Z).
 
 ### Must NOT Do:
-- **No Blind Adds:** If a word looks like a genuine typo, DO NOT add it. List it in the "Suspected Typos" section of your preview.
-- **NO BRITTLE SCRIPTS:** Do NOT use `sed`, `awk`, or `echo >`. Use `edit_file`.
 
----
+- No Blind Adds: Do not add words that appear to be genuine typos.
+- No Brittle Scripts: Do not use sed or awk; use native file editing tools.
 
 ## 4. RESPONSE STRATEGY
 
-- **Preview:** <Display the plan: Words to Add vs. Typos to Reject>
-- **Action:** <Call edit_file to update dictionaries>
+- Preview: <Display the plan: Words to Add vs. Typos to Reject>
+- Action: <Call edit_file to update dictionaries>
 """
