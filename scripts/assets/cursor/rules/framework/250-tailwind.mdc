@@ -1,0 +1,26 @@
+---
+description: enforce tailwind v4 css standards and utility-first patterns
+globs: "**/*.tsx,**/*.jsx,**/*.html,**/*.css"
+alwaysApply: false
+priority: 250
+---
+
+# TAILWIND CSS V4 STANDARDS
+
+## HARD REQUIREMENTS
+
+- Use utility classes for all layout, spacing, and typography.
+- Use `flex` and `grid` for layouts; avoid manual floats or positioning.
+- Use the `cn()` utility for conditional class application.
+- Sort classes logically: Layout -> Box Model -> Typography -> Visuals -> Interaction.
+- Define theme extensions using CSS variables in the main CSS file via `@theme`.
+- Use `gap-*` utilities instead of margins for sibling spacing.
+- Use logical properties like `ps-*` and `pe-*` for RTL support.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not use `tailwind.config.js` for theming; use native CSS variables.
+- Do not use `@apply` in CSS files; keep utilities in the markup.
+- Do not use arbitrary values (e.g., `w-[123px]`) unless adhering to a strict design spec.
+- Do not use `style` props for static styling.
+- Do not use container queries without checking browser support targets.
