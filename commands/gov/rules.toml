@@ -174,7 +174,7 @@ priority: 300
 GEMINI_EOF
 echo '  + .cursor/rules/300-testing-ts.mdc'
 
-cat << 'GEMINI_EOF' > .cursor/rules/900-workflow-node.mdc
+cat << 'GEMINI_EOF' > .cursor/rules/900-node.mdc
 ---
 description: enforce node workflow verification and staging handoff
 globs: \"package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx\"
@@ -198,7 +198,7 @@ priority: 900
 - Do not proceed to subsequent verification steps if a previous step fails.
 - Do not modify code without a confirmed plan.
 GEMINI_EOF
-echo '  + .cursor/rules/900-workflow-node.mdc'
+echo '  + .cursor/rules/900-node.mdc'
 
 echo '✅ Installation complete.'
 
