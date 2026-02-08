@@ -1,5 +1,5 @@
 ---
-description: Enforce_testing_standards_and_framework_isolation
+description: enforce testing standards and framework isolation
 globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
 alwaysApply: false
 priority: 300

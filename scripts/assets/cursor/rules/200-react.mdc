@@ -1,5 +1,5 @@
 ---
-description: Enforce_React_architecture_and_component_patterns
+description: enforce react architecture and component patterns
 globs: "**/*.tsx,**/*.ts"
 alwaysApply: false
 priority: 200
