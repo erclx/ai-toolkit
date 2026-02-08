@@ -2,17 +2,17 @@
 
 ## STATUS
 
-- **Version**: 1.0.0
+- **Current**: 1.0.0
 - **Owner**: Release Manager
-- **Last Updated**: 2026-02-05
+- **Last Updated**: 2026-02-08
 
 ## PRINCIPLES
 
-- **Atomic Structure**: One commit per logical change. If you can't describe it in one sentence, split the commit.
-- **Semantic Types**: Use standard types (`feat`, `fix`, `chore`, `refactor`, `docs`, `perf`, `test`) to drive automated versioning.
-- **Lowercase Enforcement**: The entire subject line must be lowercase to ensure visual consistency in logs.
-- **Imperative Mood**: Write as if giving a command (e.g., "add field" not "added field").
-- **Scope Specificity**: Use single-word scopes that map to the directory or component modified.
+- Structure commits atomically, ensuring one logical change per commit.
+- Use standard semantic types (`feat`, `fix`, `chore`, `refactor`, `docs`, `perf`, `test`) to drive automated versioning.
+- Enforce lowercase subject lines to ensure visual consistency in logs.
+- Write subject lines in the imperative mood (e.g., "add field" not "added field").
+- Use single-word scopes that map to the directory or component modified.
 
 ## COMMANDS
 
@@ -56,7 +56,7 @@ docs(readme): update installation guide.
 
 ## CONSTRAINTS
 
-- **Subject Length**: Maximum 72 characters.
-- **No Filler**: Avoid words like "updates", "changes", "tweaks" in the subject. Be specific (e.g., "resize", "rename", "delete").
-- **No WIP**: Do not commit "work in progress" to shared branches. Squash them locally first.
-- **Body Requirement**: If the change is complex, add a body paragraph separated by a blank line.
+- Limit subject lines to a maximum of 72 characters.
+- Avoid filler words like "updates", "changes", or "tweaks" in the subject.
+- Do not commit "work in progress" to shared branches; squash them locally first.
+- Add a body paragraph separated by a blank line for complex changes.
