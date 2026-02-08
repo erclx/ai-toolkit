@@ -48,7 +48,7 @@ mkdir -p .cursor/rules
 
 cat << 'GEMINI_EOF' > .cursor/rules/000-constitution.mdc
 ---
-description: Define_Senior_Architect_persona_and_core_philosophy
+description: define senior architect persona and core philosophy
 alwaysApply: true
 priority: 1
 ---
@@ -82,7 +82,7 @@ echo '  + .cursor/rules/000-constitution.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/100-typescript.mdc
 ---
-description: Enforce_strict_TypeScript_and_modern_syntax_standards
+description: enforce strict typescript and modern syntax standards
 globs: \"**/*.ts,**/*.tsx\"
 alwaysApply: false
 priority: 100
@@ -111,7 +111,7 @@ echo '  + .cursor/rules/100-typescript.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/200-react.mdc
 ---
-description: Enforce_React_architecture_and_component_patterns
+description: enforce react architecture and component patterns
 globs: \"**/*.tsx,**/*.ts\"
 alwaysApply: false
 priority: 200
@@ -145,7 +145,7 @@ echo '  + .cursor/rules/200-react.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/300-testing-ts.mdc
 ---
-description: Enforce_testing_standards_and_framework_isolation
+description: enforce testing standards and framework isolation
 globs: \"**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx\"
 alwaysApply: false
 priority: 300
@@ -176,7 +176,7 @@ echo '  + .cursor/rules/300-testing-ts.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/900-workflow-node.mdc
 ---
-description: Enforce_strict_node_workflow_verification_and_staging_handoff
+description: enforce node workflow verification and staging handoff
 globs: \"package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx\"
 alwaysApply: false
 priority: 900
@@ -184,41 +184,19 @@ priority: 900
 
 # NODE WORKFLOW STANDARDS
 
-## AGENT OPERATING PROCEDURE
+## HARD REQUIREMENTS
 
-### 1. Planning Phase
-
-- Analyze the request and output a numbered implementation plan.
-- Identify strictly necessary file creations and modifications.
-- Wait for user confirmation before executing destructive actions.
-
-### 2. Execution Phase
-
-- Implement changes iteratively focusing on one logical concern.
-- Apply the Zero-Bloat principle to all code changes.
-- Ensure all new files adhere to strict file hygiene.
-
-### 3. Verification Phase (Fail-Fast Sequence)
-
-- **Step 1 (Style Compliance):** Execute `bun run format`. Stop immediately if it fails.
-- **Step 2 (Static Analysis):** Execute `bun run lint:fix`. Stop immediately if it fails.
-- **Step 3 (Type Safety):** Execute `bun run typecheck`. Stop immediately if it fails.
-- **Step 4 (Logic Verification):** Execute `bun run test`. Stop immediately if it fails.
-- **Step 5 (Integration):** Execute `bun run build`. Stop immediately if it fails.
-
-### 4. Handoff Phase
-
-- Stage verified files using `git add` individually.
-- Confirm the staging area status with `git status`.
-- Signal completion to the user without committing.
+- Analyze requests and output a numbered implementation plan before execution.
+- Execute a fail-fast verification sequence: `` `bun run format` `` -> `` `bun run lint:fix` `` -> `` `bun run typecheck` `` -> `` `bun run test` `` -> `` `bun run build` ``.
+- Stage verified files using `` `git add` `` individually and verify with `` `git status` ``.
+- Signal completion to the user for manual review and commit.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not run the heavy `bun run check` script first; use the fail-fast sequence.
-- Do not modify code without a preceding plan step.
-- Do not commit code that fails any verification step.
-- Do not execute `git commit` as an agent.
-- Do not proceed to the next step if the previous one fails.
+- Do not execute the heavy `` `bun run check` `` script; use the individual fail-fast steps.
+- Do not execute `` `git commit` ``; hand off the staged environment to the user.
+- Do not proceed to subsequent verification steps if a previous step fails.
+- Do not modify code without a confirmed plan.
 GEMINI_EOF
 echo '  + .cursor/rules/900-workflow-node.mdc'
 
