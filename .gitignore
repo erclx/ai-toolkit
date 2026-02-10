@@ -9,6 +9,5 @@
 node_modules/
 
 # Tooling
-.cursor/rules/
 .gemini/*
 !.gemini/settings.json
