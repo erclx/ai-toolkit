@@ -1,70 +1,71 @@
-# PULL REQUESTS REFERENCE
+# PULL REQUEST REFERENCE
 
-## STATUS
+## RULES
 
-- **Current**: 1.0.1
-- **Owner**: Lead Engineer
-- **Last Updated**: 2026-02-08
-
-## PRINCIPLES
-
-- Document *only* what currently exists in the code in PR descriptions; reject future promises or "work in progress" narratives.
-- Write all bullet points and titles in the imperative mood (e.g., "Add handler" not "Added handler").
-- Exclude meta-commentary or conversational filler (e.g., "This PR," "I have," "Included are").
-- Treat code diffs as raw data; descriptions must objectively reflect the diff without marketing adjectives (e.g., "robust," "seamless").
-
-## COMMANDS
-
-```bash
-# generate PR description using the git agent
-gemini /commands/git/pr.toml
-
-# Manual creation via GitHub CLI (adhering to standards)
-gh pr create --title "type(scope): subject" --body-file .gemini/.tmp/pr-body.md --draft
-```
-
-## EXAMPLES
-
-### ✅ Correct Pattern
-
-```markdown
-## Summary
-Implement JWT validation middleware to secure API endpoints.
-
-## Key Changes
-- Add `validateToken` function to `auth/middleware.ts`
-- Inject middleware into `/api/v1/user` routes
-- Update error handling to return 401 on invalid signatures
-
-## Technical Context
-- Uses `jose` library for stateless verification to reduce db load
-
-## Testing
-- `npm test tests/auth/middleware.test.ts`
-- Verified expired token returns 401 via Postman
-```
-
-### ❌ Incorrect Pattern
-
-```markdown
-## Summary
-This PR updates the auth system to be more robust and seamless. I worked hard on this.
-
-## Key Changes
-- I added a new file for validation
-- Changed the routes
-- Fixed some bugs that were annoying
-
-## Technical Context
-- It is a game-changer for our security.
-
-## Testing
-- Tested locally.
-```
+- Title: Format as `<type>(<scope>): <subject>` with lowercase for `<type>`, `<scope>`, and first word of `<subject>` (72 characters maximum).
+- Voice: Use the imperative mood (e.g., "Add," "Fix," "Refactor") for all bullet points and the summary.
+- Summary Pattern: `<Action Verb> <Direct Object> to <Result>` (target 20 words; expand if necessary for clarity).
+- Required Sections: Include `## Summary`, `## Key Changes`, `## Technical Context`, and `## Testing`.
+- Section Specifications: Summary (target 20 words), Key Changes (bullet list of component changes), Technical Context (1-2 lines architectural reasoning), Testing (specific commands or test cases).
+- Content Focus: Document only what exists in the code right now; describe new behavior, not historical state.
 
 ## CONSTRAINTS
 
-- MUST follow `<type>(<scope>): <subject>` title format (strictly lowercase, max 72 chars).
-- FORBIDDEN words include "robust," "seamless," "enhanced," "allows," and "game-changer."
-- MUST ONLY include visuals if `<DIFF_STATS>` indicates changes to UI/CSS files.
-- FORBIDDEN to use past tense in summary or key changes (e.g., "Added" -> "Add").
+- Do not use filler phrases such as "This PR," "This commit," "Included are," or "I have."
+- Do not use marketing buzzwords like "seamless," "robust," "game-changer," "enhanced," or "allows."
+- Do not describe historical behavior or what the code "used to do"; describe the new behavior only.
+- Do not include future promises or speculative documentation.
+- Do not use generic or conversational opening sentences.
+- Do not include `## 📸 Visuals` unless UI or CSS files are modified in the changeset.
+
+## EXAMPLES
+
+### Template
+
+```markdown
+## Summary
+<Action Verb> <Direct Object> to <Result>.
+
+## Key Changes
+- <Verb> <component> (<reason if non-obvious>)
+- <Verb> <component>
+
+## Technical Context
+- <Architectural reasoning in 1-2 lines>
+
+## Testing
+- <Specific command or test case>
+- <Edge case verified>
+```
+
+### Correct
+
+```markdown
+## Summary
+Update auth middleware to enforce jwt expiration checks.
+
+## Key Changes
+- Add `verifyExpiration` utility to core logic
+- Refactor `AuthService` to handle 401 response codes
+
+## Technical Context
+- Migration to stateless session management for scalability
+
+## Testing
+- `npm run test:auth`
+- Verified expired token rejection in staging
+```
+
+### Incorrect
+
+```markdown
+## Summary
+This PR updates the authentication system to be more robust.
+
+## Key Changes
+- Updated auth middleware files
+- The old system used to check tokens differently
+
+## Testing
+- Tested manually
+```
