@@ -26,7 +26,7 @@ main() {
 
   echo -e "${GREY}┌${NC}"
   
-  log_step "Compiling Governance Rules"
+  log_step "Building Governance Rules"
   "$ENGINE_SCRIPT" \
     "scripts/assets/cursor/rules" \
     ".cursor/rules" \
@@ -35,7 +35,7 @@ main() {
     "{{INJECT_ALL_RULES}}" \
     ".mdc"
 
-  log_step "Compiling Project Documentation"
+  log_step "Building Project Documentation"
   "$ENGINE_SCRIPT" \
     "scripts/assets/docs" \
     "docs" \
@@ -44,7 +44,7 @@ main() {
     "{{INJECT_DOCS}}" \
     ".md"
 
-  log_step "Staging Artifacts"
+  log_step "Staging Build Artifacts"
 
   if git add commands/gov/rules.toml; then
     log_add "commands/gov/rules.toml"
@@ -59,7 +59,7 @@ main() {
   fi
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Governance artifacts staged${NC}"
+  echo -e "${GREEN}✓ Governance build complete${NC}"
   echo -e "${GREY}  Next: git add scripts/assets/ && git commit${NC}"
 }
 
