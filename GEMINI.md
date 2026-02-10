@@ -31,7 +31,7 @@ Install the project rules:
 
 | Command | Action |
 | --- | --- |
-| `bun run sync` | Compiles governance rules and documentation |
+| `bun run build:gov` | Compiles governance rules and documentation |
 | `bun run lint:spelling` | Checks spelling across the project |
 
 ---
