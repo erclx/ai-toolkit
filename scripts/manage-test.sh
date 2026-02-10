@@ -197,6 +197,11 @@ EOF
     )
   fi
 
+  if [ -d "$PROJECT_ROOT/scripts/assets/docs" ]; then
+    mkdir -p "$SANDBOX/docs"
+    cp -r "$PROJECT_ROOT/scripts/assets/docs/." "$SANDBOX/docs/"
+  fi
+
   mkdir -p "$SANDBOX/.gemini"
   cat <<EOF > "$SANDBOX/.gemini/settings.json"
 {
