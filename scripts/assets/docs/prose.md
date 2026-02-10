@@ -3,6 +3,7 @@
 ## RULES
 
 - Voice: Use active voice and present tense for all content.
+- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
 - Bullets: Use dashes (-) not asterisks (*) for all bulleted lists.
 - Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
 - Lists: Use prose by default; reserve bullets for discrete, unrelated items.

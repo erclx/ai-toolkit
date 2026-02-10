@@ -4,6 +4,7 @@
 
 - Title: Format as `<type>(<scope>): <subject>` with lowercase for `<type>`, `<scope>`, and first word of `<subject>` (72 characters maximum).
 - Voice: Use the imperative mood (e.g., "Add," "Fix," "Refactor") for all bullet points and the summary.
+- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
 - Summary Pattern: `<Action Verb> <Direct Object> to <Result>` (target 20 words; expand if necessary for clarity).
 - Required Sections: Include `## Summary`, `## Key Changes`, `## Technical Context`, and `## Testing`.
 - Section Specifications: Summary (target 20 words), Key Changes (bullet list of component changes), Technical Context (1-2 lines architectural reasoning), Testing (specific commands or test cases).
