@@ -210,6 +210,11 @@ EOF
   }
 }
 EOF
+  (
+    cd "$SANDBOX"
+    git add .
+    git commit -m "chore(sandbox): initial environment setup" --no-verify > /dev/null
+  )
 }
 
 execute_stage_and_commit() {
