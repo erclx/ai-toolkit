@@ -12,4 +12,3 @@ node_modules/
 .cursor/rules/
 .gemini/*
 !.gemini/settings.json
-.prompts
