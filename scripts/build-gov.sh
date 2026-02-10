@@ -12,6 +12,7 @@ log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
 log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
 log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
+log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
 
 ENGINE_SCRIPT="scripts/build/compiler.sh"
 
@@ -44,23 +45,28 @@ main() {
     "{{INJECT_DOCS}}" \
     ".md"
 
-  log_step "Staging Build Artifacts"
-
-  if git add commands/gov/rules.toml; then
-    log_add "commands/gov/rules.toml"
+  log_step "Syncing Documentation to Root"
+  if [ -d "scripts/assets/docs" ]; then
+    mkdir -p docs
+    cp -r scripts/assets/docs/. docs/
+    log_info "Synced scripts/assets/docs -> ./docs"
   else
-    log_error "Failed to stage rules.toml"
+    log_warn "Assets directory scripts/assets/docs not found"
   fi
 
-  if git add commands/gov/docs.toml; then
-    log_add "commands/gov/docs.toml"
+  log_step "Staging & Committing Artifacts"
+
+  git add commands/gov/rules.toml commands/gov/docs.toml docs/
+
+  if git diff --cached --quiet; then
+    log_info "No changes detected. Working tree clean."
   else
-    log_error "Failed to stage docs.toml"
+    git commit -m "chore(gov): update governance artifacts"
+    log_add "Committed: chore(gov): update governance artifacts"
   fi
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Governance build complete${NC}"
-  echo -e "${GREY}  Next: git add scripts/assets/ && git commit${NC}"
 }
 
 main "$@"
