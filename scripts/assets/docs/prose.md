@@ -1,4 +1,4 @@
-# MARKDOWN WRITING REFERENCE
+# PROSE REFERENCE
 
 ## RULES
 
@@ -21,6 +21,7 @@
 - Do not explain obvious concepts or provide unnecessary context.
 - Do not use unnecessary adverbs or qualifiers.
 - Do not write in overly academic or corporate language.
+- Do not use horizontal rules or dividers (`---`).
 
 ## EXAMPLES
 
