@@ -3,20 +3,18 @@
 ## RULES
 
 - Title: Format as `<type>(<scope>): <subject>` with lowercase for `<type>`, `<scope>`, and first word of `<subject>` (72 characters maximum).
-- Voice: Use the imperative mood (e.g., "Add," "Fix," "Refactor") for all bullet points and the summary.
-- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
-- Summary Pattern: `<Action Verb> <Direct Object> to <Result>` (target 20 words; expand if necessary for clarity).
+- Voice: Use the imperative mood for all content (e.g., "Add," "Fix," "Refactor").
+- Summary: Single sentence following `<Action Verb> <Direct Object> to <Result>` pattern.
 - Required Sections: Include `## Summary`, `## Key Changes`, `## Technical Context`, and `## Testing`.
-- Section Specifications: Summary (target 20 words), Key Changes (bullet list of component changes), Technical Context (1-2 lines architectural reasoning), Testing (specific commands or test cases).
-- Content Focus: Document only what exists in the code right now; describe new behavior, not historical state.
+- Component Clarity: Name actual files, functions, or modules in Key Changes (e.g., `AuthService.verify()` not "auth handler").
+- Technical Context: 1-2 lines maximum explaining architectural reasoning, not restating what changed.
+- Testing: Specify exact commands or test cases run.
 
 ## CONSTRAINTS
-
-- Do not use filler phrases such as "This PR," "This commit," "Included are," or "I have."
+- Do not start sentences with "This PR," "This commit," "Included are," or "I have."
 - Do not use marketing buzzwords like "seamless," "robust," "game-changer," "enhanced," or "allows."
-- Do not describe historical behavior or what the code "used to do"; describe the new behavior only.
+- Do not describe historical behavior or unchanged code; describe new behavior only.
 - Do not include future promises or speculative documentation.
-- Do not use generic or conversational opening sentences.
 - Do not include `## 📸 Visuals` unless UI or CSS files are modified in the changeset.
 
 ## EXAMPLES
@@ -28,11 +26,11 @@
 <Action Verb> <Direct Object> to <Result>.
 
 ## Key Changes
-- <Verb> <component> (<reason if non-obvious>)
-- <Verb> <component>
+- <Verb> <specific component/file/function> (<reason if non-obvious>)
+- <Verb> <specific component/file/function>
 
 ## Technical Context
-- <Architectural reasoning in 1-2 lines>
+- <Architectural reasoning explaining why, not what>
 
 ## Testing
 - <Specific command or test case>
@@ -46,11 +44,12 @@
 Update auth middleware to enforce jwt expiration checks.
 
 ## Key Changes
-- Add `verifyExpiration` utility to core logic
-- Refactor `AuthService` to handle 401 response codes
+- Add `verifyExpiration()` utility to `src/auth/validators.ts`
+- Refactor `AuthService.authenticate()` to handle 401 response codes
+- Update `JwtMiddleware` to call expiration validator
 
 ## Technical Context
-- Migration to stateless session management for scalability
+- Migration to stateless session management for horizontal scalability
 
 ## Testing
 - `npm run test:auth`
