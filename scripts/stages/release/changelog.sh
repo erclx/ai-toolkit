@@ -13,6 +13,8 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 stage_setup() {
+  export GEMINI_SKIP_AUTO_COMMIT="true"
+
   log_step "Setting up Changelog Environment"
   
   cat <<'EOF' > CHANGELOG.md
