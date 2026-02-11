@@ -34,7 +34,6 @@ prompt = """
 ## 2. ROLE & CONTEXT
 
 You generate PR descriptions from git diffs.
-Follow <PR_STANDARDS> exactly.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS

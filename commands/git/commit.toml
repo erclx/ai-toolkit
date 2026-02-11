@@ -29,8 +29,7 @@ prompt = """
 
 ## 2. ROLE & CONTEXT
 
-You generate conventional commit messages from git diffs. 
-Follow <COMMIT_STANDARDS> exactly.
+Generate conventional commit messages from git diffs.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS
