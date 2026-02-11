@@ -3,6 +3,8 @@
 ## RULES
 
 - Voice: Use active voice and present tense for all content.
+- Hierarchy: Use H1 for the document title, H2 for main sections, and H3 for subsections.
+- Spacing: Ensure a single blank line between headers and content.
 - Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
 - Bullets: Use dashes (-) not asterisks (*) for all bulleted lists.
 - Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
