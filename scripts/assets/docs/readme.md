@@ -20,6 +20,7 @@
 - Do not include extensive troubleshooting guides; use wiki or separate documentation.
 - Do not use absolute URLs for files within the repository.
 - Do not create deeply nested heading structures that harm scannability.
+- Do not use horizontal rules or dividers (`---`).
 
 ## EXAMPLES
 
