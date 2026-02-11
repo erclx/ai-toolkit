@@ -205,19 +205,20 @@ cat << 'GEMINI_EOF' > docs/pr.md
 ## RULES
 
 - Title: Format as `<type>(<scope>): <subject>` with lowercase for `<type>`, `<scope>`, and first word of `<subject>` (72 characters maximum).
-- Voice: Use the imperative mood for all content (e.g., \"Add,\" \"Fix,\" \"Refactor\").
-- Summary: Single sentence following `<Action Verb> <Direct Object> to <Result>` pattern.
+- Voice: Use the imperative mood (e.g., \"Add,\" \"Fix,\" \"Refactor\") for all bullet points and the summary.
+- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
+- Summary Pattern: `<Action Verb> <Direct Object> to <Result>` (target 20 words; expand if necessary for clarity).
 - Required Sections: Include `## Summary`, `## Key Changes`, `## Technical Context`, and `## Testing`.
-- Component Clarity: Name actual files, functions, or modules in Key Changes (e.g., `AuthService.verify()` not \"auth handler\").
-- Technical Context: 1-2 lines maximum explaining architectural reasoning, not restating what changed.
-- Testing: Specify exact commands or test cases run.
+- Section Specifications: Summary (target 20 words), Key Changes (bullet list of component changes), Technical Context (1-2 lines architectural reasoning), Testing (specific commands or test cases).
+- Content Focus: Document only what exists in the code right now; describe new behavior, not historical state.
 
 ## CONSTRAINTS
 
-- Do not start sentences with \"This PR,\" \"This commit,\" \"Included are,\" or \"I have.\"
+- Do not use filler phrases such as \"This PR,\" \"This commit,\" \"Included are,\" or \"I have.\"
 - Do not use marketing buzzwords like \"seamless,\" \"robust,\" \"game-changer,\" \"enhanced,\" or \"allows.\"
-- Do not describe historical behavior or unchanged code; describe new behavior only.
+- Do not describe historical behavior or what the code \"used to do\"; describe the new behavior only.
 - Do not include future promises or speculative documentation.
+- Do not use generic or conversational opening sentences.
 - Do not include `## 📸 Visuals` unless UI or CSS files are modified in the changeset.
 
 ## EXAMPLES
@@ -229,11 +230,11 @@ cat << 'GEMINI_EOF' > docs/pr.md
 <Action Verb> <Direct Object> to <Result>.
 
 ## Key Changes
-- <Verb> <specific component/file/function> (<reason if non-obvious>)
-- <Verb> <specific component/file/function>
+- <Verb> <component> (<reason if non-obvious>)
+- <Verb> <component>
 
 ## Technical Context
-- <Architectural reasoning explaining why, not what>
+- <Architectural reasoning in 1-2 lines>
 
 ## Testing
 - <Specific command or test case>
@@ -247,12 +248,11 @@ cat << 'GEMINI_EOF' > docs/pr.md
 Update auth middleware to enforce jwt expiration checks.
 
 ## Key Changes
-- Add `verifyExpiration()` utility to `src/auth/validators.ts`
-- Refactor `AuthService.authenticate()` to handle 401 response codes
-- Update `JwtMiddleware` to call expiration validator
+- Add `verifyExpiration` utility to core logic
+- Refactor `AuthService` to handle 401 response codes
 
 ## Technical Context
-- Migration to stateless session management for horizontal scalability
+- Migration to stateless session management for scalability
 
 ## Testing
 - `npm run test:auth`
@@ -268,7 +268,6 @@ This PR updates the authentication system to be more robust.
 ## Key Changes
 - Updated auth middleware files
 - The old system used to check tokens differently
-- Enhanced the handler
 
 ## Testing
 - Tested manually
@@ -277,11 +276,13 @@ GEMINI_EOF
 echo '  + docs/pr.md'
 
 cat << 'GEMINI_EOF' > docs/prose.md
-# MARKDOWN WRITING REFERENCE
+# PROSE REFERENCE
 
 ## RULES
 
 - Voice: Use active voice and present tense for all content.
+- Hierarchy: Use H1 for the document title, H2 for main sections, and H3 for subsections.
+- Spacing: Ensure a single blank line between headers and content.
 - Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
 - Bullets: Use dashes (-) not asterisks (*) for all bulleted lists.
 - Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
@@ -300,6 +301,7 @@ cat << 'GEMINI_EOF' > docs/prose.md
 - Do not explain obvious concepts or provide unnecessary context.
 - Do not use unnecessary adverbs or qualifiers.
 - Do not write in overly academic or corporate language.
+- Do not use horizontal rules or dividers (`---`).
 
 ## EXAMPLES
 
@@ -350,6 +352,7 @@ cat << 'GEMINI_EOF' > docs/readme.md
 - Do not include extensive troubleshooting guides; use wiki or separate documentation.
 - Do not use absolute URLs for files within the repository.
 - Do not create deeply nested heading structures that harm scannability.
+- Do not use horizontal rules or dividers (`---`).
 
 ## EXAMPLES
 
