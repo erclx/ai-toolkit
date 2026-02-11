@@ -153,20 +153,32 @@ cat << 'GEMINI_EOF' > docs/commit.md
 ## RULES
 
 - Format: `<type>(<scope>): <subject>`
-- Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `perf`, `test`, `style`, `build`, `ci`, `revert`.
-- Scope: Use a single-word directory category or system component.
-- Subject Mood: Use the imperative mood (e.g., `add` instead of `added`).
-- Casing: Use lowercase for `<type>`, `<scope>`, and the first word of `<subject>`.
-- Character Limits: Subject 50 chars (soft), Body 72 chars (hard).
+- Types:
+  - `feat`: New feature or capability
+  - `fix`: Bug fix
+  - `refactor`: Structural changes (not a fix or a new feature)
+  - `docs`: Documentation only (README)
+  - `chore`: Maintenance tasks (deps, tooling, configs)
+  - `perf`: Performance improvements
+  - `test`: Add or modify tests
+  - `style`: Code formatting (whitespace, semicolons)
+  - `build`: Build system changes (webpack, npm scripts)
+  - `ci`: CI/CD pipeline changes (GitHub Actions)
+  - `revert`: Revert a previous commit
+- Scope: Single lowercase word representing a system component
+- Subject Mood: Use the imperative mood (e.g., `add` instead of `added`)
+- Casing: Use lowercase for `<type>`, `<scope>`, and the first word of `<subject>`
+- Character Limits: Subject 72 chars maximum.
 
 ## CONSTRAINTS
 
-- Do not use multi-word scopes; no dashes, spaces, or kebab-case.
+- Do not use multi-word scopes or kebab-case (no dashes or spaces)
 - Do not use specific filenames as scopes.
-- Do not use generic scopes such as `(misc)`, `(general)`, or `(fix)`.
+- Do not use a scope that duplicates the type.
+- Do not repeat the scope in the subject line.
 - Do not use trailing periods at the end of the subject line.
 - Do not use backslash escaping `\\\"` or internal double quotes; use single quotes if necessary.
-- Do not use conversational filler or introductory phrases.
+- Do not use conversational filler or introductory phrases
 
 ## EXAMPLES
 
@@ -174,18 +186,15 @@ cat << 'GEMINI_EOF' > docs/commit.md
 
 ```
 feat(api): add retry logic for failed webhooks
-```
-```
 fix(auth): update 'UserSession' validation logic
 ```
 
 ### Incorrect
 
 ```
-fix(user auth): Fixed the redirect loop.
-```
-```
-feat(ui): add the period at the end.
+fix(user-auth): Fixed the redirect loop.
+docs(docs): update the readme.
+refactor(pr): update pr prompt structure
 ```
 GEMINI_EOF
 echo '  + docs/commit.md'
@@ -196,19 +205,19 @@ cat << 'GEMINI_EOF' > docs/pr.md
 ## RULES
 
 - Title: Format as `<type>(<scope>): <subject>` with lowercase for `<type>`, `<scope>`, and first word of `<subject>` (72 characters maximum).
-- Voice: Use the imperative mood (e.g., \"Add,\" \"Fix,\" \"Refactor\") for all bullet points and the summary.
-- Summary Pattern: `<Action Verb> <Direct Object> to <Result>` (target 20 words; expand if necessary for clarity).
+- Voice: Use the imperative mood for all content (e.g., \"Add,\" \"Fix,\" \"Refactor\").
+- Summary: Single sentence following `<Action Verb> <Direct Object> to <Result>` pattern.
 - Required Sections: Include `## Summary`, `## Key Changes`, `## Technical Context`, and `## Testing`.
-- Section Specifications: Summary (target 20 words), Key Changes (bullet list of component changes), Technical Context (1-2 lines architectural reasoning), Testing (specific commands or test cases).
-- Content Focus: Document only what exists in the code right now; describe new behavior, not historical state.
+- Component Clarity: Name actual files, functions, or modules in Key Changes (e.g., `AuthService.verify()` not \"auth handler\").
+- Technical Context: 1-2 lines maximum explaining architectural reasoning, not restating what changed.
+- Testing: Specify exact commands or test cases run.
 
 ## CONSTRAINTS
 
-- Do not use filler phrases such as \"This PR,\" \"This commit,\" \"Included are,\" or \"I have.\"
+- Do not start sentences with \"This PR,\" \"This commit,\" \"Included are,\" or \"I have.\"
 - Do not use marketing buzzwords like \"seamless,\" \"robust,\" \"game-changer,\" \"enhanced,\" or \"allows.\"
-- Do not describe historical behavior or what the code \"used to do\"; describe the new behavior only.
+- Do not describe historical behavior or unchanged code; describe new behavior only.
 - Do not include future promises or speculative documentation.
-- Do not use generic or conversational opening sentences.
 - Do not include `## 📸 Visuals` unless UI or CSS files are modified in the changeset.
 
 ## EXAMPLES
@@ -220,11 +229,11 @@ cat << 'GEMINI_EOF' > docs/pr.md
 <Action Verb> <Direct Object> to <Result>.
 
 ## Key Changes
-- <Verb> <component> (<reason if non-obvious>)
-- <Verb> <component>
+- <Verb> <specific component/file/function> (<reason if non-obvious>)
+- <Verb> <specific component/file/function>
 
 ## Technical Context
-- <Architectural reasoning in 1-2 lines>
+- <Architectural reasoning explaining why, not what>
 
 ## Testing
 - <Specific command or test case>
@@ -238,11 +247,12 @@ cat << 'GEMINI_EOF' > docs/pr.md
 Update auth middleware to enforce jwt expiration checks.
 
 ## Key Changes
-- Add `verifyExpiration` utility to core logic
-- Refactor `AuthService` to handle 401 response codes
+- Add `verifyExpiration()` utility to `src/auth/validators.ts`
+- Refactor `AuthService.authenticate()` to handle 401 response codes
+- Update `JwtMiddleware` to call expiration validator
 
 ## Technical Context
-- Migration to stateless session management for scalability
+- Migration to stateless session management for horizontal scalability
 
 ## Testing
 - `npm run test:auth`
@@ -258,6 +268,7 @@ This PR updates the authentication system to be more robust.
 ## Key Changes
 - Updated auth middleware files
 - The old system used to check tokens differently
+- Enhanced the handler
 
 ## Testing
 - Tested manually
@@ -271,6 +282,7 @@ cat << 'GEMINI_EOF' > docs/prose.md
 ## RULES
 
 - Voice: Use active voice and present tense for all content.
+- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
 - Bullets: Use dashes (-) not asterisks (*) for all bulleted lists.
 - Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
 - Lists: Use prose by default; reserve bullets for discrete, unrelated items.

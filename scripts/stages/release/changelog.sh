@@ -13,9 +13,11 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_fail() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; }
 
 stage_setup() {
-    log_step "Setting up Changelog Environment"
+  export GEMINI_SKIP_AUTO_COMMIT="true"
+
+  log_step "Setting up Changelog Environment"
   
-    cat <<'EOF' > CHANGELOG.md
+  cat <<'EOF' > CHANGELOG.md
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -26,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **Core:** Initial release of the system.
+- Core: Initial release of the system.
 EOF
   
   git add CHANGELOG.md

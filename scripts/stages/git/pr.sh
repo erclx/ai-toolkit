@@ -17,10 +17,12 @@ use_anchor() {
 }
 
 stage_setup() {
+  export GEMINI_SKIP_AUTO_COMMIT="true"
+
   log_step "Configuring PR Environment ($ANCHOR_REPO)"
   
-git config user.email "architect@erclx.com"
-git config user.name "Senior Architect"
+  git config user.email "erclx@github.com"
+  git config user.name "Eric"
 
   git remote add origin "git@github.com:erclx/${ANCHOR_REPO}.git"
   git push --force origin HEAD:main
@@ -29,7 +31,6 @@ git config user.name "Senior Architect"
   git checkout -b feature/string-utils -q
 
   cat <<'EOF' >> utils.js
-
 export function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
