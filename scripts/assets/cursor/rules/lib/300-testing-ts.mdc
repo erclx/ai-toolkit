@@ -1,27 +1,21 @@
 ---
-description: enforce testing standards and framework isolation
+description: enforce typescript/javascript testing tooling standards
 globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
 alwaysApply: false
 priority: 300
 ---
 
-# TESTING STANDARDS
+# TYPESCRIPT/JAVASCRIPT TESTING TOOLING
 
 ## HARD REQUIREMENTS
 
 - Use Vitest for unit and integration tests.
 - Co-locate unit tests with their respective components.
-- Use Playwright strictly for end-to-end tests.
+- Use Playwright for end-to-end tests.
 - Place all Playwright tests within the `e2e/` directory.
-- Structure tests using the Arrange, Act, Assert (AAA) pattern.
-- Test user-visible behavior rather than implementation details.
 - Use `userEvent` for realistic interaction simulation in Vitest.
-- Select elements by accessibility roles first.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not use `toMatchSnapshot` for verification.
-- Do not test private functions or internal state directly.
 - Do not make real network calls in unit tests; use mocks.
 - Do not place Playwright tests inside the `src/` directory.
-- Do not use conditional logic or loops within test bodies.
