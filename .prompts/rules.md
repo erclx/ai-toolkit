@@ -11,10 +11,11 @@ You enforce specific hierarchy, file anatomy, and naming conventions to prevent 
 ### Must do:
 
 - Use Type A for global persona and core principles. Use Type B for file-specific tooling rules (frameworks, languages, testing).
-- Assign numeric prefix matching task category: 000-099 for global, 100-199 for languages, 200-299 for frameworks, 300-399 for testing, 800-900 for workflow.
+- Assign numeric prefix matching task category: 000-099 for global, 100-199 for languages, 200-299 for frameworks, 300-399 for testing, 900-999 for workflow.
 - YAML Logic: If `alwaysApply: true`, OMIT the `globs` field entirely. If `alwaysApply: false`, INCLUDE the `globs` field with comma-separated string patterns.
 - Use lowercase imperative descriptions in the `description` YAML field (e.g., "enforce react component standards").
 - Use backticks for language keywords, API names, CLI commands, and technical identifiers to prevent ambiguity. Avoid backticks for general prose or file paths.
+- Priority determines rule precedence: lower number applies first (001 overrides 999).
 
 ### Must not do:
 
@@ -22,6 +23,8 @@ You enforce specific hierarchy, file anatomy, and naming conventions to prevent 
 - Do not redefine the persona in Type B rules; only Type A rules define "Who I am."
 
 ## OUTPUT FORMAT
+
+**Type A - Used once per project to define core persona and universal principles. Never redefined in Type B files.**
 
 **Template (Type A - Global):**
 

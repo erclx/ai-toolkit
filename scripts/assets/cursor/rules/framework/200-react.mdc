@@ -15,6 +15,11 @@ priority: 200
 - Use named exports exclusively for components and hooks.
 - Encapsulate data fetching and complex effects in custom hooks.
 - Define TypeScript interfaces for props immediately above the component.
+- Use function declarations for components, not arrow functions.
+- Use stable, unique keys for list items; never use array index.
+- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.
+- Avoid prop drilling beyond 2 levels; use context or composition.
+- Use `<>` shorthand for fragments unless key prop is required.
 
 ## NEGATIVE CONSTRAINTS
 
@@ -22,4 +27,3 @@ priority: 200
 - Do not use default exports.
 - Do not place feature-specific components in the global components folder.
 - Do not use `useEffect` for derived state; use `useMemo`.
-- Do not use inline styles; use Tailwind classes.

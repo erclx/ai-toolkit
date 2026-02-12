@@ -1,5 +1,5 @@
 ---
-description: enforce tailwind v4 css standards and utility-first patterns
+description: enforce tailwind css standards and utility-first patterns
 globs: "**/*.tsx,**/*.jsx,**/*.html,**/*.css"
 alwaysApply: false
 priority: 250
@@ -15,11 +15,14 @@ priority: 250
 - Define theme extensions using CSS variables in the main CSS file via `@theme`.
 - Use `gap-*` utilities instead of margins for sibling spacing.
 - Use logical properties like `ps-*` and `pe-*` for RTL support.
+- Do not use inline styles; use Tailwind classes.
+- Use mobile-first breakpoints; default styles apply to mobile.
+- Use `dark:` variant for dark mode styling; avoid manual class toggling.
+- Use `prose` class for rich text content; do not manually style typography.
 
 ## NEGATIVE CONSTRAINTS
 
 - Do not use `tailwind.config.js` for theming; use native CSS variables.
-- Do not use `@apply` in CSS files; keep utilities in the markup.
+- Minimize `@apply` usage; prefer composing utilities in markup.
 - Do not use arbitrary values unless adhering to a strict design spec.
 - Do not use `style` props for static styling.
-- Do not use container queries without checking browser support targets.

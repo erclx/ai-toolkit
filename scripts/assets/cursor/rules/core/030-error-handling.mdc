@@ -1,0 +1,20 @@
+---
+description: enforce consistent error handling patterns
+alwaysApply: true
+priority: 30
+---
+
+# ERROR HANDLING STANDARDS
+
+## HARD REQUIREMENTS
+
+- Validate inputs at system boundaries; reject invalid data immediately.
+- Distinguish expected failures (validation, not found) from unexpected failures (null reference, network timeout).
+- Return structured error types for recoverable failures; propagate exceptions for programmer errors.
+- Include actionable context in error messages; never expose internal implementation details.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not use exceptions for control flow.
+- Do not silently ignore errors.
+- Do not log sensitive data in error messages.

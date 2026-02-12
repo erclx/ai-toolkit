@@ -1,0 +1,19 @@
+---
+description: enforce web frontend security and xss prevention
+globs: "**/*.tsx,**/*.jsx,**/*.html"
+alwaysApply: false
+priority: 350
+---
+
+# WEB SECURITY STANDARDS
+
+## HARD REQUIREMENTS
+
+- Add `rel="noopener noreferrer"` to all external links with `target="_blank"`.
+- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent.
+- Validate all URL parameters and query strings using schema validation before use.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not use `dangerouslySetInnerHTML` without an accompanying sanitization function.
+- Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.

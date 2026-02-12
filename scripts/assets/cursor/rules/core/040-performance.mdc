@@ -1,0 +1,20 @@
+---
+description: enforce performance constraints and optimization patterns
+alwaysApply: true
+priority: 40
+---
+
+# PERFORMANCE STANDARDS
+
+## HARD REQUIREMENTS
+
+- Lazy load resources at architectural boundaries (routes, features), not inline.
+- Batch independent operations; avoid sequential execution when parallelizable.
+- Defer non-critical work until after user-visible rendering completes.
+- Virtualize or paginate unbounded lists.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not import entire modules when subsets are sufficient.
+- Do not fetch data inside loops.
+- Do not optimize without measurement.
