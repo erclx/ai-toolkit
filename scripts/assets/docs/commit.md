@@ -19,6 +19,7 @@
 - Subject Mood: Use the imperative mood (e.g., `add` instead of `added`)
 - Casing: Use lowercase for `<type>`, `<scope>`, and the first word of `<subject>`
 - Character Limits: Subject 72 chars maximum.
+- Specificity: Describe the actual technical change, not that something changed (e.g., "add retry logic" not "improve api")
 
 ## CONSTRAINTS
 
@@ -42,7 +43,7 @@ fix(auth): update 'UserSession' validation logic
 ### Incorrect
 
 ```
-fix(user-auth): Fixed the redirect loop.
-docs(docs): update the readme.
-refactor(pr): update pr prompt structure
+fix(user-auth): Fixed the redirect loop.  # wrong casing + period
+docs(docs): update the readme.            # duplicate scope + period
+docs(api): improve documentation          # vague verb + lacks specificity
 ```
