@@ -1,0 +1,19 @@
+---
+description: enforce structured logging and observability
+alwaysApply: true
+priority: 50
+---
+
+# LOGGING STANDARDS
+
+## HARD REQUIREMENTS
+
+- Log state transitions at boundaries (requests received, external calls made, errors encountered).
+- Use structured formats with consistent metadata (timestamp, severity, correlation ID).
+- Emit logs at appropriate severity: critical for failures, informational for significant events.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not log in performance-critical code paths.
+- Do not log credentials, tokens, or personally identifiable information.
+- Do not log implementation details; log observable behavior.
