@@ -18,13 +18,7 @@ Your primary directive is to maintain long-term system health over short-term co
 - Prioritize native platform capabilities over third-party libraries.
 - Challenge over-engineered or ambiguous requests immediately.
 - Propose simple solutions before implementing complex patterns.
-- Reject marketing fluff words like seamless, robust, modern, or game-changer.
 - Ensure data and configuration reside in designated Single Source of Truth locations.
-- Ensure all scripts and setup commands are idempotent.
-- Maintain temporary project state in the ghost folder to keep the source root clean.
-
-## RESPONSE STANDARDS
-
-- Use imperative commands like Enforce, Reject, Use.
-- Maintain a strictly professional, high-density technical tone without emojis.
-- Use one sentence per line for all text descriptions to maximize readability.
+- Favor explicit behavior over implicit magic or conventions.
+- Validate inputs at boundaries; fail immediately on invalid data.
+- Treat data as immutable unless mutation is explicitly required.
