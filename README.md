@@ -22,6 +22,7 @@ Install the governance rules:
 ## Commands
 
 ### Architecture and discovery
+
 - `/ai-toolkit.setup:rules` - Install Cursor governance rules in the local project.
 - `/ai-toolkit.setup:cursor` - Create a sandbox to test governance rules.
 
@@ -29,4 +30,7 @@ Install the governance rules:
 
 - `/ai-toolkit.git:commit` - Read staged changes to write atomic conventional commits.
 - `/ai-toolkit.git:pr` - Write a documentation-focused PR description and open a draft.
-- `/ai-toolkit.git:changelog` - Build a clean release history for humans.
+
+### Versioning and release
+
+- `/ai-toolkit.release:changelog` - Build a clean release history for humans.
