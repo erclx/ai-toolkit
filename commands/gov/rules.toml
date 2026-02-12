@@ -51,18 +51,138 @@ Your primary directive is to maintain long-term system health over short-term co
 - Prioritize native platform capabilities over third-party libraries.
 - Challenge over-engineered or ambiguous requests immediately.
 - Propose simple solutions before implementing complex patterns.
-- Reject marketing fluff words like seamless, robust, modern, or game-changer.
 - Ensure data and configuration reside in designated Single Source of Truth locations.
-- Ensure all scripts and setup commands are idempotent.
-- Maintain temporary project state in the ghost folder to keep the source root clean.
-
-## RESPONSE STANDARDS
-
-- Use imperative commands like Enforce, Reject, Use.
-- Maintain a strictly professional, high-density technical tone without emojis.
-- Use one sentence per line for all text descriptions to maximize readability.
+- Favor explicit behavior over implicit magic or conventions.
+- Validate inputs at boundaries; fail immediately on invalid data.
+- Treat data as immutable unless mutation is explicitly required.
 GEMINI_EOF
 echo '  + .cursor/rules/000-constitution.mdc'
+
+cat << 'GEMINI_EOF' > .cursor/rules/010-testing.mdc
+---
+description: enforce universal testing standards and best practices
+alwaysApply: true
+priority: 10
+---
+
+# TESTING STANDARDS
+
+## HARD REQUIREMENTS
+
+- Structure tests using the Arrange, Act, Assert (AAA) pattern.
+- Test user-visible behavior rather than implementation details.
+- Name tests using \"should\" or descriptive phrases: \"should validate email format\".
+- Ensure tests are independent; each test should run in isolation without side effects.
+- Group related tests using describe/context blocks; keep nesting shallow (max 2 levels).
+- Use factory functions or builders for test data; avoid inline object literals.
+- Always await async operations; avoid fire-and-forget promises in tests.
+- Select elements by accessibility attributes first.
+
+## NEGATIVE CONSTRAINTS
+- Do not use snapshot testing for verification.
+- Do not test private functions or internal state directly.
+- Do not use conditional logic or loops within test bodies.
+GEMINI_EOF
+echo '  + .cursor/rules/010-testing.mdc'
+
+cat << 'GEMINI_EOF' > .cursor/rules/020-concurrency.mdc
+---
+description: enforce safe concurrency and async operation patterns
+alwaysApply: true
+priority: 20
+---
+
+# CONCURRENCY STANDARDS
+
+## HARD REQUIREMENTS
+
+- Make async operations cancellable; clean up on component unmount or request abort.
+- Coordinate dependent async operations explicitly; document execution order.
+- Protect shared mutable state with locks, queues, or single-writer patterns.
+- Batch independent operations; avoid sequential execution when parallelizable.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not fire-and-forget async operations without cleanup handlers.
+- Do not mutate shared state from multiple concurrent contexts.
+- Do not ignore race conditions in user-triggered async flows.
+
+GEMINI_EOF
+echo '  + .cursor/rules/020-concurrency.mdc'
+
+cat << 'GEMINI_EOF' > .cursor/rules/030-error-handling.mdc
+---
+description: enforce consistent error handling patterns
+alwaysApply: true
+priority: 30
+---
+
+# ERROR HANDLING STANDARDS
+
+## HARD REQUIREMENTS
+
+- Validate inputs at system boundaries; reject invalid data immediately.
+- Distinguish expected failures (validation, not found) from unexpected failures (null reference, network timeout).
+- Return structured error types for recoverable failures; propagate exceptions for programmer errors.
+- Include actionable context in error messages; never expose internal implementation details.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not use exceptions for control flow.
+- Do not silently ignore errors.
+- Do not log sensitive data in error messages.
+
+GEMINI_EOF
+echo '  + .cursor/rules/030-error-handling.mdc'
+
+cat << 'GEMINI_EOF' > .cursor/rules/040-performance.mdc
+---
+description: enforce performance constraints and optimization patterns
+alwaysApply: true
+priority: 40
+---
+
+# PERFORMANCE STANDARDS
+
+## HARD REQUIREMENTS
+
+- Lazy load resources at architectural boundaries (routes, features), not inline.
+- Batch independent operations; avoid sequential execution when parallelizable.
+- Defer non-critical work until after user-visible rendering completes.
+- Virtualize or paginate unbounded lists.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not import entire modules when subsets are sufficient.
+- Do not fetch data inside loops.
+- Do not optimize without measurement.
+
+GEMINI_EOF
+echo '  + .cursor/rules/040-performance.mdc'
+
+cat << 'GEMINI_EOF' > .cursor/rules/050-logging.mdc
+---
+description: enforce structured logging and observability
+alwaysApply: true
+priority: 50
+---
+
+# LOGGING STANDARDS
+
+## HARD REQUIREMENTS
+
+- Log state transitions at boundaries (requests received, external calls made, errors encountered).
+- Use structured formats with consistent metadata (timestamp, severity, correlation ID).
+- Emit logs at appropriate severity: critical for failures, informational for significant events.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not log in performance-critical code paths.
+- Do not log credentials, tokens, or personally identifiable information.
+- Do not log implementation details; log observable behavior.
+
+GEMINI_EOF
+echo '  + .cursor/rules/050-logging.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/200-react.mdc
 ---
@@ -82,6 +202,11 @@ priority: 200
 - Use named exports exclusively for components and hooks.
 - Encapsulate data fetching and complex effects in custom hooks.
 - Define TypeScript interfaces for props immediately above the component.
+- Use function declarations for components, not arrow functions.
+- Use stable, unique keys for list items; never use array index.
+- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.
+- Avoid prop drilling beyond 2 levels; use context or composition.
+- Use `<>` shorthand for fragments unless key prop is required.
 
 ## NEGATIVE CONSTRAINTS
 
@@ -89,13 +214,12 @@ priority: 200
 - Do not use default exports.
 - Do not place feature-specific components in the global components folder.
 - Do not use `useEffect` for derived state; use `useMemo`.
-- Do not use inline styles; use Tailwind classes.
 GEMINI_EOF
 echo '  + .cursor/rules/200-react.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/250-tailwind.mdc
 ---
-description: enforce tailwind v4 css standards and utility-first patterns
+description: enforce tailwind css standards and utility-first patterns
 globs: \"**/*.tsx,**/*.jsx,**/*.html,**/*.css\"
 alwaysApply: false
 priority: 250
@@ -111,20 +235,23 @@ priority: 250
 - Define theme extensions using CSS variables in the main CSS file via `@theme`.
 - Use `gap-*` utilities instead of margins for sibling spacing.
 - Use logical properties like `ps-*` and `pe-*` for RTL support.
+- Do not use inline styles; use Tailwind classes.
+- Use mobile-first breakpoints; default styles apply to mobile.
+- Use `dark:` variant for dark mode styling; avoid manual class toggling.
+- Use `prose` class for rich text content; do not manually style typography.
 
 ## NEGATIVE CONSTRAINTS
 
 - Do not use `tailwind.config.js` for theming; use native CSS variables.
-- Do not use `@apply` in CSS files; keep utilities in the markup.
+- Minimize `@apply` usage; prefer composing utilities in markup.
 - Do not use arbitrary values unless adhering to a strict design spec.
 - Do not use `style` props for static styling.
-- Do not use container queries without checking browser support targets.
 GEMINI_EOF
 echo '  + .cursor/rules/250-tailwind.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/100-typescript.mdc
 ---
-description: enforce strict typescript and template syntax standards
+description: enforce strict typescript type safety and patterns
 globs: \"**/*.ts,**/*.tsx\"
 alwaysApply: false
 priority: 100
@@ -135,10 +262,15 @@ priority: 100
 ## HARD REQUIREMENTS
 
 - Enforce explicit types or strict inference using `unknown` over `any`.
-- Use `interface` for all object definitions and props.
+- Use `interface` for object shapes and component props.
+- Use `type` for unions, intersections, and utility types.
 - Use `Promise.all()` for independent operations to avoid serial waterfalls.
 - Prefer `readonly` properties for data objects.
 - Use absolute imports mapping `@/` to `src/`.
+- Use `import type` for type-only imports to enable proper tree-shaking.
+- Enable `strict: true` in tsconfig.json with no exceptions.
+- Use discriminated unions for error handling over throwing exceptions.
+- Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
 
 ## NEGATIVE CONSTRAINTS
 
@@ -152,89 +284,78 @@ echo '  + .cursor/rules/100-typescript.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/300-testing-ts.mdc
 ---
-description: enforce testing standards and framework isolation
+description: enforce typescript/javascript testing tooling standards
 globs: \"**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx\"
 alwaysApply: false
 priority: 300
 ---
 
-# TESTING STANDARDS
+# TYPESCRIPT/JAVASCRIPT TESTING TOOLING
 
 ## HARD REQUIREMENTS
 
 - Use Vitest for unit and integration tests.
 - Co-locate unit tests with their respective components.
-- Use Playwright strictly for end-to-end tests.
+- Use Playwright for end-to-end tests.
 - Place all Playwright tests within the `e2e/` directory.
-- Structure tests using the Arrange, Act, Assert (AAA) pattern.
-- Test user-visible behavior rather than implementation details.
 - Use `userEvent` for realistic interaction simulation in Vitest.
-- Select elements by accessibility roles first.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not use `toMatchSnapshot` for verification.
-- Do not test private functions or internal state directly.
 - Do not make real network calls in unit tests; use mocks.
 - Do not place Playwright tests inside the `src/` directory.
-- Do not use conditional logic or loops within test bodies.
 GEMINI_EOF
 echo '  + .cursor/rules/300-testing-ts.mdc'
 
-cat << 'GEMINI_EOF' > .cursor/rules/300-zod.mdc
+cat << 'GEMINI_EOF' > .cursor/rules/310-zod.mdc
 ---
-description: enforce zod schema validation and type inference standards
+description: enforce zod schema validation and type inference
 globs: \"**/*.ts,**/*.tsx\"
 alwaysApply: false
-priority: 300
+priority: 310
 ---
 
 # ZOD VALIDATION STANDARDS
 
 ## HARD REQUIREMENTS
 
-- Define strict schemas for all API responses, form inputs, and environment variables.
-- Use `z.infer<typeof Schema>` to generate TypeScript types from schemas (Single Source of Truth).
-- Co-locate schemas with the data consuming functions or in `src/schemas/` if shared.
-- Use `.parse()` for strict validation where failure should block execution (e.g., env vars).
-- Use `.safeParse()` for runtime data where graceful error handling is required (e.g., forms).
+- Use `z.infer<typeof Schema>` to generate TypeScript types (Single Source of Truth).
+- Use `.strict()` for untrusted external API boundaries to prevent data pollution.
+- Use `.parse()` for blocking validation (env vars) and `.safeParse()` for recoverable flows (forms).
+- Restrict `z.coerce` usage strictly to I/O boundaries (e.g., URL params); never use for internal data flow.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not manually type interfaces that duplicate Zod schemas; infer them.
-- Do not use `z.any()` unless validating a truly unknown external blob; prefer `z.unknown()`.
-- Do not use loose validation (e.g., `z.string()`) for specific formats (emails, UUIDs); use specific validators.
-- Do not export the Zod schema if only the inferred type is needed publicly.
+- Do not manually declare interfaces that duplicate Zod schemas.
+- Do not use `z.any()`; use `z.unknown()` for truly ambiguous inputs.
+- Do not use `.passthrough()`; prefer `.strict()` at boundaries or explicit `.pick()`/`.omit()`.
+- Do not export the runtime Schema if only the inferred Type is required by consumers.
 GEMINI_EOF
-echo '  + .cursor/rules/300-zod.mdc'
+echo '  + .cursor/rules/310-zod.mdc'
 
-cat << 'GEMINI_EOF' > .cursor/rules/800-security.mdc
+cat << 'GEMINI_EOF' > .cursor/rules/350-security-web.mdc
 ---
-description: enforce nodejs security and secret management
-globs: \"**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.mjs,**/*.cjs\"
+description: enforce web frontend security and xss prevention
+globs: \"**/*.tsx,**/*.jsx,**/*.html\"
 alwaysApply: false
-priority: 800
+priority: 350
 ---
 
-# SECURITY STANDARDS (NODE/JS)
+# WEB SECURITY STANDARDS
 
 ## HARD REQUIREMENTS
 
-- Import secrets strictly from the environment configuration module.
-- Validate all external inputs using a strict schema validation library.
-- Add `rel=\"noopener noreferrer\"` to all external links.
-- Sanitize all data rendered via raw HTML directives.
-- Use the package manager's audit tool to verify new dependencies.
+- Add `rel=\"noopener noreferrer\"` to all external links with `target=\"_blank\"`.
+- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent.
+- Validate all URL parameters and query strings using schema validation before use.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not commit hardcoded secrets, keys, or tokens.
-- Do not use `eval()` or `new Function()` execution patterns.
-- Do not expose internal error stack traces to the client-side console.
-- Do not use `Math.random()` for cryptographic operations; use `crypto.getRandomValues()`.
-- Do not disable linter security rules without written justification.
+- Do not use `dangerouslySetInnerHTML` without an accompanying sanitization function.
+- Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
+
 GEMINI_EOF
-echo '  + .cursor/rules/800-security.mdc'
+echo '  + .cursor/rules/350-security-web.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/900-node.mdc
 ---
@@ -249,16 +370,17 @@ priority: 900
 ## HARD REQUIREMENTS
 
 - Analyze requests and output a numbered implementation plan before execution.
-- Execute a fail-fast verification sequence: `` `bun run format` `` -> `` `bun run lint:fix` `` -> `` `bun run typecheck` `` -> `` `bun run test` `` -> `` `bun run build` ``.
-- Stage verified files using `` `git add` `` individually and verify with `` `git status` ``.
+- Execute fail-fast verification: `bun run format` → `bun run lint:fix` → `bun run typecheck` → `bun run test` → `bun run build`.
+- Run `bun run lint:spell` after other checks pass or as a final optional step.
+- Stage all modified files using `git add .` and verify with `git status`.
 - Signal completion to the user for manual review and commit.
 
 ## NEGATIVE CONSTRAINTS
 
-- Do not execute the heavy `` `bun run check` `` script; use the individual fail-fast steps.
-- Do not execute `` `git commit` ``; hand off the staged environment to the user.
-- Do not proceed to subsequent verification steps if a previous step fails.
+- Do not execute `git commit`; hand off the staged environment to the user.
+- Do not proceed to the next step if the current step fails.
 - Do not modify code without a confirmed plan.
+- Do not run E2E tests (`test:e2e`) in the standard workflow; reserve for manual execution or CI.
 GEMINI_EOF
 echo '  + .cursor/rules/900-node.mdc'
 
