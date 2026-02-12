@@ -23,6 +23,7 @@
 
 ## CONSTRAINTS
 
+- Do not use vague action verbs (e.g., refine, enhance)
 - Do not use multi-word scopes or kebab-case (no dashes or spaces)
 - Do not use specific filenames as scopes.
 - Do not use a scope that duplicates the type.
