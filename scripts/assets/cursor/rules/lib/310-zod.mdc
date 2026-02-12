@@ -1,0 +1,25 @@
+---
+description: enforce zod schema validation, naming, and type inference
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+priority: 310
+---
+
+# ZOD VALIDATION STANDARDS
+
+## HARD REQUIREMENTS
+
+- Name schemas using PascalCase with a `Schema` suffix (e.g., `UserProfileSchema`).
+- Use `z.infer<typeof Schema>` to generate TypeScript types (Single Source of Truth).
+- Append `.strict()` to all schemas validating external API payloads to prevent data pollution.
+- Use `.parse()` for blocking validation (env vars) and `.safeParse()` for recoverable flows (forms).
+- Restrict `z.coerce` usage strictly to I/O boundaries (e.g., URL params); never use for internal data flow.
+- Co-locate schemas with consuming functions or place in `src/schemas/` if shared.
+
+## NEGATIVE CONSTRAINTS
+
+- Do not manually declare interfaces that duplicate Zod schemas.
+- Do not use `z.any()`; use `z.unknown()` for truly ambiguous inputs.
+- Do not use `.passthrough()` without a specific inline comment explaining why.
+- Do not use `.optional()` for fields that represent null values; use `.nullable()`.
+- Do not export the runtime Schema if only the inferred Type is required by consumers.
