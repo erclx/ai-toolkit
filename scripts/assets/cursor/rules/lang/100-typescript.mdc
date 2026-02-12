@@ -1,5 +1,5 @@
 ---
-description: enforce strict typescript and template syntax standards
+description: enforce strict typescript type safety and patterns
 globs: "**/*.ts,**/*.tsx"
 alwaysApply: false
 priority: 100
@@ -10,10 +10,15 @@ priority: 100
 ## HARD REQUIREMENTS
 
 - Enforce explicit types or strict inference using `unknown` over `any`.
-- Use `interface` for all object definitions and props.
+- Use `interface` for object shapes and component props.
+- Use `type` for unions, intersections, and utility types.
 - Use `Promise.all()` for independent operations to avoid serial waterfalls.
 - Prefer `readonly` properties for data objects.
 - Use absolute imports mapping `@/` to `src/`.
+- Use `import type` for type-only imports to enable proper tree-shaking.
+- Enable `strict: true` in tsconfig.json with no exceptions.
+- Use discriminated unions for error handling over throwing exceptions.
+- Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
 
 ## NEGATIVE CONSTRAINTS
 
