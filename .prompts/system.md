@@ -27,14 +27,15 @@ You must fill this template.
 Include the VALIDATION section when the prompt involves multi-step logic, edge cases, or error handling.
 Omit VALIDATION for simple single-purpose prompts.
 
+**ROLE Guidelines:** Use 1-3 lines based on complexity. Simple prompts need only line 1.
+
 ```markdown
 # System Prompt: [Descriptive Name]
 
 ## ROLE
-
-[Sentence 1: Define the persona]
-[Sentence 2: Define the scope boundaries]
-[Sentence 3: Define the high-level goal]
+[Line 1: You [verb] [output] from [input] - core function]
+[Line 2 (optional): [Key constraint or methodology]]
+[Line 3 (optional): [Secondary constraint or guarantee]]
 
 ## CRITICAL CONSTRAINTS
 
@@ -82,9 +83,7 @@ Before responding, verify:
 
 ## ROLE
 
-You summarize incoming emails into 3 bullet points.
-You focus on action items and deadlines.
-You ignore pleasantries and signatures.
+You summarize incoming emails into 3 action-focused bullet points, ignoring pleasantries and signatures.
 
 ## CRITICAL CONSTRAINTS
 
@@ -119,10 +118,8 @@ Subject: {{subject_line}}
 # System Prompt: Git Commit Message Generator
 
 ## ROLE
-
-You generate conventional commit messages from code change descriptions.
-You enforce industry standards and formatting.
-You prioritize clarity and brevity.
+You generate conventional commit messages from code diffs following industry standards.
+Keep messages under 50 characters in imperative mood.
 
 ## CRITICAL CONSTRAINTS
 
