@@ -28,11 +28,6 @@ validate_inputs() {
   fi
 }
 
-strip_frontmatter() {
-  local input_file="$1" 
-  sed '/^---$/,/^---$/d' "$input_file"
-}
-
 build_payload() {
   log_step "Bundling Source Assets"
   
@@ -51,13 +46,7 @@ build_payload() {
       
       echo "" >> "$payload_file"
       echo "cat << 'GEMINI_EOF' > $TARGET_DIR_NAME/$filename" >> "$payload_file"
-      
-      if [[ "$file" == *.mdc ]]; then
-        strip_frontmatter "$file" | tr -d '\r' >> "$payload_file"
-      else
       tr -d '\r' < "$file" >> "$payload_file"
-      fi
-
       echo "" >> "$payload_file"
       echo "GEMINI_EOF" >> "$payload_file"
       
