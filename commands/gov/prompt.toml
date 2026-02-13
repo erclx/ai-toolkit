@@ -1,110 +1,88 @@
-description = "generate master prompt from installed cursor rules"
+description = "compile master system prompt for external LLMs"
 
 prompt = """
-## 1. ROLE & CONTEXT
+## 1. OBSERVATION
 
-You are a File Aggregator that creates portable system prompts from installed governance rules.
+<DATA_CONTEXT>
+<RULES_DIR>
+!{ls .cursor/rules/*.mdc 2>/dev/null || echo "NO_RULES"}
+</RULES_DIR>
+</DATA_CONTEXT>
 
-## 2. TASK & CONSTRAINTS
+## 2. ROLE & CONTEXT
+
+You generate a shell script to aggregate project governance rules into a single Master Prompt file.
+Target File: `.gemini/.tmp/master-prompt.md`
+
+## 3. TASK & CONSTRAINTS
 
 ### Must Do:
 
-- Check if `.cursor/rules/` directory exists
-  - If not: Output error "❌ No rules installed. Run: gemini @commands/gov/rules"
-- Read all `.mdc` files from `.cursor/rules/` directory
-- Create `.gemini/.tmp/master-prompt.md` using file_create tool with this structure:
-  - Section 1: PROJECT GOVERNANCE RULES (concatenated .mdc content)
-  - Section 2: OUTPUT PROTOCOL (static format defined below)
-- Confirm file creation with usage instructions
+- Check <RULES_DIR>: If "NO_RULES", output `echo "❌ No rules found. Run 'gemini gov:rules' first."` and exit.
+- Generate a shell script that:
+  1. Creates directory `.gemini/.tmp`
+  2. Writes the "System Persona" header to the target file.
+  3. Appends ALL `.mdc` files from `.cursor/rules/` to the target file with labels.
+  4. Appends the "Output Protocol" footer to the target file.
+  5. Prints success message with full path.
+- Preserve YAML frontmatter in rules - it provides useful context.
 
 ### Must NOT Do:
 
-- Do not generate code or implement features
-- Do not modify rule content
-- Do not skip the OUTPUT PROTOCOL section
+- Do not read file contents yourself. Let `cat` do the work.
+- Do not use python or complex logic. Use standard bash (heredoc `<<`, redirection `>>`).
 
-## 3. RESPONSE STRATEGY
+## 4. RESPONSE FORMAT
 
-- **Thought:** Check for .cursor/rules/ directory and read all .mdc files
-- **Action:** Use file_create to write .gemini/.tmp/master-prompt.md
-- **Output:** Success message with usage instructions
+# PREVIEW
 
-## 4. MASTER PROMPT STRUCTURE
+- **Status:** [X rules found | NO_RULES]
+- **Output:** .gemini/.tmp/master-prompt.md
 
-Create the file with exactly this format:
+# FINAL COMMAND
 
-```markdown
-# PROJECT GOVERNANCE RULES
+```bash
+mkdir -p .gemini/.tmp
 
-[Concatenate ALL .mdc file contents from .cursor/rules/ here]
+# 1. Header
+cat << 'EOF' > .gemini/.tmp/master-prompt.md
+# SYSTEM INSTRUCTIONS
 
-# OUTPUT PROTOCOL
+## ROLE
+You are a Senior Principal Architect. You favor technical density and reject fluff.
 
-When implementing features or changes, you MUST respond using EXACTLY this format:
+## GOVERNANCE RULES
+The following rules are strictly enforced for this project:
 
-## Response Format
+EOF
+
+# 2. Inject Rules
+for f in .cursor/rules/*.mdc; do
+  echo -e "\n--- Rule: $(basename "$f") ---\n" >> .gemini/.tmp/master-prompt.md
+  cat "$f" >> .gemini/.tmp/master-prompt.md
+done
+
+# 3. Footer (Output Protocol)
+cat << 'EOF' >> .gemini/.tmp/master-prompt.md
+
+## OUTPUT PROTOCOL
+You must output your response in this exact format. Do not include preambles.
 
 # PLAN
-
-1. [First implementation step]
-2. [Second implementation step]
-3. [Continue for all steps needed]
+1. [Step 1]
+...
 
 # FILES
-
-## path/to/file.ts
-```typescript
-// Complete implementation here
-```
-
-## path/to/another-file.test.ts
-```typescript
-// Complete test implementation here
+## path/to/file.ext
+```language
+[code]
 ```
 
 # VERIFY
+[command to validate changes]
+EOF
 
-bun run format && bun run lint:fix && bun run typecheck && bun run test
-
-## Error Recovery Format
-
-If verification fails, respond with:
-
-# ERROR
-
+echo "👻 Master prompt generated: .gemini/.tmp/master-prompt.md"
+echo "👉 Copy this file content to your Web LLM."
 ```
-[Exact error output only - no explanations]
-```
-
-# FILES
-
-## path/to/fixed-file.ts
-```typescript
-// Corrected implementation
-```
-
-# VERIFY
-
-[Same verification command]
-
-## Critical Rules
-
-- Do NOT include prose outside these sections
-- Do NOT use placeholder comments like "// implementation here"
-- Do NOT skip the verification step
-- Do provide complete, production-ready code
-```
-
-## 5. USAGE INSTRUCTIONS
-
-After creating the file, output:
-
-✓ Master prompt generated at .gemini/.tmp/master-prompt.md
-
-Usage:
-1. Copy contents of .gemini/.tmp/master-prompt.md
-2. Paste into your LLM chat interface (Web Chat, etc.)
-3. Add your source code and feature request to the chat
-4. Copy the LLM's response
-5. Run: gemini @commands/dev/apply [paste response]
 """
