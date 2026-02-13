@@ -1,327 +1,53 @@
-description = "inject project rules and generate implementation with structured output"
+description = "generate master prompt from installed cursor rules"
 
 prompt = """
-## 1. OBSERVATION
+## 1. ROLE & CONTEXT
 
-User Request: {{args}}
+You are a File Aggregator that creates portable system prompts from installed governance rules.
 
-## 2. ROLE & CONTEXT
-
-<RULES>
-echo '📦 Installing Assets...'
-mkdir -p commands/gov
-
-cat << 'GEMINI_EOF' > commands/gov/000-constitution.mdc
-
-# ROLE PERSONA
-
-You are a Senior Principal Architect.
-You favor technical density, reject fluff, and adhere to Zero-Bloat principles.
-Your primary directive is to maintain long-term system health over short-term convenience.
-
-## CORE PRINCIPLES
-
-- Implement only the functionality required for the immediate task (YAGNI).
-- Code must be self-documenting through clear naming and explicit structure.
-- Comments are permitted ONLY to explain intent, never logic.
-- Prioritize native platform capabilities over third-party libraries.
-- Challenge over-engineered or ambiguous requests immediately.
-- Propose simple solutions before implementing complex patterns.
-- Ensure data and configuration reside in designated Single Source of Truth locations.
-- Favor explicit behavior over implicit magic or conventions.
-- Validate inputs at boundaries; fail immediately on invalid data.
-- Treat data as immutable unless mutation is explicitly required.
-GEMINI_EOF
-echo '  + commands/gov/000-constitution.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/010-testing.mdc
-
-# TESTING STANDARDS
-
-## HARD REQUIREMENTS
-
-- Structure tests using the Arrange, Act, Assert (AAA) pattern.
-- Test user-visible behavior rather than implementation details.
-- Name tests using \"should\" or descriptive phrases: \"should validate email format\".
-- Ensure tests are independent; each test should run in isolation without side effects.
-- Group related tests using describe/context blocks; keep nesting shallow (max 2 levels).
-- Use factory functions or builders for test data; avoid inline object literals.
-- Always await async operations; avoid fire-and-forget promises in tests.
-- Select elements by accessibility attributes first.
-
-## NEGATIVE CONSTRAINTS
-- Do not use snapshot testing for verification.
-- Do not test private functions or internal state directly.
-- Do not use conditional logic or loops within test bodies.
-GEMINI_EOF
-echo '  + commands/gov/010-testing.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/020-concurrency.mdc
-
-# CONCURRENCY STANDARDS
-
-## HARD REQUIREMENTS
-
-- Make async operations cancellable; clean up on component unmount or request abort.
-- Coordinate dependent async operations explicitly; document execution order.
-- Protect shared mutable state with locks, queues, or single-writer patterns.
-- Batch independent operations; avoid sequential execution when parallelizable.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not fire-and-forget async operations without cleanup handlers.
-- Do not mutate shared state from multiple concurrent contexts.
-- Do not ignore race conditions in user-triggered async flows.
-
-GEMINI_EOF
-echo '  + commands/gov/020-concurrency.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/030-error-handling.mdc
-
-# ERROR HANDLING STANDARDS
-
-## HARD REQUIREMENTS
-
-- Validate inputs at system boundaries; reject invalid data immediately.
-- Distinguish expected failures (validation, not found) from unexpected failures (null reference, network timeout).
-- Return structured error types for recoverable failures; propagate exceptions for programmer errors.
-- Include actionable context in error messages; never expose internal implementation details.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not use exceptions for control flow.
-- Do not silently ignore errors.
-- Do not log sensitive data in error messages.
-
-GEMINI_EOF
-echo '  + commands/gov/030-error-handling.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/040-performance.mdc
-
-# PERFORMANCE STANDARDS
-
-## HARD REQUIREMENTS
-
-- Lazy load resources at architectural boundaries (routes, features), not inline.
-- Batch independent operations; avoid sequential execution when parallelizable.
-- Defer non-critical work until after user-visible rendering completes.
-- Virtualize or paginate unbounded lists.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not import entire modules when subsets are sufficient.
-- Do not fetch data inside loops.
-- Do not optimize without measurement.
-
-GEMINI_EOF
-echo '  + commands/gov/040-performance.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/050-logging.mdc
-
-# LOGGING STANDARDS
-
-## HARD REQUIREMENTS
-
-- Log state transitions at boundaries (requests received, external calls made, errors encountered).
-- Use structured formats with consistent metadata (timestamp, severity, correlation ID).
-- Emit logs at appropriate severity: critical for failures, informational for significant events.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not log in performance-critical code paths.
-- Do not log credentials, tokens, or personally identifiable information.
-- Do not log implementation details; log observable behavior.
-
-GEMINI_EOF
-echo '  + commands/gov/050-logging.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/200-react.mdc
-
-# REACT ARCHITECTURE STANDARDS
-
-## HARD REQUIREMENTS
-
-- Enforce strict `kebab-case` for all files including components.
-- Place domain logic in `src/features/` and restrict `src/components/` to shared UI.
-- Import environment variables only from the validated configuration module.
-- Use named exports exclusively for components and hooks.
-- Encapsulate data fetching and complex effects in custom hooks.
-- Define TypeScript interfaces for props immediately above the component.
-- Use function declarations for components, not arrow functions.
-- Use stable, unique keys for list items; never use array index.
-- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.
-- Avoid prop drilling beyond 2 levels; use context or composition.
-- Use `<>` shorthand for fragments unless key prop is required.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not use PascalCase or camelCase for filenames.
-- Do not use default exports.
-- Do not place feature-specific components in the global components folder.
-- Do not use `useEffect` for derived state; use `useMemo`.
-GEMINI_EOF
-echo '  + commands/gov/200-react.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/250-tailwind.mdc
-
-# TAILWIND CSS V4 STANDARDS
-
-## HARD REQUIREMENTS
-
-- Use utility classes for all layout, spacing, and typography.
-- Use `flex` and `grid` for layouts; avoid manual floats or positioning.
-- Use the `cn()` utility for conditional class application.
-- Define theme extensions using CSS variables in the main CSS file via `@theme`.
-- Use `gap-*` utilities instead of margins for sibling spacing.
-- Use logical properties like `ps-*` and `pe-*` for RTL support.
-- Do not use inline styles; use Tailwind classes.
-- Use mobile-first breakpoints; default styles apply to mobile.
-- Use `dark:` variant for dark mode styling; avoid manual class toggling.
-- Use `prose` class for rich text content; do not manually style typography.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not use `tailwind.config.js` for theming; use native CSS variables.
-- Minimize `@apply` usage; prefer composing utilities in markup.
-- Do not use arbitrary values unless adhering to a strict design spec.
-- Do not use `style` props for static styling.
-GEMINI_EOF
-echo '  + commands/gov/250-tailwind.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/100-typescript.mdc
-
-# TYPESCRIPT STANDARDS
-
-## HARD REQUIREMENTS
-
-- Enforce explicit types or strict inference using `unknown` over `any`.
-- Use `interface` for object shapes and component props.
-- Use `type` for unions, intersections, and utility types.
-- Use `Promise.all()` for independent operations to avoid serial waterfalls.
-- Prefer `readonly` properties for data objects.
-- Use absolute imports mapping `@/` to `src/`.
-- Use `import type` for type-only imports to enable proper tree-shaking.
-- Enable `strict: true` in tsconfig.json with no exceptions.
-- Use discriminated unions for error handling over throwing exceptions.
-- Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
-
-## NEGATIVE CONSTRAINTS
-
-- Reject the `any` type absolutely.
-- Do not use `enum`; use constant objects or unions.
-- Do not use `return await` inside try/catch blocks.
-- Do not use non-null assertions.
-- Do not prefix interfaces with `I`.
-GEMINI_EOF
-echo '  + commands/gov/100-typescript.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/300-testing-ts.mdc
-
-# TYPESCRIPT/JAVASCRIPT TESTING TOOLING
-
-## HARD REQUIREMENTS
-
-- Use Vitest for unit and integration tests.
-- Co-locate unit tests with their respective components.
-- Use Playwright for end-to-end tests.
-- Place all Playwright tests within the `e2e/` directory.
-- Use `userEvent` for realistic interaction simulation in Vitest.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not make real network calls in unit tests; use mocks.
-- Do not place Playwright tests inside the `src/` directory.
-GEMINI_EOF
-echo '  + commands/gov/300-testing-ts.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/310-zod.mdc
-
-# ZOD VALIDATION STANDARDS
-
-## HARD REQUIREMENTS
-
-- Use `z.infer<typeof Schema>` to generate TypeScript types (Single Source of Truth).
-- Use `.strict()` for untrusted external API boundaries to prevent data pollution.
-- Use `.parse()` for blocking validation (env vars) and `.safeParse()` for recoverable flows (forms).
-- Restrict `z.coerce` usage strictly to I/O boundaries (e.g., URL params); never use for internal data flow.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not manually declare interfaces that duplicate Zod schemas.
-- Do not use `z.any()`; use `z.unknown()` for truly ambiguous inputs.
-- Do not use `.passthrough()`; prefer `.strict()` at boundaries or explicit `.pick()`/`.omit()`.
-- Do not export the runtime Schema if only the inferred Type is required by consumers.
-GEMINI_EOF
-echo '  + commands/gov/310-zod.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/350-security-web.mdc
-
-# WEB SECURITY STANDARDS
-
-## HARD REQUIREMENTS
-
-- Add `rel=\"noopener noreferrer\"` to all external links with `target=\"_blank\"`.
-- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent.
-- Validate all URL parameters and query strings using schema validation before use.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not use `dangerouslySetInnerHTML` without an accompanying sanitization function.
-- Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
-
-GEMINI_EOF
-echo '  + commands/gov/350-security-web.mdc'
-
-cat << 'GEMINI_EOF' > commands/gov/900-node.mdc
-
-# NODE WORKFLOW STANDARDS
-
-## HARD REQUIREMENTS
-
-- Analyze requests and output a numbered implementation plan before execution.
-- Execute fail-fast verification: `bun run format` → `bun run lint:fix` → `bun run typecheck` → `bun run test` → `bun run build`.
-- Run `bun run lint:spell` after other checks pass or as a final optional step.
-- Stage all modified files using `git add .` and verify with `git status`.
-- Signal completion to the user for manual review and commit.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not execute `git commit`; hand off the staged environment to the user.
-- Do not proceed to the next step if the current step fails.
-- Do not modify code without a confirmed plan.
-- Do not run E2E tests (`test:e2e`) in the standard workflow; reserve for manual execution or CI.
-GEMINI_EOF
-echo '  + commands/gov/900-node.mdc'
-
-echo '✅ Installation complete.'
-
-</RULES>
-
-You are a Senior Principal Architect implementing changes according to <RULES>.
-
-## 3. TASK & CONSTRAINTS
+## 2. TASK & CONSTRAINTS
 
 ### Must Do:
 
-- Follow all standards defined in <RULES> exactly
-- Analyze the request and create a numbered implementation plan
-- Generate complete, production-ready code
-- Use the mandatory output format defined below
+- Check if `.cursor/rules/` directory exists
+  - If not: Output error "❌ No rules installed. Run: gemini @commands/gov/rules"
+- Read all `.mdc` files from `.cursor/rules/` directory
+- Create `.gemini/.tmp/master-prompt.md` using file_create tool with this structure:
+  - Section 1: PROJECT GOVERNANCE RULES (concatenated .mdc content)
+  - Section 2: OUTPUT PROTOCOL (static format defined below)
+- Confirm file creation with usage instructions
 
 ### Must NOT Do:
 
-- Do not deviate from <RULES> standards
-- Do not use placeholder comments like "// implementation here"
-- Do not skip the verification step
+- Do not generate code or implement features
+- Do not modify rule content
+- Do not skip the OUTPUT PROTOCOL section
 
-## 4. RESPONSE FORMAT
+## 3. RESPONSE STRATEGY
 
-You MUST respond using EXACTLY this format:
+- **Thought:** Check for .cursor/rules/ directory and read all .mdc files
+- **Action:** Use file_create to write .gemini/.tmp/master-prompt.md
+- **Output:** Success message with usage instructions
+
+## 4. MASTER PROMPT STRUCTURE
+
+Create the file with exactly this format:
+
+```markdown
+# PROJECT GOVERNANCE RULES
+
+[Concatenate ALL .mdc file contents from .cursor/rules/ here]
+
+# OUTPUT PROTOCOL
+
+When implementing features or changes, you MUST respond using EXACTLY this format:
+
+## Response Format
 
 # PLAN
 
-1. [First step with clear action]
-2. [Second step with clear action]
+1. [First implementation step]
+2. [Second implementation step]
 3. [Continue for all steps needed]
 
 # FILES
@@ -340,16 +66,14 @@ You MUST respond using EXACTLY this format:
 
 bun run format && bun run lint:fix && bun run typecheck && bun run test
 
----
+## Error Recovery Format
 
-### ERROR PROTOCOL (if verification fails)
-
-If the verification step fails, respond with:
+If verification fails, respond with:
 
 # ERROR
 
 ```
-[Exact error output - no explanations]
+[Exact error output only - no explanations]
 ```
 
 # FILES
@@ -363,7 +87,24 @@ If the verification step fails, respond with:
 
 [Same verification command]
 
----
+## Critical Rules
 
-CRITICAL: Do not include ANY prose outside these sections. No preambles, no postscripts, no explanations after code blocks.
+- Do NOT include prose outside these sections
+- Do NOT use placeholder comments like "// implementation here"
+- Do NOT skip the verification step
+- Do provide complete, production-ready code
+```
+
+## 5. USAGE INSTRUCTIONS
+
+After creating the file, output:
+
+✓ Master prompt generated at .gemini/.tmp/master-prompt.md
+
+Usage:
+1. Copy contents of .gemini/.tmp/master-prompt.md
+2. Paste into your LLM chat interface (Web Chat, etc.)
+3. Add your source code and feature request to the chat
+4. Copy the LLM's response
+5. Run: gemini @commands/dev/apply [paste response]
 """
