@@ -28,6 +28,11 @@ validate_inputs() {
   fi
 }
 
+strip_frontmatter() {
+  local input_file="$1" 
+  sed '/^---$/,/^---$/d' "$input_file"
+}
+
 build_payload() {
   log_step "Bundling Source Assets"
   
@@ -44,6 +49,13 @@ build_payload() {
       filename=$(basename "$file")
       local rel_path="${file#$SOURCE_DIR/}"
       
+      if [[ "$file" == *.mdc ]]; then
+        echo "" >> "$payload_file"
+        echo "cat << 'GEMINI_EOF' > $TARGET_DIR_NAME/$filename" >> "$payload_file"
+        strip_frontmatter "$file" | tr -d '\r' >> "$payload_file"
+        echo "" >> "$payload_file"
+        echo "GEMINI_EOF" >> "$payload_file"
+      else
       echo "" >> "$payload_file"
       echo "cat << 'GEMINI_EOF' > $TARGET_DIR_NAME/$filename" >> "$payload_file"
       tr -d '\r' < "$file" >> "$payload_file"
