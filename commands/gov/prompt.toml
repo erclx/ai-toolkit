@@ -11,26 +11,20 @@ prompt = """
 
 ## 2. ROLE & CONTEXT
 
-You generate a shell script to aggregate project governance rules into a single Master Prompt file.
+You validate the observation and output the exact script below.
 Target File: `.gemini/.tmp/master-prompt.md`
 
 ## 3. TASK & CONSTRAINTS
 
 ### Must Do:
 
-- Check <RULES_DIR>: If "NO_RULES", output `echo "❌ No rules found. Run 'gemini gov:rules' first."` and exit.
-- Generate a shell script that:
-  1. Creates directory `.gemini/.tmp`
-  2. Writes the "System Persona" header to the target file.
-  3. Appends ALL `.mdc` files from `.cursor/rules/` to the target file with labels.
-  4. Appends the "Output Protocol" footer to the target file.
-  5. Prints success message with full path.
-- Preserve YAML frontmatter in rules - it provides useful context.
+- Check <RULES_DIR>: If "NO_RULES", inform user to run 'gemini gov:rules' first.
+- If rules exist, output the EXACT script below without modification.
 
 ### Must NOT Do:
 
-- Do not read file contents yourself. Let `cat` do the work.
-- Do not use python or complex logic. Use standard bash (heredoc `<<`, redirection `>>`).
+- Do not modify the script structure, heredocs, or loop logic.
+- Do not add conditional checks or validation beyond the observation.
 
 ## 4. RESPONSE FORMAT
 
