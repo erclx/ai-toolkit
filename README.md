@@ -22,6 +22,7 @@ Install the governance rules:
 ## Commands
 
 ### Architecture and discovery
+
 - `/ai-toolkit.setup:rules` - Install Cursor governance rules in the local project.
 - `/ai-toolkit.setup:cursor` - Create a sandbox to test governance rules.
 
@@ -29,14 +30,7 @@ Install the governance rules:
 
 - `/ai-toolkit.git:commit` - Read staged changes to write atomic conventional commits.
 - `/ai-toolkit.git:pr` - Write a documentation-focused PR description and open a draft.
-- `/ai-toolkit.git:changelog` - Build a clean release history for humans.
 
-### Quality and linting
+### Versioning and release
 
-- `/ai-toolkit.lint:spelling` - Fix spelling errors and update dictionaries.
-
-## Patterns
-
-- **Ghost folder:** Isolate state in `.gemini/.tmp/`.
-- **Zero-bloat:** Prioritize technical density over narrative.
-- **Atomic history:** Treat commits and PRs as immutable records.
+- `/ai-toolkit.release:changelog` - Build a clean release history for humans.

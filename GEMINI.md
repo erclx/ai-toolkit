@@ -1,74 +1,74 @@
-# AI Toolkit - Gemini CLI Extension
+# AI Toolkit - Gemini CLI Extension Context
 
-The AI Toolkit is a Gemini CLI extension built for codebase governance and automation.
-It automates Git operations, enforces code standards, and manages sandboxed testing environments.
+Defines instructional context for the Gemini CLI agent. Specifies project purpose, functionalities, and operational conventions for assistance in development, standards adherence, and tool usage.
 
----
+## Project Overview
 
-## Installation and setup
+The AI Toolkit extends the Gemini CLI with automated governance, versioning, and discovery tools. Custom commands improve code quality and manage releases. Integrates with Git for version control, shell scripting for automation, and markdown for governance rules and documentation.
 
-### Install the extension
+## Building and Running
 
-Link the toolkit to your Gemini CLI:
+Commands for setup, build, and maintenance.
+
+### Installation
+
+Install and link the toolkit locally:
 
 ```bash
 git clone git@github.com:erclx/ai-toolkit.git
 cd ai-toolkit
 gemini extensions link .
-
 ```
 
-### Apply governance rules
+### Setup Governance Rules and Documentation
 
-Install the project rules:
+Compile governance rules and synchronize documentation to generate Gemini CLI command definitions.
 
 ```bash
-/ai-toolkit.setup:rules
-
+./scripts/build-gov.sh
 ```
 
-### Build and lint scripts
+Execution details:
+- Processes markdown rules (`scripts/assets/cursor/rules/*.mdc`) and documentation (`scripts/assets/docs/*.md`) via `scripts/build/compiler.sh`
+- Generates command definitions (`commands/gov/rules.toml` and `commands/gov/docs.toml`)
+- Syncs documentation from `scripts/assets/docs` to `docs/`
+- Stages and commits generated artifacts
 
-| Command | Action |
-| --- | --- |
-| `bun run build:gov` | Compiles governance rules and documentation |
-| `bun run lint:spelling` | Checks spelling across the project |
+### Linting
 
----
+Check spelling errors:
 
-## Testing and sandboxing
+```bash
+bun run lint:spelling
+```
 
-The toolkit manages test environments through sandboxing to keep your main system clean.
+## Development Conventions
 
-- **Management**: The `scripts/manage-test.sh` script handles sandbox creation.
-- **Stages**: Commands run in predefined sequences found in `scripts/stages`.
-- **Environment**: Sandboxes use `gemini-2.5-flash` as the default model.
-- **Context**: Use "anchor" repositories to provide specific starting points for tests.
+Conventions ensure consistency and effective Gemini CLI usage.
 
----
+### Gemini CLI Command Definitions
 
-## Development conventions
+- Define custom commands in `.toml` files within `commands/`.
+- Reference external files to provide context, standards, or dynamic data.
+- Example: `commands/git/commit.toml` references `docs/commit.md` for conventional commit standards.
 
-### Commit message format
+### Governance Rules
 
-Use the conventional commit format with a strict lowercase requirement.
+- Author rules in `.mdc` (Markdown with Code) files under `scripts/assets/cursor/rules/`.
+- `scripts/build-gov.sh` compiles files into command definitions for consistent application.
 
-- **Template**: `<type>(<scope>): <subject>`
-- **Casing**: Use 100% lowercase for the entire message.
-- **Scope**: Use a directory name or system component (e.g., `scripts`).
-- **Limit**: Keep subjects under 72 characters and do not use trailing periods.
+### Documentation
 
-### Core engineering principles
+- Write documentation in standard Markdown (`.md`).
+- Store sources in `scripts/assets/docs/`.
+- `scripts/build-gov.sh` syncs sources to the root `docs/` directory.
 
-- **Zero bloat**: Implement only what you need now.
-- **Zero comments**: Code must be self-explanatory.
-- **Why over what**: Use comments only to explain intent, not logic.
-- **Native first**: Avoid adding dependencies if native platform tools exist.
-- **Idempotency**: Ensure scripts are safe to run multiple times.
-- **Temporary state**: Store all transient data in `.gemini/.tmp/`.
+## Available Gemini Commands
 
-### AI communication standards
+Custom commands assist development tasks:
 
-- Use the imperative voice for all descriptions.
-- Use ventilated prose (one sentence per line).
-- Avoid emojis and marketing language.
+- `/ai-toolkit.setup:rules`: Installs local Cursor governance rules.
+- `/ai-toolkit.setup:cursor`: Creates governance rule testing sandbox.
+- `/ai-toolkit.git:commit`: Generates atomic conventional commit messages from staged changes.
+- `/ai-toolkit.git:pr`: Drafts PRs and writes documentation-focused descriptions.
+- `/ai-toolkit.release:changelog`: Builds release history.
