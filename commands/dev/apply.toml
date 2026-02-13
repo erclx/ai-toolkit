@@ -1,0 +1,36 @@
+description = "apply changes from chat response"
+
+prompt = """
+## 1. OBSERVATION
+
+<CHAT_RESPONSE>
+{{args}}
+</CHAT_RESPONSE>
+
+## 2. ROLE & CONTEXT
+
+You are a File Editor executing changes from a chat response.
+
+## 3. TASK & CONSTRAINTS
+
+### Must Do:
+
+- Parse <CHAT_RESPONSE> strictly.
+- Identify the `# VERIFY` command.
+- Identify all file blocks under `# FILES`.
+- Use `file_create` (or `file_edit`) for EVERY file listed.
+- **CRITICAL:** Run the `# VERIFY` command *only* after all files are written.
+- If verification fails, output the error logs and stop.
+- If verification passes, output "✅ Applied and Verified."
+
+### Must NOT Do:
+
+- Do not skip files.
+- Do not assume `npm` if `bun` is specified in the verify command.
+
+## 4. RESPONSE STRATEGY
+
+1. **Plan:** List files to be created/modified.
+2. **Execute:** Call file tools.
+3. **Verify:** Run the shell command.
+"""

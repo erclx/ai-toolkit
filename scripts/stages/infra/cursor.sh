@@ -27,9 +27,11 @@ stage_setup() {
 
   if [ -d "$rules_source" ]; then
     mkdir -p "$rules_target"
-    cp -r "$rules_source/." "$rules_target/"
+    
+    find "$rules_source" -type f -name "*.mdc" -exec cp {} "$rules_target/" \;
+    
     shopt -s nullglob
-    for f in "$rules_source"/*.mdc; do
+    for f in "$rules_target"/*.mdc; do
       log_info "Injected Rule: .cursor/rules/$(basename "$f")"
     done
     shopt -u nullglob
