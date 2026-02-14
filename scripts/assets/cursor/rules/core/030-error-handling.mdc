@@ -18,4 +18,3 @@ priority: 30
 - Do not use exceptions for control flow.
 - Do not silently ignore errors.
 - Do not log sensitive data in error messages.
-

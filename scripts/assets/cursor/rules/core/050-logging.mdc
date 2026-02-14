@@ -17,4 +17,3 @@ priority: 50
 - Do not log in performance-critical code paths.
 - Do not log credentials, tokens, or personally identifiable information.
 - Do not log implementation details; log observable behavior.
-
