@@ -62,20 +62,23 @@ Goal: Update README.md sections affected by code changes.
 ## 4. RESPONSE STRATEGY
 
 - **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES> → determine if user-facing → identify existing README sections → map changes to appropriate sections → plan specific updates
-- **Preview:** Output impact analysis showing which sections will be updated and why
+- **Preview:** Output impact analysis showing which sections will be updated and why (no status emoji in preview)
 - **Execute:** Based on user response, use `file_edit` tool to update README.md with the planned changes, adjust the plan based on user feedback, or abort if requested
-- **Report:** After execution, output "✅ README.md updated. Review with `git diff README.md`" or "✅ No changes needed."
+- **Report:** 
+  - If changes applied: "✅ README.md updated. Review with `git diff README.md`"
+  - If user skipped/aborted: "⏭️ No changes applied"
+  - If no user-facing changes detected: "✅ No user-facing changes detected"
 
 ## 5. PREVIEW FORMAT
 
 # PREVIEW
 
 - **Impact:** [user-facing | internal-only]
-- **Affected Sections:** [Installation, Usage, Features, Configuration, None]
-- **Justification:**
-  - [Section Name]: [Specific code change that requires update]
-  - [Section Name]: [Specific code change that requires update]
-- **Action:** [Will update README | No changes needed]
+- **Sections:** [Configuration, Usage, Features, etc. | None]
+- **Changes:**
+  - [Section]: [Specific change description]
+  - [Section]: [Specific change description]
 
-[If user-facing changes, wait for user confirmation before executing]
+[If internal-only, stop here with "✅ No user-facing changes detected"]
+[If user-facing, wait silently for user confirmation]
 """
