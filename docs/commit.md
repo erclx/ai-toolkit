@@ -37,8 +37,8 @@
 ### Correct
 
 ```
-feat(api): add retry logic for failed webhooks
-fix(auth): update 'UserSession' validation logic
+feat(api): add retry logic for failed webhooks    # specific action + clear scope
+fix(auth): update 'UserSession' validation logic  # single quotes for class names
 ```
 
 ### Incorrect
