@@ -66,7 +66,7 @@ Goal: Update README.md sections affected by code changes.
 - **Preview:** Output impact analysis showing which sections will be updated and why (no status emoji in preview)
 - **Execute:** Based on user response, use `file_edit` tool to update README.md with the planned changes, adjust the plan based on user feedback, or abort if requested
 - **Report:** 
-  - If changes applied: "✅ README.md updated. Review with `git diff README.md`"
+  - If changes applied: "✅ README.md updated."
   - If user skipped/aborted: "⏭️ No changes applied"
   - If no user-facing changes detected: "✅ No user-facing changes detected"
 
