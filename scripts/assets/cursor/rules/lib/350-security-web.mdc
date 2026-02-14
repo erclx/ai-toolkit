@@ -17,4 +17,3 @@ priority: 350
 
 - Do not use `dangerouslySetInnerHTML` without an accompanying sanitization function.
 - Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
-

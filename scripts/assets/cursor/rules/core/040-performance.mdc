@@ -18,4 +18,3 @@ priority: 40
 - Do not import entire modules when subsets are sufficient.
 - Do not fetch data inside loops.
 - Do not optimize without measurement.
-
