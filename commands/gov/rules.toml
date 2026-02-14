@@ -49,6 +49,7 @@ Your primary directive is to maintain long-term system health over short-term co
 - Favor explicit behavior over implicit magic or conventions.
 - Validate inputs at boundaries; fail immediately on invalid data.
 - Treat data as immutable unless mutation is explicitly required.
+
 GEMINI_EOF
 echo '  + .cursor/rules/000-constitution.mdc'
 
@@ -76,6 +77,7 @@ priority: 10
 - Do not use snapshot testing for verification.
 - Do not test private functions or internal state directly.
 - Do not use conditional logic or loops within test bodies.
+
 GEMINI_EOF
 echo '  + .cursor/rules/010-testing.mdc'
 
@@ -208,6 +210,7 @@ priority: 200
 - Do not use default exports.
 - Do not place feature-specific components in the global components folder.
 - Do not use `useEffect` for derived state; use `useMemo`.
+
 GEMINI_EOF
 echo '  + .cursor/rules/200-react.mdc'
 
@@ -240,6 +243,7 @@ priority: 250
 - Minimize `@apply` usage; prefer composing utilities in markup.
 - Do not use arbitrary values unless adhering to a strict design spec.
 - Do not use `style` props for static styling.
+
 GEMINI_EOF
 echo '  + .cursor/rules/250-tailwind.mdc'
 
@@ -273,6 +277,7 @@ priority: 100
 - Do not use `return await` inside try/catch blocks.
 - Do not use non-null assertions.
 - Do not prefix interfaces with `I`.
+
 GEMINI_EOF
 echo '  + .cursor/rules/100-typescript.mdc'
 
@@ -298,6 +303,7 @@ priority: 300
 
 - Do not make real network calls in unit tests; use mocks.
 - Do not place Playwright tests inside the `src/` directory.
+
 GEMINI_EOF
 echo '  + .cursor/rules/300-testing-ts.mdc'
 
@@ -324,6 +330,7 @@ priority: 310
 - Do not use `z.any()`; use `z.unknown()` for truly ambiguous inputs.
 - Do not use `.passthrough()`; prefer `.strict()` at boundaries or explicit `.pick()`/`.omit()`.
 - Do not export the runtime Schema if only the inferred Type is required by consumers.
+
 GEMINI_EOF
 echo '  + .cursor/rules/310-zod.mdc'
 
@@ -375,6 +382,7 @@ priority: 900
 - Do not proceed to the next step if the current step fails.
 - Do not modify code without a confirmed plan.
 - Do not run E2E tests (`test:e2e`) in the standard workflow; reserve for manual execution or CI.
+
 GEMINI_EOF
 echo '  + .cursor/rules/900-node.mdc'
 

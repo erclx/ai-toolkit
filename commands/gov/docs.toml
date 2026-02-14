@@ -130,6 +130,7 @@ All notable changes to this project will be documented in this file.
 
 - The default timeout has been increased from 30 seconds to 60 seconds to improve reliability and ensure seamless operation.
 ```
+
 GEMINI_EOF
 echo '  + docs/changelog.md'
 
@@ -184,6 +185,7 @@ fix(user-auth): Fixed the redirect loop.  # wrong casing + period
 docs(docs): update the readme.            # duplicate scope + period
 docs(api): improve documentation          # vague verb + lacks specificity
 ```
+
 GEMINI_EOF
 echo '  + docs/commit.md'
 
@@ -262,6 +264,7 @@ This PR updates the authentication system to be more robust.
 ## Testing
 - Tested manually
 ```
+
 GEMINI_EOF
 echo '  + docs/pr.md'
 
@@ -316,6 +319,7 @@ It should be noted that configuration lives in `vite.config.ts`. You can very ea
 - **Seamless** hot module replacement during development
 - **Powerful** tree-shaking for production builds
 - **Enhanced** TypeScript support without additional setup
+
 GEMINI_EOF
 echo '  + docs/prose.md'
 
@@ -536,6 +540,7 @@ of this software and associated documentation files...
 
 [...full license text...]
 ````
+
 GEMINI_EOF
 echo '  + docs/readme.md'
 
