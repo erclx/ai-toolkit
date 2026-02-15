@@ -325,14 +325,14 @@ main() {
   
   export PROJECT_ROOT
 
-  if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
-     echo -e "${GREY}┌${NC}"
-     log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
-  fi
-
   if [[ "$1" == "sync" ]]; then
     shift
     exec "$PROJECT_ROOT/scripts/sync-gov.sh" "$@"
+  fi
+
+  if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
+     echo -e "${GREY}┌${NC}"
+     log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
   fi
   
   SANDBOX="$PROJECT_ROOT/.sandbox"
