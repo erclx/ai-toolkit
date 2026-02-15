@@ -15,29 +15,63 @@ log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2; exit 1; }
 log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
 log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
 
-confirm() {
+select_option() {
   local prompt_text=$1
-  echo -ne "${GREY}│${NC}\n${GREEN}◆${NC} ${prompt_text} [y/N] " >&2
-  read -n 1 -r input
-  if [[ "$input" =~ ^[Yy]$ ]]; then
-    echo -e "\033[1A\r\033[K${GREY}◇${NC} ${prompt_text} ${WHITE}Yes${NC}" >&2
-    return 0
-  else
-    echo -e "\033[1A\r\033[K${GREY}◇${NC} ${prompt_text} ${RED}Skipped${NC}" >&2
-    return 1
-  fi
+  shift
+  local options=("$@")
+  local cur=0
+  local count=${#options[@]}
+
+  echo -ne "${GREY}│${NC}\n${GREEN}◆${NC} ${prompt_text}\n" >&2
+
+  while true; do
+    for i in "${!options[@]}"; do
+      if [ $i -eq $cur ]; then
+        echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}" >&2
+      else
+        echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}" >&2
+      fi
+    done
+
+    read -rsn1 key
+    case "$key" in
+      $'\x1b')
+        if read -rsn2 -t 0.001 key_seq; then
+          if [[ "$key_seq" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
+          if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
+        else
+          echo -en "\033[$((count + 1))A\033[J" >&2
+          echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+          exit 1
+        fi
+        ;;
+      "k") cur=$(( (cur - 1 + count) % count ));;
+      "j") cur=$(( (cur + 1) % count ));;
+      "q")
+        echo -en "\033[$((count + 1))A\033[J" >&2
+        echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+        exit 1
+        ;;
+      "") break ;;
+    esac
+
+    echo -en "\033[${count}A" >&2
+  done
+
+  echo -en "\033[$((count + 1))A\033[J" >&2
+  echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
+  SELECTED_OPTION="${options[$cur]}"
 }
 
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Governance Sync Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./scripts/sync-gov.sh [target-path] [options]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./scripts/sync-gov.sh [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path      ${GREY}# Target directory (default: current directory)${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    -d, --dry-run    ${GREY}# Preview changes without applying${NC}"
   echo -e "${GREY}│${NC}    -h, --help       ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
   exit 0
@@ -57,60 +91,24 @@ validate_target() {
   echo "$target"
 }
 
-sync_file() {
-  local src=$1
-  local rel_path=$2
-  local target_root=$3
-  local dry_run=$4
-  local dest="$target_root/$rel_path"
-
-  if [ ! -f "$dest" ]; then
-    if [ "$dry_run" != "true" ]; then
-    mkdir -p "$(dirname "$dest")"
-    cp "$src" "$dest"
-    fi
-    if [ "$dry_run" == "true" ]; then
-      log_add "${GREY}(dry)${NC} $rel_path"
-    else
-    log_add "$rel_path"
-    fi
-    return 0
-  fi
-
-  if diff -q "$src" "$dest" >/dev/null 2>&1; then
-    return 1
-  fi
-
-  log_warn "Conflict detected: $rel_path"
-  
-    if command -v diff >/dev/null; then
-      echo -e "${GREY}│${NC}" >&2
-      diff --color=always -u "$dest" "$src" | head -n 5 | sed "s/^/${GREY}│${NC} /" >&2
-    fi
-    
-    if confirm "Overwrite file?"; then
-      if [ "$dry_run" != "true" ]; then
-      cp "$src" "$dest"
-      fi
-      log_info "Overwritten"
-      return 0
-    else
-      return 1
-    fi
-}
-
-process_directory() {
+collect_changes() {
   local src_dir=$1
   local target_dir=$2
   local pattern=$3
   local dest_prefix=$4
-  local dry_run=$5
   local count=0
 
   if [ -d "$src_dir" ]; then
     while IFS= read -r file; do
       local rel="$(basename "$file")"
-      if sync_file "$file" "$dest_prefix/$rel" "$target_dir" "$dry_run"; then
+      local dest="$target_dir/$dest_prefix/$rel"
+      if [ ! -f "$dest" ]; then
+        log_add "$dest_prefix/$rel"
+        echo "$file|$dest" >> "$PENDING_FILE"
+        ((count++))
+      elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
+        log_warn "Changed: $dest_prefix/$rel"
+        echo "$file|$dest" >> "$PENDING_FILE"
         ((count++))
       fi
     done < <(find "$src_dir" -name "$pattern")
@@ -121,9 +119,17 @@ process_directory() {
   echo "$count"
 }
 
+apply_changes() {
+  while IFS= read -r entry; do
+    local src="${entry%%|*}"
+    local dest="${entry##*|}"
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+  done < "$PENDING_FILE"
+}
+
 parse_args() {
   TARGET_PATH="."
-  DRY_RUN_MODE="false"
 
   if [[ $# -gt 0 && "$1" != -* ]]; then
     TARGET_PATH="$1"
@@ -134,10 +140,6 @@ parse_args() {
     case $1 in
       -h|--help)
         show_help
-        ;;
-      -d|--dry-run)
-        DRY_RUN_MODE="true"
-        shift
         ;;
       *)
         shift
@@ -156,30 +158,42 @@ main() {
   echo -e "${GREY}┌${NC}" >&2
   TARGET_PATH=$(validate_target "$TARGET_PATH")
 
+  PENDING_FILE=$(mktemp)
+  trap 'rm -f "$PENDING_FILE"' EXIT
+
   local gov_count=0
   local doc_count=0
 
   log_step "Syncing Governance Rules"
-  gov_count=$(process_directory "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules" "$DRY_RUN_MODE")
+  gov_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
 
   if [ "$gov_count" -eq 0 ]; then
     log_info "All governance rules up to date"
   fi
 
   log_step "Syncing Documentation"
-  doc_count=$(process_directory "$PROJECT_ROOT/scripts/assets/docs" "$TARGET_PATH" "*.md" "docs" "$DRY_RUN_MODE")
+  doc_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/docs" "$TARGET_PATH" "*.md" "docs")
 
   if [ "$doc_count" -eq 0 ]; then
     log_info "All documentation up to date"
   fi
 
+  local total=$((gov_count + doc_count))
+
+  if [ "$total" -gt 0 ]; then
+    select_option "Apply $total changes?" "Yes" "No"
+    if [ "$SELECTED_OPTION" == "Yes" ]; then
+      apply_changes
   echo -e "${GREY}└${NC}\n" >&2
-
-  if [ "$DRY_RUN_MODE" == "true" ] && [ $((gov_count + doc_count)) -gt 0 ]; then
-    echo -e "${YELLOW}⚠ Dry run - no changes applied${NC}" >&2
-  fi
-
   echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $doc_count docs)${NC}" >&2
+    else
+      echo -e "${GREY}└${NC}\n" >&2
+      echo -e "${YELLOW}● Sync cancelled${NC}" >&2
+    fi
+  else
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ Everything up to date${NC}" >&2
+  fi
 }
 
 main "$@"
