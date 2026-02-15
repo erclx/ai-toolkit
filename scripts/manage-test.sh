@@ -26,6 +26,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    gdev git:commit"
+  echo -e "${GREY}│${NC}    gdev sync ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -321,6 +322,8 @@ handle_post_execution_prompt() {
 main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+  
+  export PROJECT_ROOT
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
      echo -e "${GREY}┌${NC}"
