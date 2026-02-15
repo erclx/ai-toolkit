@@ -8,20 +8,23 @@ stage_setup() {
   git add .
   git commit -m "chore(project): init base" -q
 
-  git checkout -b temp/dev-work -q
+  git checkout -b feat/clean-feature -q
+  echo "valid code" > feature.js
+  git add . && git commit -m "feat(core): compliant feature work" -q
 
-  echo "function login() {}" > auth.js
-  git add auth.js
-  git commit -m "feat(auth): implement login function" -q
+  git checkout -b temp/wip-stuff -q
+  echo "messy code" > wip.js
+  git add . && git commit -m "feat(wip): messy work in progress" -q
 
-  mkdir -p docs
-  echo "docs" > docs/auth.md
-  git add docs/auth.md
-  git commit -m "docs(auth): add auth notes" -q
-
-  log_info "Branch scenario prepared with messy name 'temp/dev-work'"
-  log_info "Current Branch: temp/dev-work"
-  log_info "Commits: 'feat(auth): implement login function', 'docs(auth): add auth notes'"
-  log_info "Run: gemini dev:apply-cli 'fix my branch name'"
-  log_info "Expect: Rename to 'feat/auth' or 'feat/login'"
+  log_step "SCENARIO READY: Branch Naming Compliance"
+  
+  log_info "Test A (Current Branch): 'temp/wip-stuff'"
+  log_info "  Action: gemini git:branch"
+  log_info "  Expect: Suggest rename to 'feat/wip-messy-work'"
+  
+  echo -e "${GREY}│${NC}"
+  
+  log_info "Test B (Toggle): 'git checkout feat/clean-feature'"
+  log_info "  Action: gemini git:branch"
+  log_info "  Expect: '✅ Branch name already follows conventions'"
 }

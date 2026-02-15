@@ -45,7 +45,13 @@ EOF
 
   git add . && git commit -m "feat(server): change port to 3000 and add debug parameter" -q
 
-  log_info "Repo Prepared with 2 Test Branches:"
-  log_info "  1. feature/drift (Currently Checked Out) -> Should TRIGGER update"
-  log_info "  2. chore/noise   (git checkout chore/noise) -> Should IGNORE update"
+  log_info "Repo prepared with 2 test branches"
+  log_info "1. feature/drift (currently checked out) - API changes"
+  log_info "   Run: gemini dev:apply-cli 'sync readme'"
+  log_info "   Expect: Detects port 3000 change and updates README"
+  log_info ""
+  log_info "2. chore/noise - internal changes only"
+  log_info "   Run: git checkout chore/noise"
+  log_info "   Run: gemini dev:apply-cli 'sync readme'"
+  log_info "   Expect: No documentation updates required"
 }
