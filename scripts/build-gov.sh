@@ -41,7 +41,8 @@ select_option() {
           if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
           echo -en "\033[$((count + 1))A\033[J"
-          echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+          echo -e "${GREY}└${NC}"
           exit 1
         fi
         ;;
@@ -49,7 +50,8 @@ select_option() {
       "j") cur=$(( (cur + 1) % count ));;
       "q")
         echo -en "\033[$((count + 1))A\033[J"
-        echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+        echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+        echo -e "${GREY}└${NC}"
         exit 1
         ;;
       "") break ;;
@@ -59,7 +61,7 @@ select_option() {
   done
 
   echo -en "\033[$((count + 1))A\033[J"
-  echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
+  echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   SELECTED_OPTION="${options[$cur]}"
 }
 
@@ -116,9 +118,10 @@ trap cleanup EXIT
 
 scan_source_git_status() {
   local source_dir="$1"
-  local mod_var="$2"
-  local new_var="$3"
-  local changed_flag="$4"
+  local output_file="$2"
+  local mod_var="$3"
+  local new_var="$4"
+  local changed_flag="$5"
 
   local mod_count=0
   local new_count=0
@@ -144,6 +147,21 @@ scan_source_git_status() {
          new_count=$((new_count + 1))
       fi
     done < <(git -C "$PROJECT_ROOT" ls-files --others --exclude-standard "$source_dir")
+
+    if [ $((mod_count + new_count)) -eq 0 ]; then
+       local last_build_hash
+       last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
+       
+       if [ -n "$last_build_hash" ]; then
+         while IFS= read -r file; do
+          if [ -n "$file" ]; then
+            local rel="${file#$source_dir/}"
+            log_warn "Changed: $rel ${GREY}(committed)${NC}"
+            mod_count=$((mod_count + 1))
+          fi
+         done < <(git -C "$PROJECT_ROOT" diff --name-only "$last_build_hash" HEAD -- "$source_dir")
+       fi
+    fi
   fi
 
   if [ "$changed_flag" -eq 0 ]; then
@@ -151,7 +169,7 @@ scan_source_git_status() {
     total=$(find "$PROJECT_ROOT/$source_dir" -type f | wc -l)
     log_info "$total items unchanged"
   elif [ $((mod_count + new_count)) -eq 0 ]; then
-    log_warn "Artifacts out of sync (source committed but not built)"
+    log_warn "Artifacts out of sync (unknown source change)"
   fi
 
   eval "$mod_var=$mod_count"
@@ -270,10 +288,10 @@ main() {
   compile_dry_run
 
   log_step "Scanning Governance Rules"
-  scan_source_git_status "$RULES_SOURCE" "RULES_MODIFIED_COUNT" "RULES_NEW_COUNT" "$RULES_CHANGED"
+  scan_source_git_status "$RULES_SOURCE" "$RULES_OUTPUT" "RULES_MODIFIED_COUNT" "RULES_NEW_COUNT" "$RULES_CHANGED"
 
   log_step "Scanning Documentation"
-  scan_source_git_status "$DOCS_SOURCE" "DOCS_MODIFIED_COUNT" "DOCS_NEW_COUNT" "$DOCS_CHANGED"
+  scan_source_git_status "$DOCS_SOURCE" "$DOCS_OUTPUT" "DOCS_MODIFIED_COUNT" "DOCS_NEW_COUNT" "$DOCS_CHANGED"
 
   local total_files=$((RULES_MODIFIED_COUNT + RULES_NEW_COUNT + DOCS_MODIFIED_COUNT + DOCS_NEW_COUNT))
   local total_artifacts=$((RULES_CHANGED + DOCS_CHANGED))
@@ -285,10 +303,11 @@ main() {
   fi
 
   select_option "Compile and commit changes?" "Yes" "No"
+  echo -e "${GREY}│${NC}"
 
   if [ "$SELECTED_OPTION" == "No" ]; then
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${YELLOW}● Build cancelled${NC}"
+    log_warn "Build cancelled"
+    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
