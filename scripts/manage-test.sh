@@ -154,7 +154,7 @@ parse_command_argument() {
       _COMMAND="cursor"
     else
       if [[ "$input_arg" != *":"* ]]; then
-        log_error "Invalid format. Use <category>:<command>, 'clean', 'cursor', 'sync', or --help"
+        log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'cursor', 'sync', or --help"
       fi
       IFS=':' read -r _CATEGORY _COMMAND <<< "$input_arg"
     fi
