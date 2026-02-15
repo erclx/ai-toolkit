@@ -4,7 +4,6 @@
   "private": true,
   "description": "Infrastructure and quality tooling for the Gemini Toolkit",
   "scripts": {
-    "build:gov": "./scripts/build-gov.sh",
     "lint:spelling": "cspell \"**\" --no-progress --color"
   },
   "devDependencies": {
