@@ -18,10 +18,11 @@ show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Core Toolkit Orchestrator Help"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC}"
-  echo -e "${GREY}│${NC}    gdev              ${GREY}# Open interactive picker to generate a scenario${NC}"
-  echo -e "${GREY}│${NC}    gdev <cat>:<cmd>  ${GREY}# Generate a specific scenario${NC}"
-  echo -e "${GREY}│${NC}    gdev clean        ${GREY}# Wipe the sandbox${NC}"
-  echo -e "${GREY}│${NC}    gdev cursor       ${GREY}# Setup cursor specific sandbox${NC}"
+  echo -e "${GREY}│${NC}    gdev                  ${GREY}# Open interactive picker to generate a scenario${NC}"
+  echo -e "${GREY}│${NC}    gdev <cat>:<cmd>      ${GREY}# Generate a specific scenario${NC}"
+  echo -e "${GREY}│${NC}    gdev sync <path>      ${GREY}# Sync rules to another project${NC}"
+  echo -e "${GREY}│${NC}    gdev clean            ${GREY}# Wipe the sandbox${NC}"
+  echo -e "${GREY}│${NC}    gdev cursor           ${GREY}# Setup cursor specific sandbox${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    gdev git:commit"
@@ -150,7 +151,7 @@ parse_command_argument() {
       _COMMAND="cursor"
     else
       if [[ "$input_arg" != *":"* ]]; then
-        log_error "Invalid format. Use <category>:<command>, 'clean', 'cursor', or --help"
+        log_error "Invalid format. Use <category>:<command>, 'clean', 'cursor', 'sync', or --help"
       fi
       IFS=':' read -r _CATEGORY _COMMAND <<< "$input_arg"
     fi
@@ -324,6 +325,11 @@ main() {
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
      echo -e "${GREY}┌${NC}"
      log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
+  fi
+
+  if [[ "$1" == "sync" ]]; then
+    shift
+    exec "$PROJECT_ROOT/scripts/sync-gov.sh" "$@"
   fi
   
   SANDBOX="$PROJECT_ROOT/.sandbox"
