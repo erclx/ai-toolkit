@@ -217,15 +217,17 @@ compile_dry_run() {
 apply_artifacts() {
   log_step "Compiling Artifacts"
 
+  if [ "$RULES_CHANGED" -eq 1 ]; then
   cp "$TEMP_DIR/rules.toml" "$PROJECT_ROOT/$RULES_OUTPUT"
   log_info "rules.toml updated"
+  fi
 
+  if [ "$DOCS_CHANGED" -eq 1 ]; then
   cp "$TEMP_DIR/docs.toml" "$PROJECT_ROOT/$DOCS_OUTPUT"
-  log_info "docs.toml updated"
-
   mkdir -p "$PROJECT_ROOT/$DOCS_SYNC_TARGET"
   cp -r "$PROJECT_ROOT/$DOCS_SOURCE/." "$PROJECT_ROOT/$DOCS_SYNC_TARGET/"
-  log_info "Synced docs/ updated"
+    log_info "docs.toml + docs/ updated"
+  fi
 }
 
 compose_commit_message() {
