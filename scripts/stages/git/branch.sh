@@ -19,9 +19,8 @@ stage_setup() {
   git add docs/auth.md
   git commit -m "docs(auth): add auth notes" -q
 
-  log_info "Branch scenario prepared with messy name 'temp/dev-work'"
-  log_info "Current Branch: temp/dev-work"
-  log_info "Commits: 'feat(auth): implement login function', 'docs(auth): add auth notes'"
-  log_info "Run: gemini dev:apply-cli 'fix my branch name'"
-  log_info "Expect: Rename to 'feat/auth' or 'feat/login'"
+  log_step "SCENARIO READY: Non-Compliant Branch Name"
+  log_info "Context: Current branch 'temp/dev-work'"
+  log_info "Action:  gemini git:branch"
+  log_info "Expect:  Rename to 'feat/auth-login' or similar"
 }

@@ -47,5 +47,8 @@ EOF
   git add .gitignore
   git commit -m "chore(gitignore): update gitignore rules" -q
   
-  log_info "Environment ready: v1.0.0 + Feature + Security Fix + Noise"
+  log_step "SCENARIO READY: Unreleased Commits"
+  log_info "Context: v1.0.0 tag exists. New feats/fixes + noise."
+  log_info "Action:  gemini release:changelog"
+  log_info "Expect:  Updates CHANGELOG.md with structured entries"
 }
