@@ -47,11 +47,11 @@ EOF
 
   log_info "Repo prepared with 2 test branches"
   log_info "1. feature/drift (currently checked out) - API changes"
-  log_info "   Run: gemini dev:apply-cli 'sync readme'"
+  log_info "   Run: gemini docs:readme"
   log_info "   Expect: Detects port 3000 change and updates README"
   log_info ""
   log_info "2. chore/noise - internal changes only"
   log_info "   Run: git checkout chore/noise"
-  log_info "   Run: gemini dev:apply-cli 'sync readme'"
+  log_info "   Run: gemini docs:readme"
   log_info "   Expect: No documentation updates required"
 }
