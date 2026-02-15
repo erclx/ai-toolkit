@@ -66,7 +66,7 @@ select_option() {
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Governance Sync Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./scripts/sync-gov.sh [target-path]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev sync [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path      ${GREY}# Target directory (default: current directory)${NC}"
