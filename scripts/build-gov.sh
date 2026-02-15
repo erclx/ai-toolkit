@@ -275,7 +275,7 @@ commit_artifacts() {
     "$DOCS_OUTPUT" \
     "$DOCS_SYNC_TARGET/"
 
-  git -C "$PROJECT_ROOT" commit -m "$msg" --no-verify
+  git -C "$PROJECT_ROOT" commit -m "$msg" --no-verify >/dev/null 2>&1
   log_add "Committed: $msg"
 }
 
@@ -305,7 +305,6 @@ main() {
   fi
 
   select_option "Compile and commit changes?" "Yes" "No"
-  echo -e "${GREY}│${NC}"
 
   if [ "$SELECTED_OPTION" == "No" ]; then
     log_warn "Build cancelled"
