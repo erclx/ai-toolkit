@@ -31,7 +31,7 @@ confirm() {
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Governance Sync Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./scripts/sync-to.sh <target-path> [options]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./scripts/sync-gov.sh <target-path> [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -f, --force    ${GREY}# Overwrite all without confirmation${NC}"
@@ -98,10 +98,15 @@ process_directory() {
       local rel="${file#$src_dir/}"
       sync_file "$file" "$dest_prefix/$rel" "$target_dir" "$force_flag"
     done
+  else
+    log_warn "Source directory not found: $src_dir"
   fi
 }
 
 main() {
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
+
   local target_path=$1
   local force_mode="false"
 
@@ -117,10 +122,10 @@ main() {
   validate_target "$target_path"
 
   log_step "Syncing Governance Rules"
-  process_directory "scripts/assets/cursor/rules" "$target_path" "$force_mode" "*.mdc" ".cursor/rules"
+  process_directory "$PROJECT_ROOT/scripts/assets/cursor/rules" "$target_path" "$force_mode" "*.mdc" ".cursor/rules"
 
   log_step "Syncing Documentation"
-  process_directory "scripts/assets/docs" "$target_path" "$force_mode" "*.md" "docs"
+  process_directory "$PROJECT_ROOT/scripts/assets/docs" "$target_path" "$force_mode" "*.md" "docs"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sync complete${NC}"
