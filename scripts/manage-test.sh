@@ -20,12 +20,14 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC}"
   echo -e "${GREY}│${NC}    gdev                  ${GREY}# Open interactive picker to generate a scenario${NC}"
   echo -e "${GREY}│${NC}    gdev <cat>:<cmd>      ${GREY}# Generate a specific scenario${NC}"
+  echo -e "${GREY}│${NC}    gdev build            ${GREY}# Scan, compile, and commit governance artifacts${NC}"
   echo -e "${GREY}│${NC}    gdev sync <path>      ${GREY}# Sync rules to another project${NC}"
   echo -e "${GREY}│${NC}    gdev clean            ${GREY}# Wipe the sandbox${NC}"
   echo -e "${GREY}│${NC}    gdev cursor           ${GREY}# Setup cursor specific sandbox${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    gdev git:commit"
+  echo -e "${GREY}│${NC}    gdev build"
   echo -e "${GREY}│${NC}    gdev sync ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
@@ -328,6 +330,11 @@ main() {
   if [[ "$1" == "sync" ]]; then
     shift
     exec "$PROJECT_ROOT/scripts/sync-gov.sh" "$@"
+  fi
+
+  if [[ "$1" == "build" ]]; then
+    shift
+    exec "$PROJECT_ROOT/scripts/build-gov.sh" "$@"
   fi
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
