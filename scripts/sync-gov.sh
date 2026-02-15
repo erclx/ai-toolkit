@@ -37,7 +37,6 @@ show_help() {
   echo -e "${GREY}│${NC}    target-path      ${GREY}# Target directory (default: current directory)${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    -f, --force      ${GREY}# Overwrite all without confirmation${NC}"
   echo -e "${GREY}│${NC}    -d, --dry-run    ${GREY}# Preview changes without applying${NC}"
   echo -e "${GREY}│${NC}    -h, --help       ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
@@ -62,8 +61,7 @@ sync_file() {
   local src=$1
   local rel_path=$2
   local target_root=$3
-  local force=$4
-  local dry_run=$5
+  local dry_run=$4
   local dest="$target_root/$rel_path"
 
   if [ ! -f "$dest" ]; then
@@ -71,7 +69,11 @@ sync_file() {
     mkdir -p "$(dirname "$dest")"
     cp "$src" "$dest"
     fi
+    if [ "$dry_run" == "true" ]; then
+      log_add "${GREY}(dry)${NC} $rel_path"
+    else
     log_add "$rel_path"
+    fi
     return 0
   fi
 
@@ -81,13 +83,6 @@ sync_file() {
 
   log_warn "Conflict detected: $rel_path"
   
-  if [ "$force" == "true" ]; then
-    if [ "$dry_run" != "true" ]; then
-    cp "$src" "$dest"
-    fi
-    log_info "Overwritten (Force)"
-    return 0
-  else
     if command -v diff >/dev/null; then
       echo -e "${GREY}│${NC}" >&2
       diff --color=always -u "$dest" "$src" | head -n 5 | sed "s/^/${GREY}│${NC} /" >&2
@@ -102,22 +97,20 @@ sync_file() {
     else
       return 1
     fi
-  fi
 }
 
 process_directory() {
   local src_dir=$1
   local target_dir=$2
-  local force_flag=$3
-  local pattern=$4
-  local dest_prefix=$5
-  local dry_run=$6
+  local pattern=$3
+  local dest_prefix=$4
+  local dry_run=$5
   local count=0
 
   if [ -d "$src_dir" ]; then
     while IFS= read -r file; do
       local rel="$(basename "$file")"
-      if sync_file "$file" "$dest_prefix/$rel" "$target_dir" "$force_flag" "$dry_run"; then
+      if sync_file "$file" "$dest_prefix/$rel" "$target_dir" "$dry_run"; then
         ((count++))
       fi
     done < <(find "$src_dir" -name "$pattern")
@@ -129,20 +122,18 @@ process_directory() {
 }
 
 parse_args() {
-  TARGET_PATH="${1:-.}"
-  FORCE_MODE="false"
+  TARGET_PATH="."
   DRY_RUN_MODE="false"
 
-  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    show_help
+  if [[ $# -gt 0 && "$1" != -* ]]; then
+    TARGET_PATH="$1"
+    shift
   fi
 
-  [[ $# -gt 0 ]] && shift
   while [[ $# -gt 0 ]]; do
     case $1 in
-      -f|--force)
-        FORCE_MODE="true"
-        shift
+      -h|--help)
+        show_help
         ;;
       -d|--dry-run)
         DRY_RUN_MODE="true"
@@ -169,14 +160,14 @@ main() {
   local doc_count=0
 
   log_step "Syncing Governance Rules"
-  gov_count=$(process_directory "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "$FORCE_MODE" "*.mdc" ".cursor/rules" "$DRY_RUN_MODE")
+  gov_count=$(process_directory "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules" "$DRY_RUN_MODE")
 
   if [ "$gov_count" -eq 0 ]; then
     log_info "All governance rules up to date"
   fi
 
   log_step "Syncing Documentation"
-  doc_count=$(process_directory "$PROJECT_ROOT/scripts/assets/docs" "$TARGET_PATH" "$FORCE_MODE" "*.md" "docs" "$DRY_RUN_MODE")
+  doc_count=$(process_directory "$PROJECT_ROOT/scripts/assets/docs" "$TARGET_PATH" "*.md" "docs" "$DRY_RUN_MODE")
 
   if [ "$doc_count" -eq 0 ]; then
     log_info "All documentation up to date"
@@ -184,7 +175,7 @@ main() {
 
   echo -e "${GREY}└${NC}\n" >&2
 
-  if [ "$DRY_RUN_MODE" == "true" ]; then
+  if [ "$DRY_RUN_MODE" == "true" ] && [ $((gov_count + doc_count)) -gt 0 ]; then
     echo -e "${YELLOW}⚠ Dry run - no changes applied${NC}" >&2
   fi
 
