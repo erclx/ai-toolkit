@@ -137,7 +137,7 @@ select_option() {
           if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
           echo -en "\033[$((count + 1))A\033[J"
-          echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
           exit 1
         fi
         ;;
@@ -145,7 +145,7 @@ select_option() {
       "j") cur=$(( (cur + 1) % count ));;
       "q")
         echo -en "\033[$((count + 1))A\033[J"
-        echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+        echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
         exit 1
         ;;
       "") break ;;
@@ -155,7 +155,7 @@ select_option() {
   done
 
   echo -en "\033[$((count + 1))A\033[J"
-  echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
+  echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   SELECTED_OPTION="${options[$cur]}"
 }
 ```
