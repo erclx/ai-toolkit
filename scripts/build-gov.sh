@@ -14,7 +14,7 @@ log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
 log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
 
-ENGINE_SCRIPT="scripts/build/compiler.sh"
+ENGINE_SCRIPT="scripts/lib/compiler.sh"
 
 check_dependencies() {
   if [ ! -f "$ENGINE_SCRIPT" ]; then
