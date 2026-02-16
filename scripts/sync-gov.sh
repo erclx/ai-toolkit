@@ -131,6 +131,23 @@ apply_changes() {
   done <"$PENDING_FILE"
 }
 
+resolve_scope() {
+  case "$SELECTED_OPTION" in
+  "Rules + Standards")
+    SYNC_RULES=1
+    SYNC_STANDARDS=1
+    ;;
+  "Rules only")
+    SYNC_RULES=1
+    SYNC_STANDARDS=0
+    ;;
+  "Standards only")
+    SYNC_RULES=0
+    SYNC_STANDARDS=1
+    ;;
+  esac
+}
+
 parse_args() {
   TARGET_PATH="."
 
@@ -155,11 +172,17 @@ main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
+  SYNC_RULES=0
+  SYNC_STANDARDS=0
+
   parse_args "$@"
   check_dependencies
 
   echo -e "${GREY}┌${NC}" >&2
   TARGET_PATH=$(validate_target "$TARGET_PATH")
+
+  select_option "Sync scope?" "Rules + Standards" "Rules only" "Standards only"
+  resolve_scope
 
   PENDING_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE"' EXIT
@@ -167,18 +190,22 @@ main() {
   local gov_count=0
   local standard_count=0
 
-  log_step "Syncing Governance Rules"
-  gov_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
+  if [ "$SYNC_RULES" -eq 1 ]; then
+    log_step "Syncing Governance Rules"
+    gov_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
 
-  if [ "$gov_count" -eq 0 ]; then
-    log_info "All governance rules up to date"
+    if [ "$gov_count" -eq 0 ]; then
+      log_info "All governance rules up to date"
+    fi
   fi
 
-  log_step "Syncing Standards"
-  standard_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/standards" "$TARGET_PATH" "*.md" "standards")
+  if [ "$SYNC_STANDARDS" -eq 1 ]; then
+    log_step "Syncing Standards"
+    standard_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/standards" "$TARGET_PATH" "*.md" "standards")
 
-  if [ "$standard_count" -eq 0 ]; then
-    log_info "All standards up to date"
+    if [ "$standard_count" -eq 0 ]; then
+      log_info "All standards up to date"
+    fi
   fi
 
   local total=$((gov_count + standard_count))
