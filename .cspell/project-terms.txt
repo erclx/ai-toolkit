@@ -1,4 +1,3 @@
-Pushback
 agentic
 arch
 changelog
@@ -7,6 +6,8 @@ conventionals
 cspell
 e2e
 erclx
+esac
+frontmatter
 gdev
 geminiignore
 gtest
@@ -16,6 +17,8 @@ lockfiles
 logicgate
 oneline
 parallelizable
+pipefail
+Pushback
 recompiles
 sandboxed
 sandboxing
