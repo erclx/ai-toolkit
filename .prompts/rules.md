@@ -68,7 +68,7 @@ priority: {{number}}
 
 ```markdown
 description: enforce react component standards
-globs: "**/*.tsx,**/*.jsx"
+globs: "**/\*.tsx,**/\*.jsx"
 alwaysApply: false
 priority: 200
 
@@ -101,7 +101,7 @@ Here is a perfect reference implementation for a Type B React component rule:
 
 ```markdown
 description: enforce react component standards
-globs: "**/*.tsx,**/*.jsx"
+globs: "**/\*.tsx,**/\*.jsx"
 alwaysApply: false
 priority: 200
 

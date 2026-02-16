@@ -46,9 +46,9 @@ npm install project-name
 ## Usage
 
 ```javascript
-import { feature } from 'project-name';
+import { feature } from "project-name"
 
-feature.doSomething();
+feature.doSomething()
 ```
 
 ## Documentation
@@ -92,14 +92,14 @@ npm install auth-sdk
 ## Quick Start
 
 ```javascript
-import { AuthClient } from 'auth-sdk';
+import { AuthClient } from "auth-sdk"
 
 const client = new AuthClient({
-  provider: 'google',
-  clientId: process.env.CLIENT_ID
-});
+  provider: "google",
+  clientId: process.env.CLIENT_ID,
+})
 
-const user = await client.authenticate(code);
+const user = await client.authenticate(code)
 ```
 
 ## Documentation
@@ -195,6 +195,7 @@ constructor(options: AuthOptions)
 Creates a new AuthClient instance with the provided options.
 
 **Parameters:**
+
 - `options` (AuthOptions): Configuration object
   - `provider` (string): OAuth provider name
   - `clientId` (string): Your client ID

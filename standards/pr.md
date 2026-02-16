@@ -23,19 +23,23 @@
 ## EXAMPLES
 
 ### Template
-  
+
 ```markdown
 ## Summary
+
 <Action Verb> <Direct Object> to <Result>.
 
 ## Key Changes
+
 - <Verb> <specific component/file/function> (<reason if non-obvious>)
 - <Verb> <specific component/file/function>
 
 ## Technical Context
+
 - <Architectural reasoning explaining why, not what>
 
 ## Testing
+
 - <Specific command or test case>
 - <Edge case verified>
 ```
@@ -44,17 +48,21 @@
 
 ```markdown
 ## Summary
+
 Update auth middleware to enforce jwt expiration checks.
 
 ## Key Changes
+
 - Add `verifyExpiration()` utility to `src/auth/validators.ts`
 - Refactor `AuthService.authenticate()` to handle 401 response codes
 - Update `JwtMiddleware` to call expiration validator
 
 ## Technical Context
+
 - Migration to stateless session management for horizontal scalability
 
 ## Testing
+
 - `npm run test:auth`
 - Verified expired token rejection in staging
 ```
@@ -63,12 +71,15 @@ Update auth middleware to enforce jwt expiration checks.
 
 ```markdown
 ## Summary
+
 This PR updates the authentication system to be more robust.
 
 ## Key Changes
+
 - Updated auth middleware files
 - The old system used to check tokens differently
 
 ## Testing
+
 - Tested manually
 ```
