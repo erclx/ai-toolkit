@@ -72,26 +72,26 @@ ENGINE_SCRIPT="$PROJECT_ROOT/scripts/lib/compiler.sh"
 RULES_SOURCE="scripts/assets/cursor/rules"
 RULES_OUTPUT="commands/gov/rules.toml"
 RULES_TEMPLATE="scripts/assets/templates/rules.toml.template"
-DOCS_SOURCE="scripts/assets/docs"
-DOCS_OUTPUT="commands/gov/docs.toml"
-DOCS_TEMPLATE="scripts/assets/templates/docs.toml.template"
-DOCS_SYNC_TARGET="docs"
+STANDARDS_SOURCE="scripts/assets/standards"
+STANDARDS_OUTPUT="commands/gov/standards.toml"
+STANDARDS_TEMPLATE="scripts/assets/templates/standards.toml.template"
+STANDARDS_SYNC_TARGET="standards"
 
 TEMP_DIR=""
 RULES_CHANGED=0
-DOCS_CHANGED=0
+STANDARDS_CHANGED=0
 RULES_MODIFIED_COUNT=0
 RULES_NEW_COUNT=0
-DOCS_MODIFIED_COUNT=0
-DOCS_NEW_COUNT=0
+STANDARDS_MODIFIED_COUNT=0
+STANDARDS_NEW_COUNT=0
 
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Governance Build"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev build"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  Scans source rules and docs for changes,"
-  echo -e "${GREY}│${NC}  recompiles .toml artifacts, syncs docs/,"
+  echo -e "${GREY}│${NC}  Scans source rules and standards for changes,"
+  echo -e "${GREY}│${NC}  recompiles .toml artifacts, syncs standards/,"
   echo -e "${GREY}│${NC}  and commits the compiled output."
   echo -e "${GREY}└${NC}"
   exit 0
@@ -104,8 +104,8 @@ check_dependencies() {
   if [ ! -d "$PROJECT_ROOT/$RULES_SOURCE" ]; then
     log_error "Rules source not found: $RULES_SOURCE"
   fi
-  if [ ! -d "$PROJECT_ROOT/$DOCS_SOURCE" ]; then
-    log_error "Docs source not found: $DOCS_SOURCE"
+  if [ ! -d "$PROJECT_ROOT/$STANDARDS_SOURCE" ]; then
+    log_error "Standards source not found: $STANDARDS_SOURCE"
   fi
 }
 
@@ -188,29 +188,29 @@ compile_dry_run() {
     ".mdc" 2>/dev/null
 
   "$ENGINE_SCRIPT" \
-    "$PROJECT_ROOT/$DOCS_SOURCE" \
-    "docs" \
-    "$PROJECT_ROOT/$DOCS_TEMPLATE" \
-    "$TEMP_DIR/docs.toml" \
-    "{{INJECT_DOCS}}" \
+    "$PROJECT_ROOT/$STANDARDS_SOURCE" \
+    "standards" \
+    "$PROJECT_ROOT/$STANDARDS_TEMPLATE" \
+    "$TEMP_DIR/standards.toml" \
+    "{{INJECT_STANDARDS}}" \
     ".md" 2>/dev/null
 
   if ! cmp -s "$TEMP_DIR/rules.toml" "$PROJECT_ROOT/$RULES_OUTPUT"; then
     RULES_CHANGED=1
   fi
 
-  if ! cmp -s "$TEMP_DIR/docs.toml" "$PROJECT_ROOT/$DOCS_OUTPUT"; then
-    DOCS_CHANGED=1
+  if ! cmp -s "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"; then
+    STANDARDS_CHANGED=1
   fi
   
-  if [ -d "$PROJECT_ROOT/$DOCS_SYNC_TARGET" ]; then
-    if diff -qr "$PROJECT_ROOT/$DOCS_SOURCE" "$PROJECT_ROOT/$DOCS_SYNC_TARGET" >/dev/null 2>&1; then
+  if [ -d "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET" ]; then
+    if diff -qr "$PROJECT_ROOT/$STANDARDS_SOURCE" "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET" >/dev/null 2>&1; then
        :
     else
-       DOCS_CHANGED=1
+       STANDARDS_CHANGED=1
     fi
   else
-    DOCS_CHANGED=1
+    STANDARDS_CHANGED=1
   fi
 }
 
@@ -222,11 +222,11 @@ apply_artifacts() {
   log_info "rules.toml updated"
   fi
 
-  if [ "$DOCS_CHANGED" -eq 1 ]; then
-  cp "$TEMP_DIR/docs.toml" "$PROJECT_ROOT/$DOCS_OUTPUT"
-  mkdir -p "$PROJECT_ROOT/$DOCS_SYNC_TARGET"
-  cp -r "$PROJECT_ROOT/$DOCS_SOURCE/." "$PROJECT_ROOT/$DOCS_SYNC_TARGET/"
-    log_info "docs.toml + docs/ updated"
+  if [ "$STANDARDS_CHANGED" -eq 1 ]; then
+  cp "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"
+  mkdir -p "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET"
+  cp -r "$PROJECT_ROOT/$STANDARDS_SOURCE/." "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET/"
+    log_info "standards.toml + standards/ updated"
   fi
 }
 
@@ -239,11 +239,11 @@ compose_commit_message() {
   if [ $RULES_NEW_COUNT -gt 0 ]; then
     parts+=("add $RULES_NEW_COUNT $([ $RULES_NEW_COUNT -eq 1 ] && echo "rule" || echo "rules")")
   fi
-  if [ $DOCS_MODIFIED_COUNT -gt 0 ]; then
-    parts+=("update $DOCS_MODIFIED_COUNT $([ $DOCS_MODIFIED_COUNT -eq 1 ] && echo "doc" || echo "docs")")
+  if [ $STANDARDS_MODIFIED_COUNT -gt 0 ]; then
+    parts+=("update $STANDARDS_MODIFIED_COUNT $([ $STANDARDS_MODIFIED_COUNT -eq 1 ] && echo "standard" || echo "standards")")
   fi
-  if [ $DOCS_NEW_COUNT -gt 0 ]; then
-    parts+=("add $DOCS_NEW_COUNT $([ $DOCS_NEW_COUNT -eq 1 ] && echo "doc" || echo "docs")")
+  if [ $STANDARDS_NEW_COUNT -gt 0 ]; then
+    parts+=("add $STANDARDS_NEW_COUNT $([ $STANDARDS_NEW_COUNT -eq 1 ] && echo "standard" || echo "standards")")
   fi
 
   local msg="chore(gov): "
@@ -272,8 +272,8 @@ commit_artifacts() {
 
   git -C "$PROJECT_ROOT" add \
     "$RULES_OUTPUT" \
-    "$DOCS_OUTPUT" \
-    "$DOCS_SYNC_TARGET/"
+    "$STANDARDS_OUTPUT" \
+    "$STANDARDS_SYNC_TARGET/"
 
   git -C "$PROJECT_ROOT" commit -m "$msg" --no-verify >/dev/null 2>&1
   log_add "Committed: $msg"
@@ -292,11 +292,11 @@ main() {
   log_step "Scanning Governance Rules"
   scan_source_git_status "$RULES_SOURCE" "$RULES_OUTPUT" "RULES_MODIFIED_COUNT" "RULES_NEW_COUNT" "$RULES_CHANGED"
 
-  log_step "Scanning Documentation"
-  scan_source_git_status "$DOCS_SOURCE" "$DOCS_OUTPUT" "DOCS_MODIFIED_COUNT" "DOCS_NEW_COUNT" "$DOCS_CHANGED"
+  log_step "Scanning Standards"
+  scan_source_git_status "$STANDARDS_SOURCE" "$STANDARDS_OUTPUT" "STANDARDS_MODIFIED_COUNT" "STANDARDS_NEW_COUNT" "$STANDARDS_CHANGED"
 
-  local total_files=$((RULES_MODIFIED_COUNT + RULES_NEW_COUNT + DOCS_MODIFIED_COUNT + DOCS_NEW_COUNT))
-  local total_artifacts=$((RULES_CHANGED + DOCS_CHANGED))
+  local total_files=$((RULES_MODIFIED_COUNT + RULES_NEW_COUNT + STANDARDS_MODIFIED_COUNT + STANDARDS_NEW_COUNT))
+  local total_artifacts=$((RULES_CHANGED + STANDARDS_CHANGED))
 
   if [ "$total_artifacts" -eq 0 ]; then
     echo -e "${GREY}└${NC}\n"

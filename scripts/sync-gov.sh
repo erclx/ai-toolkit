@@ -41,7 +41,7 @@ select_option() {
           if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
           echo -en "\033[$((count + 1))A\033[J" >&2
-          echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
           exit 1
         fi
         ;;
@@ -49,7 +49,7 @@ select_option() {
       "j") cur=$(( (cur + 1) % count ));;
       "q")
         echo -en "\033[$((count + 1))A\033[J" >&2
-        echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+        echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
         exit 1
         ;;
       "") break ;;
@@ -59,7 +59,7 @@ select_option() {
   done
 
   echo -en "\033[$((count + 1))A\033[J" >&2
-  echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
+  echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
   SELECTED_OPTION="${options[$cur]}"
 }
 
@@ -162,7 +162,7 @@ main() {
   trap 'rm -f "$PENDING_FILE"' EXIT
 
   local gov_count=0
-  local doc_count=0
+  local standard_count=0
 
   log_step "Syncing Governance Rules"
   gov_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
@@ -171,21 +171,21 @@ main() {
     log_info "All governance rules up to date"
   fi
 
-  log_step "Syncing Documentation"
-  doc_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/docs" "$TARGET_PATH" "*.md" "docs")
+  log_step "Syncing Standards"
+  standard_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/standards" "$TARGET_PATH" "*.md" "standards")
 
-  if [ "$doc_count" -eq 0 ]; then
-    log_info "All documentation up to date"
+  if [ "$standard_count" -eq 0 ]; then
+    log_info "All standards up to date"
   fi
 
-  local total=$((gov_count + doc_count))
+  local total=$((gov_count + standard_count))
 
   if [ "$total" -gt 0 ]; then
     select_option "Apply $total changes?" "Yes" "No"
     if [ "$SELECTED_OPTION" == "Yes" ]; then
       apply_changes
   echo -e "${GREY}└${NC}\n" >&2
-  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $doc_count docs)${NC}" >&2
+  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $standard_count standards)${NC}" >&2
     else
       echo -e "${GREY}└${NC}\n" >&2
       echo -e "${YELLOW}● Sync cancelled${NC}" >&2

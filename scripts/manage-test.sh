@@ -232,9 +232,9 @@ provision_sandbox() {
 }
 
 inject_documentation() {
-  if [ -d "$PROJECT_ROOT/scripts/assets/docs" ]; then
-    mkdir -p "$SANDBOX/docs"
-    cp -r "$PROJECT_ROOT/scripts/assets/docs/." "$SANDBOX/docs/"
+  if [ -d "$PROJECT_ROOT/scripts/assets/standards" ]; then
+    mkdir -p "$SANDBOX/standards"
+    cp -r "$PROJECT_ROOT/scripts/assets/standards/." "$SANDBOX/standards/"
   fi
 }
 

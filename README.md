@@ -20,7 +20,7 @@ gemini extensions link .
 ### Governance
 
 - `/ai-toolkit.gov:rules` - Install context-aware Cursor governance rules based on detected stack.
-- `/ai-toolkit.gov:docs` - Install project reference documentation.
+- `/ai-toolkit.gov:standards` - Install project reference standards.
 - `/ai-toolkit.gov:prompt` - Compile a master system prompt for external LLMs.
 
 ### Versioning and git

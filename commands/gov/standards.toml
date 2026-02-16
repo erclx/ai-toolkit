@@ -4,12 +4,12 @@ prompt = """
 ## 1. OBSERVATION
 
 <DATA_CONTEXT>
-!{ls -F docs/ 2>/dev/null || echo "No docs found"}
+!{ls -F standards/ 2>/dev/null || echo "No standards found"}
 </DATA_CONTEXT>
 
 ## 2. ROLE & CONTEXT
 
-You install official project reference documentation into the docs/ directory.
+You install official project reference documentation into the standards/ directory.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS
@@ -30,9 +30,9 @@ Context: {{args}}
 
 ```bash
 echo '📦 Installing Assets...'
-mkdir -p docs
+mkdir -p standards
 
-cat << 'GEMINI_EOF' > docs/branch.md
+cat << 'GEMINI_EOF' > standards/branch.md
 # BRANCH REFERENCE
 
 ## RULES
@@ -78,9 +78,9 @@ fix/DB-456-fix-the-database-connection-pool-memory-leak     # exceeds 50 charact
 ```
 
 GEMINI_EOF
-echo '  + docs/branch.md'
+echo '  + standards/branch.md'
 
-cat << 'GEMINI_EOF' > docs/changelog.md
+cat << 'GEMINI_EOF' > standards/changelog.md
 # CHANGELOG REFERENCE
 
 ## RULES
@@ -180,9 +180,9 @@ All notable changes to this project will be documented in this file.
 ```
 
 GEMINI_EOF
-echo '  + docs/changelog.md'
+echo '  + standards/changelog.md'
 
-cat << 'GEMINI_EOF' > docs/commit.md
+cat << 'GEMINI_EOF' > standards/commit.md
 # COMMIT MESSAGE REFERENCE
 
 ## RULES
@@ -235,9 +235,9 @@ docs(api): improve documentation          # vague verb + lacks specificity
 ```
 
 GEMINI_EOF
-echo '  + docs/commit.md'
+echo '  + standards/commit.md'
 
-cat << 'GEMINI_EOF' > docs/pr.md
+cat << 'GEMINI_EOF' > standards/pr.md
 # PULL REQUEST REFERENCE
 
 ## RULES
@@ -314,9 +314,9 @@ This PR updates the authentication system to be more robust.
 ```
 
 GEMINI_EOF
-echo '  + docs/pr.md'
+echo '  + standards/pr.md'
 
-cat << 'GEMINI_EOF' > docs/prose.md
+cat << 'GEMINI_EOF' > standards/prose.md
 # PROSE REFERENCE
 
 ## RULES
@@ -369,9 +369,9 @@ It should be noted that configuration lives in `vite.config.ts`. You can very ea
 - **Enhanced** TypeScript support without additional setup
 
 GEMINI_EOF
-echo '  + docs/prose.md'
+echo '  + standards/prose.md'
 
-cat << 'GEMINI_EOF' > docs/readme.md
+cat << 'GEMINI_EOF' > standards/readme.md
 # README REFERENCE
 
 ## RULES
@@ -590,7 +590,7 @@ of this software and associated documentation files...
 ````
 
 GEMINI_EOF
-echo '  + docs/readme.md'
+echo '  + standards/readme.md'
 
 echo '✅ Installation complete.'
 

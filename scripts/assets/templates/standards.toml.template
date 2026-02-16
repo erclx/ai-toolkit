@@ -4,12 +4,12 @@ prompt = """
 ## 1. OBSERVATION
 
 <DATA_CONTEXT>
-!{ls -F docs/ 2>/dev/null || echo "No docs found"}
+!{ls -F standards/ 2>/dev/null || echo "No standards found"}
 </DATA_CONTEXT>
 
 ## 2. ROLE & CONTEXT
 
-You install official project reference documentation into the docs/ directory.
+You install official project reference documentation into the standards/ directory.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS
@@ -29,6 +29,6 @@ Context: {{args}}
 # FINAL COMMAND
 
 ```bash
-{{INJECT_DOCS}}
+{{INJECT_STANDARDS}}
 ```
 """
