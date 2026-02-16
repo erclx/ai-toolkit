@@ -46,7 +46,7 @@ npm install project-name
 ## Usage
 
 ```javascript
-import { feature } from "project-name"
+import { feature } from 'project-name'
 
 feature.doSomething()
 ```
@@ -92,10 +92,10 @@ npm install auth-sdk
 ## Quick Start
 
 ```javascript
-import { AuthClient } from "auth-sdk"
+import { AuthClient } from 'auth-sdk'
 
 const client = new AuthClient({
-  provider: "google",
+  provider: 'google',
   clientId: process.env.CLIENT_ID,
 })
 
