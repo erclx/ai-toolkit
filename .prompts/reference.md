@@ -8,14 +8,14 @@ Output minimal, scannable formats for LLM context windows.
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - Store files in `docs/` directory using kebab-case naming with `.md` extension (e.g., `docs/commit.md`).
 - Use RULES → CONSTRAINTS → EXAMPLES ordering for cognitive flow.
 - Label examples as "Correct" and "Incorrect" without emojis.
 - Use backticks for technical identifiers (commands, API names, keywords).
 
-### Must not do:
+### Must Not Do
 
 - Do not use ambiguous language like "preferred" or "should"; use "MUST" or "DO NOT".
 - Do not include YAML frontmatter or configuration headers.
