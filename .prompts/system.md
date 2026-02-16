@@ -33,6 +33,7 @@ Omit VALIDATION for simple single-purpose prompts.
 # System Prompt: [Descriptive Name]
 
 ## ROLE
+
 [Line 1: You [verb] [output] from [input] - core function]
 [Line 2 (optional): [Key constraint or methodology]]
 [Line 3 (optional): [Secondary constraint or guarantee]]
@@ -63,9 +64,11 @@ Omit VALIDATION for simple single-purpose prompts.
 [Non-obvious scenario with solution]
 
 ## VALIDATION
-*(Include when prompt involves complexity)*
+
+_(Include when prompt involves complexity)_
 
 Before responding, verify:
+
 - [Specific check]
 - [Specific check]
 ```
@@ -101,6 +104,7 @@ You summarize incoming emails into 3 action-focused bullet points, ignoring plea
 
 **Template:**
 Subject: {{subject_line}}
+
 - Action: {{action_item}}
 - Deadline: {{date}} or "None"
 - Key Point: {{summary_text}}
@@ -114,10 +118,11 @@ Subject: {{subject_line}}
 
 **Output:**
 
-```markdown
+````markdown
 # System Prompt: Git Commit Message Generator
 
 ## ROLE
+
 You generate conventional commit messages from code diffs following industry standards.
 Keep messages under 50 characters in imperative mood.
 
@@ -137,11 +142,14 @@ Keep messages under 50 characters in imperative mood.
 ## OUTPUT FORMAT
 
 **Template:**
+
 ```bash
 git commit -m "<type>: <subject>"
 ```
+````
 
 **Example:**
+
 ```bash
 git commit -m "feat: add jwt authentication middleware"
 ```
@@ -152,7 +160,11 @@ For breaking changes, add `BREAKING CHANGE:` in commit body, not the subject lin
 ## VALIDATION
 
 Before responding, verify:
+
 - Output is in bash code block.
 - Verb is imperative mood.
 - Subject is under 50 characters.
+
+```
+
 ```

@@ -115,7 +115,7 @@ Context: {{args}}
 
 ### Option C: Agentic Template (For Code Editing & Complex Tasks)
 
-````toml
+```toml
 description = "Agentic session to <Action> <scope>"
 
 prompt = """
@@ -147,7 +147,7 @@ Goal: SOLVE the user's request iteratively. Use your tools.
 - **Thought:** <Explain your reasoning>
 - **Action:** <Call a tool OR output a safe shell command>
 """
-````
+```
 
 ## ONE-SHOT EXAMPLE
 

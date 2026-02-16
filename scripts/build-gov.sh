@@ -9,11 +9,14 @@ WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
 
-log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
-log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
-log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
-log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
+log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
+log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
+log_error() {
+  echo -e "${GREY}│${NC} ${RED}✗${NC} $1"
+  exit 1
+}
+log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
+log_add() { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
 
 select_option() {
   local prompt_text=$1
@@ -35,26 +38,26 @@ select_option() {
 
     read -rsn1 key
     case "$key" in
-      $'\x1b')
-        if read -rsn2 -t 0.001 key_seq; then
-          if [[ "$key_seq" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
-          if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
-        else
-          echo -en "\033[$((count + 1))A\033[J"
-          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
-          echo -e "${GREY}└${NC}"
-          exit 1
-        fi
-        ;;
-      "k") cur=$(( (cur - 1 + count) % count ));;
-      "j") cur=$(( (cur + 1) % count ));;
-      "q")
+    $'\x1b')
+      if read -rsn2 -t 0.001 key_seq; then
+        if [[ "$key_seq" == "[A" ]]; then cur=$(((cur - 1 + count) % count)); fi
+        if [[ "$key_seq" == "[B" ]]; then cur=$(((cur + 1) % count)); fi
+      else
         echo -en "\033[$((count + 1))A\033[J"
         echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
         echo -e "${GREY}└${NC}"
         exit 1
-        ;;
-      "") break ;;
+      fi
+      ;;
+    "k") cur=$(((cur - 1 + count) % count)) ;;
+    "j") cur=$(((cur + 1) % count)) ;;
+    "q")
+      echo -en "\033[$((count + 1))A\033[J"
+      echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+      echo -e "${GREY}└${NC}"
+      exit 1
+      ;;
+    "") break ;;
     esac
 
     echo -en "\033[${count}A"
@@ -131,36 +134,36 @@ scan_source_git_status() {
       if [ -n "$file" ]; then
         local rel="${file#$source_dir/}"
         if git -C "$PROJECT_ROOT" ls-files --error-unmatch "$file" >/dev/null 2>&1; then
-           log_warn "Changed: $rel"
-           mod_count=$((mod_count + 1))
+          log_warn "Changed: $rel"
+          mod_count=$((mod_count + 1))
         else
-           log_add "New:     $rel"
-           new_count=$((new_count + 1))
+          log_add "New:     $rel"
+          new_count=$((new_count + 1))
         fi
       fi
     done < <(git -C "$PROJECT_ROOT" diff --name-only HEAD -- "$source_dir" 2>/dev/null)
 
     while IFS= read -r file; do
       if [ -n "$file" ]; then
-         local rel="${file#$source_dir/}"
-         log_add "New:     $rel"
-         new_count=$((new_count + 1))
+        local rel="${file#$source_dir/}"
+        log_add "New:     $rel"
+        new_count=$((new_count + 1))
       fi
     done < <(git -C "$PROJECT_ROOT" ls-files --others --exclude-standard "$source_dir")
 
     if [ $((mod_count + new_count)) -eq 0 ]; then
-       local last_build_hash
-       last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
-       
-       if [ -n "$last_build_hash" ]; then
-         while IFS= read -r file; do
+      local last_build_hash
+      last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
+
+      if [ -n "$last_build_hash" ]; then
+        while IFS= read -r file; do
           if [ -n "$file" ]; then
             local rel="${file#$source_dir/}"
             log_warn "Changed: $rel ${GREY}(committed)${NC}"
             mod_count=$((mod_count + 1))
           fi
-         done < <(git -C "$PROJECT_ROOT" diff --name-only "$last_build_hash" HEAD -- "$source_dir")
-       fi
+        done < <(git -C "$PROJECT_ROOT" diff --name-only "$last_build_hash" HEAD -- "$source_dir")
+      fi
     fi
   fi
 
@@ -178,7 +181,7 @@ scan_source_git_status() {
 
 compile_dry_run() {
   TEMP_DIR=$(mktemp -d)
-  
+
   "$ENGINE_SCRIPT" \
     "$PROJECT_ROOT/$RULES_SOURCE" \
     ".cursor/rules" \
@@ -202,12 +205,12 @@ compile_dry_run() {
   if ! cmp -s "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"; then
     STANDARDS_CHANGED=1
   fi
-  
+
   if [ -d "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET" ]; then
     if diff -qr "$PROJECT_ROOT/$STANDARDS_SOURCE" "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET" >/dev/null 2>&1; then
-       :
+      :
     else
-       STANDARDS_CHANGED=1
+      STANDARDS_CHANGED=1
     fi
   else
     STANDARDS_CHANGED=1
@@ -218,14 +221,14 @@ apply_artifacts() {
   log_step "Compiling Artifacts"
 
   if [ "$RULES_CHANGED" -eq 1 ]; then
-  cp "$TEMP_DIR/rules.toml" "$PROJECT_ROOT/$RULES_OUTPUT"
-  log_info "rules.toml updated"
+    cp "$TEMP_DIR/rules.toml" "$PROJECT_ROOT/$RULES_OUTPUT"
+    log_info "rules.toml updated"
   fi
 
   if [ "$STANDARDS_CHANGED" -eq 1 ]; then
-  cp "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"
-  mkdir -p "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET"
-  cp -r "$PROJECT_ROOT/$STANDARDS_SOURCE/." "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET/"
+    cp "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"
+    mkdir -p "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET"
+    cp -r "$PROJECT_ROOT/$STANDARDS_SOURCE/." "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET/"
     log_info "standards.toml + standards/ updated"
   fi
 }
@@ -248,7 +251,7 @@ compose_commit_message() {
 
   local msg="chore(gov): "
   if [ ${#parts[@]} -eq 0 ]; then
-     msg+="update compiled artifacts"
+    msg+="update compiled artifacts"
   else
     local first=true
     for part in "${parts[@]}"; do

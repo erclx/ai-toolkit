@@ -9,11 +9,14 @@ WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
 
-log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1" >&2; }
-log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1" >&2; }
-log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2; exit 1; }
-log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
-log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
+log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1" >&2; }
+log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1" >&2; }
+log_error() {
+  echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2
+  exit 1
+}
+log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
+log_add() { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
 
 select_option() {
   local prompt_text=$1
@@ -35,24 +38,24 @@ select_option() {
 
     read -rsn1 key
     case "$key" in
-      $'\x1b')
-        if read -rsn2 -t 0.001 key_seq; then
-          if [[ "$key_seq" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
-          if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
-        else
-          echo -en "\033[$((count + 1))A\033[J" >&2
-          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
-          exit 1
-        fi
-        ;;
-      "k") cur=$(( (cur - 1 + count) % count ));;
-      "j") cur=$(( (cur + 1) % count ));;
-      "q")
+    $'\x1b')
+      if read -rsn2 -t 0.001 key_seq; then
+        if [[ "$key_seq" == "[A" ]]; then cur=$(((cur - 1 + count) % count)); fi
+        if [[ "$key_seq" == "[B" ]]; then cur=$(((cur + 1) % count)); fi
+      else
         echo -en "\033[$((count + 1))A\033[J" >&2
         echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
         exit 1
-        ;;
-      "") break ;;
+      fi
+      ;;
+    "k") cur=$(((cur - 1 + count) % count)) ;;
+    "j") cur=$(((cur + 1) % count)) ;;
+    "q")
+      echo -en "\033[$((count + 1))A\033[J" >&2
+      echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+      exit 1
+      ;;
+    "") break ;;
     esac
 
     echo -en "\033[${count}A" >&2
@@ -104,11 +107,11 @@ collect_changes() {
       local dest="$target_dir/$dest_prefix/$rel"
       if [ ! -f "$dest" ]; then
         log_add "$dest_prefix/$rel"
-        echo "$file|$dest" >> "$PENDING_FILE"
+        echo "$file|$dest" >>"$PENDING_FILE"
         ((count++))
       elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
         log_warn "Changed: $dest_prefix/$rel"
-        echo "$file|$dest" >> "$PENDING_FILE"
+        echo "$file|$dest" >>"$PENDING_FILE"
         ((count++))
       fi
     done < <(find "$src_dir" -name "$pattern")
@@ -125,7 +128,7 @@ apply_changes() {
     local dest="${entry##*|}"
     mkdir -p "$(dirname "$dest")"
     cp "$src" "$dest"
-  done < "$PENDING_FILE"
+  done <"$PENDING_FILE"
 }
 
 parse_args() {
@@ -138,12 +141,12 @@ parse_args() {
 
   while [[ $# -gt 0 ]]; do
     case $1 in
-      -h|--help)
-        show_help
-        ;;
-      *)
-        shift
-        ;;
+    -h | --help)
+      show_help
+      ;;
+    *)
+      shift
+      ;;
     esac
   done
 }
@@ -184,8 +187,8 @@ main() {
     select_option "Apply $total changes?" "Yes" "No"
     if [ "$SELECTED_OPTION" == "Yes" ]; then
       apply_changes
-  echo -e "${GREY}└${NC}\n" >&2
-  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $standard_count standards)${NC}" >&2
+      echo -e "${GREY}└${NC}\n" >&2
+      echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $standard_count standards)${NC}" >&2
     else
       echo -e "${GREY}└${NC}\n" >&2
       echo -e "${YELLOW}● Sync cancelled${NC}" >&2

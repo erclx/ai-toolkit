@@ -11,7 +11,10 @@ NC='\033[0m'
 
 log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
 log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
-log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
+log_error() {
+  echo -e "${GREY}│${NC} ${RED}✗${NC} $1"
+  exit 1
+}
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 show_help() {
@@ -41,7 +44,7 @@ select_option() {
   local count=${#options[@]}
   echo -e "${GREY}│${NC}"
   echo -ne "${GREEN}◆${NC} ${prompt_text}\n"
-  
+
   while true; do
     for i in "${!options[@]}"; do
       if [ $i -eq $cur ]; then
@@ -50,29 +53,29 @@ select_option() {
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}"
       fi
     done
-    
+
     read -rsn1 key
     case "$key" in
-      $'\x1b')
-        if read -rsn2 -t 0.001 key; then
-        if [[ "$key" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
-        if [[ "$key" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
-        else
-          echo -ne "\033[$((count + 1))A\033[J"
-          log_error "Selection cancelled"
-        fi
-        ;;
-      "k") cur=$(( (cur - 1 + count) % count ));;
-      "j") cur=$(( (cur + 1) % count ));;
-      "") break ;;
-      "q")
+    $'\x1b')
+      if read -rsn2 -t 0.001 key; then
+        if [[ "$key" == "[A" ]]; then cur=$(((cur - 1 + count) % count)); fi
+        if [[ "$key" == "[B" ]]; then cur=$(((cur + 1) % count)); fi
+      else
         echo -ne "\033[$((count + 1))A\033[J"
         log_error "Selection cancelled"
-        ;;
+      fi
+      ;;
+    "k") cur=$(((cur - 1 + count) % count)) ;;
+    "j") cur=$(((cur + 1) % count)) ;;
+    "") break ;;
+    "q")
+      echo -ne "\033[$((count + 1))A\033[J"
+      log_error "Selection cancelled"
+      ;;
     esac
     echo -ne "\033[${count}A"
   done
-  
+
   echo -ne "\033[$((count + 1))A\033[J"
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
   export SELECTED_OPT="${options[$cur]}"
@@ -83,27 +86,27 @@ clone_anchor() {
   local repo_url="git@github.com:erclx/$repo_name.git"
 
   log_step "Cloning Anchor Repository ($repo_name)"
-  
+
   if [ -d "$SANDBOX" ]; then
     rm -rf "$SANDBOX"
   fi
-  
+
   git clone --depth 1 "$repo_url" "$SANDBOX"
   rm -rf "$SANDBOX/.git"
   (
     cd "$SANDBOX"
-    git init > /dev/null
+    git init >/dev/null
     git add .
-    git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify > /dev/null
+    git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify >/dev/null
   )
   log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
 }
 
 setup_ssh() {
   log_step "Security Authentication"
-  
+
   if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval "$(ssh-agent -s)" > /dev/null
+    eval "$(ssh-agent -s)" >/dev/null
     ssh-add ~/.ssh/id_rsa
     log_info "SSH Agent initialized"
   else
@@ -112,31 +115,31 @@ setup_ssh() {
 }
 
 select_stage_category() {
-    local categories=()
-    if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
-      categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
-    fi
+  local categories=()
+  if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
+    categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
+  fi
 
-    if [ ${#categories[@]} -eq 0 ]; then
-      log_error "No stage categories found in $STAGES_DIR"
-    fi
+  if [ ${#categories[@]} -eq 0 ]; then
+    log_error "No stage categories found in $STAGES_DIR"
+  fi
 
-    select_option "Select category:" "${categories[@]}"
-    _CATEGORY=$SELECTED_OPT
+  select_option "Select category:" "${categories[@]}"
+  _CATEGORY=$SELECTED_OPT
 }
-    
+
 select_stage_command() {
-    local commands=()
-    if ls "$STAGES_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
-      commands=($(ls "$STAGES_DIR/$_CATEGORY/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
-    fi
+  local commands=()
+  if ls "$STAGES_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
+    commands=($(ls "$STAGES_DIR/$_CATEGORY/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
+  fi
 
-    if [ ${#commands[@]} -eq 0 ]; then
-      log_error "No stage scripts found in $_CATEGORY"
-    fi
+  if [ ${#commands[@]} -eq 0 ]; then
+    log_error "No stage scripts found in $_CATEGORY"
+  fi
 
-    select_option "Select command:" "${commands[@]}"
-    _COMMAND=$SELECTED_OPT
+  select_option "Select command:" "${commands[@]}"
+  _COMMAND=$SELECTED_OPT
 }
 
 prompt_for_category_and_command() {
@@ -146,18 +149,18 @@ prompt_for_category_and_command() {
 
 parse_command_argument() {
   local input_arg="$1"
-  
-    if [ "$input_arg" == "clean" ]; then
-      rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
-    elif [ "$input_arg" == "cursor" ]; then
-      _CATEGORY="infra"
-      _COMMAND="cursor"
-    else
-      if [[ "$input_arg" != *":"* ]]; then
-        log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'cursor', 'sync', or --help"
-      fi
-      IFS=':' read -r _CATEGORY _COMMAND <<< "$input_arg"
+
+  if [ "$input_arg" == "clean" ]; then
+    rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
+  elif [ "$input_arg" == "cursor" ]; then
+    _CATEGORY="infra"
+    _COMMAND="cursor"
+  else
+    if [[ "$input_arg" != *":"* ]]; then
+      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'cursor', 'sync', or --help"
     fi
+    IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
+  fi
 }
 
 resolve_command_and_category() {
@@ -191,7 +194,7 @@ load_stage_script() {
   local current_command="$2"
 
   local stage_file="$STAGES_DIR/$current_category/$current_command.sh"
-  
+
   if [ ! -f "$stage_file" ]; then
     log_error "Stage script not found: $current_category/$current_command"
   fi
@@ -204,25 +207,25 @@ load_stage_script() {
 }
 
 init_empty_sandbox() {
-    if [ -d "$SANDBOX" ]; then
-        rm -rf "$SANDBOX"
-    fi
-    mkdir -p "$SANDBOX"
+  if [ -d "$SANDBOX" ]; then
+    rm -rf "$SANDBOX"
+  fi
+  mkdir -p "$SANDBOX"
 
-  cat <<EOF > "$SANDBOX/.gitignore"
+  cat <<EOF >"$SANDBOX/.gitignore"
 .gemini/.tmp/
 EOF
-    (
-      cd "$SANDBOX"
-      git init > /dev/null
-      git add .gitignore > /dev/null 2> /dev/null
-      git commit -m "feat(sandbox): initial empty sandbox setup" --no-verify > /dev/null
-    )
+  (
+    cd "$SANDBOX"
+    git init >/dev/null
+    git add .gitignore >/dev/null 2>/dev/null
+    git commit -m "feat(sandbox): initial empty sandbox setup" --no-verify >/dev/null
+  )
 }
 
 provision_sandbox() {
   log_step "Provisioning $1:$2"
-  
+
   if [[ "$(type -t use_anchor)" == "function" ]]; then
     use_anchor
     clone_anchor
@@ -240,7 +243,7 @@ inject_documentation() {
 
 configure_agent_settings() {
   mkdir -p "$SANDBOX/.gemini"
-  cat <<EOF > "$SANDBOX/.gemini/settings.json"
+  cat <<EOF >"$SANDBOX/.gemini/settings.json"
 {
   "model": {
     "name": "$LLM_MODEL"
@@ -254,7 +257,7 @@ commit_environment_setup() {
     cd "$SANDBOX"
     git add .
     if ! git diff --cached --quiet; then
-    git commit -m "chore(sandbox): initial environment setup" --no-verify > /dev/null
+      git commit -m "chore(sandbox): initial environment setup" --no-verify >/dev/null
     fi
   )
 }
@@ -280,8 +283,8 @@ commit_stage_changes() {
     log_step "Staging environment changes"
     (
       cd "$SANDBOX"
-      git add . > /dev/null 2> /dev/null
-      git commit -m 'chore(sandbox): apply stage specific setup' --no-verify > /dev/null
+      git add . >/dev/null 2>/dev/null
+      git commit -m 'chore(sandbox): apply stage specific setup' --no-verify >/dev/null
     )
     log_info "Git state clean after setup"
   else
@@ -290,10 +293,10 @@ commit_stage_changes() {
 }
 
 execute_stage_and_commit() {
-  pushd "$SANDBOX" > /dev/null
+  pushd "$SANDBOX" >/dev/null
   stage_setup
-  popd > /dev/null
-  
+  popd >/dev/null
+
   commit_stage_changes
 }
 
@@ -305,15 +308,15 @@ handle_post_execution_prompt() {
   if [ "$current_category" == "infra" ] && [ "$current_command" == "cursor" ]; then
     select_option "Open sandbox in Cursor?" "Yes" "No"
     if [ "$SELECTED_OPT" == "Yes" ]; then
-       if command -v cursor &> /dev/null; then
-           log_info "Opening Cursor..."
-           cursor "$SANDBOX"
-       else
-           log_warn "Cursor CLI command 'cursor' not found."
-           log_info "Sandbox Path: $SANDBOX"
-       fi
+      if command -v cursor &>/dev/null; then
+        log_info "Opening Cursor..."
+        cursor "$SANDBOX"
+      else
+        log_warn "Cursor CLI command 'cursor' not found."
+        log_info "Sandbox Path: $SANDBOX"
+      fi
     else
-       echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
+      echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
     fi
   fi
 
@@ -324,7 +327,7 @@ handle_post_execution_prompt() {
 main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-  
+
   export PROJECT_ROOT
 
   if [[ "$1" == "sync" ]]; then
@@ -338,10 +341,10 @@ main() {
   fi
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
-     echo -e "${GREY}┌${NC}"
-     log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
+    echo -e "${GREY}┌${NC}"
+    log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
   fi
-  
+
   SANDBOX="$PROJECT_ROOT/.sandbox"
   STAGES_DIR="$PROJECT_ROOT/scripts/stages"
   NAMESPACE="ai-toolkit"
@@ -350,7 +353,7 @@ main() {
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
   fi
-  
+
   resolve_command_and_category "$1"
   local category="$_CATEGORY"
   local command="$_COMMAND"

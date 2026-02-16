@@ -4,6 +4,7 @@ arch
 changelog
 codenames
 conventionals
+cspell
 e2e
 erclx
 gdev
@@ -15,9 +16,12 @@ lockfiles
 logicgate
 oneline
 parallelizable
+recompiles
 sandboxed
 sandboxing
 scannability
 scoutreport
+shfmt
 ssot
+unmatch
 yolo
