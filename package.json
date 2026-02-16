@@ -4,7 +4,9 @@
   "private": true,
   "description": "Infrastructure and quality tooling for the Gemini Toolkit",
   "scripts": {
-    "lint:spelling": "cspell \"**\" --no-progress --color"
+    "lint:spelling": "cspell \"**\" --no-progress --color",
+    "format": "prettier --write --ignore-path .gitignore . && shfmt --write -indent 2 **/*.sh",
+    "check:format": "prettier --check --ignore-path .gitignore . && shfmt --diff --indent 2 **/*.sh"
   },
   "devDependencies": {
     "cspell": "^8.17.1",
