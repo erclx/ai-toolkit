@@ -18,5 +18,5 @@ AI Toolkit is a meta-extension for the Gemini CLI designed to enforce engineerin
 ## Operational Single Source of Truth
 
 - **Command Definitions:** See `commands/**/*.toml`.
-- **Governance Logic:** See `docs/` and `.cursor/rules/`.
+- **Governance Logic:** See `standards/` and `.cursor/rules/`.
 - **Project Configuration:** See `gemini-extension.json`.

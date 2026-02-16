@@ -5,8 +5,8 @@ inject_governance() {
 
   local rules_source="$PROJECT_ROOT/scripts/assets/cursor/rules"
   local rules_target=".cursor/rules"
-  local docs_source="$PROJECT_ROOT/scripts/assets/docs"
-  local docs_target="docs"
+  local standards_source="$PROJECT_ROOT/scripts/assets/standards"
+  local standards_target="standards"
 
   if [ -d "$rules_source" ]; then
     mkdir -p "$rules_target" 
@@ -20,16 +20,16 @@ inject_governance() {
     log_warn "Source rules not found at $rules_source. Skipping injection."
   fi
 
-  if [ -d "$docs_source" ]; then
-    mkdir -p "$docs_target"
-    cp -r "$docs_source/." "$docs_target/"
+  if [ -d "$standards_source" ]; then
+    mkdir -p "$standards_target"
+    cp -r "$standards_source/." "$standards_target/"
     shopt -s nullglob
-    for f in "$docs_target"/*.md; do
-      log_info "Injected Doc:  docs/$(basename "$f")"
+    for f in "$standards_target"/*.md; do
+      log_info "Injected Standard:  standards/$(basename "$f")"
     done
     shopt -u nullglob
   else
-    log_warn "Source docs not found at $docs_source. Skipping injection."
+    log_warn "Source docs not found at $standards_source. Skipping injection."
   fi
 }
 

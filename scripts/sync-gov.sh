@@ -162,7 +162,7 @@ main() {
   trap 'rm -f "$PENDING_FILE"' EXIT
 
   local gov_count=0
-  local doc_count=0
+  local standard_count=0
 
   log_step "Syncing Governance Rules"
   gov_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
@@ -172,20 +172,20 @@ main() {
   fi
 
   log_step "Syncing Documentation"
-  doc_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/docs" "$TARGET_PATH" "*.md" "docs")
+  standard_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/standards" "$TARGET_PATH" "*.md" "standards")
 
-  if [ "$doc_count" -eq 0 ]; then
+  if [ "$standard_count" -eq 0 ]; then
     log_info "All documentation up to date"
   fi
 
-  local total=$((gov_count + doc_count))
+  local total=$((gov_count + standard_count))
 
   if [ "$total" -gt 0 ]; then
     select_option "Apply $total changes?" "Yes" "No"
     if [ "$SELECTED_OPTION" == "Yes" ]; then
       apply_changes
   echo -e "${GREY}└${NC}\n" >&2
-  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $doc_count docs)${NC}" >&2
+  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $standard_count standards)${NC}" >&2
     else
       echo -e "${GREY}└${NC}\n" >&2
       echo -e "${YELLOW}● Sync cancelled${NC}" >&2
