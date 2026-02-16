@@ -41,7 +41,7 @@ select_option() {
           if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
           echo -en "\033[$((count + 1))A\033[J" >&2
-          echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
           exit 1
         fi
         ;;
@@ -49,7 +49,7 @@ select_option() {
       "j") cur=$(( (cur + 1) % count ));;
       "q")
         echo -en "\033[$((count + 1))A\033[J" >&2
-        echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+        echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
         exit 1
         ;;
       "") break ;;
@@ -59,7 +59,7 @@ select_option() {
   done
 
   echo -en "\033[$((count + 1))A\033[J" >&2
-  echo -e "\033[1A${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
+  echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
   SELECTED_OPTION="${options[$cur]}"
 }
 
@@ -171,11 +171,11 @@ main() {
     log_info "All governance rules up to date"
   fi
 
-  log_step "Syncing Documentation"
+  log_step "Syncing Standards"
   standard_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/standards" "$TARGET_PATH" "*.md" "standards")
 
   if [ "$standard_count" -eq 0 ]; then
-    log_info "All documentation up to date"
+    log_info "All standards up to date"
   fi
 
   local total=$((gov_count + standard_count))
