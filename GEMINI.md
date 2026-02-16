@@ -4,7 +4,7 @@ AI Toolkit is a meta-extension for the Gemini CLI designed to enforce engineerin
 
 ## Architecture
 
-- **Source Assets:** Governance rules reside in `scripts/assets/cursor/rules/` and reference docs in `scripts/assets/docs/`.
+- **Source Assets:** Governance rules reside in `scripts/assets/cursor/rules/` and reference standards in `scripts/assets/standards/`.
 - **Compiler:** `scripts/build-gov.sh` bundles these assets into context-aware `.toml` command definitions.
 - **Distribution:** Compiled commands in `commands/` provide the runtime instructions for the Gemini CLI.
 
