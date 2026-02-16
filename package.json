@@ -6,10 +6,12 @@
   "scripts": {
     "check:spell": "cspell '**' --no-progress --color --show-context",
     "format": "prettier --write --ignore-path .gitignore . && shfmt --write -indent 2 **/*.sh",
-    "check:format": "prettier --check --ignore-path .gitignore . && shfmt --diff --indent 2 **/*.sh"
+    "check:format": "prettier --check --ignore-path .gitignore . && shfmt --diff --indent 2 **/*.sh",
+    "prepare": "husky"
   },
   "devDependencies": {
     "cspell": "^8.17.1",
+    "husky": "^9.1.7",
     "prettier": "^3.8.1"
   }
 }
