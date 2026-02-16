@@ -8,30 +8,32 @@ Optimize for token efficiency and developer experience.
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - Use Type A for global persona and core principles. Use Type B for file-specific tooling rules (frameworks, languages, testing).
-- Assign numeric prefix matching task category: 000-099 for global, 100-199 for languages, 200-299 for frameworks, 300-399 for testing, 900-999 for workflow.
-- YAML Logic: If `alwaysApply: true`, OMIT the `globs` field entirely. If `alwaysApply: false`, INCLUDE the `globs` field with comma-separated string patterns.
-- Use lowercase imperative descriptions in the `description` YAML field (e.g., "enforce react component standards").
-- Use backticks for language keywords, API names, CLI commands, and technical identifiers to prevent ambiguity. Avoid backticks for general prose or file paths.
-- Priority determines rule precedence: lower number applies first (001 overrides 999).
+- Assign numeric prefix matching task category: `000-099` global, `100-199` languages, `200-299` frameworks, `300-399` testing, `900-999` workflow.
+- YAML logic: if `alwaysApply: true`, OMIT `globs` entirely. If `alwaysApply: false`, INCLUDE `globs` with comma-separated string patterns.
+- Group bullets under H2 headers by domain concern (`## Imports`, `## Hooks`, `## Errors`). Mix dos and don'ts under the topic they belong to.
+- Write `description` specific enough for Cursor routing — mention key technologies. Bad: `"coding standards"`. Good: `"typescript strict type safety and import patterns"`.
+- One actionable constraint per bullet. Prefer `X over Y` format for preferences: `unknown over any`, `interface over type for object shapes`.
+- Keep rule files under ~40 lines. If a rule grows beyond this, split into separate focused files.
 
-### Must not do:
+### Must Not Do
 
-- Do not include code snippets in Type B rules; focus on high-level principles to save tokens.
-- Do not redefine the persona in Type B rules; only Type A rules define "Who I am."
+- Do not use flat `RULES` / `CONSTRAINTS` sections. Always group by domain concern.
+- Do not include code examples unless it is a 1-3 line inline snippet for a project-specific custom pattern the LLM cannot infer.
+- Do not redefine the persona in Type B rules; only Type A defines "Who I am."
 
 ## OUTPUT FORMAT
 
-**Type A - Used once per project to define core persona and universal principles. Never redefined in Type B files.**
-
-**Template (Type A - Global):**
+**Type A — Global (one per project):**
 
 ```markdown
-description: {{natural_imperative_phrase}}
+---
+description: { { specific_imperative_phrase } }
 alwaysApply: true
 priority: 1
+---
 
 # ROLE PERSONA
 
@@ -43,87 +45,66 @@ priority: 1
 - {{principle_2}}
 ```
 
-**Template (Type B - Modular):**
+**Type B — Modular (per domain):**
 
 ```markdown
-description: {{natural_imperative_phrase}}
-globs: "{{file_pattern}}"
+---
+description: { { specific_imperative_phrase_with_technologies } }
+globs: '{{file_pattern}}'
 alwaysApply: false
-priority: {{number}}
+priority: { { number } }
+---
 
 # {{MODULE}} STANDARDS
 
-## RULES
+## {{Concern Group 1}}
 
-- {{requirement_1}}
-- {{requirement_2}}
+- {{actionable constraint}}
+- {{preference using X over Y}}
 
-## CONSTRAINTS
+## {{Concern Group 2}}
 
-- {{prohibition_1}}
-- {{prohibition_2}}
+- {{constraint}}
+- {{inline custom pattern only if LLM cannot infer}}
 ```
 
-**Example (Type B Input: "I need rules for React components"):**
+**Example (Type B):**
 
 ```markdown
-description: enforce react component standards
-globs: "**/\*.tsx,**/\*.jsx"
+---
+description: enforce react component patterns with hooks and typescript props
+globs: '**/*.tsx,**/*.jsx'
 alwaysApply: false
 priority: 200
+---
 
 # REACT COMPONENT STANDARDS
 
-## RULES
+## Components
 
-- Use functional components with named exports.
-- Enforce strict TypeScript prop interfaces.
-- Use the `useCallback` hook for all event handlers passed to children.
+- Functional components with named exports, no default exports.
+- Strict `interface` for all prop definitions, co-located above the component.
+- Extract complex logic to hooks or helpers, never inline in JSX.
 
-## CONSTRAINTS
+## Hooks
 
-- Do not use `useEffect` for derived state; use `useMemo`.
-- Do not use default exports.
-- Do not inline complex logic in JSX; extract to helper functions.
-```
+- `useCallback` for all event handlers passed as props to children.
+- `useMemo` for derived state, never `useEffect`.
+- Custom hooks prefixed with `use`, placed in `/hooks` directory.
 
-## ONE-SHOT EXAMPLE
+## Composition
 
-Here is a perfect reference implementation for a Type B React component rule:
-
-**Numeric Prefix Reference:**
-
-- `000-099`: Global/Persona (Constitution)
-- `100-199`: Language Rules (TypeScript, Python)
-- `200-299`: Framework Rules (React, FastAPI)
-- `300-399`: Testing/Quality
-- `900-999`: Workflow/Git
-
-```markdown
-description: enforce react component standards
-globs: "**/\*.tsx,**/\*.jsx"
-alwaysApply: false
-priority: 200
-
-# REACT COMPONENT STANDARDS
-
-## RULES
-
-- Use functional components with named exports.
-- Enforce strict TypeScript prop interfaces.
-- Use the `useCallback` hook for all event handlers passed to children.
-
-## CONSTRAINTS
-
-- Do not use `useEffect` for derived state; use `useMemo`.
-- Do not use default exports.
-- Do not inline complex logic in JSX; extract to helper functions.
+- Compound components or context over prop drilling for deep trees.
+- `children` prop over render props unless conditional rendering is needed.
+- Error boundaries at route level, `Suspense` at data-fetching level.
 ```
 
 ## VALIDATION
 
 Before responding, verify:
 
-- Selected correct rule type (Type A or Type B) and applied appropriate template.
-- If `alwaysApply: true`, the `globs` key is completely absent.
-- YAML `description` field uses lowercase imperative phrase with spaces, not underscores.
+- Correct rule type (A or B) with appropriate template applied.
+- If `alwaysApply: true`, `globs` key is completely absent.
+- `description` mentions specific technologies or concerns for accurate routing.
+- H2 sections grouped by domain concern, not flat RULES/CONSTRAINTS.
+- Total output under ~40 lines.
