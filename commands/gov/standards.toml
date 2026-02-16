@@ -263,19 +263,23 @@ cat << 'GEMINI_EOF' > standards/pr.md
 ## EXAMPLES
 
 ### Template
-  
+
 ```markdown
 ## Summary
+
 <Action Verb> <Direct Object> to <Result>.
 
 ## Key Changes
+
 - <Verb> <specific component/file/function> (<reason if non-obvious>)
 - <Verb> <specific component/file/function>
 
 ## Technical Context
+
 - <Architectural reasoning explaining why, not what>
 
 ## Testing
+
 - <Specific command or test case>
 - <Edge case verified>
 ```
@@ -284,17 +288,21 @@ cat << 'GEMINI_EOF' > standards/pr.md
 
 ```markdown
 ## Summary
+
 Update auth middleware to enforce jwt expiration checks.
 
 ## Key Changes
+
 - Add `verifyExpiration()` utility to `src/auth/validators.ts`
 - Refactor `AuthService.authenticate()` to handle 401 response codes
 - Update `JwtMiddleware` to call expiration validator
 
 ## Technical Context
+
 - Migration to stateless session management for horizontal scalability
 
 ## Testing
+
 - `npm run test:auth`
 - Verified expired token rejection in staging
 ```
@@ -303,13 +311,16 @@ Update auth middleware to enforce jwt expiration checks.
 
 ```markdown
 ## Summary
+
 This PR updates the authentication system to be more robust.
 
 ## Key Changes
+
 - Updated auth middleware files
 - The old system used to check tokens differently
 
 ## Testing
+
 - Tested manually
 ```
 
@@ -325,7 +336,7 @@ cat << 'GEMINI_EOF' > standards/prose.md
 - Hierarchy: Use H1 for the document title, H2 for main sections, and H3 for subsections.
 - Spacing: Ensure a single blank line between headers and content.
 - Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
-- Bullets: Use dashes (-) not asterisks (*) for all bulleted lists.
+- Bullets: Use dashes (-) not asterisks (\\*) for all bulleted lists.
 - Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
 - Lists: Use prose by default; reserve bullets for discrete, unrelated items.
 - Clarity: Use common words over complex alternatives (prefer \"use\" over \"utilize\", \"help\" over \"facilitate\").
@@ -353,6 +364,7 @@ Run `npm install` to install dependencies. The build process uses Vite for faste
 Configuration lives in `vite.config.ts`. Modify the `plugins` array to add build extensions.
 
 Key features:
+
 - Hot module replacement during development
 - Tree-shaking for production builds
 - TypeScript support without additional setup
@@ -364,6 +376,7 @@ Basically, you'll want to simply run `npm install` to easily install all of the 
 It should be noted that configuration lives in `vite.config.ts`. You can very easily modify the `plugins` array to quickly add build extensions.
 
 **Key features:**
+
 - **Seamless** hot module replacement during development
 - **Powerful** tree-shaking for production builds
 - **Enhanced** TypeScript support without additional setup
@@ -420,9 +433,9 @@ npm install project-name
 ## Usage
 
 ```javascript
-import { feature } from 'project-name';
+import { feature } from 'project-name'
 
-feature.doSomething();
+feature.doSomething()
 ```
 
 ## Documentation
@@ -466,14 +479,14 @@ npm install auth-sdk
 ## Quick Start
 
 ```javascript
-import { AuthClient } from 'auth-sdk';
+import { AuthClient } from 'auth-sdk'
 
 const client = new AuthClient({
   provider: 'google',
-  clientId: process.env.CLIENT_ID
-});
+  clientId: process.env.CLIENT_ID,
+})
 
-const user = await client.authenticate(code);
+const user = await client.authenticate(code)
 ```
 
 ## Documentation
@@ -569,6 +582,7 @@ constructor(options: AuthOptions)
 Creates a new AuthClient instance with the provided options.
 
 **Parameters:**
+
 - `options` (AuthOptions): Configuration object
   - `provider` (string): OAuth provider name
   - `clientId` (string): Your client ID
