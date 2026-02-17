@@ -21,23 +21,22 @@ check_dependencies() {
 
 main() {
   check_dependencies
-
   echo -e "${GREY}┌${NC}"
 
   log_step "1. Formatting"
-  bun run check:format || log_error "Formatting Check Failed"
-  log_info "Formatting correct"
+  bun run check:format || log_error "Format check failed"
+  log_info "Format check passed"
 
   log_step "2. Spelling"
-  bun run check:spell || log_error "Spelling Check Failed"
-  log_info "Spelling correct"
+  bun run check:spell || log_error "Spell check failed"
+  log_info "Spell check passed"
 
-  log_step "3. Shell Linting"
-  bun run check:shell || log_error "Shell Lint Failed"
-  log_info "Shell scripts clean"
+  log_step "3. Shell"
+  bun run check:shell || log_error "Shell check failed"
+  log_info "Shell check passed"
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Verification Passed!${NC}"
+  echo -e "${GREEN}✓ Verification passed${NC}"
 }
 
 main "$@"
