@@ -8,28 +8,34 @@ Keep scripts minimal while maintaining the established visual system.
 
 ## CRITICAL CONSTRAINTS
 
-### Must Do
+### Script Setup
 
 - Start with `#!/bin/bash`, `set -e`, and `set -o pipefail`.
+- Implement visual help screen (using `show_help`) if script accepts arguments.
+- Do not rely on unset variables (use `${VAR:-default}`).
+
+### Visual Timeline
+
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
 - Use state transitions for interactive prompts: `◆` (active) → `◇` (inactive).
+- Do not add diamonds (`◆`/`◇`) to non-interactive log functions.
 - On cancellation: show `◇ ... Cancelled`, exit 1, no `log_error` call.
-- Implement visual help screen (using `show_help`) if script accepts arguments.
-- Show external tool output by default (git, npm, gh, etc.).
+
+### Code Style
+
 - Decompose by responsibility: each function does one thing, `main()` orchestrates only.
 - Name functions verb-first: `validate_input`, `deploy_service`, `install_dependencies`.
-- Include context in error messages: `log_error "npm install failed: check package.json"`.
-
-### Must Not Do
-
-- Do not include comments except the shebang line.
-- Do not add diamonds (`◆`/`◇`) to non-interactive log functions.
+- Do not use global variables except exports from `ask()`.
 - Do not define unused color variables.
-- Do not log intermediate variable assignments.
+- Do not include comments except the shebang line.
+
+### Output Hygiene
+
+- Show external tool output by default (git, npm, gh, etc.).
+- Include context in error messages: `log_error "npm install failed: check package.json"`.
 - Do not echo command names before running them (output speaks for itself).
 - Do not log "Starting..." and "Finished..." around every action.
-- Do not use global variables except exports from `ask()`.
-- Do not rely on unset variables (use `${VAR:-default}`).
+- Do not log intermediate variable assignments.
 
 ## VISUAL SYSTEM
 
