@@ -1,12 +1,15 @@
 agentic
 arch
+bunx
 changelog
 codenames
+commitlint
 conventionals
 cspell
 e2e
 erclx
 esac
+esbenp
 frontmatter
 gdev
 geminiignore
@@ -15,6 +18,7 @@ headerless
 heredocs
 lockfiles
 logicgate
+mkhl
 navigations
 oneline
 parallelizable
@@ -25,7 +29,9 @@ sandboxed
 sandboxing
 scannability
 scoutreport
+shellcheck
 shfmt
 ssot
+timonwong
 unmatch
 yolo

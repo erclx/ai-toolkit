@@ -47,7 +47,7 @@ select_option() {
 
   while true; do
     for i in "${!options[@]}"; do
-      if [ $i -eq $cur ]; then
+      if [ "$i" -eq $cur ]; then
         echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}"
       else
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}"
@@ -117,7 +117,7 @@ setup_ssh() {
 select_stage_category() {
   local categories=()
   if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
-    categories=($(ls -d "$STAGES_DIR"/*/ | xargs -n1 basename))
+    mapfile -t categories < <(find "$STAGES_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
   fi
 
   if [ ${#categories[@]} -eq 0 ]; then
@@ -131,7 +131,7 @@ select_stage_category() {
 select_stage_command() {
   local commands=()
   if ls "$STAGES_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
-    commands=($(ls "$STAGES_DIR/$_CATEGORY/"*.sh | xargs -n1 basename | sed 's/\.sh//'))
+    mapfile -t commands < <(find "$STAGES_DIR/$_CATEGORY" -maxdepth 1 -name '*.sh' -exec basename {} .sh \;)
   fi
 
   if [ ${#commands[@]} -eq 0 ]; then
@@ -199,6 +199,7 @@ load_stage_script() {
     log_error "Stage script not found: $current_category/$current_command"
   fi
 
+  # shellcheck source=/dev/null
   source "$stage_file"
 
   if [ "$current_category" == "git" ] && [ "$current_command" == "pr" ]; then
@@ -303,7 +304,6 @@ execute_stage_and_commit() {
 handle_post_execution_prompt() {
   local current_category="$1"
   local current_command="$2"
-  local current_namespace="$3"
 
   if [ "$current_category" == "infra" ] && [ "$current_command" == "cursor" ]; then
     select_option "Open sandbox in Cursor?" "Yes" "No"
@@ -347,7 +347,6 @@ main() {
 
   SANDBOX="$PROJECT_ROOT/.sandbox"
   STAGES_DIR="$PROJECT_ROOT/scripts/stages"
-  NAMESPACE="ai-toolkit"
   LLM_MODEL="gemini-2.5-flash"
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -362,7 +361,7 @@ main() {
 
   execute_stage_and_commit
 
-  handle_post_execution_prompt "$category" "$command" "$NAMESPACE"
+  handle_post_execution_prompt "$category" "$command"
 }
 
 main "$@"

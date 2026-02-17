@@ -28,6 +28,8 @@ Keep scripts minimal while maintaining the established visual system.
 - Do not use global variables except exports from `ask()`.
 - Do not define unused color variables.
 - Do not include comments except the shebang line.
+- Quote variables inside parameter expansions: `"${file#"$dir"/}"` not `"${file#$dir/}"`.
+- Quote variables in test brackets: `[ "$i" -eq "$cur" ]` not `[ $i -eq $cur ]`.
 
 ### Output Hygiene
 

@@ -29,7 +29,7 @@ select_option() {
 
   while true; do
     for i in "${!options[@]}"; do
-      if [ $i -eq $cur ]; then
+      if [ "$i" -eq $cur ]; then
         echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}"
       else
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}"
@@ -132,7 +132,7 @@ scan_source_git_status() {
   if [ "$changed_flag" -eq 1 ]; then
     while IFS= read -r file; do
       if [ -n "$file" ]; then
-        local rel="${file#$source_dir/}"
+        local rel="${file#"$source_dir"/}"
         if git -C "$PROJECT_ROOT" ls-files --error-unmatch "$file" >/dev/null 2>&1; then
           log_warn "Changed: $rel"
           mod_count=$((mod_count + 1))
@@ -145,7 +145,7 @@ scan_source_git_status() {
 
     while IFS= read -r file; do
       if [ -n "$file" ]; then
-        local rel="${file#$source_dir/}"
+        local rel="${file#"$source_dir"/}"
         log_add "New:     $rel"
         new_count=$((new_count + 1))
       fi
@@ -158,7 +158,7 @@ scan_source_git_status() {
       if [ -n "$last_build_hash" ]; then
         while IFS= read -r file; do
           if [ -n "$file" ]; then
-            local rel="${file#$source_dir/}"
+            local rel="${file#"$source_dir"/}"
             log_warn "Changed: $rel ${GREY}(committed)${NC}"
             mod_count=$((mod_count + 1))
           fi
@@ -298,7 +298,6 @@ main() {
   log_step "Scanning Standards"
   scan_source_git_status "$STANDARDS_SOURCE" "$STANDARDS_OUTPUT" "STANDARDS_MODIFIED_COUNT" "STANDARDS_NEW_COUNT" "$STANDARDS_CHANGED"
 
-  local total_files=$((RULES_MODIFIED_COUNT + RULES_NEW_COUNT + STANDARDS_MODIFIED_COUNT + STANDARDS_NEW_COUNT))
   local total_artifacts=$((RULES_CHANGED + STANDARDS_CHANGED))
 
   if [ "$total_artifacts" -eq 0 ]; then

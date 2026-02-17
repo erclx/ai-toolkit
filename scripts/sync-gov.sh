@@ -29,7 +29,7 @@ select_option() {
 
   while true; do
     for i in "${!options[@]}"; do
-      if [ $i -eq $cur ]; then
+      if [ "$i" -eq $cur ]; then
         echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}" >&2
       else
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}" >&2
@@ -103,7 +103,8 @@ collect_changes() {
 
   if [ -d "$src_dir" ]; then
     while IFS= read -r file; do
-      local rel="$(basename "$file")"
+      local rel
+      rel="$(basename "$file")"
       local dest="$target_dir/$dest_prefix/$rel"
       if [ ! -f "$dest" ]; then
         log_add "$dest_prefix/$rel"
