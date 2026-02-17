@@ -1,0 +1,18 @@
+---
+description: enforce consistent naming semantics across all code
+alwaysApply: true
+priority: 60
+---
+
+# NAMING STANDARDS
+
+## Semantics
+
+- Prefer descriptive names over abbreviations; `getUserProfile` over `getUP`.
+- Prefix booleans with `is`, `has`, `should`, or `can`: `isLoading`, `hasAccess`.
+- Prefix event handlers with `handle`: `handleClick`, `handleSubmit`.
+- Name collections as plurals; name items as singulars: `users` / `user`.
+
+## Test Naming
+
+- Name tests using "should" or descriptive phrases: "should validate email format".
