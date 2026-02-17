@@ -1,26 +1,30 @@
 # README REFERENCE
 
-## RULES
+## Structure
 
-- Hierarchy: H1 title, H2 major sections, H3 subsections.
-- Required Sections: Project description, installation/setup, usage examples, support/help resources.
-- Optional Sections: Badges (at top), features, contributing (link to `CONTRIBUTING.md`), license (link to `LICENSE`).
-- Links: Use relative paths for repository files; use absolute URLs for external resources.
-- Code Examples: Include practical usage snippets demonstrating core functionality.
-- Context Adaptation: For libraries/tools include API quickstart; for applications/products include usage instructions and configuration options; for CLI tools include command examples with flags.
-- Heading Structure: Use proper heading hierarchy to enable GitHub's auto-generated table of contents.
-- Spacing: Include one blank line between headers and content.
-- Description: Brief overview in 2-3 sentences maximum explaining what the project does.
+- H1 title, H2 major sections, H3 subsections
+- Project description in plain text directly under H1; 2-3 sentences maximum
+- Use proper heading hierarchy to enable GitHub's auto-generated table of contents
+- Do not create deeply nested heading structures that harm scannability
+- Do not use horizontal rules or dividers (`---`)
 
-## CONSTRAINTS
+## Sections
 
-- Do not include full API documentation; link to separate docs instead.
-- Do not include license text; reference the `LICENSE` file.
-- Do not include detailed contribution guidelines; reference the `CONTRIBUTING.md` file.
-- Do not include extensive troubleshooting guides; use wiki or separate documentation.
-- Do not use absolute URLs for files within the repository.
-- Do not create deeply nested heading structures that harm scannability.
-- Do not use horizontal rules or dividers (`---`).
+- Required: project description, installation/setup, usage examples, support/help resources
+- Optional: badges (at top, before description), features, contributing (link to `CONTRIBUTING.md`), license (link to `LICENSE`)
+- Do not include full API documentation; link to separate docs instead
+- Do not include license text; reference the `LICENSE` file
+- Do not include detailed contribution guidelines; reference `CONTRIBUTING.md`
+- Do not include extensive troubleshooting guides; use wiki or separate documentation
+
+## Content
+
+- Use relative paths for repository files; use absolute URLs for external resources
+- Do not use absolute URLs for files within the repository
+- Include practical usage snippets demonstrating core functionality
+- For libraries/tools: include API quickstart
+- For applications/products: include usage instructions and configuration options
+- For CLI tools: include command examples with flags
 
 ## EXAMPLES
 
@@ -33,7 +37,6 @@ Brief description of what the project does in 2-3 sentences.
 
 ## Features
 
-- Key feature highlighting user benefit
 - Key feature highlighting user benefit
 - Key feature highlighting user benefit
 
@@ -74,11 +77,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ````markdown
 # Auth SDK
 
-Lightweight authentication library for Node.js applications with OAuth2 and JWT support.
+Lightweight authentication library for Node.js with OAuth2 and JWT support. # 1 sentence, plain text, under H1
 
 ## Features
 
-- OAuth2 provider integration (Google, GitHub, Azure)
+- OAuth2 provider integration (Google, GitHub, Azure) # user benefit, no buzzwords
 - JWT token generation and validation
 - Session management with Redis support
 - TypeScript support with full type definitions
@@ -99,21 +102,21 @@ const client = new AuthClient({
   clientId: process.env.CLIENT_ID,
 })
 
-const user = await client.authenticate(code)
+const user = await client.authenticate(code)    # practical snippet, core functionality
 ```
 
 ## Documentation
 
-Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference and guides.
+Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference. # links to external docs, not inline
 
 ## Support
 
-- Report bugs via [GitHub Issues](../../issues)
+- Report bugs via [GitHub Issues](../../issues) # relative path for repo link
 - Community support on [Discord](https://discord.gg/example)
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) # references file, no license text
 ````
 
 ### Correct (Application/Product)
@@ -121,7 +124,7 @@ Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference and 
 ````markdown
 # Terraform Formatter
 
-VSCode extension for formatting and validating Terraform files.
+VSCode extension for formatting and validating Terraform files. # plain text description, concise
 
 ## Features
 
@@ -136,7 +139,7 @@ Install from the [VSCode Marketplace](https://marketplace.visualstudio.com/items
 
 ## Usage
 
-Open a Terraform file and run `Format Document` from the command palette, or enable auto-format on save in settings.
+Open a Terraform file and run `Format Document` from the command palette, or enable auto-format on save in settings. # practical usage, no hand-holding
 
 ### Configuration
 
@@ -166,15 +169,15 @@ Report issues on [GitHub](../../issues).
 ````markdown
 # Auth SDK
 
-This is a seamless and powerful authentication library that allows developers to easily integrate robust OAuth2 functionality into their Node.js applications. It's a game-changer for authentication!
+This is a seamless and powerful authentication library that allows developers to easily integrate robust OAuth2 functionality. # buzzwords + vague qualifiers
 
 ## Why Use This?
 
-Basically, this library is just amazing and will revolutionize how you handle auth. It's super simple to use and very powerful.
+Basically, this library is just amazing and will revolutionize how you handle auth. # filler + buzzwords
 
 ## Installation
 
-Simply run the following command to install:
+Simply run the following command to install: # "Simply" filler
 
 ```bash
 npm install auth-sdk
@@ -184,23 +187,9 @@ npm install auth-sdk
 
 ### AuthClient Class
 
-The AuthClient class is the main entry point for the library.
-
 #### Constructor
 
-```typescript
-constructor(options: AuthOptions)
-```
-
-Creates a new AuthClient instance with the provided options.
-
-**Parameters:**
-
-- `options` (AuthOptions): Configuration object
-  - `provider` (string): OAuth provider name
-  - `clientId` (string): Your client ID
-  - `clientSecret` (string): Your client secret
-  - `redirectUri` (string): Callback URL
+constructor(options: AuthOptions) # full API docs inline, should link to external docs instead
 
 [...500 more lines of detailed API docs...]
 
@@ -208,10 +197,7 @@ Creates a new AuthClient instance with the provided options.
 
 MIT License
 
-Copyright (c) 2026 Example Corp
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files...
+Copyright (c) 2026 Example Corp # full license text, should reference LICENSE file only
 
 [...full license text...]
 ````
