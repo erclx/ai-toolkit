@@ -8,16 +8,16 @@ priority: 40
 
 ## Resource Loading
 
-- Lazy load resources at architectural boundaries (routes, features), not inline.
+- Lazy load resources at architectural boundaries, not inline.
 - Do not import entire modules when subsets are sufficient.
 
 ## Execution Efficiency
 
 - Batch independent operations; avoid sequential execution when parallelizable.
-- Defer non-critical work until after user-visible rendering completes.
+- Defer non-critical work until after primary output completes.
 - Do not fetch data inside loops.
 
-## Rendering
+## Data Handling
 
-- Virtualize or paginate unbounded lists.
+- Paginate or stream unbounded data sets.
 - Do not optimize without measurement.
