@@ -1,29 +1,35 @@
 ---
 description: enforce strict typescript type safety and patterns
-globs: "**/*.ts,**/*.tsx"
+globs: '**/*.ts,**/*.tsx'
 alwaysApply: false
 priority: 100
 ---
 
 # TYPESCRIPT STANDARDS
 
-## HARD REQUIREMENTS
+## Type Declarations
 
 - Enforce explicit types or strict inference using `unknown` over `any`.
+- Reject the `any` type absolutely.
 - Use `interface` for object shapes and component props.
 - Use `type` for unions, intersections, and utility types.
-- Use `Promise.all()` for independent operations to avoid serial waterfalls.
+- Do not prefix interfaces with `I`.
+
+## Type Safety
+
+- Use discriminated unions for error handling over throwing exceptions.
+- Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
 - Prefer `readonly` properties for data objects.
+- Do not use `enum`; use constant objects or unions.
+- Do not use non-null assertions.
+
+## Imports and Configuration
+
 - Use absolute imports mapping `@/` to `src/`.
 - Use `import type` for type-only imports to enable proper tree-shaking.
 - Enable `strict: true` in tsconfig.json with no exceptions.
-- Use discriminated unions for error handling over throwing exceptions.
-- Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
 
-## NEGATIVE CONSTRAINTS
+## Async Patterns
 
-- Reject the `any` type absolutely.
-- Do not use `enum`; use constant objects or unions.
+- Use `Promise.all()` for independent operations to avoid serial waterfalls.
 - Do not use `return await` inside try/catch blocks.
-- Do not use non-null assertions.
-- Do not prefix interfaces with `I`.

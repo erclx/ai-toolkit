@@ -6,18 +6,25 @@ priority: 10
 
 # TESTING STANDARDS
 
-## HARD REQUIREMENTS
+## Test Structure
 
 - Structure tests using the Arrange, Act, Assert (AAA) pattern.
 - Test user-visible behavior rather than implementation details.
-- Name tests using "should" or descriptive phrases: "should validate email format".
-- Ensure tests are independent; each test should run in isolation without side effects.
-- Group related tests using describe/context blocks; keep nesting shallow (max 2 levels).
-- Use factory functions or builders for test data; avoid inline object literals.
-- Always await async operations; avoid fire-and-forget promises in tests.
-- Select elements by accessibility attributes first.
-
-## NEGATIVE CONSTRAINTS
-- Do not use snapshot testing for verification.
 - Do not test private functions or internal state directly.
 - Do not use conditional logic or loops within test bodies.
+
+## Naming and Organization
+
+- Name tests using "should" or descriptive phrases: "should validate email format".
+- Group related tests using describe/context blocks; keep nesting shallow (max 2 levels).
+- Ensure tests are independent; each test should run in isolation without side effects.
+
+## Test Data and Async
+
+- Use factory functions or builders for test data; avoid inline object literals.
+- Always await async operations; avoid fire-and-forget promises in tests.
+
+## Selection and Verification
+
+- Select elements by accessibility attributes first.
+- Do not use snapshot testing for verification.

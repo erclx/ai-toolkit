@@ -1,28 +1,37 @@
 ---
 description: enforce tailwind css standards and utility-first patterns
-globs: "**/*.tsx,**/*.jsx,**/*.html,**/*.css"
+globs: '**/*.tsx,**/*.jsx,**/*.html,**/*.css'
 alwaysApply: false
 priority: 250
 ---
 
 # TAILWIND CSS V4 STANDARDS
 
-## HARD REQUIREMENTS
+## Layout and Spacing
 
 - Use utility classes for all layout, spacing, and typography.
 - Use `flex` and `grid` for layouts; avoid manual floats or positioning.
-- Use the `cn()` utility for conditional class application.
-- Define theme extensions using CSS variables in the main CSS file via `@theme`.
 - Use `gap-*` utilities instead of margins for sibling spacing.
 - Use logical properties like `ps-*` and `pe-*` for RTL support.
+
+## Theming and Customization
+
+- Define theme extensions using CSS variables in the main CSS file via `@theme`.
+- Do not use `tailwind.config.js` for theming; use native CSS variables.
+- Do not use arbitrary values unless adhering to a strict design spec.
+
+## Class Application
+
+- Use the `cn()` utility for conditional class application.
+- Minimize `@apply` usage; prefer composing utilities in markup.
 - Do not use inline styles; use Tailwind classes.
+- Do not use `style` props for static styling.
+
+## Responsive and Variants
+
 - Use mobile-first breakpoints; default styles apply to mobile.
 - Use `dark:` variant for dark mode styling; avoid manual class toggling.
+
+## Typography
+
 - Use `prose` class for rich text content; do not manually style typography.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not use `tailwind.config.js` for theming; use native CSS variables.
-- Minimize `@apply` usage; prefer composing utilities in markup.
-- Do not use arbitrary values unless adhering to a strict design spec.
-- Do not use `style` props for static styling.

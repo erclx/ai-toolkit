@@ -1,29 +1,38 @@
 ---
 description: enforce opinionated react architecture and component patterns
-globs: "**/*.tsx,**/*.ts"
+globs: '**/*.tsx,**/*.ts'
 alwaysApply: false
 priority: 200
 ---
 
 # REACT ARCHITECTURE STANDARDS
 
-## HARD REQUIREMENTS
+## File and Export Conventions
 
 - Enforce strict `kebab-case` for all files including components.
-- Place domain logic in `src/features/` and restrict `src/components/` to shared UI.
-- Import environment variables only from the validated configuration module.
-- Use named exports exclusively for components and hooks.
-- Encapsulate data fetching and complex effects in custom hooks.
-- Define TypeScript interfaces for props immediately above the component.
-- Use function declarations for components, not arrow functions.
-- Use stable, unique keys for list items; never use array index.
-- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.
-- Avoid prop drilling beyond 2 levels; use context or composition.
-- Use `<>` shorthand for fragments unless key prop is required.
-
-## NEGATIVE CONSTRAINTS
-
 - Do not use PascalCase or camelCase for filenames.
+- Use named exports exclusively for components and hooks.
 - Do not use default exports.
+
+## Project Structure
+
+- Place domain logic in `src/features/` and restrict `src/components/` to shared UI.
 - Do not place feature-specific components in the global components folder.
+- Import environment variables only from the validated configuration module.
+
+## Component Patterns
+
+- Use function declarations for components, not arrow functions.
+- Define TypeScript interfaces for props immediately above the component.
+- Use `<>` shorthand for fragments unless key prop is required.
+- Use stable, unique keys for list items; never use array index.
+
+## State and Effects
+
+- Encapsulate data fetching and complex effects in custom hooks.
 - Do not use `useEffect` for derived state; use `useMemo`.
+
+## Composition and Props
+
+- Avoid prop drilling beyond 2 levels; use context or composition.
+- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.

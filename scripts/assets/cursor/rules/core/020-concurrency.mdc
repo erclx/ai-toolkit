@@ -6,15 +6,18 @@ priority: 20
 
 # CONCURRENCY STANDARDS
 
-## HARD REQUIREMENTS
+## Async Lifecycle
 
 - Make async operations cancellable; clean up on component unmount or request abort.
 - Coordinate dependent async operations explicitly; document execution order.
-- Protect shared mutable state with locks, queues, or single-writer patterns.
-- Batch independent operations; avoid sequential execution when parallelizable.
-
-## NEGATIVE CONSTRAINTS
-
 - Do not fire-and-forget async operations without cleanup handlers.
-- Do not mutate shared state from multiple concurrent contexts.
 - Do not ignore race conditions in user-triggered async flows.
+
+## Shared State
+
+- Protect shared mutable state with locks, queues, or single-writer patterns.
+- Do not mutate shared state from multiple concurrent contexts.
+
+## Execution Efficiency
+
+- Batch independent operations; avoid sequential execution when parallelizable.
