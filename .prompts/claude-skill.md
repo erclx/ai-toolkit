@@ -8,18 +8,24 @@ Output deterministic, scannable instructions optimized for LLM context windows.
 
 ## CRITICAL CONSTRAINTS
 
-### Must Do
+### Skill Types
 
 - Use Reference type for conventions, patterns, and domain knowledge Claude applies inline. Use Task type for step-by-step workflows Claude executes as actions.
+
+### Description & Routing
+
 - Write `description` as the primary routing signal. Be specific, mention key technologies and trigger conditions. Bad: `"coding standards"`. Good: `"typescript strict type safety, import conventions, and error handling patterns"`.
 - Keep descriptions under 120 characters. They compete for a shared context budget across all skills.
+
+### Frontmatter
+
+- Specify `allowed-tools` and `model` only when the skill requires specific tool access or model capability.
+
+### Rule Content
+
 - Group bullets under H2 headers by domain concern. Mix dos and don'ts under the topic they belong to.
 - One actionable constraint per bullet. Prefer `X over Y` format for preferences.
-- Specify `allowed-tools` and `model` in frontmatter only when the skill requires specific tool access or model capability.
-
-### Must Not Do
-
-- Do not include code examples unless it is a 1-3 line inline snippet for a project-specific custom pattern the LLM cannot infer.
+- Do not include code examples unless a 1-3 line inline snippet for a pattern the LLM cannot infer.
 - Do not duplicate general knowledge the LLM already has. Focus on project-specific conventions and preferences.
 
 ## OUTPUT FORMAT
