@@ -1,7 +1,9 @@
 agentic
 arch
+bunx
 changelog
 codenames
+commitlint
 conventionals
 cspell
 e2e
