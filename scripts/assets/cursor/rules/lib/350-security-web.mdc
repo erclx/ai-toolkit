@@ -13,10 +13,17 @@ priority: 350
 
 ## Content Sanitization
 
-- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent.
-- Do not use `dangerouslySetInnerHTML` without an accompanying sanitization function.
+- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent; never use without sanitization.
 
-## Input Validation and Storage
+## Input Validation
 
 - Validate all URL parameters and query strings using schema validation before use.
+
+## Storage and Tokens
+
 - Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
+- Store authentication tokens in httpOnly cookies; never expose to JavaScript.
+
+## Third-Party Scripts
+
+- Audit and pin versions for all third-party scripts loaded in the browser.
