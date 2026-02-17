@@ -17,7 +17,3 @@ priority: 20
 
 - Protect shared mutable state with locks, queues, or single-writer patterns.
 - Do not mutate shared state from multiple concurrent contexts.
-
-## Execution Efficiency
-
-- Batch independent operations; avoid sequential execution when parallelizable.
