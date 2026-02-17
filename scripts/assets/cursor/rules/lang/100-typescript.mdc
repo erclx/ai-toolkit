@@ -33,6 +33,7 @@ priority: 100
 ## Imports and Configuration
 
 - Use absolute imports mapping `@/` to `src/`.
+- Import from the module's source file directly; avoid barrel `index` re-exports.
 - Use `import type` for type-only imports to enable proper tree-shaking.
 - Enable `strict: true` in tsconfig.json with no exceptions.
 
