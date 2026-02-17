@@ -32,6 +32,10 @@ main() {
   bun run check:spell || log_error "Spelling Check Failed"
   log_info "Spelling correct"
 
+  log_step "3. Shell Linting"
+  bun run check:shell || log_error "Shell Lint Failed"
+  log_info "Shell scripts clean"
+
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Verification Passed!${NC}"
 }
