@@ -1,52 +1,61 @@
 # PROSE REFERENCE
 
-## RULES
+## Voice
 
-- Voice: Use active voice and present tense for all content.
-- Hierarchy: Use H1 for the document title, H2 for main sections, and H3 for subsections.
-- Spacing: Ensure a single blank line between headers and content.
-- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
-- Bullets: Use dashes (-) not asterisks (\*) for all bulleted lists.
-- Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
-- Lists: Use prose by default; reserve bullets for discrete, unrelated items.
-- Clarity: Use common words over complex alternatives (prefer "use" over "utilize", "help" over "facilitate").
-- Audience: Assume developer-level technical knowledge; skip hand-holding explanations.
-- Density: Every sentence must provide new information; remove redundant context.
-- Structure: Front-load key information in each paragraph; keep paragraphs concise and scannable.
+- Use active voice and present tense for all content
+- Prioritize direct verbs and nouns, using the absolute minimum words necessary
+- Use common words over complex alternatives (`use` not `utilize`, `help` not `facilitate`)
+- Assume developer-level technical knowledge; skip hand-holding explanations
 
-## CONSTRAINTS
+## Structure
 
-- Do not use marketing buzzwords: "seamless," "robust," "game-changer," "powerful," "revolutionary," "enhanced," "allows."
-- Do not use vague qualifiers: "simply," "just," "easily," "quickly," "very," "really."
-- Do not start sentences with filler: "Note that," "It should be noted," "Basically," "Essentially."
-- Do not over-format with excessive bold, italic, or header usage.
-- Do not explain obvious concepts or provide unnecessary context.
-- Do not use unnecessary adverbs or qualifiers.
-- Do not write in overly academic or corporate language.
-- Do not use horizontal rules or dividers (`---`).
+- H1 for document title, H2 for main sections, H3 for subsections
+- Front-load key information in each paragraph; keep paragraphs concise and scannable
+- Every sentence must provide new information; remove redundant context
+- Use prose by default; reserve bullets for discrete, unrelated items
+
+## Formatting
+
+- Use dashes (`-`) not asterisks (`*`) for bulleted lists
+- Wrap commands, API names, file paths, and code identifiers in backticks
+- Do not over-format with excessive bold, italic, or header usage
+- Do not use horizontal rules or dividers (`---`)
+- Use descriptive anchor text for links; avoid `click here` or `read more`
+
+## Language
+
+- Do not use marketing buzzwords (`seamless`, `robust`, `powerful`, `revolutionary`, `enhanced`, `allows`)
+- Do not use vague qualifiers (`simply`, `just`, `easily`, `quickly`, `very`, `really`)
+- Do not start sentences with filler (`Note that`, `Basically`, `Essentially`, `It should be noted`)
+- Do not write in overly academic or corporate language
 
 ## EXAMPLES
 
 ### Correct
 
-Run `npm install` to install dependencies. The build process uses Vite for faster compilation.
+```markdown
+Run `npm install` to install dependencies. The build process uses Vite for faster compilation. # active voice + direct verb
 
-Configuration lives in `vite.config.ts`. Modify the `plugins` array to add build extensions.
+Configuration lives in `vite.config.ts`. Modify the `plugins` array to add build extensions. # front-loaded + backticks
 
 Key features:
 
-- Hot module replacement during development
+- Hot module replacement during development # plain dash + no bold
 - Tree-shaking for production builds
 - TypeScript support without additional setup
+```
 
 ### Incorrect
 
-Basically, you'll want to simply run `npm install` to easily install all of the dependencies. Note that the build process utilizes the powerful and robust Vite bundler, which allows for seamless and revolutionary faster compilation.
+```markdown
+Basically, you'll want to simply run `npm install` to easily install all of the dependencies. # filler opener + vague qualifiers
+Note that the build process utilizes the powerful and robust Vite bundler, which allows for seamless faster compilation. # "Note that" + buzzwords + "utilize"
 
-It should be noted that configuration lives in `vite.config.ts`. You can very easily modify the `plugins` array to quickly add build extensions.
+It should be noted that configuration lives in `vite.config.ts`. You can very easily modify the `plugins` array. # filler + qualifier
 
 **Key features:**
 
-- **Seamless** hot module replacement during development
-- **Powerful** tree-shaking for production builds
-- **Enhanced** TypeScript support without additional setup
+- **Seamless** hot module replacement during development # excessive bold + buzzword
+- **Powerful** tree-shaking for production builds # buzzword
+- **Enhanced** TypeScript support without additional setup # buzzword
+```

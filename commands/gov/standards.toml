@@ -35,35 +35,32 @@ mkdir -p standards
 cat << 'GEMINI_EOF' > standards/branch.md
 # BRANCH REFERENCE
 
-## RULES
+## Format
 
-- Format: `<type>/<description>` or `<type>/<ticket>-<description>`
-- Types:
-  - `feat`: New feature or capability
-  - `fix`: Bug fix
-  - `refactor`: Structural changes (not a fix or a new feature)
-  - `docs`: Documentation only (README)
-  - `chore`: Maintenance tasks (deps, tooling, configs)
-  - `perf`: Performance improvements
-  - `test`: Add or modify tests
-  - `style`: Code formatting (whitespace, semicolons)
-  - `build`: Build system changes (webpack, npm scripts)
-  - `ci`: CI/CD pipeline changes (GitHub Actions)
-  - `revert`: Revert a previous commit
+- Structure: `<type>/<description>` or `<type>/<ticket>-<description>`
 - Length: 50 characters maximum
-- Casing: kebab-case only
-
-## CONSTRAINTS
-
-- Do not use underscores or camelCase
+- Casing: kebab-case only, no underscores or camelCase
 - Do not duplicate type in description (e.g., `feat/feature-login`)
-- Do not exceed 50 characters
+
+## Types
+
+- `feat`: new feature or capability
+- `fix`: bug fix
+- `refactor`: structural changes (not a fix or feature)
+- `docs`: documentation only (README)
+- `chore`: maintenance tasks (deps, tooling, configs)
+- `perf`: performance improvements
+- `test`: add or modify tests
+- `style`: code formatting (whitespace, semicolons)
+- `build`: build system changes (webpack, npm scripts)
+- `ci`: CI/CD pipeline changes (GitHub Actions)
+- `revert`: revert a previous commit
 
 ## EXAMPLES
 
 ### Correct
 
-```
+```text
 feat/jwt-expiration                    # clear feature scope
 fix/AUTH-123-connection-pool           # includes ticket ID
 refactor/remove-deprecated-endpoints   # clear refactor intent
@@ -71,10 +68,10 @@ refactor/remove-deprecated-endpoints   # clear refactor intent
 
 ### Incorrect
 
-```
-feature/auth_stuff                                           # wrong type name + underscore
-feat/feature-add-login                                       # duplicates type in description
-fix/DB-456-fix-the-database-connection-pool-memory-leak     # exceeds 50 characters (59)
+```text
+feature/auth_stuff                                        # wrong type + underscore
+feat/feature-add-login                                    # duplicates type in description
+fix/DB-456-fix-the-database-connection-pool-memory-leak   # exceeds 50 chars (59)
 ```
 
 GEMINI_EOF
@@ -83,23 +80,29 @@ echo '  + standards/branch.md'
 cat << 'GEMINI_EOF' > standards/changelog.md
 # CHANGELOG REFERENCE
 
-## RULES
+## Format
 
-- Standard: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format with [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-- Hierarchy: H1 title, H2 version+date or `[Unreleased]`, H3 category.
-- Categories: Use `Added`, `Changed`, `Fixed`, `Deprecated`, `Security` as H3 headers.
-- Entry Format: `- component: description from user perspective` (no bold markers or special formatting).
-- Spacing: Include one blank line between H3 category headers and bullet lists.
-- Version Links: Place at bottom in reverse chronological order; `[Unreleased]` compares latest release to HEAD.
-- Content: Include only user-facing changes; exclude internal refactors, typos, CI/CD updates, and dependency bumps unless they affect functionality.
+- Standard: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) with [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+- Hierarchy: H1 title, H2 version+date or `[Unreleased]`, H3 category
+- Entry format: `- component: description`
+- No bold formatting for component names in entries
+- No prose; use concise bullet points
 
-## CONSTRAINTS
+## Categories
 
-- Do not include commits that do not affect end users (formatting changes, internal refactors, test updates).
-- Do not use bold formatting for component names in entries.
-- Do not write in prose; use concise bullet points.
-- Do not include version sections with no meaningful changes.
-- Do not mix developer-focused and user-focused changes in the same entry.
+- Use `Added`, `Changed`, `Fixed`, `Deprecated`, `Security` as H3 headers
+- Do not include version sections with no meaningful changes
+
+## Entries
+
+- Include only user-facing changes
+- Exclude internal refactors, typos, CI/CD updates, and dependency bumps unless they affect functionality
+- Do not mix developer-focused and user-focused changes in the same entry
+
+## Versioning
+
+- Place version links at bottom in reverse chronological order
+- `[Unreleased]` compares latest release to HEAD
 
 ## EXAMPLES
 
@@ -124,6 +127,14 @@ All notable changes to this project will be documented in this file.
 
 - component: specific bug fix description
 
+### Deprecated
+
+- component: description of what is being phased out
+
+### Removed
+
+- component: description of removed feature
+
 ## [1.0.0] - 2026-01-20
 
 ### Added
@@ -146,20 +157,20 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- editor: syntax highlighting for terraform files
-- cli: `--watch` flag for continuous file monitoring
+- editor: syntax highlighting for terraform files # user-facing, specific component
+- cli: `--watch` flag for continuous file monitoring # concrete capability added
 
 ### Changed
 
-- config: default timeout increased from 30s to 60s
+- config: default timeout increased from 30s to 60s # measurable change, user impact clear
 
 ### Fixed
 
-- api: race condition in concurrent request handling
+- api: race condition in concurrent request handling # specific bug, no internal detail
 
 ### Security
 
-- auth: patch jwt verification vulnerability (CVE-2026-1234)
+- auth: patch jwt verification vulnerability (CVE-2026-1234) # cve reference, scoped
 ```
 
 ### Incorrect
@@ -169,14 +180,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **Editor:** Added syntax highlighting for terraform files
-- Fixed a typo in the README
-- Updated CI pipeline to use Node 20
-- Refactored internal parser logic for better performance
+- **Editor:** Added syntax highlighting for terraform files # bold formatting + past tense
+- Fixed a typo in the README # non-user-facing change
+- Updated CI pipeline to use Node 20 # internal, no user impact
+- Refactored internal parser logic for better performance # developer-focused
 
 ### Changed
 
-- The default timeout has been increased from 30 seconds to 60 seconds to improve reliability and ensure seamless operation.
+- The default timeout has been increased from 30s to 60s to improve reliability and ensure seamless operation. # prose + buzzword
 ```
 
 GEMINI_EOF
@@ -185,53 +196,57 @@ echo '  + standards/changelog.md'
 cat << 'GEMINI_EOF' > standards/commit.md
 # COMMIT MESSAGE REFERENCE
 
-## RULES
+## Format
 
-- Format: `<type>(<scope>): <subject>`
-- Types:
-  - `feat`: New feature or capability
-  - `fix`: Bug fix
-  - `refactor`: Structural changes (not a fix or a new feature)
-  - `docs`: Documentation only (README)
-  - `chore`: Maintenance tasks (deps, tooling, configs)
-  - `perf`: Performance improvements
-  - `test`: Add or modify tests
-  - `style`: Code formatting (whitespace, semicolons)
-  - `build`: Build system changes (webpack, npm scripts)
-  - `ci`: CI/CD pipeline changes (GitHub Actions)
-  - `revert`: Revert a previous commit
-- Scope: Single lowercase word representing a system component
-- Subject Mood: Use the imperative mood (e.g., `add` instead of `added`)
-- Casing: Use lowercase for `<type>`, `<scope>`, and the first word of `<subject>`
-- Character Limits: Subject 72 chars maximum.
-- Specificity: Describe the actual technical change, not that something changed (e.g., \"add retry logic\" not \"improve api\")
+- Structure: `<type>(<scope>): <subject>`
+- Casing: lowercase for `<type>`, `<scope>`, and first word of `<subject>`
+- Subject: 72 characters maximum, no trailing period
 
-## CONSTRAINTS
+## Types
 
-- Do not use vague action verbs (e.g., refine, enhance)
-- Do not use multi-word scopes or kebab-case (no dashes or spaces)
-- Do not use specific filenames as scopes.
-- Do not use a scope that duplicates the type.
-- Do not repeat the scope in the subject line.
-- Do not use trailing periods at the end of the subject line.
-- Do not use backslash escaping `\\\"` or internal double quotes; use single quotes if necessary.
-- Do not use conversational filler or introductory phrases
+- `feat`: new feature or capability
+- `fix`: bug fix
+- `refactor`: structural changes (not a fix or feature)
+- `docs`: documentation only (README)
+- `chore`: maintenance tasks (deps, tooling, configs)
+- `perf`: performance improvements
+- `test`: add or modify tests
+- `style`: code formatting (whitespace, semicolons)
+- `build`: build system changes (webpack, npm scripts)
+- `ci`: CI/CD pipeline changes (GitHub Actions)
+- `revert`: revert a previous commit
+
+## Scope
+
+- Single lowercase word representing a system component
+- Prefer single word; use kebab-case only when two words are genuinely needed for specificity
+- Do not use specific filenames as scopes
+- Do not use a scope that duplicates the type
+
+## Subject
+
+- Use imperative mood (`add` not `added`)
+- Describe the actual technical change, not that something changed
+- Do not use vague verbs (`improve`, `refine`, `enhance`)
+- Do not repeat the scope in the subject line
+- Use single quotes if quoting; no backslash escaping or internal double quotes
+- No conversational filler or introductory phrases
 
 ## EXAMPLES
 
 ### Correct
 
-```
-feat(api): add retry logic for failed webhooks
-fix(auth): update 'UserSession' validation logic
+```text
+feat(api): add retry logic for failed webhooks       # specific verb + clear change
+fix(auth): update 'UserSession' validation logic     # scoped + imperative + single quotes
 ```
 
 ### Incorrect
 
-```
-fix(user-auth): Fixed the redirect loop.  # wrong casing + period
-docs(docs): update the readme.            # duplicate scope + period
-docs(api): improve documentation          # vague verb + lacks specificity
+```text
+fix(user-auth): Fixed the redirect loop.    # wrong casing + period + multi-word scope
+docs(docs): update the readme.              # duplicate scope + period
+docs(api): improve documentation            # vague verb + lacks specificity
 ```
 
 GEMINI_EOF
@@ -240,25 +255,29 @@ echo '  + standards/commit.md'
 cat << 'GEMINI_EOF' > standards/pr.md
 # PULL REQUEST REFERENCE
 
-## RULES
+## Title
 
-- Title: Format as `<type>(<scope>): <subject>` with lowercase for `<type>`, `<scope>`, and first word of `<subject>` (72 characters maximum).
-- Voice: Use the imperative mood for all content (e.g., \"Add,\" \"Fix,\" \"Refactor\").
-- Summary: Target 1-2 sentences following `<Action Verb> <Direct Object> to <r>` pattern. Expand for clarity if needed.
-- Required Sections: Include `## Summary`, `## Key Changes`, `## Technical Context`, and `## Testing`.
-- Component Clarity: Name actual files, functions, or modules in Key Changes (e.g., `AuthService.verify()` not \"auth handler\").
-- Technical Context: Target 1-2 lines explaining architectural reasoning. Expand for complex architectural changes.
-- Testing: Specify exact commands or test cases run.
+- Format: `<type>(<scope>): <subject>`
+- Casing: lowercase for `<type>`, `<scope>`, and first word of `<subject>`
+- Length: 72 characters maximum
 
-## CONSTRAINTS
+## Content
 
-- Do not start sentences with \"This PR,\" \"This commit,\" \"Included are,\" or \"I have.\"
-- Do not use marketing buzzwords like \"seamless,\" \"robust,\" \"game-changer,\" \"enhanced,\" or \"allows.\"
-- Do not describe historical behavior or unchanged code; describe new behavior only.
-- Do not include future promises or speculative documentation.
-- Do not include visuals unless they clarify architecture, UI, or complex logic flows
+- Use imperative mood for all content (`add`, `fix`, `refactor`)
+- Do not start with \"This PR,\" \"This commit,\" \"Included are,\" or \"I have\"
+- Do not use buzzwords (`seamless`, `robust`, `game-changer`, `enhanced`)
+- Do not describe historical behavior or unchanged code; describe new behavior only
+- Do not include future promises or speculative documentation
 - Do not explain obvious changes (formatting, renaming variables)
 - Do not duplicate commit messages verbatim
+
+## Sections
+
+- `## Summary`: 1-2 sentences following `<Action Verb> <Direct Object> to <Result>`, expand for clarity if needed
+- `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not \"auth handler\")
+- `## Technical Context`: 1-2 lines of architectural reasoning explaining why, not what; expand for complex changes
+- `## Testing`: specify exact commands or test cases run
+- Visuals: include only when they clarify architecture, UI, or complex logic flows
 
 ## EXAMPLES
 
@@ -289,22 +308,21 @@ cat << 'GEMINI_EOF' > standards/pr.md
 ```markdown
 ## Summary
 
-Update auth middleware to enforce jwt expiration checks.
+Update auth middleware to enforce jwt expiration checks. # imperative + direct object + result
 
 ## Key Changes
 
-- Add `verifyExpiration()` utility to `src/auth/validators.ts`
-- Refactor `AuthService.authenticate()` to handle 401 response codes
-- Update `JwtMiddleware` to call expiration validator
+- Add `verifyExpiration()` to `src/auth/validators.ts` # specific function + file path
+- Refactor `AuthService.authenticate()` to handle 401 codes # named component + clear change
 
 ## Technical Context
 
-- Migration to stateless session management for horizontal scalability
+- Migration to stateless session management for horizontal scalability # why, not what
 
 ## Testing
 
-- `npm run test:auth`
-- Verified expired token rejection in staging
+- `npm run test:auth` # exact command
+- Verified expired token rejection in staging # edge case
 ```
 
 ### Incorrect
@@ -312,16 +330,16 @@ Update auth middleware to enforce jwt expiration checks.
 ```markdown
 ## Summary
 
-This PR updates the authentication system to be more robust.
+This PR updates the authentication system to be more robust. # \"This PR\" opener + buzzword
 
 ## Key Changes
 
-- Updated auth middleware files
-- The old system used to check tokens differently
+- Updated auth middleware files # vague, no specific component
+- The old system used to check tokens differently # describes historical behavior
 
 ## Testing
 
-- Tested manually
+- Tested manually # no specific command or case
 ```
 
 GEMINI_EOF
@@ -330,56 +348,65 @@ echo '  + standards/pr.md'
 cat << 'GEMINI_EOF' > standards/prose.md
 # PROSE REFERENCE
 
-## RULES
+## Voice
 
-- Voice: Use active voice and present tense for all content.
-- Hierarchy: Use H1 for the document title, H2 for main sections, and H3 for subsections.
-- Spacing: Ensure a single blank line between headers and content.
-- Directness: Prioritize direct verbs and nouns, phrasing all content using the absolute minimum number of words necessary.
-- Bullets: Use dashes (-) not asterisks (\\*) for all bulleted lists.
-- Technical Terms: Wrap commands, API names, file paths, and code identifiers in backticks.
-- Lists: Use prose by default; reserve bullets for discrete, unrelated items.
-- Clarity: Use common words over complex alternatives (prefer \"use\" over \"utilize\", \"help\" over \"facilitate\").
-- Audience: Assume developer-level technical knowledge; skip hand-holding explanations.
-- Density: Every sentence must provide new information; remove redundant context.
-- Structure: Front-load key information in each paragraph; keep paragraphs concise and scannable.
+- Use active voice and present tense for all content
+- Prioritize direct verbs and nouns, using the absolute minimum words necessary
+- Use common words over complex alternatives (`use` not `utilize`, `help` not `facilitate`)
+- Assume developer-level technical knowledge; skip hand-holding explanations
 
-## CONSTRAINTS
+## Structure
 
-- Do not use marketing buzzwords: \"seamless,\" \"robust,\" \"game-changer,\" \"powerful,\" \"revolutionary,\" \"enhanced,\" \"allows.\"
-- Do not use vague qualifiers: \"simply,\" \"just,\" \"easily,\" \"quickly,\" \"very,\" \"really.\"
-- Do not start sentences with filler: \"Note that,\" \"It should be noted,\" \"Basically,\" \"Essentially.\"
-- Do not over-format with excessive bold, italic, or header usage.
-- Do not explain obvious concepts or provide unnecessary context.
-- Do not use unnecessary adverbs or qualifiers.
-- Do not write in overly academic or corporate language.
-- Do not use horizontal rules or dividers (`---`).
+- H1 for document title, H2 for main sections, H3 for subsections
+- Front-load key information in each paragraph; keep paragraphs concise and scannable
+- Every sentence must provide new information; remove redundant context
+- Use prose by default; reserve bullets for discrete, unrelated items
+
+## Formatting
+
+- Use dashes (`-`) not asterisks (`*`) for bulleted lists
+- Wrap commands, API names, file paths, and code identifiers in backticks
+- Do not over-format with excessive bold, italic, or header usage
+- Do not use horizontal rules or dividers (`---`)
+- Use descriptive anchor text for links; avoid `click here` or `read more`
+
+## Language
+
+- Do not use marketing buzzwords (`seamless`, `robust`, `powerful`, `revolutionary`, `enhanced`, `allows`)
+- Do not use vague qualifiers (`simply`, `just`, `easily`, `quickly`, `very`, `really`)
+- Do not start sentences with filler (`Note that`, `Basically`, `Essentially`, `It should be noted`)
+- Do not write in overly academic or corporate language
 
 ## EXAMPLES
 
 ### Correct
 
-Run `npm install` to install dependencies. The build process uses Vite for faster compilation.
+```markdown
+Run `npm install` to install dependencies. The build process uses Vite for faster compilation. # active voice + direct verb
 
-Configuration lives in `vite.config.ts`. Modify the `plugins` array to add build extensions.
+Configuration lives in `vite.config.ts`. Modify the `plugins` array to add build extensions. # front-loaded + backticks
 
 Key features:
 
-- Hot module replacement during development
+- Hot module replacement during development # plain dash + no bold
 - Tree-shaking for production builds
 - TypeScript support without additional setup
+```
 
 ### Incorrect
 
-Basically, you'll want to simply run `npm install` to easily install all of the dependencies. Note that the build process utilizes the powerful and robust Vite bundler, which allows for seamless and revolutionary faster compilation.
+```markdown
+Basically, you'll want to simply run `npm install` to easily install all of the dependencies. # filler opener + vague qualifiers
+Note that the build process utilizes the powerful and robust Vite bundler, which allows for seamless faster compilation. # \"Note that\" + buzzwords + \"utilize\"
 
-It should be noted that configuration lives in `vite.config.ts`. You can very easily modify the `plugins` array to quickly add build extensions.
+It should be noted that configuration lives in `vite.config.ts`. You can very easily modify the `plugins` array. # filler + qualifier
 
 **Key features:**
 
-- **Seamless** hot module replacement during development
-- **Powerful** tree-shaking for production builds
-- **Enhanced** TypeScript support without additional setup
+- **Seamless** hot module replacement during development # excessive bold + buzzword
+- **Powerful** tree-shaking for production builds # buzzword
+- **Enhanced** TypeScript support without additional setup # buzzword
+```
 
 GEMINI_EOF
 echo '  + standards/prose.md'
@@ -387,27 +414,31 @@ echo '  + standards/prose.md'
 cat << 'GEMINI_EOF' > standards/readme.md
 # README REFERENCE
 
-## RULES
+## Structure
 
-- Hierarchy: H1 title, H2 major sections, H3 subsections.
-- Required Sections: Project description, installation/setup, usage examples, support/help resources.
-- Optional Sections: Badges (at top), features, contributing (link to `CONTRIBUTING.md`), license (link to `LICENSE`).
-- Links: Use relative paths for repository files; use absolute URLs for external resources.
-- Code Examples: Include practical usage snippets demonstrating core functionality.
-- Context Adaptation: For libraries/tools include API quickstart; for applications/products include usage instructions and configuration options; for CLI tools include command examples with flags.
-- Heading Structure: Use proper heading hierarchy to enable GitHub's auto-generated table of contents.
-- Spacing: Include one blank line between headers and content.
-- Description: Brief overview in 2-3 sentences maximum explaining what the project does.
+- H1 title, H2 major sections, H3 subsections
+- Project description in plain text directly under H1; 2-3 sentences maximum
+- Use proper heading hierarchy to enable GitHub's auto-generated table of contents
+- Do not create deeply nested heading structures that harm scannability
+- Do not use horizontal rules or dividers (`---`)
 
-## CONSTRAINTS
+## Sections
 
-- Do not include full API documentation; link to separate docs instead.
-- Do not include license text; reference the `LICENSE` file.
-- Do not include detailed contribution guidelines; reference the `CONTRIBUTING.md` file.
-- Do not include extensive troubleshooting guides; use wiki or separate documentation.
-- Do not use absolute URLs for files within the repository.
-- Do not create deeply nested heading structures that harm scannability.
-- Do not use horizontal rules or dividers (`---`).
+- Required: project description, installation/setup, usage examples, support/help resources
+- Optional: badges (at top, before description), features, contributing (link to `CONTRIBUTING.md`), license (link to `LICENSE`)
+- Do not include full API documentation; link to separate docs instead
+- Do not include license text; reference the `LICENSE` file
+- Do not include detailed contribution guidelines; reference `CONTRIBUTING.md`
+- Do not include extensive troubleshooting guides; use wiki or separate documentation
+
+## Content
+
+- Use relative paths for repository files; use absolute URLs for external resources
+- Do not use absolute URLs for files within the repository
+- Include practical usage snippets demonstrating core functionality
+- For libraries/tools: include API quickstart
+- For applications/products: include usage instructions and configuration options
+- For CLI tools: include command examples with flags
 
 ## EXAMPLES
 
@@ -420,7 +451,6 @@ Brief description of what the project does in 2-3 sentences.
 
 ## Features
 
-- Key feature highlighting user benefit
 - Key feature highlighting user benefit
 - Key feature highlighting user benefit
 
@@ -461,11 +491,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ````markdown
 # Auth SDK
 
-Lightweight authentication library for Node.js applications with OAuth2 and JWT support.
+Lightweight authentication library for Node.js with OAuth2 and JWT support. # 1 sentence, plain text, under H1
 
 ## Features
 
-- OAuth2 provider integration (Google, GitHub, Azure)
+- OAuth2 provider integration (Google, GitHub, Azure) # user benefit, no buzzwords
 - JWT token generation and validation
 - Session management with Redis support
 - TypeScript support with full type definitions
@@ -486,21 +516,21 @@ const client = new AuthClient({
   clientId: process.env.CLIENT_ID,
 })
 
-const user = await client.authenticate(code)
+const user = await client.authenticate(code)    # practical snippet, core functionality
 ```
 
 ## Documentation
 
-Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference and guides.
+Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference. # links to external docs, not inline
 
 ## Support
 
-- Report bugs via [GitHub Issues](../../issues)
+- Report bugs via [GitHub Issues](../../issues) # relative path for repo link
 - Community support on [Discord](https://discord.gg/example)
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) # references file, no license text
 ````
 
 ### Correct (Application/Product)
@@ -508,7 +538,7 @@ Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference and 
 ````markdown
 # Terraform Formatter
 
-VSCode extension for formatting and validating Terraform files.
+VSCode extension for formatting and validating Terraform files. # plain text description, concise
 
 ## Features
 
@@ -523,7 +553,7 @@ Install from the [VSCode Marketplace](https://marketplace.visualstudio.com/items
 
 ## Usage
 
-Open a Terraform file and run `Format Document` from the command palette, or enable auto-format on save in settings.
+Open a Terraform file and run `Format Document` from the command palette, or enable auto-format on save in settings. # practical usage, no hand-holding
 
 ### Configuration
 
@@ -553,15 +583,15 @@ Report issues on [GitHub](../../issues).
 ````markdown
 # Auth SDK
 
-This is a seamless and powerful authentication library that allows developers to easily integrate robust OAuth2 functionality into their Node.js applications. It's a game-changer for authentication!
+This is a seamless and powerful authentication library that allows developers to easily integrate robust OAuth2 functionality. # buzzwords + vague qualifiers
 
 ## Why Use This?
 
-Basically, this library is just amazing and will revolutionize how you handle auth. It's super simple to use and very powerful.
+Basically, this library is just amazing and will revolutionize how you handle auth. # filler + buzzwords
 
 ## Installation
 
-Simply run the following command to install:
+Simply run the following command to install: # \"Simply\" filler
 
 ```bash
 npm install auth-sdk
@@ -571,23 +601,9 @@ npm install auth-sdk
 
 ### AuthClient Class
 
-The AuthClient class is the main entry point for the library.
-
 #### Constructor
 
-```typescript
-constructor(options: AuthOptions)
-```
-
-Creates a new AuthClient instance with the provided options.
-
-**Parameters:**
-
-- `options` (AuthOptions): Configuration object
-  - `provider` (string): OAuth provider name
-  - `clientId` (string): Your client ID
-  - `clientSecret` (string): Your client secret
-  - `redirectUri` (string): Callback URL
+constructor(options: AuthOptions) # full API docs inline, should link to external docs instead
 
 [...500 more lines of detailed API docs...]
 
@@ -595,10 +611,7 @@ Creates a new AuthClient instance with the provided options.
 
 MIT License
 
-Copyright (c) 2026 Example Corp
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files...
+Copyright (c) 2026 Example Corp # full license text, should reference LICENSE file only
 
 [...full license text...]
 ````
