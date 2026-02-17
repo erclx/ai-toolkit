@@ -15,6 +15,7 @@ pycache
 pydantic
 pyproject
 pytest
+tanstack
 uv
 uvicorn
 vite
