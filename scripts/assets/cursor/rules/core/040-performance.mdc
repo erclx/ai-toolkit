@@ -6,15 +6,18 @@ priority: 40
 
 # PERFORMANCE STANDARDS
 
-## HARD REQUIREMENTS
+## Resource Loading
 
 - Lazy load resources at architectural boundaries (routes, features), not inline.
+- Do not import entire modules when subsets are sufficient.
+
+## Execution Efficiency
+
 - Batch independent operations; avoid sequential execution when parallelizable.
 - Defer non-critical work until after user-visible rendering completes.
-- Virtualize or paginate unbounded lists.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not import entire modules when subsets are sufficient.
 - Do not fetch data inside loops.
+
+## Rendering
+
+- Virtualize or paginate unbounded lists.
 - Do not optimize without measurement.

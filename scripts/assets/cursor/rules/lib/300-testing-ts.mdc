@@ -1,21 +1,21 @@
 ---
 description: enforce typescript/javascript testing tooling standards
-globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
+globs: '**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx'
 alwaysApply: false
 priority: 300
 ---
 
 # TYPESCRIPT/JAVASCRIPT TESTING TOOLING
 
-## HARD REQUIREMENTS
+## Unit and Integration
 
 - Use Vitest for unit and integration tests.
 - Co-locate unit tests with their respective components.
+- Use `userEvent` for realistic interaction simulation in Vitest.
+- Do not make real network calls in unit tests; use mocks.
+
+## End-to-End
+
 - Use Playwright for end-to-end tests.
 - Place all Playwright tests within the `e2e/` directory.
-- Use `userEvent` for realistic interaction simulation in Vitest.
-
-## NEGATIVE CONSTRAINTS
-
-- Do not make real network calls in unit tests; use mocks.
 - Do not place Playwright tests inside the `src/` directory.

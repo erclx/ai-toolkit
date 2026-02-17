@@ -6,14 +6,17 @@ priority: 50
 
 # LOGGING STANDARDS
 
-## HARD REQUIREMENTS
+## Log Coverage
 
 - Log state transitions at boundaries (requests received, external calls made, errors encountered).
+- Do not log in performance-critical code paths.
+
+## Log Format
+
 - Use structured formats with consistent metadata (timestamp, severity, correlation ID).
 - Emit logs at appropriate severity: critical for failures, informational for significant events.
 
-## NEGATIVE CONSTRAINTS
+## Log Safety
 
-- Do not log in performance-critical code paths.
 - Do not log credentials, tokens, or personally identifiable information.
 - Do not log implementation details; log observable behavior.

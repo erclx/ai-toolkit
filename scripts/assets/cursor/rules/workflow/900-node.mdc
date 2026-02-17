@@ -1,23 +1,26 @@
 ---
 description: enforce node workflow verification and staging handoff
-globs: "package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+globs: 'package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx'
 alwaysApply: false
 priority: 900
 ---
 
 # NODE WORKFLOW STANDARDS
 
-## HARD REQUIREMENTS
+## Planning
 
 - Analyze requests and output a numbered implementation plan before execution.
+- Do not modify code without a confirmed plan.
+
+## Verification Pipeline
+
 - Execute fail-fast verification: `bun run format` → `bun run lint:fix` → `bun run typecheck` → `bun run test` → `bun run build`.
 - Run `bun run lint:spell` after other checks pass or as a final optional step.
+- Do not proceed to the next step if the current step fails.
+- Do not run E2E tests (`test:e2e`) in the standard workflow; reserve for manual execution or CI.
+
+## Staging and Handoff
+
 - Stage all modified files using `git add .` and verify with `git status`.
 - Signal completion to the user for manual review and commit.
-
-## NEGATIVE CONSTRAINTS
-
 - Do not execute `git commit`; hand off the staged environment to the user.
-- Do not proceed to the next step if the current step fails.
-- Do not modify code without a confirmed plan.
-- Do not run E2E tests (`test:e2e`) in the standard workflow; reserve for manual execution or CI.
