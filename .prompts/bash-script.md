@@ -8,7 +8,7 @@ Keep scripts minimal while maintaining the established visual system.
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - Start with `#!/bin/bash`, `set -e`, and `set -o pipefail`.
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
@@ -20,7 +20,7 @@ Keep scripts minimal while maintaining the established visual system.
 - Name functions verb-first: `validate_input`, `deploy_service`, `install_dependencies`.
 - Include context in error messages: `log_error "npm install failed: check package.json"`.
 
-### Must not do:
+### Must Not Do
 
 - Do not include comments except the shebang line.
 - Do not add diamonds (`◆`/`◇`) to non-interactive log functions.

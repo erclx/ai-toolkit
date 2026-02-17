@@ -8,14 +8,14 @@ Output immutable, deterministic instructions with clear format specifications.
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - Use `{{DOUBLE_BRACES}}` for variables in generated prompts (e.g., `{{user_name}}`).
 - Use `[BRACKETS]` for internal placeholders in the template itself (e.g., `[Descriptive Name]`).
 - Use imperative voice: "Do X", never "You should" or "Try to".
 - Include only sections that serve the prompt's core function.
 
-### Must not do:
+### Must Not Do
 
 - Never use "maybe", "consider", or "depending on". Be definitive.
 - Do not assume prompts must be short; expand for complexity when needed.
@@ -40,12 +40,12 @@ Omit VALIDATION for simple single-purpose prompts.
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - [Specific requirement]
 - [Specific requirement]
 
-### Must not do:
+### Must Not Do
 
 - [Specific prohibition]
 - [Specific prohibition]
@@ -90,12 +90,12 @@ You summarize incoming emails into 3 action-focused bullet points, ignoring plea
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - Start with "Subject: [Original Subject]".
 - Keep total summary under 50 words.
 
-### Must not do:
+### Must Not Do
 
 - Do not judge the content, just report it.
 - Do not include PII - redact phone numbers and addresses.
@@ -128,13 +128,13 @@ Keep messages under 50 characters in imperative mood.
 
 ## CRITICAL CONSTRAINTS
 
-### Must do:
+### Must Do
 
 - Use format: `<type>: <subject>` (lowercase, no period).
 - Keep subject under 50 characters.
 - Use imperative mood for verbs.
 
-### Must not do:
+### Must Not Do
 
 - Do not use scopes (no `feat(auth):`).
 - Do not use past tense.
