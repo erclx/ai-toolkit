@@ -8,12 +8,16 @@ priority: 20
 
 ## Async Lifecycle
 
-- Make async operations cancellable; clean up on component unmount or request abort.
+- Make async operations cancellable; clean up on scope exit or caller cancellation.
 - Coordinate dependent async operations explicitly; document execution order.
+- Set explicit timeouts on all external async operations.
 - Do not fire-and-forget async operations without cleanup handlers.
-- Do not ignore race conditions in user-triggered async flows.
 
-## Shared State
+## Race Conditions
 
+- Do not ignore race conditions in concurrent flows.
 - Protect shared mutable state with locks, queues, or single-writer patterns.
-- Do not mutate shared state from multiple concurrent contexts.
+
+## Failure Handling
+
+- Handle partial failures in batched operations independently; do not fail the entire batch for a single error.
