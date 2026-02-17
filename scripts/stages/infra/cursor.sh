@@ -3,7 +3,6 @@ set -e
 set -o pipefail
 
 GREEN='\033[0;32m'
-RED='\033[0;31m'
 WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
@@ -25,11 +24,11 @@ stage_setup() {
   log_step "SCENARIO READY: Cursor IDE Playground"
   log_info "Context: Full governance rules + docs injected"
   log_info "Action:  Open Cursor and try these prompts:"
-  
+
   echo -e "${GREY}│${NC}"
   log_info "1. UI Test (Tailwind/React Rules):"
   echo -e "${GREY}│${NC}    \"Create a shared StatusBadge component in src/components/. It should accept a variant prop (success, warning, error) and children. Use the cn utility.\""
-  
+
   echo -e "${GREY}│${NC}"
   log_info "2. Feature Test (Architecture Rules):"
   echo -e "${GREY}│${NC}    \"Create a UserGreeting feature in src/features/dashboard. Display time of day and use the StatusBadge to show 'Online'.\""
