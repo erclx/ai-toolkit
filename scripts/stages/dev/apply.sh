@@ -3,7 +3,6 @@ set -e
 set -o pipefail
 
 GREEN='\033[0;32m'
-RED='\033[0;31m'
 WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
