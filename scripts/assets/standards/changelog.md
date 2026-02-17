@@ -1,22 +1,28 @@
 # CHANGELOG REFERENCE
 
-## RULES
+## Format
 
-- Standard: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format with [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-- Hierarchy: H1 title, H2 version+date or `[Unreleased]`, H3 category.
-- Categories: Use `Added`, `Changed`, `Fixed`, `Deprecated`, `Security` as H3 headers.
-- Entry Format: `- component: description from user perspective` (no bold markers or special formatting).
-- Spacing: Include one blank line between H3 category headers and bullet lists.
-- Version Links: Place at bottom in reverse chronological order; `[Unreleased]` compares latest release to HEAD.
-- Content: Include only user-facing changes; exclude internal refactors, typos, CI/CD updates, and dependency bumps unless they affect functionality.
+- Standard: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) with [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+- Hierarchy: H1 title, H2 version+date or `[Unreleased]`, H3 category
+- Entry format: `- component: description`
+- No bold formatting for component names in entries
+- No prose; use concise bullet points
 
-## CONSTRAINTS
+## Categories
 
-- Do not include commits that do not affect end users (formatting changes, internal refactors, test updates).
-- Do not use bold formatting for component names in entries.
-- Do not write in prose; use concise bullet points.
-- Do not include version sections with no meaningful changes.
-- Do not mix developer-focused and user-focused changes in the same entry.
+- Use `Added`, `Changed`, `Fixed`, `Deprecated`, `Security` as H3 headers
+- Do not include version sections with no meaningful changes
+
+## Entries
+
+- Include only user-facing changes
+- Exclude internal refactors, typos, CI/CD updates, and dependency bumps unless they affect functionality
+- Do not mix developer-focused and user-focused changes in the same entry
+
+## Versioning
+
+- Place version links at bottom in reverse chronological order
+- `[Unreleased]` compares latest release to HEAD
 
 ## EXAMPLES
 
@@ -41,6 +47,14 @@ All notable changes to this project will be documented in this file.
 
 - component: specific bug fix description
 
+### Deprecated
+
+- component: description of what is being phased out
+
+### Removed
+
+- component: description of removed feature
+
 ## [1.0.0] - 2026-01-20
 
 ### Added
@@ -63,20 +77,20 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- editor: syntax highlighting for terraform files
-- cli: `--watch` flag for continuous file monitoring
+- editor: syntax highlighting for terraform files # user-facing, specific component
+- cli: `--watch` flag for continuous file monitoring # concrete capability added
 
 ### Changed
 
-- config: default timeout increased from 30s to 60s
+- config: default timeout increased from 30s to 60s # measurable change, user impact clear
 
 ### Fixed
 
-- api: race condition in concurrent request handling
+- api: race condition in concurrent request handling # specific bug, no internal detail
 
 ### Security
 
-- auth: patch jwt verification vulnerability (CVE-2026-1234)
+- auth: patch jwt verification vulnerability (CVE-2026-1234) # cve reference, scoped
 ```
 
 ### Incorrect
@@ -86,12 +100,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **Editor:** Added syntax highlighting for terraform files
-- Fixed a typo in the README
-- Updated CI pipeline to use Node 20
-- Refactored internal parser logic for better performance
+- **Editor:** Added syntax highlighting for terraform files # bold formatting + past tense
+- Fixed a typo in the README # non-user-facing change
+- Updated CI pipeline to use Node 20 # internal, no user impact
+- Refactored internal parser logic for better performance # developer-focused
 
 ### Changed
 
-- The default timeout has been increased from 30 seconds to 60 seconds to improve reliability and ensure seamless operation.
+- The default timeout has been increased from 30s to 60s to improve reliability and ensure seamless operation. # prose + buzzword
 ```
