@@ -9,7 +9,9 @@ priority: 60
 ## Semantics
 
 - Prefer descriptive names over abbreviations; `getUserProfile` over `getUP`.
+- Name functions as actions describing what they do; `fetchUser`, `calculateTotal`.
 - Prefix booleans with `is`, `has`, `should`, or `can`: `isLoading`, `hasAccess`.
+- Avoid negative boolean names; `isEnabled` over `isNotDisabled`.
 - Prefix event handlers with `handle`: `handleClick`, `handleSubmit`.
 - Name collections as plurals; name items as singulars: `users` / `user`.
 
