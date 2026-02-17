@@ -15,6 +15,7 @@ headerless
 heredocs
 lockfiles
 logicgate
+navigations
 oneline
 parallelizable
 pipefail

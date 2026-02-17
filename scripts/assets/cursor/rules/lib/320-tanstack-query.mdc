@@ -1,0 +1,30 @@
+---
+description: enforce tanstack query data fetching and cache patterns
+globs: '**/*.ts,**/*.tsx'
+alwaysApply: false
+priority: 320
+---
+
+# TANSTACK QUERY STANDARDS
+
+## Query Conventions
+
+- Define query keys as `readonly` tuple constants; co-locate with their query functions.
+- Encapsulate each query in a custom `use*Query` hook; never call `useQuery` inline in components.
+- Set explicit `staleTime` per query based on data volatility; never rely on the default.
+
+## Mutations
+
+- Use `useMutation` for all write operations; never mutate data outside the mutation lifecycle.
+- Invalidate related query keys in `onSuccess`; avoid manual cache updates unless optimistic UI is required.
+- Handle `onError` at the mutation site with user-facing feedback.
+
+## Cache Management
+
+- Use `queryClient.invalidateQueries` over `queryClient.setQueryData` unless implementing optimistic updates.
+- Prefetch predictable navigations with `queryClient.prefetchQuery` at route boundaries.
+
+## Separation of Concerns
+
+- Keep query functions as pure async data fetchers; no UI logic, no side effects.
+- Do not use `useEffect` to trigger fetches; use query `enabled` option for conditional fetching.

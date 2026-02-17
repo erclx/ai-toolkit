@@ -16,8 +16,15 @@ priority: 30
 - Distinguish expected failures (validation, not found) from unexpected failures (null reference, network timeout).
 - Return structured error types for recoverable failures; propagate exceptions for programmer errors.
 
+## Error Propagation
+
+- Handle errors at the layer that has enough context to respond meaningfully; do not catch and rethrow without adding value.
+- Do not silently ignore errors.
+
 ## Error Reporting
 
 - Include actionable context in error messages; never expose internal implementation details.
-- Do not silently ignore errors.
-- Do not log sensitive data in error messages.
+
+## Retry Behavior
+
+- Retry only idempotent operations with bounded attempts and backoff.

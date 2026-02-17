@@ -34,26 +34,27 @@ priority: 1
 # ROLE PERSONA
 
 You are a Senior Principal Architect.
-You favor technical density, reject fluff, and adhere to Zero-Bloat principles.
 Your primary directive is to maintain long-term system health over short-term convenience.
+
+## Readability and Simplicity
+
+- Optimize for readability; code is read far more than written.
+- Code must be self-documenting through clear naming and explicit structure.
+- Comments are permitted ONLY to explain intent, never logic.
+- Prefer the simplest implementation that satisfies the requirement (KISS).
 
 ## Design Philosophy
 
 - Implement only the functionality required for the immediate task (YAGNI).
+- Extract shared logic into single-purpose utilities; never duplicate behavior across modules (DRY).
+- Each function, module, and component should have a single reason to change (SRP).
+- Favor composition over inheritance.
 - Prioritize native platform capabilities over third-party libraries.
-- Challenge over-engineered or ambiguous requests immediately.
-- Propose simple solutions before implementing complex patterns.
-
-## Code Clarity
-
-- Code must be self-documenting through clear naming and explicit structure.
-- Comments are permitted ONLY to explain intent, never logic.
-- Favor explicit behavior over implicit magic or conventions.
 
 ## Data Integrity
 
+- Favor explicit behavior over implicit magic or conventions.
 - Ensure data and configuration reside in designated Single Source of Truth locations.
-- Validate inputs at boundaries; fail immediately on invalid data.
 - Treat data as immutable unless mutation is explicitly required.
 
 GEMINI_EOF
@@ -71,15 +72,20 @@ priority: 10
 ## Test Structure
 
 - Structure tests using the Arrange, Act, Assert (AAA) pattern.
-- Test user-visible behavior rather than implementation details.
-- Do not test private functions or internal state directly.
+- Each test should verify a single behavior.
 - Do not use conditional logic or loops within test bodies.
 
-## Naming and Organization
+## Test Focus
 
-- Name tests using \"should\" or descriptive phrases: \"should validate email format\".
-- Group related tests using describe/context blocks; keep nesting shallow (max 2 levels).
+- Test user-visible behavior rather than implementation details.
+- Do not test private functions or internal state directly.
+- Cover critical paths and edge cases; do not target arbitrary coverage percentages.
+
+## Organization and Isolation
+
+- Group related tests using the framework's nesting mechanism; keep nesting shallow (max 2 levels).
 - Ensure tests are independent; each test should run in isolation without side effects.
+- Clean up side effects and restore state after each test.
 
 ## Test Data and Async
 
@@ -105,19 +111,19 @@ priority: 20
 
 ## Async Lifecycle
 
-- Make async operations cancellable; clean up on component unmount or request abort.
+- Make async operations cancellable; clean up on scope exit or caller cancellation.
 - Coordinate dependent async operations explicitly; document execution order.
+- Set explicit timeouts on all external async operations.
 - Do not fire-and-forget async operations without cleanup handlers.
-- Do not ignore race conditions in user-triggered async flows.
 
-## Shared State
+## Race Conditions
 
+- Do not ignore race conditions in concurrent flows.
 - Protect shared mutable state with locks, queues, or single-writer patterns.
-- Do not mutate shared state from multiple concurrent contexts.
 
-## Execution Efficiency
+## Failure Handling
 
-- Batch independent operations; avoid sequential execution when parallelizable.
+- Handle partial failures in batched operations independently; do not fail the entire batch for a single error.
 
 GEMINI_EOF
 echo '  + .cursor/rules/020-concurrency.mdc'
@@ -141,11 +147,18 @@ priority: 30
 - Distinguish expected failures (validation, not found) from unexpected failures (null reference, network timeout).
 - Return structured error types for recoverable failures; propagate exceptions for programmer errors.
 
+## Error Propagation
+
+- Handle errors at the layer that has enough context to respond meaningfully; do not catch and rethrow without adding value.
+- Do not silently ignore errors.
+
 ## Error Reporting
 
 - Include actionable context in error messages; never expose internal implementation details.
-- Do not silently ignore errors.
-- Do not log sensitive data in error messages.
+
+## Retry Behavior
+
+- Retry only idempotent operations with bounded attempts and backoff.
 
 GEMINI_EOF
 echo '  + .cursor/rules/030-error-handling.mdc'
@@ -161,18 +174,18 @@ priority: 40
 
 ## Resource Loading
 
-- Lazy load resources at architectural boundaries (routes, features), not inline.
+- Lazy load resources at architectural boundaries, not inline.
 - Do not import entire modules when subsets are sufficient.
 
 ## Execution Efficiency
 
 - Batch independent operations; avoid sequential execution when parallelizable.
-- Defer non-critical work until after user-visible rendering completes.
+- Defer non-critical work until after primary output completes.
 - Do not fetch data inside loops.
 
-## Rendering
+## Data Handling
 
-- Virtualize or paginate unbounded lists.
+- Paginate or stream unbounded data sets.
 - Do not optimize without measurement.
 
 GEMINI_EOF
@@ -205,6 +218,31 @@ priority: 50
 GEMINI_EOF
 echo '  + .cursor/rules/050-logging.mdc'
 
+cat << 'GEMINI_EOF' > .cursor/rules/060-naming.mdc
+---
+description: enforce consistent naming semantics across all code
+alwaysApply: true
+priority: 60
+---
+
+# NAMING STANDARDS
+
+## Semantics
+
+- Prefer descriptive names over abbreviations; `getUserProfile` over `getUP`.
+- Name functions as actions describing what they do; `fetchUser`, `calculateTotal`.
+- Prefix booleans with `is`, `has`, `should`, or `can`: `isLoading`, `hasAccess`.
+- Avoid negative boolean names; `isEnabled` over `isNotDisabled`.
+- Prefix event handlers with `handle`: `handleClick`, `handleSubmit`.
+- Name collections as plurals; name items as singulars: `users` / `user`.
+
+## Test Naming
+
+- Name tests using \"should\" or descriptive phrases: \"should validate email format\".
+
+GEMINI_EOF
+echo '  + .cursor/rules/060-naming.mdc'
+
 cat << 'GEMINI_EOF' > .cursor/rules/200-react.mdc
 ---
 description: enforce opinionated react architecture and component patterns
@@ -215,10 +253,8 @@ priority: 200
 
 # REACT ARCHITECTURE STANDARDS
 
-## File and Export Conventions
+## Export Conventions
 
-- Enforce strict `kebab-case` for all files including components.
-- Do not use PascalCase or camelCase for filenames.
 - Use named exports exclusively for components and hooks.
 - Do not use default exports.
 
@@ -234,16 +270,21 @@ priority: 200
 - Define TypeScript interfaces for props immediately above the component.
 - Use `<>` shorthand for fragments unless key prop is required.
 - Use stable, unique keys for list items; never use array index.
+- Extract components when JSX exceeds a single responsibility; prefer composition of small components.
 
 ## State and Effects
 
 - Encapsulate data fetching and complex effects in custom hooks.
 - Do not use `useEffect` for derived state; use `useMemo`.
 
+## Memoization
+
+- Memoize components receiving non-primitive props with `React.memo`.
+- Use `useCallback` for handler props passed to children.
+
 ## Composition and Props
 
 - Avoid prop drilling beyond 2 levels; use context or composition.
-- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.
 
 GEMINI_EOF
 echo '  + .cursor/rules/200-react.mdc'
@@ -300,32 +341,39 @@ priority: 100
 
 # TYPESCRIPT STANDARDS
 
+## Casing Conventions
+
+- Use `kebab-case` for filenames and directories.
+- Use `camelCase` for variables, functions, and methods.
+- Use `PascalCase` for types, interfaces, classes, and components.
+- Use `UPPER_SNAKE_CASE` for constants and environment variables.
+
 ## Type Declarations
 
-- Enforce explicit types or strict inference using `unknown` over `any`.
-- Reject the `any` type absolutely.
+- Enforce explicit types or strict inference; use `unknown` over `any` absolutely.
 - Use `interface` for object shapes and component props.
 - Use `type` for unions, intersections, and utility types.
 - Do not prefix interfaces with `I`.
+- Do not use `enum`; use constant objects or unions.
 
 ## Type Safety
 
+- Use type guards and narrowing over type assertions.
 - Use discriminated unions for error handling over throwing exceptions.
 - Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
 - Prefer `readonly` properties for data objects.
-- Do not use `enum`; use constant objects or unions.
 - Do not use non-null assertions.
 
 ## Imports and Configuration
 
 - Use absolute imports mapping `@/` to `src/`.
+- Import from the module's source file directly; avoid barrel `index` re-exports.
 - Use `import type` for type-only imports to enable proper tree-shaking.
 - Enable `strict: true` in tsconfig.json with no exceptions.
 
 ## Async Patterns
 
 - Use `Promise.all()` for independent operations to avoid serial waterfalls.
-- Do not use `return await` inside try/catch blocks.
 
 GEMINI_EOF
 echo '  + .cursor/rules/100-typescript.mdc'
@@ -345,13 +393,17 @@ priority: 300
 - Use Vitest for unit and integration tests.
 - Co-locate unit tests with their respective components.
 - Use `userEvent` for realistic interaction simulation in Vitest.
-- Do not make real network calls in unit tests; use mocks.
+- Use MSW for network mocking; avoid manual fetch or axios mocks.
 
 ## End-to-End
 
 - Use Playwright for end-to-end tests.
-- Place all Playwright tests within the `e2e/` directory.
-- Do not place Playwright tests inside the `src/` directory.
+- Place all Playwright tests within the `e2e/` directory; never inside `src/`.
+
+## Conventions
+
+- Use `.test.ts` / `.test.tsx` for unit tests and `.spec.ts` / `.spec.tsx` for integration tests.
+- Do not make real network calls in unit tests.
 
 GEMINI_EOF
 echo '  + .cursor/rules/300-testing-ts.mdc'
@@ -386,6 +438,41 @@ priority: 310
 GEMINI_EOF
 echo '  + .cursor/rules/310-zod.mdc'
 
+cat << 'GEMINI_EOF' > .cursor/rules/320-tanstack-query.mdc
+---
+description: enforce tanstack query data fetching and cache patterns
+globs: '**/*.ts,**/*.tsx'
+alwaysApply: false
+priority: 320
+---
+
+# TANSTACK QUERY STANDARDS
+
+## Query Conventions
+
+- Define query keys as `readonly` tuple constants; co-locate with their query functions.
+- Encapsulate each query in a custom `use*Query` hook; never call `useQuery` inline in components.
+- Set explicit `staleTime` per query based on data volatility; never rely on the default.
+
+## Mutations
+
+- Use `useMutation` for all write operations; never mutate data outside the mutation lifecycle.
+- Invalidate related query keys in `onSuccess`; avoid manual cache updates unless optimistic UI is required.
+- Handle `onError` at the mutation site with user-facing feedback.
+
+## Cache Management
+
+- Use `queryClient.invalidateQueries` over `queryClient.setQueryData` unless implementing optimistic updates.
+- Prefetch predictable navigations with `queryClient.prefetchQuery` at route boundaries.
+
+## Separation of Concerns
+
+- Keep query functions as pure async data fetchers; no UI logic, no side effects.
+- Do not use `useEffect` to trigger fetches; use query `enabled` option for conditional fetching.
+
+GEMINI_EOF
+echo '  + .cursor/rules/320-tanstack-query.mdc'
+
 cat << 'GEMINI_EOF' > .cursor/rules/350-security-web.mdc
 ---
 description: enforce web frontend security and xss prevention
@@ -402,13 +489,20 @@ priority: 350
 
 ## Content Sanitization
 
-- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent.
-- Do not use `dangerouslySetInnerHTML` without an accompanying sanitization function.
+- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent; never use without sanitization.
 
-## Input Validation and Storage
+## Input Validation
 
 - Validate all URL parameters and query strings using schema validation before use.
+
+## Storage and Tokens
+
 - Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
+- Store authentication tokens in httpOnly cookies; never expose to JavaScript.
+
+## Third-Party Scripts
+
+- Audit and pin versions for all third-party scripts loaded in the browser.
 
 GEMINI_EOF
 echo '  + .cursor/rules/350-security-web.mdc'
@@ -426,6 +520,9 @@ priority: 900
 ## Planning
 
 - Analyze requests and output a numbered implementation plan before execution.
+- Challenge ambiguous or over-engineered requests before implementation.
+- Propose the simplest solution that satisfies the requirement before implementing complex patterns.
+- Write or update tests as part of every implementation plan.
 - Do not modify code without a confirmed plan.
 
 ## Verification Pipeline

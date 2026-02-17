@@ -7,10 +7,8 @@ priority: 200
 
 # REACT ARCHITECTURE STANDARDS
 
-## File and Export Conventions
+## Export Conventions
 
-- Enforce strict `kebab-case` for all files including components.
-- Do not use PascalCase or camelCase for filenames.
 - Use named exports exclusively for components and hooks.
 - Do not use default exports.
 
@@ -26,13 +24,18 @@ priority: 200
 - Define TypeScript interfaces for props immediately above the component.
 - Use `<>` shorthand for fragments unless key prop is required.
 - Use stable, unique keys for list items; never use array index.
+- Extract components when JSX exceeds a single responsibility; prefer composition of small components.
 
 ## State and Effects
 
 - Encapsulate data fetching and complex effects in custom hooks.
 - Do not use `useEffect` for derived state; use `useMemo`.
 
+## Memoization
+
+- Memoize components receiving non-primitive props with `React.memo`.
+- Use `useCallback` for handler props passed to children.
+
 ## Composition and Props
 
 - Avoid prop drilling beyond 2 levels; use context or composition.
-- Name event handlers with `handle` prefix: `handleClick`, `handleSubmit`.

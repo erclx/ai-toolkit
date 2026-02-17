@@ -9,15 +9,20 @@ priority: 10
 ## Test Structure
 
 - Structure tests using the Arrange, Act, Assert (AAA) pattern.
-- Test user-visible behavior rather than implementation details.
-- Do not test private functions or internal state directly.
+- Each test should verify a single behavior.
 - Do not use conditional logic or loops within test bodies.
 
-## Naming and Organization
+## Test Focus
 
-- Name tests using "should" or descriptive phrases: "should validate email format".
-- Group related tests using describe/context blocks; keep nesting shallow (max 2 levels).
+- Test user-visible behavior rather than implementation details.
+- Do not test private functions or internal state directly.
+- Cover critical paths and edge cases; do not target arbitrary coverage percentages.
+
+## Organization and Isolation
+
+- Group related tests using the framework's nesting mechanism; keep nesting shallow (max 2 levels).
 - Ensure tests are independent; each test should run in isolation without side effects.
+- Clean up side effects and restore state after each test.
 
 ## Test Data and Async
 

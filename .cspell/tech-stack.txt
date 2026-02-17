@@ -1,3 +1,4 @@
+axios
 cspell
 fastapi
 gitattributes
@@ -14,6 +15,7 @@ pycache
 pydantic
 pyproject
 pytest
+tanstack
 uv
 uvicorn
 vite
