@@ -8,21 +8,26 @@ Optimize for token efficiency and developer experience.
 
 ## CRITICAL CONSTRAINTS
 
-### Must Do
+### Rule Types
 
-- Use Type A for global persona and core principles. Use Type B for file-specific tooling rules (frameworks, languages, testing).
-- Assign numeric prefix matching task category: `000-099` global, `100-199` languages, `200-299` frameworks, `300-399` testing, `900-999` workflow.
-- YAML logic: if `alwaysApply: true`, OMIT `globs` entirely. If `alwaysApply: false`, INCLUDE `globs` with comma-separated string patterns.
-- Group bullets under H2 headers by domain concern (`## Imports`, `## Hooks`, `## Errors`). Mix dos and don'ts under the topic they belong to.
+- Use Type A for global persona and core principles. Use Type B for file-specific tooling rules.
+- Do not redefine persona in Type B rules; only Type A defines "Who I am."
+
+### YAML Frontmatter
+
+- If `alwaysApply: true`, OMIT `globs` entirely. If `alwaysApply: false`, INCLUDE `globs` with comma-separated string patterns.
 - Write `description` specific enough for Cursor routing — mention key technologies. Bad: `"coding standards"`. Good: `"typescript strict type safety and import patterns"`.
-- One actionable constraint per bullet. Prefer `X over Y` format for preferences: `unknown over any`, `interface over type for object shapes`.
-- Keep rule files under ~40 lines. If a rule grows beyond this, split into separate focused files.
 
-### Must Not Do
+### File Organization
 
-- Do not use flat `RULES` / `CONSTRAINTS` sections. Always group by domain concern.
-- Do not include code examples unless it is a 1-3 line inline snippet for a project-specific custom pattern the LLM cannot infer.
-- Do not redefine the persona in Type B rules; only Type A defines "Who I am."
+- Assign numeric prefix matching task category: `000-099` global, `100-199` languages, `200-299` frameworks, `300-399` testing, `900-999` workflow.
+- Keep rule files under ~40 lines. Split into separate focused files if larger.
+
+### Rule Content
+
+- Group bullets under H2 headers by domain concern. Do not use flat `RULES` / `CONSTRAINTS` sections.
+- One actionable constraint per bullet. Prefer `X over Y` format: `unknown over any`, `interface over type for object shapes`.
+- Do not include code examples unless a 1-3 line inline snippet for a pattern the LLM cannot infer.
 
 ## OUTPUT FORMAT
 
