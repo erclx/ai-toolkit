@@ -12,10 +12,14 @@ priority: 300
 - Use Vitest for unit and integration tests.
 - Co-locate unit tests with their respective components.
 - Use `userEvent` for realistic interaction simulation in Vitest.
-- Do not make real network calls in unit tests; use mocks.
+- Use MSW for network mocking; avoid manual fetch or axios mocks.
 
 ## End-to-End
 
 - Use Playwright for end-to-end tests.
-- Place all Playwright tests within the `e2e/` directory.
-- Do not place Playwright tests inside the `src/` directory.
+- Place all Playwright tests within the `e2e/` directory; never inside `src/`.
+
+## Conventions
+
+- Use `.test.ts` / `.test.tsx` for unit tests and `.spec.ts` / `.spec.tsx` for integration tests.
+- Do not make real network calls in unit tests.
