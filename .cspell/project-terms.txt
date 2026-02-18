@@ -16,6 +16,7 @@ geminiignore
 gtest
 headerless
 heredocs
+lintstagedrc
 lockfiles
 logicgate
 mkhl
