@@ -72,13 +72,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 ENGINE_SCRIPT="$PROJECT_ROOT/scripts/lib/compiler.sh"
-RULES_SOURCE="scripts/assets/cursor/rules"
+RULES_SOURCE=".cursor/rules"
 RULES_OUTPUT="gemini/commands/gov/rules.toml"
-RULES_TEMPLATE="scripts/assets/templates/rules.toml.template"
-STANDARDS_SOURCE="scripts/assets/standards"
+RULES_TEMPLATE="scripts/templates/rules.toml.template"
+STANDARDS_SOURCE="standards"
 STANDARDS_OUTPUT="gemini/commands/gov/standards.toml"
-STANDARDS_TEMPLATE="scripts/assets/templates/standards.toml.template"
-STANDARDS_SYNC_TARGET="standards"
+STANDARDS_TEMPLATE="scripts/templates/standards.toml.template"
 
 TEMP_DIR=""
 RULES_CHANGED=0
@@ -94,8 +93,8 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev build"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Scans source rules and standards for changes,"
-  echo -e "${GREY}│${NC}  recompiles .toml artifacts, syncs standards/,"
-  echo -e "${GREY}│${NC}  and commits the compiled output."
+  echo -e "${GREY}│${NC}  recompiles .toml artifacts, and commits the"
+  echo -e "${GREY}│${NC}  compiled output."
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -205,16 +204,6 @@ compile_dry_run() {
   if ! cmp -s "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"; then
     STANDARDS_CHANGED=1
   fi
-
-  if [ -d "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET" ]; then
-    if diff -qr "$PROJECT_ROOT/$STANDARDS_SOURCE" "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET" >/dev/null 2>&1; then
-      :
-    else
-      STANDARDS_CHANGED=1
-    fi
-  else
-    STANDARDS_CHANGED=1
-  fi
 }
 
 apply_artifacts() {
@@ -227,9 +216,7 @@ apply_artifacts() {
 
   if [ "$STANDARDS_CHANGED" -eq 1 ]; then
     cp "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"
-    mkdir -p "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET"
-    cp -r "$PROJECT_ROOT/$STANDARDS_SOURCE/." "$PROJECT_ROOT/$STANDARDS_SYNC_TARGET/"
-    log_info "standards.toml + standards/ updated"
+    log_info "standards.toml updated"
   fi
 }
 
@@ -275,8 +262,7 @@ commit_artifacts() {
 
   git -C "$PROJECT_ROOT" add \
     "$RULES_OUTPUT" \
-    "$STANDARDS_OUTPUT" \
-    "$STANDARDS_SYNC_TARGET/"
+    "$STANDARDS_OUTPUT"
 
   git -C "$PROJECT_ROOT" commit -m "$msg" --no-verify >/dev/null 2>&1
   log_add "Committed: $msg"

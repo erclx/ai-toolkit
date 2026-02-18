@@ -3,13 +3,13 @@
 inject_governance() {
   log_step "Injecting Governance Assets"
 
-  local rules_source="$PROJECT_ROOT/scripts/assets/cursor/rules"
+  local rules_source="$PROJECT_ROOT/.cursor/rules"
   local rules_target=".cursor/rules"
-  local standards_source="$PROJECT_ROOT/scripts/assets/standards"
+  local standards_source="$PROJECT_ROOT/standards"
   local standards_target="standards"
 
   if [ -d "$rules_source" ]; then
-    mkdir -p "$rules_target" 
+    mkdir -p "$rules_target"
     find "$rules_source" -type f -name "*.mdc" -exec cp {} "$rules_target/" \;
     shopt -s nullglob
     for f in "$rules_target"/*.mdc; do
@@ -37,7 +37,7 @@ inject_dependencies() {
   log_step "Provisioning Dependencies"
 
   if [ -f "package.json" ]; then
-    if command -v bun &> /dev/null; then
+    if command -v bun &>/dev/null; then
       log_info "Detected Node project. Running bun install..."
       bun install
       log_info "Dependencies installed"
@@ -45,7 +45,7 @@ inject_dependencies() {
       log_warn "package.json found but bun missing"
     fi
   elif [ -f "pyproject.toml" ] || [ -f "uv.lock" ]; then
-    if command -v uv &> /dev/null; then
+    if command -v uv &>/dev/null; then
       log_info "Detected Python project. Running uv sync..."
       uv sync
       log_info "Dependencies synced"
