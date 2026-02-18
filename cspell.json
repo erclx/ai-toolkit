@@ -12,13 +12,8 @@
       "name": "tech-stack",
       "path": "./.cspell/tech-stack.txt",
       "addWords": true
-    },
-    {
-      "name": "typos",
-      "path": "./.cspell/typos.txt",
-      "addWords": true
     }
   ],
-  "dictionaries": ["project-terms", "tech-stack", "typos"],
+  "dictionaries": ["project-terms", "tech-stack"],
   "ignorePaths": [".cspell/**"]
 }
