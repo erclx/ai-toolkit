@@ -193,7 +193,7 @@ main() {
 
   if [ "$SYNC_RULES" -eq 1 ]; then
     log_step "Syncing Governance Rules"
-    gov_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
+    gov_count=$(collect_changes "$PROJECT_ROOT/.cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
 
     if [ "$gov_count" -eq 0 ]; then
       log_info "All governance rules up to date"
@@ -202,7 +202,7 @@ main() {
 
   if [ "$SYNC_STANDARDS" -eq 1 ]; then
     log_step "Syncing Standards"
-    standard_count=$(collect_changes "$PROJECT_ROOT/scripts/assets/standards" "$TARGET_PATH" "*.md" "standards")
+    standard_count=$(collect_changes "$PROJECT_ROOT/standards" "$TARGET_PATH" "*.md" "standards")
 
     if [ "$standard_count" -eq 0 ]; then
       log_info "All standards up to date"
