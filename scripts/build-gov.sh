@@ -72,7 +72,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 ENGINE_SCRIPT="$PROJECT_ROOT/scripts/lib/compiler.sh"
-RULES_SOURCE="scripts/assets/cursor/rules"
+RULES_SOURCE=".cursor/rules"
 RULES_OUTPUT="gemini/commands/gov/rules.toml"
 RULES_TEMPLATE="scripts/assets/templates/rules.toml.template"
 STANDARDS_SOURCE="standards"
