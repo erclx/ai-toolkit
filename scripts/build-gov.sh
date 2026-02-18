@@ -74,10 +74,10 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 ENGINE_SCRIPT="$PROJECT_ROOT/scripts/lib/compiler.sh"
 RULES_SOURCE=".cursor/rules"
 RULES_OUTPUT="gemini/commands/gov/rules.toml"
-RULES_TEMPLATE="scripts/assets/templates/rules.toml.template"
+RULES_TEMPLATE="scripts/templates/rules.toml.template"
 STANDARDS_SOURCE="standards"
 STANDARDS_OUTPUT="gemini/commands/gov/standards.toml"
-STANDARDS_TEMPLATE="scripts/assets/templates/standards.toml.template"
+STANDARDS_TEMPLATE="scripts/templates/standards.toml.template"
 
 TEMP_DIR=""
 RULES_CHANGED=0
