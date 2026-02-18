@@ -7,7 +7,7 @@ Gemini CLI extension for enforcing git conventions, installing governance rules,
 ```bash
 git clone git@github.com:erclx/ai-toolkit.git
 cd ai-toolkit
-gemini extensions link .
+gemini extensions link ./gemini
 ```
 
 ## Commands
