@@ -114,28 +114,28 @@ setup_ssh() {
   fi
 }
 
-select_stage_category() {
+select_sandbox_category() {
   local categories=()
-  if ls -d "$STAGES_DIR"/*/ >/dev/null 2>&1; then
-    mapfile -t categories < <(find "$STAGES_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+  if ls -d "$SANDBOX_DIR"/*/ >/dev/null 2>&1; then
+    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
   fi
 
   if [ ${#categories[@]} -eq 0 ]; then
-    log_error "No stage categories found in $STAGES_DIR"
+    log_error "No sandbox categories found in $SANDBOX_DIR"
   fi
 
   select_option "Select category:" "${categories[@]}"
   _CATEGORY=$SELECTED_OPT
 }
 
-select_stage_command() {
+select_sandbox_command() {
   local commands=()
-  if ls "$STAGES_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
-    mapfile -t commands < <(find "$STAGES_DIR/$_CATEGORY" -maxdepth 1 -name '*.sh' -exec basename {} .sh \;)
+  if ls "$SANDBOX_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
+    mapfile -t commands < <(find "$SANDBOX_DIR/$_CATEGORY" -maxdepth 1 -name '*.sh' -exec basename {} .sh \;)
   fi
 
   if [ ${#commands[@]} -eq 0 ]; then
-    log_error "No stage scripts found in $_CATEGORY"
+    log_error "No sandbox scripts found in $_CATEGORY"
   fi
 
   select_option "Select command:" "${commands[@]}"
@@ -143,8 +143,8 @@ select_stage_command() {
 }
 
 prompt_for_category_and_command() {
-  select_stage_category
-  select_stage_command
+  select_sandbox_category
+  select_sandbox_command
 }
 
 parse_command_argument() {
@@ -176,9 +176,9 @@ validate_environment() {
   local current_category="$1"
   local current_command="$2"
 
-  if [ ! -d "$STAGES_DIR" ]; then
+  if [ ! -d "$SANDBOX_DIR" ]; then
     echo -e "${GREY}┌${NC}"
-    log_error "Stages directory not found at: $STAGES_DIR"
+    log_error "Sandbox directory not found at: $SANDBOX_DIR"
   fi
 
   echo -e "${GREY}┌${NC}"
@@ -189,18 +189,18 @@ validate_environment() {
   fi
 }
 
-load_stage_script() {
+load_sandbox_script() {
   local current_category="$1"
   local current_command="$2"
 
-  local stage_file="$STAGES_DIR/$current_category/$current_command.sh"
+  local sandbox_file="$SANDBOX_DIR/$current_category/$current_command.sh"
 
-  if [ ! -f "$stage_file" ]; then
-    log_error "Stage script not found: $current_category/$current_command"
+  if [ ! -f "$sandbox_file" ]; then
+    log_error "Sandbox script not found: $current_category/$current_command"
   fi
 
   # shellcheck source=/dev/null
-  source "$stage_file"
+  source "$sandbox_file"
 
   if [ "$current_category" == "git" ] && [ "$current_command" == "pr" ]; then
     setup_ssh
@@ -236,9 +236,9 @@ provision_sandbox() {
 }
 
 inject_documentation() {
-  if [ -d "$PROJECT_ROOT/scripts/assets/standards" ]; then
+  if [ -d "$PROJECT_ROOT/standards" ]; then
     mkdir -p "$SANDBOX/standards"
-    cp -r "$PROJECT_ROOT/scripts/assets/standards/." "$SANDBOX/standards/"
+    cp -r "$PROJECT_ROOT/standards/." "$SANDBOX/standards/"
   fi
 }
 
@@ -274,18 +274,18 @@ initialize_sandbox_environment() {
   local current_command="$2"
 
   validate_environment "$current_category" "$current_command"
-  load_stage_script "$current_category" "$current_command"
+  load_sandbox_script "$current_category" "$current_command"
   provision_sandbox "$current_category" "$current_command"
   setup_sandbox_assets
 }
 
-commit_stage_changes() {
+commit_sandbox_changes() {
   if [ -z "$GEMINI_SKIP_AUTO_COMMIT" ]; then
     log_step "Staging environment changes"
     (
       cd "$SANDBOX"
       git add . >/dev/null 2>/dev/null
-      git commit -m 'chore(sandbox): apply stage specific setup' --no-verify >/dev/null
+      git commit -m 'chore(sandbox): apply scenario specific setup' --no-verify >/dev/null
     )
     log_info "Git state clean after setup"
   else
@@ -293,12 +293,12 @@ commit_stage_changes() {
   fi
 }
 
-execute_stage_and_commit() {
+execute_sandbox_and_commit() {
   pushd "$SANDBOX" >/dev/null
   stage_setup
   popd >/dev/null
 
-  commit_stage_changes
+  commit_sandbox_changes
 }
 
 handle_post_execution_prompt() {
@@ -346,7 +346,7 @@ main() {
   fi
 
   SANDBOX="$PROJECT_ROOT/.sandbox"
-  STAGES_DIR="$PROJECT_ROOT/scripts/stages"
+  SANDBOX_DIR="$PROJECT_ROOT/scripts/sandbox"
   LLM_MODEL="gemini-2.5-flash"
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -359,7 +359,7 @@ main() {
 
   initialize_sandbox_environment "$category" "$command"
 
-  execute_stage_and_commit
+  execute_sandbox_and_commit
 
   handle_post_execution_prompt "$category" "$command"
 }
