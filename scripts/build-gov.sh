@@ -82,6 +82,8 @@ STANDARDS_TEMPLATE="scripts/templates/standards.toml.template"
 TEMP_DIR=""
 RULES_CHANGED=0
 STANDARDS_CHANGED=0
+RULES_TEMPLATE_CHANGED=0
+STANDARDS_TEMPLATE_CHANGED=0
 RULES_MODIFIED_COUNT=0
 RULES_NEW_COUNT=0
 STANDARDS_MODIFIED_COUNT=0
@@ -118,64 +120,148 @@ cleanup() {
 }
 trap cleanup EXIT
 
+detect_template_change() {
+  local template_file="$1"
+  local output_file="$2"
+
+  local last_build_hash
+  last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
+
+  if [ -z "$last_build_hash" ]; then
+    echo "1"
+    return
+  fi
+
+  if ! git -C "$PROJECT_ROOT" diff --quiet -- "$template_file" 2>/dev/null; then
+    echo "1"
+    return
+  fi
+
+  if git -C "$PROJECT_ROOT" diff --name-only "$last_build_hash" HEAD -- "$template_file" 2>/dev/null | grep -q .; then
+    echo "1"
+    return
+  fi
+
+  echo "0"
+}
+
+has_source_changes() {
+  local source_dir="$1"
+  local output_file="$2"
+
+  if git -C "$PROJECT_ROOT" diff --name-only HEAD -- "$source_dir" 2>/dev/null | grep -q .; then
+    echo "1"
+    return
+  fi
+
+  if git -C "$PROJECT_ROOT" ls-files --others --exclude-standard "$source_dir" 2>/dev/null | grep -q .; then
+    echo "1"
+    return
+  fi
+
+  local last_build_hash
+  last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
+
+  if [ -n "$last_build_hash" ]; then
+    local old_tree new_tree
+
+    old_tree=$(git -C "$PROJECT_ROOT" ls-tree -r "$last_build_hash" -- "$source_dir" 2>/dev/null | sort)
+    new_tree=$(git -C "$PROJECT_ROOT" ls-tree -r HEAD -- "$source_dir" 2>/dev/null | sort)
+
+    if [ "$old_tree" != "$new_tree" ]; then
+      echo "1"
+      return
+    fi
+  fi
+
+  echo "0"
+}
+
+enumerate_source_changes() {
+  local source_dir="$1"
+  local output_file="$2"
+  local mod_var="$3"
+  local new_var="$4"
+
+  local mod_count=0
+  local new_count=0
+
+  while IFS= read -r file; do
+    if [ -n "$file" ]; then
+      local rel="${file#"$source_dir"/}"
+      if git -C "$PROJECT_ROOT" ls-files --error-unmatch "$file" >/dev/null 2>&1; then
+        log_warn "Changed: $rel"
+        mod_count=$((mod_count + 1))
+      else
+        log_add "New:     $rel"
+        new_count=$((new_count + 1))
+      fi
+    fi
+  done < <(git -C "$PROJECT_ROOT" diff --name-only HEAD -- "$source_dir" 2>/dev/null)
+
+  while IFS= read -r file; do
+    if [ -n "$file" ]; then
+      local rel="${file#"$source_dir"/}"
+      log_add "New:     $rel"
+      new_count=$((new_count + 1))
+    fi
+  done < <(git -C "$PROJECT_ROOT" ls-files --others --exclude-standard "$source_dir")
+
+  if [ $((mod_count + new_count)) -eq 0 ]; then
+    local last_build_hash
+    last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
+
+    if [ -n "$last_build_hash" ]; then
+      while IFS= read -r file; do
+        if [ -n "$file" ]; then
+          local rel="${file#"$source_dir"/}"
+          log_warn "Changed: $rel ${GREY}(committed)${NC}"
+          mod_count=$((mod_count + 1))
+        fi
+      done < <(git -C "$PROJECT_ROOT" diff --name-only "$last_build_hash" HEAD -- "$source_dir")
+    fi
+  fi
+
+  eval "$mod_var=$mod_count"
+  eval "$new_var=$new_count"
+}
+
 scan_source_git_status() {
   local source_dir="$1"
   local output_file="$2"
   local mod_var="$3"
   local new_var="$4"
   local changed_flag="$5"
-
-  local mod_count=0
-  local new_count=0
-
-  if [ "$changed_flag" -eq 1 ]; then
-    while IFS= read -r file; do
-      if [ -n "$file" ]; then
-        local rel="${file#"$source_dir"/}"
-        if git -C "$PROJECT_ROOT" ls-files --error-unmatch "$file" >/dev/null 2>&1; then
-          log_warn "Changed: $rel"
-          mod_count=$((mod_count + 1))
-        else
-          log_add "New:     $rel"
-          new_count=$((new_count + 1))
-        fi
-      fi
-    done < <(git -C "$PROJECT_ROOT" diff --name-only HEAD -- "$source_dir" 2>/dev/null)
-
-    while IFS= read -r file; do
-      if [ -n "$file" ]; then
-        local rel="${file#"$source_dir"/}"
-        log_add "New:     $rel"
-        new_count=$((new_count + 1))
-      fi
-    done < <(git -C "$PROJECT_ROOT" ls-files --others --exclude-standard "$source_dir")
-
-    if [ $((mod_count + new_count)) -eq 0 ]; then
-      local last_build_hash
-      last_build_hash=$(git -C "$PROJECT_ROOT" log -n 1 --pretty=format:%H -- "$output_file" 2>/dev/null || echo "")
-
-      if [ -n "$last_build_hash" ]; then
-        while IFS= read -r file; do
-          if [ -n "$file" ]; then
-            local rel="${file#"$source_dir"/}"
-            log_warn "Changed: $rel ${GREY}(committed)${NC}"
-            mod_count=$((mod_count + 1))
-          fi
-        done < <(git -C "$PROJECT_ROOT" diff --name-only "$last_build_hash" HEAD -- "$source_dir")
-      fi
-    fi
-  fi
+  local template_changed="$6"
 
   if [ "$changed_flag" -eq 0 ]; then
     local total
     total=$(find "$PROJECT_ROOT/$source_dir" -type f | wc -l)
     log_info "$total items unchanged"
-  elif [ $((mod_count + new_count)) -eq 0 ]; then
-    log_warn "Artifacts out of sync (unknown source change)"
+    eval "$mod_var=0"
+    eval "$new_var=0"
+    return
   fi
 
-  eval "$mod_var=$mod_count"
-  eval "$new_var=$new_count"
+  local source_changed
+  source_changed=$(has_source_changes "$source_dir" "$output_file")
+
+  if [ "$template_changed" -eq 1 ] && [ "$source_changed" -eq 0 ]; then
+    log_info "Template changed; sources unchanged"
+    eval "$mod_var=0"
+    eval "$new_var=0"
+    return
+  fi
+
+  enumerate_source_changes "$source_dir" "$output_file" "$mod_var" "$new_var"
+
+  local mod_result new_result
+  eval "mod_result=\$$mod_var"
+  eval "new_result=\$$new_var"
+
+  if [ $((mod_result + new_result)) -eq 0 ] && [ "$template_changed" -eq 0 ]; then
+    log_warn "Artifacts out of sync (unknown source change)"
+  fi
 }
 
 compile_dry_run() {
@@ -204,6 +290,9 @@ compile_dry_run() {
   if ! cmp -s "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"; then
     STANDARDS_CHANGED=1
   fi
+
+  RULES_TEMPLATE_CHANGED=$(detect_template_change "$RULES_TEMPLATE" "$RULES_OUTPUT")
+  STANDARDS_TEMPLATE_CHANGED=$(detect_template_change "$STANDARDS_TEMPLATE" "$STANDARDS_OUTPUT")
 }
 
 apply_artifacts() {
@@ -234,6 +323,25 @@ compose_commit_message() {
   fi
   if [ $STANDARDS_NEW_COUNT -gt 0 ]; then
     parts+=("add $STANDARDS_NEW_COUNT $([ $STANDARDS_NEW_COUNT -eq 1 ] && echo "standard" || echo "standards")")
+  fi
+
+  if [ ${#parts[@]} -eq 0 ]; then
+    local template_parts=()
+    if [ "$RULES_TEMPLATE_CHANGED" -eq 1 ] && [ "$RULES_CHANGED" -eq 1 ]; then
+      template_parts+=("rules")
+    fi
+    if [ "$STANDARDS_TEMPLATE_CHANGED" -eq 1 ] && [ "$STANDARDS_CHANGED" -eq 1 ]; then
+      template_parts+=("standards")
+    fi
+
+    if [ ${#template_parts[@]} -gt 0 ]; then
+      local joined
+      joined=$(
+        IFS=', '
+        echo "${template_parts[*]}"
+      )
+      parts+=("update ${joined} template")
+    fi
   fi
 
   local msg="chore(gov): "
@@ -279,10 +387,10 @@ main() {
   compile_dry_run
 
   log_step "Scanning Governance Rules"
-  scan_source_git_status "$RULES_SOURCE" "$RULES_OUTPUT" "RULES_MODIFIED_COUNT" "RULES_NEW_COUNT" "$RULES_CHANGED"
+  scan_source_git_status "$RULES_SOURCE" "$RULES_OUTPUT" "RULES_MODIFIED_COUNT" "RULES_NEW_COUNT" "$RULES_CHANGED" "$RULES_TEMPLATE_CHANGED"
 
   log_step "Scanning Standards"
-  scan_source_git_status "$STANDARDS_SOURCE" "$STANDARDS_OUTPUT" "STANDARDS_MODIFIED_COUNT" "STANDARDS_NEW_COUNT" "$STANDARDS_CHANGED"
+  scan_source_git_status "$STANDARDS_SOURCE" "$STANDARDS_OUTPUT" "STANDARDS_MODIFIED_COUNT" "STANDARDS_NEW_COUNT" "$STANDARDS_CHANGED" "$STANDARDS_TEMPLATE_CHANGED"
 
   local total_artifacts=$((RULES_CHANGED + STANDARDS_CHANGED))
 
