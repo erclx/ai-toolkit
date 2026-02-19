@@ -352,6 +352,13 @@ reset_sandbox() {
     exit 0
   fi
 
+  select_option "Reset sandbox to initial state?" "Yes" "No"
+  if [ "$SELECTED_OPT" == "No" ]; then
+    log_warn "Reset cancelled"
+    echo -e "${GREY}└${NC}"
+    exit 0
+  fi
+
   log_step "Resetting Sandbox"
   (
     cd "$SANDBOX"
