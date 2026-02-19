@@ -76,6 +76,8 @@ log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
+  command -v shellcheck >/dev/null 2>&1 || log_error "shellcheck is not installed"
+  command -v shfmt >/dev/null 2>&1 || log_error "shfmt is not installed"
 }
 
 main() {
@@ -123,15 +125,14 @@ main "$@"
 { "semi": false, "singleQuote": true }                          # .prettierrc minimal
 ```
 
+```json
+{ "**/*.sh": ["shfmt --write --indent 2", "shellcheck --severity=warning"] }   # merged glob array
+```
+
 ```sh
 bunx lint-staged                                                 # pre-commit hook
 bunx commitlint --edit "$1"                                      # commit-msg hook
 bun run check                                                    # pre-push hook
-```
-
-```text
-feat(api): add retry logic for failed webhooks                   # specific verb + scoped
-fix(auth): update token validation logic                         # imperative mood
 ```
 
 ### Incorrect
@@ -139,9 +140,4 @@ fix(auth): update token validation logic                         # imperative mo
 ```sh
 npx lint-staged                                                  # use bunx not npx
 npm run check                                                    # use bun not npm
-```
-
-```text
-fix(user-auth): Fixed the redirect loop.                         # multi-word scope + period + past tense
-docs(docs): update the readme.                                   # duplicated scope + period
 ```
