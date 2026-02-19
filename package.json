@@ -10,9 +10,9 @@
     "check:format": "prettier --check --ignore-path .gitignore . && shfmt --diff --indent 2 **/*.sh",
     "check:shell": "shellcheck --severity=warning **/*.sh",
     "prepare": "husky",
-    "check": "./scripts/verify.sh",
-    "update": "./scripts/update.sh",
-    "clean": "./scripts/clean.sh"
+    "check": "./scripts/core/verify.sh",
+    "update": "./scripts/core/update.sh",
+    "clean": "./scripts/core/clean.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",

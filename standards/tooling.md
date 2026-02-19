@@ -199,6 +199,7 @@ check_dependencies() {
 }
 
 main() {
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   check_dependencies
   echo -e "${GREY}┌${NC}"
 
@@ -207,8 +208,8 @@ main() {
   bun update --interactive 2>&1 | pipe_output
 
   log_step "Verifying Project Health"
-  if [ -f "./scripts/verify.sh" ]; then
-    ./scripts/verify.sh --nested
+  if [ -f "$SCRIPT_DIR/verify.sh" ]; then
+    "$SCRIPT_DIR/verify.sh" --nested
     log_info "All checks passed"
   else
     log_warn "Verification script not found, skipping."

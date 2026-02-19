@@ -46,6 +46,7 @@ claude --plugin-dir ./claude
 
 - `/dev:apply` - Apply file changes from a chat response.
 - `/dev:apply-cli` - Generate and apply changes using governance rules.
+- `/dev:setup` - Setup sandbox environment for development.
 
 ## Claude Commands
 

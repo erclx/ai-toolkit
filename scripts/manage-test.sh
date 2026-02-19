@@ -25,6 +25,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gdev <cat>:<cmd>      ${GREY}# Generate a specific scenario${NC}"
   echo -e "${GREY}│${NC}    gdev build            ${GREY}# Scan, compile, and commit governance artifacts${NC}"
   echo -e "${GREY}│${NC}    gdev sync <path>      ${GREY}# Sync rules to another project${NC}"
+  echo -e "${GREY}│${NC}    gdev reset            ${GREY}# Reset sandbox to initial state${NC}"
   echo -e "${GREY}│${NC}    gdev clean            ${GREY}# Wipe the sandbox${NC}"
   echo -e "${GREY}│${NC}    gdev cursor           ${GREY}# Setup cursor specific sandbox${NC}"
   echo -e "${GREY}│${NC}"
@@ -32,6 +33,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gdev git:commit"
   echo -e "${GREY}│${NC}    gdev build"
   echo -e "${GREY}│${NC}    gdev sync ../my-app"
+  echo -e "${GREY}│${NC}    gdev reset"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -157,7 +159,7 @@ parse_command_argument() {
     _COMMAND="cursor"
   else
     if [[ "$input_arg" != *":"* ]]; then
-      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'cursor', 'sync', or --help"
+      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'reset', 'cursor', 'sync', or --help"
     fi
     IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
   fi
@@ -293,12 +295,21 @@ commit_sandbox_changes() {
   fi
 }
 
+tag_sandbox_baseline() {
+  (
+    cd "$SANDBOX"
+    git tag -f sandbox-baseline >/dev/null 2>&1
+    git write-tree | xargs -I {} git tag -f sandbox-baseline-index {} >/dev/null 2>&1
+  )
+}
+
 execute_sandbox_and_commit() {
   pushd "$SANDBOX" >/dev/null
   stage_setup
   popd >/dev/null
 
   commit_sandbox_changes
+  tag_sandbox_baseline
 }
 
 handle_post_execution_prompt() {
@@ -322,6 +333,73 @@ handle_post_execution_prompt() {
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sandbox Ready${NC}"
+}
+
+reset_sandbox() {
+  echo -e "${GREY}┌${NC}"
+
+  if [ ! -d "$SANDBOX/.git" ]; then
+    log_error "No sandbox found. Run gdev first."
+  fi
+
+  log_step "Checking Sandbox State"
+
+  local has_baseline=0
+  (cd "$SANDBOX" && git rev-parse sandbox-baseline >/dev/null 2>&1) && has_baseline=1
+
+  if [ "$has_baseline" -eq 0 ]; then
+    log_error "No baseline found. Re-provision with gdev <cat>:<cmd>."
+  fi
+
+  local is_dirty=0
+  (
+    cd "$SANDBOX"
+    if [ "$(git rev-parse HEAD)" != "$(git rev-parse sandbox-baseline)" ]; then
+      exit 1
+    fi
+    local current_index baseline_index
+    current_index=$(git write-tree)
+    baseline_index=$(git rev-parse sandbox-baseline-index 2>/dev/null || echo "")
+    if [ -n "$baseline_index" ] && [ "$current_index" != "$baseline_index" ]; then
+      exit 1
+    fi
+    if ! git diff --quiet 2>/dev/null; then
+      exit 1
+    fi
+    if [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]; then
+      exit 1
+    fi
+  ) || is_dirty=1
+
+  if [ "$is_dirty" -eq 0 ]; then
+    echo -e "${GREY}└${NC}\n"
+    echo -e "${GREEN}✓ Sandbox already at initial state${NC}"
+    exit 0
+  fi
+
+  select_option "Reset sandbox to initial state?" "Yes" "No"
+  if [ "$SELECTED_OPT" == "No" ]; then
+    log_warn "Reset cancelled"
+    echo -e "${GREY}└${NC}"
+    exit 0
+  fi
+
+  log_step "Resetting Sandbox"
+  (
+    cd "$SANDBOX"
+    git reset --hard sandbox-baseline --quiet
+    git clean -fd --quiet
+    local baseline_index
+    baseline_index=$(git rev-parse sandbox-baseline-index 2>/dev/null || echo "")
+    if [ -n "$baseline_index" ] && [ "$baseline_index" != "$(git write-tree)" ]; then
+      git read-tree "$baseline_index"
+      git checkout-index -a -f
+    fi
+  )
+  log_info "Sandbox reset to baseline"
+
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Sandbox reset complete${NC}"
 }
 
 main() {
@@ -351,6 +429,11 @@ main() {
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
+  fi
+
+  if [[ "$1" == "reset" ]]; then
+    reset_sandbox
+    exit 0
   fi
 
   resolve_command_and_category "$1"
