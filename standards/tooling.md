@@ -16,6 +16,7 @@
 
 - `prettier`, `cspell`, `husky`, `@commitlint/cli`, `@commitlint/config-conventional`.
 - Install via `bun add -D`.
+- Ensure `.gitignore` contains `node_modules/`.
 
 ## CSpell
 
@@ -25,6 +26,7 @@
 - Dictionary files in `.cspell/`: `project-terms.txt`, `tech-stack.txt`.
 - Set `addWords: true` on each dictionary definition.
 - Add `ignorePaths: [".cspell/**"]` to avoid self-checking dictionaries.
+- Keep dictionary entries sorted alphabetically, one word per line.
 
 ## Shell Tooling
 
