@@ -20,6 +20,8 @@ prompt = """
 !{cat .vscode/settings.json 2>/dev/null || echo "NOT_FOUND"}
 !{cat .vscode/extensions.json 2>/dev/null || echo "NOT_FOUND"}
 !{cat scripts/verify.sh 2>/dev/null || echo "NOT_FOUND"}
+!{cat scripts/clean.sh 2>/dev/null || echo "NOT_FOUND"}
+!{cat scripts/update.sh 2>/dev/null || echo "NOT_FOUND"}
 !{cat package.json 2>/dev/null || echo "NOT_FOUND"}
 </PROJECT_STATE>
 </DATA_CONTEXT>
