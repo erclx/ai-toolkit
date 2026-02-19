@@ -33,6 +33,8 @@ Goal: Audit project state against references, then apply changes.
 
 ### Must Do
 
+- If {{args}} is empty or contains no file paths, output `echo "❌ Error: No reference files provided."` and stop.
+- Check `bun` is installed before proceeding.
 - Parse each reference file from <REFERENCES> to determine desired configs.
 - Compare <PROJECT_STATE> against desired configs.
 - Classify each config: SKIP (matches), UPDATE (differs), CREATE (missing).
