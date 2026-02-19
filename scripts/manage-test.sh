@@ -295,12 +295,20 @@ commit_sandbox_changes() {
   fi
 }
 
+tag_sandbox_baseline() {
+  (
+    cd "$SANDBOX"
+    git tag -f sandbox-baseline >/dev/null 2>&1
+  )
+}
+
 execute_sandbox_and_commit() {
   pushd "$SANDBOX" >/dev/null
   stage_setup
   popd >/dev/null
 
   commit_sandbox_changes
+  tag_sandbox_baseline
 }
 
 handle_post_execution_prompt() {
@@ -335,9 +343,19 @@ reset_sandbox() {
 
   log_step "Checking Sandbox State"
 
+  local has_baseline=0
+  (cd "$SANDBOX" && git rev-parse sandbox-baseline >/dev/null 2>&1) && has_baseline=1
+
+  if [ "$has_baseline" -eq 0 ]; then
+    log_error "No baseline found. Re-provision with gdev <cat>:<cmd>."
+  fi
+
   local is_dirty=0
   (
     cd "$SANDBOX"
+    if [ "$(git rev-parse HEAD)" != "$(git rev-parse sandbox-baseline)" ]; then
+      exit 1
+    fi
     if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
       exit 1
     fi
@@ -362,11 +380,10 @@ reset_sandbox() {
   log_step "Resetting Sandbox"
   (
     cd "$SANDBOX"
-    git reset --hard HEAD --quiet
+    git reset --hard sandbox-baseline --quiet
     git clean -fd --quiet
   )
-  log_info "Working tree reset to last commit"
-  log_info "Untracked files removed"
+  log_info "Sandbox reset to baseline"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sandbox reset complete${NC}"
