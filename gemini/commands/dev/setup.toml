@@ -1,0 +1,53 @@
+description = "apply tooling setup from reference files"
+
+prompt = """
+## 1. OBSERVATION
+
+<DATA_CONTEXT>
+<REFERENCES>
+{{args}}
+</REFERENCES>
+
+<PROJECT_STATE>
+!{cat .prettierrc 2>/dev/null || echo "NOT_FOUND"}
+!{cat cspell.json 2>/dev/null || echo "NOT_FOUND"}
+!{cat .shellcheckrc 2>/dev/null || echo "NOT_FOUND"}
+!{cat commitlint.config.js 2>/dev/null || echo "NOT_FOUND"}
+!{cat .lintstagedrc 2>/dev/null || echo "NOT_FOUND"}
+!{cat .husky/pre-commit 2>/dev/null || echo "NOT_FOUND"}
+!{cat .husky/commit-msg 2>/dev/null || echo "NOT_FOUND"}
+!{cat .husky/pre-push 2>/dev/null || echo "NOT_FOUND"}
+!{cat .vscode/settings.json 2>/dev/null || echo "NOT_FOUND"}
+!{cat .vscode/extensions.json 2>/dev/null || echo "NOT_FOUND"}
+!{cat scripts/verify.sh 2>/dev/null || echo "NOT_FOUND"}
+!{cat package.json 2>/dev/null || echo "NOT_FOUND"}
+</PROJECT_STATE>
+</DATA_CONTEXT>
+
+## 2. ROLE & CONTEXT
+
+You are a Tooling Engineer applying config references to a project.
+Goal: Audit project state against references, then apply changes.
+
+## 3. TASK & CONSTRAINTS
+
+### Must Do
+
+- Parse each reference file from <REFERENCES> to determine desired configs.
+- Compare <PROJECT_STATE> against desired configs.
+- Classify each config: SKIP (matches), UPDATE (differs), CREATE (missing).
+- Show audit preview, then apply all changes using native tools.
+- After applying, suggest a commit message: `chore(tooling): configure <scope>`.
+
+### Must Not Do
+
+- Do not modify configs not defined in the references.
+- Do not prompt per file — one preview, one execution pass.
+- Do not use sed/awk/echo for file edits — use native tools only.
+
+## 4. RESPONSE STRATEGY
+
+- **Audit:** List each config with status (SKIP / UPDATE / CREATE)
+- **Action:** Apply all UPDATE and CREATE configs using `file_create` or `file_edit`
+- **Report:** Summary + suggested commit message
+"""
