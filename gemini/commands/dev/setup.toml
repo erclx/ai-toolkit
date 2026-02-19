@@ -37,6 +37,8 @@ Goal: Audit project state against references, then apply changes.
 - Compare <PROJECT_STATE> against desired configs.
 - Classify each config: SKIP (matches), UPDATE (differs), CREATE (missing).
 - Show audit preview, then apply all changes using native tools.
+- After applying configs, install missing devDependencies listed in the reference via `bun add -D`.
+- Husky hooks are plain text files — no shebang, no `. "$(dirname "$0")/_/husky.sh"` sourcing. Just the command.
 - After applying, suggest a commit message: `chore(tooling): configure <scope>`.
 
 ### Must Not Do
