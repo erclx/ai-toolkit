@@ -12,6 +12,11 @@
 - Add parser overrides for non-standard extensions (e.g., `.mdc` → `markdown`).
 - Ignore paths via `.gitignore` — do not create `.prettierignore`.
 
+## Dev Dependencies
+
+- `prettier`, `cspell`, `husky`, `@commitlint/cli`, `@commitlint/config-conventional`.
+- Install via `bun add -D`.
+
 ## CSpell
 
 - Config: `cspell.json` at root.
