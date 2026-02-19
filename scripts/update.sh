@@ -33,9 +33,12 @@ main() {
   bun update --interactive 2>&1 | pipe_output
 
   log_step "Verifying Project Health"
-  [ -f "./scripts/verify.sh" ] || log_warn "Verification script not found, skipping."
-  [ -f "./scripts/verify.sh" ] && ./scripts/verify.sh --nested
-  log_info "All checks passed"
+  if [ -f "./scripts/verify.sh" ]; then
+    ./scripts/verify.sh --nested
+    log_info "All checks passed"
+  else
+    log_warn "Verification script not found, skipping."
+  fi
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Update Complete.${NC}"
