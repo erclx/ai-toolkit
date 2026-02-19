@@ -25,6 +25,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gdev <cat>:<cmd>      ${GREY}# Generate a specific scenario${NC}"
   echo -e "${GREY}│${NC}    gdev build            ${GREY}# Scan, compile, and commit governance artifacts${NC}"
   echo -e "${GREY}│${NC}    gdev sync <path>      ${GREY}# Sync rules to another project${NC}"
+  echo -e "${GREY}│${NC}    gdev reset            ${GREY}# Reset sandbox to initial state${NC}"
   echo -e "${GREY}│${NC}    gdev clean            ${GREY}# Wipe the sandbox${NC}"
   echo -e "${GREY}│${NC}    gdev cursor           ${GREY}# Setup cursor specific sandbox${NC}"
   echo -e "${GREY}│${NC}"
@@ -32,6 +33,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gdev git:commit"
   echo -e "${GREY}│${NC}    gdev build"
   echo -e "${GREY}│${NC}    gdev sync ../my-app"
+  echo -e "${GREY}│${NC}    gdev reset"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -157,7 +159,7 @@ parse_command_argument() {
     _COMMAND="cursor"
   else
     if [[ "$input_arg" != *":"* ]]; then
-      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'cursor', 'sync', or --help"
+      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'reset', 'cursor', 'sync', or --help"
     fi
     IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
   fi
@@ -324,6 +326,45 @@ handle_post_execution_prompt() {
   echo -e "${GREEN}✓ Sandbox Ready${NC}"
 }
 
+reset_sandbox() {
+  echo -e "${GREY}┌${NC}"
+
+  if [ ! -d "$SANDBOX/.git" ]; then
+    log_error "No sandbox found. Run gdev first."
+  fi
+
+  log_step "Checking Sandbox State"
+
+  local is_dirty=0
+  (
+    cd "$SANDBOX"
+    if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+      exit 1
+    fi
+    if [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]; then
+      exit 1
+    fi
+  ) || is_dirty=1
+
+  if [ "$is_dirty" -eq 0 ]; then
+    echo -e "${GREY}└${NC}\n"
+    echo -e "${GREEN}✓ Sandbox already at initial state${NC}"
+    exit 0
+  fi
+
+  log_step "Resetting Sandbox"
+  (
+    cd "$SANDBOX"
+    git reset --hard HEAD --quiet
+    git clean -fd --quiet
+  )
+  log_info "Working tree reset to last commit"
+  log_info "Untracked files removed"
+
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Sandbox reset complete${NC}"
+}
+
 main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
@@ -351,6 +392,11 @@ main() {
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
+  fi
+
+  if [[ "$1" == "reset" ]]; then
+    reset_sandbox
+    exit 0
   fi
 
   resolve_command_and_category "$1"
