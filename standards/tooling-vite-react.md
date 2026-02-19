@@ -132,6 +132,10 @@ export default defineConfig([
 
 - Build: `tsc -b` before `vite build`.
 - Type check: `tsc --noEmit` as standalone script.
+- Do not template full tsconfigs — use Vite scaffold defaults.
+- Root `tsconfig.json` must include `tsconfig.e2e.json` in references.
+- `tsconfig.app.json` must include `vitest/globals` and `@testing-library/jest-dom` in `types`.
+- `tsconfig.app.json` must include `paths: { "@/*": ["./src/*"] }` to match vite alias.
 - E2E tsconfig: `tsconfig.e2e.json` extending `tsconfig.node.json` with `@playwright/test` types, including `e2e/` and `playwright.config.ts`.
 
 ## Vite Config
