@@ -12,18 +12,11 @@
 - Add parser overrides for non-standard extensions (e.g., `.mdc` → `markdown`).
 - Ignore paths via `.gitignore` — do not create `.prettierignore`.
 
-## Commit Lint
-
-- Config: `commitlint.config.js` (ESM default export).
-- Extends: `@commitlint/config-conventional`.
-- Rules: `header-max-length: 72`, `scope-case: lower-case`, `subject-full-stop: never`, `subject-case: disabled`.
-- Format: `<type>(<scope>): <subject>` — imperative mood, no trailing period.
-
 ## CSpell
 
 - Config: `cspell.json` at root.
-- Set `useGitignore: true` to skip ignored paths.
 - Include `version: "0.2"` and `language: "en"`.
+- Set `useGitignore: true` to skip ignored paths.
 - Dictionary files in `.cspell/`: `project-terms.txt`, `tech-stack.txt`.
 - Set `addWords: true` on each dictionary definition.
 - Add `ignorePaths: [".cspell/**"]` to avoid self-checking dictionaries.
@@ -34,6 +27,13 @@
 - Format: `shfmt` with `--indent 2`.
 - Config: `.shellcheckrc` with `external-sources=true`.
 - Project `.vscode/settings.json` with `"shellcheck.customArgs": ["--severity=warning"]` (no CLI config equivalent).
+
+## Commit Lint
+
+- Config: `commitlint.config.js` (ESM default export).
+- Extends: `@commitlint/config-conventional`.
+- Rules: `header-max-length: 72`, `scope-case: lower-case`, `subject-full-stop: never`, `subject-case: disabled`.
+- Format: `<type>(<scope>): <subject>` — imperative mood, no trailing period.
 
 ## Husky + Lint-Staged
 
@@ -116,28 +116,3 @@ main "$@"
 - `format` — prettier write + shfmt write.
 - `prepare` — husky install.
 - `check` — runs `scripts/verify.sh`.
-
-## EXAMPLES
-
-### Correct
-
-```json
-{ "semi": false, "singleQuote": true }                          # .prettierrc minimal
-```
-
-```json
-{ "**/*.sh": ["shfmt --write --indent 2", "shellcheck --severity=warning"] }   # merged glob array
-```
-
-```sh
-bunx lint-staged                                                 # pre-commit hook
-bunx commitlint --edit "$1"                                      # commit-msg hook
-bun run check                                                    # pre-push hook
-```
-
-### Incorrect
-
-```sh
-npx lint-staged                                                  # use bunx not npx
-npm run check                                                    # use bun not npm
-```
