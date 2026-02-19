@@ -43,9 +43,8 @@
   - `commit-msg` → `bunx commitlint --edit "$1"`
   - `pre-push` → `bun run check`
 - Lint-staged globs:
-  - `**/*.{json,css,md,mdc}` → `prettier --write --ignore-path .gitignore`
-  - `**/*.sh` → `shfmt --write --indent 2`
-  - `**/*.{json,md,mdc}` → `cspell --no-must-find-files`
+  - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`
+  - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 
 ## Verification Script
 
