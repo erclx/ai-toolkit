@@ -1,11 +1,13 @@
 agentic
 arch
+bradlc
 bunx
 changelog
 codenames
 commitlint
 conventionals
 cspell
+dbaeumer
 e2e
 erclx
 esac
