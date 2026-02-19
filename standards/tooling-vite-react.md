@@ -134,6 +134,34 @@ export default defineConfig([
 - Type check: `tsc --noEmit` as standalone script.
 - E2E tsconfig: `tsconfig.e2e.json` extending `tsconfig.node.json` with `@playwright/test` types, including `e2e/` and `playwright.config.ts`.
 
+## Vite Config
+
+- Config: `vite.config.ts`.
+- Plugins: `@vitejs/plugin-react`, `@tailwindcss/vite`.
+- Path alias: `@` → `./src`.
+- Supports `VITE_BASE_URL` env variable for base path.
+
+```ts
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+import { defineConfig, loadEnv } from 'vite'
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+
+  return {
+    base: env.VITE_BASE_URL || '/',
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+  }
+})
+```
+
 ## Vitest
 
 - Config: `vitest.config.ts` merging from `vite.config.ts`.
@@ -255,7 +283,7 @@ on:
 
 jobs:
   static-checks:
-    name: Static Checks
+    name: 🛡️ Static Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -285,7 +313,7 @@ jobs:
         run: bun run check:spell
 
   unit-tests:
-    name: Unit Tests
+    name: 🧪 Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -303,7 +331,7 @@ jobs:
         run: bun run test:coverage
 
   build-verify:
-    name: Build Check
+    name: 📦 Build Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -321,7 +349,7 @@ jobs:
         run: bun run build
 
   e2e-tests:
-    name: E2E Tests
+    name: 🎭 E2E Tests
     needs: [static-checks, unit-tests, build-verify]
     runs-on: ubuntu-latest
     steps:
