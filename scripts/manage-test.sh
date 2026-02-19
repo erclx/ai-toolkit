@@ -299,6 +299,7 @@ tag_sandbox_baseline() {
   (
     cd "$SANDBOX"
     git tag -f sandbox-baseline >/dev/null 2>&1
+    git write-tree | xargs -I {} git tag -f sandbox-baseline-index {} >/dev/null 2>&1
   )
 }
 
@@ -356,7 +357,13 @@ reset_sandbox() {
     if [ "$(git rev-parse HEAD)" != "$(git rev-parse sandbox-baseline)" ]; then
       exit 1
     fi
-    if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+    local current_index baseline_index
+    current_index=$(git write-tree)
+    baseline_index=$(git rev-parse sandbox-baseline-index 2>/dev/null || echo "")
+    if [ -n "$baseline_index" ] && [ "$current_index" != "$baseline_index" ]; then
+      exit 1
+    fi
+    if ! git diff --quiet 2>/dev/null; then
       exit 1
     fi
     if [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]; then
@@ -382,6 +389,12 @@ reset_sandbox() {
     cd "$SANDBOX"
     git reset --hard sandbox-baseline --quiet
     git clean -fd --quiet
+    local baseline_index
+    baseline_index=$(git rev-parse sandbox-baseline-index 2>/dev/null || echo "")
+    if [ -n "$baseline_index" ] && [ "$baseline_index" != "$(git write-tree)" ]; then
+      git read-tree "$baseline_index"
+      git checkout-index -a -f
+    fi
   )
   log_info "Sandbox reset to baseline"
 
