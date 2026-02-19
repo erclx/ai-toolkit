@@ -397,17 +397,17 @@ jobs:
 
 ## Package Scripts (Extend)
 
-- `dev` — vite dev server.
-- `build` — `tsc -b && vite build`.
-- `preview` — vite preview.
-- `lint` — eslint with `--max-warnings 0`.
-- `lint:fix` — eslint fix with `--max-warnings 0`.
-- `typecheck` — `tsc --noEmit`.
-- `test` — vitest watch mode.
-- `test:run` — vitest single run with verbose reporter.
-- `test:ui` — vitest UI.
-- `test:coverage` — vitest with coverage.
-- `test:e2e` — playwright test.
-- `test:e2e:ui` — playwright UI mode.
-- `test:e2e:report` — playwright show report.
-- `check:full` — `./scripts/verify.sh && bun run test:e2e`.
+- `dev` — `vite`
+- `build` — `tsc -b && vite build`
+- `preview` — `vite preview`
+- `lint` — `eslint . --max-warnings 0`
+- `lint:fix` — `eslint . --fix --max-warnings 0`
+- `typecheck` — `tsc --noEmit`
+- `test` — `vitest`
+- `test:run` — `vitest run --reporter=verbose`
+- `test:ui` — `vitest --ui`
+- `test:coverage` — `vitest run --coverage`
+- `test:e2e` — `playwright test`
+- `test:e2e:ui` — `playwright test --ui`
+- `test:e2e:report` — `playwright show-report`
+- `check:full` — `./scripts/verify.sh && bun run test:e2e`
