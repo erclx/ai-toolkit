@@ -67,7 +67,7 @@ setup_ssh() {
 select_sandbox_category() {
   local categories=()
   if ls -d "$SANDBOX_DIR"/*/ >/dev/null 2>&1; then
-    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
   fi
 
   if [ ${#categories[@]} -eq 0 ]; then
@@ -81,7 +81,7 @@ select_sandbox_category() {
 select_sandbox_command() {
   local commands=()
   if ls "$SANDBOX_DIR/$_CATEGORY/"*.sh >/dev/null 2>&1; then
-    mapfile -t commands < <(find "$SANDBOX_DIR/$_CATEGORY" -maxdepth 1 -name '*.sh' -exec basename {} .sh \;)
+    mapfile -t commands < <(find "$SANDBOX_DIR/$_CATEGORY" -maxdepth 1 -name '*.sh' -exec basename {} .sh \; | sort)
   fi
 
   if [ ${#commands[@]} -eq 0 ]; then
