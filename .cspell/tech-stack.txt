@@ -16,6 +16,8 @@ pydantic
 pyproject
 pytest
 tanstack
+tolower
+toupper
 uv
 uvicorn
 vite
