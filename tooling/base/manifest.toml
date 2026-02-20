@@ -1,0 +1,8 @@
+[stack]
+name = "base"
+extends = ""
+runtime = "bun"
+scaffold = ""
+
+[sync]
+source = "configs"
