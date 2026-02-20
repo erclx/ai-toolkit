@@ -2,11 +2,24 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/inject.sh"
+
 stage_setup() {
   export GEMINI_SKIP_AUTO_COMMIT="true"
 
   log_step "Injecting Base Tooling Configs"
   inject_tooling_configs "base"
+
+  log_step "Initializing Package"
+  cat <<'EOF' >package.json
+{
+  "name": "sandbox-base-tooling",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module"
+}
+EOF
+  log_info "package.json created"
 
   log_step "Installing Dev Dependencies"
   bun add -D \
@@ -21,7 +34,7 @@ stage_setup() {
 
   log_step "Scaffolding Verify Scripts"
   mkdir -p scripts
-  cp "$PROJECT_ROOT/tooling/base/configs/scripts/verify.sh" scripts/verify.sh 2>/dev/null || scaffold_verify_script
+  scaffold_verify_script
   chmod +x scripts/verify.sh
 
   log_step "Adding Package Scripts"
@@ -96,7 +109,7 @@ main() {
   log_info "Format check passed"
 
   log_step "2. Spelling"
-  run_check "bun run check:spell" "Spell check passed"
+  run_check "bun run check:spell" "Spell check failed"
   log_info "Spell check passed"
 
   log_step "3. Shell"

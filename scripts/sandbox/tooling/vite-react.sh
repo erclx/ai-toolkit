@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/inject.sh"
+
 use_anchor() {
   export ANCHOR_REPO="vite-react-template"
 }
