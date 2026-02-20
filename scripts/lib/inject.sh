@@ -44,7 +44,7 @@ inject_tooling_configs() {
   fi
 
   local extends
-  extends=$(grep '^extends' "$manifest" | sed 's/.*= *"//' | sed 's/".*//')
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
 
   if [ -n "$extends" ]; then
     inject_tooling_configs "$extends"
@@ -70,6 +70,43 @@ inject_tooling_configs() {
     cp "$file" "$rel"
     log_info "  $rel"
   done < <(find "$configs_dir" -type f | sort)
+}
+
+inject_tooling_manifest() {
+  local stack_name="$1"
+  local manifest="$PROJECT_ROOT/tooling/$stack_name/manifest.toml"
+
+  [ ! -f "$manifest" ] && return
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+  [ -n "$extends" ] && inject_tooling_manifest "$extends"
+
+  local deps
+  deps=$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '", ')
+
+  if [ -n "$deps" ]; then
+    log_info "Installing $stack_name dev dependencies"
+    # shellcheck disable=SC2086
+    bun add -D $deps
+  fi
+
+  local scripts
+  scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
+
+  if [ -n "$scripts" ] && [ -f "package.json" ]; then
+    node -e "
+        const fs = require('fs');
+      const pkg = JSON.parse(fs.readFileSync('package.json'));
+      pkg.scripts = pkg.scripts || {};
+      process.argv[1].split('\n').forEach(line => {
+        const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
+        if (m) pkg.scripts[m[1]] = m[2];
+      });
+        fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+    " "$scripts"
+    log_info "Applied $stack_name package scripts"
+  fi
 }
 
 inject_dependencies() {

@@ -7,19 +7,6 @@ source "$PROJECT_ROOT/scripts/lib/inject.sh"
 stage_setup() {
   export GEMINI_SKIP_AUTO_COMMIT="true"
 
-  log_step "Injecting Base Tooling Configs"
-  inject_tooling_configs "base"
-
-  log_step "Seeding CSpell Dictionary"
-  mkdir -p .cspell
-  cat <<'EOF' >>.cspell/tech-stack.txt
-commitlint
-scannability
-shellcheck
-shfmt
-EOF
-  log_info "Base terms added to .cspell/tech-stack.txt"
-
   log_step "Initializing Package"
   cat <<'EOF' >package.json
 {
@@ -31,34 +18,24 @@ EOF
 EOF
   log_info "package.json created"
 
-  log_step "Installing Dev Dependencies"
-  bun add -D \
-    prettier \
-    cspell \
-    husky \
-    @commitlint/cli \
-    @commitlint/config-conventional
+  log_step "Injecting Base Tooling Configs"
+  inject_tooling_configs "base"
+
+  log_step "Applying Base Tooling Manifest"
+  inject_tooling_manifest "base"
+
+  log_step "Seeding CSpell Dictionary"
+  mkdir -p .cspell
+  cat <<'EOF' >>.cspell/tech-stack.txt
+commitlint
+scannability
+shellcheck
+shfmt
+EOF
+  log_info "Base terms added to .cspell/tech-stack.txt"
 
   log_step "Initializing Husky"
   bunx husky
-
-  log_step "Adding Package Scripts"
-  node -e "
-    const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
-    pkg.scripts = {
-      ...pkg.scripts,
-      'check:spell': \"cspell '**' --no-progress --color --show-context\",
-      'check:format': 'prettier --check --ignore-path .gitignore . && shfmt --diff --indent 2 **/*.sh',
-      'check:shell': 'shellcheck --severity=warning **/*.sh',
-      'format': 'prettier --write --ignore-path .gitignore . && shfmt --write --indent 2 **/*.sh',
-      'prepare': 'husky',
-      'check': './scripts/verify.sh',
-      'clean': './scripts/clean.sh',
-      'update': './scripts/update.sh'
-    };
-    require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-  "
-  log_info "Package scripts configured"
 
   log_step "Setting Script Permissions"
   chmod +x scripts/*.sh
