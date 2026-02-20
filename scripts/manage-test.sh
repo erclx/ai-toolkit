@@ -75,7 +75,7 @@ select_sandbox_category() {
   fi
 
   select_option "Select category:" "${categories[@]}"
-  _CATEGORY=$SELECTED_OPT
+  _CATEGORY=$SELECTED_OPTION
 }
 
 select_sandbox_command() {
@@ -89,7 +89,7 @@ select_sandbox_command() {
   fi
 
   select_option "Select command:" "${commands[@]}"
-  _COMMAND=$SELECTED_OPT
+  _COMMAND=$SELECTED_OPTION
 }
 
 prompt_for_category_and_command() {
@@ -267,7 +267,7 @@ handle_post_execution_prompt() {
 
   if [ "$current_category" == "infra" ] && [ "$current_command" == "cursor" ]; then
     select_option "Open sandbox in Cursor?" "Yes" "No"
-    if [ "$SELECTED_OPT" == "Yes" ]; then
+    if [ "$SELECTED_OPTION" == "Yes" ]; then
       if command -v cursor &>/dev/null; then
         log_info "Opening Cursor..."
         cursor "$SANDBOX"
@@ -327,7 +327,7 @@ reset_sandbox() {
   fi
 
   select_option "Reset sandbox to initial state?" "Yes" "No"
-  if [ "$SELECTED_OPT" == "No" ]; then
+  if [ "$SELECTED_OPTION" == "No" ]; then
     log_warn "Reset cancelled"
     echo -e "${GREY}└${NC}"
     exit 0

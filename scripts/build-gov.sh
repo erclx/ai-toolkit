@@ -339,7 +339,7 @@ main() {
 
   select_option "Compile and commit changes?" "Yes" "No"
 
-  if [ "$SELECTED_OPT" == "No" ]; then
+  if [ "$SELECTED_OPTION" == "No" ]; then
     log_warn "Build cancelled"
     echo -e "${GREY}└${NC}"
     exit 0

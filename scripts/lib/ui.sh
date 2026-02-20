@@ -58,5 +58,5 @@ select_option() {
 
   echo -ne "\033[$((count + 1))A\033[J" >&2
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
-  export SELECTED_OPT="${options[$cur]}"
+  export SELECTED_OPTION="${options[$cur]}"
 }

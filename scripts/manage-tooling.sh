@@ -38,7 +38,7 @@ cmd_sync() {
     fi
 
     select_option "Select tooling stack:" "${stacks[@]}"
-    stack="$SELECTED_OPT"
+    stack="$SELECTED_OPTION"
   fi
 
   if [ ! -d "$PROJECT_ROOT/tooling/$stack" ]; then
@@ -67,7 +67,7 @@ main() {
   if [ -z "$command" ]; then
     local commands=("sync")
     select_option "Select tooling command:" "${commands[@]}"
-    command="$SELECTED_OPT"
+    command="$SELECTED_OPTION"
   else
     shift
   fi

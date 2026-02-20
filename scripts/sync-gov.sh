@@ -97,7 +97,7 @@ apply_changes() {
 resolve_scope() {
   SELECTED_TARGETS=()
 
-  case "$SELECTED_OPT" in
+  case "$SELECTED_OPTION" in
   "Rules + Standards")
     SELECTED_TARGETS=("${GOV_TARGETS[@]}")
     ;;
@@ -170,7 +170,7 @@ main() {
 
   if [ "$total" -gt 0 ]; then
     select_option "Apply $total changes?" "Yes" "No"
-    if [ "$SELECTED_OPT" == "Yes" ]; then
+    if [ "$SELECTED_OPTION" == "Yes" ]; then
       apply_changes
 
       local summary=""
