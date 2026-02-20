@@ -21,7 +21,7 @@ stage_setup() {
     husky \
     @commitlint/cli \
     @commitlint/config-conventional \
-    eslint \
+    "eslint@^9" \
     eslint-config-prettier \
     eslint-plugin-check-file \
     eslint-plugin-react-hooks \
