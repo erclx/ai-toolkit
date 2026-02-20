@@ -33,6 +33,45 @@ inject_governance() {
   fi
 }
 
+inject_tooling_configs() {
+  local stack_name="$1"
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    log_warn "Manifest not found: $manifest"
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | sed 's/.*= *"//' | sed 's/".*//')
+
+  if [ -n "$extends" ]; then
+    inject_tooling_configs "$extends"
+  fi
+
+  local configs_dir="$tooling_dir/$stack_name/configs"
+  if [ ! -d "$configs_dir" ]; then
+    log_warn "Configs not found: $configs_dir"
+    return
+  fi
+
+  log_info "Applying $stack_name configs"
+
+  while IFS= read -r file; do
+    local rel="${file#"$configs_dir"/}"
+    local dest_dir
+    dest_dir=$(dirname "$rel")
+
+    if [ "$dest_dir" != "." ]; then
+      mkdir -p "$dest_dir"
+    fi
+
+    cp "$file" "$rel"
+    log_info "  $rel"
+  done < <(find "$configs_dir" -type f | sort)
+}
+
 inject_dependencies() {
   log_step "Provisioning Dependencies"
 
