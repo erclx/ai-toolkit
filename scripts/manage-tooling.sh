@@ -26,7 +26,7 @@ show_help() {
 select_stack() {
   local stacks=()
   if ls -d "$PROJECT_ROOT/tooling"/*/ >/dev/null 2>&1; then
-    mapfile -t stacks < <(find "$PROJECT_ROOT/tooling" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+    mapfile -t stacks < <(find "$PROJECT_ROOT/tooling" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
   fi
 
   if [ ${#stacks[@]} -eq 0 ]; then
@@ -35,6 +35,59 @@ select_stack() {
 
   select_option "Select tooling stack:" "${stacks[@]}"
   echo "$SELECTED_OPTION"
+}
+
+collect_stack_configs() {
+  local stack="$1"
+  local target="$2"
+  local -n _new=$3
+  local -n _drifted=$4
+  local -n _matching=$5
+
+  local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
+  local extends
+  extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    collect_stack_configs "$extends" "$target" _new _drifted _matching
+  fi
+
+  local configs_dir="$PROJECT_ROOT/tooling/$stack/configs"
+  [ ! -d "$configs_dir" ] && return
+
+  while IFS= read -r file; do
+    local rel="${file#"$configs_dir"/}"
+    local dest="$target/$rel"
+
+    if [ ! -f "$dest" ]; then
+      _new+=("$rel")
+    elif diff -q "$file" "$dest" >/dev/null 2>&1; then
+      _matching+=("$rel")
+    else
+      _drifted+=("$rel")
+    fi
+  done < <(find "$configs_dir" -type f | sort)
+}
+
+scan_configs() {
+  local stack="$1"
+  local target="$2"
+
+  log_step "Scanning Configs"
+
+  collect_stack_configs "$stack" "$target" NEW_FILES DRIFTED_FILES MATCHING_FILES
+
+  for f in "${MATCHING_FILES[@]}"; do
+    log_info "${GREY}Matching:  $f${NC}"
+  done
+  for f in "${DRIFTED_FILES[@]}"; do
+    log_warn "Drifted:   $f"
+  done
+  for f in "${NEW_FILES[@]}"; do
+    log_add "Missing:   $f"
+  done
+
+  TOTAL_CHANGES=$((${#NEW_FILES[@]} + ${#DRIFTED_FILES[@]}))
 }
 
 cmd_sync() {
@@ -55,7 +108,35 @@ cmd_sync() {
     log_error "Cannot sync tooling to ai-toolkit root. Files here are the source of truth."
   fi
 
-  log_step "Syncing Tooling Stack: $stack"
+  NEW_FILES=()
+  DRIFTED_FILES=()
+  MATCHING_FILES=()
+  TOTAL_CHANGES=0
+
+  scan_configs "$stack" "$target"
+
+  if [ "$TOTAL_CHANGES" -eq 0 ]; then
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ Everything up to date${NC}" >&2
+    exit 0
+  fi
+
+  local summary=""
+  [ "${#DRIFTED_FILES[@]}" -gt 0 ] && summary+="${#DRIFTED_FILES[@]} drifted"
+  if [ "${#NEW_FILES[@]}" -gt 0 ]; then
+    [ -n "$summary" ] && summary+=", "
+    summary+="${#NEW_FILES[@]} missing"
+  fi
+
+  select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" == "No" ]; then
+    log_warn "Sync cancelled"
+    echo -e "${GREY}└${NC}" >&2
+    exit 0
+  fi
+
+  log_step "Applying Changes"
   inject_tooling_configs "$stack" "$target"
   inject_tooling_manifest "$stack" "$target"
 }
