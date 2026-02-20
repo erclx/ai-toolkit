@@ -128,6 +128,32 @@ inject_tooling_seeds() {
   done < <(find "$seeds_dir" -type f | sort)
 }
 
+inject_tooling_reference() {
+  local stack_name="$1"
+  local target_path="${2:-.}"
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    inject_tooling_reference "$extends" "$target_path"
+  fi
+
+  local reference_file="$tooling_dir/$stack_name/reference.md"
+  [ ! -f "$reference_file" ] && return
+
+  local dest_dir="$target_path/tooling"
+  mkdir -p "$dest_dir"
+  cp "$reference_file" "$dest_dir/$stack_name.md"
+  log_info "  tooling/$stack_name.md"
+}
+
 inject_tooling_manifest() {
   local stack_name="$1"
   local target_path="${2:-.}"
