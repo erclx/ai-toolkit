@@ -73,8 +73,8 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 ENGINE_SCRIPT="$PROJECT_ROOT/scripts/lib/compiler.sh"
 
 BUILD_TARGETS=(
-  "Rules:.cursor/rules:.mdc:gemini/commands/gov/rules.toml:scripts/templates/rules.toml.template:{{INJECT_ALL_RULES}}"
-  "Standards:standards:.md:gemini/commands/gov/standards.toml:scripts/templates/standards.toml.template:{{INJECT_STANDARDS}}"
+  "Rules:.cursor/rules:mdc:gemini/commands/gov/rules.toml:scripts/templates/rules.toml.template:{{INJECT_ALL_RULES}}"
+  "Standards:standards:md:gemini/commands/gov/standards.toml:scripts/templates/standards.toml.template:{{INJECT_STANDARDS}}"
 )
 
 TEMP_DIR=""
@@ -310,10 +310,10 @@ compose_commit_message() {
     local new="${TARGET_NEW_COUNT[$label]:-0}"
 
     if [ "$mod" -gt 0 ]; then
-      parts+=("update $mod $([ "$mod" -eq 1 ] && echo "$label_lower" || echo "${label_lower}")")
+      parts+=("update $mod $label_lower")
     fi
     if [ "$new" -gt 0 ]; then
-      parts+=("add $new $([ "$new" -eq 1 ] && echo "$label_lower" || echo "${label_lower}")")
+      parts+=("add $new $label_lower")
     fi
   done
 
