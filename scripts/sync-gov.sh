@@ -29,7 +29,7 @@ select_option() {
 
   while true; do
     for i in "${!options[@]}"; do
-      if [ "$i" -eq $cur ]; then
+      if [ "$i" -eq "$cur" ]; then
         echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}" >&2
       else
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}" >&2
@@ -80,6 +80,13 @@ show_help() {
   exit 0
 }
 
+SYNC_TARGETS=(
+  "Rules:.cursor/rules:*.mdc:.cursor/rules"
+  "Standards:standards:*.md:standards"
+  "Tooling (base):tooling/base/configs:*:."
+  "Tooling (vite-react):tooling/vite-react/configs:*:."
+)
+
 check_dependencies() {
   command -v diff >/dev/null 2>&1 || log_error "diff not installed"
   command -v find >/dev/null 2>&1 || log_error "find not installed"
@@ -101,24 +108,40 @@ collect_changes() {
   local dest_prefix=$4
   local count=0
 
-  if [ -d "$src_dir" ]; then
-    while IFS= read -r file; do
-      local rel
-      rel="$(basename "$file")"
-      local dest="$target_dir/$dest_prefix/$rel"
-      if [ ! -f "$dest" ]; then
-        log_add "$dest_prefix/$rel"
-        echo "$file|$dest" >>"$PENDING_FILE"
-        ((count++))
-      elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
-        log_warn "Changed: $dest_prefix/$rel"
-        echo "$file|$dest" >>"$PENDING_FILE"
-        ((count++))
-      fi
-    done < <(find "$src_dir" -name "$pattern")
-  else
+  if [ ! -d "$src_dir" ]; then
     log_warn "Source directory not found: $src_dir"
+    echo "0"
+    return
   fi
+
+  while IFS= read -r file; do
+    local rel="${file#"$src_dir"/}"
+
+    local dest
+    if [ "$dest_prefix" = "." ]; then
+      dest="$target_dir/$rel"
+    else
+      dest="$target_dir/$dest_prefix/$rel"
+    fi
+
+    if [ ! -f "$dest" ]; then
+      if [ "$dest_prefix" = "." ]; then
+        log_add "$rel"
+      else
+        log_add "$dest_prefix/$rel"
+      fi
+      echo "$file|$dest" >>"$PENDING_FILE"
+      ((count++))
+    elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
+      if [ "$dest_prefix" = "." ]; then
+        log_warn "Changed: $rel"
+      else
+        log_warn "Changed: $dest_prefix/$rel"
+      fi
+      echo "$file|$dest" >>"$PENDING_FILE"
+      ((count++))
+    fi
+  done < <(find "$src_dir" -type f -name "$pattern")
 
   echo "$count"
 }
@@ -132,21 +155,41 @@ apply_changes() {
   done <"$PENDING_FILE"
 }
 
-resolve_scope() {
-  case "$SELECTED_OPTION" in
-  "Rules + Standards")
-    SYNC_RULES=1
-    SYNC_STANDARDS=1
-    ;;
-  "Rules only")
-    SYNC_RULES=1
-    SYNC_STANDARDS=0
-    ;;
-  "Standards only")
-    SYNC_RULES=0
-    SYNC_STANDARDS=1
-    ;;
-  esac
+build_scope_options() {
+  SCOPE_OPTIONS=()
+  SCOPE_LABELS=()
+
+  for target in "${SYNC_TARGETS[@]}"; do
+    IFS=':' read -r label src_rel _ _ <<<"$target"
+    if [ -d "$PROJECT_ROOT/$src_rel" ]; then
+      SCOPE_OPTIONS+=("$label")
+      SCOPE_LABELS+=("$label")
+    fi
+  done
+
+  if [ ${#SCOPE_OPTIONS[@]} -gt 1 ]; then
+    SCOPE_OPTIONS=("All" "${SCOPE_OPTIONS[@]}")
+  fi
+
+  if [ ${#SCOPE_OPTIONS[@]} -eq 0 ]; then
+    log_error "No sync sources found"
+  fi
+}
+
+resolve_selected_targets() {
+  SELECTED_TARGETS=()
+
+  if [ "$SELECTED_OPTION" = "All" ]; then
+    SELECTED_TARGETS=("${SYNC_TARGETS[@]}")
+    return
+  fi
+
+  for target in "${SYNC_TARGETS[@]}"; do
+    IFS=':' read -r label _ _ _ <<<"$target"
+    if [ "$label" = "$SELECTED_OPTION" ]; then
+      SELECTED_TARGETS+=("$target")
+    fi
+  done
 }
 
 parse_args() {
@@ -173,9 +216,6 @@ main() {
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
-  SYNC_RULES=0
-  SYNC_STANDARDS=0
-
   parse_args "$@"
   check_dependencies
 
@@ -188,41 +228,47 @@ main() {
     log_error "Cannot sync to ai-toolkit root. Files here are the source of truth."
   fi
 
-  select_option "Sync scope?" "Rules + Standards" "Rules only" "Standards only"
-  resolve_scope
+  build_scope_options
+  select_option "Sync scope?" "${SCOPE_OPTIONS[@]}"
+  resolve_selected_targets
 
   PENDING_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE"' EXIT
 
-  local gov_count=0
-  local standard_count=0
+  declare -A TARGET_COUNTS
+  local total=0
 
-  if [ "$SYNC_RULES" -eq 1 ]; then
-    log_step "Syncing Governance Rules"
-    gov_count=$(collect_changes "$PROJECT_ROOT/.cursor/rules" "$TARGET_PATH" "*.mdc" ".cursor/rules")
+  for target in "${SELECTED_TARGETS[@]}"; do
+    IFS=':' read -r label src_rel pattern dest_prefix <<<"$target"
 
-    if [ "$gov_count" -eq 0 ]; then
-      log_info "All governance rules up to date"
+    log_step "Syncing $label"
+    local count
+    count=$(collect_changes "$PROJECT_ROOT/$src_rel" "$TARGET_PATH" "$pattern" "$dest_prefix")
+    TARGET_COUNTS["$label"]=$count
+    total=$((total + count))
+
+    if [ "$count" -eq 0 ]; then
+      log_info "$label up to date"
     fi
-  fi
-
-  if [ "$SYNC_STANDARDS" -eq 1 ]; then
-    log_step "Syncing Standards"
-    standard_count=$(collect_changes "$PROJECT_ROOT/standards" "$TARGET_PATH" "*.md" "standards")
-
-    if [ "$standard_count" -eq 0 ]; then
-      log_info "All standards up to date"
-    fi
-  fi
-
-  local total=$((gov_count + standard_count))
+  done
 
   if [ "$total" -gt 0 ]; then
     select_option "Apply $total changes?" "Yes" "No"
     if [ "$SELECTED_OPTION" == "Yes" ]; then
       apply_changes
+
+      local summary=""
+      for target in "${SELECTED_TARGETS[@]}"; do
+        IFS=':' read -r label _ _ _ <<<"$target"
+        local c="${TARGET_COUNTS[$label]}"
+        if [ "$c" -gt 0 ]; then
+          [ -n "$summary" ] && summary+=", "
+          summary+="$c $label"
+        fi
+      done
+
       echo -e "${GREY}└${NC}\n" >&2
-      echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($gov_count rules, $standard_count standards)${NC}" >&2
+      echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($summary)${NC}" >&2
     else
       echo -e "${GREY}└${NC}\n" >&2
       echo -e "${YELLOW}● Sync cancelled${NC}" >&2
