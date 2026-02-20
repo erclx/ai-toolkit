@@ -19,10 +19,10 @@ EOF
   log_info "package.json created"
 
   log_step "Injecting Base Tooling Configs"
-  inject_tooling_configs "base"
+  inject_tooling_configs "base" "."
 
   log_step "Applying Base Tooling Manifest"
-  inject_tooling_manifest "base"
+  inject_tooling_manifest "base" "."
 
   log_step "Seeding CSpell Dictionary"
   mkdir -p .cspell

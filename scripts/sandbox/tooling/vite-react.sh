@@ -12,10 +12,10 @@ stage_setup() {
   export GEMINI_SKIP_AUTO_COMMIT="true"
 
   log_step "Injecting Tooling Configs (base + vite-react)"
-  inject_tooling_configs "vite-react"
+  inject_tooling_configs "vite-react" "."
 
   log_step "Applying Tooling Manifest (base + vite-react)"
-  inject_tooling_manifest "vite-react"
+  inject_tooling_manifest "vite-react" "."
 
   log_step "Seeding CSpell Dictionary"
   mkdir -p .cspell

@@ -35,6 +35,7 @@ inject_governance() {
 
 inject_tooling_configs() {
   local stack_name="$1"
+  local target_path="${2:-.}"
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
 
@@ -47,55 +48,55 @@ inject_tooling_configs() {
   extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
 
   if [ -n "$extends" ]; then
-    inject_tooling_configs "$extends"
+    inject_tooling_configs "$extends" "$target_path"
   fi
 
   local configs_dir="$tooling_dir/$stack_name/configs"
   if [ ! -d "$configs_dir" ]; then
-    log_warn "Configs not found: $configs_dir"
     return
   fi
 
-  log_info "Applying $stack_name configs"
+  log_info "Applying $stack_name configs to $target_path"
 
   while IFS= read -r file; do
     local rel="${file#"$configs_dir"/}"
+    local dest="$target_path/$rel"
     local dest_dir
-    dest_dir=$(dirname "$rel")
+    dest_dir=$(dirname "$dest")
 
     if [ "$dest_dir" != "." ]; then
       mkdir -p "$dest_dir"
     fi
 
-    cp "$file" "$rel"
+    cp "$file" "$dest"
     log_info "  $rel"
   done < <(find "$configs_dir" -type f | sort)
 }
 
 inject_tooling_manifest() {
   local stack_name="$1"
+  local target_path="${2:-.}"
   local manifest="$PROJECT_ROOT/tooling/$stack_name/manifest.toml"
 
   [ ! -f "$manifest" ] && return
 
   local extends
   extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
-  [ -n "$extends" ] && inject_tooling_manifest "$extends"
+  [ -n "$extends" ] && inject_tooling_manifest "$extends" "$target_path"
 
   local deps
   deps=$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '", ')
 
   if [ -n "$deps" ]; then
-    log_info "Installing $stack_name dev dependencies"
-    # shellcheck disable=SC2086
-    bun add -D $deps
+    log_info "Installing $stack_name dev dependencies in $target_path"
+    (cd "$target_path" && bun add -D $deps)
   fi
 
   local scripts
   scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
 
-  if [ -n "$scripts" ] && [ -f "package.json" ]; then
-    node -e "
+  if [ -n "$scripts" ] && [ -f "$target_path/package.json" ]; then
+    (cd "$target_path" && node -e "
         const fs = require('fs');
       const pkg = JSON.parse(fs.readFileSync('package.json'));
       pkg.scripts = pkg.scripts || {};
@@ -104,7 +105,7 @@ inject_tooling_manifest() {
         if (m) pkg.scripts[m[1]] = m[2];
       });
         fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-    " "$scripts"
+    " "$scripts")
     log_info "Applied $stack_name package scripts"
   fi
 }
