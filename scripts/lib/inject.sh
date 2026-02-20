@@ -73,6 +73,42 @@ inject_tooling_configs() {
   done < <(find "$configs_dir" -type f | sort)
 }
 
+inject_tooling_seeds() {
+  local stack_name="$1"
+  local target_path="${2:-.}"
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    inject_tooling_seeds "$extends" "$target_path"
+  fi
+
+  local seeds_dir="$tooling_dir/$stack_name/seeds"
+  if [ ! -d "$seeds_dir" ]; then
+    return
+  fi
+
+  while IFS= read -r file; do
+    local rel="${file#"$seeds_dir"/}"
+    local dest="$target_path/$rel"
+    local dest_dir
+    dest_dir=$(dirname "$dest")
+
+    if [ ! -f "$dest" ]; then
+      mkdir -p "$dest_dir"
+      cp "$file" "$dest"
+      log_info "  $rel"
+    fi
+  done < <(find "$seeds_dir" -type f | sort)
+}
+
 inject_tooling_manifest() {
   local stack_name="$1"
   local target_path="${2:-.}"

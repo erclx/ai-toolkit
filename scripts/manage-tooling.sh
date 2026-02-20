@@ -69,6 +69,35 @@ collect_stack_configs() {
   done < <(find "$configs_dir" -type f | sort)
 }
 
+collect_stack_seeds() {
+  local stack="$1"
+  local target="$2"
+  local -n _seeded=$3
+  local -n _seed_missing=$4
+
+  local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
+  local extends
+  extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    collect_stack_seeds "$extends" "$target" _seeded _seed_missing
+  fi
+
+  local seeds_dir="$PROJECT_ROOT/tooling/$stack/seeds"
+  [ ! -d "$seeds_dir" ] && return
+
+  while IFS= read -r file; do
+    local rel="${file#"$seeds_dir"/}"
+    local dest="$target/$rel"
+
+    if [ -f "$dest" ]; then
+      _seeded+=("$rel")
+    else
+      _seed_missing+=("$rel")
+    fi
+  done < <(find "$seeds_dir" -type f | sort)
+}
+
 scan_configs() {
   local stack="$1"
   local target="$2"
@@ -87,7 +116,21 @@ scan_configs() {
     log_add "Missing:   $f"
   done
 
-  TOTAL_CHANGES=$((${#NEW_FILES[@]} + ${#DRIFTED_FILES[@]}))
+  CONFIG_CHANGES=$((${#NEW_FILES[@]} + ${#DRIFTED_FILES[@]}))
+
+  log_step "Scanning Seeds"
+
+  collect_stack_seeds "$stack" "$target" SEEDED_FILES SEED_MISSING_FILES
+
+  for f in "${SEEDED_FILES[@]}"; do
+    log_info "${GREY}Seeded:    $f${NC}"
+  done
+  for f in "${SEED_MISSING_FILES[@]}"; do
+    log_add "Missing:   $f"
+  done
+
+  SEED_CHANGES=${#SEED_MISSING_FILES[@]}
+  TOTAL_CHANGES=$((CONFIG_CHANGES + SEED_CHANGES))
 }
 
 cmd_sync() {
@@ -111,6 +154,10 @@ cmd_sync() {
   NEW_FILES=()
   DRIFTED_FILES=()
   MATCHING_FILES=()
+  SEEDED_FILES=()
+  SEED_MISSING_FILES=()
+  CONFIG_CHANGES=0
+  SEED_CHANGES=0
   TOTAL_CHANGES=0
 
   scan_configs "$stack" "$target"
@@ -127,6 +174,10 @@ cmd_sync() {
     [ -n "$summary" ] && summary+=", "
     summary+="${#NEW_FILES[@]} missing"
   fi
+  if [ "${#SEED_MISSING_FILES[@]}" -gt 0 ]; then
+    [ -n "$summary" ] && summary+=", "
+    summary+="${#SEED_MISSING_FILES[@]} seeds"
+  fi
 
   select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Yes" "No"
 
@@ -136,8 +187,16 @@ cmd_sync() {
     exit 0
   fi
 
-  log_step "Applying Changes"
-  inject_tooling_configs "$stack" "$target"
+  if [ "$CONFIG_CHANGES" -gt 0 ]; then
+    log_step "Applying Configs"
+    inject_tooling_configs "$stack" "$target"
+  fi
+
+  if [ "$SEED_CHANGES" -gt 0 ]; then
+    log_step "Applying Seeds"
+    inject_tooling_seeds "$stack" "$target"
+  fi
+
   inject_tooling_manifest "$stack" "$target"
 }
 
