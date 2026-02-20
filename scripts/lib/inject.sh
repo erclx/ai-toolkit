@@ -84,12 +84,11 @@ inject_tooling_manifest() {
   extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
   [ -n "$extends" ] && inject_tooling_manifest "$extends" "$target_path"
 
-  local deps
-  deps=$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '", ')
+  read -r -a deps_array <<<"$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '",' | tr '\n' ' ')"
 
-  if [ -n "$deps" ]; then
+  if [ ${#deps_array[@]} -gt 0 ]; then
     log_info "Installing $stack_name dev dependencies in $target_path"
-    (cd "$target_path" && bun add -D "$deps")
+    (cd "$target_path" && bun add -D "${deps_array[@]}")
   fi
 
   local scripts
