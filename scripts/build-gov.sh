@@ -29,7 +29,7 @@ select_option() {
 
   while true; do
     for i in "${!options[@]}"; do
-      if [ "$i" -eq $cur ]; then
+      if [ "$i" -eq "$cur" ]; then
         echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}"
       else
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}"
@@ -70,24 +70,19 @@ select_option() {
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
-
 ENGINE_SCRIPT="$PROJECT_ROOT/scripts/lib/compiler.sh"
-RULES_SOURCE=".cursor/rules"
-RULES_OUTPUT="gemini/commands/gov/rules.toml"
-RULES_TEMPLATE="scripts/templates/rules.toml.template"
-STANDARDS_SOURCE="standards"
-STANDARDS_OUTPUT="gemini/commands/gov/standards.toml"
-STANDARDS_TEMPLATE="scripts/templates/standards.toml.template"
+
+BUILD_TARGETS=(
+  "Rules:.cursor/rules:mdc:gemini/commands/gov/rules.toml:scripts/templates/rules.toml.template:{{INJECT_ALL_RULES}}"
+  "Standards:standards:md:gemini/commands/gov/standards.toml:scripts/templates/standards.toml.template:{{INJECT_STANDARDS}}"
+)
 
 TEMP_DIR=""
-RULES_CHANGED=0
-STANDARDS_CHANGED=0
-RULES_TEMPLATE_CHANGED=0
-STANDARDS_TEMPLATE_CHANGED=0
-RULES_MODIFIED_COUNT=0
-RULES_NEW_COUNT=0
-STANDARDS_MODIFIED_COUNT=0
-STANDARDS_NEW_COUNT=0
+
+declare -A TARGET_CHANGED
+declare -A TARGET_TEMPLATE_CHANGED
+declare -A TARGET_MODIFIED_COUNT
+declare -A TARGET_NEW_COUNT
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -105,12 +100,13 @@ check_dependencies() {
   if [ ! -f "$ENGINE_SCRIPT" ]; then
     log_error "Compiler engine not found at: $ENGINE_SCRIPT"
   fi
-  if [ ! -d "$PROJECT_ROOT/$RULES_SOURCE" ]; then
-    log_error "Rules source not found: $RULES_SOURCE"
-  fi
-  if [ ! -d "$PROJECT_ROOT/$STANDARDS_SOURCE" ]; then
-    log_error "Standards source not found: $STANDARDS_SOURCE"
-  fi
+
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r label src_rel _ _ _ _ <<<"$target"
+    if [ ! -d "$PROJECT_ROOT/$src_rel" ]; then
+      log_error "Source not found: $src_rel"
+    fi
+  done
 }
 
 cleanup() {
@@ -164,7 +160,6 @@ has_source_changes() {
 
   if [ -n "$last_build_hash" ]; then
     local old_tree new_tree
-
     old_tree=$(git -C "$PROJECT_ROOT" ls-tree -r "$last_build_hash" -- "$source_dir" 2>/dev/null | sort)
     new_tree=$(git -C "$PROJECT_ROOT" ls-tree -r HEAD -- "$source_dir" 2>/dev/null | sort)
 
@@ -180,8 +175,7 @@ has_source_changes() {
 enumerate_source_changes() {
   local source_dir="$1"
   local output_file="$2"
-  local mod_var="$3"
-  local new_var="$4"
+  local label="$3"
 
   local mod_count=0
   local new_count=0
@@ -222,24 +216,23 @@ enumerate_source_changes() {
     fi
   fi
 
-  eval "$mod_var=$mod_count"
-  eval "$new_var=$new_count"
+  TARGET_MODIFIED_COUNT["$label"]=$mod_count
+  TARGET_NEW_COUNT["$label"]=$new_count
 }
 
 scan_source_git_status() {
   local source_dir="$1"
   local output_file="$2"
-  local mod_var="$3"
-  local new_var="$4"
-  local changed_flag="$5"
-  local template_changed="$6"
+  local label="$3"
+  local changed_flag="$4"
+  local template_changed="$5"
 
   if [ "$changed_flag" -eq 0 ]; then
     local total
     total=$(find "$PROJECT_ROOT/$source_dir" -type f | wc -l)
     log_info "$total items unchanged"
-    eval "$mod_var=0"
-    eval "$new_var=0"
+    TARGET_MODIFIED_COUNT["$label"]=0
+    TARGET_NEW_COUNT["$label"]=0
     return
   fi
 
@@ -248,16 +241,15 @@ scan_source_git_status() {
 
   if [ "$template_changed" -eq 1 ] && [ "$source_changed" -eq 0 ]; then
     log_info "Template changed; sources unchanged"
-    eval "$mod_var=0"
-    eval "$new_var=0"
+    TARGET_MODIFIED_COUNT["$label"]=0
+    TARGET_NEW_COUNT["$label"]=0
     return
   fi
 
-  enumerate_source_changes "$source_dir" "$output_file" "$mod_var" "$new_var"
+  enumerate_source_changes "$source_dir" "$output_file" "$label"
 
-  local mod_result new_result
-  eval "mod_result=\$$mod_var"
-  eval "new_result=\$$new_var"
+  local mod_result="${TARGET_MODIFIED_COUNT[$label]}"
+  local new_result="${TARGET_NEW_COUNT[$label]}"
 
   if [ $((mod_result + new_result)) -eq 0 ] && [ "$template_changed" -eq 0 ]; then
     log_warn "Artifacts out of sync (unknown source change)"
@@ -267,72 +259,74 @@ scan_source_git_status() {
 compile_dry_run() {
   TEMP_DIR=$(mktemp -d)
 
-  "$ENGINE_SCRIPT" \
-    "$PROJECT_ROOT/$RULES_SOURCE" \
-    ".cursor/rules" \
-    "$PROJECT_ROOT/$RULES_TEMPLATE" \
-    "$TEMP_DIR/rules.toml" \
-    "{{INJECT_ALL_RULES}}" \
-    ".mdc" 2>/dev/null
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r label src_rel ext output_rel template_rel placeholder <<<"$target"
 
-  "$ENGINE_SCRIPT" \
-    "$PROJECT_ROOT/$STANDARDS_SOURCE" \
-    "standards" \
-    "$PROJECT_ROOT/$STANDARDS_TEMPLATE" \
-    "$TEMP_DIR/standards.toml" \
-    "{{INJECT_STANDARDS}}" \
-    ".md" 2>/dev/null
+    local temp_name
+    temp_name=$(basename "$output_rel")
 
-  if ! cmp -s "$TEMP_DIR/rules.toml" "$PROJECT_ROOT/$RULES_OUTPUT"; then
-    RULES_CHANGED=1
-  fi
+    "$ENGINE_SCRIPT" \
+      "$PROJECT_ROOT/$src_rel" \
+      "$src_rel" \
+      "$PROJECT_ROOT/$template_rel" \
+      "$TEMP_DIR/$temp_name" \
+      "$placeholder" \
+      ".$ext" 2>/dev/null
 
-  if ! cmp -s "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"; then
-    STANDARDS_CHANGED=1
-  fi
+    if ! cmp -s "$TEMP_DIR/$temp_name" "$PROJECT_ROOT/$output_rel"; then
+      TARGET_CHANGED["$label"]=1
+    else
+      TARGET_CHANGED["$label"]=0
+    fi
 
-  RULES_TEMPLATE_CHANGED=$(detect_template_change "$RULES_TEMPLATE" "$RULES_OUTPUT")
-  STANDARDS_TEMPLATE_CHANGED=$(detect_template_change "$STANDARDS_TEMPLATE" "$STANDARDS_OUTPUT")
+    TARGET_TEMPLATE_CHANGED["$label"]=$(detect_template_change "$template_rel" "$output_rel")
+  done
 }
 
 apply_artifacts() {
   log_step "Compiling Artifacts"
 
-  if [ "$RULES_CHANGED" -eq 1 ]; then
-    cp "$TEMP_DIR/rules.toml" "$PROJECT_ROOT/$RULES_OUTPUT"
-    log_info "rules.toml updated"
-  fi
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r label _ _ output_rel _ _ <<<"$target"
 
-  if [ "$STANDARDS_CHANGED" -eq 1 ]; then
-    cp "$TEMP_DIR/standards.toml" "$PROJECT_ROOT/$STANDARDS_OUTPUT"
-    log_info "standards.toml updated"
-  fi
+    if [ "${TARGET_CHANGED[$label]}" -eq 1 ]; then
+      local temp_name
+      temp_name=$(basename "$output_rel")
+      cp "$TEMP_DIR/$temp_name" "$PROJECT_ROOT/$output_rel"
+      log_info "$(basename "$output_rel") updated"
+    fi
+  done
 }
 
 compose_commit_message() {
   local parts=()
 
-  if [ $RULES_MODIFIED_COUNT -gt 0 ]; then
-    parts+=("update $RULES_MODIFIED_COUNT $([ $RULES_MODIFIED_COUNT -eq 1 ] && echo "rule" || echo "rules")")
-  fi
-  if [ $RULES_NEW_COUNT -gt 0 ]; then
-    parts+=("add $RULES_NEW_COUNT $([ $RULES_NEW_COUNT -eq 1 ] && echo "rule" || echo "rules")")
-  fi
-  if [ $STANDARDS_MODIFIED_COUNT -gt 0 ]; then
-    parts+=("update $STANDARDS_MODIFIED_COUNT $([ $STANDARDS_MODIFIED_COUNT -eq 1 ] && echo "standard" || echo "standards")")
-  fi
-  if [ $STANDARDS_NEW_COUNT -gt 0 ]; then
-    parts+=("add $STANDARDS_NEW_COUNT $([ $STANDARDS_NEW_COUNT -eq 1 ] && echo "standard" || echo "standards")")
-  fi
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r label _ _ _ _ _ <<<"$target"
+    local label_lower
+    label_lower=$(echo "$label" | tr '[:upper:]' '[:lower:]')
+
+    local mod="${TARGET_MODIFIED_COUNT[$label]:-0}"
+    local new="${TARGET_NEW_COUNT[$label]:-0}"
+
+    if [ "$mod" -gt 0 ]; then
+      parts+=("update $mod $label_lower")
+    fi
+    if [ "$new" -gt 0 ]; then
+      parts+=("add $new $label_lower")
+    fi
+  done
 
   if [ ${#parts[@]} -eq 0 ]; then
     local template_parts=()
-    if [ "$RULES_TEMPLATE_CHANGED" -eq 1 ] && [ "$RULES_CHANGED" -eq 1 ]; then
-      template_parts+=("rules")
-    fi
-    if [ "$STANDARDS_TEMPLATE_CHANGED" -eq 1 ] && [ "$STANDARDS_CHANGED" -eq 1 ]; then
-      template_parts+=("standards")
-    fi
+    for target in "${BUILD_TARGETS[@]}"; do
+      IFS=':' read -r label _ _ _ _ _ <<<"$target"
+      if [ "${TARGET_TEMPLATE_CHANGED[$label]:-0}" -eq 1 ] && [ "${TARGET_CHANGED[$label]:-0}" -eq 1 ]; then
+        local label_lower
+        label_lower=$(echo "$label" | tr '[:upper:]' '[:lower:]')
+        template_parts+=("$label_lower")
+      fi
+    done
 
     if [ ${#template_parts[@]} -gt 0 ]; then
       local joined
@@ -368,9 +362,10 @@ commit_artifacts() {
 
   log_step "Staging Compiled Artifacts"
 
-  git -C "$PROJECT_ROOT" add \
-    "$RULES_OUTPUT" \
-    "$STANDARDS_OUTPUT"
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r _ _ _ output_rel _ _ <<<"$target"
+    git -C "$PROJECT_ROOT" add "$output_rel"
+  done
 
   git -C "$PROJECT_ROOT" commit -m "$msg" --no-verify >/dev/null 2>&1
   log_add "Committed: $msg"
@@ -386,13 +381,18 @@ main() {
   check_dependencies
   compile_dry_run
 
-  log_step "Scanning Governance Rules"
-  scan_source_git_status "$RULES_SOURCE" "$RULES_OUTPUT" "RULES_MODIFIED_COUNT" "RULES_NEW_COUNT" "$RULES_CHANGED" "$RULES_TEMPLATE_CHANGED"
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r label src_rel _ output_rel _ _ <<<"$target"
 
-  log_step "Scanning Standards"
-  scan_source_git_status "$STANDARDS_SOURCE" "$STANDARDS_OUTPUT" "STANDARDS_MODIFIED_COUNT" "STANDARDS_NEW_COUNT" "$STANDARDS_CHANGED" "$STANDARDS_TEMPLATE_CHANGED"
+    log_step "Scanning $label"
+    scan_source_git_status "$src_rel" "$output_rel" "$label" "${TARGET_CHANGED[$label]}" "${TARGET_TEMPLATE_CHANGED[$label]}"
+  done
 
-  local total_artifacts=$((RULES_CHANGED + STANDARDS_CHANGED))
+  local total_artifacts=0
+  for target in "${BUILD_TARGETS[@]}"; do
+    IFS=':' read -r label _ _ _ _ _ <<<"$target"
+    total_artifacts=$((total_artifacts + TARGET_CHANGED[$label]))
+  done
 
   if [ "$total_artifacts" -eq 0 ]; then
     echo -e "${GREY}└${NC}\n"

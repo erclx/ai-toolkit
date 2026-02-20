@@ -1,0 +1,12 @@
+{
+  "**/*.{js,jsx,ts,tsx}": [
+    "eslint --fix --max-warnings 0",
+    "prettier --write --ignore-path .gitignore"
+  ],
+  "**/*.{json,css,md,mdc}": [
+    "prettier --write --ignore-path .gitignore",
+    "cspell --no-must-find-files"
+  ],
+  "**/*.{js,jsx,ts,tsx,json,css,md,mdc}": ["cspell --no-must-find-files"],
+  "**/*.sh": ["shfmt --write --indent 2", "shellcheck --severity=warning"]
+}
