@@ -1,4 +1,4 @@
-description = "apply tooling setup from reference files"
+description = "audit project tooling drift against reference files"
 
 prompt = """
 ## 1. OBSERVATION
@@ -27,7 +27,6 @@ prompt = """
 !{cat vitest.config.ts 2>/dev/null || echo "NOT_FOUND"}
 !{cat playwright.config.ts 2>/dev/null || echo "NOT_FOUND"}
 !{cat vite.config.ts 2>/dev/null || echo "NOT_FOUND"}
-!{cat tsconfig.e2e.json 2>/dev/null || echo "NOT_FOUND"}
 !{cat src/test/setup.ts 2>/dev/null || echo "NOT_FOUND"}
 !{cat .github/workflows/verify.yml 2>/dev/null || echo "NOT_FOUND"}
 </PROJECT_STATE>
@@ -35,32 +34,51 @@ prompt = """
 
 ## 2. ROLE & CONTEXT
 
-You are a Tooling Engineer applying config references to a project.
-Goal: Audit project state against references, then apply changes.
+You are a Tooling Auditor specializing in config drift detection.
+Goal: Compare the project's current state against the provided references and produce an accurate drift report.
+This audit is for mature projects with existing configs that must not be blindly overwritten.
 
 ## 3. TASK & CONSTRAINTS
 
 ### Must Do
 
 - If {{args}} is empty or contains no file paths, output `echo "❌ Error: No reference files provided."` and stop.
-- Check `bun` is installed before proceeding.
-- Parse each reference file from <REFERENCES> to determine desired configs.
-- Compare <PROJECT_STATE> against desired configs.
-- Classify each config: SKIP (matches), UPDATE (differs), CREATE (missing).
-- Show audit preview, then apply all changes using native tools.
-- After applying configs, install missing devDependencies listed in the reference via `bun add -D`.
-- Husky hooks are plain text files — no shebang, no `. "$(dirname "$0")/_/husky.sh"` sourcing. Just the command.
-- After applying, suggest a commit message: `chore(tooling): configure <scope>`.
+- Parse each reference file from <REFERENCES> to extract the desired config state.
+- Compare each config in <PROJECT_STATE> against the reference.
+- Classify every config file as one of: SKIP (matches reference), UPDATE (exists but drifted), CREATE (missing entirely).
+- For every UPDATE, show a precise diff — what exists vs what the reference expects. Be specific about which keys or rules differ.
+- Present the full audit report before touching anything.
+- Only after showing the report, ask: "Apply fixes?"
+- If confirmed, apply only UPDATE and CREATE items using native tools with surgical edits where possible.
+- SKIP items are never touched under any circumstance.
 
 ### Must Not Do
 
-- Do not modify configs not defined in the references.
-- Do not prompt per file — one preview, one execution pass.
+- Do not overwrite any file without first showing what will change.
+- Do not apply changes before the audit report is presented and confirmed.
+- Do not install dependencies or suggest commit messages — that is out of scope.
 - Do not use sed/awk/echo for file edits — use native tools only.
+- Do not treat this as a fresh install — assume the project is live and existing configs have intentional content.
 
 ## 4. RESPONSE STRATEGY
 
-- **Audit:** List each config with status (SKIP / UPDATE / CREATE)
-- **Action:** Apply all UPDATE and CREATE configs using `file_create` or `file_edit`
-- **Report:** Summary + suggested commit message
+**Audit Report:**
+
+```
+SKIP    .prettierrc              matches reference
+UPDATE  commitlint.config.js     missing header-max-length rule
+CREATE  .shellcheckrc            not found
+```
+
+**For each UPDATE, show drift:**
+
+```
+commitlint.config.js
+  expected: 'header-max-length': [2, 'always', 72]
+  found:    rule not present
+```
+
+**Then ask:** "Apply fixes to N files? (UPDATE: X, CREATE: Y)"
+
+**On confirmation:** Apply surgical fixes using native tools. SKIP items untouched.
 """

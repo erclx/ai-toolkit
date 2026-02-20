@@ -1,0 +1,4 @@
+commitlint
+scannability
+shellcheck
+shfmt

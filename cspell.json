@@ -15,5 +15,5 @@
     }
   ],
   "dictionaries": ["project-terms", "tech-stack"],
-  "ignorePaths": [".cspell/**"]
+  "ignorePaths": [".cspell/**", "tooling/**"]
 }

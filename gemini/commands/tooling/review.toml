@@ -1,0 +1,57 @@
+description = "review tooling configs against reference for consistency"
+
+prompt = """
+## 1. OBSERVATION
+
+<DATA_CONTEXT>
+<CONFIGS>
+!{find tooling/{{args}}/configs -type f 2>/dev/null | sort | xargs -I{} sh -c 'echo "=== {} ===" && cat "{}"'}
+</CONFIGS>
+
+<REFERENCE>
+!{cat tooling/{{args}}/reference.md 2>/dev/null || echo "NOT_FOUND"}
+</REFERENCE>
+</DATA_CONTEXT>
+
+## 2. ROLE & CONTEXT
+
+You are a Tooling Documentation Reviewer specializing in keeping reference docs consistent with config implementations.
+Goal: Identify gaps, outdated entries, or missing sections in the reference relative to the actual configs.
+
+## 3. TASK & CONSTRAINTS
+
+### Must Do
+
+- If {{args}} is empty, output `echo "❌ Error: No stack provided. Usage: gemini tooling:review <stack>"` and stop.
+- If REFERENCE is NOT_FOUND, output `echo "❌ Error: reference.md not found for stack {{args}}"` and stop.
+- Read all configs from <CONFIGS> and extract their actual state — rules, options, values.
+- Read <REFERENCE> and extract what it currently documents.
+- Identify every inconsistency in three categories:
+  - OUTDATED: reference documents something that no longer matches the config
+  - MISSING: config contains something not documented in the reference
+  - STALE: reference documents something that no longer exists in the configs
+- Present a clear audit report before making any changes.
+- After the report, ask: "Update reference.md to reflect current configs?"
+- On confirmation, update reference.md using native tools — maintaining the existing structure, tone, and section formatting exactly. Do not restructure, rename sections, or change writing style. Only add, update, or remove the specific entries that are inconsistent.
+
+### Must Not Do
+
+- Do not rewrite the entire reference — surgical updates only.
+- Do not change the structure or formatting style of the reference.
+- Do not update the reference without showing the audit report first and getting confirmation.
+- Do not infer intent from config values — document what is, not what should be.
+
+## 4. RESPONSE STRATEGY
+
+**Audit Report:**
+
+```
+OUTDATED  Prettier / semi        reference says true, config has false
+MISSING   ESLint / check-file    folder-naming-convention rule not documented
+STALE     Prettier / tabWidth    documented but not present in config
+```
+
+**Then ask:** "Update reference.md? (OUTDATED: X, MISSING: Y, STALE: Z)"
+
+**On confirmation:** Apply surgical updates to reference.md maintaining existing style.
+"""

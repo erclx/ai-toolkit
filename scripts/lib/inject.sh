@@ -73,6 +73,87 @@ inject_tooling_configs() {
   done < <(find "$configs_dir" -type f | sort)
 }
 
+merge_seed_file() {
+  local src="$1"
+  local dest="$2"
+
+  local dest_dir
+  dest_dir=$(dirname "$dest")
+  mkdir -p "$dest_dir"
+
+  if [ ! -f "$dest" ]; then
+    cp "$src" "$dest"
+    return
+  fi
+
+  local added=0
+  while IFS= read -r word; do
+    [ -z "$word" ] && continue
+    if ! grep -qxF "$word" "$dest"; then
+      echo "$word" >>"$dest"
+      added=$((added + 1))
+    fi
+  done <"$src"
+
+  if [ "$added" -gt 0 ]; then
+    sort -o "$dest" "$dest"
+  fi
+}
+
+inject_tooling_seeds() {
+  local stack_name="$1"
+  local target_path="${2:-.}"
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    inject_tooling_seeds "$extends" "$target_path"
+  fi
+
+  local seeds_dir="$tooling_dir/$stack_name/seeds"
+  [ ! -d "$seeds_dir" ] && return
+
+  while IFS= read -r file; do
+    local rel="${file#"$seeds_dir"/}"
+    local dest="$target_path/$rel"
+    merge_seed_file "$file" "$dest"
+    log_info "  $rel"
+  done < <(find "$seeds_dir" -type f | sort)
+}
+
+inject_tooling_reference() {
+  local stack_name="$1"
+  local target_path="${2:-.}"
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    inject_tooling_reference "$extends" "$target_path"
+  fi
+
+  local reference_file="$tooling_dir/$stack_name/reference.md"
+  [ ! -f "$reference_file" ] && return
+
+  local dest_dir="$target_path/tooling"
+  mkdir -p "$dest_dir"
+  cp "$reference_file" "$dest_dir/$stack_name.md"
+  log_info "  tooling/$stack_name.md"
+}
+
 inject_tooling_manifest() {
   local stack_name="$1"
   local target_path="${2:-.}"
@@ -84,12 +165,11 @@ inject_tooling_manifest() {
   extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
   [ -n "$extends" ] && inject_tooling_manifest "$extends" "$target_path"
 
-  local deps
-  deps=$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '", ')
+  read -r -a deps_array <<<"$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '",' | tr '\n' ' ')"
 
-  if [ -n "$deps" ]; then
+  if [ ${#deps_array[@]} -gt 0 ]; then
     log_info "Installing $stack_name dev dependencies in $target_path"
-    (cd "$target_path" && bun add -D "$deps")
+    (cd "$target_path" && bun add -D "${deps_array[@]}")
   fi
 
   local scripts

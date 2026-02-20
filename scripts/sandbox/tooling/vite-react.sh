@@ -14,20 +14,11 @@ stage_setup() {
   log_step "Injecting Tooling Configs (base + vite-react)"
   inject_tooling_configs "vite-react" "."
 
+  log_step "Seeding Dictionaries (base + vite-react)"
+  inject_tooling_seeds "vite-react" "."
+
   log_step "Applying Tooling Manifest (base + vite-react)"
   inject_tooling_manifest "vite-react" "."
-
-  log_step "Seeding CSpell Dictionary"
-  mkdir -p .cspell
-  cat <<'EOF' >>.cspell/tech-stack.txt
-scannability
-shfmt
-shellcheck
-tolower
-toupper
-Vite
-EOF
-  log_info "Anchor terms added to .cspell/tech-stack.txt"
 
   log_step "Initializing Husky"
   bunx husky
