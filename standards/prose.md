@@ -20,6 +20,7 @@
 - Wrap commands, API names, file paths, and code identifiers in backticks
 - Do not over-format with excessive bold, italic, or header usage
 - Do not use horizontal rules or dividers (`---`)
+- Do not use em dashes (`—`); use a comma, period, or restructure the sentence instead
 - Use descriptive anchor text for links; avoid `click here` or `read more`
 
 ## Language
