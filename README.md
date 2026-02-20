@@ -39,18 +39,46 @@ Run `gdev` from the repo root.
 
 ## Gemini Commands
 
-| Command                   | Description                                                |
-| ------------------------- | ---------------------------------------------------------- |
-| `/git:commit`             | Generate a conventional commit message from staged changes |
-| `/git:pr`                 | Generate a PR description and open a draft                 |
-| `/dev:setup [ref]`        | Audit project tooling drift against a reference file       |
-| `/tooling:review [stack]` | Sync reference docs with current config state              |
-| `/release:changelog`      | Generate a changelog entry from commit history             |
-| `/docs:readme`            | Sync README with codebase changes from main branch         |
+### Git
+
+| Command       | Description                                                |
+| ------------- | ---------------------------------------------------------- |
+| `/git:commit` | Generate a conventional commit message from staged changes |
+| `/git:branch` | Rename current branch to match conventional format         |
+| `/git:pr`     | Generate a PR description and open a draft                 |
+
+### Governance
+
+| Command          | Description                                      |
+| ---------------- | ------------------------------------------------ |
+| `/gov:rules`     | Install governance rules into a project          |
+| `/gov:standards` | Install project reference standards              |
+| `/gov:prompt`    | Compile a master system prompt for external LLMs |
+
+### Development
+
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `/dev:setup [ref]` | Audit project tooling drift against a reference file |
+| `/dev:apply`       | Apply file changes from a chat response              |
+| `/dev:apply-cli`   | Generate and apply changes using governance rules    |
+
+### Tooling
+
+| Command                   | Description                                   |
+| ------------------------- | --------------------------------------------- |
+| `/tooling:review [stack]` | Sync reference docs with current config state |
+
+### Docs and Release
+
+| Command              | Description                                        |
+| -------------------- | -------------------------------------------------- |
+| `/docs:readme`       | Sync README with codebase changes from main branch |
+| `/release:changelog` | Generate a changelog entry from commit history     |
 
 ## Architecture
 
-Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles them into Gemini command artifacts under `gemini/commands/gov/`. Tooling stacks live in `tooling/` and are synced directly as concrete files.
+Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles them into Gemini command artifacts under `gemini/commands/gov/`. Tooling stacks live in `tooling/` and sync directly as concrete files.
 
 See [GOVERNANCE.md](docs/GOVERNANCE.md), [TOOLING.md](docs/TOOLING.md), and [SANDBOX.md](docs/SANDBOX.md) for detailed documentation.
 
