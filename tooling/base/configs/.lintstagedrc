@@ -1,0 +1,7 @@
+{
+  "**/*.{json,md,mdc}": [
+    "prettier --write --ignore-path .gitignore",
+    "cspell --no-must-find-files"
+  ],
+  "**/*.sh": ["shfmt --write --indent 2", "shellcheck --severity=warning"]
+}
