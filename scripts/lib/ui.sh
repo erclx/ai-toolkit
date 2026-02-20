@@ -15,6 +15,9 @@ log_error() {
 }
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
 log_add() { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
+log_rem() { echo -e "${GREY}│${NC} ${RED}-${NC} $1" >&2; }
+
+pipe_output() { while IFS= read -r line; do echo -e "${GREY}│${NC}  $line" >&2; done; }
 
 select_option() {
   local prompt_text=$1
@@ -58,5 +61,5 @@ select_option() {
 
   echo -ne "\033[$((count + 1))A\033[J" >&2
   echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
-  export SELECTED_OPT="${options[$cur]}"
+  export SELECTED_OPTION="${options[$cur]}"
 }

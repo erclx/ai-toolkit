@@ -2,30 +2,16 @@
 set -e
 set -o pipefail
 
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-WHITE='\033[1;37m'
-GREY='\033[0;90m'
-NC='\033[0m'
-
-log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1" >&2; }
-log_warn() { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1" >&2; }
-log_error() {
-  echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2
-  exit 1
-}
-log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
+source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Tooling Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev tooling <command> <stack> [target-path]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev tooling <command> [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    sync        Sync tooling configs and manifest to target"
@@ -42,7 +28,17 @@ cmd_sync() {
   local target="${2:-.}"
 
   if [ -z "$stack" ]; then
-    log_error "Stack name is required. Usage: gdev tooling sync <stack> [target]"
+    local stacks=()
+    if ls -d "$PROJECT_ROOT/tooling"/*/ >/dev/null 2>&1; then
+      mapfile -t stacks < <(find "$PROJECT_ROOT/tooling" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+    fi
+
+    if [ ${#stacks[@]} -eq 0 ]; then
+      log_error "No tooling stacks found in $PROJECT_ROOT/tooling"
+    fi
+
+    select_option "Select tooling stack:" "${stacks[@]}"
+    stack="$SELECTED_OPTION"
   fi
 
   if [ ! -d "$PROJECT_ROOT/tooling/$stack" ]; then
@@ -61,14 +57,20 @@ cmd_sync() {
 }
 
 main() {
-  if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ -z "$1" ]; then
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     show_help
   fi
 
-  local command="$1"
-  shift
-
   echo -e "${GREY}┌${NC}" >&2
+
+  local command="$1"
+  if [ -z "$command" ]; then
+    local commands=("sync")
+    select_option "Select tooling command:" "${commands[@]}"
+    command="$SELECTED_OPTION"
+  else
+    shift
+  fi
 
   case "$command" in
   sync)

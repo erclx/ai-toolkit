@@ -89,7 +89,7 @@ inject_tooling_manifest() {
 
   if [ -n "$deps" ]; then
     log_info "Installing $stack_name dev dependencies in $target_path"
-    (cd "$target_path" && bun add -D $deps)
+    (cd "$target_path" && bun add -D "$deps")
   fi
 
   local scripts

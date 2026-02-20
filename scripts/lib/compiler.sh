@@ -2,18 +2,10 @@
 set -e
 set -o pipefail
 
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-WHITE='\033[1;37m'
-GREY='\033[0;90m'
-NC='\033[0m'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
-log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1" >&2; }
-log_error() {
-  echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2
-  exit 1
-}
-log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
+source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 SOURCE_DIR="$1"
 TARGET_DIR_NAME="$2"
