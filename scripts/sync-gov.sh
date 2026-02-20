@@ -85,8 +85,6 @@ GOV_TARGETS=(
   "Standards:standards:*.md:standards"
 )
 
-TOOLING_DIR="tooling"
-
 check_dependencies() {
   command -v diff >/dev/null 2>&1 || log_error "diff not installed"
   command -v find >/dev/null 2>&1 || log_error "find not installed"
@@ -155,20 +153,6 @@ apply_changes() {
   done <"$PENDING_FILE"
 }
 
-discover_tooling_stacks() {
-  TOOLING_STACKS=()
-
-  if [ ! -d "$PROJECT_ROOT/$TOOLING_DIR" ]; then
-    return
-  fi
-
-  while IFS= read -r stack_dir; do
-    if [ -d "$stack_dir/configs" ]; then
-      TOOLING_STACKS+=("$(basename "$stack_dir")")
-    fi
-  done < <(find "$PROJECT_ROOT/$TOOLING_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
-}
-
 resolve_scope() {
   SELECTED_TARGETS=()
 
@@ -182,27 +166,7 @@ resolve_scope() {
   "Standards only")
     SELECTED_TARGETS=("${GOV_TARGETS[1]}")
     ;;
-  "Tooling")
-    select_tooling_stack
-    ;;
   esac
-}
-
-select_tooling_stack() {
-  local options=("${TOOLING_STACKS[@]}")
-  if [ ${#options[@]} -gt 1 ]; then
-    options=("All" "${options[@]}")
-  fi
-
-  select_option "Select tooling stack:" "${options[@]}"
-
-  if [ "$SELECTED_OPTION" = "All" ]; then
-    for stack in "${TOOLING_STACKS[@]}"; do
-      SELECTED_TARGETS+=("$stack:$TOOLING_DIR/$stack/configs:*:.")
-    done
-  else
-    SELECTED_TARGETS+=("$SELECTED_OPTION:$TOOLING_DIR/$SELECTED_OPTION/configs:*:.")
-  fi
 }
 
 parse_args() {
@@ -241,12 +205,7 @@ main() {
     log_error "Cannot sync to ai-toolkit root. Files here are the source of truth."
   fi
 
-  discover_tooling_stacks
-
   local scope_options=("Rules + Standards" "Rules only" "Standards only")
-  if [ ${#TOOLING_STACKS[@]} -gt 0 ]; then
-    scope_options+=("Tooling")
-  fi
 
   select_option "Sync scope?" "${scope_options[@]}"
   resolve_scope

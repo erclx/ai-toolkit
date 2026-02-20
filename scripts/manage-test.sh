@@ -25,6 +25,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gdev <cat>:<cmd>      ${GREY}# Generate a specific scenario${NC}"
   echo -e "${GREY}│${NC}    gdev build            ${GREY}# Scan, compile, and commit governance artifacts${NC}"
   echo -e "${GREY}│${NC}    gdev sync <path>      ${GREY}# Sync rules to another project${NC}"
+  echo -e "${GREY}│${NC}    gdev tooling <cmd>    ${GREY}# Manage tooling stacks and configs${NC}"
   echo -e "${GREY}│${NC}    gdev reset            ${GREY}# Reset sandbox to initial state${NC}"
   echo -e "${GREY}│${NC}    gdev clean            ${GREY}# Wipe the sandbox${NC}"
   echo -e "${GREY}│${NC}    gdev cursor           ${GREY}# Setup cursor specific sandbox${NC}"
@@ -33,6 +34,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gdev git:commit"
   echo -e "${GREY}│${NC}    gdev build"
   echo -e "${GREY}│${NC}    gdev sync ../my-app"
+  echo -e "${GREY}│${NC}    gdev tooling sync base"
   echo -e "${GREY}│${NC}    gdev reset"
   echo -e "${GREY}└${NC}"
   exit 0
@@ -159,7 +161,7 @@ parse_command_argument() {
     _COMMAND="cursor"
   else
     if [[ "$input_arg" != *":"* ]]; then
-      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'reset', 'cursor', 'sync', or --help"
+      log_error "Invalid format. Use <category>:<command>, 'build', 'clean', 'reset', 'cursor', 'sync', 'tooling', or --help"
     fi
     IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
   fi
@@ -301,7 +303,6 @@ tag_sandbox_baseline() {
     cd "$SANDBOX"
     git tag -f sandbox-baseline >/dev/null 2>&1
     git write-tree | xargs -I {} git tag -f sandbox-baseline-index {} >/dev/null 2>&1
-    git rev-parse --abbrev-ref HEAD >.sandbox-baseline-branch
   )
 }
 
@@ -356,13 +357,6 @@ reset_sandbox() {
   local is_dirty=0
   (
     cd "$SANDBOX"
-    local baseline_branch
-    baseline_branch=$(cat .sandbox-baseline-branch 2>/dev/null || echo "")
-    local current_branch
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    if [ -n "$baseline_branch" ] && [ "$current_branch" != "$baseline_branch" ]; then
-      exit 1
-    fi
     if [ "$(git rev-parse HEAD)" != "$(git rev-parse sandbox-baseline)" ]; then
       exit 1
     fi
@@ -396,11 +390,6 @@ reset_sandbox() {
   log_step "Resetting Sandbox"
   (
     cd "$SANDBOX"
-    local baseline_branch
-    baseline_branch=$(cat .sandbox-baseline-branch 2>/dev/null || echo "")
-    if [ -n "$baseline_branch" ]; then
-      git checkout "$baseline_branch" --quiet 2>/dev/null || true
-    fi
     git reset --hard sandbox-baseline --quiet
     git clean -fd --quiet
     local baseline_index
@@ -430,6 +419,11 @@ main() {
   if [[ "$1" == "build" ]]; then
     shift
     exec "$PROJECT_ROOT/scripts/build-gov.sh" "$@"
+  fi
+
+  if [[ "$1" == "tooling" ]]; then
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-tooling.sh" "$@"
   fi
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
