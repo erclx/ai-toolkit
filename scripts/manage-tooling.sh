@@ -11,16 +11,30 @@ source "$PROJECT_ROOT/scripts/lib/inject.sh"
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Tooling Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev tooling <command> [stack] [target-path]"
-  echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
-  echo -e "${GREY}│${NC}    sync        Sync tooling configs and manifest to target"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev tooling [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
-  echo -e "${GREY}│${NC}    stack       Name of the tooling stack (e.g., base, vite-react)"
-  echo -e "${GREY}│${NC}    target-path Target directory (default: current directory)"
+  echo -e "${GREY}│${NC}    stack         Name of the tooling stack (e.g., base, vite-react)"
+  echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
+  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
+  echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
   exit 0
+}
+
+select_stack() {
+  local stacks=()
+  if ls -d "$PROJECT_ROOT/tooling"/*/ >/dev/null 2>&1; then
+    mapfile -t stacks < <(find "$PROJECT_ROOT/tooling" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+  fi
+
+  if [ ${#stacks[@]} -eq 0 ]; then
+    log_error "No tooling stacks found in $PROJECT_ROOT/tooling"
+  fi
+
+  select_option "Select tooling stack:" "${stacks[@]}"
+  echo "$SELECTED_OPTION"
 }
 
 cmd_sync() {
@@ -28,17 +42,7 @@ cmd_sync() {
   local target="${2:-.}"
 
   if [ -z "$stack" ]; then
-    local stacks=()
-    if ls -d "$PROJECT_ROOT/tooling"/*/ >/dev/null 2>&1; then
-      mapfile -t stacks < <(find "$PROJECT_ROOT/tooling" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-    fi
-
-    if [ ${#stacks[@]} -eq 0 ]; then
-      log_error "No tooling stacks found in $PROJECT_ROOT/tooling"
-    fi
-
-    select_option "Select tooling stack:" "${stacks[@]}"
-    stack="$SELECTED_OPTION"
+    stack=$(select_stack)
   fi
 
   if [ ! -d "$PROJECT_ROOT/tooling/$stack" ]; then
@@ -63,26 +67,10 @@ main() {
 
   echo -e "${GREY}┌${NC}" >&2
 
-  local command="$1"
-  if [ -z "$command" ]; then
-    local commands=("sync")
-    select_option "Select tooling command:" "${commands[@]}"
-    command="$SELECTED_OPTION"
-  else
-    shift
-  fi
-
-  case "$command" in
-  sync)
-    cmd_sync "$@"
-    ;;
-  *)
-    log_error "Unknown tooling command: $command"
-    ;;
-  esac
+  cmd_sync "$@"
 
   echo -e "${GREY}└${NC}\n" >&2
-  echo -e "${GREEN}✓ Tooling operation complete${NC}" >&2
+  echo -e "${GREEN}✓ Tooling sync complete${NC}" >&2
 }
 
 main "$@"
