@@ -15,6 +15,9 @@ log_error() {
 }
 log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
 log_add() { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
+log_rem() { echo -e "${GREY}│${NC} ${RED}-${NC} $1" >&2; }
+
+pipe_output() { while IFS= read -r line; do echo -e "${GREY}│${NC}  $line" >&2; done; }
 
 select_option() {
   local prompt_text=$1
