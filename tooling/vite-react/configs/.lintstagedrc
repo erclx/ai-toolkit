@@ -7,11 +7,6 @@
     "prettier --write --ignore-path .gitignore",
     "cspell --no-must-find-files"
   ],
-  "**/*.{js,jsx,ts,tsx,json,css,md,mdc}": [
-    "cspell --no-must-find-files"
-  ],
-  "**/*.sh": [
-    "shfmt --write --indent 2",
-    "shellcheck --severity=warning"
-  ]
+  "**/*.{js,jsx,ts,tsx,json,css,md,mdc}": ["cspell --no-must-find-files"],
+  "**/*.sh": ["shfmt --write --indent 2", "shellcheck --severity=warning"]
 }
