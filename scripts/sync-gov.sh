@@ -80,12 +80,12 @@ show_help() {
   exit 0
 }
 
-SYNC_TARGETS=(
+GOV_TARGETS=(
   "Rules:.cursor/rules:*.mdc:.cursor/rules"
   "Standards:standards:*.md:standards"
-  "Tooling (base):tooling/base/configs:*:."
-  "Tooling (vite-react):tooling/vite-react/configs:*:."
 )
+
+TOOLING_DIR="tooling"
 
 check_dependencies() {
   command -v diff >/dev/null 2>&1 || log_error "diff not installed"
@@ -155,41 +155,54 @@ apply_changes() {
   done <"$PENDING_FILE"
 }
 
-build_scope_options() {
-  SCOPE_OPTIONS=()
-  SCOPE_LABELS=()
+discover_tooling_stacks() {
+  TOOLING_STACKS=()
 
-  for target in "${SYNC_TARGETS[@]}"; do
-    IFS=':' read -r label src_rel _ _ <<<"$target"
-    if [ -d "$PROJECT_ROOT/$src_rel" ]; then
-      SCOPE_OPTIONS+=("$label")
-      SCOPE_LABELS+=("$label")
-    fi
-  done
-
-  if [ ${#SCOPE_OPTIONS[@]} -gt 1 ]; then
-    SCOPE_OPTIONS=("All" "${SCOPE_OPTIONS[@]}")
-  fi
-
-  if [ ${#SCOPE_OPTIONS[@]} -eq 0 ]; then
-    log_error "No sync sources found"
-  fi
-}
-
-resolve_selected_targets() {
-  SELECTED_TARGETS=()
-
-  if [ "$SELECTED_OPTION" = "All" ]; then
-    SELECTED_TARGETS=("${SYNC_TARGETS[@]}")
+  if [ ! -d "$PROJECT_ROOT/$TOOLING_DIR" ]; then
     return
   fi
 
-  for target in "${SYNC_TARGETS[@]}"; do
-    IFS=':' read -r label _ _ _ <<<"$target"
-    if [ "$label" = "$SELECTED_OPTION" ]; then
-      SELECTED_TARGETS+=("$target")
+  while IFS= read -r stack_dir; do
+    if [ -d "$stack_dir/configs" ]; then
+      TOOLING_STACKS+=("$(basename "$stack_dir")")
     fi
-  done
+  done < <(find "$PROJECT_ROOT/$TOOLING_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
+}
+
+resolve_scope() {
+  SELECTED_TARGETS=()
+
+  case "$SELECTED_OPTION" in
+  "Rules + Standards")
+    SELECTED_TARGETS=("${GOV_TARGETS[@]}")
+    ;;
+  "Rules only")
+    SELECTED_TARGETS=("${GOV_TARGETS[0]}")
+    ;;
+  "Standards only")
+    SELECTED_TARGETS=("${GOV_TARGETS[1]}")
+    ;;
+  "Tooling")
+    select_tooling_stack
+    ;;
+  esac
+}
+
+select_tooling_stack() {
+  local options=("${TOOLING_STACKS[@]}")
+  if [ ${#options[@]} -gt 1 ]; then
+    options=("All" "${options[@]}")
+  fi
+
+  select_option "Select tooling stack:" "${options[@]}"
+
+  if [ "$SELECTED_OPTION" = "All" ]; then
+    for stack in "${TOOLING_STACKS[@]}"; do
+      SELECTED_TARGETS+=("$stack:$TOOLING_DIR/$stack/configs:*:.")
+    done
+  else
+    SELECTED_TARGETS+=("$SELECTED_OPTION:$TOOLING_DIR/$SELECTED_OPTION/configs:*:.")
+  fi
 }
 
 parse_args() {
@@ -228,9 +241,15 @@ main() {
     log_error "Cannot sync to ai-toolkit root. Files here are the source of truth."
   fi
 
-  build_scope_options
-  select_option "Sync scope?" "${SCOPE_OPTIONS[@]}"
-  resolve_selected_targets
+  discover_tooling_stacks
+
+  local scope_options=("Rules + Standards" "Rules only" "Standards only")
+  if [ ${#TOOLING_STACKS[@]} -gt 0 ]; then
+    scope_options+=("Tooling")
+  fi
+
+  select_option "Sync scope?" "${scope_options[@]}"
+  resolve_scope
 
   PENDING_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE"' EXIT
