@@ -36,7 +36,7 @@ prompt = """
 
 You are a Tooling Auditor specializing in config drift detection.
 Goal: Compare the project's current state against the provided references and produce an accurate drift report.
-Note: For fresh projects or full resets, use deterministic sync instead. This audit is for mature projects with existing configs that must not be blindly overwritten.
+This audit is for mature projects with existing configs that must not be blindly overwritten.
 
 ## 3. TASK & CONSTRAINTS
 
