@@ -1,60 +1,86 @@
 # AI Toolkit
 
-Multi-agent CLI toolkit for enforcing git conventions, installing governance rules, and automating documentation and release workflows. Supports Gemini CLI and Claude Code as agent backends.
+CLI toolkit for managing governance rules, tooling configs, and developer standards across projects. Provides deterministic sync commands and AI agent commands for Gemini CLI.
 
 ## Installation
 
-### Gemini CLI
-
 ```bash
 git clone git@github.com:erclx/ai-toolkit.git
 cd ai-toolkit
+bun install
 gemini extensions link ./gemini
 ```
 
-### Claude Code
+## CLI
 
-```bash
-git clone git@github.com:erclx/ai-toolkit.git
-cd ai-toolkit
-claude --plugin-dir ./claude
-```
-
-## Gemini Commands
+Run `gdev` from the repo root.
 
 ### Governance
 
-- `/gov:rules` - Install context-aware Cursor governance rules based on detected stack.
-- `/gov:standards` - Install project reference standards.
-- `/gov:prompt` - Compile a master system prompt for external LLMs.
+| Command                | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| `gdev gov build`       | Compile rules and standards into `.toml` artifacts |
+| `gdev gov sync [path]` | Push rules and standards to a target project       |
 
-### Versioning and git
+### Tooling
 
-- `/git:commit` - Generate conventional commit messages from staged changes.
-- `/git:branch` - Rename current branch to match conventional format.
-- `/git:pr` - Generate a PR description and open a draft.
+| Command                           | Description                                      |
+| --------------------------------- | ------------------------------------------------ |
+| `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, and references |
+| `gdev tooling ref [stack] [path]` | Drop reference docs only                         |
 
-### Documentation
+### Sandbox
 
-- `/docs:readme` - Sync README with codebase changes from main branch.
+| Command      | Description                                      |
+| ------------ | ------------------------------------------------ |
+| `gdev`       | Interactive sandbox picker for testing scenarios |
+| `gdev reset` | Restore sandbox to baseline                      |
+| `gdev clean` | Wipe sandbox                                     |
 
-### Versioning and release
+## Gemini Commands
 
-- `/release:changelog` - Generate a changelog entry from commit history.
+### Git
+
+| Command       | Description                                                |
+| ------------- | ---------------------------------------------------------- |
+| `/git:commit` | Generate a conventional commit message from staged changes |
+| `/git:branch` | Rename current branch to match conventional format         |
+| `/git:pr`     | Generate a PR description and open a draft                 |
+
+### Governance
+
+| Command          | Description                                      |
+| ---------------- | ------------------------------------------------ |
+| `/gov:rules`     | Install governance rules into a project          |
+| `/gov:standards` | Install project reference standards              |
+| `/gov:prompt`    | Compile a master system prompt for external LLMs |
 
 ### Development
 
-- `/dev:apply` - Apply file changes from a chat response.
-- `/dev:apply-cli` - Generate and apply changes using governance rules.
-- `/dev:setup` - Setup sandbox environment for development.
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `/dev:setup [ref]` | Audit project tooling drift against a reference file |
+| `/dev:apply`       | Apply file changes from a chat response              |
+| `/dev:apply-cli`   | Generate and apply changes using governance rules    |
 
-## Claude Commands
+### Tooling
 
-Claude Code plugin commands are in development. See `claude/` for current status.
+| Command                   | Description                                   |
+| ------------------------- | --------------------------------------------- |
+| `/tooling:review [stack]` | Sync reference docs with current config state |
+
+### Docs and Release
+
+| Command              | Description                                        |
+| -------------------- | -------------------------------------------------- |
+| `/docs:readme`       | Sync README with codebase changes from main branch |
+| `/release:changelog` | Generate a changelog entry from commit history     |
 
 ## Architecture
 
-Governance rules (`.cursor/rules/`) and standards (`standards/`) live at the repository root as the single source of truth. The compiler (`scripts/build-gov.sh`) bundles these into agent-specific command definitions under `gemini/commands/` and `claude/commands/`.
+Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles them into Gemini command artifacts under `gemini/commands/gov/`. Tooling stacks live in `tooling/` and sync directly as concrete files.
+
+See [GOVERNANCE.md](docs/GOVERNANCE.md), [TOOLING.md](docs/TOOLING.md), and [SANDBOX.md](docs/SANDBOX.md) for detailed documentation.
 
 ## Support
 
