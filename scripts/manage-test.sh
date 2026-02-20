@@ -217,6 +217,7 @@ init_empty_sandbox() {
 
   cat <<EOF >"$SANDBOX/.gitignore"
 .gemini/.tmp/
+node_modules
 EOF
   (
     cd "$SANDBOX"
@@ -300,6 +301,7 @@ tag_sandbox_baseline() {
     cd "$SANDBOX"
     git tag -f sandbox-baseline >/dev/null 2>&1
     git write-tree | xargs -I {} git tag -f sandbox-baseline-index {} >/dev/null 2>&1
+    git rev-parse --abbrev-ref HEAD >.sandbox-baseline-branch
   )
 }
 
@@ -354,6 +356,13 @@ reset_sandbox() {
   local is_dirty=0
   (
     cd "$SANDBOX"
+    local baseline_branch
+    baseline_branch=$(cat .sandbox-baseline-branch 2>/dev/null || echo "")
+    local current_branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ -n "$baseline_branch" ] && [ "$current_branch" != "$baseline_branch" ]; then
+      exit 1
+    fi
     if [ "$(git rev-parse HEAD)" != "$(git rev-parse sandbox-baseline)" ]; then
       exit 1
     fi
@@ -387,6 +396,11 @@ reset_sandbox() {
   log_step "Resetting Sandbox"
   (
     cd "$SANDBOX"
+    local baseline_branch
+    baseline_branch=$(cat .sandbox-baseline-branch 2>/dev/null || echo "")
+    if [ -n "$baseline_branch" ]; then
+      git checkout "$baseline_branch" --quiet 2>/dev/null || true
+    fi
     git reset --hard sandbox-baseline --quiet
     git clean -fd --quiet
     local baseline_index

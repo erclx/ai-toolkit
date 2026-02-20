@@ -23,6 +23,13 @@ prompt = """
 !{cat scripts/clean.sh 2>/dev/null || echo "NOT_FOUND"}
 !{cat scripts/update.sh 2>/dev/null || echo "NOT_FOUND"}
 !{cat package.json 2>/dev/null || echo "NOT_FOUND"}
+!{cat eslint.config.js 2>/dev/null || echo "NOT_FOUND"}
+!{cat vitest.config.ts 2>/dev/null || echo "NOT_FOUND"}
+!{cat playwright.config.ts 2>/dev/null || echo "NOT_FOUND"}
+!{cat vite.config.ts 2>/dev/null || echo "NOT_FOUND"}
+!{cat tsconfig.e2e.json 2>/dev/null || echo "NOT_FOUND"}
+!{cat src/test/setup.ts 2>/dev/null || echo "NOT_FOUND"}
+!{cat .github/workflows/verify.yml 2>/dev/null || echo "NOT_FOUND"}
 </PROJECT_STATE>
 </DATA_CONTEXT>
 

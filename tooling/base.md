@@ -229,11 +229,11 @@ main "$@"
 
 ## Package Scripts
 
-- `check:spell` — cspell all files with context output.
-- `check:format` — prettier check + shfmt diff.
-- `check:shell` — shellcheck all `.sh` files.
-- `format` — prettier write + shfmt write.
-- `prepare` — husky install.
-- `check` — runs `scripts/verify.sh`.
-- `clean` — runs `scripts/clean.sh`.
-- `update` — runs `scripts/update.sh`.
+- `check:spell` — `cspell '**' --no-progress --color --show-context`
+- `check:format` — `prettier --check --ignore-path .gitignore . && shfmt --diff --indent 2 **/*.sh`
+- `check:shell` — `shellcheck --severity=warning **/*.sh`
+- `format` — `prettier --write --ignore-path .gitignore . && shfmt --write --indent 2 **/*.sh`
+- `prepare` — `husky`
+- `check` — `./scripts/verify.sh`
+- `clean` — `./scripts/clean.sh`
+- `update` — `./scripts/update.sh`
