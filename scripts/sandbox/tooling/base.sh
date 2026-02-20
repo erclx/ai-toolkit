@@ -24,16 +24,6 @@ EOF
   log_step "Applying Base Tooling Manifest"
   inject_tooling_manifest "base" "."
 
-  log_step "Seeding CSpell Dictionary"
-  mkdir -p .cspell
-  cat <<'EOF' >>.cspell/tech-stack.txt
-commitlint
-scannability
-shellcheck
-shfmt
-EOF
-  log_info "Base terms added to .cspell/tech-stack.txt"
-
   log_step "Initializing Husky"
   bunx husky
 
