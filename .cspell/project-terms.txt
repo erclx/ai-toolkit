@@ -18,6 +18,7 @@ geminiignore
 gtest
 headerless
 heredocs
+jsdom
 lintstagedrc
 lockfiles
 logicgate
@@ -37,4 +38,5 @@ shfmt
 ssot
 timonwong
 unmatch
+vitejs
 yolo
