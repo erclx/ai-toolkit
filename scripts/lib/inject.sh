@@ -73,6 +73,33 @@ inject_tooling_configs() {
   done < <(find "$configs_dir" -type f | sort)
 }
 
+merge_seed_file() {
+  local src="$1"
+  local dest="$2"
+
+  local dest_dir
+  dest_dir=$(dirname "$dest")
+  mkdir -p "$dest_dir"
+
+  if [ ! -f "$dest" ]; then
+    cp "$src" "$dest"
+    return
+  fi
+
+  local added=0
+  while IFS= read -r word; do
+    [ -z "$word" ] && continue
+    if ! grep -qxF "$word" "$dest"; then
+      echo "$word" >>"$dest"
+      added=$((added + 1))
+    fi
+  done <"$src"
+
+  if [ "$added" -gt 0 ]; then
+    sort -o "$dest" "$dest"
+  fi
+}
+
 inject_tooling_seeds() {
   local stack_name="$1"
   local target_path="${2:-.}"
@@ -91,21 +118,13 @@ inject_tooling_seeds() {
   fi
 
   local seeds_dir="$tooling_dir/$stack_name/seeds"
-  if [ ! -d "$seeds_dir" ]; then
-    return
-  fi
+  [ ! -d "$seeds_dir" ] && return
 
   while IFS= read -r file; do
     local rel="${file#"$seeds_dir"/}"
     local dest="$target_path/$rel"
-    local dest_dir
-    dest_dir=$(dirname "$dest")
-
-    if [ ! -f "$dest" ]; then
-      mkdir -p "$dest_dir"
-      cp "$file" "$dest"
-      log_info "  $rel"
-    fi
+    merge_seed_file "$file" "$dest"
+    log_info "  $rel"
   done < <(find "$seeds_dir" -type f | sort)
 }
 
