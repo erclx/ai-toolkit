@@ -16,9 +16,16 @@ scripts/sandbox/
 │   ├── cursor.sh      ← Cursor IDE playground with full governance injected
 │   └── gov-sync.sh    ← tests gdev gov sync against mock drifted project
 ├── git/
-│   └── commit.sh      ← staged changes scenario for testing git:commit
-└── dev/
-    └── setup.sh       ← mixed-state project for testing gemini dev:setup
+│   ├── commit.sh      ← staged changes scenario for testing /git:commit
+│   ├── branch.sh      ← branch rename scenario for testing /git:branch
+│   └── pr.sh          ← PR description scenario for testing /git:pr
+├── dev/
+│   ├── apply.sh       ← file changes scenario for testing /dev:apply
+│   └── setup.sh       ← mixed-state project for testing /dev:setup
+├── docs/
+│   └── readme.sh      ← stale README scenario for testing /docs:readme
+└── release/
+    └── changelog.sh   ← commit history scenario for testing /release:changelog
 ```
 
 All sandboxes provision into `.sandbox/` at the repo root. Git history initializes fresh each run. A `sandbox-baseline` tag marks the post-setup state for `gdev reset`.
