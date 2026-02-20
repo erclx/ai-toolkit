@@ -1,0 +1,6 @@
+scannability
+shfmt
+shellcheck
+tolower
+toupper
+Vite

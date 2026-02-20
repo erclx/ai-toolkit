@@ -21,6 +21,9 @@ EOF
   log_step "Injecting Base Tooling Configs"
   inject_tooling_configs "base" "."
 
+  log_step "Seeding Base Dictionaries"
+  inject_tooling_seeds "base" "."
+
   log_step "Applying Base Tooling Manifest"
   inject_tooling_manifest "base" "."
 
