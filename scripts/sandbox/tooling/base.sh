@@ -10,6 +10,16 @@ stage_setup() {
   log_step "Injecting Base Tooling Configs"
   inject_tooling_configs "base"
 
+  log_step "Seeding CSpell Dictionary"
+  mkdir -p .cspell
+  cat <<'EOF' >>.cspell/tech-stack.txt
+commitlint
+scannability
+shellcheck
+shfmt
+EOF
+  log_info "Base terms added to .cspell/tech-stack.txt"
+
   log_step "Initializing Package"
   cat <<'EOF' >package.json
 {

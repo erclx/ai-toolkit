@@ -14,6 +14,18 @@ stage_setup() {
   log_step "Injecting Tooling Configs (base + vite-react)"
   inject_tooling_configs "vite-react"
 
+  log_step "Seeding CSpell Dictionary"
+  mkdir -p .cspell
+  cat <<'EOF' >>.cspell/tech-stack.txt
+scannability
+shfmt
+shellcheck
+tolower
+toupper
+Vite
+EOF
+  log_info "Anchor terms added to .cspell/tech-stack.txt"
+
   log_step "Installing Dev Dependencies"
   bun add -D \
     prettier \
@@ -92,6 +104,10 @@ stage_setup() {
   mkdir -p scripts
   scaffold_vite_verify_script
   chmod +x scripts/verify.sh
+
+  log_step "Applying Auto-fixes"
+  bun run lint:fix
+  log_info "Lint autofix applied to scaffolded files"
 
   log_step "Running Verification"
   if bash scripts/verify.sh; then
