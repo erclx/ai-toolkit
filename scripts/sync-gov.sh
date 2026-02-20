@@ -54,29 +54,18 @@ collect_changes() {
   fi
 
   while IFS= read -r file; do
-    local rel="${file#"$src_dir"/}"
+    local filename
+    filename=$(basename "$file")
 
     local dest
-    if [ "$dest_prefix" = "." ]; then
-      dest="$target_dir/$rel"
-    else
-      dest="$target_dir/$dest_prefix/$rel"
-    fi
+    dest="$target_dir/$dest_prefix/$filename"
 
     if [ ! -f "$dest" ]; then
-      if [ "$dest_prefix" = "." ]; then
-        log_add "$rel"
-      else
-        log_add "$dest_prefix/$rel"
-      fi
+      log_add "$dest_prefix/$filename"
       echo "$file|$dest" >>"$PENDING_FILE"
       ((count++))
     elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
-      if [ "$dest_prefix" = "." ]; then
-        log_warn "Changed: $rel"
-      else
-        log_warn "Changed: $dest_prefix/$rel"
-      fi
+      log_warn "Changed: $dest_prefix/$filename"
       echo "$file|$dest" >>"$PENDING_FILE"
       ((count++))
     fi
