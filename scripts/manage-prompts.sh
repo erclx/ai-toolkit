@@ -8,7 +8,8 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 RULES_DIR="$PWD/.cursor/rules"
-TEMPLATE_FILE="$PROJECT_ROOT/scripts/templates/master-prompt.template"
+TEMPLATE_CLI="$PROJECT_ROOT/scripts/templates/master-prompt-cli.template"
+TEMPLATE_CHAT="$PROJECT_ROOT/scripts/templates/master-prompt-chat.template"
 OUTPUT_DIR="$PWD/.gemini/.tmp"
 OUTPUT_FILE="$OUTPUT_DIR/master-prompt.md"
 PLACEHOLDER="{{GOVERNANCE_RULES}}"
@@ -35,8 +36,8 @@ check_dependencies() {
     log_error "No rules found at .cursor/rules/. Run 'gdev gov rules' first."
   fi
 
-  if [ ! -f "$TEMPLATE_FILE" ]; then
-    log_error "Template not found at: $TEMPLATE_FILE"
+  if [ ! -f "$TEMPLATE_CLI" ] || [ ! -f "$TEMPLATE_CHAT" ]; then
+    log_error "Templates not found in scripts/templates/. Check toolkit installation."
   fi
 }
 
@@ -89,9 +90,10 @@ build_rules_payload() {
 
 inject_into_template() {
   local payload_file="$1"
+  local template_file="$2"
 
   local split_line
-  split_line=$(grep -n -F "$PLACEHOLDER" "$TEMPLATE_FILE" | cut -d: -f1)
+  split_line=$(grep -n -F "$PLACEHOLDER" "$template_file" | cut -d: -f1)
 
   if [ -z "$split_line" ]; then
     log_error "Placeholder $PLACEHOLDER not found in template."
@@ -101,10 +103,10 @@ inject_into_template() {
 
   mkdir -p "$OUTPUT_DIR"
 
-  head -n "$head_lines" "$TEMPLATE_FILE" >"$OUTPUT_FILE"
+  head -n "$head_lines" "$template_file" >"$OUTPUT_FILE"
   cat "$payload_file" >>"$OUTPUT_FILE"
   echo "" >>"$OUTPUT_FILE"
-  tail -n +$((split_line + 1)) "$TEMPLATE_FILE" >>"$OUTPUT_FILE"
+  tail -n +$((split_line + 1)) "$template_file" >>"$OUTPUT_FILE"
 }
 
 cmd_generate() {
@@ -126,14 +128,24 @@ cmd_generate() {
     exit 0
   fi
 
+  select_option "Template type?" "cli" "chat"
+
+  local template_file
+  if [ "$SELECTED_OPTION" == "cli" ]; then
+    template_file="$TEMPLATE_CLI"
+  else
+    template_file="$TEMPLATE_CHAT"
+  fi
+
   log_step "Building Master Prompt"
 
   local payload_file
   payload_file=$(build_rules_payload)
 
-  inject_into_template "$payload_file"
+  inject_into_template "$payload_file" "$template_file"
   rm "$payload_file"
 
+  log_info "Template: $SELECTED_OPTION"
   log_info "Output: .gemini/.tmp/master-prompt.md"
 }
 
