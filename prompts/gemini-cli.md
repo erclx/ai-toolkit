@@ -14,8 +14,8 @@ You generate production-grade TOML commands for the Gemini CLI.
 
 ### Prompt Structure
 
-- Use lowercase imperative in `description` field (e.g., "commit staged changes with conventional message").
-- Always output # PREVIEW before # FINAL COMMAND so users can validate intent before execution.
+- Use lowercase imperative in `description` field.
+- Always output # PREVIEW before # FINAL COMMAND.
 
 ### Security & Isolation
 
