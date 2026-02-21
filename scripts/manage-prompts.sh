@@ -76,9 +76,11 @@ build_rules_payload() {
     filename=$(basename "$file" .mdc)
 
     echo "---" >>"$payload_file"
+    echo "" >>"$payload_file"
     echo "# $filename" >>"$payload_file"
     echo "" >>"$payload_file"
     strip_frontmatter "$file" >>"$payload_file"
+    echo "" >>"$payload_file"
     echo "" >>"$payload_file"
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
 
