@@ -40,6 +40,7 @@ cat << 'GEMINI_EOF' > standards/branch.md
 - Structure: `<type>/<description>` or `<type>/<ticket>-<description>`
 - Length: 50 characters maximum
 - Casing: kebab-case only, no underscores or camelCase
+- Description: 2-3 words maximum, capture the core change, do not transcribe commit messages verbatim
 - Do not duplicate type in description (e.g., `feat/feature-login`)
 
 ## Types
@@ -71,7 +72,7 @@ refactor/remove-deprecated-endpoints   # clear refactor intent
 ```text
 feature/auth_stuff                                        # wrong type + underscore
 feat/feature-add-login                                    # duplicates type in description
-fix/DB-456-fix-the-database-connection-pool-memory-leak   # exceeds 50 chars (59)
+fix/DB-456-fix-the-database-connection-pool-memory-leak   # exceeds 50 chars + verbatim message
 ```
 
 GEMINI_EOF
@@ -368,6 +369,7 @@ cat << 'GEMINI_EOF' > standards/prose.md
 - Wrap commands, API names, file paths, and code identifiers in backticks
 - Do not over-format with excessive bold, italic, or header usage
 - Do not use horizontal rules or dividers (`---`)
+- Do not use em dashes (`—`); use a comma, period, or restructure the sentence instead
 - Use descriptive anchor text for links; avoid `click here` or `read more`
 
 ## Language
