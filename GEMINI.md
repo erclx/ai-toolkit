@@ -6,7 +6,7 @@ CLI toolkit for managing governance rules, tooling configs, and developer standa
 
 Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles them into Gemini command artifacts under `gemini/commands/gov/`. Tooling stacks in `tooling/` sync directly as concrete files, no compilation step.
 
-See `docs/GOVERNANCE.md`, `docs/TOOLING.md`, and `docs/SANDBOX.md` for full documentation.
+See `docs/GOVERNANCE.md`, `docs/TOOLING.md`, `docs/SANDBOX.md`, and `docs/PROMPTS.md` for full documentation.
 
 ## Commands
 
@@ -18,6 +18,7 @@ See `docs/GOVERNANCE.md`, `docs/TOOLING.md`, and `docs/SANDBOX.md` for full docu
 | `gdev gov sync [path]`            | Push rules and standards to a target project               |
 | `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, and references           |
 | `gdev tooling ref [stack] [path]` | Drop reference docs only                                   |
+| `gdev prompt`                     | Generate a master prompt from installed cursor rules       |
 | `gdev`                            | Sandbox picker                                             |
 | `gdev reset`                      | Restore sandbox to baseline                                |
 
@@ -30,10 +31,8 @@ See `docs/GOVERNANCE.md`, `docs/TOOLING.md`, and `docs/SANDBOX.md` for full docu
 | `/git:pr`                 | Generate a PR description and open a draft                 |
 | `/gov:rules`              | Install governance rules into a project                    |
 | `/gov:standards`          | Install project reference standards                        |
-| `/gov:prompt`             | Compile a master system prompt for external LLMs           |
 | `/dev:setup [ref]`        | Audit project tooling drift against a reference file       |
 | `/dev:apply`              | Apply file changes from a chat response                    |
-| `/dev:apply-cli`          | Generate and apply changes using governance rules          |
 | `/tooling:review [stack]` | Sync reference docs with current config state              |
 | `/docs:readme`            | Sync README with codebase changes                          |
 | `/release:changelog`      | Generate a changelog entry from commit history             |

@@ -29,6 +29,12 @@ Run `gdev` from the repo root.
 | `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, and references |
 | `gdev tooling ref [stack] [path]` | Drop reference docs only                         |
 
+### Prompts
+
+| Command       | Description                                          |
+| ------------- | ---------------------------------------------------- |
+| `gdev prompt` | Generate a master prompt from installed cursor rules |
+
 ### Sandbox
 
 | Command      | Description                                      |
@@ -49,11 +55,10 @@ Run `gdev` from the repo root.
 
 ### Governance
 
-| Command          | Description                                      |
-| ---------------- | ------------------------------------------------ |
-| `/gov:rules`     | Install governance rules into a project          |
-| `/gov:standards` | Install project reference standards              |
-| `/gov:prompt`    | Compile a master system prompt for external LLMs |
+| Command          | Description                             |
+| ---------------- | --------------------------------------- |
+| `/gov:rules`     | Install governance rules into a project |
+| `/gov:standards` | Install project reference standards     |
 
 ### Development
 
@@ -61,7 +66,6 @@ Run `gdev` from the repo root.
 | ------------------ | ---------------------------------------------------- |
 | `/dev:setup [ref]` | Audit project tooling drift against a reference file |
 | `/dev:apply`       | Apply file changes from a chat response              |
-| `/dev:apply-cli`   | Generate and apply changes using governance rules    |
 
 ### Tooling
 
@@ -71,16 +75,16 @@ Run `gdev` from the repo root.
 
 ### Docs and Release
 
-| Command              | Description                                        |
-| -------------------- | -------------------------------------------------- |
-| `/docs:readme`       | Sync README with codebase changes from main branch |
-| `/release:changelog` | Generate a changelog entry from commit history     |
+| Command              | Description                                    |
+| -------------------- | ---------------------------------------------- |
+| `/docs:readme`       | Sync README with codebase changes              |
+| `/release:changelog` | Generate a changelog entry from commit history |
 
 ## Architecture
 
 Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles them into Gemini command artifacts under `gemini/commands/gov/`. Tooling stacks live in `tooling/` and sync directly as concrete files.
 
-See [GOVERNANCE.md](docs/GOVERNANCE.md), [TOOLING.md](docs/TOOLING.md), and [SANDBOX.md](docs/SANDBOX.md) for detailed documentation.
+See [GOVERNANCE.md](docs/GOVERNANCE.md), [TOOLING.md](docs/TOOLING.md), [SANDBOX.md](docs/SANDBOX.md), and [PROMPTS.md](docs/PROMPTS.md) for detailed documentation.
 
 ## Support
 
