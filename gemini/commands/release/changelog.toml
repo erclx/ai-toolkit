@@ -15,6 +15,10 @@ prompt = """
 <NEW_COMMITS>
 !{TAG=$(git describe --tags --abbrev=0 2>/dev/null); if [ -n "$TAG" ]; then git log --pretty=format:"%h %s" --no-merges "$TAG"..HEAD; else git log --pretty=format:"%h %s" --no-merges; fi}
 </NEW_COMMITS>
+
+<CHANGELOG_STANDARDS>
+!{cat standards/changelog.md 2>/dev/null || echo "DOCS_MISSING"}
+</CHANGELOG_STANDARDS>
 </DATA_CONTEXT>
 
 ## 2. ROLE & CONTEXT
@@ -23,10 +27,6 @@ You generate changelog entries from git commits.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS
-
-<CHANGELOG_STANDARDS>
-!{cat standards/changelog.md 2>/dev/null || echo "DOCS_MISSING"}
-</CHANGELOG_STANDARDS>
 
 ### Must Do:
 
@@ -37,7 +37,7 @@ Context: {{args}}
 
 ### Must NOT Do:
 
-- **CRITICAL:** Never modify/delete entries under released version headers. Only append to `[Unreleased]` or create new version.
+- Do not modify or delete entries under released version headers. Only append to `[Unreleased]` or create a new version.
 - Do not include commits excluded by <CHANGELOG_STANDARDS>.
 - Do not generate version comparison URLs.
 
