@@ -24,18 +24,18 @@ See `docs/GOVERNANCE.md`, `docs/TOOLING.md`, `docs/SANDBOX.md`, and `docs/PROMPT
 
 ### Gemini Commands
 
-| Command                   | Description                                                |
-| ------------------------- | ---------------------------------------------------------- |
-| `/git:commit`             | Generate a conventional commit message from staged changes |
-| `/git:branch`             | Rename current branch to match conventional format         |
-| `/git:pr`                 | Generate a PR description and open a draft                 |
-| `/gov:rules`              | Install governance rules into a project                    |
-| `/gov:standards`          | Install project reference standards                        |
-| `/dev:setup [ref]`        | Audit project tooling drift against a reference file       |
-| `/dev:apply`              | Apply file changes from a chat response                    |
-| `/tooling:review [stack]` | Sync reference docs with current config state              |
-| `/docs:readme`            | Sync README with codebase changes                          |
-| `/release:changelog`      | Generate a changelog entry from commit history             |
+| Command                   | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `/git:commit`             | Generate a conventional commit message from staged changes  |
+| `/git:branch`             | Rename current branch to match conventional format          |
+| `/git:pr`                 | Generate a PR description and open a draft                  |
+| `/gov:rules`              | Install governance rules into a project                     |
+| `/gov:standards`          | Install project reference standards                         |
+| `/dev:setup [ref]`        | Audit project tooling drift against a reference file        |
+| `/dev:apply`              | Apply file changes from a chat response                     |
+| `/tooling:review [stack]` | Sync reference docs with current config state               |
+| `/docs:sync`              | Sync README and docs with codebase changes from main branch |
+| `/release:changelog`      | Generate a changelog entry from commit history              |
 
 ## Conventions
 
