@@ -15,10 +15,6 @@ prompt = """
 <COMMIT_LOG>
 !{git log main..HEAD --oneline || echo "NO_COMMITS"}
 </COMMIT_LOG>
-
-<BRANCH_STANDARDS>
-!{cat standards/branch.md 2>/dev/null || echo "DOCS_MISSING"}
-</BRANCH_STANDARDS>
 </DATA_CONTEXT>
 
 ## 2. ROLE & CONTEXT
@@ -27,6 +23,10 @@ You generate conventional branch names from commit history or user intent.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS
+
+<BRANCH_STANDARDS>
+!{cat standards/branch.md 2>/dev/null || echo "DOCS_MISSING"}
+</BRANCH_STANDARDS>
 
 ### Must Do:
 
