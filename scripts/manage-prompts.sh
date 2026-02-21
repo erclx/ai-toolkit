@@ -7,9 +7,9 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
-RULES_DIR="$PROJECT_ROOT/.cursor/rules"
+RULES_DIR="$PWD/.cursor/rules"
 TEMPLATE_FILE="$PROJECT_ROOT/scripts/templates/master-prompt.template"
-OUTPUT_DIR="$PROJECT_ROOT/.gemini/.tmp"
+OUTPUT_DIR="$PWD/.gemini/.tmp"
 OUTPUT_FILE="$OUTPUT_DIR/master-prompt.md"
 PLACEHOLDER="{{GOVERNANCE_RULES}}"
 
