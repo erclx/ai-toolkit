@@ -23,6 +23,10 @@ prompt = """
 <GIT_DIFF_RAW>
 !{git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
+
+<PR_STANDARDS>
+!{cat standards/pr.md 2>/dev/null || echo "DOCS_MISSING"}
+</PR_STANDARDS>
 </DATA_CONTEXT>
 
 ## 2. ROLE & CONTEXT
@@ -31,10 +35,6 @@ You generate PR descriptions from git diffs.
 Context: {{args}}
 
 ## 3. TASK & CONSTRAINTS
-
-<PR_STANDARDS>
-!{cat standards/pr.md 2>/dev/null || echo "DOCS_MISSING"}
-</PR_STANDARDS>
 
 ### Must Do:
 
@@ -57,7 +57,7 @@ Context: {{args}}
 - **Title:** <title_from_standards>
 - **Files Changed:** <count>
 - **Analysis:** <Brief summary of impact>
-   
+
 # FINAL COMMAND
 
 ```bash
