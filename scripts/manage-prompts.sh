@@ -120,21 +120,22 @@ cmd_generate() {
     log_info "$(basename "$file")"
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
 
-  select_option "Generate master prompt from these $count rules?" "Yes" "No"
+  select_option "Template type?" "cli" "chat"
+
+  local template_type="$SELECTED_OPTION"
+  local template_file
+  if [ "$template_type" == "cli" ]; then
+    template_file="$TEMPLATE_CLI"
+  else
+    template_file="$TEMPLATE_CHAT"
+  fi
+
+  select_option "Generate $template_type master prompt from $count rules?" "Yes" "No"
 
   if [ "$SELECTED_OPTION" == "No" ]; then
     log_warn "Cancelled"
     echo -e "${GREY}└${NC}"
     exit 0
-  fi
-
-  select_option "Template type?" "cli" "chat"
-
-  local template_file
-  if [ "$SELECTED_OPTION" == "cli" ]; then
-    template_file="$TEMPLATE_CLI"
-  else
-    template_file="$TEMPLATE_CHAT"
   fi
 
   log_step "Building Master Prompt"
@@ -145,7 +146,7 @@ cmd_generate() {
   inject_into_template "$payload_file" "$template_file"
   rm "$payload_file"
 
-  log_info "Template: $SELECTED_OPTION"
+  log_info "Template: $template_type"
   log_info "Output: .gemini/.tmp/master-prompt.md"
 }
 
