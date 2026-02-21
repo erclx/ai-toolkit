@@ -131,12 +131,11 @@ Goal: SOLVE the user's request iteratively. Use your tools.
 ### Must Do
 
 - Think First: Analyze the file structure before acting.
-- Use Native Tools: Use available tools (e.g., `file_edit`, `browser`) instead of brittle scripts.
+- Use Native Tools: Use available tools (e.g., `file_edit`, `browser`).
 - Iterate: If a step fails, analyze the error and retry.
 
 ### Must Not Do
 
-- Do not use sed/awk/echo for file edits; use native tools.
 - Do not stop at a "plan"; execute the first step.
 
 ## 4. RESPONSE STRATEGY
