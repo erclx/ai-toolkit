@@ -30,6 +30,13 @@ EOF
 }
 EOF
 
+  cat <<'EOF' >cspell.json
+{
+  "version": "0.2",
+  "language": "en"
+}
+EOF
+
   cat <<'EOF' >package.json
 {
   "name": "sandbox-tooling",
@@ -61,8 +68,8 @@ EOF
   log_step "SCENARIO READY: Tooling Config Audit"
   log_info "Context: Project contains compliant (SKIP), drifted (UPDATE), and missing (CREATE) configs."
   log_info "  SKIP:   .shellcheckrc, commitlint.config.js"
-  log_info "  UPDATE: .prettierrc (semi/singleQuote differ), package.json (missing scripts)"
-  log_info "  CREATE: .lintstagedrc, .husky/*, scripts/verify.sh (incomplete)"
+  log_info "  UPDATE: .prettierrc, cspell.json, package.json, scripts/verify.sh"
+  log_info "  CREATE: .lintstagedrc, .husky/*, scripts/clean.sh, scripts/update.sh"
   log_info "Action:  gemini dev:setup tooling/base.md"
   log_info "Expect:  Agent audits state, reports drift, applies fixes on confirmation."
 }
