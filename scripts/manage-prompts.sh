@@ -118,6 +118,14 @@ cmd_generate() {
     log_info "$(basename "$file")"
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
 
+  select_option "Generate master prompt from these $count rules?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" == "No" ]; then
+    log_warn "Cancelled"
+    echo -e "${GREY}└${NC}"
+    exit 0
+  fi
+
   log_step "Building Master Prompt"
 
   local payload_file
