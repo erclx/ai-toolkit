@@ -11,9 +11,10 @@ use_anchor() {
 stage_setup() {
   inject_governance
   inject_dependencies
+  inject_tooling_reference "vite-react" "."
 
   log_step "SCENARIO READY: Cursor IDE Playground"
-  log_info "Context: Full governance rules + docs injected"
+  log_info "Context: Full governance rules + tooling references injected"
   log_info "Action:  Open Cursor and try these prompts:"
 
   echo -e "${GREY}│${NC}"
@@ -27,4 +28,8 @@ stage_setup() {
   echo -e "${GREY}│${NC}"
   log_info "3. Security Test (Zod/Env Rules):"
   echo -e "${GREY}│${NC}    \"Add VITE_MAINTENANCE_MODE to env config with Zod validation. Trigger a full-screen error if true.\""
+
+  echo -e "${GREY}│${NC}"
+  log_info "4. Tooling Audit Test (setup.toml):"
+  echo -e "${GREY}│${NC}    \"gemini dev:setup tooling/base.md tooling/vite-react.md\""
 }
