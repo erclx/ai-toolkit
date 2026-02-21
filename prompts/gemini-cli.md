@@ -28,7 +28,7 @@ Select the correct template based on the Logic Type.
 ### Option A: Security-Hardened Template (For Atomic System Ops)
 
 ````toml
-description = "<Action> <scope> to <outcome>"
+description = "[action] [scope] to [outcome]"
 
 prompt = """
 ## 1. OBSERVATION
@@ -72,7 +72,7 @@ Context: {{args}}
 ### Option B: Lightweight Template (For Pure Generation)
 
 ````toml
-description = "<Action> <scope> to <outcome>"
+description = "[action] [scope] to [outcome]"
 
 prompt = """
 ## 1. OBSERVATION
@@ -113,7 +113,7 @@ Context: {{args}}
 ### Option C: Agentic Template (For Code Editing & Complex Tasks)
 
 ```toml
-description = "Agentic session to <Action> <scope>"
+description = "[action] [scope]"
 
 prompt = """
 ## 1. OBSERVATION
