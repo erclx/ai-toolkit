@@ -26,7 +26,6 @@ Goal: APPLY the changes iteratively using your tools.
 
 ### Must NOT Do:
 
-- Do not use bash scripts (sed/awk/echo) for file manipulation - use native tools only
 - Do not skip the verification step
 - Do not stop at a "plan" - execute immediately
 

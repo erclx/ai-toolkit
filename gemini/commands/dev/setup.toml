@@ -57,7 +57,6 @@ This audit is for mature projects with existing configs that must not be blindly
 - Do not overwrite any file without first showing what will change.
 - Do not apply changes before the audit report is presented and confirmed.
 - Do not install dependencies or suggest commit messages — that is out of scope.
-- Do not use sed/awk/echo for file edits — use native tools only.
 - Do not treat this as a fresh install — assume the project is live and existing configs have intentional content.
 
 ## 4. RESPONSE STRATEGY
