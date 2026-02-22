@@ -313,6 +313,8 @@ main() {
     show_help
   fi
 
+  require_project_root
+
   echo -e "${GREY}┌${NC}"
 
   check_dependencies

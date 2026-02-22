@@ -38,6 +38,15 @@ gdev reset    # restore sandbox to baseline
 gdev clean    # wipe sandbox entirely
 ```
 
+After provisioning, your terminal cwd may need a refresh. Add this to `.zshrc` or `.bashrc`:
+
+```bash
+gdev() {
+  command gdev "$@"
+  cd .
+}
+```
+
 ## Writing a Sandbox
 
 Each sandbox is a `.sh` file with a `stage_setup` function:

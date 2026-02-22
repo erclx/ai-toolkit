@@ -19,6 +19,17 @@ log_rem() { echo -e "${GREY}│${NC} ${RED}-${NC} $1" >&2; }
 
 pipe_output() { while IFS= read -r line; do echo -e "${GREY}│${NC}  $line" >&2; done; }
 
+require_project_root() {
+  if [[ "$PWD" == *".sandbox"* ]]; then
+    echo -e "${GREY}┌${NC}" >&2
+    log_error "Execution restricted: Command cannot be run from inside the sandbox environment."
+  fi
+  if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
+    echo -e "${GREY}┌${NC}" >&2
+    log_error "Context Error: You must run this command from inside the repository."
+  fi
+}
+
 select_option() {
   local prompt_text=$1
   shift
