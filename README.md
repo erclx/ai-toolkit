@@ -8,6 +8,7 @@ CLI toolkit for managing governance rules, tooling configs, and developer standa
 git clone git@github.com:erclx/ai-toolkit.git
 cd ai-toolkit
 bun install
+bun link
 gemini extensions link ./gemini
 ```
 
