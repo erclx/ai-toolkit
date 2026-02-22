@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Infrastructure and quality tooling for the Gemini Toolkit",
+  "bin": {
+    "gdev": "./scripts/manage-test.sh"
+  },
   "scripts": {
     "check:spell": "cspell '**' --no-progress --color --show-context",
     "format": "prettier --write --ignore-path .gitignore . && shfmt --write -indent 2 **/*.sh",
