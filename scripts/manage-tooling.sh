@@ -178,6 +178,21 @@ scan_configs() {
   TOTAL_CHANGES=$((CONFIG_CHANGES + SEED_CHANGES + REF_CHANGES))
 }
 
+open_diffs() {
+  local stack="$1"
+  local target="$2"
+
+  for f in "${DRIFTED_FILES[@]}"; do
+    code --diff "$PROJECT_ROOT/tooling/$stack/configs/$f" "$target/$f"
+  done
+
+  for f in "${REF_UPDATE_FILES[@]}"; do
+    local stack_name="${f#tooling/}"
+    stack_name="${stack_name%.md}"
+    code --diff "$PROJECT_ROOT/tooling/$stack_name/reference.md" "$target/$f"
+  done
+}
+
 cmd_ref() {
   local stack="$1"
   local target="${2:-.}"
@@ -249,13 +264,32 @@ cmd_sync() {
     summary+="${REF_CHANGES} references"
   fi
 
-  select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Yes" "No"
+  local has_diffs=false
+  [ "${#DRIFTED_FILES[@]}" -gt 0 ] && has_diffs=true
+  [ "${#REF_UPDATE_FILES[@]}" -gt 0 ] && has_diffs=true
 
-  if [ "$SELECTED_OPTION" == "No" ]; then
+  if [ "$has_diffs" = true ]; then
+    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Review diffs" "Apply all" "Cancel"
+  else
+    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
+  fi
+
+  case "$SELECTED_OPTION" in
+  "Review diffs")
+    open_diffs "$stack" "$target"
+    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
+    [ "$SELECTED_OPTION" == "Cancel" ] && {
+      log_warn "Sync cancelled"
+      echo -e "${GREY}└${NC}" >&2
+      exit 0
+    }
+    ;;
+  "Cancel")
     log_warn "Sync cancelled"
     echo -e "${GREY}└${NC}" >&2
     exit 0
-  fi
+    ;;
+  esac
 
   if [ "$CONFIG_CHANGES" -gt 0 ]; then
     log_step "Applying Configs"
