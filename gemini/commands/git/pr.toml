@@ -23,7 +23,6 @@ prompt = """
 <GIT_DIFF_RAW>
 !{git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
-
 </DATA_CONTEXT>
 
 ## 2. ROLE & CONTEXT
