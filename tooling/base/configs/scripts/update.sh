@@ -36,7 +36,7 @@ main() {
 
   log_step "Verifying Project Health"
   if [ -f "$SCRIPT_DIR/verify.sh" ]; then
-    "$SCRIPT_DIR/verify.sh" --nested
+    VERIFY_NESTED=true "$SCRIPT_DIR/verify.sh"
     log_info "All checks passed"
   else
     log_warn "Verification script not found, skipping."
