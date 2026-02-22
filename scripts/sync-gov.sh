@@ -67,11 +67,20 @@ collect_changes() {
     elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
       log_warn "Changed: $dest_prefix/$filename"
       echo "$file|$dest" >>"$PENDING_FILE"
+      echo "$file|$dest" >>"$DRIFTED_FILE"
       ((count++))
     fi
   done < <(find "$src_dir" -type f -name "$pattern")
 
   echo "$count"
+}
+
+open_diffs() {
+  while IFS= read -r entry; do
+    local src="${entry%%|*}"
+    local dest="${entry##*|}"
+    code --diff "$src" "$dest"
+  done <"$DRIFTED_FILE"
 }
 
 apply_changes() {
@@ -138,7 +147,8 @@ main() {
   resolve_scope
 
   PENDING_FILE=$(mktemp)
-  trap 'rm -f "$PENDING_FILE"' EXIT
+  DRIFTED_FILE=$(mktemp)
+  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
 
   declare -A TARGET_COUNTS
   local total=0
@@ -158,26 +168,46 @@ main() {
   done
 
   if [ "$total" -gt 0 ]; then
-    select_option "Apply $total changes?" "Yes" "No"
-    if [ "$SELECTED_OPTION" == "Yes" ]; then
-      apply_changes
+    local has_diffs=false
+    [ -s "$DRIFTED_FILE" ] && has_diffs=true
 
-      local summary=""
-      for target in "${SELECTED_TARGETS[@]}"; do
-        IFS=':' read -r label _ _ _ <<<"$target"
-        local c="${TARGET_COUNTS[$label]}"
-        if [ "$c" -gt 0 ]; then
-          [ -n "$summary" ] && summary+=", "
-          summary+="$c $label"
-        fi
-      done
-
-      echo -e "${GREY}└${NC}\n" >&2
-      echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($summary)${NC}" >&2
+    if [ "$has_diffs" = true ]; then
+      select_option "Apply $total changes?" "Review diffs" "Apply all" "No"
     else
+      select_option "Apply $total changes?" "Yes" "No"
+    fi
+
+    case "$SELECTED_OPTION" in
+    "Review diffs")
+      open_diffs
+      select_option "Apply $total changes?" "Yes" "No"
+      [ "$SELECTED_OPTION" == "No" ] && {
+        echo -e "${GREY}└${NC}\n" >&2
+        echo -e "${YELLOW}● Sync cancelled${NC}" >&2
+        exit 0
+      }
+      ;;
+    "No")
       echo -e "${GREY}└${NC}\n" >&2
       echo -e "${YELLOW}● Sync cancelled${NC}" >&2
-    fi
+      exit 0
+      ;;
+    esac
+
+    apply_changes
+
+    local summary=""
+    for target in "${SELECTED_TARGETS[@]}"; do
+      IFS=':' read -r label _ _ _ <<<"$target"
+      local c="${TARGET_COUNTS[$label]}"
+      if [ "$c" -gt 0 ]; then
+        [ -n "$summary" ] && summary+=", "
+        summary+="$c $label"
+      fi
+    done
+
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($summary)${NC}" >&2
   else
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ Everything up to date${NC}" >&2
