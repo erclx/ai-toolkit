@@ -75,10 +75,10 @@ Run `gdev` from the repo root.
 
 ### Docs and Release
 
-| Command              | Description                                    |
-| -------------------- | ---------------------------------------------- |
-| `/docs:readme`       | Sync README with codebase changes              |
-| `/release:changelog` | Generate a changelog entry from commit history |
+| Command              | Description                                                 |
+| -------------------- | ----------------------------------------------------------- |
+| `/docs:sync`         | Sync README and docs with codebase changes from main branch |
+| `/release:changelog` | Generate a changelog entry from commit history              |
 
 ## Architecture
 

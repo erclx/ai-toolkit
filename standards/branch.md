@@ -5,6 +5,7 @@
 - Structure: `<type>/<description>` or `<type>/<ticket>-<description>`
 - Length: 50 characters maximum
 - Casing: kebab-case only, no underscores or camelCase
+- Description: 2-3 words maximum, capture the core change, do not transcribe commit messages verbatim
 - Do not duplicate type in description (e.g., `feat/feature-login`)
 
 ## Types
@@ -36,5 +37,5 @@ refactor/remove-deprecated-endpoints   # clear refactor intent
 ```text
 feature/auth_stuff                                        # wrong type + underscore
 feat/feature-add-login                                    # duplicates type in description
-fix/DB-456-fix-the-database-connection-pool-memory-leak   # exceeds 50 chars (59)
+fix/DB-456-fix-the-database-connection-pool-memory-leak   # exceeds 50 chars + verbatim message
 ```

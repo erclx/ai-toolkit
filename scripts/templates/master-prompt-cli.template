@@ -28,7 +28,6 @@ The following rules are strictly enforced for this project:
 ### Must Not Do
 
 - Do not violate any governance rule.
-- Do not use bash scripts (sed/awk/echo) for file manipulation — use native tools only.
 - Do not skip verification.
 - Do not stop at a "plan" — execute immediately.
 

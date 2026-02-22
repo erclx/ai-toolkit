@@ -37,7 +37,7 @@ Context: {{args}}
 
 ### Must NOT Do:
 
-- **CRITICAL:** Never modify/delete entries under released version headers. Only append to `[Unreleased]` or create new version.
+- Do not modify or delete entries under released version headers. Only append to `[Unreleased]` or create a new version.
 - Do not include commits excluded by <CHANGELOG_STANDARDS>.
 - Do not generate version comparison URLs.
 

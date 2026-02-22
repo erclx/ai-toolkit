@@ -57,7 +57,7 @@ Context: {{args}}
 - **Title:** <title_from_standards>
 - **Files Changed:** <count>
 - **Analysis:** <Brief summary of impact>
-   
+
 # FINAL COMMAND
 
 ```bash

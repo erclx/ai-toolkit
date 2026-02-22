@@ -23,7 +23,7 @@ scripts/sandbox/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   └── setup.sh       ← mixed-state project for testing /dev:setup
 ├── docs/
-│   └── readme.sh      ← stale README scenario for testing /docs:readme
+│   └── sync.sh        ← stale README and docs scenario for testing /docs:sync
 └── release/
     └── changelog.sh   ← commit history scenario for testing /release:changelog
 ```

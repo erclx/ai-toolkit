@@ -46,18 +46,14 @@ This audit is for mature projects with existing configs that must not be blindly
 - Parse each reference file from <REFERENCES> to extract the desired config state.
 - Compare each config in <PROJECT_STATE> against the reference.
 - Classify every config file as one of: SKIP (matches reference), UPDATE (exists but drifted), CREATE (missing entirely).
-- For every UPDATE, show a precise diff — what exists vs what the reference expects. Be specific about which keys or rules differ.
-- Present the full audit report before touching anything.
-- Only after showing the report, ask: "Apply fixes?"
+- For every UPDATE, show a precise diff — what exists vs what the reference expects.
+- Present the full audit report and ask "Apply fixes?" before touching anything.
 - If confirmed, apply only UPDATE and CREATE items using native tools with surgical edits where possible.
-- SKIP items are never touched under any circumstance.
+- SKIP items are never touched.
 
 ### Must Not Do
 
-- Do not overwrite any file without first showing what will change.
-- Do not apply changes before the audit report is presented and confirmed.
-- Do not install dependencies or suggest commit messages — that is out of scope.
-- Do not use sed/awk/echo for file edits — use native tools only.
+- Do not apply changes before the audit report is confirmed.
 - Do not treat this as a fresh install — assume the project is live and existing configs have intentional content.
 
 ## 4. RESPONSE STRATEGY
