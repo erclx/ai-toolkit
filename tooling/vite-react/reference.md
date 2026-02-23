@@ -25,6 +25,7 @@
 ## ESLint
 
 - Config: `eslint.config.js` (flat config, ESM).
+- Imports: `defineConfig` and `globalIgnores` from `eslint/config` (not from a plugin).
 - Structure: define named config objects as constants, compose them in `defineConfig` array.
 - Order: ignores → base JS → typescript-eslint → feature conventions → react → testing → prettier (last).
 - Extends: `@eslint/js` recommended, `typescript-eslint` recommended, `eslint-config-prettier` (last to disable formatting conflicts).
@@ -34,7 +35,7 @@
 - Folder naming: `KEBAB_CASE` for `src/**/!(__tests__)` via `check-file/folder-naming-convention`.
 - React hooks: use `reactHooks.configs.recommended.rules`.
 - React refresh: `only-export-components` as warning with `allowConstantExport: true`.
-- Vitest: apply `vitest.configs.recommended.rules` to `**/*.test.{ts,tsx}` files only.
+- Vitest: apply `vitest.configs.recommended.rules` and `vitest.environments.env.globals` to `**/*.test.{ts,tsx}` files only.
 - Global ignores: `dist`, `dist-ssr`, `coverage`, `.claude`, `.gemini`, `.vscode`, `.husky`, `test-results`, `playwright-report`, `blob-report`, `playwright/.cache`.
 
 ## TypeScript
@@ -84,6 +85,7 @@
 - Add steps before base checks: typecheck → lint.
 - Add steps after base checks: unit tests → production build.
 - Full order: typecheck → lint → format → spelling → unit tests → build.
+- Note: `run_check` does not pipe successful output — output is only shown on failure.
 
 ## CI Workflow
 
