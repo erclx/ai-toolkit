@@ -1,13 +1,13 @@
 {
   "recommendations": [
     "esbenp.prettier-vscode",
-    "streetsidesoftware.code-spell-checker",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
     "mkhl.shfmt",
     "timonwong.shellcheck",
     "mads-hartmann.bash-ide-vscode",
-    "dbaeumer.vscode-eslint",
-    "bradlc.vscode-tailwindcss",
     "ms-playwright.playwright",
-    "vitest.explorer"
+    "vitest.explorer",
+    "streetsidesoftware.code-spell-checker"
   ]
 }
