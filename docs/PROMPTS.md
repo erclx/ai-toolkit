@@ -6,26 +6,26 @@ The prompt system generates master prompts by injecting installed governance rul
 
 ## Structure
 
-```
+````
 scripts/
 ├── manage-prompts.sh               ← entry point (gdev prompt)
-└── templates/
-    ├── master-prompt-cli.template  ← for Gemini CLI sessions
-    └── master-prompt-chat.template ← for chat interface sessions
-```
+        └── templates/
+            └── master-prompt-chat.template ← for chat interface sessions```
 
 Output writes to the target project at runtime:
 
-```
+````
+
 .gemini/.tmp/
-└── master-prompt.md   ← generated, gitignored, never committed
-```
+└── master-prompt.md ← generated, gitignored, never committed
+
+````
 
 ## Key Decisions
 
 **Rules come from the target project, not the toolkit.** `gdev prompt` reads `.cursor/rules/` in the current working directory. Run `gdev gov rules` in the target project first to install the relevant rule set before generating a prompt.
 
-**Two templates serve two workflows.** The CLI template assumes Gemini has native file tools and runs verification inline. The chat template assumes a human is the executor, structuring output as `# PLAN / # FILES / # VERIFY` blocks intended to be pasted into `apply.toml` for file application.
+**A single template serves the chat workflow.** The `master-prompt-chat.template` assumes a human is the executor, structuring output as `# PLAN / # FILES / # VERIFY` blocks intended to be pasted into `apply.toml` for file application.
 
 **Governance injection is identical across both templates.** Frontmatter is stripped from each `.mdc` file, rules are concatenated with separators, and the payload is injected at `{{GOVERNANCE_RULES}}`. The template type only changes the surrounding instructions.
 
@@ -33,10 +33,10 @@ Output writes to the target project at runtime:
 
 ## CLI
 
-| Command                | What it does                             |
-| ---------------------- | ---------------------------------------- |
-| `gdev prompt`          | Interactive picker: cli or chat template |
-| `gdev prompt generate` | Same, defaults to picker                 |
+| Command                | What it does                                         |
+| ---------------------- | ---------------------------------------------------- |
+| `gdev prompt`          | Generates a master prompt using the chat template    |
+| `gdev prompt generate` | Same as `gdev prompt`                                |
 
 `gdev prompt` lists installed rules, prompts for template type, then asks for confirmation before generating.
 
@@ -47,13 +47,7 @@ Typical session setup:
 ```bash
 gdev gov rules          # install rules for detected stack
 gdev prompt             # pick cli or chat, confirm, generate
-```
-
-For CLI sessions:
-
-```bash
-gemini -p .gemini/.tmp/master-prompt.md "your request"
-```
+````
 
 For chat sessions, copy `.gemini/.tmp/master-prompt.md` as the system prompt in your chat interface. After the model responds with `# PLAN / # FILES / # VERIFY` blocks, apply the output with:
 

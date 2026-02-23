@@ -32,9 +32,9 @@ Run `gdev` from the repo root.
 
 ### Prompts
 
-| Command       | Description                                          |
-| ------------- | ---------------------------------------------------- |
-| `gdev prompt` | Generate a master prompt from installed cursor rules |
+| Command       | Description                                        |
+| ------------- | -------------------------------------------------- |
+| `gdev prompt` | Generate a chat master prompt from installed rules |
 
 ### Sandbox
 

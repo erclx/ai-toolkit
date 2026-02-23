@@ -13,8 +13,7 @@ scripts/sandbox/
 │   ├── vite-react.sh  ← tests vite-react configs against anchor repo
 │   └── sync.sh        ← tests gdev tooling sync against drifted project
 ├── infra/
-│   ├── cursor.sh      ← Cursor IDE playground with full governance injected
-│   └── gov-sync.sh    ← tests gdev gov sync against mock drifted project
+│   └── cursor.sh      ← Cursor IDE playground with full governance injected
 ├── git/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
