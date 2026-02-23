@@ -182,14 +182,14 @@ main() {
       open_diffs
       select_option "Apply $total changes?" "Yes" "No"
       [ "$SELECTED_OPTION" == "No" ] && {
-        echo -e "${GREY}└${NC}\n" >&2
-        echo -e "${YELLOW}● Sync cancelled${NC}" >&2
+        log_warn "Sync cancelled"
+        echo -e "${GREY}└${NC}" >&2
         exit 0
       }
       ;;
     "No")
-      echo -e "${GREY}└${NC}\n" >&2
-      echo -e "${YELLOW}● Sync cancelled${NC}" >&2
+      log_warn "Sync cancelled"
+      echo -e "${GREY}└${NC}" >&2
       exit 0
       ;;
     esac
