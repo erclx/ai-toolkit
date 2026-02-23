@@ -57,8 +57,8 @@
 
 - Entry: `scripts/` directory with `verify.sh`, `clean.sh`, `update.sh`.
 - All scripts use logging functions from the bash script reference.
-- `verify.sh` supports `--nested` flag to suppress timeline boundaries when called by other scripts.
-- `update.sh` calls `verify.sh --nested` after interactive dependency update.
+- `verify.sh` supports `VERIFY_NESTED=true` env var to suppress timeline boundaries when called by other scripts.
+- `update.sh` calls `VERIFY_NESTED=true verify.sh` after interactive dependency update.
 
 ## VS Code
 
