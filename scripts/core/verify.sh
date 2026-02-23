@@ -7,8 +7,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
-NESTED=false
-[[ "${1:-}" == "--nested" ]] && NESTED=true
+NESTED="${VERIFY_NESTED:-false}"
 
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
@@ -17,9 +16,12 @@ check_dependencies() {
 run_check() {
   local cmd=$1
   local err_msg=$2
-  if ! eval "$cmd" 2>&1 | pipe_output; then
+  local output
+  if ! output=$(eval "$cmd" 2>&1); then
+    echo "$output" | pipe_output
     log_error "$err_msg"
   fi
+  echo "$output" | pipe_output
 }
 
 main() {
