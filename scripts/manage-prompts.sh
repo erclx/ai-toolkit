@@ -79,8 +79,9 @@ build_rules_payload() {
     echo "" >>"$payload_file"
     echo "# $filename" >>"$payload_file"
     echo "" >>"$payload_file"
-    strip_frontmatter "$file" >>"$payload_file"
-    echo "" >>"$payload_file"
+
+    strip_frontmatter "$file" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
+
     echo "" >>"$payload_file"
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
 
