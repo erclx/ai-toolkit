@@ -8,8 +8,7 @@ WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
 
-NESTED=false
-[[ "${1:-}" == "--nested" ]] && NESTED=true
+NESTED="${VERIFY_NESTED:-false}"
 
 log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
 log_error() {
@@ -26,7 +25,9 @@ check_dependencies() {
 run_check() {
   local cmd=$1
   local err_msg=$2
-  if ! eval "$cmd" 2>&1 | pipe_output; then
+  local output
+  if ! output=$(eval "$cmd" 2>&1); then
+    echo "$output" | pipe_output
     log_error "$err_msg"
   fi
 }
