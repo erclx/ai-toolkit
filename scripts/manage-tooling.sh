@@ -8,6 +8,11 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
+declare -A SEEN_CONFIGS
+declare -A SEEN_SEEDS
+declare -A SEEN_REFS
+declare -A CONFIG_SOURCE_STACK
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Tooling Usage"
@@ -55,19 +60,23 @@ collect_stack_references() {
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
-  if [ -n "$extends" ]; then
-    collect_stack_references "$extends" "$target" _ref_update _ref_missing
+  local reference_file="$PROJECT_ROOT/tooling/$stack/reference.md"
+  if [ -f "$reference_file" ]; then
+    local ref_key="tooling/$stack.md"
+    if ! [[ -v SEEN_REFS["$ref_key"] ]]; then
+      SEEN_REFS["$ref_key"]=1
+      local dest="$target/$ref_key"
+
+      if [ ! -f "$dest" ]; then
+        _ref_missing+=("$ref_key")
+      elif ! diff -q "$reference_file" "$dest" >/dev/null 2>&1; then
+        _ref_update+=("$ref_key")
+      fi
+    fi
   fi
 
-  local reference_file="$PROJECT_ROOT/tooling/$stack/reference.md"
-  [ ! -f "$reference_file" ] && return
-
-  local dest="$target/tooling/$stack.md"
-
-  if [ ! -f "$dest" ]; then
-    _ref_missing+=("tooling/$stack.md")
-  elif ! diff -q "$reference_file" "$dest" >/dev/null 2>&1; then
-    _ref_update+=("tooling/$stack.md")
+  if [ -n "$extends" ]; then
+    collect_stack_references "$extends" "$target" "$3" "$4"
   fi
 }
 
@@ -82,25 +91,28 @@ collect_stack_configs() {
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
-  if [ -n "$extends" ]; then
-    collect_stack_configs "$extends" "$target" _new _drifted _matching
+  local configs_dir="$PROJECT_ROOT/tooling/$stack/configs"
+  if [ -d "$configs_dir" ]; then
+    while IFS= read -r file; do
+      local rel="${file#"$configs_dir"/}"
+      [[ -v SEEN_CONFIGS["$rel"] ]] && continue
+      SEEN_CONFIGS["$rel"]=1
+      CONFIG_SOURCE_STACK["$rel"]="$stack"
+      local dest="$target/$rel"
+
+      if [ ! -f "$dest" ]; then
+        _new+=("$rel")
+      elif diff -q "$file" "$dest" >/dev/null 2>&1; then
+        _matching+=("$rel")
+      else
+        _drifted+=("$rel")
+      fi
+    done < <(find "$configs_dir" -type f | sort)
   fi
 
-  local configs_dir="$PROJECT_ROOT/tooling/$stack/configs"
-  [ ! -d "$configs_dir" ] && return
-
-  while IFS= read -r file; do
-    local rel="${file#"$configs_dir"/}"
-    local dest="$target/$rel"
-
-    if [ ! -f "$dest" ]; then
-      _new+=("$rel")
-    elif diff -q "$file" "$dest" >/dev/null 2>&1; then
-      _matching+=("$rel")
-    else
-      _drifted+=("$rel")
-    fi
-  done < <(find "$configs_dir" -type f | sort)
+  if [ -n "$extends" ]; then
+    collect_stack_configs "$extends" "$target" "$3" "$4" "$5"
+  fi
 }
 
 collect_stack_seeds() {
@@ -113,23 +125,24 @@ collect_stack_seeds() {
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
-  if [ -n "$extends" ]; then
-    collect_stack_seeds "$extends" "$target" _seeded _seed_missing
+  local seeds_dir="$PROJECT_ROOT/tooling/$stack/seeds"
+  if [ -d "$seeds_dir" ]; then
+    while IFS= read -r file; do
+      local rel="${file#"$seeds_dir"/}"
+      [[ -v SEEN_SEEDS["$rel"] ]] && continue
+      SEEN_SEEDS["$rel"]=1
+
+      if [ -f "$target/$rel" ]; then
+        _seeded+=("$rel")
+      else
+        _seed_missing+=("$rel")
+      fi
+    done < <(find "$seeds_dir" -type f | sort)
   fi
 
-  local seeds_dir="$PROJECT_ROOT/tooling/$stack/seeds"
-  [ ! -d "$seeds_dir" ] && return
-
-  while IFS= read -r file; do
-    local rel="${file#"$seeds_dir"/}"
-    local dest="$target/$rel"
-
-    if [ -f "$dest" ]; then
-      _seeded+=("$rel")
-    else
-      _seed_missing+=("$rel")
-    fi
-  done < <(find "$seeds_dir" -type f | sort)
+  if [ -n "$extends" ]; then
+    collect_stack_seeds "$extends" "$target" "$3" "$4"
+  fi
 }
 
 scan_configs() {
@@ -179,11 +192,11 @@ scan_configs() {
 }
 
 open_diffs() {
-  local stack="$1"
-  local target="$2"
+  local target="$1"
 
   for f in "${DRIFTED_FILES[@]}"; do
-    code --diff "$PROJECT_ROOT/tooling/$stack/configs/$f" "$target/$f"
+    local src_stack="${CONFIG_SOURCE_STACK[$f]}"
+    code --diff "$PROJECT_ROOT/tooling/$src_stack/configs/$f" "$target/$f"
   done
 
   for f in "${REF_UPDATE_FILES[@]}"; do
@@ -240,6 +253,10 @@ cmd_sync() {
   SEED_MISSING_FILES=()
   REF_UPDATE_FILES=()
   REF_MISSING_FILES=()
+  SEEN_CONFIGS=()
+  SEEN_SEEDS=()
+  SEEN_REFS=()
+  CONFIG_SOURCE_STACK=()
   CONFIG_CHANGES=0
   SEED_CHANGES=0
   REF_CHANGES=0
@@ -276,7 +293,7 @@ cmd_sync() {
 
   case "$SELECTED_OPTION" in
   "Review diffs")
-    open_diffs "$stack" "$target"
+    open_diffs "$target"
     select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" == "Cancel" ] && {
       log_warn "Sync cancelled"
