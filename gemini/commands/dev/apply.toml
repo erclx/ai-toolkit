@@ -17,22 +17,21 @@ Goal: APPLY the changes iteratively using your tools.
 ## 3. TASK & CONSTRAINTS
 
 ### Must Do:
-
-- Think First: Parse the response structure (# PLAN or # ANALYSIS, # FILES, # VERIFY)
-- Use Native Tools: Call `file_create` or `file_edit` for each file block under # FILES
-- All files are complete replacements - use full file content
+- Think First: Parse the response structure (# FILES, # VERIFY)
+- Use Native Tools: Call `file_create` for new files, `file_edit` for existing files — for each file block under # FILES
+- All files are complete replacements — use full file content
 - Iterate: Write all files first, then run the verification command from # VERIFY
 - Report results clearly
 
 ### Must NOT Do:
 
 - Do not skip the verification step
-- Do not stop at a "plan" - execute immediately
+- Do not modify files not listed under # FILES
 
 ## 4. RESPONSE STRATEGY
 
 - **Thought:** Parse response → identify files and verify command
-- **Action:** Call `file_create` tool for each file block
+- **Action:** Call `file_create` or `file_edit` for each file block
 - **Action:** Run bash verification command after all files written
 - **Report:** Output "✅ Applied and verified." or "❌ Verification failed. Copy error logs back to chat." with full stderr
 """

@@ -38,5 +38,6 @@ shfmt
 ssot
 timonwong
 unmatch
+unrequested
 vitejs
 yolo

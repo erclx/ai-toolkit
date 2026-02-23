@@ -25,7 +25,7 @@ Output writes to the target project at runtime:
 
 **Rules come from the target project, not the toolkit.** `gdev prompt` reads `.cursor/rules/` in the current working directory. Run `gdev gov rules` in the target project first to install the relevant rule set before generating a prompt.
 
-**A single template serves the chat workflow.** The `master-prompt-chat.template` assumes a human is the executor, structuring output as `# PLAN / # FILES / # VERIFY` blocks intended to be pasted into `apply.toml` for file application.
+**A single template serves the chat workflow.** The `master-prompt-chat.template` assumes a human is the executor, structuring output as `# FILES / # VERIFY` blocks intended to be pasted into `apply.toml` for file application.
 
 **Governance injection is identical across both templates.** Frontmatter is stripped from each `.mdc` file, rules are concatenated with separators, and the payload is injected at `{{GOVERNANCE_RULES}}`. The template type only changes the surrounding instructions.
 
@@ -49,7 +49,7 @@ gdev gov rules          # install rules for detected stack
 gdev prompt             # pick cli or chat, confirm, generate
 ````
 
-For chat sessions, copy `.gemini/.tmp/master-prompt.md` as the system prompt in your chat interface. After the model responds with `# PLAN / # FILES / # VERIFY` blocks, apply the output with:
+For chat sessions, copy `.gemini/.tmp/master-prompt.md` as the system prompt in your chat interface. After the model responds with `# FILES / # VERIFY` blocks, apply the output with:
 
 ```bash
 gemini dev:apply "<paste response>"
