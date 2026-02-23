@@ -109,11 +109,10 @@ inject_into_template() {
 }
 
 cmd_generate() {
-  log_step "Reading Rules"
-
   local count
   count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
-  log_info "$count rules found"
+
+  log_step "Reading .cursor/rules ($count found)"
 
   while IFS= read -r file; do
     log_info "$(basename "$file")"
