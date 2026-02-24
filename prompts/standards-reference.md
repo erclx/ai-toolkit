@@ -1,4 +1,4 @@
-# System Prompt: Reference File Generator
+# System Prompt: Standards Reference Generator
 
 ## ROLE
 
