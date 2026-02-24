@@ -207,13 +207,13 @@ scan_configs() {
   collect_stack_configs "$stack" "$target" NEW_FILES DRIFTED_FILES MATCHING_FILES
 
   for f in "${MATCHING_FILES[@]}"; do
-    log_info "${GREY}Matching:  $f${NC}"
+    log_info "${GREY}$f${NC}"
   done
   for f in "${DRIFTED_FILES[@]}"; do
-    log_warn "Drifted:   $f"
+    log_warn "$f (drifted)"
   done
   for f in "${NEW_FILES[@]}"; do
-    log_add "Missing:   $f"
+    log_add "$f"
   done
 
   CONFIG_CHANGES=$((${#NEW_FILES[@]} + ${#DRIFTED_FILES[@]}))
@@ -223,10 +223,10 @@ scan_configs() {
   collect_stack_seeds "$stack" "$target" SEEDED_FILES SEED_MISSING_FILES
 
   for f in "${SEEDED_FILES[@]}"; do
-    log_info "${GREY}Seeded:    $f${NC}"
+    log_info "${GREY}$f${NC}"
   done
   for f in "${SEED_MISSING_FILES[@]}"; do
-    log_add "Missing:   $f"
+    log_add "$f"
   done
 
   log_step "Scanning Gitignore"
@@ -237,7 +237,7 @@ scan_configs() {
     log_info "Up to date"
   fi
   for f in "${GITIGNORE_MISSING_FILES[@]}"; do
-    log_add "Missing:   $f"
+    log_add "$f"
   done
 
   GITIGNORE_CHANGES=${#GITIGNORE_MISSING_FILES[@]}
@@ -247,10 +247,10 @@ scan_configs() {
   collect_stack_references "$stack" "$target" REF_UPDATE_FILES REF_MISSING_FILES
 
   for f in "${REF_UPDATE_FILES[@]}"; do
-    log_warn "Outdated: $f"
+    log_warn "$f (outdated)"
   done
   for f in "${REF_MISSING_FILES[@]}"; do
-    log_add "Missing:  $f"
+    log_add "$f"
   done
 
   REF_CHANGES=$((${#REF_UPDATE_FILES[@]} + ${#REF_MISSING_FILES[@]}))
