@@ -90,8 +90,7 @@ Run `gdev` from the repo root.
 
 ## Architecture
 
-Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles them into Gemini command artifacts under `gemini/commands/gov/`. Tooling stacks live in `tooling/` and sync directly as concrete files.
-The Claude tooling (`tooling/claude/`) provides seed documents and commands for managing Claude AI-assisted workflow documents, including scaffolding and updating. See [tooling/claude/reference.md](tooling/claude/reference.md) for details.
+Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles rules into `gemini/commands/gov/rules.toml`. Standards sync directly to target projects as plain markdown files via `gdev gov sync`. Tooling stacks live in `tooling/` and sync directly as concrete files, including the `claude` stack which seeds `.claude/` planning docs.
 
 See [GOVERNANCE.md](docs/GOVERNANCE.md), [TOOLING.md](docs/TOOLING.md), [SANDBOX.md](docs/SANDBOX.md), [PROMPTS.md](docs/PROMPTS.md), and [WORKFLOW.md](docs/WORKFLOW.md) for detailed documentation.
 
