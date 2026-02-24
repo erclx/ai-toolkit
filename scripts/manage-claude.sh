@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 CLAUDE_SEEDS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude"
 CLAUDE_SEED="$CLAUDE_SEEDS_DIR/CLAUDE.md"
@@ -63,24 +64,6 @@ seed_claude_docs() {
   done < <(find "$CLAUDE_SEEDS_DIR" -maxdepth 1 -type f | sort)
 }
 
-add_to_gitignore() {
-  local target="$1"
-  local entry=".claude/PROJECT.md"
-  local gitignore="$target/.gitignore"
-
-  if [ ! -f "$gitignore" ]; then
-    return
-  fi
-
-  if grep -qxF "$entry" "$gitignore"; then
-    log_info "$entry already in .gitignore"
-    return
-  fi
-
-  echo "$entry" >>"$gitignore"
-  log_add "$entry added to .gitignore"
-}
-
 create_features_dirs() {
   local target="$1"
 
@@ -109,7 +92,7 @@ cmd_init() {
   create_features_dirs "$target"
 
   log_step "Updating .gitignore"
-  add_to_gitignore "$target"
+  merge_gitignore "claude" "$target"
 }
 
 cmd_update() {
