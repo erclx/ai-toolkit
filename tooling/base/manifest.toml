@@ -26,3 +26,9 @@ packages = [
 "clean" = "./scripts/clean.sh"
 "update" = "./scripts/update.sh"
 "snapshot" = "./scripts/snapshot.sh"
+
+[gitignore]
+"# System" = [".DS_Store"]
+"# Dependencies" = ["node_modules/"]
+"# Secrets" = [".env", ".env.*", "*.local", "!.env.example"]
+"# Gemini" = [".gemini/*", "!.gemini/settings.json"]
