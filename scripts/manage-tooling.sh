@@ -188,7 +188,8 @@ collect_stack_gitignore() {
           [[ -v SEEN_GITIGNORE["$entry"] ]] && continue
           SEEN_GITIGNORE["$entry"]=1
 
-          if [ ! -f "$gitignore" ] || ! grep -qxF "$entry" "$gitignore"; then
+          local normalized="${entry%/}"
+          if [ ! -f "$gitignore" ] || { ! grep -qxF "$entry" "$gitignore" && ! grep -qxF "$normalized" "$gitignore"; }; then
             _gi_missing+=("$entry")
           fi
         done < <(echo "$rest" | tr ',' '\n')

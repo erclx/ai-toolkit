@@ -205,7 +205,8 @@ merge_gitignore() {
 
         local missing=()
         for entry in "${current_entries[@]}"; do
-          if ! grep -qxF "$entry" "$gitignore"; then
+          local normalized="${entry%/}"
+          if ! grep -qxF "$entry" "$gitignore" && ! grep -qxF "$normalized" "$gitignore"; then
             missing+=("$entry")
           fi
         done
