@@ -53,6 +53,13 @@
   - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`
   - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 
+## Gitignore
+
+- `# System` — `.DS_Store`
+- `# Dependencies` — `node_modules/`
+- `# Secrets` — `.env`, `.env.*`, `*.local`, `!.env.example`
+- `# Gemini` — `.gemini/*`, `!.gemini/settings.json`
+
 ## Scripts
 
 - Entry: `scripts/` directory with `verify.sh`, `clean.sh`, `update.sh`, `snapshot.sh`.
