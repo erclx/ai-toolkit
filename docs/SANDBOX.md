@@ -2,7 +2,7 @@
 
 ## Overview
 
-Sandboxes provision isolated project states for testing scripts, configs, and AI commands. Each sandbox defines a known starting state and clear instructions for what to run and what to expect.
+Sandboxes provision isolated project states for testing scripts, configs, and AI commands. Each sandbox defines a known starting state with clear instructions for what to run and what to expect.
 
 ## Structure
 
