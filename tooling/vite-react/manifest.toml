@@ -53,3 +53,9 @@ packages = [
 "test:e2e:ui" = "playwright test --ui"
 "test:e2e:report" = "playwright show-report"
 "check:full" = "./scripts/verify.sh && bun run test:e2e"
+
+[gitignore]
+"# Build" = ["dist/"]
+"# Coverage" = ["coverage/"]
+"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/"]
+"# VS Code" = [".vscode/*", "!.vscode/extensions.json", "!.vscode/settings.json"]
