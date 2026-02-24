@@ -53,6 +53,13 @@
   - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`
   - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 
+## GitHub
+
+- PR template: `.github/pull_request_template.md`.
+- Sections: `## Summary`, `## Key Changes`, `## Technical Context`, `## Testing`.
+- Visuals: HTML comment only — never a visible section header.
+- Follow `standards/pr.md`: imperative mood, no "This PR" opener, no buzzwords, name specific files and functions.
+
 ## Gitignore
 
 - `# System` — `.DS_Store`
