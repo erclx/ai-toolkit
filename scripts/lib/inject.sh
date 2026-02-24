@@ -13,7 +13,7 @@ inject_governance() {
     find "$rules_source" -type f -name "*.mdc" -exec cp {} "$rules_target/" \;
     shopt -s nullglob
     for f in "$rules_target"/*.mdc; do
-      log_info "Injected Rule: .cursor/rules/$(basename "$f")"
+      log_add "Injected Rule: .cursor/rules/$(basename "$f")"
     done
     shopt -u nullglob
   else
@@ -25,7 +25,7 @@ inject_governance() {
     cp -r "$standards_source/." "$standards_target/"
     shopt -s nullglob
     for f in "$standards_target"/*.md; do
-      log_info "Injected Standard:  standards/$(basename "$f")"
+      log_add "Injected Standard:  standards/$(basename "$f")"
     done
     shopt -u nullglob
   else
@@ -69,7 +69,7 @@ inject_tooling_configs() {
     fi
 
     cp "$file" "$dest"
-    log_info "  $rel"
+    log_add "$rel"
   done < <(find "$configs_dir" -type f | sort)
 }
 
@@ -125,7 +125,7 @@ inject_tooling_seeds() {
     local rel="${file#"$seeds_dir"/}"
     local dest="$target_path/$rel"
     merge_seed_file "$file" "$dest"
-    log_info "  $rel"
+    log_add "$rel"
   done < <(find "$seeds_dir" -type f | sort)
 }
 
@@ -153,7 +153,7 @@ inject_tooling_reference() {
   mkdir -p "$dest_dir"
   log_step "Applying $stack_name reference"
   cp "$reference_file" "$dest_dir/$stack_name.md"
-  log_info "  tooling/$stack_name.md"
+  log_add "tooling/$stack_name.md"
 }
 
 merge_gitignore() {
@@ -253,6 +253,13 @@ inject_tooling_manifest() {
   scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
 
   if [ -n "$scripts" ] && [ -f "$target_path/package.json" ]; then
+    log_step "Applying $stack_name scripts"
+    while IFS= read -r line; do
+      local key
+      key=$(echo "$line" | sed -n 's/^[[:space:]]*"\([^"]*\)"[[:space:]]*=.*/\1/p')
+      [ -n "$key" ] && log_add "$key"
+    done <<<"$scripts"
+
     (cd "$target_path" && node -e "
         const fs = require('fs');
       const pkg = JSON.parse(fs.readFileSync('package.json'));
