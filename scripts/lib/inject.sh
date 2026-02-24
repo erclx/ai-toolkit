@@ -120,6 +120,7 @@ inject_tooling_seeds() {
   local seeds_dir="$tooling_dir/$stack_name/seeds"
   [ ! -d "$seeds_dir" ] && return
 
+  log_step "Applying $stack_name seeds"
   while IFS= read -r file; do
     local rel="${file#"$seeds_dir"/}"
     local dest="$target_path/$rel"
@@ -150,6 +151,7 @@ inject_tooling_reference() {
 
   local dest_dir="$target_path/tooling"
   mkdir -p "$dest_dir"
+  log_step "Applying $stack_name reference"
   cp "$reference_file" "$dest_dir/$stack_name.md"
   log_info "  tooling/$stack_name.md"
 }
@@ -245,14 +247,12 @@ inject_tooling_manifest() {
   if [ ${#deps_array[@]} -gt 0 ]; then
     log_step "Applying $stack_name dependencies"
     (cd "$target_path" && bun add -D "${deps_array[@]}")
-    echo -e "${GREY}│${NC}"
   fi
 
   local scripts
   scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
 
   if [ -n "$scripts" ] && [ -f "$target_path/package.json" ]; then
-    log_step "Applying $stack_name scripts"
     (cd "$target_path" && node -e "
         const fs = require('fs');
       const pkg = JSON.parse(fs.readFileSync('package.json'));

@@ -382,17 +382,14 @@ cmd_sync() {
   esac
 
   if [ "$CONFIG_CHANGES" -gt 0 ]; then
-    log_step "Applying Configs"
     inject_tooling_configs "$stack" "$target"
   fi
 
   if [ "$SEED_CHANGES" -gt 0 ]; then
-    log_step "Applying Seeds"
     inject_tooling_seeds "$stack" "$target"
   fi
 
   if [ "$REF_CHANGES" -gt 0 ]; then
-    log_step "Applying References"
     inject_tooling_reference "$stack" "$target"
   fi
 
