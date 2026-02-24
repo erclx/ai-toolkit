@@ -366,6 +366,11 @@ main() {
     exec "$PROJECT_ROOT/scripts/manage-prompts.sh" "$@"
   fi
 
+  if [[ "$1" == "claude" ]]; then
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-claude.sh" "$@"
+  fi
+
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
     echo -e "${GREY}┌${NC}"
     log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
