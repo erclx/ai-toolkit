@@ -13,7 +13,7 @@ inject_governance() {
     find "$rules_source" -type f -name "*.mdc" -exec cp {} "$rules_target/" \;
     shopt -s nullglob
     for f in "$rules_target"/*.mdc; do
-      log_add "Injected Rule: .cursor/rules/$(basename "$f")"
+      log_add ".cursor/rules/$(basename "$f")"
     done
     shopt -u nullglob
   else
@@ -25,7 +25,7 @@ inject_governance() {
     cp -r "$standards_source/." "$standards_target/"
     shopt -s nullglob
     for f in "$standards_target"/*.md; do
-      log_add "Injected Standard:  standards/$(basename "$f")"
+      log_add "standards/$(basename "$f")"
     done
     shopt -u nullglob
   else
@@ -281,7 +281,6 @@ inject_dependencies() {
 
   if [ -f "package.json" ]; then
     if command -v bun &>/dev/null; then
-      log_info "Detected Node project. Running bun install..."
       bun install
       log_info "Dependencies installed"
     else
@@ -289,7 +288,6 @@ inject_dependencies() {
     fi
   elif [ -f "pyproject.toml" ] || [ -f "uv.lock" ]; then
     if command -v uv &>/dev/null; then
-      log_info "Detected Python project. Running uv sync..."
       uv sync
       log_info "Dependencies synced"
     else
