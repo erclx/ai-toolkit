@@ -6,3 +6,6 @@ scaffold = ""
 
 [sync]
 source = "seeds"
+
+[gitignore]
+"# Claude" = [".claude/PROJECT.md"]
