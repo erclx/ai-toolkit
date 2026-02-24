@@ -59,7 +59,6 @@ EOF
 
   chmod +x scripts/verify.sh
 
-  log_step "Injecting Tooling Reference"
   inject_tooling_reference "base" "."
 
   git add .
