@@ -154,6 +154,80 @@ inject_tooling_reference() {
   log_info "  tooling/$stack_name.md"
 }
 
+merge_gitignore() {
+  local stack_name="$1"
+  local target_path="${2:-.}"
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    merge_gitignore "$extends" "$target_path"
+  fi
+
+  local gitignore="$target_path/.gitignore"
+  touch "$gitignore"
+
+  local in_section=0
+  local current_header=""
+  local current_entries=()
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\[gitignore\] ]]; then
+      in_section=1
+      continue
+    fi
+
+    if [[ "$in_section" -eq 1 && "$line" =~ ^\[.+\] ]]; then
+      break
+    fi
+
+    [ "$in_section" -eq 0 ] && continue
+    [ -z "$line" ] && continue
+
+    if [[ "$line" =~ ^\"(#[^\"]+)\"[[:space:]]*=[[:space:]]*\[(.*)$ ]]; then
+      current_header="${BASH_REMATCH[1]}"
+      current_entries=()
+      local rest="${BASH_REMATCH[2]}"
+
+      if [[ "$rest" =~ \] ]]; then
+        rest="${rest%%]*}"
+        while IFS= read -r entry; do
+          entry=$(echo "$entry" | tr -d '",' | xargs)
+          [ -n "$entry" ] && current_entries+=("$entry")
+        done < <(echo "$rest" | tr ',' '\n')
+
+        local missing=()
+        for entry in "${current_entries[@]}"; do
+          if ! grep -qxF "$entry" "$gitignore"; then
+            missing+=("$entry")
+          fi
+        done
+
+        if [ "${#missing[@]}" -gt 0 ]; then
+          if [ "${#missing[@]}" -eq "${#current_entries[@]}" ]; then
+            echo "" >>"$gitignore"
+            echo "$current_header" >>"$gitignore"
+          fi
+          for entry in "${missing[@]}"; do
+            echo "$entry" >>"$gitignore"
+            log_add ".gitignore: $entry"
+          done
+        fi
+
+        current_header=""
+        current_entries=()
+      fi
+    fi
+  done <"$manifest"
+}
+
 inject_tooling_manifest() {
   local stack_name="$1"
   local target_path="${2:-.}"
@@ -188,6 +262,8 @@ inject_tooling_manifest() {
     " "$scripts")
     log_info "Applied $stack_name package scripts"
   fi
+
+  merge_gitignore "$stack_name" "$target_path"
 }
 
 inject_dependencies() {
