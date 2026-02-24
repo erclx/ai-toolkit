@@ -35,6 +35,8 @@ is_ignored() {
   local name="$1"
   local patterns="$2"
 
+  [ "$name" = ".git" ] && return 0
+
   while IFS= read -r pattern; do
     [ -z "$pattern" ] && continue
     # shellcheck disable=SC2053
