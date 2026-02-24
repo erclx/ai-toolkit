@@ -56,7 +56,7 @@ inject_tooling_configs() {
     return
   fi
 
-  log_info "Applying $stack_name configs to $target_path"
+  log_step "Applying $stack_name configs"
 
   while IFS= read -r file; do
     local rel="${file#"$configs_dir"/}"
@@ -243,14 +243,16 @@ inject_tooling_manifest() {
   read -r -a deps_array <<<"$(awk '/packages = \[/{f=1; next} /\]/{f=0} f' "$manifest" | tr -d '",' | tr '\n' ' ')"
 
   if [ ${#deps_array[@]} -gt 0 ]; then
-    log_info "Installing $stack_name dev dependencies in $target_path"
+    log_step "Applying $stack_name dependencies"
     (cd "$target_path" && bun add -D "${deps_array[@]}")
+    echo -e "${GREY}│${NC}"
   fi
 
   local scripts
   scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
 
   if [ -n "$scripts" ] && [ -f "$target_path/package.json" ]; then
+    log_step "Applying $stack_name scripts"
     (cd "$target_path" && node -e "
         const fs = require('fs');
       const pkg = JSON.parse(fs.readFileSync('package.json'));
@@ -261,9 +263,9 @@ inject_tooling_manifest() {
       });
         fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
     " "$scripts")
-    log_info "Applied $stack_name package scripts"
   fi
 
+  log_step "Applying $stack_name gitignore"
   merge_gitignore "$stack_name" "$target_path"
 }
 
