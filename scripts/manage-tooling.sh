@@ -360,9 +360,9 @@ cmd_sync() {
 
   local prompt_opts=()
   if [ "$has_diffs" = true ]; then
-    prompt_opts=("Apply all" "Apply without refs" "Review diffs" "Cancel")
+    prompt_opts=("Apply without refs" "Review diffs" "Apply all" "Cancel")
   else
-    prompt_opts=("Apply all" "Apply without refs" "Cancel")
+    prompt_opts=("Apply without refs" "Apply all" "Cancel")
   fi
 
   select_option "Apply $TOTAL_CHANGES changes ($summary)?" "${prompt_opts[@]}"
@@ -370,7 +370,7 @@ cmd_sync() {
   case "$SELECTED_OPTION" in
   "Review diffs")
     open_diffs "$target"
-    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Apply without refs" "Cancel"
+    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply without refs" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" == "Cancel" ] && {
       log_warn "Sync cancelled"
       echo -e "${GREY}└${NC}" >&2
