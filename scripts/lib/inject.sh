@@ -179,6 +179,7 @@ merge_gitignore() {
   local in_section=0
   local current_header=""
   local current_entries=()
+  local has_logged=0
 
   while IFS= read -r line; do
     if [[ "$line" =~ ^\[gitignore\] ]]; then
@@ -214,10 +215,16 @@ merge_gitignore() {
         done
 
         if [ "${#missing[@]}" -gt 0 ]; then
+          if [ "$has_logged" -eq 0 ]; then
+            log_step "Applying $stack_name gitignore"
+            has_logged=1
+          fi
+
           if [ "${#missing[@]}" -eq "${#current_entries[@]}" ]; then
             echo "" >>"$gitignore"
             echo "$current_header" >>"$gitignore"
           fi
+
           for entry in "${missing[@]}"; do
             echo "$entry" >>"$gitignore"
             log_add ".gitignore: $entry"
@@ -272,7 +279,6 @@ inject_tooling_manifest() {
     " "$scripts")
   fi
 
-  log_step "Applying $stack_name gitignore"
   merge_gitignore "$stack_name" "$target_path"
 }
 
