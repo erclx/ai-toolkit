@@ -11,6 +11,7 @@ scripts/sandbox/
 ├── tooling/
 │   ├── base.sh        ← tests base golden configs
 │   ├── vite-react.sh  ← tests vite-react configs against anchor repo
+│   ├── claude.sh      ← tests claude workflow initialization
 │   ├── chrome.sh      ← tests chrome extension tooling configs against anchor repo
 │   └── sync.sh        ← tests gdev tooling sync against drifted project
 ├── infra/
