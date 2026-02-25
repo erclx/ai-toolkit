@@ -358,16 +358,19 @@ cmd_sync() {
   [ "${#DRIFTED_FILES[@]}" -gt 0 ] && has_diffs=true
   [ "${#REF_UPDATE_FILES[@]}" -gt 0 ] && has_diffs=true
 
+  local prompt_opts=()
   if [ "$has_diffs" = true ]; then
-    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Review diffs" "Apply all" "Cancel"
+    prompt_opts=("Apply all" "Apply without refs" "Review diffs" "Cancel")
   else
-    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
+    prompt_opts=("Apply all" "Apply without refs" "Cancel")
   fi
+
+  select_option "Apply $TOTAL_CHANGES changes ($summary)?" "${prompt_opts[@]}"
 
   case "$SELECTED_OPTION" in
   "Review diffs")
     open_diffs "$target"
-    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
+    select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Apply without refs" "Cancel"
     [ "$SELECTED_OPTION" == "Cancel" ] && {
       log_warn "Sync cancelled"
       echo -e "${GREY}└${NC}" >&2
@@ -389,7 +392,7 @@ cmd_sync() {
     inject_tooling_seeds "$stack" "$target"
   fi
 
-  if [ "$REF_CHANGES" -gt 0 ]; then
+  if [ "$REF_CHANGES" -gt 0 ] && [ "$SELECTED_OPTION" != "Apply without refs" ]; then
     inject_tooling_reference "$stack" "$target"
   fi
 
