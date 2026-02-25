@@ -25,10 +25,10 @@ Run `gdev` from the repo root.
 
 ### Tooling
 
-| Command                           | Description                                                  |
-| --------------------------------- | ------------------------------------------------------------ |
-| `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, .gitignore, and references |
-| `gdev tooling ref [stack] [path]` | Drop reference docs only                                     |
+| Command                           | Description                                                             |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, .gitignore, and optionally references |
+| `gdev tooling ref [stack] [path]` | Drop reference docs only                                                |
 
 ### Prompts
 
