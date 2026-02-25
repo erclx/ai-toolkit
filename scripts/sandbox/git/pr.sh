@@ -11,10 +11,10 @@ stage_setup() {
 
   log_step "Configuring PR Environment ($ANCHOR_REPO)"
 
-  git config user.email "erclx@github.com"
+  git config user.email "${GITHUB_ORG}@github.com"
   git config user.name "Eric"
 
-  git remote add origin "git@github.com:erclx/${ANCHOR_REPO}.git"
+  git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
   git push --force origin HEAD:main
   git push origin --delete feature/string-utils -q 2>/dev/null || true
 

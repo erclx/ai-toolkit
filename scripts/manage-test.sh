@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 export PROJECT_ROOT
 
+source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
@@ -32,7 +33,7 @@ show_help() {
 
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
-  local repo_url="git@github.com:erclx/$repo_name.git"
+  local repo_url="git@github.com:${GITHUB_ORG}/$repo_name.git"
 
   log_step "Cloning Anchor Repository ($repo_name)"
 
@@ -197,7 +198,7 @@ configure_agent_settings() {
   cat <<EOF >"$SANDBOX/.gemini/settings.json"
 {
   "model": {
-    "name": "$LLM_MODEL"
+    "name": "$GEMINI_MODEL"
   }
 }
 EOF
@@ -378,7 +379,6 @@ main() {
 
   SANDBOX="$PROJECT_ROOT/.sandbox"
   SANDBOX_DIR="$PROJECT_ROOT/scripts/sandbox"
-  LLM_MODEL="gemini-2.5-flash"
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
