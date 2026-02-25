@@ -1,0 +1,22 @@
+[stack]
+name = "chrome"
+extends = "vite-react"
+runtime = "bun"
+scaffold = "bunx create-crxjs@latest"
+
+[sync]
+source = "configs"
+
+[dependencies.dev]
+packages = [
+  "@crxjs/vite-plugin",
+  "vite-plugin-zip-pack"
+]
+
+[scripts]
+"build" = "tsc -b && vite build"
+"setup" = "./scripts/setup.sh"
+
+[gitignore]
+"# Chrome Extension" = ["*.crx", "*.pem"]
+"# Release" = ["release/"]
