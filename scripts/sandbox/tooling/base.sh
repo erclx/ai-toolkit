@@ -5,8 +5,6 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
-
   log_step "Initializing Package"
   cat <<'EOF' >package.json
 {

@@ -9,8 +9,6 @@ use_anchor() {
 }
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
-
   inject_tooling_configs "vite-react" "."
   inject_tooling_seeds "vite-react" "."
   inject_tooling_manifest "vite-react" "."
