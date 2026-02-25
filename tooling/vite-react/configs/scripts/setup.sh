@@ -115,7 +115,7 @@ update_package_json() {
     pkg.scripts.verify = "./scripts/verify.sh";
     pkg.scripts.clean = "./scripts/clean.sh";
     pkg.scripts.update = "./scripts/update.sh";
-    delete pkg.scripts.reset;
+    delete pkg.scripts.setup;
     fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
   ' || log_error "package.json update failed"
   log_add "package.json"

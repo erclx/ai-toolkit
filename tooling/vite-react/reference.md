@@ -80,7 +80,7 @@
 - File: `scripts/setup.sh`. Destructive — deletes `.git` and self-removes after running. Run once immediately after scaffolding.
 - Prompts for project name, normalizes to kebab-case.
 - Derives a title-cased display name from the project name for use in `index.html` and `README.md`.
-- Updates `package.json`: sets `name`, resets `version` to `0.1.0`, injects `verify`, `clean`, `update` scripts, removes `reset`.
+- Updates `package.json`: sets `name`, resets `version` to `0.1.0`, injects `verify`, `clean`, `update` scripts, removes `setup`.
 - Updates `index.html` `<title>` to match derived title.
 - Copies `.env.example` → `.env` if `.env` does not exist.
 - Wipes `.git`, re-inits with `--initial-branch=main`, makes scripts executable, commits everything as `chore(root): initialize <name>`.
