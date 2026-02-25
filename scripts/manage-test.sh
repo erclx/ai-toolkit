@@ -198,7 +198,7 @@ configure_agent_settings() {
   cat <<EOF >"$SANDBOX/.gemini/settings.json"
 {
   "model": {
-    "name": "$LLM_MODEL"
+    "name": "$GEMINI_MODEL"
   }
 }
 EOF
