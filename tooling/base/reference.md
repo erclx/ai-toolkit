@@ -71,10 +71,10 @@
 
 - Entry: `scripts/` directory with `verify.sh`, `clean.sh`, `update.sh`, `snapshot.sh`.
 - All scripts use logging functions from the bash script reference.
-- `verify.sh` — runs format, spell, and shell checks in sequence. Supports `VERIFY_NESTED=true` to suppress timeline boundaries when called by other scripts.
+- `verify.sh` — self-healing: runs `format` first to auto-fix AI-generated or drifted code, then asserts with `check:format`. Supports `VERIFY_NESTED=true` to suppress timeline boundaries when called by other scripts.
 - `clean.sh` — removes `node_modules/`, clears bun cache, reinstalls dependencies fresh.
 - `update.sh` — runs `bun update --interactive` then calls `verify.sh` with `VERIFY_NESTED=true` to confirm project health after updates.
-- `snapshot.sh` — generates `.claude/PROJECT.md` with a directory tree and `package.json` contents. Tree respects `.gitignore`. Output is ephemeral — add `.claude/PROJECT.md` to `.gitignore`, do not commit it.
+- `snapshot.sh` — generates `.claude/PROJECT.md` with a directory tree and `package.json` contents. Creates `.claude/` if it does not exist. Tree respects `.gitignore`. Output is ephemeral — add `.claude/PROJECT.md` to `.gitignore`, do not commit it.
 
 ## VS Code
 
@@ -88,7 +88,7 @@
 - `check:shell` — runs shellcheck at warning severity across all `.sh` files.
 - `format` — writes prettier and shfmt formatting in place.
 - `prepare` — initializes husky hooks (runs automatically on `bun install`).
-- `check` — runs `scripts/verify.sh`, the full verification suite.
+- `check` — runs `scripts/verify.sh`, the full verification suite. Auto-formats before asserting.
 - `clean` — runs `scripts/clean.sh`, wipes and reinstalls dependencies.
 - `update` — runs `scripts/update.sh`, interactive dependency update with verification.
 - `snapshot` — runs `scripts/snapshot.sh`, writes `.claude/PROJECT.md`.
