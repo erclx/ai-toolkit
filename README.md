@@ -63,10 +63,9 @@ Run `gdev` from the repo root.
 
 ### Governance
 
-| Command          | Description                             |
-| ---------------- | --------------------------------------- |
-| `/gov:rules`     | Install governance rules into a project |
-| `/gov:standards` | Install project reference standards     |
+| Command      | Description                             |
+| ------------ | --------------------------------------- |
+| `/gov:rules` | Install governance rules into a project |
 
 ### Development
 
@@ -87,6 +86,12 @@ Run `gdev` from the repo root.
 | -------------------- | ----------------------------------------------------------- |
 | `/docs:sync`         | Sync README and docs with codebase changes from main branch |
 | `/release:changelog` | Generate a changelog entry from commit history              |
+
+### Development Scripts
+
+| Command            | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| `bun run snapshot` | Generate a project snapshot (`.claude/PROJECT.md`) |
 
 ## Architecture
 

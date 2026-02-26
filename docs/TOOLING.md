@@ -20,7 +20,6 @@ tooling/
 │   └── reference.md
 ├── chrome/
 │   ├── configs/       ← golden config files
-│   └── seeds/
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 └── claude/
@@ -74,7 +73,7 @@ gemini tooling:review vite-react        # AI identifies gaps, updates on confirm
 
 ## Testing
 
-Each stack has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `gdev` → tooling → pick scenario. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms. The `sync` scenario tests drift detection against a deliberately partial or drifted project, including config drift, missing seeds, and missing gitignore entries.
+Each stack has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `gdev` → tooling → pick scenario. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms.
 
 ## Adding a New Stack
 
