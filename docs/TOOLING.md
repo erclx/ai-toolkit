@@ -20,7 +20,6 @@ tooling/
 │   └── reference.md
 ├── chrome/
 │   ├── configs/       ← golden config files
-│   └── seeds/
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 └── claude/
