@@ -44,15 +44,15 @@ Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named g
 
 ## CLI
 
-| Command                           | What it does                                     |
-| --------------------------------- | ------------------------------------------------ |
-| `gdev gov build`                  | Compile rules into `rules.toml` artifact         |
-| `gdev gov sync [path]`            | Push governance rules and standards to a project |
-| `gdev tooling [stack] [path]`     | Full sync: configs, seeds, refs, deps, gitignore |
-| `gdev tooling ref [stack] [path]` | Drop reference docs only                         |
-| `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project     |
-| `gdev claude update [path]`       | Diff `CLAUDE.md` against seed, offer to apply    |
-| `gdev`                            | Sandbox picker: provision and test scenarios     |
+| Command                           | What it does                                      |
+| --------------------------------- | ------------------------------------------------- | --- | ------ | -------------------------------------------- |
+| `gdev gov build`                  | Compile rules into `rules.toml` artifact          |
+| `gdev gov sync [path]`            | Push governance rules and standards to a project  |
+| `gdev tooling [stack] [path]`     | Full sync: configs, seeds, refs, deps, gitignore  |
+| `gdev tooling ref [stack] [path]` | Drop reference docs only                          |
+| `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project      |
+| `gdev claude update [path]`       | Diff `CLAUDE.md` against seed, offer to apply     |
+| `gdev tooling:scaffold`           | Scaffold a raw upstream template into `.sandbox/` |     | `gdev` | Sandbox picker: provision and test scenarios |
 
 ## Common Workflows
 
@@ -70,6 +70,8 @@ Keep references consistent after a config change:
 ```bash
 gemini tooling:review vite-react        # AI identifies gaps, updates on confirmation
 ```
+
+Inspect a raw upstream template: `gdev tooling:scaffold` → pick stack → vanilla template lands in `.sandbox/sandbox-scaffold/`. No config injection. Run `gdev clean` when done.
 
 ## Testing
 
