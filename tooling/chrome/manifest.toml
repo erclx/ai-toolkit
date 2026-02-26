@@ -10,7 +10,8 @@ source = "configs"
 [dependencies.dev]
 packages = [
   "@crxjs/vite-plugin",
-  "vite-plugin-zip-pack"
+  "vite-plugin-zip-pack",
+  "@types/chrome"
 ]
 
 [scripts]

@@ -70,5 +70,5 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build Project
+      - name: Build Extension
         run: bun run build

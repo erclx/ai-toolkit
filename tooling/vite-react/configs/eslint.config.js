@@ -13,6 +13,7 @@ const ignoreConfig = globalIgnores([
   'dist',
   'dist-ssr',
   'coverage',
+  'release',
   '.claude',
   '.gemini',
   '.vscode',

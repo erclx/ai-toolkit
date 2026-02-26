@@ -36,7 +36,7 @@
 - React hooks: use `reactHooks.configs.recommended.rules`.
 - React refresh: `only-export-components` as warning with `allowConstantExport: true`.
 - Vitest: apply `vitest.configs.recommended.rules` and `vitest.environments.env.globals` to `**/*.test.{ts,tsx}` files only.
-- Global ignores: `dist`, `dist-ssr`, `coverage`, `.claude`, `.gemini`, `.vscode`, `.husky`, `test-results`, `playwright-report`, `blob-report`, `playwright/.cache`.
+- Global ignores: `dist`, `dist-ssr`, `coverage`, `release`, `.claude`, `.gemini`, `.vscode`, `.husky`, `test-results`, `playwright-report`, `blob-report`, `playwright/.cache`.
 
 ## TypeScript
 
@@ -79,7 +79,7 @@
 
 - File: `scripts/setup.sh`. Destructive — deletes `.git` and self-removes after running. Run once immediately after scaffolding.
 - Prompts for project name, normalizes to kebab-case.
-- Derives a title-cased display name from the project name for use in `index.html` and `README.md`.
+- Derives a title-cased display name from the project name for use in `index.html`.
 - Updates `package.json`: sets `name`, resets `version` to `0.1.0`, injects `verify`, `clean`, `update` scripts, removes `setup`.
 - Updates `index.html` `<title>` to match derived title.
 - Copies `.env.example` → `.env` if `.env` does not exist.
@@ -133,3 +133,4 @@
 - `test:e2e:ui` — `playwright test --ui`
 - `test:e2e:report` — `playwright show-report`
 - `check:full` — `./scripts/verify.sh && bun run test:e2e`
+- `setup` — `./scripts/setup.sh`
