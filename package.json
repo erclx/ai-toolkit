@@ -15,7 +15,8 @@
     "prepare": "husky",
     "check": "./scripts/core/verify.sh",
     "update": "./scripts/core/update.sh",
-    "clean": "./scripts/core/clean.sh"
+    "clean": "./scripts/core/clean.sh",
+    "snapshot": "./scripts/core/snapshot.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",
