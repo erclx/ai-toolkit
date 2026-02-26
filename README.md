@@ -87,6 +87,12 @@ Run `gdev` from the repo root.
 | `/docs:sync`         | Sync README and docs with codebase changes from main branch |
 | `/release:changelog` | Generate a changelog entry from commit history              |
 
+### Development Scripts
+
+| Command            | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| `bun run snapshot` | Generate a project snapshot (`.claude/PROJECT.md`) |
+
 ## Architecture
 
 Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles rules into `gemini/commands/gov/rules.toml`. Standards sync directly to target projects as plain markdown files via `gdev gov sync`. Tooling stacks live in `tooling/` and sync directly as concrete files, including the `claude` stack which seeds `.claude/` planning docs.
