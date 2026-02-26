@@ -18,7 +18,7 @@ main() {
 
   log_step "Interactive Dependency Update"
   echo -e "${GREY}│${NC}"
-  bun update --interactive 2>&1 | pipe_output
+  bun update --interactive
 
   log_step "Verifying Project Health"
   if [ -f "$SCRIPT_DIR/verify.sh" ]; then
