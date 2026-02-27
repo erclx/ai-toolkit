@@ -65,7 +65,6 @@
 - `# System` — `.DS_Store`
 - `# Dependencies` — `node_modules/`
 - `# Secrets` — `.env`, `.env.*`, `*.local`, `!.env.example`
-- `# Gemini` — `.gemini/*`, `!.gemini/settings.json`
 
 ## Scripts
 

@@ -8,4 +8,4 @@ scaffold = ""
 source = "seeds"
 
 [gitignore]
-"# Claude" = [".claude/PROJECT.md"]
+"# Claude" = [".claude/.tmp/", ".claude/PROJECT.md"]

@@ -1,0 +1,11 @@
+[stack]
+name = "gemini"
+extends = ""
+runtime = ""
+scaffold = ""
+
+[sync]
+source = "configs"
+
+[gitignore]
+"# Gemini" = [".gemini/.tmp/"]
