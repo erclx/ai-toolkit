@@ -48,15 +48,16 @@ Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named g
 
 ## CLI
 
-| Command                           | What it does                                      |
-| --------------------------------- | ------------------------------------------------- | --- | ------ | -------------------------------------------- |
-| `gdev gov build`                  | Compile rules into `rules.toml` artifact          |
-| `gdev gov sync [path]`            | Push governance rules and standards to a project  |
-| `gdev tooling [stack] [path]`     | Full sync: configs, seeds, refs, deps, gitignore  |
-| `gdev tooling ref [stack] [path]` | Drop reference docs only                          |
-| `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project      |
-| `gdev claude update [path]`       | Diff `CLAUDE.md` against seed, offer to apply     |
-| `gdev tooling:scaffold`           | Scaffold a raw upstream template into `.sandbox/` |     | `gdev` | Sandbox picker: provision and test scenarios |
+| Command                           | What it does                                                 |
+| --------------------------------- | ------------------------------------------------------------ |
+| `gdev gov build`                  | Compile rules into `rules.toml` artifact                     |
+| `gdev gov sync [path]`            | Push governance rules and standards to a project             |
+| `gdev tooling [stack] [path]`     | Full sync: configs, seeds, refs, deps, gitignore             |
+| `gdev tooling ref [stack] [path]` | Drop reference docs only                                     |
+| `gdev tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
+| `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project                 |
+| `gdev claude update [path]`       | Diff `CLAUDE.md` against seed, offer to apply                |
+| `gdev`                            | Sandbox picker: provision and test scenarios                 |
 
 ## Common Workflows
 
@@ -75,7 +76,7 @@ Keep references consistent after a config change:
 gemini tooling:review vite-react        # AI identifies gaps, updates on confirmation
 ```
 
-Inspect a raw upstream template: `gdev tooling:scaffold` → pick stack → vanilla template lands in `.sandbox/sandbox-scaffold/`. No config injection. Run `gdev clean` when done.
+Scaffold a new stack: `gdev tooling scaffold` → enter name → stub structure created in `tooling/<name>/`.
 
 ## Testing
 
@@ -83,12 +84,13 @@ Each stack has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `gdev`
 
 ## Adding a New Stack
 
-1. Create `tooling/<n>/configs/` with golden config files
-2. Create `tooling/<n>/seeds/` with pre-populated dictionary terms
-3. Create `tooling/<n>/manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`
-4. Create `tooling/<n>/reference.md` with prose documentation
-5. Create `scripts/sandbox/tooling/<n>.sh`: inject configs, seeds, manifest, run verify
-6. Test via `gdev` → tooling → `<n>`
+1. Run `gdev tooling scaffold` to generate the stub structure
+2. Add golden config files to `tooling/<n>/configs/`
+3. Add pre-populated seed files to `tooling/<n>/seeds/`
+4. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`
+5. Fill in `reference.md` with prose documentation
+6. Create `scripts/sandbox/tooling/<n>.sh`: inject configs, seeds, manifest, run verify
+7. Test via `gdev` → tooling → `<n>`
 
 Sync auto-discovers the new stack.
 
