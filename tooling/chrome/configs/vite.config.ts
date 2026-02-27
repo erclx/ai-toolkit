@@ -21,6 +21,11 @@ export default defineConfig({
     zip({ outDir: 'release', outFileName: `crx-${name}-${version}.zip` }),
   ],
   server: {
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      clientPort: 5173,
+    },
     cors: {
       origin: [/chrome-extension:\/\//],
     },

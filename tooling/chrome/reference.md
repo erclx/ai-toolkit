@@ -11,6 +11,8 @@ The chrome stack layers a Chrome Extension setup using CRXJS and Vite on top of 
 - Replace vite-react `vite.config.ts` entirely — do not merge.
 - Plugins: `@vitejs/plugin-react`, `@tailwindcss/vite`, `crx({ manifest })`, `zip({ outDir: 'release', outFileName: 'crx-<name>-<version>.zip' })`.
 - Path alias: `@` → `./src` via `path`.
+- Server port: `5173`, `strictPort: true` — ensures HMR always connects on the same port.
+- Server HMR: `clientPort: 5173` — required for extension content scripts to connect back correctly.
 - Server cors: allow `chrome-extension://` origin.
 - No `loadEnv` or `VITE_BASE_URL` — not applicable for extensions.
 - Manifest imported from `manifest.config.js` (note `.js` extension — required by crxjs at runtime).
