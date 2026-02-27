@@ -1,7 +1,7 @@
 #!/bin/bash
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_SKIP_AUTO_COMMIT="true"
 
   git init -q
   git config user.email "architect@erclx.com"

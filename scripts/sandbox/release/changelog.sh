@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_SKIP_AUTO_COMMIT="true"
 
   log_step "Setting up Changelog Environment"
 

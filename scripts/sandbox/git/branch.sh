@@ -2,7 +2,7 @@
 set -e
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_SKIP_AUTO_COMMIT="true"
 
   echo "Base project" >README.md
   git add .

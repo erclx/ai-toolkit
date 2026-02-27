@@ -231,7 +231,7 @@ initialize_sandbox_environment() {
 }
 
 commit_sandbox_changes() {
-  if [ -z "$GEMINI_SKIP_AUTO_COMMIT" ]; then
+  if [ -z "$SANDBOX_SKIP_AUTO_COMMIT" ]; then
     log_step "Staging environment changes"
     (
       cd "$SANDBOX"

@@ -5,7 +5,7 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_SKIP_AUTO_COMMIT="true"
 
   cat <<'EOF' >.shellcheckrc
 external-sources=true

@@ -23,7 +23,7 @@ collect_scaffold_stacks() {
 }
 
 stage_setup() {
-  export GEMINI_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_SKIP_AUTO_COMMIT="true"
 
   local stacks=()
   declare -A commands
