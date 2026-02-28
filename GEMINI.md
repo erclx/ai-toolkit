@@ -1,18 +1,12 @@
 # AI Toolkit Context
 
-A compiler system that transforms governance rules into executable Gemini CLI commands. Rules are authored once, compiled into `.toml` command definitions, and distributed to target projects. Standards sync directly as plain markdown files.
-
-## How It Works
-
-- **Sources:** `.cursor/rules/` (governance rules) and `standards/` (reference docs) are the source of truth
-- **Compiler:** `scripts/build-gov.sh` bundles rules into `rules.toml` and auto-commits the artifact
-- **Commands:** `gemini/commands/` contains the compiled runtime commands for the Gemini CLI
-- **Sandbox:** `scripts/sandbox/` provides isolated test scenarios for each command
+CLI toolkit for managing governance rules, tooling configs, and developer standards across projects. Rules are authored in `.cursor/rules/`, compiled into Gemini CLI commands via `scripts/build-gov.sh`, and distributed to target projects. Standards sync directly as plain markdown files.
 
 ## Key Paths
 
-- `gemini/commands/**/*.toml` — command definitions
-- `standards/` — reference docs injected as agent context
+- `gemini/commands/**/*.toml` — Gemini CLI command definitions
+- `claude/commands/` — Claude Code slash commands
 - `.cursor/rules/` — governance rules compiled into prompts
-- `scripts/templates/` — master prompt templates (cli + chat)
+- `standards/` — reference docs synced to target projects
 - `tooling/` — golden configs and manifests per stack
+- `scripts/` — build, sync, sandbox, and prompt generation scripts
