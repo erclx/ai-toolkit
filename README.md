@@ -1,6 +1,6 @@
 # AI Toolkit
 
-CLI toolkit for managing governance rules, tooling configs, and developer standards across projects. Provides deterministic sync commands and AI agent commands for Gemini CLI.
+CLI toolkit for managing governance rules, tooling configs, and developer standards across projects.
 
 ## Installation
 
@@ -25,11 +25,11 @@ Run `gdev` from the repo root.
 
 ### Tooling
 
-| Command                           | Description                                                                                 |
-| --------------------------------- | ------------------------------------------------------------------------------------------- |
-| `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, .gitignore, and optionally references for any known stack |
-| `gdev tooling ref [stack] [path]` | Drop reference docs only                                                                    |
-| `gdev tooling scaffold`           | Scaffold a new stack with stub manifest, reference, configs, and seeds dirs                 |
+| Command                           | Description                                                        |
+| --------------------------------- | ------------------------------------------------------------------ |
+| `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, .gitignore, and references       |
+| `gdev tooling ref [stack] [path]` | Drop reference docs only                                           |
+| `gdev tooling scaffold`           | Scaffold a new stack with stub manifest, reference, configs, seeds |
 
 ### Prompts
 
@@ -52,53 +52,16 @@ Run `gdev` from the repo root.
 | `gdev reset` | Restore sandbox to baseline                      |
 | `gdev clean` | Wipe sandbox                                     |
 
-## Gemini Commands
+## Agent Commands
 
-### Git
-
-| Command       | Description                                                |
-| ------------- | ---------------------------------------------------------- |
-| `/git:commit` | Generate a conventional commit message from staged changes |
-| `/git:branch` | Rename current branch to match conventional format         |
-| `/git:pr`     | Generate a PR description and open a draft                 |
-
-### Governance
-
-| Command      | Description                             |
-| ------------ | --------------------------------------- |
-| `/gov:rules` | Install governance rules into a project |
-
-### Development
-
-| Command            | Description                                          |
-| ------------------ | ---------------------------------------------------- |
-| `/dev:setup [ref]` | Audit project tooling drift against a reference file |
-| `/dev:apply`       | Apply file changes from a chat response              |
-
-### Tooling
-
-| Command                   | Description                                   |
-| ------------------------- | --------------------------------------------- |
-| `/tooling:review [stack]` | Sync reference docs with current config state |
-
-### Docs and Release
-
-| Command              | Description                                                 |
-| -------------------- | ----------------------------------------------------------- |
-| `/docs:sync`         | Sync README and docs with codebase changes from main branch |
-| `/release:changelog` | Generate a changelog entry from commit history              |
-
-### Development Scripts
-
-| Command            | Description                                        |
-| ------------------ | -------------------------------------------------- |
-| `bun run snapshot` | Generate a project snapshot (`.claude/PROJECT.md`) |
+- Gemini CLI commands: see [gemini/README.md](gemini/README.md)
+- Claude Code commands and skills: see [claude/README.md](claude/README.md)
 
 ## Architecture
 
-Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles rules into `gemini/commands/gov/rules.toml`. Standards sync directly to target projects as plain markdown files via `gdev gov sync`. Tooling stacks live in `tooling/` and sync directly as concrete files, including the `claude` stack which seeds `.claude/` planning docs.
+Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles rules into `gemini/commands/gov/rules.toml`. Tooling stacks live in `tooling/` and sync to target projects as concrete files.
 
-See [GOVERNANCE.md](docs/GOVERNANCE.md), [TOOLING.md](docs/TOOLING.md), [SANDBOX.md](docs/SANDBOX.md), [PROMPTS.md](docs/PROMPTS.md), and [WORKFLOW.md](docs/WORKFLOW.md) for detailed documentation.
+See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, prompts, and workflow.
 
 ## Support
 
