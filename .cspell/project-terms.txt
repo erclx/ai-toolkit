@@ -1,6 +1,7 @@
 agentic
 arch
 bradlc
+behaviour
 bunx
 changelog
 codenames
@@ -40,4 +41,5 @@ timonwong
 unmatch
 unrequested
 vitejs
+wireframes
 yolo

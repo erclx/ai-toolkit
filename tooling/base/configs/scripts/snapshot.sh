@@ -103,15 +103,6 @@ write_snapshot() {
     build_tree "." "" "$patterns"
     echo '```'
     echo ""
-
-    if [ -f "package.json" ]; then
-      echo "## package.json"
-      echo ""
-      echo '```json'
-      cat package.json
-      echo '```'
-      echo ""
-    fi
   } >"$OUTPUT_FILE"
 }
 
