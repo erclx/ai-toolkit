@@ -29,5 +29,5 @@ Goal: APPLY the changes exactly using your tools. Do not verify, fix, or interpr
 ## 4. RESPONSE STRATEGY
 
 - **Action:** Call `file_create` or `file_edit` for each file block
-- **Report:** Output "✅ Files applied."
+- **Report:** Output "✅ Files applied:" followed by a list of relative paths for each file written
 """
