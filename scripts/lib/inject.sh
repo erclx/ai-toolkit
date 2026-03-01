@@ -307,27 +307,49 @@ inject_tooling_manifest() {
     done
   fi
 
-  local scripts
-  scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
+  if [ -f "$target_path/package.json" ]; then
+    local scripts
+    scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
 
-  if [ -n "$scripts" ] && [ -f "$target_path/package.json" ]; then
-    log_step "Applying $stack_name scripts"
-    while IFS= read -r line; do
-      local key
-      key=$(echo "$line" | sed -n 's/^[[:space:]]*"\([^"]*\)"[[:space:]]*=.*/\1/p')
-      [ -n "$key" ] && log_add "$key"
-    done <<<"$scripts"
+    if [ -n "$scripts" ]; then
+      local to_apply_keys=()
+      local to_apply_vals=()
 
-    (cd "$target_path" && node -e "
-        const fs = require('fs');
-      const pkg = JSON.parse(fs.readFileSync('package.json'));
-      pkg.scripts = pkg.scripts || {};
-      process.argv[1].split('\n').forEach(line => {
-        const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
-        if (m) pkg.scripts[m[1]] = m[2];
-      });
-        fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-    " "$scripts")
+      while IFS= read -r line; do
+        if [[ "$line" =~ ^\"([^\"]+)\"[[:space:]]*=[[:space:]]*\"(.*)\"[[:space:]]*$ ]]; then
+          local key="${BASH_REMATCH[1]}"
+          local val="${BASH_REMATCH[2]}"
+          local pkg_val
+          pkg_val=$(node -e "
+            const p = JSON.parse(require('fs').readFileSync('$target_path/package.json'));
+            process.stdout.write(p.scripts && p.scripts['$key'] !== undefined ? p.scripts['$key'] : '__MISSING__');
+          " 2>/dev/null)
+
+          if [ "$pkg_val" = "__MISSING__" ]; then
+            to_apply_keys+=("$key")
+            to_apply_vals+=("$val")
+          fi
+        fi
+      done <<<"$scripts"
+
+      if [ "${#to_apply_keys[@]}" -gt 0 ]; then
+        log_step "Applying $stack_name scripts"
+        for key in "${to_apply_keys[@]}"; do
+          log_add "$key"
+        done
+
+        (cd "$target_path" && node -e "
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json'));
+          pkg.scripts = pkg.scripts || {};
+          process.argv[1].split('\n').forEach(line => {
+            const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
+            if (m) pkg.scripts[m[1]] = m[2];
+          });
+          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+        " "$scripts")
+      fi
+    fi
   fi
 
   merge_gitignore "$stack_name" "$target_path"
