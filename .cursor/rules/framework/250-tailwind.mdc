@@ -1,5 +1,5 @@
 ---
-description: enforce tailwind css standards and utility-first patterns
+description: enforce tailwind css v4 utility patterns, theme tokens, dark mode, and custom styles
 globs: '**/*.tsx,**/*.jsx,**/*.html,**/*.css'
 alwaysApply: false
 priority: 250
@@ -7,31 +7,24 @@ priority: 250
 
 # TAILWIND CSS V4 STANDARDS
 
+## Theme Variables
+
+- Use `@theme` for design tokens that generate utility classes; use `:root` for plain CSS variables with no utility counterpart.
+- Define dark mode color overrides in `.dark { }` at root level — not inside `@layer base`.
+
+## Dark Mode
+
+- Always pair light and dark utilities explicitly: `bg-white dark:bg-gray-900`.
+
 ## Layout and Spacing
 
-- Use utility classes for all layout, spacing, and typography.
-- Use `flex` and `grid` for layouts; avoid manual floats or positioning.
-- Use `gap-*` utilities instead of margins for sibling spacing.
-- Use logical properties like `ps-*` and `pe-*` for RTL support.
-
-## Theming and Customization
-
-- Define theme extensions using CSS variables in the main CSS file via `@theme`.
-- Do not use `tailwind.config.js` for theming; use native CSS variables.
-- Do not use arbitrary values unless adhering to a strict design spec.
+- Use `flex` and `grid` for all layouts — never floats or absolute positioning for flow.
+- Use `gap-*` for sibling spacing over margins; `size-*` over `w-* h-*` for equal dimensions.
+- Mobile-first: default styles apply to mobile; use `sm:` and up to override.
 
 ## Class Application
 
-- Use the `cn()` utility for conditional class application.
-- Minimize `@apply` usage; prefer composing utilities in markup.
-- Do not use inline styles; use Tailwind classes.
-- Do not use `style` props for static styling.
-
-## Responsive and Variants
-
-- Use mobile-first breakpoints; default styles apply to mobile.
-- Use `dark:` variant for dark mode styling; avoid manual class toggling.
-
-## Typography
-
-- Use `prose` class for rich text content; do not manually style typography.
+- Use `cn()` from `@/lib/utils` for all conditional class application.
+- Do not use the `!` important modifier — signals a broken abstraction.
+- Do not use inline `style` props for static styling; use arbitrary values `bg-[#316ff6]` instead.
+- Use inline styles only for dynamic values from JS/API, or to set CSS variables for utility consumption.

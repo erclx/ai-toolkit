@@ -1,0 +1,25 @@
+---
+description: enforce shadcn/ui v4 component patterns, semantic tokens, and composition rules
+globs: '**/*.tsx,**/*.jsx'
+alwaysApply: false
+priority: 260
+---
+
+# SHADCN/UI STANDARDS
+
+## Component Authoring
+
+- Use `React.ComponentProps<typeof Primitive>` over `React.forwardRef` — forwardRef is deprecated in React 19.
+- Add `data-slot="component-name"` to every primitive root for Tailwind targeting.
+
+## Tokens and Styling
+
+- Use semantic color tokens (`bg-background`, `text-foreground`, `border-border`) — never hardcoded colors like `bg-white` or `text-gray-900`.
+- Use `cn()` from `@/lib/utils` for all className merging and conditional classes.
+- Do not override shadcn component internals with arbitrary classes — extend via `className` prop only.
+
+## Composition
+
+- Compose shadcn primitives as documented — do not destructure or restructure internal component trees.
+- Use `asChild` prop with `<Slot>` for polymorphic rendering — do not wrap in extra DOM elements.
+- Use `sonner` for toasts — `toast` component is deprecated.

@@ -18,7 +18,7 @@ All output must comply with the governance rules below without exception.
 - Write complete files — no partial snippets, no placeholders, no omissions.
 - Follow all governance rules for every line of code produced.
 - Implement ONE feature per response.
-
+- If the plan is ambiguous, implement the simplest interpretation and note the assumption as a comment above the relevant code.
 ### Must Not Do
 
 - Do not violate any governance rule.
@@ -28,7 +28,7 @@ All output must comply with the governance rules below without exception.
 ## INPUT FORMAT
 
 **Feature Plan:**
-[paste the feature plan and todo list]
+[paste the feature plan and todo list — it is a markdown checklist, implement all items in order]
 
 **Source Code Context:**
 [paste relevant existing files or excerpts]

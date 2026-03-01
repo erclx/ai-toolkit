@@ -291,7 +291,7 @@ echo '  + .cursor/rules/200-react.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/250-tailwind.mdc
 ---
-description: enforce tailwind css standards and utility-first patterns
+description: enforce tailwind css v4 utility patterns, theme tokens, dark mode, and custom styles
 globs: '**/*.tsx,**/*.jsx,**/*.html,**/*.css'
 alwaysApply: false
 priority: 250
@@ -299,37 +299,60 @@ priority: 250
 
 # TAILWIND CSS V4 STANDARDS
 
+## Theme Variables
+
+- Use `@theme` for design tokens that generate utility classes; use `:root` for plain CSS variables with no utility counterpart.
+- Define dark mode color overrides in `.dark { }` at root level — not inside `@layer base`.
+
+## Dark Mode
+
+- Always pair light and dark utilities explicitly: `bg-white dark:bg-gray-900`.
+
 ## Layout and Spacing
 
-- Use utility classes for all layout, spacing, and typography.
-- Use `flex` and `grid` for layouts; avoid manual floats or positioning.
-- Use `gap-*` utilities instead of margins for sibling spacing.
-- Use logical properties like `ps-*` and `pe-*` for RTL support.
-
-## Theming and Customization
-
-- Define theme extensions using CSS variables in the main CSS file via `@theme`.
-- Do not use `tailwind.config.js` for theming; use native CSS variables.
-- Do not use arbitrary values unless adhering to a strict design spec.
+- Use `flex` and `grid` for all layouts — never floats or absolute positioning for flow.
+- Use `gap-*` for sibling spacing over margins; `size-*` over `w-* h-*` for equal dimensions.
+- Mobile-first: default styles apply to mobile; use `sm:` and up to override.
 
 ## Class Application
 
-- Use the `cn()` utility for conditional class application.
-- Minimize `@apply` usage; prefer composing utilities in markup.
-- Do not use inline styles; use Tailwind classes.
-- Do not use `style` props for static styling.
-
-## Responsive and Variants
-
-- Use mobile-first breakpoints; default styles apply to mobile.
-- Use `dark:` variant for dark mode styling; avoid manual class toggling.
-
-## Typography
-
-- Use `prose` class for rich text content; do not manually style typography.
+- Use `cn()` from `@/lib/utils` for all conditional class application.
+- Do not use the `!` important modifier — signals a broken abstraction.
+- Do not use inline `style` props for static styling; use arbitrary values `bg-[#316ff6]` instead.
+- Use inline styles only for dynamic values from JS/API, or to set CSS variables for utility consumption.
 
 GEMINI_EOF
 echo '  + .cursor/rules/250-tailwind.mdc'
+
+cat << 'GEMINI_EOF' > .cursor/rules/260-shadcn.mdc
+---
+description: enforce shadcn/ui v4 component patterns, semantic tokens, and composition rules
+globs: '**/*.tsx,**/*.jsx'
+alwaysApply: false
+priority: 260
+---
+
+# SHADCN/UI STANDARDS
+
+## Component Authoring
+
+- Use `React.ComponentProps<typeof Primitive>` over `React.forwardRef` — forwardRef is deprecated in React 19.
+- Add `data-slot=\"component-name\"` to every primitive root for Tailwind targeting.
+
+## Tokens and Styling
+
+- Use semantic color tokens (`bg-background`, `text-foreground`, `border-border`) — never hardcoded colors like `bg-white` or `text-gray-900`.
+- Use `cn()` from `@/lib/utils` for all className merging and conditional classes.
+- Do not override shadcn component internals with arbitrary classes — extend via `className` prop only.
+
+## Composition
+
+- Compose shadcn primitives as documented — do not destructure or restructure internal component trees.
+- Use `asChild` prop with `<Slot>` for polymorphic rendering — do not wrap in extra DOM elements.
+- Use `sonner` for toasts — `toast` component is deprecated.
+
+GEMINI_EOF
+echo '  + .cursor/rules/260-shadcn.mdc'
 
 cat << 'GEMINI_EOF' > .cursor/rules/100-typescript.mdc
 ---
@@ -559,7 +582,7 @@ Context: {{args}}
 - Stack detection rules:
   - Core (always): `000-constitution`, `010-testing`, `020-concurrency`, `030-error-handling`, `040-performance`, `050-logging`, `060-naming`
   - Node/TS: If `package.json` exists → `100-typescript`, `900-node`
-  - React: If `react` dep → `200-react`, `250-tailwind`
+  - React: If `react` dep → `200-react`, `250-tailwind`, `260-shadcn`
   - Next.js: If `next` dep → `200-nextjs` (overrides React)
   - Python: If `pyproject.toml` or `*.py` → `100-python`
   - Testing: If `vitest`/`jest` → `300-testing-ts`

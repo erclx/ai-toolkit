@@ -34,8 +34,10 @@ sandboxed
 sandboxing
 scannability
 scoutreport
+shadcn
 shellcheck
 shfmt
+sonner
 ssot
 timonwong
 unmatch

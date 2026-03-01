@@ -38,7 +38,7 @@ Context: {{args}}
 - Stack detection rules:
   - Core (always): `000-constitution`, `010-testing`, `020-concurrency`, `030-error-handling`, `040-performance`, `050-logging`, `060-naming`
   - Node/TS: If `package.json` exists → `100-typescript`, `900-node`
-  - React: If `react` dep → `200-react`, `250-tailwind`
+  - React: If `react` dep → `200-react`, `250-tailwind`, `260-shadcn`
   - Next.js: If `next` dep → `200-nextjs` (overrides React)
   - Python: If `pyproject.toml` or `*.py` → `100-python`
   - Testing: If `vitest`/`jest` → `300-testing-ts`
