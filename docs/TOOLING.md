@@ -58,7 +58,7 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 | `gdev tooling ref [stack] [path]` | Drop reference docs only                                     |
 | `gdev tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
 | `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project                 |
-| `gdev claude update [path]`       | Diff `CLAUDE.md` against seed, offer to apply                |
+| `gdev claude update [path]`       | Diff `SESSION.md` against seed, offer to apply               |
 | `gdev`                            | Sandbox picker: provision and test scenarios                 |
 
 ## Common Workflows
