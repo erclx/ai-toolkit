@@ -15,7 +15,6 @@ log_error() {
   echo -e "${GREY}│${NC} ${RED}✗${NC} $1"
   exit 1
 }
-log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
 
 OUTPUT_FILE=".claude/PROJECT.md"
 
@@ -111,7 +110,7 @@ main() {
 
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
 
-  log_step "Snapshot"
+  echo -e "${GREY}├${NC} ${WHITE}Snapshot${NC}"
   write_snapshot
   log_info "Written to $OUTPUT_FILE"
 
