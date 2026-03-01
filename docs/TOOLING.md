@@ -42,6 +42,8 @@ References are `reference.md` files synced to `tooling/<stack>.md` in target pro
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only; existing entries are never touched.
 
+Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Similar to seeds, only missing entries are added; existing dependencies or scripts are not modified or overwritten.
+
 ## Extends Chain
 
 `manifest.toml` declares `extends = "base"`. The full chain resolves recursively: base applies first, the derived stack overlays second. This applies to configs, seeds, references, and gitignore equally.
