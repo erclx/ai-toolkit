@@ -28,10 +28,12 @@ All output must comply with the governance rules below without exception.
 
 ## INPUT FORMAT
 
-**Feature Plan:**
+## Feature Plan
+
 [paste the feature plan and todo list — it is a markdown checklist, implement all items in order]
 
-**Source Code Context:**
+## Source Code Context
+
 [paste relevant existing files or excerpts]
 
 ## RESPONSE FORMAT
