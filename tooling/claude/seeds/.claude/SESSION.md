@@ -23,7 +23,7 @@ Sync after each completed feature, not end of session.
 ## Planning
 
 - Clarify before planning. Use the `ask_user_input` tool — never prose questions.
-- Before modifying existing behaviour, request relevant src files first.
+- Before modifying existing behavior, request relevant src files first.
 - For any feature with UI, generate ASCII wireframes before the todo list — layout and component hierarchy only, no decoration.
 - For every feature todo list, state test strategy explicitly: unit, integration, e2e, or none. Justify in one word.
 - Never offer to implement. Planning ends at synced docs; implementation happens in Gemini.

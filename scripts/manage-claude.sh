@@ -9,7 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 CLAUDE_SEEDS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude"
-CLAUDE_SEED="$CLAUDE_SEEDS_DIR/CLAUDE.md"
+CLAUDE_SEED="$CLAUDE_SEEDS_DIR/SESSION.md"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -18,7 +18,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
-  echo -e "${GREY}│${NC}    update    ${GREY}# Diff CLAUDE.md against seed and offer to apply${NC}"
+  echo -e "${GREY}│${NC}    update    ${GREY}# Diff SESSION.md against seed and offer to apply${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
@@ -64,22 +64,6 @@ seed_claude_docs() {
   done < <(find "$CLAUDE_SEEDS_DIR" -maxdepth 1 -type f | sort)
 }
 
-create_features_dirs() {
-  local target="$1"
-
-  mkdir -p "$target/.claude/FEATURES/done"
-
-  if [ ! -f "$target/.claude/FEATURES/.gitkeep" ]; then
-    touch "$target/.claude/FEATURES/.gitkeep"
-    log_add ".claude/FEATURES/"
-  fi
-
-  if [ ! -f "$target/.claude/FEATURES/done/.gitkeep" ]; then
-    touch "$target/.claude/FEATURES/done/.gitkeep"
-    log_add ".claude/FEATURES/done/"
-  fi
-}
-
 cmd_init() {
   local target="${1:-.}"
 
@@ -87,9 +71,6 @@ cmd_init() {
 
   log_step "Seeding .claude/"
   seed_claude_docs "$target"
-
-  log_step "Scaffolding Features"
-  create_features_dirs "$target"
 
   log_step "Updating .gitignore"
   merge_gitignore "claude" "$target"
@@ -100,22 +81,22 @@ cmd_update() {
 
   validate_target "$target"
 
-  local dest="$target/.claude/CLAUDE.md"
+  local dest="$target/.claude/SESSION.md"
 
   if [ ! -f "$dest" ]; then
-    log_error "CLAUDE.md not found at $target/.claude/. Run 'gdev claude init' first."
+    log_error "SESSION.md not found at $target/.claude/. Run 'gdev claude init' first."
   fi
 
   if diff -q "$CLAUDE_SEED" "$dest" >/dev/null 2>&1; then
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ CLAUDE.md already up to date${NC}"
+    echo -e "${GREEN}✓ SESSION.md already up to date${NC}"
     exit 0
   fi
 
   log_step "Reviewing Changes"
   code --diff "$CLAUDE_SEED" "$dest"
 
-  select_option "Apply updated CLAUDE.md?" "Yes" "No"
+  select_option "Apply updated SESSION.md?" "Yes" "No"
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Update cancelled"
@@ -124,7 +105,7 @@ cmd_update() {
   fi
 
   cp "$CLAUDE_SEED" "$dest"
-  log_add "CLAUDE.md"
+  log_add "SESSION.md"
 }
 
 main() {

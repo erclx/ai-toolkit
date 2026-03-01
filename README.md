@@ -39,10 +39,10 @@ Run `gdev` from the repo root.
 
 ### Claude
 
-| Command              | Description                                    |
-| -------------------- | ---------------------------------------------- |
-| `gdev claude init`   | Seed .claude/ workflow docs into a project     |
-| `gdev claude update` | Diff CLAUDE.md against seed and offer to apply |
+| Command              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| `gdev claude init`   | Seed .claude/ workflow docs into a project      |
+| `gdev claude update` | Diff SESSION.md against seed and offer to apply |
 
 ### Sandbox
 
