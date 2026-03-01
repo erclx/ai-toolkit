@@ -52,7 +52,7 @@ Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named g
 | --------------------------------- | ------------------------------------------------------------ |
 | `gdev gov build`                  | Compile rules into `rules.toml` artifact                     |
 | `gdev gov sync [path]`            | Push governance rules and standards to a project             |
-| `gdev tooling [stack] [path]`     | Full sync: configs, seeds, refs, deps, gitignore             |
+| `gdev tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                   |
 | `gdev tooling ref [stack] [path]` | Drop reference docs only                                     |
 | `gdev tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
 | `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project                 |
