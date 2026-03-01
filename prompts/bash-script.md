@@ -103,6 +103,19 @@ log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
 log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1"; }
 ```
 
+### Section Headers
+
+`log_step` includes a leading blank `│` line to visually separate sections in multi-section scripts. For **single-section scripts**, skip `log_step` and use a raw echo to avoid unnecessary vertical space:
+
+```bash
+# multi-section: use log_step (adds breathing room between sections)
+log_step "Build"
+log_step "Deploy"
+
+# single-section: use raw echo (no leading blank line)
+echo -e "${GREY}├${NC} ${WHITE}Snapshot${NC}"
+```
+
 ### Interactive Prompts (Must transition `◆` → `◇`)
 
 ```bash
@@ -302,4 +315,5 @@ Before responding, verify:
 - Logging is concise: no "Starting.../Finished..." bloat, no intermediate variable logging.
 - `log_add` is used for all file, entry, and key writes.
 - `log_info` is used for status confirmations only, not writes.
+- Single-section scripts use raw `echo` for the section header instead of `log_step`.
 - File ends with exactly one empty line.
