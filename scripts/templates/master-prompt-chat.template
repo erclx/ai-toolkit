@@ -41,8 +41,3 @@ All output must comply with the governance rules below without exception.
 ```language
 [complete file content]
 ```
-
-# VERIFY
-```bash
-[verification command — typically: bun run check]
-```
