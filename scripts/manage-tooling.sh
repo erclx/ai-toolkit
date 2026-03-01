@@ -290,9 +290,7 @@ scan_configs() {
 
   collect_stack_configs "$stack" "$target" NEW_FILES DRIFTED_FILES MATCHING_FILES
 
-  if [ "${#DRIFTED_FILES[@]}" -eq 0 ] && [ "${#NEW_FILES[@]}" -eq 0 ]; then
-    log_info "${#MATCHING_FILES[@]} files up to date"
-  fi
+  log_info "${#MATCHING_FILES[@]} files up to date"
   for f in "${DRIFTED_FILES[@]}"; do
     log_warn "$f (drifted)"
   done
@@ -306,9 +304,7 @@ scan_configs() {
 
   collect_stack_seeds "$stack" "$target" SEEDED_FILES SEED_MISSING_FILES
 
-  if [ "${#SEED_MISSING_FILES[@]}" -eq 0 ]; then
-    log_info "${#SEEDED_FILES[@]} files up to date"
-  fi
+  log_info "${#SEEDED_FILES[@]} files up to date"
   for f in "${SEED_MISSING_FILES[@]}"; do
     log_add "$f"
   done
@@ -498,10 +494,12 @@ cmd_sync() {
   fi
 
   local summary=""
-  [ "${#DRIFTED_FILES[@]}" -gt 0 ] && summary+="${#DRIFTED_FILES[@]} drifted"
-  if [ "${#NEW_FILES[@]}" -gt 0 ]; then
+  if [ "$CONFIG_CHANGES" -gt 0 ]; then
+    summary+="${CONFIG_CHANGES} configs"
+  fi
+  if [ "$SEED_CHANGES" -gt 0 ]; then
     [ -n "$summary" ] && summary+=", "
-    summary+="${#NEW_FILES[@]} missing"
+    summary+="${SEED_CHANGES} seeds"
   fi
   if [ "$SCRIPT_CHANGES" -gt 0 ]; then
     [ -n "$summary" ] && summary+=", "
