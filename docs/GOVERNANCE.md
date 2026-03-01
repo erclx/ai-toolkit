@@ -27,7 +27,7 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | --------- | -------------------------------------------------- |
 | `000–099` | core (constitution, testing, error handling, etc.) |
 | `100–199` | lang (TypeScript, etc.)                            |
-| `200–299` | framework (React, Tailwind, etc.)                  |
+| 200–299   | framework (React, Tailwind, Shadcn, etc.)          |
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)  |
 | `900+`    | workflow (Node, tooling, etc.)                     |
 
