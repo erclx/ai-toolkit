@@ -4,17 +4,31 @@ set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
-use_anchor() {
-  export ANCHOR_REPO="vite-react-template"
-}
-
 stage_setup() {
-  inject_governance
-  inject_dependencies
+  mkdir -p src/utils
 
-  log_step "SCENARIO READY: CLI Automation Test"
-  log_info "Context: Governance rules injected. React environment ready."
-  log_info "Step 1:  gemini gov:prompt"
-  log_info "Step 2:  gemini dev:apply-cli \"Create a shared StatusBadge component with success/warning/error variants using tailwind\""
-  log_info "Expect:  Agent creates 'src/components/status-badge.tsx', runs lint/build, and reports success."
+  cat <<'EOF' >src/config.ts
+export const MAX_RETRIES = 3;
+export const TIMEOUT = 5000;
+EOF
+
+  cat <<'EOF' >mock-response.md
+# FILES
+
+## src/config.ts
+```ts
+export const MAX_RETRIES = 5;
+export const TIMEOUT = 10000;
+```
+
+## src/utils/helpers.ts
+```ts
+export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+```
+EOF
+
+  log_step "SCENARIO READY: dev:apply file write test"
+  log_info "Context: 'src/config.ts' exists (will be edited). 'src/utils/helpers.ts' is new (will be created)."
+  log_info "Action:  /dev:apply @mock-response.md"
+  log_info "Expect:  ✅ Files applied: src/config.ts, src/utils/helpers.ts"
 }
