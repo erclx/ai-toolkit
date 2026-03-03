@@ -14,7 +14,8 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    build     ${GREY}# Scan, compile, and commit governance artifacts${NC}"
-  echo -e "${GREY}│${NC}    sync      ${GREY}# Sync rules and standards to another project${NC}"
+  echo -e "${GREY}│${NC}    install   ${GREY}# Bootstrap rules for a stack into a project${NC}"
+  echo -e "${GREY}│${NC}    sync      ${GREY}# Sync existing rules and standards to another project${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
@@ -31,7 +32,7 @@ main() {
 
   if [ -z "$command" ]; then
     echo -e "${GREY}┌${NC}"
-    select_option "Governance command?" "build" "sync"
+    select_option "Governance command?" "build" "install" "sync"
     command="$SELECTED_OPTION"
   else
     shift
@@ -41,12 +42,15 @@ main() {
   build)
     exec "$PROJECT_ROOT/scripts/build-gov.sh" "$@"
     ;;
+  install)
+    exec "$PROJECT_ROOT/scripts/install-gov.sh" "$@"
+    ;;
   sync)
     exec "$PROJECT_ROOT/scripts/sync-gov.sh" "$@"
     ;;
   *)
     echo -e "${GREY}┌${NC}"
-    log_error "Unknown command: $command. Use 'build' or 'sync'."
+    log_error "Unknown command: $command. Use 'build', 'install', or 'sync'."
     ;;
   esac
 }
