@@ -61,7 +61,7 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 | `aitk tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
 | `aitk claude init [path]`         | Seed `.claude/` workflow docs and sync .gitignore            |
 | `aitk claude update [path]`       | Diff `SESSION.md` against seed, offer to apply               |
-| `aitk`                            | Sandbox picker: provision and test scenarios                 |
+| `aitk sandbox`                    | Sandbox picker: provision and test scenarios                 |
 
 ## Common Workflows
 

@@ -34,9 +34,9 @@ All sandboxes provision into `.sandbox/` at the repo root. Git history initializ
 ## Running
 
 ```bash
-aitk          # interactive category + command picker
-aitk reset    # restore sandbox to baseline
-aitk clean    # wipe sandbox entirely
+aitk sandbox          # interactive category + command picker
+aitk sandbox reset    # restore sandbox to baseline
+aitk sandbox clean    # wipe sandbox entirely
 ```
 
 After provisioning, your terminal cwd may need a refresh. Add this to `.zshrc` or `.bashrc`:

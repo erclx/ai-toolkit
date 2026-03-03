@@ -111,7 +111,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 
 | Stage                  | Tool            | Command / Note                                                           |
 | ---------------------- | --------------- | ------------------------------------------------------------------------ |
-| Scaffold .claude/      | aitk            | Interactively seed .claude/ docs and sync .gitignore                     |
+| Scaffold .claude/      | aitk claude     | Interactively seed .claude/ docs and sync .gitignore                     |
 | Planning (all docs)    | Claude chat     | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features |
 | Code generation        | Gemini pro chat | Master prompt via `aitk prompt`                                          |
 | Apply file changes     | Gemini CLI      | `/dev:apply` — file writer only, no planning                             |

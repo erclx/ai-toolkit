@@ -32,7 +32,7 @@ show_help() {
 
 check_dependencies() {
   if [ ! -d "$RULES_DIR" ] || ! ls "$RULES_DIR"/*.mdc >/dev/null 2>&1; then
-    log_error "No rules found at .cursor/rules/. Run 'aitk gov rules' first."
+    log_error "No rules found at .cursor/rules/. Run \`aitk gov install\` first."
   fi
 
   if [ ! -f "$TEMPLATE_FILE" ]; then

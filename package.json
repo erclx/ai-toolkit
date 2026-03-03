@@ -5,7 +5,7 @@
   "private": true,
   "description": "Infrastructure and quality tooling for the Gemini Toolkit",
   "bin": {
-    "aitk": "./scripts/manage-test.sh"
+    "aitk": "./scripts/manage-aitk.sh"
   },
   "scripts": {
     "check:spell": "cspell '**' --no-progress --color --show-context",

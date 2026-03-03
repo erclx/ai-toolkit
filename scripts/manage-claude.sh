@@ -177,7 +177,7 @@ cmd_update() {
   local dest="$target/.claude/SESSION.md"
 
   if [ ! -f "$dest" ]; then
-    log_error "SESSION.md not found at $target/.claude/. Run 'aitk claude init' first."
+    log_error "SESSION.md not found at $target/.claude/. Run \`aitk claude init\` first."
   fi
 
   if diff -q "$CLAUDE_SEED" "$dest" >/dev/null 2>&1; then

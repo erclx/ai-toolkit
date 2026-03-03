@@ -53,11 +53,12 @@ Run `aitk` from the repo root.
 
 ### Sandbox
 
-| Command      | Description                                      |
-| ------------ | ------------------------------------------------ |
-| `aitk`       | Interactive sandbox picker for testing scenarios |
-| `aitk reset` | Restore sandbox to baseline                      |
-| `aitk clean` | Wipe sandbox                                     |
+| Command                  | Description                                  |
+| ------------------------ | -------------------------------------------- |
+| `aitk sandbox`           | Interactive scenario picker                  |
+| `aitk sandbox [cat:cmd]` | Provision and run specific sandbox scenarios |
+| `aitk sandbox reset`     | Restore sandbox to baseline                  |
+| `aitk sandbox clean`     | Wipe sandbox                                 |
 
 ## Agent Commands
 
