@@ -15,7 +15,8 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC}"
   echo -e "${GREY}│${NC}    gdev                  ${GREY}# Open interactive picker to generate a scenario${NC}"
   echo -e "${GREY}│${NC}    gdev <cat>:<cmd>      ${GREY}# Generate a specific scenario${NC}"
-  echo -e "${GREY}│${NC}    gdev gov [command]    ${GREY}# Governance commands (build, sync)${NC}"
+  echo -e "${GREY}│${NC}    gdev gov [command]    ${GREY}# Governance commands (install, sync)${NC}"
+  echo -e "${GREY}│${NC}    gdev standards [cmd]  ${GREY}# Standards commands (sync)${NC}"
   echo -e "${GREY}│${NC}    gdev tooling <cmd>    ${GREY}# Manage tooling stacks and configs${NC}"
   echo -e "${GREY}│${NC}    gdev reset            ${GREY}# Reset sandbox to initial state${NC}"
   echo -e "${GREY}│${NC}    gdev clean            ${GREY}# Wipe the sandbox${NC}"
@@ -23,8 +24,9 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    gdev git:commit"
-  echo -e "${GREY}│${NC}    gdev gov build"
+  echo -e "${GREY}│${NC}    gdev gov install react"
   echo -e "${GREY}│${NC}    gdev gov sync ../my-app"
+  echo -e "${GREY}│${NC}    gdev standards sync ../my-app"
   echo -e "${GREY}│${NC}    gdev tooling sync base"
   echo -e "${GREY}│${NC}    gdev reset"
   echo -e "${GREY}└${NC}"
@@ -107,7 +109,7 @@ parse_command_argument() {
     _COMMAND="cursor"
   else
     if [[ "$input_arg" != *":"* ]]; then
-      log_error "Invalid format. Use <category>:<command>, 'gov', 'clean', 'reset', 'cursor', 'tooling', or --help"
+      log_error "Invalid format. Use <category>:<command>, 'gov', 'standards', 'clean', 'reset', 'cursor', 'tooling', or --help"
     fi
     IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
   fi
@@ -359,6 +361,11 @@ main() {
   if [[ "$1" == "gov" ]]; then
     shift
     exec "$PROJECT_ROOT/scripts/manage-gov.sh" "$@"
+  fi
+
+  if [[ "$1" == "standards" ]]; then
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-standards.sh" "$@"
   fi
 
   if [[ "$1" == "tooling" ]]; then
