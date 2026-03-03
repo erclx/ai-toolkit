@@ -102,9 +102,7 @@ prompt_for_category_and_command() {
 parse_command_argument() {
   local input_arg="$1"
 
-  if [ "$input_arg" == "clean" ]; then
-    rm -rf "$SANDBOX" && log_info "Sandbox cleaned." && echo -e "${GREY}└${NC}" && exit 0
-  elif [ "$input_arg" == "cursor" ]; then
+  if [ "$input_arg" == "cursor" ]; then
     _CATEGORY="infra"
     _COMMAND="cursor"
   else
@@ -286,6 +284,14 @@ handle_post_execution_prompt() {
   echo -e "${GREEN}✓ Sandbox Ready${NC}"
 }
 
+cmd_clean() {
+  echo -e "${GREY}┌${NC}"
+  rm -rf "$SANDBOX"
+  log_info "Sandbox cleaned"
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Sandbox clean${NC}"
+}
+
 reset_sandbox() {
   echo -e "${GREY}┌${NC}"
 
@@ -368,6 +374,11 @@ main() {
 
   if [[ "$1" == "reset" ]]; then
     reset_sandbox
+    exit 0
+  fi
+
+  if [[ "$1" == "clean" ]]; then
+    cmd_clean
     exit 0
   fi
 
