@@ -13,6 +13,7 @@ The claude stack seeds the `.claude/` workflow directory into a project.
 ├── REQUIREMENTS.md    ← project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md    ← technical design decisions and open questions
 ├── DESIGN.md          ← color, typography, spacing, and motion decisions
+├── REVIEW.md          ← review prompt template, copy-paste into fresh chat
 ├── PROJECT.md         ← ASCII tree only, auto-generated, gitignored
 └── .tmp/              ← ephemeral scratch space, gitignored
 ```
