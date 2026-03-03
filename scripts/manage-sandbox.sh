@@ -296,7 +296,7 @@ reset_sandbox() {
   echo -e "${GREY}┌${NC}"
 
   if [ ! -d "$SANDBOX/.git" ]; then
-    log_error "No sandbox found. Run aitk sandbox first."
+    log_error "No sandbox found. Run \`aitk sandbox\` first."
   fi
 
   log_step "Checking Sandbox State"
@@ -305,7 +305,7 @@ reset_sandbox() {
   (cd "$SANDBOX" && git rev-parse sandbox-baseline >/dev/null 2>&1) && has_baseline=1
 
   if [ "$has_baseline" -eq 0 ]; then
-    log_error "No baseline found. Re-provision with aitk sandbox <cat>:<cmd>."
+    log_error "No baseline found. Re-provision with \`aitk sandbox <cat>:<cmd>\`."
   fi
 
   local is_dirty=0
