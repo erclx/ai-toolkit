@@ -15,13 +15,18 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev standards [command] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
-  echo -e "${GREY}│${NC}    sync      ${GREY}# Sync standards to another project${NC}"
+  echo -e "${GREY}│${NC}    install   ${GREY}# Copy all standards into a project (overwrites)${NC}"
+  echo -e "${GREY}│${NC}    sync      ${GREY}# Update standards already present in a project${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
+  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
+  echo -e "${GREY}│${NC}    gdev standards install ../my-app"
+  echo -e "${GREY}│${NC}    gdev standards sync ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -35,41 +40,13 @@ validate_target() {
   echo "$target"
 }
 
-collect_changes() {
-  local target_dir="$1"
-  local standards_target="$target_dir/standards"
-  local count=0
-
-  if [ ! -d "$standards_target" ]; then
-    while IFS= read -r file; do
-      local filename
-      filename=$(basename "$file")
-      log_add "standards/$filename"
-      echo "$file|$standards_target/$filename" >>"$PENDING_FILE"
-      ((count++))
-    done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
-    echo "$count"
-    return
+guard_root() {
+  local target="$1"
+  local target_abs
+  target_abs=$(cd "$target" && pwd)
+  if [ "$target_abs" = "$PROJECT_ROOT" ]; then
+    log_error "Cannot write to ai-toolkit root. Files here are the source of truth."
   fi
-
-  while IFS= read -r src_file; do
-    local filename
-    filename=$(basename "$src_file")
-    local dest_file="$standards_target/$filename"
-
-    if [ ! -f "$dest_file" ]; then
-      log_add "standards/$filename"
-      echo "$src_file|$dest_file" >>"$PENDING_FILE"
-      ((count++))
-    elif ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "Changed: standards/$filename"
-      echo "$src_file|$dest_file" >>"$PENDING_FILE"
-      echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
-      ((count++))
-    fi
-  done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
-
-  echo "$count"
 }
 
 open_diffs() {
@@ -89,16 +66,65 @@ apply_changes() {
   done <"$PENDING_FILE"
 }
 
+cmd_install() {
+  local target="${1:-.}"
+  target=$(validate_target "$target")
+  guard_root "$target"
+
+  local dest_dir="$target/standards"
+  mkdir -p "$dest_dir"
+
+  log_step "Installing Standards"
+
+  local count=0
+  while IFS= read -r file; do
+    local filename
+    filename=$(basename "$file")
+    cp "$file" "$dest_dir/$filename"
+    log_add "standards/$filename"
+    ((count++))
+  done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
+
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Standards installed${NC} ${GREY}($count files)${NC}"
+}
+
+collect_sync_changes() {
+  local target_dir="$1"
+  local standards_target="$target_dir/standards"
+  local count=0
+
+  if [ ! -d "$standards_target" ]; then
+    log_warn "No standards/ found in target. Run 'gdev standards install' first."
+    echo "0"
+    return
+  fi
+
+  while IFS= read -r dest_file; do
+    local filename
+    filename=$(basename "$dest_file")
+    local src_file="$STANDARDS_SOURCE/$filename"
+
+    if [ ! -f "$src_file" ]; then
+      log_warn "$filename (not in toolkit source, skipping)"
+      continue
+    fi
+
+    if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
+      log_warn "Changed: standards/$filename"
+      echo "$src_file|$dest_file" >>"$PENDING_FILE"
+      echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
+      ((count++))
+    fi
+  done < <(find "$standards_target" -type f -name "*.md" | sort)
+
+  echo "$count"
+}
+
 cmd_sync() {
   local target="${1:-.}"
-
   target=$(validate_target "$target")
-
-  local TARGET_ABS
-  TARGET_ABS=$(cd "$target" && pwd)
-  if [ "$TARGET_ABS" = "$PROJECT_ROOT" ]; then
-    log_error "Cannot sync to ai-toolkit root. Files here are the source of truth."
-  fi
+  guard_root "$target"
 
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
@@ -106,12 +132,11 @@ cmd_sync() {
 
   log_step "Scanning Standards"
   local count
-  count=$(collect_changes "$target")
+  count=$(collect_sync_changes "$target")
 
   if [ "$count" -eq 0 ]; then
-    log_info "Everything up to date"
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Standards up to date${NC}"
+    echo -e "${GREEN}✓ Everything up to date${NC}"
     exit 0
   fi
 
@@ -142,6 +167,9 @@ cmd_sync() {
   esac
 
   apply_changes
+
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count standards)${NC}"
 }
 
 main() {
@@ -151,20 +179,24 @@ main() {
 
   echo -e "${GREY}┌${NC}"
 
-  local command="${1:-sync}"
+  local command="$1"
 
-  if [ "$1" = "sync" ]; then
+  if [ -z "$command" ]; then
+    select_option "Standards command?" "install" "sync"
+    command="$SELECTED_OPTION"
+  else
     shift
   fi
 
   case "$command" in
+  install)
+    cmd_install "$@"
+    ;;
   sync)
     cmd_sync "$@"
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Standards synced${NC}"
     ;;
   *)
-    log_error "Unknown command: $command. Use 'sync' or --help."
+    log_error "Unknown command: $command. Use 'install', 'sync', or --help."
     ;;
   esac
 }
