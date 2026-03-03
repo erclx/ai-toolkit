@@ -28,7 +28,7 @@ Rules come from the target project, not the toolkit. `gdev prompt` reads `.curso
 
 A single template serves the chat workflow. `master-prompt-chat.template` assumes a human is the executor, structuring output as `# FILES / # VERIFY` blocks intended to be pasted into `apply.toml` for file application.
 
-Prompts inject rules only. Standards sync separately via `gdev gov sync` and are not included in generated prompts. Frontmatter is stripped from each `.mdc` file, rules are concatenated with separators, and the payload replaces `{{GOVERNANCE_RULES}}`.
+Prompts inject rules only. Standards sync separately via `gdev standards sync` and are not included in generated prompts. Frontmatter is stripped from each `.mdc` file, rules are concatenated with separators, and the payload replaces `{{GOVERNANCE_RULES}}`.
 
 Output is ephemeral. `.gemini/.tmp/` and `.gemini/settings.json` are gitignored. The master prompt is regenerated per session, reflects whatever rules are currently installed, and can be edited mid-session without affecting the source rules.
 

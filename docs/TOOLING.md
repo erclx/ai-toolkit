@@ -53,7 +53,9 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 | Command                           | What it does                                                 |
 | --------------------------------- | ------------------------------------------------------------ |
 | `gdev gov install [stack] [path]` | Bootstrap rules for a stack into a project                   |
-| `gdev gov sync [path]`            | Push governance rules to a project                           |
+| `gdev gov sync [path]`            | Update rules already present in target (never adds new)      |
+| `gdev standards install [path]`   | Copy all standards into a target project (overwrites)        |
+| `gdev standards sync [path]`      | Update standards already present in target                   |
 | `gdev tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                   |
 | `gdev tooling ref [stack] [path]` | Drop reference docs only                                     |
 | `gdev tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
