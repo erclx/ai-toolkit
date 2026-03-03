@@ -111,10 +111,12 @@ collect_sync_changes() {
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "Changed: standards/$filename"
+      log_warn "standards/$filename"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       ((count++))
+    else
+      log_info "standards/$filename"
     fi
   done < <(find "$standards_target" -type f -name "*.md" | sort)
 

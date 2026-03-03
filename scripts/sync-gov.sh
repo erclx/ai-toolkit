@@ -64,10 +64,12 @@ collect_changes() {
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "Changed: .cursor/rules/$filename"
+      log_warn ".cursor/rules/$filename"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       ((count++))
+    else
+      log_info ".cursor/rules/$filename"
     fi
   done < <(find "$target_rules_dir" -type f -name "*.mdc" | sort)
 
