@@ -28,8 +28,4 @@ stage_setup() {
   echo -e "${GREY}│${NC}"
   log_info "3. Security Test (Zod/Env Rules):"
   echo -e "${GREY}│${NC}    \"Add VITE_MAINTENANCE_MODE to env config with Zod validation. Trigger a full-screen error if true.\""
-
-  echo -e "${GREY}│${NC}"
-  log_info "4. Tooling Audit Test (setup.toml):"
-  echo -e "${GREY}│${NC}    \"gemini dev:setup tooling/base.md tooling/vite-react.md\""
 }

@@ -22,7 +22,7 @@ scripts/sandbox/
 │   └── pr.sh          ← PR description scenario for testing /git:pr
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
-│   └── setup.sh       ← mixed-state project for testing /dev:setup
+
 ├── docs/
 │   └── sync.sh        ← stale README and docs scenario for testing /docs:sync
 └── release/

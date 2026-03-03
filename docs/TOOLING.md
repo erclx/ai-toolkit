@@ -38,7 +38,7 @@ Configs are golden files and the source of truth. On sync they always overwrite 
 
 Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. Workflow docs (`.claude/`) are seeded once and never touched by tooling again. Sync appends only what's missing and never overwrites. Stacks ship seeds pre-populated with terms they introduce, such as `shellcheck` and `vitest`.
 
-References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Drop them with `gdev tooling ref`, then point a Gemini command at them. Run `gemini tooling:review <stack>` after config changes to keep references consistent with configs.
+References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Drop them with `gdev tooling ref`.
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only; existing entries are never touched.
 
@@ -64,19 +64,6 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 ## Common Workflows
 
 Sync to a fresh project: `gdev tooling` → sync → pick stack → enter path.
-
-AI audit of a mature project:
-
-```bash
-gdev tooling ref vite-react ../my-app   # drop references
-gemini dev:setup tooling/vite-react.md  # AI audits drift, applies surgical fixes
-```
-
-Keep references consistent after a config change:
-
-```bash
-gemini tooling:review vite-react        # AI identifies gaps, updates on confirmation
-```
 
 Scaffold a new stack: `gdev tooling scaffold` → enter name → stub structure created in `tooling/<name>/`.
 
