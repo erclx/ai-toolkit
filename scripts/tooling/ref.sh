@@ -6,7 +6,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -39,6 +38,49 @@ select_stack() {
   echo "$SELECTED_OPTION"
 }
 
+collect_references() {
+  local stack="$1"
+  local target="$2"
+  local -n _pending=$3
+
+  local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
+  [ ! -f "$manifest" ] && return
+
+  local extends
+  extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    collect_references "$extends" "$target" "$3"
+  fi
+
+  local reference_file="$PROJECT_ROOT/tooling/$stack/reference.md"
+  [ ! -f "$reference_file" ] && return
+
+  local dest="$target/tooling/$stack.md"
+
+  if [ -f "$dest" ] && diff -q "$reference_file" "$dest" >/dev/null 2>&1; then
+    log_info "tooling/$stack.md"
+    return
+  fi
+
+  log_add "tooling/$stack.md"
+  _pending+=("$stack")
+}
+
+apply_references() {
+  local target="$1"
+  shift
+  local stacks=("$@")
+
+  mkdir -p "$target/tooling"
+
+  for stack in "${stacks[@]}"; do
+    local src="$PROJECT_ROOT/tooling/$stack/reference.md"
+    cp "$src" "$target/tooling/$stack.md"
+    log_add "tooling/$stack.md"
+  done
+}
+
 main() {
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
@@ -61,9 +103,32 @@ main() {
     log_error "Cannot sync tooling to ai-toolkit root. Files here are the source of truth."
   fi
 
+  local pending=()
+
   echo -e "${GREY}┌${NC}" >&2
-  log_step "Syncing References: $stack"
-  inject_tooling_reference "$stack" "$target"
+  log_step "Scanning References: $stack"
+  collect_references "$stack" "$target" pending
+
+  if [ "${#pending[@]}" -eq 0 ]; then
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ References up to date${NC}" >&2
+    exit 0
+  fi
+
+  local dest_display="$target/tooling/"
+  dest_display="${dest_display#./}"
+
+  select_option "Sync ${#pending[@]} reference(s) to $dest_display?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" = "No" ]; then
+    log_warn "Cancelled"
+    echo -e "${GREY}└${NC}" >&2
+    exit 0
+  fi
+
+  log_step "Applying Changes"
+  apply_references "$target" "${pending[@]}"
+
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ References synced${NC}" >&2
 }
