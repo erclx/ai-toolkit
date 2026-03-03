@@ -124,6 +124,8 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Changelog              | Gemini CLI      | `/release:changelog`                                                     |
 | Prompt generation      | gdev            | `gdev prompt`                                                            |
 | Install gov rules      | gdev            | `gdev gov install [stack] [path]`                                        |
-| Sync gov to project    | gdev            | `gdev gov sync [path]`                                                   |
+| Sync gov rules         | gdev            | `gdev gov sync [path]`                                                   |
+| Sync standards         | gdev            | `gdev standards sync [path]`                                             |
+| Sync standards         | gdev            | `gdev standards sync [path]`                                             |
 
 > Gov rules apply to code generation and fix failures only.

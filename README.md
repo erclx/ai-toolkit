@@ -18,10 +18,16 @@ Run `gdev` from the repo root.
 
 ### Governance
 
-| Command                           | Description                                      |
-| --------------------------------- | ------------------------------------------------ |
-| `gdev gov install [stack] [path]` | Bootstrap rules for a stack into a project       |
-| `gdev gov sync [path]`            | Update existing rules and standards in a project |
+| Command                           | Description                                |
+| --------------------------------- | ------------------------------------------ |
+| `gdev gov install [stack] [path]` | Bootstrap rules for a stack into a project |
+| `gdev gov sync [path]`            | Update existing rules in a project         |
+
+### Standards
+
+| Command                      | Description                 |
+| ---------------------------- | --------------------------- |
+| `gdev standards sync [path]` | Sync standards to a project |
 
 ### Tooling
 
