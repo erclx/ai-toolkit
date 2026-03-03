@@ -2,7 +2,7 @@
 
 ## Overview
 
-Governance manages the rules and standards that guide AI agents working in projects. Rules compile into a `.toml` artifact for Gemini and sync as `.mdc` files for Cursor. Standards are markdown docs synced directly to target projects.
+Governance manages the rules and standards that guide AI agents working in projects. Rules sync as `.mdc` files for Cursor. Standards are markdown docs synced directly to target projects.
 
 ## Structure
 
@@ -11,9 +11,10 @@ Governance manages the rules and standards that guide AI agents working in proje
 .cursor/stacks/        ← stack definitions (.toml), declare which rules belong to a stack
 standards/             ← source standards (.md)
 scripts/
-├── install-gov.sh     ← bootstraps rules for a stack into a target project
-├── sync-gov.sh        ← syncs existing rules/standards to external projects
-└── manage-gov.sh      ← entry point (gdev gov)
+├── install-gov.sh      ← bootstraps rules for a stack into a target project
+├── sync-gov.sh         ← syncs existing rules to external projects
+├── manage-gov.sh       ← entry point (gdev gov)
+└── manage-standards.sh ← entry point (gdev standards)
 ```
 
 ## Key Decisions
@@ -51,8 +52,10 @@ Standards cover developer workflow conventions, not code style. Current standard
 | --------------------------------- | ------------------------------------------------------- |
 | `gdev gov install [stack] [path]` | Bootstrap rules for a stack into a target project       |
 | `gdev gov sync [path]`            | Update rules already present in target (never adds new) |
+| `gdev standards install [path]`   | Copy all standards into a target project (overwrites)   |
+| `gdev standards sync [path]`      | Update standards already present in target              |
 
-`gdev gov` with no args shows a picker: `install` or `sync`.
+`gdev gov` with no args shows a picker: `install` or `sync`. Same for `gdev standards`.
 
 ## Workflow
 
@@ -61,14 +64,19 @@ To set up a new project:
 ```bash
 gdev gov install react ../my-app
 # resolves react → node → base, copies all matching rules
+
+gdev standards install ../my-app
+# copies all standards into ../my-app/standards/
 ```
 
 To sync updates to an existing project:
 
 ```bash
 gdev gov sync ../my-app
-# pick scope: Rules + Standards / Rules only / Standards only
 # only diffs rules already present — never adds new files
+
+gdev standards sync ../my-app
+# diffs standards already present, proposes new ones too
 ```
 
 ## Adding a New Rule
@@ -86,9 +94,11 @@ rules = ["200-react", "250-tailwind"]
 
 ## Adding a Standard
 
-Create a `.md` file in `standards/`. No build step needed. Standards sync directly.
+Create a `.md` file in `standards/`. No build step needed. Run `gdev standards install` to push to a new project or `gdev standards sync` to update an existing one.
 
 ## Notes
 
 - `gdev gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
+- `gdev standards install` overwrites all standards intentionally, mirroring `gdev gov install`.
+- `gdev standards sync` only updates files already present — never adds new ones.
 - Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional/addon complexity in stack definitions.

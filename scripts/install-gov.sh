@@ -178,8 +178,6 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-
   cmd_install "$@"
 
   echo -e "${GREY}└${NC}\n"

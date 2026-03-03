@@ -10,10 +10,11 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Governance Sync Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev sync [target-path]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev gov sync [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs rules already installed in the target project."
   echo -e "${GREY}│${NC}  To add new rules, use 'gdev gov install' instead."
+  echo -e "${GREY}│${NC}  To sync standards, use 'gdev standards sync' instead."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path      ${GREY}# Target directory (default: current directory)${NC}"
@@ -38,7 +39,7 @@ validate_target() {
   echo "$target"
 }
 
-collect_rule_changes() {
+collect_changes() {
   local target_dir="$1"
   local target_rules_dir="$target_dir/.cursor/rules"
 
@@ -63,47 +64,14 @@ collect_rule_changes() {
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "Changed: .cursor/rules/$filename"
+      log_warn ".cursor/rules/$filename"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       ((count++))
+    else
+      log_info ".cursor/rules/$filename"
     fi
   done < <(find "$target_rules_dir" -type f -name "*.mdc" | sort)
-
-  echo "$count"
-}
-
-collect_standard_changes() {
-  local target_dir="$1"
-  local standards_source="$PROJECT_ROOT/standards"
-  local standards_target="$target_dir/standards"
-
-  if [ ! -d "$standards_target" ]; then
-    log_info "Standards not installed in target, skipping"
-    echo "0"
-    return
-  fi
-
-  local count=0
-
-  while IFS= read -r dest_file; do
-    local filename
-    filename=$(basename "$dest_file")
-
-    local src_file="$standards_source/$filename"
-
-    if [ ! -f "$src_file" ]; then
-      log_warn "$filename (not in toolkit source, skipping)"
-      continue
-    fi
-
-    if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "Changed: standards/$filename"
-      echo "$src_file|$dest_file" >>"$PENDING_FILE"
-      echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
-      ((count++))
-    fi
-  done < <(find "$standards_target" -type f -name "*.md" | sort)
 
   echo "$count"
 }
@@ -149,7 +117,6 @@ main() {
   parse_args "$@"
   check_dependencies
 
-  echo -e "${GREY}┌${NC}" >&2
   TARGET_PATH=$(validate_target "$TARGET_PATH")
 
   local TARGET_ABS
@@ -158,77 +125,50 @@ main() {
     log_error "Cannot sync to ai-toolkit root. Files here are the source of truth."
   fi
 
-  local scope_options=("Rules + Standards" "Rules only" "Standards only")
-  select_option "Sync scope?" "${scope_options[@]}"
-  local scope="$SELECTED_OPTION"
-
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
 
-  local rules_count=0
-  local standards_count=0
+  log_step "Scanning Rules"
+  local count
+  count=$(collect_changes "$TARGET_PATH")
 
-  if [[ "$scope" == "Rules + Standards" || "$scope" == "Rules only" ]]; then
-    log_step "Scanning Rules"
-    rules_count=$(collect_rule_changes "$TARGET_PATH")
-    if [ "$rules_count" -eq 0 ]; then
-      log_info "Rules up to date"
-    fi
+  if [ "$count" -eq 0 ]; then
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ Everything up to date${NC}" >&2
+    exit 0
   fi
 
-  if [[ "$scope" == "Rules + Standards" || "$scope" == "Standards only" ]]; then
-    log_step "Scanning Standards"
-    standards_count=$(collect_standard_changes "$TARGET_PATH")
-    if [ "$standards_count" -eq 0 ]; then
-      log_info "Standards up to date"
-    fi
+  local has_diffs=false
+  [ -s "$DRIFTED_FILE" ] && has_diffs=true
+
+  if [ "$has_diffs" = true ]; then
+    select_option "Apply $count changes?" "Review diffs" "Apply all" "No"
+  else
+    select_option "Apply $count changes?" "Yes" "No"
   fi
 
-  local total=$((rules_count + standards_count))
-
-  if [ "$total" -gt 0 ]; then
-    local has_diffs=false
-    [ -s "$DRIFTED_FILE" ] && has_diffs=true
-
-    if [ "$has_diffs" = true ]; then
-      select_option "Apply $total changes?" "Review diffs" "Apply all" "No"
-    else
-      select_option "Apply $total changes?" "Yes" "No"
-    fi
-
-    case "$SELECTED_OPTION" in
-    "Review diffs")
-      open_diffs
-      select_option "Apply $total changes?" "Yes" "No"
-      [ "$SELECTED_OPTION" == "No" ] && {
-        log_warn "Sync cancelled"
-        echo -e "${GREY}└${NC}" >&2
-        exit 0
-      }
-      ;;
-    "No")
+  case "$SELECTED_OPTION" in
+  "Review diffs")
+    open_diffs
+    select_option "Apply $count changes?" "Yes" "No"
+    [ "$SELECTED_OPTION" == "No" ] && {
       log_warn "Sync cancelled"
       echo -e "${GREY}└${NC}" >&2
       exit 0
-      ;;
-    esac
+    }
+    ;;
+  "No")
+    log_warn "Sync cancelled"
+    echo -e "${GREY}└${NC}" >&2
+    exit 0
+    ;;
+  esac
 
-    apply_changes
+  apply_changes
 
-    local summary=""
-    [ "$rules_count" -gt 0 ] && summary="${rules_count} rules"
-    if [ "$standards_count" -gt 0 ]; then
-      [ -n "$summary" ] && summary+=", "
-      summary+="${standards_count} standards"
-    fi
-
-    echo -e "${GREY}└${NC}\n" >&2
-    echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($summary)${NC}" >&2
-  else
-    echo -e "${GREY}└${NC}\n" >&2
-    echo -e "${GREEN}✓ Everything up to date${NC}" >&2
-  fi
+  echo -e "${GREY}└${NC}\n" >&2
+  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count rules)${NC}" >&2
 }
 
 main "$@"
