@@ -140,7 +140,17 @@ cmd_install() {
     log_info "$rule"
   done
 
-  select_option "Install ${#found[@]} rules to $target?" "Yes" "No"
+  local display_target
+  display_target="${target%/}"
+  display_target="${display_target#./}"
+  local display_path
+  if [ "$display_target" = "." ] || [ -z "$display_target" ]; then
+    display_path=".cursor/rules"
+  else
+    display_path="$display_target/.cursor/rules"
+  fi
+
+  select_option "Install ${#found[@]} rules to $display_path?" "Yes" "No"
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
