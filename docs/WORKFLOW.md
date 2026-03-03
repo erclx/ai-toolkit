@@ -109,24 +109,20 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 
 ## Tool Mapping Summary
 
-| Stage                   | Tool                 | Gov rules? | Command / Note                                      |
-| ----------------------- | -------------------- | ---------- | --------------------------------------------------- |
-| Scaffold .claude/       | gdev                 | —          | `gdev claude init`                                  |
-| Project snapshot        | bun script           | —          | `bun run snapshot` — ASCII tree only, gitignored    |
-| Session orientation     | Claude chat          | No         | Paste SESSION.md first, every session               |
-| Requirements & planning | Claude chat          | No         | —                                                   |
-| Architecture design     | Claude chat          | No         | —                                                   |
-| Design decisions        | Claude chat          | No         | —                                                   |
-| Task tracking           | Claude chat + manual | No         | Paste TASKS.md every session after SESSION.md       |
-| Feature planning        | Claude chat          | No         | New feature: also paste REQUIREMENTS + ARCHITECTURE |
-| Code generation         | Gemini pro chat      | Yes        | Master prompt via `gdev prompt`                     |
-| Apply file changes      | Gemini CLI           | No         | `/dev:apply` — file writer only, no planning        |
-| Lint / format / tests   | bun scripts          | —          | `bun run check`                                     |
-| Fix failures            | Gemini chat          | Yes        | Paste error in same session                         |
-| Feature review          | Fresh chat           | No         | Copy REVIEW.md template, paste task + plan + code   |
-| Escalate design issues  | Claude chat          | No         | Paste error + relevant plan context                 |
-| Commit message          | Gemini CLI command   | —          | `/git:commit`                                       |
-| PR description          | Gemini CLI command   | —          | `/git:pr`                                           |
-| Changelog               | Gemini CLI command   | —          | `/release:changelog`                                |
-| Prompt generation       | gdev                 | —          | `gdev prompt`                                       |
-| Gov sync to project     | gdev                 | —          | `gdev gov sync [path]`                              |
+| Stage                  | Tool            | Command / Note                                                           |
+| ---------------------- | --------------- | ------------------------------------------------------------------------ |
+| Scaffold .claude/      | gdev            | `gdev claude init`                                                       |
+| Planning (all docs)    | Claude chat     | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features |
+| Code generation        | Gemini pro chat | Master prompt via `gdev prompt`                                          |
+| Apply file changes     | Gemini CLI      | `/dev:apply` — file writer only, no planning                             |
+| Lint / format / tests  | bun scripts     | `bun run check`                                                          |
+| Fix failures           | Gemini chat     | Paste error in same session                                              |
+| Feature review         | Fresh chat      | Copy REVIEW.md template, paste task + plan + code                        |
+| Escalate design issues | Claude chat     | Paste error + relevant plan context                                      |
+| Commit message         | Gemini CLI      | `/git:commit`                                                            |
+| PR description         | Gemini CLI      | `/git:pr`                                                                |
+| Changelog              | Gemini CLI      | `/release:changelog`                                                     |
+| Prompt generation      | gdev            | `gdev prompt`                                                            |
+| Gov sync to project    | gdev            | `gdev gov sync [path]`                                                   |
+
+> Gov rules apply to code generation and fix failures only.
