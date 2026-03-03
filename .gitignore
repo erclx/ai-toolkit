@@ -9,8 +9,8 @@
 node_modules/
 
 # Tooling
-.gemini/*
-!.gemini/settings.json
+.gemini/.tmp/
+.gemini/settings.json
 
 # Claude
 .claude/PROJECT.md
