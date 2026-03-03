@@ -115,6 +115,7 @@ collect_stack_gitignore() {
   local stack="$1"
   local target="$2"
   local -n _gi_missing=$3
+  local -n _gi_present=$4
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -123,7 +124,7 @@ collect_stack_gitignore() {
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
   if [ -n "$extends" ]; then
-    collect_stack_gitignore "$extends" "$target" "$3"
+    collect_stack_gitignore "$extends" "$target" "$3" "$4"
   fi
 
   local gitignore="$target/.gitignore"
@@ -156,6 +157,8 @@ collect_stack_gitignore() {
           local normalized="${entry%/}"
           if [ ! -f "$gitignore" ] || { ! grep -qxF "$entry" "$gitignore" && ! grep -qxF "$normalized" "$gitignore"; }; then
             _gi_missing+=("$entry")
+          else
+            _gi_present+=("$entry")
           fi
         done < <(echo "$rest" | tr ',' '\n')
       fi
@@ -168,6 +171,7 @@ collect_stack_scripts() {
   local target="$2"
   local -n _drifted_scripts=$3
   local -n _missing_scripts=$4
+  local -n _matching_scripts=$5
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -176,7 +180,7 @@ collect_stack_scripts() {
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
   if [ -n "$extends" ]; then
-    collect_stack_scripts "$extends" "$target" "$3" "$4"
+    collect_stack_scripts "$extends" "$target" "$3" "$4" "$5"
   fi
 
   local pkg="$target/package.json"
@@ -213,6 +217,8 @@ collect_stack_scripts() {
         _missing_scripts+=("$key")
       elif [ "$pkg_val" != "$val" ]; then
         _drifted_scripts+=("$key")
+      else
+        _matching_scripts+=("$key")
       fi
     fi
   done <"$manifest"
@@ -222,6 +228,7 @@ collect_stack_deps() {
   local stack="$1"
   local target="$2"
   local -n _missing_deps=$3
+  local -n _present_deps=$4
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -230,7 +237,7 @@ collect_stack_deps() {
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
   if [ -n "$extends" ]; then
-    collect_stack_deps "$extends" "$target" "$3"
+    collect_stack_deps "$extends" "$target" "$3" "$4"
   fi
 
   local pkg="$target/package.json"
@@ -270,6 +277,8 @@ collect_stack_deps() {
 
     if [ "$found" = "no" ]; then
       _missing_deps+=("$pkg_name")
+    else
+      _present_deps+=("$pkg_name")
     fi
   done <"$manifest"
 }
@@ -282,9 +291,11 @@ scan_configs() {
 
   collect_stack_configs "$stack" "$target" NEW_FILES DRIFTED_FILES MATCHING_FILES
 
-  log_info "${#MATCHING_FILES[@]} files up to date"
+  for f in "${MATCHING_FILES[@]}"; do
+    log_info "$f"
+  done
   for f in "${DRIFTED_FILES[@]}"; do
-    log_warn "$f (drifted)"
+    log_warn "$f"
   done
   for f in "${NEW_FILES[@]}"; do
     log_add "$f"
@@ -296,49 +307,53 @@ scan_configs() {
 
   collect_stack_seeds "$stack" "$target" SEEDED_FILES SEED_MISSING_FILES
 
-  log_info "${#SEEDED_FILES[@]} files up to date"
+  for f in "${SEEDED_FILES[@]}"; do
+    log_info "$f"
+  done
   for f in "${SEED_MISSING_FILES[@]}"; do
     log_add "$f"
   done
 
   SEED_CHANGES=${#SEED_MISSING_FILES[@]}
 
-  log_step "Scanning Scripts"
+  if [ -f "$target/package.json" ]; then
+    log_step "Scanning Scripts"
 
-  collect_stack_scripts "$stack" "$target" DRIFTED_SCRIPTS MISSING_SCRIPTS
+    collect_stack_scripts "$stack" "$target" DRIFTED_SCRIPTS MISSING_SCRIPTS MATCHING_SCRIPTS
 
-  if [ "${#DRIFTED_SCRIPTS[@]}" -eq 0 ] && [ "${#MISSING_SCRIPTS[@]}" -eq 0 ]; then
-    log_info "Up to date"
+    for s in "${MATCHING_SCRIPTS[@]}"; do
+      log_info "$s"
+    done
+    for s in "${DRIFTED_SCRIPTS[@]}"; do
+      log_warn "$s"
+    done
+    for s in "${MISSING_SCRIPTS[@]}"; do
+      log_add "$s"
+    done
+
+    SCRIPT_CHANGES=$((${#DRIFTED_SCRIPTS[@]} + ${#MISSING_SCRIPTS[@]}))
+
+    log_step "Scanning Dependencies"
+
+    collect_stack_deps "$stack" "$target" MISSING_DEPS PRESENT_DEPS
+
+    for d in "${PRESENT_DEPS[@]}"; do
+      log_info "$d"
+    done
+    for d in "${MISSING_DEPS[@]}"; do
+      log_add "$d"
+    done
+
+    DEP_CHANGES=${#MISSING_DEPS[@]}
   fi
-  for s in "${DRIFTED_SCRIPTS[@]}"; do
-    log_warn "$s (drifted)"
-  done
-  for s in "${MISSING_SCRIPTS[@]}"; do
-    log_add "$s"
-  done
-
-  SCRIPT_CHANGES=$((${#DRIFTED_SCRIPTS[@]} + ${#MISSING_SCRIPTS[@]}))
-
-  log_step "Scanning Dependencies"
-
-  collect_stack_deps "$stack" "$target" MISSING_DEPS
-
-  if [ "${#MISSING_DEPS[@]}" -eq 0 ]; then
-    log_info "Up to date"
-  fi
-  for d in "${MISSING_DEPS[@]}"; do
-    log_warn "$d (missing)"
-  done
-
-  DEP_CHANGES=${#MISSING_DEPS[@]}
 
   log_step "Scanning Gitignore"
 
-  collect_stack_gitignore "$stack" "$target" GITIGNORE_MISSING_FILES
+  collect_stack_gitignore "$stack" "$target" GITIGNORE_MISSING_FILES GITIGNORE_PRESENT_FILES
 
-  if [ "${#GITIGNORE_MISSING_FILES[@]}" -eq 0 ]; then
-    log_info "Up to date"
-  fi
+  for f in "${GITIGNORE_PRESENT_FILES[@]}"; do
+    log_info "$f"
+  done
   for f in "${GITIGNORE_MISSING_FILES[@]}"; do
     log_add "$f"
   done
@@ -385,9 +400,12 @@ main() {
   SEEDED_FILES=()
   SEED_MISSING_FILES=()
   GITIGNORE_MISSING_FILES=()
+  GITIGNORE_PRESENT_FILES=()
   DRIFTED_SCRIPTS=()
   MISSING_SCRIPTS=()
+  MATCHING_SCRIPTS=()
   MISSING_DEPS=()
+  PRESENT_DEPS=()
   SEEN_CONFIGS=()
   SEEN_SEEDS=()
   SEEN_GITIGNORE=()
