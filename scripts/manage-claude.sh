@@ -10,6 +10,7 @@ source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 CLAUDE_SEEDS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude"
 CLAUDE_SEED="$CLAUDE_SEEDS_DIR/SESSION.md"
+CLAUDE_MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -79,6 +80,47 @@ apply_seeds() {
   done
 }
 
+collect_gitignore_entries() {
+  local target="$1"
+  local -n _gi_pending=$2
+  local gitignore="$target/.gitignore"
+  local in_section=0
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\[gitignore\] ]]; then
+      in_section=1
+      continue
+    fi
+
+    if [[ "$in_section" -eq 1 && "$line" =~ ^\[.+\] ]]; then
+      break
+    fi
+
+    [ "$in_section" -eq 0 ] && continue
+    [ -z "$line" ] && continue
+
+    if [[ "$line" =~ ^\"(#[^\"]+)\"[[:space:]]*=[[:space:]]*\[(.*)$ ]]; then
+      local rest="${BASH_REMATCH[2]}"
+
+      if [[ "$rest" =~ \] ]]; then
+        rest="${rest%%]*}"
+        while IFS= read -r entry; do
+          entry=$(echo "$entry" | tr -d '",' | xargs)
+          [ -z "$entry" ] && continue
+
+          local normalized="${entry%/}"
+          if [ ! -f "$gitignore" ] || { ! grep -qxF "$entry" "$gitignore" && ! grep -qxF "$normalized" "$gitignore"; }; then
+            log_add ".gitignore: $entry"
+            _gi_pending+=("$entry")
+          else
+            log_info ".gitignore: $entry"
+          fi
+        done < <(echo "$rest" | tr ',' '\n')
+      fi
+    fi
+  done <"$CLAUDE_MANIFEST"
+}
+
 cmd_init() {
   local target="${1:-.}"
 
@@ -91,14 +133,31 @@ cmd_init() {
 
   if [ "${#pending[@]}" -eq 0 ]; then
     echo -e "${GREY}│${NC}" >&2
-    log_step "Updating .gitignore"
-    merge_gitignore "claude" "$target"
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow ready${NC}"
+  else
+    select_option "Seed ${#pending[@]} file(s) to .claude/?" "Yes" "No"
+
+    if [ "$SELECTED_OPTION" = "No" ]; then
+      log_warn "Cancelled"
+      echo -e "${GREY}└${NC}"
+      exit 0
+    fi
+
+    log_step "Applying Changes"
+    apply_seeds "$target" "${pending[@]}"
+    echo -e "${GREY}│${NC}" >&2
+  fi
+
+  local gi_pending=()
+
+  log_step "Scanning .gitignore"
+  collect_gitignore_entries "$target" gi_pending
+
+  if [ "${#gi_pending[@]}" -eq 0 ]; then
+    log_info ".gitignore up to date"
     return
   fi
 
-  select_option "Seed ${#pending[@]} file(s) to .claude/?" "Yes" "No"
+  select_option "Add entries to .gitignore?" "Yes" "No"
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
@@ -107,9 +166,6 @@ cmd_init() {
   fi
 
   log_step "Applying Changes"
-  apply_seeds "$target" "${pending[@]}"
-
-  log_step "Updating .gitignore"
   merge_gitignore "claude" "$target"
 }
 
