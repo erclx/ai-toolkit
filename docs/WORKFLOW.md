@@ -123,6 +123,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | PR description         | Gemini CLI      | `/git:pr`                                                                |
 | Changelog              | Gemini CLI      | `/release:changelog`                                                     |
 | Prompt generation      | gdev            | `gdev prompt`                                                            |
-| Gov sync to project    | gdev            | `gdev gov sync [path]`                                                   |
+| Install gov rules      | gdev            | `gdev gov install [stack] [path]`                                        |
+| Sync gov to project    | gdev            | `gdev gov sync [path]`                                                   |
 
 > Gov rules apply to code generation and fix failures only.

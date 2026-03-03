@@ -18,10 +18,10 @@ Run `gdev` from the repo root.
 
 ### Governance
 
-| Command                | Description                                  |
-| ---------------------- | -------------------------------------------- |
-| `gdev gov build`       | Compile rules into `rules.toml`              |
-| `gdev gov sync [path]` | Push rules and standards to a target project |
+| Command                           | Description                                      |
+| --------------------------------- | ------------------------------------------------ |
+| `gdev gov install [stack] [path]` | Bootstrap rules for a stack into a project       |
+| `gdev gov sync [path]`            | Update existing rules and standards in a project |
 
 ### Tooling
 
@@ -59,7 +59,7 @@ Run `gdev` from the repo root.
 
 ## Architecture
 
-Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. `scripts/build-gov.sh` compiles rules into `gemini/commands/gov/rules.toml`. Tooling stacks live in `tooling/` and sync to target projects as concrete files.
+Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. Stack definitions (`.cursor/stacks/`) declare which rules belong to each stack. Tooling stacks live in `tooling/` and sync to target projects as concrete files.
 
 See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, prompts, and workflow.
 

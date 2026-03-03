@@ -8,12 +8,11 @@ Governance manages the rules and standards that guide AI agents working in proje
 
 ```
 .cursor/rules/         ← source rules (.mdc), organized by domain
+.cursor/stacks/        ← stack definitions (.toml), declare which rules belong to a stack
 standards/             ← source standards (.md)
-gemini/commands/gov/
-└── rules.toml         ← compiled artifact, do not edit directly
 scripts/
-├── build-gov.sh       ← compiles rules into .toml artifact
-├── sync-gov.sh        ← syncs rules/standards to external projects
+├── install-gov.sh     ← bootstraps rules for a stack into a target project
+├── sync-gov.sh        ← syncs existing rules/standards to external projects
 └── manage-gov.sh      ← entry point (gdev gov)
 ```
 
@@ -31,38 +30,65 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)  |
 | `900+`    | workflow (Node, tooling, etc.)                     |
 
+**Install vs sync** are separate concerns. `gdev gov install` bootstraps a project with all rules for a given stack — it overwrites. `gdev gov sync` updates rules already present in the target — it never adds new files. Use install once to set up, use sync to keep up to date.
+
+Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed. This mirrors the same pattern used by tooling manifests.
+
 Standards cover developer workflow conventions, not code style. Current standards: branch, changelog, commit, PR, prose, readme. Code style belongs in rules. Standards are the same across every project, so they sync directly without a compilation step.
 
-`rules.toml` is generated but committed so Gemini commands work without a build step on first use. `build-gov.sh` diffs source files against the last build commit, recompiles only when sources or the template change, then auto-commits the updated artifact.
+## Stacks
+
+| Stack    | Extends | Rules                                                                                  |
+| -------- | ------- | -------------------------------------------------------------------------------------- |
+| `base`   | —       | 000–060 core rules                                                                     |
+| `node`   | base    | 100-typescript, 900-node                                                               |
+| `react`  | node    | 200-react, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
+| `python` | base    | stub — add python rules when available                                                 |
 
 ## CLI
 
-| Command                | What it does                                     |
-| ---------------------- | ------------------------------------------------ |
-| `gdev gov build`       | Scan for changes, recompile `rules.toml`, commit |
-| `gdev gov sync [path]` | Push rules and/or standards to a target project  |
+| Command                           | What it does                                            |
+| --------------------------------- | ------------------------------------------------------- |
+| `gdev gov install [stack] [path]` | Bootstrap rules for a stack into a target project       |
+| `gdev gov sync [path]`            | Update rules already present in target (never adds new) |
 
-`gdev gov` with no args shows a picker: `build` or `sync`.
+`gdev gov` with no args shows a picker: `install` or `sync`.
 
 ## Workflow
 
-Typical rule update cycle: edit or add a `.mdc` file in `.cursor/rules/`, run `gdev gov build`, then `gdev gov sync ../my-app` to push to target projects.
+To set up a new project:
 
-To sync to a new project:
+```bash
+gdev gov install react ../my-app
+# resolves react → node → base, copies all matching rules
+```
+
+To sync updates to an existing project:
 
 ```bash
 gdev gov sync ../my-app
 # pick scope: Rules + Standards / Rules only / Standards only
+# only diffs rules already present — never adds new files
 ```
 
-## Adding a New Rule or Standard
+## Adding a New Rule
 
-To add a rule, create a `.mdc` file anywhere under `.cursor/rules/` using the numbering convention above, then run `gdev gov build`. It is auto-discovered with no other changes needed.
+Create a `.mdc` file anywhere under `.cursor/rules/` using the numbering convention above. It is auto-discovered with no other changes needed. To include it in a stack, add it to the `rules` array in the relevant `.cursor/stacks/*.toml` file.
 
-To add a standard, create a `.md` file in `standards/`. No build step needed. Standards sync directly.
+## Adding a Stack
+
+Create a new `.toml` file in `.cursor/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.mdc`) in the `rules` array. No build step needed — install reads stacks directly.
+
+```toml
+extends = "node"
+rules = ["200-react", "250-tailwind"]
+```
+
+## Adding a Standard
+
+Create a `.md` file in `standards/`. No build step needed. Standards sync directly.
 
 ## Notes
 
-- `gemini/commands/gov/rules.toml` is overwritten on every build. Never edit it directly.
-- Adding a new compilable target type is one line in the `BUILD_TARGETS` array in `build-gov.sh`.
 - `gdev gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
+- Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional/addon complexity in stack definitions.

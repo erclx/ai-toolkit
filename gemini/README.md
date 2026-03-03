@@ -15,8 +15,6 @@ gemini/
 │   │   ├── branch.toml      ← rename current branch to conventional format
 │   │   ├── commit.toml      ← generate conventional commit message from staged changes
 │   │   └── pr.toml          ← generate PR description and open draft
-│   ├── gov/
-│   │   └── rules.toml       ← compiled governance rules artifact (do not edit directly)
 │   └── release/
 │       └── changelog.toml   ← generate changelog entry from commit history
 └── gemini-extension.json    ← extension manifest, points contextFileName to GEMINI.md
@@ -30,7 +28,6 @@ gemini/
 | `/git:branch`        | Rename current branch to match conventional format         |
 | `/git:pr`            | Generate a PR description and open a draft                 |
 | `/dev:apply`         | Apply file changes from a chat response                    |
-| `/gov:rules`         | Install governance rules into a project                    |
 | `/docs:sync`         | Sync README and docs with codebase changes                 |
 | `/release:changelog` | Generate a changelog entry from commit history             |
 

@@ -12,6 +12,9 @@ show_help() {
   log_step "Governance Sync Usage"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} gdev sync [target-path]"
   echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}  Syncs rules already installed in the target project."
+  echo -e "${GREY}│${NC}  To add new rules, use 'gdev gov install' instead."
+  echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path      ${GREY}# Target directory (default: current directory)${NC}"
   echo -e "${GREY}│${NC}"
@@ -20,11 +23,6 @@ show_help() {
   echo -e "${GREY}└${NC}"
   exit 0
 }
-
-GOV_TARGETS=(
-  "Rules:.cursor/rules:*.mdc:.cursor/rules"
-  "Standards:standards:*.md:standards"
-)
 
 check_dependencies() {
   command -v diff >/dev/null 2>&1 || log_error "diff not installed"
@@ -40,37 +38,72 @@ validate_target() {
   echo "$target"
 }
 
-collect_changes() {
-  local src_dir=$1
-  local target_dir=$2
-  local pattern=$3
-  local dest_prefix=$4
-  local count=0
+collect_rule_changes() {
+  local target_dir="$1"
+  local target_rules_dir="$target_dir/.cursor/rules"
 
-  if [ ! -d "$src_dir" ]; then
-    log_warn "Source directory not found: $src_dir"
+  if [ ! -d "$target_rules_dir" ]; then
+    log_warn "No .cursor/rules/ found in target. Run 'gdev gov install' first."
     echo "0"
     return
   fi
 
-  while IFS= read -r file; do
+  local count=0
+
+  while IFS= read -r dest_file; do
     local filename
-    filename=$(basename "$file")
+    filename=$(basename "$dest_file")
 
-    local dest
-    dest="$target_dir/$dest_prefix/$filename"
+    local src_file
+    src_file=$(find "$PROJECT_ROOT/.cursor/rules" -type f -name "$filename" | head -n 1)
 
-    if [ ! -f "$dest" ]; then
-      log_add "$dest_prefix/$filename"
-      echo "$file|$dest" >>"$PENDING_FILE"
-      ((count++))
-    elif ! diff -q "$file" "$dest" >/dev/null 2>&1; then
-      log_warn "Changed: $dest_prefix/$filename"
-      echo "$file|$dest" >>"$PENDING_FILE"
-      echo "$file|$dest" >>"$DRIFTED_FILE"
+    if [ -z "$src_file" ]; then
+      log_warn "$filename (not in toolkit source, skipping)"
+      continue
+    fi
+
+    if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
+      log_warn "Changed: .cursor/rules/$filename"
+      echo "$src_file|$dest_file" >>"$PENDING_FILE"
+      echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       ((count++))
     fi
-  done < <(find "$src_dir" -type f -name "$pattern")
+  done < <(find "$target_rules_dir" -type f -name "*.mdc" | sort)
+
+  echo "$count"
+}
+
+collect_standard_changes() {
+  local target_dir="$1"
+  local standards_source="$PROJECT_ROOT/standards"
+  local standards_target="$target_dir/standards"
+
+  if [ ! -d "$standards_target" ]; then
+    log_info "Standards not installed in target, skipping"
+    echo "0"
+    return
+  fi
+
+  local count=0
+
+  while IFS= read -r dest_file; do
+    local filename
+    filename=$(basename "$dest_file")
+
+    local src_file="$standards_source/$filename"
+
+    if [ ! -f "$src_file" ]; then
+      log_warn "$filename (not in toolkit source, skipping)"
+      continue
+    fi
+
+    if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
+      log_warn "Changed: standards/$filename"
+      echo "$src_file|$dest_file" >>"$PENDING_FILE"
+      echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
+      ((count++))
+    fi
+  done < <(find "$standards_target" -type f -name "*.md" | sort)
 
   echo "$count"
 }
@@ -90,22 +123,6 @@ apply_changes() {
     mkdir -p "$(dirname "$dest")"
     cp "$src" "$dest"
   done <"$PENDING_FILE"
-}
-
-resolve_scope() {
-  SELECTED_TARGETS=()
-
-  case "$SELECTED_OPTION" in
-  "Rules + Standards")
-    SELECTED_TARGETS=("${GOV_TARGETS[@]}")
-    ;;
-  "Rules only")
-    SELECTED_TARGETS=("${GOV_TARGETS[0]}")
-    ;;
-  "Standards only")
-    SELECTED_TARGETS=("${GOV_TARGETS[1]}")
-    ;;
-  esac
 }
 
 parse_args() {
@@ -142,30 +159,33 @@ main() {
   fi
 
   local scope_options=("Rules + Standards" "Rules only" "Standards only")
-
   select_option "Sync scope?" "${scope_options[@]}"
-  resolve_scope
+  local scope="$SELECTED_OPTION"
 
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
 
-  declare -A TARGET_COUNTS
-  local total=0
+  local rules_count=0
+  local standards_count=0
 
-  for target in "${SELECTED_TARGETS[@]}"; do
-    IFS=':' read -r label src_rel pattern dest_prefix <<<"$target"
-
-    log_step "Syncing $label"
-    local count
-    count=$(collect_changes "$PROJECT_ROOT/$src_rel" "$TARGET_PATH" "$pattern" "$dest_prefix")
-    TARGET_COUNTS["$label"]=$count
-    total=$((total + count))
-
-    if [ "$count" -eq 0 ]; then
-      log_info "$label up to date"
+  if [[ "$scope" == "Rules + Standards" || "$scope" == "Rules only" ]]; then
+    log_step "Scanning Rules"
+    rules_count=$(collect_rule_changes "$TARGET_PATH")
+    if [ "$rules_count" -eq 0 ]; then
+      log_info "Rules up to date"
     fi
-  done
+  fi
+
+  if [[ "$scope" == "Rules + Standards" || "$scope" == "Standards only" ]]; then
+    log_step "Scanning Standards"
+    standards_count=$(collect_standard_changes "$TARGET_PATH")
+    if [ "$standards_count" -eq 0 ]; then
+      log_info "Standards up to date"
+    fi
+  fi
+
+  local total=$((rules_count + standards_count))
 
   if [ "$total" -gt 0 ]; then
     local has_diffs=false
@@ -197,14 +217,11 @@ main() {
     apply_changes
 
     local summary=""
-    for target in "${SELECTED_TARGETS[@]}"; do
-      IFS=':' read -r label _ _ _ <<<"$target"
-      local c="${TARGET_COUNTS[$label]}"
-      if [ "$c" -gt 0 ]; then
-        [ -n "$summary" ] && summary+=", "
-        summary+="$c $label"
-      fi
-    done
+    [ "$rules_count" -gt 0 ] && summary="${rules_count} rules"
+    if [ "$standards_count" -gt 0 ]; then
+      [ -n "$summary" ] && summary+=", "
+      summary+="${standards_count} standards"
+    fi
 
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($summary)${NC}" >&2
