@@ -11,8 +11,9 @@ Governance manages the rules and standards that guide AI agents working in proje
 .cursor/stacks/        ← stack definitions (.toml), declare which rules belong to a stack
 standards/             ← source standards (.md)
 scripts/
-├── install-gov.sh      ← bootstraps rules for a stack into a target project
-├── sync-gov.sh         ← syncs existing rules to external projects
+├── gov/
+│   ├── install.sh      ← bootstraps rules for a stack into a target project
+│   └── sync.sh         ← syncs existing rules to external projects
 ├── manage-gov.sh       ← entry point (gdev gov)
 └── manage-standards.sh ← entry point (gdev standards)
 ```

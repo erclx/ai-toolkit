@@ -39,10 +39,10 @@ main() {
 
   case "$command" in
   install)
-    exec "$PROJECT_ROOT/scripts/install-gov.sh" "$@"
+    exec "$PROJECT_ROOT/scripts/gov/install.sh" "$@"
     ;;
   sync)
-    exec "$PROJECT_ROOT/scripts/sync-gov.sh" "$@"
+    exec "$PROJECT_ROOT/scripts/gov/sync.sh" "$@"
     ;;
   *)
     echo -e "${GREY}┌${NC}"
