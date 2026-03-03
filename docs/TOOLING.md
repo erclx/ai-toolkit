@@ -27,7 +27,7 @@ tooling/
 │   ├── manifest.toml  ← gitignore only, no configs or deps
 │   └── reference.md
 └── gemini/
-    ├── configs/       ← .gemini/settings.json, always overwrite on sync
+    ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
     ├── manifest.toml  ← gitignore only, no deps or scripts
     └── reference.md
 ```
@@ -88,4 +88,4 @@ Sync auto-discovers the new stack.
 - Commit golden config changes with `--no-verify`. Lint-staged runs on the template files themselves, not project source.
 - `cspell.json` references `.cspell/` dictionaries. Seeds must exist, even if empty, or cspell errors on missing paths.
 - Tooling configs are concrete files and skip the governance build compilation step.
-- Gemini stack manages `.gemini/settings.json` only — no deps, no scripts, gitignores `.gemini/.tmp/`.
+- Gemini stack seeds `.gemini/settings.json` only — no deps, no scripts. It gitignores `.gemini/.tmp/` and the user-owned `.gemini/settings.json`.

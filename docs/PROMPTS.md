@@ -30,7 +30,7 @@ A single template serves the chat workflow. `master-prompt-chat.template` assume
 
 Prompts inject rules only. Rules are stack-aware and compiled; standards sync separately via `gdev gov sync` and are not included in generated prompts. Frontmatter is stripped from each `.mdc` file, rules are concatenated with separators, and the payload replaces `{{GOVERNANCE_RULES}}`.
 
-Output is ephemeral. `.gemini/.tmp/` is gitignored. The master prompt is regenerated per session, reflects whatever rules are currently installed, and can be edited mid-session without affecting the source rules.
+Output is ephemeral. `.gemini/.tmp/` and `.gemini/settings.json` are gitignored. The master prompt is regenerated per session, reflects whatever rules are currently installed, and can be edited mid-session without affecting the source rules.
 
 ## CLI
 
@@ -64,5 +64,5 @@ Templates live in `scripts/templates/`. Each must contain the `{{GOVERNANCE_RULE
 
 - Run `gdev gov sync` before `gdev prompt` when switching projects or stacks.
 - The generated prompt includes raw rule content, so review it before a sensitive session.
-- Add `.gemini/.tmp/` to `.gitignore` if missing.
+- Add `.gemini/.tmp/` and `.gemini/settings.json` to `.gitignore` if missing.
 ````
