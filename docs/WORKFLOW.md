@@ -125,7 +125,9 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Prompt generation      | gdev            | `gdev prompt`                                                            |
 | Install gov rules      | gdev            | `gdev gov install [stack] [path]`                                        |
 | Sync gov rules         | gdev            | `gdev gov sync [path]`                                                   |
+| Install standards      | gdev            | `gdev standards install [path]`                                          |
 | Sync standards         | gdev            | `gdev standards sync [path]`                                             |
+| Install standards      | gdev            | `gdev standards install [path]`                                          |
 | Sync standards         | gdev            | `gdev standards sync [path]`                                             |
 
 > Gov rules apply to code generation and fix failures only.
