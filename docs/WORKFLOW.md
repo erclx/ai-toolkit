@@ -8,7 +8,7 @@ A concise overview of all documents in the dev workflow, with tool mappings.
 
 All planning docs live in `.claude/` at the project root. Git tracked, part of the project, not throwaway notes.
 
-> **Setup:** Run `gdev claude init` in a new project to generate this structure automatically.
+> **Setup:** Run `gdev claude init` in a new project to interactively seed this structure.
 
 ```
 .claude/
@@ -111,7 +111,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 
 | Stage                  | Tool            | Command / Note                                                           |
 | ---------------------- | --------------- | ------------------------------------------------------------------------ |
-| Scaffold .claude/      | gdev            | `gdev claude init`                                                       |
+| Scaffold .claude/      | gdev            | Interactively seed .claude/ docs                                         |
 | Planning (all docs)    | Claude chat     | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features |
 | Code generation        | Gemini pro chat | Master prompt via `gdev prompt`                                          |
 | Apply file changes     | Gemini CLI      | `/dev:apply` — file writer only, no planning                             |

@@ -38,7 +38,7 @@ Configs are golden files and the source of truth. On sync they always overwrite 
 
 Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. Workflow docs (`.claude/`) are seeded once and never touched by tooling again. Sync appends only what's missing and never overwrites. Stacks ship seeds pre-populated with terms they introduce, such as `shellcheck` and `vitest`.
 
-References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Drop them with `gdev tooling ref`.
+References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `gdev tooling ref`, which respects the extends chain.
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only; existing entries are never touched.
 
@@ -57,7 +57,7 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 | `gdev standards install [path]`   | Copy all standards into a target project (overwrites)        |
 | `gdev standards sync [path]`      | Update standards already present in target                   |
 | `gdev tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                   |
-| `gdev tooling ref [stack] [path]` | Drop reference docs only                                     |
+| `gdev tooling ref [stack] [path]` | Sync reference docs for a stack and its parents              |
 | `gdev tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
 | `gdev claude init [path]`         | Seed `.claude/` workflow docs into a project                 |
 | `gdev claude update [path]`       | Diff `SESSION.md` against seed, offer to apply               |

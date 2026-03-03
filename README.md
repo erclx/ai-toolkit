@@ -35,7 +35,7 @@ Run `gdev` from the repo root.
 | Command                           | Description                                                        |
 | --------------------------------- | ------------------------------------------------------------------ |
 | `gdev tooling [stack] [path]`     | Sync golden configs, seeds, deps, and .gitignore                   |
-| `gdev tooling ref [stack] [path]` | Drop reference docs only                                           |
+| `gdev tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                    |
 | `gdev tooling scaffold`           | Scaffold a new stack with stub manifest, reference, configs, seeds |
 
 ### Prompts
@@ -48,7 +48,7 @@ Run `gdev` from the repo root.
 
 | Command              | Description                                     |
 | -------------------- | ----------------------------------------------- |
-| `gdev claude init`   | Seed .claude/ workflow docs into a project      |
+| `gdev claude init`   | Interactively seed .claude/ workflow docs       |
 | `gdev claude update` | Diff SESSION.md against seed and offer to apply |
 
 ### Sandbox
