@@ -127,7 +127,5 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Sync gov rules         | aitk            | `aitk gov sync [path]`                                                   |
 | Install standards      | aitk            | `aitk standards install [path]`                                          |
 | Sync standards         | aitk            | `aitk standards sync [path]`                                             |
-| Install standards      | aitk            | `aitk standards install [path]`                                          |
-| Sync standards         | aitk            | `aitk standards sync [path]`                                             |
 
 > Gov rules apply to code generation and fix failures only.

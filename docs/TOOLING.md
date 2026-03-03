@@ -52,16 +52,9 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 
 | Command                           | What it does                                                 |
 | --------------------------------- | ------------------------------------------------------------ |
-| `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a project                   |
-| `aitk gov sync [path]`            | Update rules already present in target (never adds new)      |
-| `aitk standards install [path]`   | Copy all standards into a target project (overwrites)        |
-| `aitk standards sync [path]`      | Update standards already present in target                   |
 | `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                   |
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents              |
 | `aitk tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
-| `aitk claude init [path]`         | Seed `.claude/` workflow docs and sync .gitignore            |
-| `aitk claude update [path]`       | Diff `SESSION.md` against seed, offer to apply               |
-| `aitk sandbox`                    | Sandbox picker: provision and test scenarios                 |
 
 ## Common Workflows
 

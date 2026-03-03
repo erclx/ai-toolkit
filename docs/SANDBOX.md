@@ -72,4 +72,4 @@ use_anchor() {
 }
 ```
 
-`manage-test.sh` handles provisioning, asset injection, git setup, and baseline tagging. `stage_setup` sets up scenario-specific state only.
+`manage-sandbox.sh` handles provisioning, asset injection, git setup, and baseline tagging. `stage_setup` sets up scenario-specific state only.
