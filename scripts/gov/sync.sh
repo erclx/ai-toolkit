@@ -85,11 +85,13 @@ open_diffs() {
 }
 
 apply_changes() {
+  log_step "Applying Changes"
   while IFS= read -r entry; do
     local src="${entry%%|*}"
     local dest="${entry##*|}"
     mkdir -p "$(dirname "$dest")"
     cp "$src" "$dest"
+    log_add "${dest#"$TARGET_PATH/"}"
   done <"$PENDING_FILE"
 }
 

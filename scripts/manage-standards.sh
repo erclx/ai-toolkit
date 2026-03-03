@@ -58,11 +58,14 @@ open_diffs() {
 }
 
 apply_changes() {
+  local target="$1"
+  log_step "Applying Changes"
   while IFS= read -r entry; do
     local src="${entry%%|*}"
     local dest="${entry##*|}"
     mkdir -p "$(dirname "$dest")"
     cp "$src" "$dest"
+    log_add "${dest#"$target/"}"
   done <"$PENDING_FILE"
 }
 
@@ -168,7 +171,7 @@ cmd_sync() {
     ;;
   esac
 
-  apply_changes
+  apply_changes "$target"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count standards)${NC}"
