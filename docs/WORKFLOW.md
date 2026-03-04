@@ -69,8 +69,9 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │  CODE GENERATION                                     │
-│  aitk claude prompt → paste source context           │
-│  Paste: .tmp/IMPLEMENTER.md into Gemini pro chat     │
+│  1. `aitk claude prompt`                               │
+│  2. Paste source files into `.tmp/IMPLEMENTER.md`      │
+│  3. Paste final prompt into Gemini pro chat          │
 │  → responds with plan restatement + complete files   │
 └──────────────────────┬──────────────────────────────┘
                        │ copy full response
