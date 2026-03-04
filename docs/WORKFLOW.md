@@ -124,4 +124,13 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Install standards      | aitk              | `aitk standards install [path]`                                                     |
 | Sync standards         | aitk              | `aitk standards sync [path]`                                                        |
 
+## Prompt Generation
+
+The `aitk claude prompt` command generates the master implementation prompt for code generation. It combines a template with the full set of installed governance rules.
+
+- **Command**: `aitk claude prompt`
+- **Template**: Reads from `.claude/IMPLEMENTER.md`, which contains the static system prompt instructions.
+- **Rules**: Injects all `.mdc` files from `.cursor/rules/` into the `{{GOVERNANCE_RULES}}` placeholder in the template.
+- **Output**: Writes the final combined prompt to `.claude/.tmp/IMPLEMENTER.md`, ready to be pasted into a Gemini chat.
+
 > Gov rules apply to code generation and fix failures only.

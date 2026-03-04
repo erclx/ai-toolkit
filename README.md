@@ -38,18 +38,13 @@ Run `aitk` from the repo root.
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                    |
 | `aitk tooling scaffold`           | Scaffold a new stack with stub manifest, reference, configs, seeds |
 
-### Prompts
-
-| Command       | Description                                        |
-| ------------- | -------------------------------------------------- |
-| `aitk prompt` | Generate a chat master prompt from installed rules |
-
 ### Claude
 
 | Command              | Description                                                   |
 | -------------------- | ------------------------------------------------------------- |
 | `aitk claude init`   | Interactively seed .claude/ workflow docs and sync .gitignore |
 | `aitk claude update` | Diff SESSION.md against seed and offer to apply               |
+| `aitk claude prompt` | Generate master prompt from installed cursor rules            |
 
 ### Sandbox
 
