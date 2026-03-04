@@ -20,6 +20,8 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
   echo -e "${GREY}│${NC}    update    ${GREY}# Diff SESSION.md against seed and offer to apply${NC}"
+  echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules${NC}"
+  echo -e "${GREY}│${NC}    review    ${GREY}# Wrap Gemini output into review prompt${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
@@ -31,6 +33,8 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk claude init"
   echo -e "${GREY}│${NC}    aitk claude init ../my-app"
   echo -e "${GREY}│${NC}    aitk claude update ../my-app"
+  echo -e "${GREY}│${NC}    aitk claude prompt"
+  echo -e "${GREY}│${NC}    aitk claude review"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -212,7 +216,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "update"
+    select_option "Claude command?" "init" "update" "prompt" "review"
     command="$SELECTED_OPTION"
   else
     shift
@@ -229,8 +233,14 @@ main() {
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude workflow updated${NC}"
     ;;
+  prompt)
+    exec "$PROJECT_ROOT/scripts/claude/prompt.sh" "$@"
+    ;;
+  review)
+    exec "$PROJECT_ROOT/scripts/claude/review.sh" "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'init' or 'update'."
+    log_error "Unknown command: $command. Use 'init', 'update', 'prompt', or 'review'."
     ;;
   esac
 }
