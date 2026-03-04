@@ -29,7 +29,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 **`ARCHITECTURE.md`** — Technical design decisions, folder structure, storage shape, and open risks. Created before any code with Claude chat. Planner-owned — never modified by the implementer. Surface architecture conflicts back to Claude chat.
 
-**`DESIGN.md`** — Color tokens, typography, spacing, border, and motion decisions. Created before UI implementation with Claude chat. Seeded for UI projects only.
+**`DESIGN.md`** — Color tokens, typography, spacing, border, and motion decisions. Created before UI implementation with Claude chat. Seeded for all projects; delete if not needed.
 
 **`TASKS.md`** — Persistent task tracker. Source of truth for what is in progress, up next, done, and blocked. Updated every session.
 
@@ -73,6 +73,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 │  2. Paste source files into `.tmp/IMPLEMENTER.md`      │
 │  3. Paste final prompt into Gemini pro chat          │
 │  → responds with plan restatement + complete files   │
+│  → may include COMMANDS section with install steps   │
 └──────────────────────┬──────────────────────────────┘
                        │ copy full response
                        ▼
