@@ -17,7 +17,8 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 ├── ARCHITECTURE.md      ← technical design decisions and open questions
 ├── DESIGN.md            ← color, typography, spacing, and motion decisions
 ├── TASKS.md             ← persistent task tracker, source of truth for progress
-└── REVIEW.md            ← review prompt template, copy-paste into fresh chat
+├── REVIEW.md            ← review prompt template, copy-paste into fresh chat
+└── IMPLEMENTER.md       ← master prompt template, read by aitk claude prompt
 ```
 
 ## Documents
@@ -32,7 +33,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 **`TASKS.md`** — Persistent task tracker. Source of truth for what is in progress, up next, done, and blocked. Updated every session.
 
-**`REVIEW.md`** — Prompt template for per-feature code review. Open it, copy the template, fill in task, plan, and code, paste into a fresh chat.
+**`REVIEW.md`** — Prompt template for per-feature code review. Copy the template, paste the full Gemini response into the single placeholder, send to a fresh chat.
 
 **`CHANGELOG.md`** — Release notes. Generated with `/release:changelog` after features are done.
 
@@ -67,10 +68,9 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │  REVIEW                                              │
-│  aitk claude review                                  │
-│  → reads clipboard + TASKS.md context               │
-│  → writes .claude/.tmp/review.md                    │
-│  Paste review.md into fresh Gemini chat              │
+│  Copy full Gemini response                           │
+│  Open REVIEW.md → paste response into placeholder   │
+│  Paste into fresh Gemini chat                        │
 │  → findings report (critical / should-fix / minor)  │
 └──────────────────────┬──────────────────────────────┘
                        │
@@ -107,24 +107,23 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 
 ## Tool Mapping Summary
 
-| Stage                  | Tool              | Command / Note                                                                        |
-| ---------------------- | ----------------- | ------------------------------------------------------------------------------------- |
-| Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                  |
-| Planning (all docs)    | Claude chat       | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features              |
-| Generate master prompt | aitk claude       | `aitk claude prompt` — reads `.cursor/rules/`, writes `.claude/.tmp/master-prompt.md` |
-| Code generation        | Gemini pro chat   | Paste master prompt + feature plan + source context                                   |
-| Apply file changes     | Gemini CLI        | `/dev:apply` — file writer only, no planning                                          |
-| Wrap for review        | aitk claude       | `aitk claude review` — reads clipboard + TASKS.md, writes `.claude/.tmp/review.md`    |
-| Feature review         | Fresh Gemini chat | Paste `.claude/.tmp/review.md` — returns findings report                              |
-| Fix findings           | Gemini chat       | Paste critical/should-fix back into original session                                  |
-| Lint / format / tests  | bun scripts       | `bun run check`                                                                       |
-| Escalate design issues | Claude chat       | Paste error + relevant plan context                                                   |
-| Commit message         | Gemini CLI        | `/git:commit`                                                                         |
-| PR description         | Gemini CLI        | `/git:pr`                                                                             |
-| Changelog              | Gemini CLI        | `/release:changelog`                                                                  |
-| Install gov rules      | aitk              | `aitk gov install [stack] [path]`                                                     |
-| Sync gov rules         | aitk              | `aitk gov sync [path]`                                                                |
-| Install standards      | aitk              | `aitk standards install [path]`                                                       |
-| Sync standards         | aitk              | `aitk standards sync [path]`                                                          |
+| Stage                  | Tool              | Command / Note                                                                      |
+| ---------------------- | ----------------- | ----------------------------------------------------------------------------------- |
+| Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                |
+| Planning (all docs)    | Claude chat       | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features            |
+| Generate master prompt | aitk claude       | `aitk claude prompt` — reads `.cursor/rules/`, writes `.claude/.tmp/IMPLEMENTER.md` |
+| Code generation        | Gemini pro chat   | Paste master prompt + feature plan + source context                                 |
+| Apply file changes     | Gemini CLI        | `/dev:apply` — file writer only, no planning                                        |
+| Feature review         | Fresh Gemini chat | Copy REVIEW.md template, paste full Gemini response, get findings                   |
+| Fix findings           | Gemini chat       | Paste critical/should-fix back into original session                                |
+| Lint / format / tests  | bun scripts       | `bun run check`                                                                     |
+| Escalate design issues | Claude chat       | Paste error + relevant plan context                                                 |
+| Commit message         | Gemini CLI        | `/git:commit`                                                                       |
+| PR description         | Gemini CLI        | `/git:pr`                                                                           |
+| Changelog              | Gemini CLI        | `/release:changelog`                                                                |
+| Install gov rules      | aitk              | `aitk gov install [stack] [path]`                                                   |
+| Sync gov rules         | aitk              | `aitk gov sync [path]`                                                              |
+| Install standards      | aitk              | `aitk standards install [path]`                                                     |
+| Sync standards         | aitk              | `aitk standards sync [path]`                                                        |
 
 > Gov rules apply to code generation and fix failures only.
