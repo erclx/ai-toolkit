@@ -18,17 +18,17 @@ Goal: APPLY the changes exactly using your tools. Do not verify, fix, or interpr
 
 ### Must Do:
 
-- Call `file_create` for new files, `file_edit` for existing files — for each file block under # FILES
+- Call `write_file` for new files, `replace` for existing files — for each file block preceded by `File:`
 - Use full file content as-is — all files are complete replacements
 
 ### Must NOT Do:
 
 - Do not run any verification or shell commands
-- Do not modify files not listed under # FILES
+- Do not modify files not listed under a `File:` prefix
 - Do not use shell commands to print the report
 
 ## 4. RESPONSE STRATEGY
 
-- **Action:** Call `file_create` or `file_edit` for each file block
+- **Action:** Call `write_file` or `replace` for each file block
 - **Report:** Print "✅ Files applied:" followed by each relative path on its own line, preceded by a dash
 """
