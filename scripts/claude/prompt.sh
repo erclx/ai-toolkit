@@ -11,7 +11,7 @@ RULES_DIR="$PWD/.cursor/rules"
 TEMPLATE_FILE="$PWD/.claude/IMPLEMENTER.md"
 OUTPUT_DIR="$PWD/.claude/.tmp"
 OUTPUT_FILE="$OUTPUT_DIR/IMPLEMENTER.md"
-PLACEHOLDER="{{GOVERNANCE_RULES}}"
+CLAUDE_DIR="$PWD/.claude"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -20,7 +20,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Generates master prompt from installed cursor rules."
   echo -e "${GREY}│${NC}  Reads template from .claude/IMPLEMENTER.md in cwd."
-  echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/master-prompt.md."
+  echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/IMPLEMENTER.md."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Prerequisites:${NC}"
   echo -e "${GREY}│${NC}    Run 'aitk claude init' to seed IMPLEMENTER.md"
@@ -73,41 +73,69 @@ build_rules_payload() {
   local payload_file
   payload_file=$(mktemp)
 
+  local last_file
+  last_file=$(find "$RULES_DIR" -type f -name "*.mdc" | sort | tail -n 1)
+
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file" .mdc)
 
-    echo "---" >>"$payload_file"
+    echo "### $filename" >>"$payload_file"
     echo "" >>"$payload_file"
-    echo "# $filename" >>"$payload_file"
-    echo "" >>"$payload_file"
-
-    strip_frontmatter "$file" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
-
-    echo "" >>"$payload_file"
+    echo '````md' >>"$payload_file"
+    strip_frontmatter "$file" | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
+    echo '````' >>"$payload_file"
+    [[ "$file" != "$last_file" ]] && echo "" >>"$payload_file"
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
+
+  sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$payload_file"
 
   echo "$payload_file"
 }
 
-inject_into_template() {
-  local payload_file="$1"
+substitute_placeholder() {
+  local placeholder="$1"
+  local content_file="$2"
+  local tmp_file
+  tmp_file=$(mktemp)
 
   local split_line
-  split_line=$(grep -n -F "$PLACEHOLDER" "$TEMPLATE_FILE" | cut -d: -f1)
+  split_line=$(grep -n -F "$placeholder" "$OUTPUT_FILE" | cut -d: -f1)
 
   if [ -z "$split_line" ]; then
-    log_error "Placeholder $PLACEHOLDER not found in .claude/PROMPT.md."
+    rm "$tmp_file"
+    return
   fi
 
-  local head_lines=$((split_line - 1))
+  head -n $((split_line - 1)) "$OUTPUT_FILE" >"$tmp_file"
+  cat "$content_file" >>"$tmp_file"
+  tail -n +$((split_line + 1)) "$OUTPUT_FILE" >>"$tmp_file"
+  mv "$tmp_file" "$OUTPUT_FILE"
+}
+
+inject_placeholder_file() {
+  local name="$1"
+  local placeholder="$2"
+  local src="$CLAUDE_DIR/$name"
+
+  if [ ! -f "$src" ]; then
+    log_warn "$name not found — skipping"
+    return
+  fi
+
+  substitute_placeholder "$placeholder" "$src"
+  log_info "$name"
+}
+
+build_output() {
+  local payload_file
+  payload_file=$(build_rules_payload)
 
   mkdir -p "$OUTPUT_DIR"
+  cp "$TEMPLATE_FILE" "$OUTPUT_FILE"
 
-  head -n "$head_lines" "$TEMPLATE_FILE" >"$OUTPUT_FILE"
-  cat "$payload_file" >>"$OUTPUT_FILE"
-  echo "" >>"$OUTPUT_FILE"
-  tail -n +$((split_line + 1)) "$TEMPLATE_FILE" >>"$OUTPUT_FILE"
+  substitute_placeholder "{{GOVERNANCE_RULES}}" "$payload_file"
+  rm "$payload_file"
 }
 
 main() {
@@ -120,8 +148,7 @@ main() {
   local count
   count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
 
-  echo -e "${GREY}┌${NC}"
-  log_step "Reading .cursor/rules ($count found)"
+  echo -e "${GREY}├${NC} ${WHITE}Reading .cursor/rules ($count found)${NC}"
 
   while IFS= read -r file; do
     log_info "$(basename "$file")"
@@ -135,15 +162,15 @@ main() {
     exit 0
   fi
 
-  log_step "Building Master Prompt"
+  build_output
 
-  local payload_file
-  payload_file=$(build_rules_payload)
+  log_step "Injecting Context"
+  inject_placeholder_file "TASKS.md" "{{TASKS}}"
+  inject_placeholder_file "REQUIREMENTS.md" "{{REQUIREMENTS}}"
+  inject_placeholder_file "ARCHITECTURE.md" "{{ARCHITECTURE}}"
 
-  inject_into_template "$payload_file"
-  rm "$payload_file"
-
-  log_info "Written to .claude/.tmp/IMPLEMENTER.md"
+  log_step "Output"
+  log_info ".claude/.tmp/IMPLEMENTER.md"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Master prompt ready${NC}"

@@ -27,30 +27,48 @@ All output must comply with the governance rules below without exception.
 - Do not return partial files or placeholder comments.
 - Do not add functionality not requested.
 
-## INPUT FORMAT
+## CONTEXT
 
-## Feature Plan
+### TASKS
 
-[paste the feature plan and todo list — it is a markdown checklist, implement all items in order]
+```md
+{{TASKS}}
+```
 
-## Source Code Context
+### REQUIREMENTS
 
-[paste relevant existing files or excerpts]
+```md
+{{REQUIREMENTS}}
+```
+
+### ARCHITECTURE
+
+```md
+{{ARCHITECTURE}}
+```
+
+### SOURCE
+
+```md
+[PASTE RELEVANT SOURCE FILES]
+```
 
 ## RESPONSE FORMAT
 
-# TASK
+````md
+### TASK
 
 [restate the task from TASKS.md in one sentence]
 
-# PLAN
+### PLAN
 
 [restate the feature plan steps you are implementing]
 
-# FILES
+### FILES
 
-## path/to/file.ext
+File: path/to/file.ext
 
 ```language
 [complete file content]
 ```
+````

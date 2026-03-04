@@ -227,7 +227,7 @@ merge_gitignore() {
 
           for entry in "${missing[@]}"; do
             echo "$entry" >>"$gitignore"
-            log_add ".gitignore: $entry"
+            log_add "$entry"
           done
         fi
 

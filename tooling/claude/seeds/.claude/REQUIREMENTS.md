@@ -8,8 +8,6 @@
 
 ## MVP Features
 
-## Nice to Have
-
 ## Tech Stack
 
 ## Constraints

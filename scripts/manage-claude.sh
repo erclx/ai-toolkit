@@ -48,12 +48,18 @@ validate_target() {
 
 collect_seeds() {
   local target="$1"
-  local -n _pending=$2
+  local skip_design="$2"
+  local -n _pending=$3
   local dest_dir="$target/.claude"
 
   while IFS= read -r file; do
     local name
     name=$(basename "$file")
+
+    if [ "$name" = "DESIGN.md" ] && [ "$skip_design" = "true" ]; then
+      continue
+    fi
+
     local dest="$dest_dir/$name"
 
     if [ -f "$dest" ]; then
@@ -127,11 +133,15 @@ cmd_init() {
 
   validate_target "$target"
 
+  select_option "Does this project have a UI?" "Yes" "No"
+  local skip_design="false"
+  [ "$SELECTED_OPTION" = "No" ] && skip_design="true"
+
   local pending=()
   local gi_pending=()
 
   log_step "Scanning .claude/"
-  collect_seeds "$target" pending
+  collect_seeds "$target" "$skip_design" pending
 
   log_step "Scanning .gitignore"
   collect_gitignore_entries "$target" gi_pending
@@ -174,7 +184,7 @@ cmd_update() {
   validate_target "$target"
 
   local managed=("SESSION.md" "REVIEW.md" "IMPLEMENTER.md")
-  local seeded=("ARCHITECTURE.md" "DESIGN.md" "REQUIREMENTS.md" "TASKS.md")
+  local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md")
   local drifted=()
 
   log_step "Managed"

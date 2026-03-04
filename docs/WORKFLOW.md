@@ -2,7 +2,7 @@
 
 A concise overview of all documents in the dev workflow, with tool mappings.
 
-> **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = paste in this order: `SESSION.md` → `TASKS.md` → active feature context. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature.
+> **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = paste in this order: `SESSION.md` → `TASKS.md`. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature or debugging a planning-level issue.
 
 ## File Location
 
@@ -15,7 +15,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 ├── SESSION.md           ← session system prompt, paste first always
 ├── REQUIREMENTS.md      ← project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md      ← technical design decisions and open questions
-├── DESIGN.md            ← color, typography, spacing, and motion decisions
+├── DESIGN.md            ← color, typography, spacing, and motion decisions (UI projects only)
 ├── TASKS.md             ← persistent task tracker, source of truth for progress
 ├── REVIEW.md            ← review prompt template, copy-paste into fresh chat
 └── IMPLEMENTER.md       ← master prompt template, read by aitk claude prompt
@@ -27,13 +27,13 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 **`REQUIREMENTS.md`** — Project goals, non-goals, MVP scope, tech stack, and constraints. Created before any code with Claude chat.
 
-**`ARCHITECTURE.md`** — Technical design decisions, folder structure, storage shape, and open risks. Created before any code with Claude chat.
+**`ARCHITECTURE.md`** — Technical design decisions, folder structure, storage shape, and open risks. Created before any code with Claude chat. Planner-owned — never modified by the implementer. Surface architecture conflicts back to Claude chat.
 
-**`DESIGN.md`** — Color tokens, typography, spacing, border, and motion decisions. Created before UI implementation with Claude chat.
+**`DESIGN.md`** — Color tokens, typography, spacing, border, and motion decisions. Created before UI implementation with Claude chat. Seeded for UI projects only.
 
 **`TASKS.md`** — Persistent task tracker. Source of truth for what is in progress, up next, done, and blocked. Updated every session.
 
-**`REVIEW.md`** — Prompt template for per-feature code review. Copy the template, paste the full Gemini response into the single placeholder, send to a fresh chat. Managed by `aitk`; use `aitk claude update` to sync.
+**`REVIEW.md`** — Prompt template for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh chat. Managed by `aitk`; use `aitk claude update` to sync.
 
 ## Prompt Generation
 
@@ -41,6 +41,8 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 - Reads `.claude/IMPLEMENTER.md` as the template (a managed file updated via `aitk claude update`)
 - Injects all `.mdc` files from `.cursor/rules/` into `{{GOVERNANCE_RULES}}`
+- Auto-injects current content of `TASKS.md`, `REQUIREMENTS.md`, and `ARCHITECTURE.md` from `.claude/`
+- Leaves `## Source Code Context` as `[PASTE RELEVANT SOURCE FILES]` — fill manually using your editor extension
 - Writes output to `.claude/.tmp/IMPLEMENTER.md` — paste into Gemini chat to start a session
 - Run `aitk gov sync` first when switching stacks
 
@@ -67,8 +69,9 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │  CODE GENERATION                                     │
-│  Paste: master prompt + feature plan + source context│
-│  Tool: Gemini pro chat                               │
+│  1. `aitk claude prompt`                               │
+│  2. Paste source files into `.tmp/IMPLEMENTER.md`      │
+│  3. Paste final prompt into Gemini pro chat          │
 │  → responds with plan restatement + complete files   │
 └──────────────────────┬──────────────────────────────┘
                        │ copy full response
@@ -76,7 +79,8 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 ┌─────────────────────────────────────────────────────┐
 │  REVIEW                                              │
 │  Copy full Gemini response                           │
-│  Open REVIEW.md → paste response into placeholder   │
+│  Open REVIEW.md → paste response into               │
+│  [PASTE GEMINI RESPONSE]                             │
 │  Paste into fresh Gemini chat                        │
 │  → findings report (critical / should-fix / minor)  │
 └──────────────────────┬──────────────────────────────┘
@@ -114,23 +118,23 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 
 ## Tool Mapping Summary
 
-| Stage                  | Tool              | Command / Note                                                                      |
-| ---------------------- | ----------------- | ----------------------------------------------------------------------------------- |
-| Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                |
-| Planning (all docs)    | Claude chat       | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features            |
-| Generate master prompt | aitk claude       | `aitk claude prompt` — reads `.cursor/rules/`, writes `.claude/.tmp/IMPLEMENTER.md` |
-| Code generation        | Gemini pro chat   | Paste master prompt + feature plan + source context                                 |
-| Apply file changes     | Gemini CLI        | `/dev:apply` — file writer only, no planning                                        |
-| Feature review         | Fresh Gemini chat | Copy REVIEW.md template, paste full Gemini response, get findings                   |
-| Fix findings           | Gemini chat       | Paste critical/should-fix back into original session                                |
-| Lint / format / tests  | bun scripts       | `bun run check`                                                                     |
-| Escalate design issues | Claude chat       | Paste error + relevant plan context                                                 |
-| Commit message         | Gemini CLI        | `/git:commit`                                                                       |
-| PR description         | Gemini CLI        | `/git:pr`                                                                           |
-| Changelog              | Gemini CLI        | `/release:changelog`                                                                |
-| Install gov rules      | aitk              | `aitk gov install [stack] [path]`                                                   |
-| Sync gov rules         | aitk              | `aitk gov sync [path]`                                                              |
-| Install standards      | aitk              | `aitk standards install [path]`                                                     |
-| Sync standards         | aitk              | `aitk standards sync [path]`                                                        |
+| Stage                  | Tool              | Command / Note                                                                                                       |
+| ---------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                                                 |
+| Planning (all docs)    | Claude chat       | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features                                             |
+| Generate master prompt | aitk claude       | `aitk claude prompt` — injects rules + auto-injects TASKS, REQUIREMENTS, ARCHITECTURE; paste source context manually |
+| Code generation        | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                                           |
+| Apply file changes     | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                                         |
+| Feature review         | Fresh Gemini chat | Copy REVIEW.md template, paste full Gemini response into [PASTE GEMINI RESPONSE]                                     |
+| Fix findings           | Gemini chat       | Paste critical/should-fix back into original session                                                                 |
+| Lint / format / tests  | bun scripts       | `bun run check`                                                                                                      |
+| Escalate design issues | Claude chat       | Paste error + relevant plan context                                                                                  |
+| Commit message         | Gemini CLI        | `/git:commit`                                                                                                        |
+| PR description         | Gemini CLI        | `/git:pr`                                                                                                            |
+| Changelog              | Gemini CLI        | `/release:changelog`                                                                                                 |
+| Install gov rules      | aitk              | `aitk gov install [stack] [path]`                                                                                    |
+| Sync gov rules         | aitk              | `aitk gov sync [path]`                                                                                               |
+| Install standards      | aitk              | `aitk standards install [path]`                                                                                      |
+| Sync standards         | aitk              | `aitk standards sync [path]`                                                                                         |
 
 > Gov rules apply to code generation and fix failures only.
