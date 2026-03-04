@@ -44,6 +44,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 - Auto-injects current content of `TASKS.md`, `REQUIREMENTS.md`, and `ARCHITECTURE.md` from `.claude/`
 - Leaves `## Source Code Context` as `[PASTE RELEVANT SOURCE FILES]` — fill manually using your editor extension
 - Writes output to `.claude/.tmp/IMPLEMENTER.md` — paste into Gemini chat to start a session
+- Copies `REVIEW.md` to `.claude/.tmp/REVIEW.md` — scratch copy for pasting Gemini responses
 - Run `aitk gov sync` first when switching stacks
 
 ## Core Implementation Loop

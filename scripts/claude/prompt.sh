@@ -21,6 +21,7 @@ show_help() {
   echo -e "${GREY}│${NC}  Generates master prompt from installed cursor rules."
   echo -e "${GREY}│${NC}  Reads template from .claude/IMPLEMENTER.md in cwd."
   echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/IMPLEMENTER.md."
+  echo -e "${GREY}│${NC}  Copies REVIEW.md to .claude/.tmp/REVIEW.md."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Prerequisites:${NC}"
   echo -e "${GREY}│${NC}    Run 'aitk claude init' to seed IMPLEMENTER.md"
@@ -136,6 +137,10 @@ build_output() {
 
   substitute_placeholder "{{GOVERNANCE_RULES}}" "$payload_file"
   rm "$payload_file"
+
+  if [ -f "$CLAUDE_DIR/REVIEW.md" ]; then
+    cp "$CLAUDE_DIR/REVIEW.md" "$OUTPUT_DIR/REVIEW.md"
+  fi
 }
 
 main() {
@@ -171,6 +176,7 @@ main() {
 
   log_step "Output"
   log_info ".claude/.tmp/IMPLEMENTER.md"
+  log_info ".claude/.tmp/REVIEW.md"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Master prompt ready${NC}"
