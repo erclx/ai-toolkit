@@ -29,13 +29,17 @@ All output must comply with the governance rules below without exception.
 
 ## INPUT FORMAT
 
+## Current Tasks
+
+[PASTE TASKS.md]
+
 ## Feature Plan
 
-[paste the feature plan and todo list — it is a markdown checklist, implement all items in order]
+[PASTE FEATURE PLAN AND TODO LIST]
 
 ## Source Code Context
 
-[paste relevant existing files or excerpts]
+[PASTE RELEVANT SOURCE FILES]
 
 ## RESPONSE FORMAT
 
@@ -49,7 +53,7 @@ All output must comply with the governance rules below without exception.
 
 # FILES
 
-## path/to/file.ext
+File: path/to/file.ext
 
 ```language
 [complete file content]
