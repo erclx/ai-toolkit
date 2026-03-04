@@ -114,10 +114,10 @@ collect_gitignore_entries() {
 
           local normalized="${entry%/}"
           if [ ! -f "$gitignore" ] || { ! grep -qxF "$entry" "$gitignore" && ! grep -qxF "$normalized" "$gitignore"; }; then
-            log_add ".gitignore: $entry"
+            log_add "$entry"
             _gi_pending+=("$entry")
           else
-            log_info ".gitignore: $entry"
+            log_info "$entry"
           fi
         done < <(echo "$rest" | tr ',' '\n')
       fi
@@ -146,9 +146,16 @@ cmd_init() {
     return
   fi
 
-  select_option "Apply $total change(s)?" "Yes" "No"
+  local summary=""
+  [ "${#pending[@]}" -gt 0 ] && summary+="${#pending[@]} .claude"
+  [ "${#gi_pending[@]}" -gt 0 ] && {
+    [ -n "$summary" ] && summary+=", "
+    summary+="${#gi_pending[@]} .gitignore"
+  }
 
-  if [ "$SELECTED_OPTION" = "No" ]; then
+  select_option "Apply $total change(s) ($summary)?" "Apply all" "Cancel"
+
+  if [ "$SELECTED_OPTION" = "Cancel" ]; then
     log_warn "Cancelled"
     echo -e "${GREY}└${NC}"
     exit 0
