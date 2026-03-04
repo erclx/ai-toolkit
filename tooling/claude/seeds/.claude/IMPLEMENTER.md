@@ -20,38 +20,30 @@ All output must comply with the governance rules below without exception.
 - Implement ONE feature per response.
 - Include the feature plan before the files in your response.
 - If the plan is ambiguous, implement the simplest interpretation and note the assumption as a comment above the relevant code.
+- If a dependency or prerequisite is missing, list the install command in `### COMMANDS`.
 
 ### Must Not Do
 
-- Do not violate any governance rule.
 - Do not return partial files or placeholder comments.
-- Do not add functionality not requested.
+- Do not violate any governance rule.
 
 ## CONTEXT
 
-### TASKS
-
-```md
+<tasks>
 {{TASKS}}
-```
+</tasks>
 
-### REQUIREMENTS
-
-```md
+<requirements>
 {{REQUIREMENTS}}
-```
+</requirements>
 
-### ARCHITECTURE
-
-```md
+<architecture>
 {{ARCHITECTURE}}
-```
+</architecture>
 
-### SOURCE
-
-```md
+<source>
 [PASTE RELEVANT SOURCE FILES]
-```
+</source>
 
 ## RESPONSE FORMAT
 
@@ -71,4 +63,8 @@ File: path/to/file.ext
 ```language
 [complete file content]
 ```
+
+### COMMANDS
+
+[optional — list install or setup commands to run manually]
 ````
