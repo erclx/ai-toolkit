@@ -173,27 +173,37 @@ cmd_update() {
 
   validate_target "$target"
 
+  local managed=("SESSION.md" "REVIEW.md" "IMPLEMENTER.md")
+  local seeded=("ARCHITECTURE.md" "DESIGN.md" "REQUIREMENTS.md" "TASKS.md")
   local drifted=()
-  local current=()
 
-  while IFS= read -r file; do
-    local name
-    name=$(basename "$file")
+  log_step "Managed"
+  for name in "${managed[@]}"; do
+    local src="$CLAUDE_SEEDS_DIR/$name"
     local dest="$target/.claude/$name"
 
     if [ ! -f "$dest" ]; then
-      log_warn "$name not found in target — run \`aitk claude init\` first"
+      log_warn "$name missing — run \`aitk claude init\`"
       continue
     fi
 
-    if diff -q "$file" "$dest" >/dev/null 2>&1; then
+    if diff -q "$src" "$dest" >/dev/null 2>&1; then
       log_info "$name"
-      current+=("$name")
     else
       log_warn "$name"
       drifted+=("$name")
     fi
-  done < <(find "$CLAUDE_SEEDS_DIR" -maxdepth 1 -type f | sort)
+  done
+
+  log_step "Seeded"
+  for name in "${seeded[@]}"; do
+    local dest="$target/.claude/$name"
+    if [ -f "$dest" ]; then
+      log_info "$name"
+    else
+      log_warn "$name missing — run \`aitk claude init\`"
+    fi
+  done
 
   if [ "${#drifted[@]}" -eq 0 ]; then
     echo -e "${GREY}└${NC}"
@@ -201,7 +211,7 @@ cmd_update() {
     exit 0
   fi
 
-  select_option "Apply ${#drifted[@]} update(s)?" "Review diffs" "Apply all" "Cancel"
+  select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} managed)?" "Review diffs" "Apply all" "Cancel"
 
   case "$SELECTED_OPTION" in
   "Review diffs")
