@@ -131,7 +131,7 @@ Goal: SOLVE the user's request iteratively. Use your tools.
 ### Must Do
 
 - Think First: Analyze the file structure before acting.
-- Use Native Tools: Use available tools (e.g., `file_edit`, `browser`).
+- Use Native Tools: Use available tools as needed.
 - Iterate: If a step fails, analyze the error and retry.
 
 ### Must Not Do
