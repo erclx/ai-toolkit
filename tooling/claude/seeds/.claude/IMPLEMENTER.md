@@ -8,9 +8,9 @@ All output must comply with the governance rules below without exception.
 
 ## GOVERNANCE RULES
 
-```md
+````md
 {{GOVERNANCE_RULES}}
-```
+````
 
 ## CONSTRAINTS
 
@@ -33,27 +33,27 @@ All output must comply with the governance rules below without exception.
 
 ### TASKS
 
-```md
+````md
 {{TASKS}}
-```
+````
 
 ### REQUIREMENTS
 
-```md
+````md
 {{REQUIREMENTS}}
-```
+````
 
 ### ARCHITECTURE
 
-```md
+````md
 {{ARCHITECTURE}}
-```
+````
 
 ### SOURCE
 
-```md
+````md
 [PASTE RELEVANT SOURCE FILES]
-```
+````
 
 ## RESPONSE FORMAT
 
