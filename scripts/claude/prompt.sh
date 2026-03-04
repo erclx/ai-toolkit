@@ -73,19 +73,22 @@ build_rules_payload() {
   local payload_file
   payload_file=$(mktemp)
 
+  local last_file
+  last_file=$(find "$RULES_DIR" -type f -name "*.mdc" | sort | tail -n 1)
+
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file" .mdc)
 
-    echo "---" >>"$payload_file"
+    echo "### $filename" >>"$payload_file"
     echo "" >>"$payload_file"
-    echo "# $filename" >>"$payload_file"
-    echo "" >>"$payload_file"
-
-    strip_frontmatter "$file" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
-
-    echo "" >>"$payload_file"
+    echo '````md' >>"$payload_file"
+    strip_frontmatter "$file" | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
+    echo '````' >>"$payload_file"
+    [[ "$file" != "$last_file" ]] && echo "" >>"$payload_file"
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
+
+  sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$payload_file"
 
   echo "$payload_file"
 }
@@ -106,7 +109,6 @@ substitute_placeholder() {
 
   head -n $((split_line - 1)) "$OUTPUT_FILE" >"$tmp_file"
   cat "$content_file" >>"$tmp_file"
-  echo "" >>"$tmp_file"
   tail -n +$((split_line + 1)) "$OUTPUT_FILE" >>"$tmp_file"
   mv "$tmp_file" "$OUTPUT_FILE"
 }
