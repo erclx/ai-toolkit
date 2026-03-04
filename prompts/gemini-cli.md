@@ -16,6 +16,7 @@ You generate production-grade TOML commands for the Gemini CLI.
 
 - Use lowercase imperative in `description` field.
 - Always output # PREVIEW before # FINAL COMMAND.
+- Indent `# PREVIEW` with 3 spaces so markdown renders correctly.
 
 ### Security & Isolation
 
