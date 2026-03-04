@@ -12,6 +12,8 @@ TEMPLATE_FILE="$PWD/.claude/IMPLEMENTER.md"
 OUTPUT_DIR="$PWD/.claude/.tmp"
 OUTPUT_FILE="$OUTPUT_DIR/IMPLEMENTER.md"
 PLACEHOLDER="{{GOVERNANCE_RULES}}"
+SOURCE_PLACEHOLDER="[PASTE RELEVANT SOURCE FILES]"
+CLAUDE_DIR="$PWD/.claude"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -97,7 +99,7 @@ inject_into_template() {
   split_line=$(grep -n -F "$PLACEHOLDER" "$TEMPLATE_FILE" | cut -d: -f1)
 
   if [ -z "$split_line" ]; then
-    log_error "Placeholder $PLACEHOLDER not found in .claude/PROMPT.md."
+    log_error "Placeholder $PLACEHOLDER not found in .claude/IMPLEMENTER.md."
   fi
 
   local head_lines=$((split_line - 1))
@@ -108,6 +110,42 @@ inject_into_template() {
   cat "$payload_file" >>"$OUTPUT_FILE"
   echo "" >>"$OUTPUT_FILE"
   tail -n +$((split_line + 1)) "$TEMPLATE_FILE" >>"$OUTPUT_FILE"
+}
+
+inject_context_files() {
+  local context_files=("TASKS.md" "REQUIREMENTS.md" "ARCHITECTURE.md")
+  local source_line
+
+  source_line=$(grep -n -F "$SOURCE_PLACEHOLDER" "$OUTPUT_FILE" | cut -d: -f1)
+
+  if [ -z "$source_line" ]; then
+    return
+  fi
+
+  local tmp_file
+  tmp_file=$(mktemp)
+
+  head -n $((source_line - 1)) "$OUTPUT_FILE" >"$tmp_file"
+
+  for name in "${context_files[@]}"; do
+    local src="$CLAUDE_DIR/$name"
+    local section="${name%.md}"
+
+    if [ ! -f "$src" ]; then
+      log_warn "$name not found — skipping"
+      continue
+    fi
+
+    echo "" >>"$tmp_file"
+    echo "## $section" >>"$tmp_file"
+    echo "" >>"$tmp_file"
+    cat "$src" >>"$tmp_file"
+    echo "" >>"$tmp_file"
+    log_info "$name injected"
+  done
+
+  tail -n +"$source_line" "$OUTPUT_FILE" >>"$tmp_file"
+  mv "$tmp_file" "$OUTPUT_FILE"
 }
 
 main() {
@@ -142,6 +180,10 @@ main() {
 
   inject_into_template "$payload_file"
   rm "$payload_file"
+
+  log_step "Injecting Context"
+
+  inject_context_files
 
   log_info "Written to .claude/.tmp/IMPLEMENTER.md"
 
