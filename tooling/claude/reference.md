@@ -14,7 +14,7 @@ The claude stack seeds the `.claude/` workflow directory into a project.
 ├── ARCHITECTURE.md    ← technical design decisions and open questions
 ├── DESIGN.md          ← color, typography, spacing, and motion decisions
 ├── REVIEW.md          ← review prompt template, copy-paste into fresh chat
-├── PROMPT.md          ← master prompt template, read by aitk claude prompt
+├── IMPLEMENTER.md     ← master prompt template, read by aitk claude prompt
 └── .tmp/              ← ephemeral scratch space, gitignored
 ```
 
@@ -24,9 +24,8 @@ The claude stack seeds the `.claude/` workflow directory into a project.
 
 ## CLI
 
-| Command              | What it does                                                       |
-| -------------------- | ------------------------------------------------------------------ |
-| `aitk claude init`   | Seeds `.claude/` workflow docs, updates `.gitignore`               |
-| `aitk claude update` | Diffs `SESSION.md` against seed, offers to apply changes           |
-| `aitk claude prompt` | Injects `.cursor/rules/` into `PROMPT.md`, writes master-prompt.md |
-| `aitk claude review` | Reads clipboard + TASKS.md, writes review.md ready to paste        |
+| Command              | What it does                                                               |
+| -------------------- | -------------------------------------------------------------------------- |
+| `aitk claude init`   | Seeds `.claude/` workflow docs, updates `.gitignore`                       |
+| `aitk claude update` | Diffs `SESSION.md` against seed, offers to apply changes                   |
+| `aitk claude prompt` | Injects `.cursor/rules/` into `IMPLEMENTER.md`, writes .tmp/IMPLEMENTER.md |

@@ -8,9 +8,9 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 RULES_DIR="$PWD/.cursor/rules"
-TEMPLATE_FILE="$PWD/.claude/PROMPT.md"
+TEMPLATE_FILE="$PWD/.claude/IMPLEMENTER.md"
 OUTPUT_DIR="$PWD/.claude/.tmp"
-OUTPUT_FILE="$OUTPUT_DIR/master-prompt.md"
+OUTPUT_FILE="$OUTPUT_DIR/IMPLEMENTER.md"
 PLACEHOLDER="{{GOVERNANCE_RULES}}"
 
 show_help() {
@@ -19,11 +19,11 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk claude prompt"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Generates master prompt from installed cursor rules."
-  echo -e "${GREY}│${NC}  Reads template from .claude/PROMPT.md in cwd."
+  echo -e "${GREY}│${NC}  Reads template from .claude/IMPLEMENTER.md in cwd."
   echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/master-prompt.md."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Prerequisites:${NC}"
-  echo -e "${GREY}│${NC}    Run 'aitk claude init' to seed PROMPT.md"
+  echo -e "${GREY}│${NC}    Run 'aitk claude init' to seed IMPLEMENTER.md"
   echo -e "${GREY}│${NC}    Run 'aitk gov sync' to install rules for your stack"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
@@ -38,7 +38,7 @@ check_dependencies() {
   fi
 
   if [ ! -f "$TEMPLATE_FILE" ]; then
-    log_error "PROMPT.md not found at .claude/PROMPT.md. Run \`aitk claude init\` first."
+    log_error "IMPLEMENTER.md not found at .claude/IMPLEMENTER.md. Run \`aitk claude init\` first."
   fi
 }
 
@@ -143,7 +143,7 @@ main() {
   inject_into_template "$payload_file"
   rm "$payload_file"
 
-  log_info "Written to .claude/.tmp/master-prompt.md"
+  log_info "Written to .claude/.tmp/IMPLEMENTER.md"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Master prompt ready${NC}"
