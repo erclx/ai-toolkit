@@ -141,7 +141,7 @@ inject_context_files() {
     echo "" >>"$tmp_file"
     cat "$src" >>"$tmp_file"
     echo "" >>"$tmp_file"
-    log_info "$name injected"
+    log_info "$name"
   done
 
   tail -n +"$source_line" "$OUTPUT_FILE" >>"$tmp_file"
@@ -158,7 +158,6 @@ main() {
   local count
   count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
 
-  echo -e "${GREY}┌${NC}"
   log_step "Reading .cursor/rules ($count found)"
 
   while IFS= read -r file; do
@@ -173,8 +172,6 @@ main() {
     exit 0
   fi
 
-  log_step "Building Master Prompt"
-
   local payload_file
   payload_file=$(build_rules_payload)
 
@@ -185,10 +182,8 @@ main() {
 
   inject_context_files
 
-  log_info "Written to .claude/.tmp/IMPLEMENTER.md"
-
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Master prompt ready${NC}"
+  echo -e "${GREEN}✓ Master prompt ready → .claude/.tmp/IMPLEMENTER.md${NC}"
 }
 
 main "$@"
