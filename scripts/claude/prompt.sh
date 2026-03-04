@@ -158,7 +158,7 @@ main() {
   local count
   count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
 
-  log_step "Reading .cursor/rules ($count found)"
+  echo -e "${GREY}├${NC} ${WHITE}Reading .cursor/rules ($count found)${NC}"
 
   while IFS= read -r file; do
     log_info "$(basename "$file")"
@@ -182,8 +182,11 @@ main() {
 
   inject_context_files
 
+  log_step "Output"
+  log_info ".claude/.tmp/IMPLEMENTER.md"
+
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Master prompt ready → .claude/.tmp/IMPLEMENTER.md${NC}"
+  echo -e "${GREEN}✓ Master prompt ready${NC}"
 }
 
 main "$@"
