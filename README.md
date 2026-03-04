@@ -40,11 +40,11 @@ Run `aitk` from the repo root.
 
 ### Claude
 
-| Command              | Description                                                   |
-| -------------------- | ------------------------------------------------------------- |
-| `aitk claude init`   | Interactively seed .claude/ workflow docs and sync .gitignore |
-| `aitk claude update` | Diff SESSION.md against seed and offer to apply               |
-| `aitk claude prompt` | Generate master prompt from installed cursor rules            |
+| Command              | Description                                                         |
+| -------------------- | ------------------------------------------------------------------- |
+| `aitk claude init`   | Interactively seed .claude/ workflow docs and sync .gitignore       |
+| `aitk claude update` | Check for updates to managed workflow files and verify seeded files |
+| `aitk claude prompt` | Generate master prompt from installed cursor rules                  |
 
 ### Sandbox
 

@@ -23,7 +23,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 ## Documents
 
-**`SESSION.md`** — System prompt for Claude. Defines role, sync format, output rules, and planning behavior. Paste first every session. Created once per project with Claude chat.
+**`SESSION.md`** — System prompt for Claude. Defines role, sync format, output rules, and planning behavior. Paste first every session. Managed by `aitk`; use `aitk claude update` to sync.
 
 **`REQUIREMENTS.md`** — Project goals, non-goals, MVP scope, tech stack, and constraints. Created before any code with Claude chat.
 
@@ -33,13 +33,13 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 **`TASKS.md`** — Persistent task tracker. Source of truth for what is in progress, up next, done, and blocked. Updated every session.
 
-**`REVIEW.md`** — Prompt template for per-feature code review. Copy the template, paste the full Gemini response into the single placeholder, send to a fresh chat.
+**`REVIEW.md`** — Prompt template for per-feature code review. Copy the template, paste the full Gemini response into the single placeholder, send to a fresh chat. Managed by `aitk`; use `aitk claude update` to sync.
 
 ## Prompt Generation
 
 `aitk claude prompt` generates the master implementation prompt for code generation.
 
-- Reads `.claude/IMPLEMENTER.md` as the template
+- Reads `.claude/IMPLEMENTER.md` as the template (a managed file updated via `aitk claude update`)
 - Injects all `.mdc` files from `.cursor/rules/` into `{{GOVERNANCE_RULES}}`
 - Writes output to `.claude/.tmp/IMPLEMENTER.md` — paste into Gemini chat to start a session
 - Run `aitk gov sync` first when switching stacks
