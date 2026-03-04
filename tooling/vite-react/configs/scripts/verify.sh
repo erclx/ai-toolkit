@@ -60,11 +60,7 @@ main() {
   run_check "bun run test:run" "Unit tests failed"
   log_info "Unit tests passed"
 
-  log_step "7. Snapshot"
-  run_check "bun run snapshot" "Snapshot failed"
-  log_info "Snapshot updated"
-
-  log_step "8. Build"
+  log_step "7. Build"
   run_check "bun run build" "Build failed"
   log_info "Build passed"
 
