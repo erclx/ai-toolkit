@@ -34,15 +34,25 @@ Context: {{args}}
 - Check <CHANGELOG_STANDARDS>: if DOCS_MISSING, output `echo "❌ Error: Reference file 'standards/changelog.md' not found."`
 - Follow <CHANGELOG_STANDARDS> categories, formatting, and filtering rules exactly.
 - Use `## [Unreleased]` for draft state.
+- Show # PREVIEW before taking any action. Wait for confirmation before writing to file.
 
 ### Must NOT Do:
 
 - Do not modify or delete entries under released version headers. Only append to `[Unreleased]` or create a new version.
 - Do not include commits excluded by <CHANGELOG_STANDARDS>.
 - Do not generate version comparison URLs.
+- Do not write to file before showing # PREVIEW.
 
 ## 4. RESPONSE STRATEGY
 
-- **Thought:** Analyze <CURRENT_CHANGELOG> and <NEW_COMMITS> to determine if file exists and what entries to add.
-- **Action:** Call edit_file or create_file tool to update CHANGELOG.md following <CHANGELOG_STANDARDS>.
+   # PREVIEW
+
+- **Version:** [Unreleased] or <version>
+- **Entries:** <count> changes across <categories>
+- **New entries:**
+<preview of changelog entries to be added>
+
+Confirm to apply.
+
+- **Action:** Use available tools as needed to update CHANGELOG.md following <CHANGELOG_STANDARDS>.
 """
