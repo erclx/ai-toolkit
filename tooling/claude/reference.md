@@ -20,7 +20,7 @@ The claude stack seeds the `.claude/` workflow directory into a project.
 
 ## Gitignore
 
-- `# Claude` — `.claude/.tmp/`, `.claude/PROJECT.md`
+- `# Claude` — `.claude/.tmp/`
 
 ## CLI
 
