@@ -122,7 +122,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                                                 |
 | Planning (all docs)    | Claude chat       | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features                                             |
 | Generate master prompt | aitk claude       | `aitk claude prompt` — injects rules + auto-injects TASKS, REQUIREMENTS, ARCHITECTURE; paste source context manually |
-| Code generation        | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md + source context                                                                           |
+| Code generation        | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                                           |
 | Apply file changes     | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                                         |
 | Feature review         | Fresh Gemini chat | Copy REVIEW.md template, paste full Gemini response into [PASTE GEMINI RESPONSE]                                     |
 | Fix findings           | Gemini chat       | Paste critical/should-fix back into original session                                                                 |
