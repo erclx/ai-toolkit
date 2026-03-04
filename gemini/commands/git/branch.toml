@@ -35,14 +35,14 @@ Context: {{args}}
 - Check <CURRENT_BRANCH>: if NO_BRANCH, output `echo "❌ Error: Not on a branch (detached HEAD)."` and stop.
 - Check <CURRENT_BRANCH>: if `main` or `master`, output `echo "❌ Error: Cannot rename protected branch."` and stop.
 - Validate current branch name against <BRANCH_STANDARDS> format:
-  - If already compliant: output `echo "✅ Branch name already follows conventions."` and stop.
+  - If already compliant: print "✅ Branch name already follows conventions." and stop.
 - Determine naming input using priority order:
   1. If `{{args}}` is provided, use it as the primary signal for type and description.
-  2. Otherwise fall back to <COMMIT_LOG> to infer intent.
+  2. Otherwise fall back to <COMMIT_LOG> to infer intent. Derive the branch name from the overall theme of all commits, not just the most recent one.
   3. If both are empty (NO_COMMITS and no args), output `echo "❌ Error: No commits or description to derive a branch name from. Run: gemini git:branch \"<description>\""` and stop.
 - Generate suggested name following <BRANCH_STANDARDS>: `<type>/<description>` or `<type>/<ticket>-<description>`, 50 chars max.
 - Check <REMOTE_STATUS>:
-  - If EXISTS: provide manual steps, do NOT output executable command.
+  - If EXISTS: print manual steps in chat, do NOT output an executable command.
   - If LOCAL_ONLY: output `git branch -m` command.
 
 ### Must NOT Do:
@@ -54,7 +54,7 @@ Context: {{args}}
 
 ## 4. RESPONSE FORMAT
 
-# PREVIEW
+   # PREVIEW
 
 - **Current:** <current_branch_name>
 - **Suggested:** <suggested_name>
@@ -62,21 +62,18 @@ Context: {{args}}
 - **Status:** <LOCAL_ONLY | EXISTS on remote>
 - **Analysis:** <Brief explanation of type choice and input signal used>
 
+If EXISTS on remote, print after PREVIEW:
+```
+Manual steps required:
+1. git branch -m <current> <suggested>
+2. git push origin <suggested>
+3. git push origin :<current>
+4. git branch -u origin/<suggested>
+```
+
 # FINAL COMMAND
 
 ```bash
 git branch -m <current> <suggested>
-```
-
-```bash
-echo "❌ Branch exists on remote. Manual steps required:
-1. git branch -m <current> <suggested>
-2. git push origin <suggested>
-3. git push origin :<current>
-4. git branch -u origin/<suggested>"
-```
-
-```bash
-echo "✅ Branch name already follows conventions."
 ```
 """

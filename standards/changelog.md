@@ -5,7 +5,6 @@
 - Standard: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) with [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Hierarchy: H1 title, H2 version+date or `[Unreleased]`, H3 category
 - Entry format: `- component: description`
-- No bold formatting for component names in entries
 - No prose; use concise bullet points
 
 ## Categories
@@ -16,6 +15,7 @@
 ## Entries
 
 - Include only user-facing changes
+- No bold formatting for component names in entries
 - Exclude internal refactors, typos, CI/CD updates, and dependency bumps unless they affect functionality
 - Do not mix developer-focused and user-focused changes in the same entry
 

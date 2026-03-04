@@ -19,9 +19,9 @@
 ## Sections
 
 - `## Summary`: 1-2 sentences following `<Action Verb> <Direct Object> to <Result>`, expand for clarity if needed
-- `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not "auth handler")
-- `## Technical Context`: 1-2 lines of architectural reasoning explaining why, not what; expand for complex changes
-- `## Testing`: specify exact commands or test cases run
+- `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not "auth handler"); always use bullet points, never prose
+- `## Technical Context`: 1-2 lines of architectural reasoning explaining why, not what; use bullet points when multiple reasons, single sentence acceptable when only one
+- `## Testing`: specify exact commands or test cases run; always use bullet points, never prose
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
 ## EXAMPLES

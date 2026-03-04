@@ -19,7 +19,7 @@ Goal: APPLY the changes exactly using your tools. Do not verify, fix, or interpr
 ### Must Do:
 
 - Call `write_file` for each file block preceded by `File:`
-- Use full file content as-is — all files are complete replacements
+- Use full file content as-is. All files are complete replacements.
 
 ### Must NOT Do:
 
