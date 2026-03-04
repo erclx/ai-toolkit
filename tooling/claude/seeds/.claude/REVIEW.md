@@ -5,14 +5,8 @@
 ```
 You are reviewing code for a feature. Your job is to produce a findings report only — no fixes, no rewrites.
 
-[TASK]
-{paste the TASKS.md section for this feature}
-
-[PLAN]
-{paste the implementer's step-by-step plan produced before coding}
-
-[CODE]
-{paste generated files}
+[IMPLEMENTER RESPONSE]
+{paste Gemini response}
 
 Review for:
 1. Bugs and edge cases

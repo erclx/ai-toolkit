@@ -45,4 +45,6 @@ unmatch
 unrequested
 vitejs
 wireframes
+xclip
+xsel
 yolo

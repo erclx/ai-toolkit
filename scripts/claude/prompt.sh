@@ -3,29 +3,31 @@ set -e
 set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
+PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 RULES_DIR="$PWD/.cursor/rules"
-TEMPLATE_FILE="$PROJECT_ROOT/scripts/templates/master-prompt-chat.template"
-OUTPUT_DIR="$PWD/.gemini/.tmp"
-OUTPUT_FILE="$OUTPUT_DIR/master-prompt.md"
+TEMPLATE_FILE="$PWD/.claude/IMPLEMENTER.md"
+OUTPUT_DIR="$PWD/.claude/.tmp"
+OUTPUT_FILE="$OUTPUT_DIR/IMPLEMENTER.md"
 PLACEHOLDER="{{GOVERNANCE_RULES}}"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Prompt Manager"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk prompt [command]"
+  log_step "Claude Prompt"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk claude prompt"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
-  echo -e "${GREY}│${NC}    generate    ${GREY}# Build master prompt from installed cursor rules${NC}"
-  echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    -h, --help  ${GREY}# Show this help message${NC}"
+  echo -e "${GREY}│${NC}  Generates master prompt from installed cursor rules."
+  echo -e "${GREY}│${NC}  Reads template from .claude/IMPLEMENTER.md in cwd."
+  echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/master-prompt.md."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Prerequisites:${NC}"
-  echo -e "${GREY}│${NC}    Run 'aitk gov rules' first to install rules for your stack."
+  echo -e "${GREY}│${NC}    Run 'aitk claude init' to seed IMPLEMENTER.md"
+  echo -e "${GREY}│${NC}    Run 'aitk gov sync' to install rules for your stack"
+  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
+  echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -36,7 +38,7 @@ check_dependencies() {
   fi
 
   if [ ! -f "$TEMPLATE_FILE" ]; then
-    log_error "Template not found in scripts/templates/. Check toolkit installation."
+    log_error "IMPLEMENTER.md not found at .claude/IMPLEMENTER.md. Run \`aitk claude init\` first."
   fi
 }
 
@@ -90,29 +92,35 @@ build_rules_payload() {
 
 inject_into_template() {
   local payload_file="$1"
-  local template_file="$2"
 
   local split_line
-  split_line=$(grep -n -F "$PLACEHOLDER" "$template_file" | cut -d: -f1)
+  split_line=$(grep -n -F "$PLACEHOLDER" "$TEMPLATE_FILE" | cut -d: -f1)
 
   if [ -z "$split_line" ]; then
-    log_error "Placeholder $PLACEHOLDER not found in template."
+    log_error "Placeholder $PLACEHOLDER not found in .claude/PROMPT.md."
   fi
 
   local head_lines=$((split_line - 1))
 
   mkdir -p "$OUTPUT_DIR"
 
-  head -n "$head_lines" "$template_file" >"$OUTPUT_FILE"
+  head -n "$head_lines" "$TEMPLATE_FILE" >"$OUTPUT_FILE"
   cat "$payload_file" >>"$OUTPUT_FILE"
   echo "" >>"$OUTPUT_FILE"
-  tail -n +$((split_line + 1)) "$template_file" >>"$OUTPUT_FILE"
+  tail -n +$((split_line + 1)) "$TEMPLATE_FILE" >>"$OUTPUT_FILE"
 }
 
-cmd_generate() {
+main() {
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+  fi
+
+  check_dependencies
+
   local count
   count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
 
+  echo -e "${GREY}┌${NC}"
   log_step "Reading .cursor/rules ($count found)"
 
   while IFS= read -r file; do
@@ -121,7 +129,7 @@ cmd_generate() {
 
   select_option "Generate master prompt from $count rules?" "Yes" "No"
 
-  if [ "$SELECTED_OPTION" == "No" ]; then
+  if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
     echo -e "${GREY}└${NC}"
     exit 0
@@ -132,31 +140,10 @@ cmd_generate() {
   local payload_file
   payload_file=$(build_rules_payload)
 
-  inject_into_template "$payload_file" "$TEMPLATE_FILE"
+  inject_into_template "$payload_file"
   rm "$payload_file"
 
-  log_info "Output: .gemini/.tmp/master-prompt.md"
-}
-
-main() {
-  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    show_help
-  fi
-
-  local command="${1:-generate}"
-
-  echo -e "${GREY}┌${NC}"
-
-  check_dependencies
-
-  case "$command" in
-  generate)
-    cmd_generate
-    ;;
-  *)
-    log_error "Unknown command: $command. Use 'generate' or --help."
-    ;;
-  esac
+  log_info "Written to .claude/.tmp/IMPLEMENTER.md"
 
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Master prompt ready${NC}"

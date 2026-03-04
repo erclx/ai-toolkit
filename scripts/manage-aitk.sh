@@ -18,9 +18,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gov [command]      ${GREY}# Governance commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    standards [cmd]    ${GREY}# Standards commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks and configs${NC}"
-  echo -e "${GREY}│${NC}    prompt [cmd]       ${GREY}# Prompt management${NC}"
-  echo -e "${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow${NC}"
-  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, update, prompt)${NC}" echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Sandbox:${NC}"
   echo -e "${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}"
   echo -e "${GREY}│${NC}    aitk sandbox git:commit  ${GREY}# Run specific scenario${NC}"
@@ -33,6 +31,8 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk gov sync ../my-app"
   echo -e "${GREY}│${NC}    aitk standards sync ../my-app"
   echo -e "${GREY}│${NC}    aitk tooling sync base"
+  echo -e "${GREY}│${NC}    aitk claude prompt"
+  echo -e "${GREY}│${NC}    aitk claude review"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -58,10 +58,6 @@ main() {
   tooling)
     shift
     exec "$PROJECT_ROOT/scripts/manage-tooling.sh" "$@"
-    ;;
-  prompt)
-    shift
-    exec "$PROJECT_ROOT/scripts/manage-prompts.sh" "$@"
     ;;
   claude)
     shift

@@ -20,6 +20,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
   echo -e "${GREY}│${NC}    update    ${GREY}# Diff SESSION.md against seed and offer to apply${NC}"
+  echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
@@ -31,6 +32,7 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk claude init"
   echo -e "${GREY}│${NC}    aitk claude init ../my-app"
   echo -e "${GREY}│${NC}    aitk claude update ../my-app"
+  echo -e "${GREY}│${NC}    aitk claude prompt"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -110,10 +112,10 @@ collect_gitignore_entries() {
 
           local normalized="${entry%/}"
           if [ ! -f "$gitignore" ] || { ! grep -qxF "$entry" "$gitignore" && ! grep -qxF "$normalized" "$gitignore"; }; then
-            log_add ".gitignore: $entry"
+            log_add "$entry"
             _gi_pending+=("$entry")
           else
-            log_info ".gitignore: $entry"
+            log_info "$entry"
           fi
         done < <(echo "$rest" | tr ',' '\n')
       fi
@@ -127,46 +129,44 @@ cmd_init() {
   validate_target "$target"
 
   local pending=()
+  local gi_pending=()
 
   log_step "Scanning .claude/"
   collect_seeds "$target" pending
 
-  if [ "${#pending[@]}" -eq 0 ]; then
-    echo -e "${GREY}│${NC}" >&2
-  else
-    select_option "Seed ${#pending[@]} file(s) to .claude/?" "Yes" "No"
-
-    if [ "$SELECTED_OPTION" = "No" ]; then
-      log_warn "Cancelled"
-      echo -e "${GREY}└${NC}"
-      exit 0
-    fi
-
-    log_step "Applying Changes"
-    apply_seeds "$target" "${pending[@]}"
-    echo -e "${GREY}│${NC}" >&2
-  fi
-
-  local gi_pending=()
-
   log_step "Scanning .gitignore"
   collect_gitignore_entries "$target" gi_pending
 
-  if [ "${#gi_pending[@]}" -eq 0 ]; then
-    log_info ".gitignore up to date"
+  local total=$((${#pending[@]} + ${#gi_pending[@]}))
+
+  if [ "$total" -eq 0 ]; then
     return
   fi
 
-  select_option "Add entries to .gitignore?" "Yes" "No"
+  local summary=""
+  [ "${#pending[@]}" -gt 0 ] && summary+="${#pending[@]} .claude"
+  [ "${#gi_pending[@]}" -gt 0 ] && {
+    [ -n "$summary" ] && summary+=", "
+    summary+="${#gi_pending[@]} .gitignore"
+  }
 
-  if [ "$SELECTED_OPTION" = "No" ]; then
+  select_option "Apply $total change(s) ($summary)?" "Apply all" "Cancel"
+
+  if [ "$SELECTED_OPTION" = "Cancel" ]; then
     log_warn "Cancelled"
     echo -e "${GREY}└${NC}"
     exit 0
   fi
 
   log_step "Applying Changes"
-  merge_gitignore "claude" "$target"
+
+  if [ "${#pending[@]}" -gt 0 ]; then
+    apply_seeds "$target" "${pending[@]}"
+  fi
+
+  if [ "${#gi_pending[@]}" -gt 0 ]; then
+    merge_gitignore "claude" "$target"
+  fi
 }
 
 cmd_update() {
@@ -181,9 +181,9 @@ cmd_update() {
   fi
 
   if diff -q "$CLAUDE_SEED" "$dest" >/dev/null 2>&1; then
-    log_info "SESSION.md already up to date"
+    log_info "SESSION.md"
     echo -e "${GREY}└${NC}"
-    echo -e "${GREEN}✓ Claude workflow up to date${NC}"
+    echo -e "${GREEN}✓ Claude up to date${NC}"
     exit 0
   fi
 
@@ -212,7 +212,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "update"
+    select_option "Claude command?" "init" "update" "prompt"
     command="$SELECTED_OPTION"
   else
     shift
@@ -222,15 +222,18 @@ main() {
   init)
     cmd_init "$@"
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow ready${NC}"
+    echo -e "${GREEN}✓ Claude ready${NC}"
     ;;
   update)
     cmd_update "$@"
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow updated${NC}"
+    echo -e "${GREEN}✓ Claude updated${NC}"
+    ;;
+  prompt)
+    exec "$PROJECT_ROOT/scripts/claude/prompt.sh" "$@"
     ;;
   *)
-    log_error "Unknown command: $command. Use 'init' or 'update'."
+    log_error "Unknown command: $command. Use 'init', 'update', or 'prompt'."
     ;;
   esac
 }
