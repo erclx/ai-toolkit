@@ -131,37 +131,22 @@ cmd_init() {
   validate_target "$target"
 
   local pending=()
+  local gi_pending=()
 
   log_step "Scanning .claude/"
   collect_seeds "$target" pending
 
-  if [ "${#pending[@]}" -eq 0 ]; then
-    echo -e "${GREY}│${NC}" >&2
-  else
-    select_option "Seed ${#pending[@]} file(s) to .claude/?" "Yes" "No"
-
-    if [ "$SELECTED_OPTION" = "No" ]; then
-      log_warn "Cancelled"
-      echo -e "${GREY}└${NC}"
-      exit 0
-    fi
-
-    log_step "Applying Changes"
-    apply_seeds "$target" "${pending[@]}"
-    echo -e "${GREY}│${NC}" >&2
-  fi
-
-  local gi_pending=()
-
   log_step "Scanning .gitignore"
   collect_gitignore_entries "$target" gi_pending
 
-  if [ "${#gi_pending[@]}" -eq 0 ]; then
-    log_info ".gitignore up to date"
+  local total=$((${#pending[@]} + ${#gi_pending[@]}))
+
+  if [ "$total" -eq 0 ]; then
+    log_info "Everything up to date"
     return
   fi
 
-  select_option "Add entries to .gitignore?" "Yes" "No"
+  select_option "Apply $total change(s)?" "Yes" "No"
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
@@ -170,7 +155,14 @@ cmd_init() {
   fi
 
   log_step "Applying Changes"
-  merge_gitignore "claude" "$target"
+
+  if [ "${#pending[@]}" -gt 0 ]; then
+    apply_seeds "$target" "${pending[@]}"
+  fi
+
+  if [ "${#gi_pending[@]}" -gt 0 ]; then
+    merge_gitignore "claude" "$target"
+  fi
 }
 
 cmd_update() {
