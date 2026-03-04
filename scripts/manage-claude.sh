@@ -181,9 +181,9 @@ cmd_update() {
   fi
 
   if diff -q "$CLAUDE_SEED" "$dest" >/dev/null 2>&1; then
-    log_info "SESSION.md already up to date"
+    log_info "SESSION.md"
     echo -e "${GREY}└${NC}"
-    echo -e "${GREEN}✓ Claude workflow up to date${NC}"
+    echo -e "${GREEN}✓ Claude up to date${NC}"
     exit 0
   fi
 
@@ -222,12 +222,12 @@ main() {
   init)
     cmd_init "$@"
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow ready${NC}"
+    echo -e "${GREEN}✓ Claude ready${NC}"
     ;;
   update)
     cmd_update "$@"
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow updated${NC}"
+    echo -e "${GREEN}✓ Claude updated${NC}"
     ;;
   prompt)
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh" "$@"
