@@ -70,12 +70,11 @@
 
 ## Scripts
 
-- Entry: `scripts/` directory with `verify.sh`, `clean.sh`, `update.sh`, `snapshot.sh`.
+- Entry: `scripts/` directory with `verify.sh`, `clean.sh`, `update.sh`.
 - All scripts use logging functions from the bash script reference.
 - `verify.sh` — self-healing: runs `format` first to auto-fix AI-generated or drifted code, then asserts with `check:format`. Supports `VERIFY_NESTED=true` to suppress timeline boundaries when called by other scripts.
 - `clean.sh` — removes `node_modules/`, clears bun cache, reinstalls dependencies fresh.
 - `update.sh` — runs `bun update --interactive` then calls `verify.sh` with `VERIFY_NESTED=true` to confirm project health after updates.
-- `snapshot.sh` — generates `.claude/PROJECT.md` with an ASCII directory tree only. Creates `.claude/` if it does not exist. Tree respects `.gitignore`. Output is ephemeral — add `.claude/PROJECT.md` to `.gitignore`, do not commit it.
 
 ## EditorConfig
 
@@ -98,4 +97,3 @@
 - `check` — runs `scripts/verify.sh`, the full verification suite. Auto-formats before asserting.
 - `clean` — runs `scripts/clean.sh`, wipes and reinstalls dependencies.
 - `update` — runs `scripts/update.sh`, interactive dependency update with verification.
-- `snapshot` — runs `scripts/snapshot.sh`, writes `.claude/PROJECT.md`.

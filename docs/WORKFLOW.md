@@ -2,7 +2,7 @@
 
 A concise overview of all documents in the dev workflow, with tool mappings.
 
-> **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = paste in this order: `SESSION.md` → `TASKS.md` → `PROJECT.md` → active feature context. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature.
+> **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = paste in this order: `SESSION.md` → `TASKS.md` → active feature context. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature.
 
 ## File Location
 
@@ -17,8 +17,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 ├── ARCHITECTURE.md      ← technical design decisions and open questions
 ├── DESIGN.md            ← color, typography, spacing, and motion decisions
 ├── TASKS.md             ← persistent task tracker, source of truth for progress
-├── REVIEW.md            ← review prompt template, copy-paste into fresh chat
-└── PROJECT.md           ← ASCII tree only, auto-generated, gitignored
+└── REVIEW.md            ← review prompt template, copy-paste into fresh chat
 ```
 
 ## Documents
@@ -36,8 +35,6 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 **`REVIEW.md`** — Prompt template for per-feature code review. Open it, copy the template, fill in task, plan, and code, paste into a fresh chat.
 
 **`CHANGELOG.md`** — Release notes. Generated with `/release:changelog` after features are done.
-
-**`PROJECT.md`** — ASCII tree of the project structure. Auto-generated via `bun run snapshot`. Gitignored. Regenerate when structure changes.
 
 ## Core Implementation Loop
 

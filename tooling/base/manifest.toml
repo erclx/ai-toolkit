@@ -25,7 +25,6 @@ packages = [
 "check" = "./scripts/verify.sh"
 "clean" = "./scripts/clean.sh"
 "update" = "./scripts/update.sh"
-"snapshot" = "./scripts/snapshot.sh"
 
 [gitignore]
 "# System" = [".DS_Store"]
