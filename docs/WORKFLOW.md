@@ -47,15 +47,13 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 
 ## Prompt Generation
 
-`aitk claude prompt` generates master prompts for planning and code generation.
+`aitk claude prompt` generates master prompts for the Planner and Implementer roles.
 
-- Reads `.claude/PLANNER.md` and `.claude/IMPLEMENTER.md` as templates
-- Injects all `.mdc` files from `.cursor/rules/` into IMPLEMENTER's `{{GOVERNANCE_RULES}}`
-- Auto-injects TASKS, REQUIREMENTS, ARCHITECTURE into both PLANNER and IMPLEMENTER
-- Auto-injects DESIGN into PLANNER only
-- Leaves IMPLEMENTER's source context as `[PASTE RELEVANT SOURCE FILES]` for manual fill
-- Writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`
-- Run `aitk gov sync` first when switching stacks
+- Reads `.claude/PLANNER.md` and `.claude/IMPLEMENTER.md` as base templates.
+- For the Implementer prompt, it injects all governance rules from `.cursor/rules/`.
+- For both prompts, it injects project state documents (`TASKS.md`, `REQUIREMENTS.md`, etc.) where placeholders like `{{TASKS}}` are found.
+- Writes the final prompts to `.claude/.tmp/PLANNER.md` and `.claude/.tmp/IMPLEMENTER.md`.
+- Copies `.claude/REVIEWER.md` to the `.tmp/` directory for convenience.
 
 ## Core Implementation Loop
 
