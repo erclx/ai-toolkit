@@ -160,6 +160,7 @@ build_planner() {
   inject_placeholder_file "REQUIREMENTS.md" "{{REQUIREMENTS}}" "$output_file"
   inject_placeholder_file "ARCHITECTURE.md" "{{ARCHITECTURE}}" "$output_file"
   inject_placeholder_file "DESIGN.md" "{{DESIGN}}" "$output_file"
+  inject_placeholder_file "WIREFRAMES.md" "{{WIREFRAMES}}" "$output_file"
 }
 
 main() {
