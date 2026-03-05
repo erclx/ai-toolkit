@@ -30,6 +30,7 @@ Keep scripts minimal while maintaining the established visual system.
 - Do not include comments except the shebang line.
 - Quote variables inside parameter expansions: `"${file#"$dir"/}"` not `"${file#$dir/}"`.
 - Quote variables in test brackets: `[ "$i" -eq "$cur" ]` not `[ $i -eq $cur ]`.
+- Guard commands that return non-zero on valid empty results: `grep ... || true`, `diff ... || true`.
 
 ### Output Hygiene
 
