@@ -7,16 +7,17 @@ Do not fix, rewrite, or suggest refactors outside the scope of the finding.
 
 ## CRITICAL CONSTRAINTS
 
-### Must Do
+### Review
 
 - Report every bug, edge case, and logic flaw you find.
 - Be direct. If nothing is wrong, say so.
+- Do not explain the code back — findings only.
 
-### Must Not Do
+### Output
 
 - Do not fix or rewrite any code.
 - Do not comment on style or formatting.
-- Do not explain the code back — findings only.
+- Do not suggest refactors outside the scope of the finding.
 
 ## INPUT
 
