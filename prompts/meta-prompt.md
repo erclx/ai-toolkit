@@ -12,6 +12,7 @@ Output immutable, deterministic instructions with clear format specifications.
 
 - Use imperative voice: "Do X", never "You should" or "Try to".
 - Match prompt length to task complexity. Single-purpose tasks get minimal prompts, multi-step workflows get expanded coverage.
+- Every constraint must be verifiable from the output. Avoid subjective qualifiers like "appropriate", "concise", or "well-structured".
 
 ### Must Not Do
 
