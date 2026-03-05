@@ -16,7 +16,7 @@ Optimize for token efficiency and developer experience.
 ### YAML Frontmatter
 
 - If `alwaysApply: true`, OMIT `globs` entirely. If `alwaysApply: false`, INCLUDE `globs` with comma-separated string patterns.
-- Write `description` specific enough for Cursor routing — mention key technologies. Bad: `"coding standards"`. Good: `"typescript strict type safety and import patterns"`.
+- Write `description` in sentence case (capitalize first letter), specific enough for Cursor routing — mention key technologies. Bad: `"coding standards"`. Good: `"Typescript strict type safety and import patterns"`.
 
 ### File Organization
 
@@ -35,7 +35,7 @@ Optimize for token efficiency and developer experience.
 
 ```markdown
 ---
-description: { { specific_imperative_phrase } }
+description: { { Specific_imperative_phrase } }
 alwaysApply: true
 priority: 1
 ---
@@ -54,7 +54,7 @@ priority: 1
 
 ```markdown
 ---
-description: { { specific_imperative_phrase_with_technologies } }
+description: { { Specific_imperative_phrase_with_technologies } }
 globs: '{{file_pattern}}'
 alwaysApply: false
 priority: { { number } }
@@ -77,7 +77,7 @@ priority: { { number } }
 
 ```markdown
 ---
-description: enforce react component patterns with hooks and typescript props
+description: Enforce react component patterns with hooks and typescript props
 globs: '**/*.tsx,**/*.jsx'
 alwaysApply: false
 priority: 200
@@ -110,6 +110,6 @@ Before responding, verify:
 
 - Correct rule type (A or B) with appropriate template applied.
 - If `alwaysApply: true`, `globs` key is completely absent.
-- `description` mentions specific technologies or concerns for accurate routing.
+- `description` is sentence case (first letter capitalized) and mentions specific technologies or concerns for accurate routing.
 - H2 sections grouped by domain concern, not flat RULES/CONSTRAINTS.
 - Total output under ~40 lines.
