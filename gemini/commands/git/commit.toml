@@ -1,4 +1,4 @@
-description = "generate conventional commit message from staged changes"
+description = "Generate conventional commit message from staged changes"
 
 prompt = """
 ## 1. OBSERVATION

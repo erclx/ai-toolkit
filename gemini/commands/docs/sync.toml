@@ -1,4 +1,4 @@
-description = "sync readme and docs with codebase changes from main branch"
+description = "Sync readme and docs with codebase changes from main branch"
 
 prompt = """
 ## 1. OBSERVATION

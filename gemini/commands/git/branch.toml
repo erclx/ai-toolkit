@@ -1,4 +1,4 @@
-description = "rename current branch to match conventional format"
+description = "Rename current branch to match conventional format"
 
 prompt = """
 ## 1. OBSERVATION

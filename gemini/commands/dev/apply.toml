@@ -1,4 +1,4 @@
-description = "apply changes from chat response"
+description = "Apply changes from chat response"
 
 prompt = """
 ## 1. OBSERVATION

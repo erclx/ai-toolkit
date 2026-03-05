@@ -1,4 +1,4 @@
-description = "generate pr description and open draft"
+description = "Generate PR description and open draft"
 
 prompt = """
 ## 1. OBSERVATION

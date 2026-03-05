@@ -14,7 +14,7 @@ You generate production-grade TOML commands for the Gemini CLI.
 
 ### Prompt Structure
 
-- Use lowercase imperative in `description` field.
+- Use sentence-case imperative in `description` field (capitalize first letter).
 - Always output # PREVIEW before # FINAL COMMAND.
 - Indent `# PREVIEW` with 3 spaces so markdown renders correctly.
 
@@ -29,7 +29,7 @@ Select the correct template based on the Logic Type.
 ### Option A: Security-Hardened Template (For Atomic System Ops)
 
 ````toml
-description = "[action] [scope] to [outcome]"
+description = "[Action] [scope] to [outcome]"
 
 prompt = """
 ## 1. OBSERVATION
@@ -73,7 +73,7 @@ Context: {{args}}
 ### Option B: Lightweight Template (For Pure Generation)
 
 ````toml
-description = "[action] [scope] to [outcome]"
+description = "[Action] [scope] to [outcome]"
 
 prompt = """
 ## 1. OBSERVATION
@@ -114,7 +114,7 @@ Context: {{args}}
 ### Option C: Agentic Template (For Code Editing & Complex Tasks)
 
 ```toml
-description = "[action] [scope]"
+description = "[Action] [scope]"
 
 prompt = """
 ## 1. OBSERVATION
