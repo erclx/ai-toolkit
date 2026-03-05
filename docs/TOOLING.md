@@ -23,7 +23,7 @@ tooling/
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 ├── claude/
-│   ├── seeds/         ← .claude/ workflow docs (managed and seeded)
+│   ├── seeds/         ← .claude/ workflow docs (role prompts and state docs)
 │   ├── manifest.toml  ← gitignore only, no configs or deps
 │   └── reference.md
 └── gemini/
