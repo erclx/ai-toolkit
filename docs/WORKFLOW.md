@@ -2,7 +2,7 @@
 
 A concise overview of all documents in the dev workflow, with tool mappings.
 
-> **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = paste in this order: `SESSION.md` → `TASKS.md`. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature or debugging a planning-level issue.
+> **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = paste in this order: `PLANNER.md` → `TASKS.md`. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature or debugging a planning-level issue.
 
 ## File Location
 
@@ -12,18 +12,30 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 ```
 .claude/
-├── SESSION.md           ← session system prompt, paste first always
+├── PLANNER.md           ← system prompt for planning, paste first always
 ├── REQUIREMENTS.md      ← project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md      ← technical design decisions and open questions
 ├── DESIGN.md            ← color, typography, spacing, and motion decisions (UI projects only)
 ├── TASKS.md             ← persistent task tracker, source of truth for progress
-├── REVIEWER.md          ← review prompt template, copy-paste into fresh chat
-└── IMPLEMENTER.md       ← master prompt template, read by aitk claude prompt
+├── REVIEWER.md          ← system prompt for code review, copy-paste into fresh chat
+└── IMPLEMENTER.md       ← system prompt for code generation, read by aitk claude prompt
 ```
 
 ## Documents
 
-**`SESSION.md`** — System prompt for Claude. Defines role, sync format, output rules, and planning behavior. Paste first every session. Managed by `aitk`; use `aitk claude update` to sync.
+### Role Prompts
+
+Role prompts are agent instructions. They open with `# System Prompt: [Role]` and define behavior for a specific agent mode.
+
+**`PLANNER.md`** — System prompt for Claude planning sessions. Defines role, sync format, output rules, and planning behavior. Paste first every session. Managed by `aitk`; use `aitk claude update` to sync.
+
+**`IMPLEMENTER.md`** — System prompt for code generation. Receives plan context and governance rules via `aitk claude prompt`. Paste into Gemini pro chat to start implementation.
+
+**`REVIEWER.md`** — System prompt for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh Gemini chat. Managed by `aitk`; use `aitk claude update` to sync.
+
+### State Documents
+
+State documents are project artifacts. They open with `# [Name]` and track project state that evolves over time.
 
 **`REQUIREMENTS.md`** — Project goals, non-goals, MVP scope, tech stack, and constraints. Created before any code with Claude chat.
 
@@ -32,8 +44,6 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 **`DESIGN.md`** — Color tokens, typography, spacing, border, and motion decisions. Created before UI implementation with Claude chat. Seeded for all projects; delete if not needed.
 
 **`TASKS.md`** — Persistent task tracker. Source of truth for what is in progress, up next, done, and blocked. Updated every session.
-
-**`REVIEWER.md`** — Prompt template for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh chat. Managed by `aitk`; use `aitk claude update` to sync.
 
 ## Prompt Generation
 
@@ -52,7 +62,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 ```
 ┌─────────────────────────────────────────────────────┐
 │  SESSION START (new chat tab)                        │
-│  1. SESSION.md           (always, paste first)       │
+│  1. PLANNER.md           (always, paste first)       │
 │  2. TASKS.md             (always)                    │
 │  3. REQUIREMENTS.md +    (new feature only)          │
 │     ARCHITECTURE.md                                  │
@@ -123,7 +133,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Stage                  | Tool              | Command / Note                                                                                                       |
 | ---------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                                                 |
-| Planning (all docs)    | Claude chat       | Paste SESSION.md first; add REQUIREMENTS + ARCHITECTURE for new features                                             |
+| Planning (all docs)    | Claude chat       | Paste PLANNER.md first; add REQUIREMENTS + ARCHITECTURE for new features                                             |
 | Generate master prompt | aitk claude       | `aitk claude prompt` — injects rules + auto-injects TASKS, REQUIREMENTS, ARCHITECTURE; paste source context manually |
 | Code generation        | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                                           |
 | Apply file changes     | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                                         |
