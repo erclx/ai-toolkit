@@ -1,5 +1,5 @@
 ---
-description: enforce typescript/javascript testing tooling standards
+description: Enforce typescript/javascript testing tooling standards
 globs: '**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx'
 alwaysApply: false
 priority: 300

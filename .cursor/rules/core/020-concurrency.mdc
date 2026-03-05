@@ -1,5 +1,5 @@
 ---
-description: enforce safe concurrency and async operation patterns
+description: Enforce safe concurrency and async operation patterns
 alwaysApply: true
 priority: 20
 ---

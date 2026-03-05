@@ -1,5 +1,5 @@
 ---
-description: enforce tanstack query data fetching and cache patterns
+description: Enforce tanstack query data fetching and cache patterns
 globs: '**/*.ts,**/*.tsx'
 alwaysApply: false
 priority: 320

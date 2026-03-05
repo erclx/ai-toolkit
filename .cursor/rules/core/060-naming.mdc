@@ -1,5 +1,5 @@
 ---
-description: enforce consistent naming semantics across all code
+description: Enforce consistent naming semantics across all code
 alwaysApply: true
 priority: 60
 ---

@@ -1,5 +1,5 @@
 ---
-description: enforce node workflow planning standards
+description: Enforce node workflow planning standards
 globs: 'package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx'
 alwaysApply: false
 priority: 900

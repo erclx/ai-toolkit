@@ -1,5 +1,5 @@
 ---
-description: enforce opinionated react architecture and component patterns
+description: Enforce opinionated react architecture and component patterns
 globs: '**/*.tsx,**/*.ts'
 alwaysApply: false
 priority: 200

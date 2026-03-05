@@ -1,5 +1,5 @@
 ---
-description: enforce performance constraints and optimization patterns
+description: Enforce performance constraints and optimization patterns
 alwaysApply: true
 priority: 40
 ---

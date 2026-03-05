@@ -1,5 +1,5 @@
 ---
-description: enforce tailwind css v4 utility patterns, theme tokens, dark mode, and custom styles
+description: Enforce tailwind css v4 utility patterns, theme tokens, dark mode, and custom styles
 globs: '**/*.tsx,**/*.jsx,**/*.html,**/*.css'
 alwaysApply: false
 priority: 250

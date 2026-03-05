@@ -1,5 +1,5 @@
 ---
-description: enforce consistent error handling patterns
+description: Enforce consistent error handling patterns
 alwaysApply: true
 priority: 30
 ---
