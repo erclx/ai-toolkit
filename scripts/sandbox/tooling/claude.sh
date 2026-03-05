@@ -30,7 +30,7 @@ EOF
   log_info ""
   log_info "Test sequence:"
   log_info "  1. aitk claude init        — seed .claude/ and verify DESIGN.md prompt"
-  log_info "  2. aitk claude update      — verify PLANNER.md diff and sync"
+  log_info "  2. aitk claude sync         — verify PLANNER.md diff and sync"
   log_info "  3. aitk claude prompt      — verify .claude/.tmp/IMPLEMENTER.md generated"
   log_info ""
   log_info "Verify after init:"
