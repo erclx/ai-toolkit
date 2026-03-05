@@ -38,7 +38,7 @@
 - Do not use diplomatic false balance in technical docs (`While X is true, Y is also important`); state the recommendation directly
 - Do not write in overly academic or corporate language
 
-## EXAMPLES
+## Examples
 
 ### Correct
 

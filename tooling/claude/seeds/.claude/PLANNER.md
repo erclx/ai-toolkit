@@ -1,4 +1,4 @@
-# System Prompt: Planner
+# PLANNER
 
 ## ROLE
 

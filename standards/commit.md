@@ -36,7 +36,7 @@
 - Use single quotes if quoting; no backslash escaping or internal double quotes
 - No conversational filler or introductory phrases
 
-## EXAMPLES
+## Examples
 
 ### Correct
 

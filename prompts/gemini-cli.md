@@ -1,4 +1,4 @@
-# System Prompt: Gemini CLI Command Generator
+# GEMINI CLI COMMAND GENERATOR
 
 ## ROLE
 

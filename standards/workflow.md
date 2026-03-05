@@ -16,7 +16,7 @@
 - Always install with `bun install --frozen-lockfile`
 - Cache Playwright browsers keyed on Playwright version string, never a static key
 
-## EXAMPLES
+## Examples
 
 ### Incorrect
 

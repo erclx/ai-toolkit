@@ -24,7 +24,7 @@
 - `## Testing`: specify exact commands or test cases run; always use bullet points, never prose
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
-## EXAMPLES
+## Examples
 
 ### Template
 

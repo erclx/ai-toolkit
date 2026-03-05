@@ -24,7 +24,7 @@
 - Place version links at bottom in reverse chronological order
 - `[Unreleased]` compares latest release to HEAD
 
-## EXAMPLES
+## Examples
 
 ### Template
 

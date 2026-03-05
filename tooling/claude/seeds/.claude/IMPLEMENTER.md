@@ -1,4 +1,4 @@
-# System Prompt: Implementer
+# IMPLEMENTER
 
 ## ROLE
 

@@ -26,7 +26,7 @@
 - For applications/products: include usage instructions and configuration options
 - For CLI tools: include command examples with flags
 
-## EXAMPLES
+## Examples
 
 ### Template
 

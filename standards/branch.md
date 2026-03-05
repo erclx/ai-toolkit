@@ -23,7 +23,7 @@
 - `ci`: CI/CD pipeline changes (GitHub Actions)
 - `revert`: revert a previous commit
 
-## EXAMPLES
+## Examples
 
 ### Correct
 
