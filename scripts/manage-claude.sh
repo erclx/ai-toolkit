@@ -18,7 +18,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
-  echo -e "${GREY}│${NC}    update    ${GREY}# Diff PLANNER.md against seed and offer to apply${NC}"
+  echo -e "${GREY}│${NC}    sync      ${GREY}# Diff managed role prompts against seed and apply${NC}"
   echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
@@ -30,7 +30,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    aitk claude init"
   echo -e "${GREY}│${NC}    aitk claude init ../my-app"
-  echo -e "${GREY}│${NC}    aitk claude update ../my-app"
+  echo -e "${GREY}│${NC}    aitk claude sync ../my-app"
   echo -e "${GREY}│${NC}    aitk claude prompt"
   echo -e "${GREY}└${NC}"
   exit 0
@@ -168,7 +168,7 @@ cmd_init() {
   fi
 }
 
-cmd_update() {
+cmd_sync() {
   local target="${1:-.}"
 
   validate_target "$target"
@@ -249,7 +249,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "update" "prompt"
+    select_option "Claude command?" "init" "sync" "prompt"
     command="$SELECTED_OPTION"
   else
     shift
@@ -261,16 +261,16 @@ main() {
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude ready${NC}"
     ;;
-  update)
-    cmd_update "$@"
+  sync)
+    cmd_sync "$@"
     echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow updated${NC}"
+    echo -e "${GREEN}✓ Claude workflow synced${NC}"
     ;;
   prompt)
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh" "$@"
     ;;
   *)
-    log_error "Unknown command: $command. Use 'init', 'update', or 'prompt'."
+    log_error "Unknown command: $command. Use 'init', 'sync', or 'prompt'."
     ;;
   esac
 }

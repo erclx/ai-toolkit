@@ -27,11 +27,11 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 Role prompts are agent instructions. They open with `# System Prompt: [Role]` and define behavior for a specific agent mode.
 
-**`PLANNER.md`** — System prompt for Claude planning sessions. Defines role, sync format, output rules, and planning behavior. Paste first every session. Managed by `aitk`; use `aitk claude update` to sync.
+**`PLANNER.md`** — System prompt for Claude planning sessions. Defines role, sync format, output rules, and planning behavior. Paste first every session. Managed by `aitk`; use `aitk claude sync` to sync.
 
 **`IMPLEMENTER.md`** — System prompt for code generation. Receives plan context and governance rules via `aitk claude prompt`. Paste into Gemini pro chat to start implementation.
 
-**`REVIEWER.md`** — System prompt for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh Gemini chat. Managed by `aitk`; use `aitk claude update` to sync.
+**`REVIEWER.md`** — System prompt for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh Gemini chat. Managed by `aitk`; use `aitk claude sync` to sync.
 
 ### State Documents
 
@@ -49,7 +49,7 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 
 `aitk claude prompt` generates the master implementation prompt for code generation.
 
-- Reads `.claude/IMPLEMENTER.md` as the template (a managed file updated via `aitk claude update`)
+- Reads `.claude/IMPLEMENTER.md` as the template (a managed file updated via `aitk claude sync`)
 - Injects all `.mdc` files from `.cursor/rules/` into `{{GOVERNANCE_RULES}}`
 - Auto-injects current content of `TASKS.md`, `REQUIREMENTS.md`, and `ARCHITECTURE.md` from `.claude/`
 - Leaves `## Source Code Context` as `[PASTE RELEVANT SOURCE FILES]` — fill manually using your editor extension
@@ -132,7 +132,8 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 
 | Stage                  | Tool              | Command / Note                                                                                                       |
 | ---------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Scaffold .claude/      | aitk claude       | Interactively seed .claude/ docs and sync .gitignore                                                                 |
+| Scaffold .claude/      | aitk claude       | `aitk claude init` — seed .claude/ docs and sync .gitignore                                                          |
+| Sync managed prompts   | aitk claude       | `aitk claude sync` — diff managed role prompts against seed and apply                                                |
 | Planning (all docs)    | Claude chat       | Paste PLANNER.md first; add REQUIREMENTS + ARCHITECTURE for new features                                             |
 | Generate master prompt | aitk claude       | `aitk claude prompt` — injects rules + auto-injects TASKS, REQUIREMENTS, ARCHITECTURE; paste source context manually |
 | Code generation        | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                                           |

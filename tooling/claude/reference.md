@@ -27,5 +27,5 @@ The claude stack seeds the `.claude/` workflow directory into a project.
 | Command              | What it does                                                                                                                                    |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `aitk claude init`   | Seeds `.claude/` workflow docs, updates `.gitignore`                                                                                            |
-| `aitk claude update` | Diffs `PLANNER.md` against seed, offers to apply changes                                                                                        |
+| `aitk claude sync`   | Diffs `PLANNER.md` against seed, offers to apply changes                                                                                        |
 | `aitk claude prompt` | Injects `.cursor/rules/` + TASKS, REQUIREMENTS, ARCHITECTURE into `IMPLEMENTER.md`, copies REVIEWER.md to `.tmp/`, writes `.tmp/IMPLEMENTER.md` |
