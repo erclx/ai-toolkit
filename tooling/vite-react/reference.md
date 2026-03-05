@@ -112,7 +112,7 @@
 - Trigger: pull requests to `main` + `workflow_dispatch`.
 - Jobs run in parallel except E2E which depends on all others.
 - All jobs: checkout → setup bun (latest) → `bun install --frozen-lockfile`.
-- `static-checks`: install shfmt, typecheck, lint, check:format, check:spell.
+- `static-checks`: install shfmt and shellcheck, typecheck, lint, check:format, check:spell, check:shell.
 - `unit-tests`: `bun run test:coverage`.
 - `build-verify`: `bun run build`.
 - `e2e-tests` (needs all above): cache Playwright browsers, install chromium if cache miss, run `test:e2e --project=chromium`, upload report artifact on failure (7 day retention).

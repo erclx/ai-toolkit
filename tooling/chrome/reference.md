@@ -66,7 +66,7 @@ The chrome stack layers a Chrome Extension setup using CRXJS and Vite on top of 
 - Trigger: pull requests to `main` + `workflow_dispatch`.
 - Three jobs only: `static-checks`, `unit-tests`, `build-verify` — no E2E (extensions cannot run Playwright against a dev server in CI).
 - All jobs: checkout → setup bun (latest) → `bun install --frozen-lockfile`.
-- `static-checks`: install shfmt, typecheck, lint, check:format, check:spell.
+- `static-checks`: install shfmt and shellcheck, typecheck, lint, check:format, check:spell, check:shell.
 - `unit-tests`: `bun run test:coverage`.
 - `build-verify`: `bun run build`.
 
