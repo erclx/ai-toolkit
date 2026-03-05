@@ -7,7 +7,7 @@ The gemini stack seeds `.gemini/settings.json` with a baseline model config into
 ## Settings
 
 - Config: `.gemini/settings.json` at root.
-- Model: `gemini-2.5-pro` (default seed, user-owned after init).
+- Model: `gemini-2.5-flash` (default seed, user-owned after init).
 - Gitignored — local override, never commit.
 
 ## Gitignore
