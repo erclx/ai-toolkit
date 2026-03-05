@@ -34,7 +34,7 @@ EOF
   log_info "  3. aitk claude prompt      — verify .claude/.tmp/IMPLEMENTER.md generated"
   log_info ""
   log_info "Verify after init:"
-  log_info "  .claude/PLANNER.md, TASKS.md, REQUIREMENTS.md, ARCHITECTURE.md exist"
+  log_info "  .claude/PLANNER.md, TASKS.md, REQUIREMENTS.md, ARCHITECTURE.md, WIREFRAMES.md exist"
   log_info "  .claude/DESIGN.md exists only if UI was selected"
   log_info "  .gitignore contains .claude/.tmp/"
   log_info ""
