@@ -109,6 +109,7 @@ substitute_placeholder() {
   split_line=$(grep -n -F "$placeholder" "$target_file" | cut -d: -f1)
 
   if [ -z "$split_line" ]; then
+    log_warn "$placeholder not found in template, run \`aitk claude sync\`"
     rm "$tmp_file"
     return
   fi
@@ -200,7 +201,7 @@ main() {
   log_info ".claude/.tmp/REVIEWER.md"
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Master prompt ready${NC}"
+  echo -e "${GREEN}✓ Master prompts ready${NC}"
 }
 
 main "$@"
