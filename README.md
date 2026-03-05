@@ -43,7 +43,7 @@ Run `aitk` from the repo root.
 | Command              | Description                                                         |
 | -------------------- | ------------------------------------------------------------------- |
 | `aitk claude init`   | Seed .claude/ workflow docs and sync .gitignore                     |
-| `aitk claude update` | Check for updates to managed workflow files and verify seeded files |
+| `aitk claude sync`   | Check for updates to managed workflow files and verify seeded files |
 | `aitk claude prompt` | Generate master prompt, inject rules and context, stage REVIEWER.md |
 
 ### Sandbox
