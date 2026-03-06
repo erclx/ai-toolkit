@@ -23,13 +23,13 @@ Run `scripts/context.sh` to gather git context before generating the PR descript
 
 ## Response Format
 
-### PREVIEW
+### Preview
 
 - **Title:** <title>
 - **Files Changed:** <count>
 - **Analysis:** <brief summary of impact>
 
-### FINAL COMMAND
+### Final command
 
 ```bash
 mkdir -p .claude/.tmp && (cat <<'BODY' > .claude/.tmp/pr-body.md

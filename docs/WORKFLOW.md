@@ -1,10 +1,10 @@
-# Workflow Documents Reference
+# Workflow documents reference
 
 A concise overview of all documents in the dev workflow, with tool mappings.
 
 > **Session note:** "Session start" = opening a new chat tab (new context window). New message in the same chat = no re-orientation needed. New chat tab = run `aitk claude prompt`, then paste `.tmp/PLANNER.md`. Add `REQUIREMENTS.md` + `ARCHITECTURE.md` only when starting a brand new feature or debugging a planning-level issue.
 
-## File Location
+## File location
 
 All planning docs live in `.claude/` at the project root. Git tracked, part of the project, not throwaway notes.
 
@@ -24,7 +24,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 ## Documents
 
-### Role Prompts
+### Role prompts
 
 Role prompts are agent instructions. They open with `# System Prompt: [Role]` and define behavior for a specific agent mode.
 
@@ -34,7 +34,7 @@ Role prompts are agent instructions. They open with `# System Prompt: [Role]` an
 
 **`REVIEWER.md`** — System prompt for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh Gemini chat. Managed by `aitk`; use `aitk claude sync` to sync.
 
-### State Documents
+### State documents
 
 State documents are project artifacts. They open with `# [Name]` and track project state that evolves over time.
 
@@ -48,7 +48,7 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 
 **`TASKS.md`** — Persistent task tracker. Source of truth for what is in progress, up next, done, and blocked. Updated every session.
 
-## Prompt Generation
+## Prompt generation
 
 `aitk claude prompt` generates master prompts for planning and code generation.
 
@@ -60,7 +60,7 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 - Writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`
 - Run `aitk gov sync` first when switching stacks
 
-## Core Implementation Loop
+## Core implementation loop
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -129,7 +129,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
       Run aitk gov sync before aitk claude prompt when switching stacks.
 ```
 
-## Tool Mapping Summary
+## Tool mapping summary
 
 | Stage                   | Tool              | Command / Note                                                                                |
 | ----------------------- | ----------------- | --------------------------------------------------------------------------------------------- |

@@ -44,7 +44,7 @@ priority: 1
 
 {{persona_definition}}
 
-## CORE PRINCIPLES
+## Core principles
 
 - {{principle_1}}
 - {{principle_2}}
@@ -62,12 +62,12 @@ priority: { { number } }
 
 # {{MODULE}} STANDARDS
 
-## {{Concern Group 1}}
+## {{Concern group 1}}
 
 - {{actionable constraint}}
 - {{preference using X over Y}}
 
-## {{Concern Group 2}}
+## {{Concern group 2}}
 
 - {{constraint}}
 - {{inline custom pattern only if LLM cannot infer}}
@@ -111,5 +111,5 @@ Before responding, verify:
 - Correct rule type (A or B) with appropriate template applied.
 - If `alwaysApply: true`, `globs` key is completely absent.
 - `description` is sentence case (first letter capitalized) and mentions specific technologies or concerns for accurate routing.
-- H2 sections grouped by domain concern, not flat RULES/CONSTRAINTS.
+- H1 all-caps, H2 sentence case, grouped by domain concern — not flat RULES/CONSTRAINTS.
 - Total output under ~40 lines.

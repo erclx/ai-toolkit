@@ -1,4 +1,4 @@
-# COMMIT MESSAGE REFERENCE
+# Commit message reference
 
 ## Format
 

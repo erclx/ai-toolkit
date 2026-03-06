@@ -23,7 +23,7 @@ Run `scripts/context.sh` to gather git context before generating a branch name.
 
 ## Response Format
 
-### PREVIEW
+### Preview
 
 - **Current:** <current_branch>
 - **Suggested:** <suggested_name>
@@ -37,7 +37,7 @@ If EXISTS on remote, warn and stop:
 ⚠️ Branch exists on remote. Rename manually via GitHub UI or gh CLI to avoid breaking open PRs.
 ```
 
-### FINAL COMMAND
+### Final command
 
 Only output if LOCAL_ONLY:
 

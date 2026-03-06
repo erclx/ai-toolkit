@@ -1,4 +1,4 @@
-# CHANGELOG REFERENCE
+# Changelog reference
 
 ## Format
 

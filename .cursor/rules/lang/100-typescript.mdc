@@ -7,14 +7,14 @@ priority: 100
 
 # TYPESCRIPT STANDARDS
 
-## Casing Conventions
+## Casing conventions
 
 - Use `kebab-case` for filenames and directories.
 - Use `camelCase` for variables, functions, and methods.
 - Use `PascalCase` for types, interfaces, classes, and components.
 - Use `UPPER_SNAKE_CASE` for constants and environment variables.
 
-## Type Declarations
+## Type declarations
 
 - Enforce explicit types or strict inference; use `unknown` over `any` absolutely.
 - Use `interface` for object shapes and component props.
@@ -22,7 +22,7 @@ priority: 100
 - Do not prefix interfaces with `I`.
 - Do not use `enum`; use constant objects or unions.
 
-## Type Safety
+## Type safety
 
 - Use type guards and narrowing over type assertions.
 - Use discriminated unions for error handling over throwing exceptions.
@@ -30,13 +30,13 @@ priority: 100
 - Prefer `readonly` properties for data objects.
 - Do not use non-null assertions.
 
-## Imports and Configuration
+## Imports and configuration
 
 - Use absolute imports mapping `@/` to `src/`.
 - Import from the module's source file directly; avoid barrel `index` re-exports.
 - Use `import type` for type-only imports to enable proper tree-shaking.
 - Enable `strict: true` in tsconfig.json with no exceptions.
 
-## Async Patterns
+## Async patterns
 
 - Use `Promise.all()` for independent operations to avoid serial waterfalls.

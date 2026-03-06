@@ -1,4 +1,4 @@
-# TOOLING CHROME REFERENCE
+# Tooling Chrome reference
 
 > Extends: `vite-react`. Apply vite-react stack first.
 

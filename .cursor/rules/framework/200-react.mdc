@@ -7,18 +7,18 @@ priority: 200
 
 # REACT ARCHITECTURE STANDARDS
 
-## Export Conventions
+## Export conventions
 
 - Use named exports exclusively for components and hooks.
 - Do not use default exports.
 
-## Project Structure
+## Project structure
 
 - Place domain logic in `src/features/` and restrict `src/components/` to shared UI.
 - Do not place feature-specific components in the global components folder.
 - Import environment variables only from the validated configuration module.
 
-## Component Patterns
+## Component patterns
 
 - Use function declarations for components, not arrow functions.
 - Define TypeScript interfaces for props immediately above the component.
@@ -26,7 +26,7 @@ priority: 200
 - Use stable, unique keys for list items; never use array index.
 - Extract components when JSX exceeds a single responsibility; prefer composition of small components.
 
-## State and Effects
+## State and effects
 
 - Encapsulate data fetching and complex effects in custom hooks.
 - Do not use `useEffect` for derived state; use `useMemo`.
@@ -36,6 +36,6 @@ priority: 200
 - Memoize components receiving non-primitive props with `React.memo`.
 - Use `useCallback` for handler props passed to children.
 
-## Composition and Props
+## Composition and props
 
 - Avoid prop drilling beyond 2 levels; use context or composition.

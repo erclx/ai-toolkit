@@ -1,4 +1,4 @@
-# BRANCH REFERENCE
+# Branch reference
 
 ## Format
 

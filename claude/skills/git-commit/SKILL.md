@@ -18,13 +18,13 @@ Follow it exactly.
 
 ## Response Format
 
-### PREVIEW
+### Preview
 
 - **Files:** <if ≤3 list all, if >3 show first 3 + "+N more">
 - **Message:** `<type>(<scope>): <subject>`
 - **Length:** <count>/72
 
-### FINAL COMMAND
+### Final command
 
 ```bash
 git commit -m "<type>(<scope>): <subject>"

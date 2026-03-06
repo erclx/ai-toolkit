@@ -1,4 +1,4 @@
-# TOOLING VITE REACT REFERENCE
+# Tooling vite-react reference
 
 > Extends: `base`. Apply base stack first.
 

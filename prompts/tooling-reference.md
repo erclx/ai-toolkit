@@ -36,7 +36,7 @@ Produce a single markdown file. No preamble, no explanation outside the file con
 **Template:**
 
 ```markdown
-# TOOLING [STACK NAME] REFERENCE
+# Tooling [stack name] reference
 
 ## Overview
 
@@ -45,12 +45,12 @@ Produce a single markdown file. No preamble, no explanation outside the file con
 > Extends: `[parent]`. Apply [parent] stack first.
 > _(Omit if no parent)_
 
-## [Tool Name]
+## [Tool name]
 
 - [Decision]
 - [Decision]
 
-## [Tool Name]
+## [Tool name]
 
 - [Decision]
 - [Decision]
@@ -71,7 +71,7 @@ Input: stack name `vite-react`, configs for Prettier, ESLint, Vitest pasted in.
 Output (excerpt):
 
 ```markdown
-# TOOLING VITE REACT REFERENCE
+# Tooling vite-react reference
 
 > Extends: `base`. Apply base stack first.
 
@@ -79,7 +79,7 @@ Output (excerpt):
 
 The vite-react stack layers a React + TypeScript + Tailwind frontend setup on top of base tooling.
 
-## Prettier (Extend)
+## Prettier (extend)
 
 - Add `jsxSingleQuote: true`.
 - Add `prettier-plugin-tailwindcss` to plugins array.

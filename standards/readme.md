@@ -1,8 +1,9 @@
-# README REFERENCE
+# Readme reference
 
 ## Structure
 
 - H1 title, H2 major sections, H3 subsections
+- Use sentence case for all headings (proper nouns and product names retain their casing)
 - Project description in plain text directly under H1; 2-3 sentences maximum
 - Use proper heading hierarchy to enable GitHub's auto-generated table of contents
 - Do not create deeply nested heading structures that harm scannability
@@ -72,7 +73,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 [MIT](LICENSE)
 ````
 
-### Correct (Library)
+### Correct (library)
 
 ````markdown
 # Auth SDK
@@ -92,7 +93,7 @@ Lightweight authentication library for Node.js with OAuth2 and JWT support. # 1 
 npm install auth-sdk
 ```
 
-## Quick Start
+## Quick start
 
 ```javascript
 import { AuthClient } from 'auth-sdk'
@@ -119,7 +120,7 @@ Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference. # l
 [MIT](LICENSE) # references file, no license text
 ````
 
-### Correct (Application/Product)
+### Correct (application/product)
 
 ````markdown
 # Terraform Formatter

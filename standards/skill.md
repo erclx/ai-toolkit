@@ -1,4 +1,4 @@
-# CLAUDE SKILL REFERENCE
+# Claude skill reference
 
 ## Structure
 
@@ -76,17 +76,15 @@ List each issue with file, line, and suggested fix.
 
 ### Incorrect
 
-Path-focused description stuffed with keywords, body dumps everything inline instead of referencing standards:
-
 ```markdown
 ---
 name: code-review
-description: Handles all code-related tasks in scripts/, src/, and lib/. Also activate when user mentions bugs, refactoring, testing, linting, formatting, or any file ending in .ts .js .py .sh.
+description: Handles all code-related tasks in scripts/, src/, and lib/. Also activate when user mentions bugs, refactoring, testing, linting, formatting, or any file ending in .ts .js .py .sh. # path-focused + keyword-stuffed
 ---
 
 # Code review
 
 A good code review should check for bugs, performance issues, security vulnerabilities,
 code style, naming conventions, test coverage, documentation, error handling,
-edge cases, and adherence to SOLID principles...
+edge cases, and adherence to SOLID principles... # dumps everything inline instead of referencing standards
 ```

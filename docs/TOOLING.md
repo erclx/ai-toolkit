@@ -1,4 +1,4 @@
-# Tooling System
+# Tooling system
 
 ## Overview
 
@@ -32,7 +32,7 @@ tooling/
     └── reference.md
 ```
 
-## Configs vs Seeds vs References vs Gitignore
+## Configs vs seeds vs references vs gitignore
 
 Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong.
 
@@ -44,7 +44,7 @@ Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named g
 
 Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Similar to seeds, only missing entries are added; existing dependencies or scripts are not modified or overwritten.
 
-## Extends Chain
+## Extends chain
 
 `manifest.toml` declares `extends = "base"`. The full chain resolves recursively: base applies first, the derived stack overlays second. This applies to configs, seeds, references, and gitignore equally.
 
@@ -56,7 +56,7 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents              |
 | `aitk tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
 
-## Common Workflows
+## Common workflows
 
 Sync to a fresh project: `aitk tooling` → sync → pick stack → enter path.
 
@@ -66,7 +66,7 @@ Scaffold a new stack: `aitk tooling scaffold` → enter name → stub structure 
 
 Each stack has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `aitk` → tooling → pick scenario. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms.
 
-## Adding a New Stack
+## Adding a new stack
 
 1. Run `aitk tooling scaffold` to generate the stub structure
 2. Add golden config files to `tooling/<n>/configs/`

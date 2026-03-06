@@ -1,4 +1,4 @@
-# Governance System
+# Governance system
 
 ## Overview
 
@@ -18,7 +18,7 @@ scripts/
 └── manage-standards.sh ← entry point (aitk standards)
 ```
 
-## Key Decisions
+## Key decisions
 
 Rules flatten on sync. They live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `workflow/`) for toolkit organization, then flatten into `.cursor/rules/` on sync because Cursor reads rules flat.
 
@@ -80,11 +80,11 @@ aitk standards sync ../my-app
 # diffs standards already present, proposes new ones too
 ```
 
-## Adding a New Rule
+## Adding a new rule
 
 Create a `.mdc` file anywhere under `.cursor/rules/` using the numbering convention above. It is auto-discovered with no other changes needed. To include it in a stack, add it to the `rules` array in the relevant `.cursor/stacks/*.toml` file.
 
-## Adding a Stack
+## Adding a stack
 
 Create a new `.toml` file in `.cursor/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.mdc`) in the `rules` array. No build step needed — install reads stacks directly.
 
@@ -93,7 +93,7 @@ extends = "node"
 rules = ["200-react", "250-tailwind"]
 ```
 
-## Adding a Standard
+## Adding a standard
 
 Create a `.md` file in `standards/`. No build step needed. Run `aitk standards install` to push to a new project or `aitk standards sync` to update an existing one.
 

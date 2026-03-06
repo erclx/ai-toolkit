@@ -1,4 +1,4 @@
-# GITHUB WORKFLOW REFERENCE
+# GitHub workflow reference
 
 ## Conventions
 
@@ -10,7 +10,7 @@
 - Job order: static → unit → build → e2e/deploy
 - Upload artifacts on `if: failure()` only; set `retention-days: 7`
 
-## Bun Stack
+## Bun stack
 
 - Use `oven-sh/setup-bun@v2` with `bun-version: latest`
 - Always install with `bun install --frozen-lockfile`
