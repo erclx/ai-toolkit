@@ -14,6 +14,7 @@
 ## Structure
 
 - H1 for document title, H2 for main sections, H3 for subsections
+- Use sentence case for all headings — H1, H2, H3
 - Front-load key information in each paragraph; keep paragraphs concise and scannable
 - Every sentence must provide new information; remove redundant context
 - Use prose by default; reserve bullets for discrete, unrelated items
