@@ -23,14 +23,14 @@ Optimize for token efficiency and deterministic AI consumption.
 **Single-topic template:**
 
 ````markdown
-# {{TOPIC_NAME}} REFERENCE
+# {{TOPIC_NAME}} reference
 
-## RULES
+## Rules
 
 - {{constraint or format spec}}
 - {{constraint or format spec}}
 
-## EXAMPLES
+## Examples
 
 ### Correct
 
@@ -50,19 +50,19 @@ Optimize for token efficiency and deterministic AI consumption.
 **Multi-topic template:**
 
 ````markdown
-# {{TOPIC_NAME}} REFERENCE
+# {{TOPIC_NAME}} reference
 
-## {{Concern Group 1}}
-
-- {{constraint}}
-- {{constraint}}
-
-## {{Concern Group 2}}
+## {{Concern group 1}}
 
 - {{constraint}}
 - {{constraint}}
 
-## EXAMPLES
+## {{Concern group 2}}
+
+- {{constraint}}
+- {{constraint}}
+
+## Examples
 
 ### Correct
 
@@ -82,7 +82,7 @@ Optimize for token efficiency and deterministic AI consumption.
 > **Filename:** `standards/commit.md`
 
 ````markdown
-# COMMIT MESSAGE REFERENCE
+# Commit message reference
 
 ## Format
 
@@ -102,7 +102,7 @@ Optimize for token efficiency and deterministic AI consumption.
 - Use specific verbs (`add`, `remove`, `update`), not vague ones (`improve`, `refine`, `enhance`).
 - Do not repeat the scope in the subject line.
 
-## EXAMPLES
+## Examples
 
 ### Correct
 
