@@ -7,23 +7,23 @@ priority: 350
 
 # WEB SECURITY STANDARDS
 
-## Link Safety
+## Link safety
 
 - Add `rel="noopener noreferrer"` to all external links with `target="_blank"`.
 
-## Content Sanitization
+## Content sanitization
 
 - Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent; never use without sanitization.
 
-## Input Validation
+## Input validation
 
 - Validate all URL parameters and query strings using schema validation before use.
 
-## Storage and Tokens
+## Storage and tokens
 
 - Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
 - Store authentication tokens in httpOnly cookies; never expose to JavaScript.
 
-## Third-Party Scripts
+## Third-party scripts
 
 - Audit and pin versions for all third-party scripts loaded in the browser.

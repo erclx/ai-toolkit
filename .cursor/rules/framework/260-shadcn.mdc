@@ -7,12 +7,12 @@ priority: 260
 
 # SHADCN/UI STANDARDS
 
-## Component Authoring
+## Component authoring
 
 - Use `React.ComponentProps<typeof Primitive>` over `React.forwardRef` — forwardRef is deprecated in React 19.
 - Add `data-slot="component-name"` to every primitive root for Tailwind targeting.
 
-## Tokens and Styling
+## Tokens and styling
 
 - Use semantic color tokens (`bg-background`, `text-foreground`, `border-border`) — never hardcoded colors like `bg-white` or `text-gray-900`.
 - Use `cn()` from `@/lib/utils` for all className merging and conditional classes.
