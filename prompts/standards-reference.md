@@ -106,14 +106,14 @@ Optimize for token efficiency and deterministic AI consumption.
 
 ### Correct
 
-```text
+```plaintext
 feat(api): add retry logic for failed webhooks    # specific verb + clear change
 fix(auth): update token validation logic           # scoped + imperative mood
 ```
 
 ### Incorrect
 
-```text
+```plaintext
 fix(user-auth): Fixed the redirect loop.    # wrong casing + period + multi-word scope
 docs(docs): update the readme.              # duplicated scope + period
 docs(api): improve documentation            # vague verb + lacks specificity

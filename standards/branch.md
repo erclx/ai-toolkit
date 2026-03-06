@@ -27,7 +27,7 @@
 
 ### Correct
 
-```text
+```plaintext
 feat/jwt-expiration                    # clear feature scope
 fix/AUTH-123-connection-pool           # includes ticket ID
 refactor/remove-deprecated-endpoints   # clear refactor intent
@@ -35,7 +35,7 @@ refactor/remove-deprecated-endpoints   # clear refactor intent
 
 ### Incorrect
 
-```text
+```plaintext
 feature/auth_stuff                                        # wrong type + underscore
 feat/feature-add-login                                    # duplicates type in description
 fix/DB-456-fix-the-database-connection-pool-memory-leak   # exceeds 50 chars + verbatim message

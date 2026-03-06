@@ -40,14 +40,14 @@
 
 ### Correct
 
-```text
+```plaintext
 feat(api): add retry logic for failed webhooks       # specific verb + clear change
 fix(auth): update 'UserSession' validation logic     # scoped + imperative + single quotes
 ```
 
 ### Incorrect
 
-```text
+```plaintext
 fix(user-auth): Fixed the redirect loop.    # wrong casing + period + multi-word scope
 docs(docs): update the readme.              # duplicate scope + period
 docs(api): improve documentation            # vague verb + lacks specificity
