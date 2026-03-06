@@ -1,8 +1,8 @@
 # Tasks
 
-## In Progress
+## In progress
 
-## Up Next
+## Up next
 
 ## Done
 

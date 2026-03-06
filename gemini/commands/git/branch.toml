@@ -42,7 +42,7 @@ Context: {{args}}
   3. If both are empty (NO_COMMITS and no args), output `echo "❌ Error: No commits or description to derive a branch name from. Run: gemini git:branch \"<description>\""` and stop.
 - Generate suggested name following <BRANCH_STANDARDS>: `<type>/<description>` or `<type>/<ticket>-<description>`, 50 chars max.
 - Check <REMOTE_STATUS>:
-  - If EXISTS: print manual steps in chat, do NOT output an executable command.
+  - If EXISTS: print the warning below and stop. Do NOT output a FINAL COMMAND.
   - If LOCAL_ONLY: output `git branch -m` command.
 
 ### Must NOT Do:
@@ -62,14 +62,13 @@ Context: {{args}}
 - **Status:** <LOCAL_ONLY | EXISTS on remote>
 - **Analysis:** <Brief explanation of type choice and input signal used>
 
-If EXISTS on remote, print after PREVIEW:
+If EXISTS on remote, print after PREVIEW and stop:
+
+```markdown
+⚠️ Branch exists on remote. Rename manually via GitHub UI or gh CLI to avoid breaking open PRs.
 ```
-Manual steps required:
-1. git branch -m <current> <suggested>
-2. git push origin <suggested>
-3. git push origin :<current>
-4. git branch -u origin/<suggested>
-```
+
+If LOCAL_ONLY, print:
 
 # FINAL COMMAND
 

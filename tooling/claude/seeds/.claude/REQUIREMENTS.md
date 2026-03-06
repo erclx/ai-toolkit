@@ -4,10 +4,10 @@
 
 ## Goals
 
-## Non-Goals
+## Non-goals
 
-## MVP Features
+## MVP features
 
-## Tech Stack
+## Tech stack
 
 ## Constraints

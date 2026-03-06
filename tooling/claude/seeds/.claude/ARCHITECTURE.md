@@ -4,6 +4,6 @@
 
 ## Structure
 
-## Key Technical Decisions
+## Key technical decisions
 
-## Risks / Open Questions
+## Risks / open questions
