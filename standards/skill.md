@@ -1,4 +1,4 @@
-# CLAUDE SKILL REFERENCE
+# Claude skill reference
 
 ## Structure
 

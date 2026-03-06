@@ -1,4 +1,4 @@
-# README REFERENCE
+# Readme reference
 
 ## Structure
 
@@ -72,7 +72,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 [MIT](LICENSE)
 ````
 
-### Correct (Library)
+### Correct (library)
 
 ````markdown
 # Auth SDK
@@ -119,7 +119,7 @@ Visit [docs.auth-sdk.dev](https://docs.auth-sdk.dev) for full API reference. # l
 [MIT](LICENSE) # references file, no license text
 ````
 
-### Correct (Application/Product)
+### Correct (application/product)
 
 ````markdown
 # Terraform Formatter

@@ -1,4 +1,4 @@
-# PROSE REFERENCE
+# Prose reference
 
 ## Voice
 
