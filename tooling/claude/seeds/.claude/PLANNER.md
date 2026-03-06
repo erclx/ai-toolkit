@@ -54,7 +54,7 @@ Planning output (wireframes, task lists, questions) is inline.
 
 After any response that produces updated document content, end with a sync block:
 
-```md
+```markdown
 SYNC REQUIRED
 □ .claude/TASKS.md
 □ .claude/[other-file].md

@@ -46,7 +46,7 @@ All output must comply with the governance rules below without exception.
 
 ## RESPONSE FORMAT
 
-````md
+````markdown
 ### TASK
 
 [restate the task from TASKS.md in one sentence]

@@ -27,7 +27,7 @@ Do not fix, rewrite, or suggest refactors outside the scope of the finding.
 
 ## INPUT
 
-```md
+```markdown
 [PASTE GEMINI RESPONSE]
 ```
 
@@ -36,23 +36,27 @@ Do not fix, rewrite, or suggest refactors outside the scope of the finding.
 Start with a summary line. Group findings by file, then by severity within each file.
 Omit any severity group with no findings. Omit files with no findings.
 
-```
+```markdown
 X critical, Y should-fix, Z minor across N files.
 
 File: path/to/file.ext
 
 critical
+
 - finding
 
 should-fix
+
 - finding
 
 File: path/to/other.ext
 
 critical
+
 - finding
 
 minor
+
 - finding
 ```
 
