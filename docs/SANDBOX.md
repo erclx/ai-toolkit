@@ -1,4 +1,4 @@
-# Sandbox System
+# Sandbox system
 
 ## Overview
 
@@ -48,7 +48,7 @@ aitk() {
 }
 ```
 
-## Writing a Sandbox
+## Writing a sandbox
 
 Each sandbox is a `.sh` file with a `stage_setup` function:
 
