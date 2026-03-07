@@ -8,6 +8,7 @@ use_anchor() {
 
 stage_setup() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_INJECT_STANDARDS="true"
 
   log_step "Configuring PR Environment ($ANCHOR_REPO)"
 

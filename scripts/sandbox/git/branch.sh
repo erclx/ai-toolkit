@@ -3,6 +3,7 @@ set -e
 
 stage_setup() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_INJECT_STANDARDS="true"
 
   echo "Base project" >README.md
   git add .
