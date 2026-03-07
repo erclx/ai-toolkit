@@ -20,6 +20,7 @@ geminiignore
 gtest
 headerless
 heredocs
+invokable
 jsdom
 lintstagedrc
 lockfiles
