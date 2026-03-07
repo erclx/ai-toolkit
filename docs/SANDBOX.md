@@ -75,3 +75,9 @@ use_anchor() {
 ```
 
 `manage-sandbox.sh` handles provisioning, asset injection, git setup, and baseline tagging. `stage_setup` sets up scenario-specific state only.
+
+By default, sandboxes are minimal. To inject shared assets, export one of the following variables from within `stage_setup`:
+
+- `SANDBOX_INJECT_STANDARDS`: Injects `standards/`
+- `SANDBOX_INJECT_GOV`: Injects `.cursor/rules/`
+- `SANDBOX_INJECT_GEMINI`: Injects `.gemini/settings.json`
