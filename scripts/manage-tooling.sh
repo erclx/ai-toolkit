@@ -40,7 +40,6 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    echo -e "${GREY}┌${NC}" >&2
     select_option "Tooling command?" "sync" "ref" "scaffold"
     command="$SELECTED_OPTION"
   else
@@ -58,7 +57,7 @@ main() {
     exec "$PROJECT_ROOT/scripts/tooling/scaffold.sh" "$@"
     ;;
   *)
-    echo -e "${GREY}┌${NC}" >&2
+    echo -e "${GREY}┌${NC}"
     log_error "Unknown command: $command. Use 'sync', 'ref', 'scaffold', or --help."
     ;;
   esac
