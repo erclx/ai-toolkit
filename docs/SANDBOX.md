@@ -13,11 +13,14 @@ scripts/sandbox/
 │   ├── vite-react.sh  ← tests vite-react configs against anchor repo
 │   ├── claude.sh      ← tests claude workflow initialization
 │   ├── chrome.sh      ← tests chrome extension tooling configs against anchor repo
-│   └── gemini.sh      ← tests gemini settings.json config injection
+│   ├── gemini.sh      ← tests gemini settings.json config injection
+│   └── upstream.sh    ← tests stack scaffolding from upstream templates
 ├── infra/
 │   ├── cursor.sh      ← Cursor IDE playground with full governance injected
-│   ├── gov.sh         ← tests governance command scenarios
-│   └── standards.sh   ← tests standards command scenarios
+│   ├── gov.sh         ← interactive tests for governance commands
+│   ├── standards.sh   ← interactive tests for standards commands
+│   ├── claude.sh      ← interactive tests for claude commands
+│   └── tooling.sh     ← interactive tests for tooling commands
 ├── git/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
