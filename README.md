@@ -64,7 +64,7 @@ Run `aitk` from the repo root.
 
 Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. Stack definitions (`.cursor/stacks/`) declare which rules belong to each stack. Tooling stacks live in `tooling/` and sync to target projects as concrete files.
 
-See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, prompts, and workflow.
+See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, prompts, standards, and AI workflow.
 
 ## Support
 

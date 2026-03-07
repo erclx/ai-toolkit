@@ -2,20 +2,18 @@
 
 ## Overview
 
-Governance manages the rules and standards that guide AI agents working in projects. Rules sync as `.mdc` files for Cursor. Standards are markdown docs synced directly to target projects.
+Governance manages the rules that guide AI agents working in projects. Rules sync as `.mdc` files for Cursor, organized by domain and installed per stack.
 
 ## Structure
 
 ```
 .cursor/rules/         ← source rules (.mdc), organized by domain
 .cursor/stacks/        ← stack definitions (.toml), declare which rules belong to a stack
-standards/             ← source standards (.md)
 scripts/
 ├── gov/
 │   ├── install.sh      ← bootstraps rules for a stack into a target project
 │   └── sync.sh         ← syncs existing rules to external projects
-├── manage-gov.sh       ← entry point (aitk gov)
-└── manage-standards.sh ← entry point (aitk standards)
+└── manage-gov.sh       ← entry point (aitk gov)
 ```
 
 ## Key decisions
@@ -28,15 +26,13 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | --------- | -------------------------------------------------- |
 | `000–099` | core (constitution, testing, error handling, etc.) |
 | `100–199` | lang (TypeScript, etc.)                            |
-| 200–299   | framework (React, Tailwind, Shadcn, etc.)          |
+| `200–299` | framework (React, Tailwind, Shadcn, etc.)          |
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)  |
 | `900+`    | workflow (Node, tooling, etc.)                     |
 
 **Install vs sync** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack — it overwrites. `aitk gov sync` updates rules already present in the target — it never adds new files. Use install once to set up, use sync to keep up to date.
 
-Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed. This mirrors the same pattern used by tooling manifests.
-
-Standards cover developer workflow conventions, not code style. Current standards: branch, changelog, commit, PR, prose, readme. Code style belongs in rules. Standards are the same across every project, so they sync directly without a compilation step.
+Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed.
 
 ## Stacks
 
@@ -53,10 +49,8 @@ Standards cover developer workflow conventions, not code style. Current standard
 | --------------------------------- | ------------------------------------------------------- |
 | `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a target project       |
 | `aitk gov sync [path]`            | Update rules already present in target (never adds new) |
-| `aitk standards install [path]`   | Copy all standards into a target project (overwrites)   |
-| `aitk standards sync [path]`      | Update standards already present in target              |
 
-`aitk gov` with no args shows a picker: `install` or `sync`. Same for `aitk standards`.
+`aitk gov` with no args shows a picker: `install` or `sync`.
 
 ## Workflow
 
@@ -65,9 +59,6 @@ To set up a new project:
 ```bash
 aitk gov install react ../my-app
 # resolves react → node → base, copies all matching rules
-
-aitk standards install ../my-app
-# copies all standards into ../my-app/standards/
 ```
 
 To sync updates to an existing project:
@@ -75,9 +66,6 @@ To sync updates to an existing project:
 ```bash
 aitk gov sync ../my-app
 # only diffs rules already present — never adds new files
-
-aitk standards sync ../my-app
-# diffs standards already present, proposes new ones too
 ```
 
 ## Adding a new rule
@@ -86,20 +74,14 @@ Create a `.mdc` file anywhere under `.cursor/rules/` using the numbering convent
 
 ## Adding a stack
 
-Create a new `.toml` file in `.cursor/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.mdc`) in the `rules` array. No build step needed — install reads stacks directly.
+Create a new `.toml` file in `.cursor/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.mdc`) in the `rules` array. No build step needed.
 
 ```toml
 extends = "node"
 rules = ["200-react", "250-tailwind"]
 ```
 
-## Adding a standard
-
-Create a `.md` file in `standards/`. No build step needed. Run `aitk standards install` to push to a new project or `aitk standards sync` to update an existing one.
-
 ## Notes
 
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
-- `aitk standards install` overwrites all standards intentionally, mirroring `aitk gov install`.
-- `aitk standards sync` only updates files already present — never adds new ones.
 - Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional/addon complexity in stack definitions.
