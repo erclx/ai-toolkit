@@ -15,7 +15,9 @@ scripts/sandbox/
 │   ├── chrome.sh      ← tests chrome extension tooling configs against anchor repo
 │   └── gemini.sh      ← tests gemini settings.json config injection
 ├── infra/
-│   └── cursor.sh      ← Cursor IDE playground with full governance injected
+│   ├── cursor.sh      ← Cursor IDE playground with full governance injected
+│   ├── gov.sh         ← tests governance command scenarios
+│   └── standards.sh   ← tests standards command scenarios
 ├── git/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
