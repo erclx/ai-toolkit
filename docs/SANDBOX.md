@@ -23,8 +23,7 @@ scripts/sandbox/
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
 │   └── pr.sh          ← PR description scenario for testing /git:pr
 ├── dev/
-│   ├── apply.sh       ← file changes scenario for testing /dev:apply
-
+│   └── apply.sh       ← file changes scenario for testing /dev:apply
 ├── docs/
 │   └── sync.sh        ← stale README and docs scenario for testing /docs:sync
 └── release/
@@ -52,12 +51,14 @@ aitk() {
 
 ## Writing a sandbox
 
-Each sandbox is a `.sh` file with a `stage_setup` function:
+Each sandbox is a `.sh` file with two optional hook functions and a required `stage_setup` function.
+
+### stage_setup
+
+`stage_setup` sets up scenario-specific state. It runs inside `.sandbox/` after provisioning and asset injection are complete.
 
 ```bash
 stage_setup() {
-  export SANDBOX_SKIP_AUTO_COMMIT="true"  # when you need git control
-
   # scaffold scenario state
   # end with SCENARIO READY instructions
   log_step "SCENARIO READY: ..."
@@ -66,7 +67,24 @@ stage_setup() {
 }
 ```
 
-Declare `use_anchor()` to clone from an anchor repo instead of starting empty:
+### use_config
+
+`use_config` runs before provisioning. Declare it to set sandbox behavior flags.
+
+```bash
+use_config() {
+  export SANDBOX_SKIP_AUTO_COMMIT="true"  # skip auto-commit after stage_setup
+  export SANDBOX_INJECT_STANDARDS="true"  # inject standards/ into sandbox
+  export SANDBOX_INJECT_GOV="true"        # inject .cursor/rules/ into sandbox
+  export SANDBOX_INJECT_GEMINI="true"     # inject .gemini/settings.json into sandbox
+}
+```
+
+By default, sandboxes are minimal: no standards, no gov rules, no Gemini settings, and auto-commit is on. Declare only the flags you need.
+
+### use_anchor
+
+`use_anchor` clones a remote repo as the sandbox base instead of starting empty.
 
 ```bash
 use_anchor() {
@@ -74,10 +92,4 @@ use_anchor() {
 }
 ```
 
-`manage-sandbox.sh` handles provisioning, asset injection, git setup, and baseline tagging. `stage_setup` sets up scenario-specific state only.
-
-By default, sandboxes are minimal. To inject shared assets, export one of the following variables from within `stage_setup`:
-
-- `SANDBOX_INJECT_STANDARDS`: Injects `standards/`
-- `SANDBOX_INJECT_GOV`: Injects `.cursor/rules/`
-- `SANDBOX_INJECT_GEMINI`: Injects `.gemini/settings.json`
+`manage-sandbox.sh` handles provisioning, asset injection, git setup, and baseline tagging. The hook functions configure behavior before that pipeline runs.
