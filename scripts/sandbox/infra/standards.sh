@@ -25,17 +25,20 @@ stage_setup() {
   git add .
   git commit -m "chore(sandbox): scaffold standards test directories" --no-verify -q
 
-  log_step "SCENARIO READY: Standards Commands"
-
+  log_step "Standards Sandbox"
   log_info "install/ — clean target, no standards present"
-  echo -e "${GREY}│${NC}"
-  log_info "Action:  cd install && aitk standards install"
-  log_info "Expect:  standards/ created and populated"
+  log_info "sync/    — stale standards/ present"
 
-  echo -e "${GREY}│${NC}"
+  select_option "Which scenario?" "install" "sync"
 
-  log_info "sync/ — stale standards/ present"
-  echo -e "${GREY}│${NC}"
-  log_info "Action:  cd sync && aitk standards sync"
-  log_info "Expect:  Drift detected, changes proposed and applied"
+  case "$SELECTED_OPTION" in
+  "install")
+    log_step "Running: aitk standards install"
+    "$PROJECT_ROOT/scripts/manage-standards.sh" install install/
+    ;;
+  "sync")
+    log_step "Running: aitk standards sync"
+    "$PROJECT_ROOT/scripts/manage-standards.sh" sync sync/
+    ;;
+  esac
 }

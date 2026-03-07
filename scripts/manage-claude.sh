@@ -130,7 +130,8 @@ cmd_init() {
   local pending=()
   local gi_pending=()
 
-  log_step "Scanning .claude/"
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Scanning .claude/${NC}"
   collect_seeds "$target" pending
 
   log_step "Scanning .gitignore"
@@ -139,6 +140,8 @@ cmd_init() {
   local total=$((${#pending[@]} + ${#gi_pending[@]}))
 
   if [ "$total" -eq 0 ]; then
+    echo -e "${GREY}└${NC}\n"
+    echo -e "${GREEN}✓ Claude already initialized${NC}"
     return
   fi
 
@@ -166,6 +169,9 @@ cmd_init() {
   if [ "${#gi_pending[@]}" -gt 0 ]; then
     merge_gitignore "claude" "$target"
   fi
+
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Claude ready${NC}"
 }
 
 cmd_sync() {
@@ -177,7 +183,8 @@ cmd_sync() {
   local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md" "DESIGN.md" "WIREFRAMES.md")
   local drifted=()
 
-  log_step "Managed"
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Managed${NC}"
   for name in "${managed[@]}"; do
     local src="$CLAUDE_SEEDS_DIR/$name"
     local dest="$target/.claude/$name"
@@ -206,9 +213,9 @@ cmd_sync() {
   done
 
   if [ "${#drifted[@]}" -eq 0 ]; then
-    echo -e "${GREY}└${NC}"
+    echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude workflow up to date${NC}"
-    exit 0
+    return
   fi
 
   select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} managed)?" "Review diffs" "Apply all" "Cancel"
@@ -237,14 +244,15 @@ cmd_sync() {
     cp "$CLAUDE_SEEDS_DIR/$file" "$target/.claude/$file"
     log_add ".claude/$file"
   done
+
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Claude workflow synced${NC}"
 }
 
 main() {
   if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     show_help
   fi
-
-  echo -e "${GREY}┌${NC}"
 
   local command="$1"
 
@@ -258,18 +266,15 @@ main() {
   case "$command" in
   init)
     cmd_init "$@"
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude ready${NC}"
     ;;
   sync)
     cmd_sync "$@"
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Claude workflow synced${NC}"
     ;;
   prompt)
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh" "$@"
     ;;
   *)
+    echo -e "${GREY}┌${NC}"
     log_error "Unknown command: $command. Use 'init', 'sync', or 'prompt'."
     ;;
   esac

@@ -30,7 +30,6 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    echo -e "${GREY}┌${NC}"
     select_option "Governance command?" "install" "sync"
     command="$SELECTED_OPTION"
   else

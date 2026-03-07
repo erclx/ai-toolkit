@@ -25,17 +25,20 @@ stage_setup() {
   git add .
   git commit -m "chore(sandbox): scaffold gov test directories" --no-verify -q
 
-  log_step "SCENARIO READY: Governance Commands"
-
+  log_step "Governance Sandbox"
   log_info "install/ — clean target, no rules present"
-  echo -e "${GREY}│${NC}"
-  log_info "Action:  cd install && aitk gov install [stack]"
-  log_info "Expect:  .cursor/rules/ created and populated"
+  log_info "sync/    — stale .cursor/rules/ present"
 
-  echo -e "${GREY}│${NC}"
+  select_option "Which scenario?" "install" "sync"
 
-  log_info "sync/ — stale .cursor/rules/ present"
-  echo -e "${GREY}│${NC}"
-  log_info "Action:  cd sync && aitk gov sync"
-  log_info "Expect:  Drift detected, changes proposed and applied"
+  case "$SELECTED_OPTION" in
+  "install")
+    log_step "Running: aitk gov install"
+    "$PROJECT_ROOT/scripts/manage-gov.sh" install base install/
+    ;;
+  "sync")
+    log_step "Running: aitk gov sync"
+    "$PROJECT_ROOT/scripts/manage-gov.sh" sync sync/
+    ;;
+  esac
 }
