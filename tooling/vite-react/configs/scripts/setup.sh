@@ -145,13 +145,13 @@ update_html_title() {
 }
 
 update_metadata() {
-  log_step "Updating Project Metadata"
+  log_step "Updating project metadata"
   update_package_json
   update_html_title
 }
 
 setup_environment() {
-  log_step "Environment Configuration"
+  log_step "Environment configuration"
   if [ ! -f ".env" ] && [ -f ".env.example" ]; then
     cp .env.example .env
     log_add ".env"
@@ -163,7 +163,7 @@ setup_environment() {
 }
 
 reset_git_history() {
-  log_step "Resetting Git History"
+  log_step "Resetting git history"
 
   if [ -d "scripts" ]; then
     chmod +x scripts/*.sh 2>/dev/null || true
@@ -193,7 +193,7 @@ finalize_folder() {
   NEW_PATH="$parent/$PROJECT_NAME"
 
   if [ "$folder" != "$PROJECT_NAME" ]; then
-    log_step "Renaming Project Folder"
+    log_step "Renaming project folder"
     cd "$parent"
     mv "$folder" "$PROJECT_NAME"
     log_info "Renamed: $folder → $PROJECT_NAME"
@@ -233,7 +233,7 @@ prompt_editor() {
 
 install_dependencies() {
   if [ "$AUTO_INSTALL" = true ]; then
-    log_step "Installing Dependencies"
+    log_step "Installing dependencies"
     cd "$NEW_PATH"
     bun install
     log_info "Dependencies installed"
@@ -257,7 +257,7 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  log_step "Vite React Setup"
+  log_step "Vite React setup"
 
   configure_identity
   update_metadata

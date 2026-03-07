@@ -160,13 +160,13 @@ update_html_titles() {
 }
 
 update_metadata() {
-  log_step "Updating Extension Metadata"
+  log_step "Updating extension metadata"
   update_package_json
   update_html_titles
 }
 
 reset_git_history() {
-  log_step "Resetting Git History"
+  log_step "Resetting git history"
 
   if [ -d "scripts" ]; then
     chmod +x scripts/*.sh 2>/dev/null || true
@@ -196,7 +196,7 @@ finalize_folder() {
   NEW_PATH="$parent/$PROJECT_NAME"
 
   if [ "$folder" != "$PROJECT_NAME" ]; then
-    log_step "Renaming Project Folder"
+    log_step "Renaming project folder"
     cd "$parent"
     mv "$folder" "$PROJECT_NAME"
     log_info "Renamed: $folder → $PROJECT_NAME"
@@ -236,7 +236,7 @@ prompt_editor() {
 
 install_dependencies() {
   if [ "$AUTO_INSTALL" = true ]; then
-    log_step "Installing Dependencies"
+    log_step "Installing dependencies"
     cd "$NEW_PATH"
     bun install
     log_info "Dependencies installed"
@@ -260,7 +260,7 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  log_step "Chrome Extension Setup"
+  log_step "Chrome extension setup"
 
   configure_identity
   update_metadata

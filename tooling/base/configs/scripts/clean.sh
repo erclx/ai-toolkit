@@ -25,16 +25,16 @@ main() {
 
   echo -e "${GREY}┌${NC}"
 
-  log_step "Cleaning Artifacts"
+  log_step "Cleaning artifacts"
   rm -rf node_modules
 
   log_rem "node_modules/"
 
-  log_step "Cleaning Cache"
+  log_step "Cleaning cache"
   bun pm cache rm
   log_info "Package manager cache cleared"
 
-  log_step "Rehydrating Project"
+  log_step "Rehydrating project"
   bun install
   log_info "Dependencies installed"
 
