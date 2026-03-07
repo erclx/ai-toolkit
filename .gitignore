@@ -13,4 +13,4 @@ node_modules/
 .gemini/settings.json
 
 # Claude
-.claude/PROJECT.md
+.claude/.tmp
