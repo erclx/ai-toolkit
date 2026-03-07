@@ -4,9 +4,11 @@ set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
-stage_setup() {
+use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
+}
 
+stage_setup() {
   mkdir -p install
   mkdir -p sync/standards
 

@@ -2,10 +2,12 @@
 set -e
 set -o pipefail
 
-stage_setup() {
+use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
+}
 
+stage_setup() {
   log_step "Setting up Changelog Environment"
 
   cat <<'EOF' >CHANGELOG.md

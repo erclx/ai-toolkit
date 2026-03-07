@@ -1,9 +1,11 @@
 #!/bin/bash
 
-stage_setup() {
+use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
+}
 
+stage_setup() {
   git init -q
   git config user.email "architect@erclx.com"
   git config user.name "Senior Architect"

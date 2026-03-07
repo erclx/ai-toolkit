@@ -1,10 +1,12 @@
 #!/bin/bash
 set -e
 
-stage_setup() {
+use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
+}
 
+stage_setup() {
   echo "Base project" >README.md
   git add .
   git commit -m "chore(project): init base" -q

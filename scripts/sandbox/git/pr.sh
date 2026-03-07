@@ -6,10 +6,12 @@ use_anchor() {
   export ANCHOR_REPO="gemini-cli-sandbox"
 }
 
-stage_setup() {
+use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
+}
 
+stage_setup() {
   log_step "Configuring PR Environment ($ANCHOR_REPO)"
 
   git config user.email "${GITHUB_ORG}@github.com"

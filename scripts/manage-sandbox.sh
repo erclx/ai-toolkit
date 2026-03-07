@@ -235,6 +235,7 @@ initialize_sandbox_environment() {
 
   validate_environment "$current_category" "$current_command"
   load_sandbox_script "$current_category" "$current_command"
+  [[ "$(type -t use_config)" == "function" ]] && use_config
   provision_sandbox "$current_category" "$current_command"
   setup_sandbox_assets
 }
