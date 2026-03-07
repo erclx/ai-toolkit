@@ -32,11 +32,11 @@ Run `aitk` from the repo root.
 
 ### Tooling
 
-| Command                           | Description                                                        |
-| --------------------------------- | ------------------------------------------------------------------ |
-| `aitk tooling [stack] [path]`     | Sync golden configs, seeds, deps, and .gitignore                   |
-| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                    |
-| `aitk tooling scaffold`           | Scaffold a new stack with stub manifest, reference, configs, seeds |
+| Command                           | Description                                                      |
+| --------------------------------- | ---------------------------------------------------------------- |
+| `aitk tooling [stack] [path]`     | Sync golden configs, seeds, deps, and .gitignore                 |
+| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                  |
+| `aitk tooling create`             | Create a new stack with stub manifest, reference, configs, seeds |
 
 ### Claude
 
