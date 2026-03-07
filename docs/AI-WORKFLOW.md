@@ -1,4 +1,4 @@
-# Workflow documents reference
+# AI workflow reference
 
 A concise overview of all documents in the dev workflow, with tool mappings.
 
@@ -40,7 +40,7 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 
 **`REQUIREMENTS.md`** — Project goals, non-goals, MVP scope, tech stack, and constraints. Created before any code with Claude chat.
 
-**`ARCHITECTURE.md`** — Technical design decisions, folder structure, storage shape, and open risks. Created before any code with Claude chat. Planner-owned — never modified by the implementer. Surface architecture conflicts back to Claude chat.
+**`ARCHITECTURE.md`** — Technical design decisions, folder structure, storage shape, and open risks. Created before any code with Claude chat. Planner-owned, never modified by the implementer. Surface architecture conflicts back to Claude chat.
 
 **`DESIGN.md`** — Color tokens, typography, spacing, border, and motion decisions. Created before UI implementation with Claude chat. Seeded for all projects; delete if not needed.
 
