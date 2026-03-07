@@ -55,16 +55,17 @@ Run `aitk` from the repo root.
 | `aitk sandbox reset`     | Restore sandbox to baseline                  |
 | `aitk sandbox clean`     | Wipe sandbox                                 |
 
-## Agent Commands
+## AI
 
 - Gemini CLI commands: see [gemini/README.md](gemini/README.md)
 - Claude Code commands and skills: see [claude/README.md](claude/README.md)
+- Snippets: see [docs/SNIPPETS.md](docs/SNIPPETS.md)
 
 ## Architecture
 
 Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. Stack definitions (`.cursor/stacks/`) declare which rules belong to each stack. Tooling stacks live in `tooling/` and sync to target projects as concrete files.
 
-See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, prompts, standards, and AI workflow.
+See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, standards, and AI workflow.
 
 ## Support
 
