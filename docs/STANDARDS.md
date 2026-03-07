@@ -2,7 +2,7 @@
 
 ## Overview
 
-Standards are markdown docs that define developer workflow conventions. They sync directly to target projects and are consumed by AI agents and developers alike. Standards cover workflow conventions, not code style — code style belongs in governance rules.
+Standards are markdown docs that define developer workflow conventions. They sync directly to target projects and are consumed by AI agents and developers alike. Standards cover workflow conventions, not code style; code style belongs in governance rules.
 
 ## Structure
 
@@ -56,6 +56,6 @@ Create a `.md` file in `standards/`. No build step needed. Run `aitk standards i
 
 ## Notes
 
-- Standards are the same across every project — no stack variation, no extends chain.
+- Standards are the same across every project, no stack variation, no extends chain.
 - `aitk standards install` overwrites all standards intentionally.
-- `aitk standards sync` only updates files already present — never adds new ones.
+- `aitk standards sync` only updates files already present, never adds new ones.
