@@ -4,7 +4,7 @@ set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
-collect_scaffold_stacks() {
+collect_upstream_stacks() {
   local -n _stacks=$1
   local -n _commands=$2
 
@@ -28,25 +28,25 @@ stage_setup() {
   local stacks=()
   declare -A commands
 
-  collect_scaffold_stacks stacks commands
+  collect_upstream_stacks stacks commands
 
   if [ ${#stacks[@]} -eq 0 ]; then
-    log_error "No stacks with scaffold commands found in tooling/"
+    log_error "No stacks with upstream commands found in tooling/"
   fi
 
-  select_option "Select stack to scaffold:" "${stacks[@]}"
+  select_option "Select stack:" "${stacks[@]}"
   local selected="$SELECTED_OPTION"
   local cmd="${commands[$selected]}"
-  local resolved_cmd="${cmd//\{\{name\}\}/sandbox-scaffold}"
+  local resolved_cmd="${cmd//\{\{name\}\}/sandbox-upstream}"
 
-  log_step "Scaffolding $selected"
+  log_step "Provisioning upstream: $selected"
   log_info "Command: $resolved_cmd"
   echo -e "${GREY}│${NC}"
 
   eval "$resolved_cmd"
 
-  log_step "SCENARIO READY: $selected scaffold"
-  log_info "Location: .sandbox/sandbox-scaffold/"
+  log_step "SCENARIO READY: $selected upstream template"
+  log_info "Location: .sandbox/sandbox-upstream/"
   log_info "Raw upstream template — no golden configs applied"
-  log_info "Run 'aitk clean' to wipe when done"
+  log_info "Run 'aitk sandbox clean' to wipe when done"
 }
