@@ -33,31 +33,21 @@ Do not fix, rewrite, or suggest refactors outside the scope of the finding.
 
 ## OUTPUT FORMAT
 
-Start with a summary line. Group findings by file, then by severity within each file.
-Omit any severity group with no findings. Omit files with no findings.
+Start with a summary line. Group findings by file. Within each file, list findings sorted by severity (critical first, then should-fix, then minor). Omit files with no findings.
 
 ```markdown
 X critical, Y should-fix, Z minor across N files.
 
 File: path/to/file.ext
 
-critical
-
-- finding
-
-should-fix
-
-- finding
+- **critical** — finding
+- **should-fix** — finding
+- **minor** — finding
 
 File: path/to/other.ext
 
-critical
-
-- finding
-
-minor
-
-- finding
+- **critical** — finding
+- **minor** — finding
 ```
 
 Review for:
