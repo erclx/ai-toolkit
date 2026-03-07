@@ -10,6 +10,7 @@ use_config() {
 
 stage_setup() {
   mkdir -p install
+  touch install/.gitkeep
   mkdir -p sync/.cursor/rules
 
   local src_rules="$PROJECT_ROOT/.cursor/rules"

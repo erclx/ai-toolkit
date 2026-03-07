@@ -309,7 +309,7 @@ reset_sandbox() {
     log_error "No sandbox found. Run \`aitk sandbox\` first."
   fi
 
-  log_step "Checking Sandbox State"
+  echo -e "${GREY}├${NC} ${WHITE}Checking Sandbox State${NC}"
 
   local has_baseline=0
   (cd "$SANDBOX" && git rev-parse sandbox-baseline >/dev/null 2>&1) && has_baseline=1

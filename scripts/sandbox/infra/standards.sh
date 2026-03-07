@@ -10,6 +10,7 @@ use_config() {
 
 stage_setup() {
   mkdir -p install
+  touch install/.gitkeep
   mkdir -p sync/standards
 
   local src_standards="$PROJECT_ROOT/standards"
