@@ -25,7 +25,7 @@ stage_setup() {
   git add .
   git commit -m "chore(sandbox): scaffold gov test directories" --no-verify -q
 
-  log_step "Governance Sandbox"
+  log_step "Governance sandbox"
   log_info "install/ — clean target, no rules present"
   log_info "sync/    — stale .cursor/rules/ present"
 

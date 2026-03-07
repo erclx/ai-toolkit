@@ -17,7 +17,7 @@ declare -A CONFIG_SOURCE_STACK
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Tooling Sync Usage"
+  log_step "Tooling sync usage"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling sync [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs configs, seeds, deps, scripts, and gitignore entries."
@@ -287,7 +287,7 @@ scan_configs() {
   local stack="$1"
   local target="$2"
 
-  echo -e "${GREY}├${NC} ${WHITE}Scanning Configs${NC}" >&2
+  echo -e "${GREY}├${NC} ${WHITE}Scanning configs${NC}" >&2
 
   collect_stack_configs "$stack" "$target" NEW_FILES DRIFTED_FILES MATCHING_FILES
 
@@ -303,7 +303,7 @@ scan_configs() {
 
   CONFIG_CHANGES=$((${#NEW_FILES[@]} + ${#DRIFTED_FILES[@]}))
 
-  log_step "Scanning Seeds"
+  log_step "Scanning seeds"
 
   collect_stack_seeds "$stack" "$target" SEEDED_FILES SEED_MISSING_FILES
 
@@ -317,7 +317,7 @@ scan_configs() {
   SEED_CHANGES=${#SEED_MISSING_FILES[@]}
 
   if [ -f "$target/package.json" ]; then
-    log_step "Scanning Scripts"
+    log_step "Scanning scripts"
 
     collect_stack_scripts "$stack" "$target" DRIFTED_SCRIPTS MISSING_SCRIPTS MATCHING_SCRIPTS
 
@@ -333,7 +333,7 @@ scan_configs() {
 
     SCRIPT_CHANGES=$((${#DRIFTED_SCRIPTS[@]} + ${#MISSING_SCRIPTS[@]}))
 
-    log_step "Scanning Dependencies"
+    log_step "Scanning dependencies"
 
     collect_stack_deps "$stack" "$target" MISSING_DEPS PRESENT_DEPS
 
@@ -347,7 +347,7 @@ scan_configs() {
     DEP_CHANGES=${#MISSING_DEPS[@]}
   fi
 
-  log_step "Scanning Gitignore"
+  log_step "Scanning gitignore"
 
   collect_stack_gitignore "$stack" "$target" GITIGNORE_MISSING_FILES GITIGNORE_PRESENT_FILES
 

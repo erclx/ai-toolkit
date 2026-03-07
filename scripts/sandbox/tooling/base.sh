@@ -5,7 +5,7 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 stage_setup() {
-  log_step "Initializing Package"
+  log_step "Initializing package"
   cat <<'EOF' >package.json
 {
   "name": "sandbox-base-tooling",
@@ -23,11 +23,11 @@ EOF
   log_step "Initializing Husky"
   bunx husky
 
-  log_step "Setting Script Permissions"
+  log_step "Setting script permissions"
   chmod +x scripts/*.sh
   log_info "Scripts made executable"
 
-  log_step "Running Verification"
+  log_step "Running verification"
   if bash scripts/verify.sh; then
     log_info "All checks passed"
   else

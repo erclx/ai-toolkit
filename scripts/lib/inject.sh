@@ -1,7 +1,7 @@
 #!/bin/bash
 
 inject_governance() {
-  log_step "Injecting Governance Assets"
+  log_step "Injecting governance assets"
 
   local rules_source="$PROJECT_ROOT/.cursor/rules"
   local rules_target=".cursor/rules"
@@ -356,7 +356,7 @@ inject_tooling_manifest() {
 }
 
 inject_dependencies() {
-  log_step "Provisioning Dependencies"
+  log_step "Provisioning dependencies"
 
   if [ -f "package.json" ]; then
     if command -v bun &>/dev/null; then

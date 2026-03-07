@@ -22,7 +22,7 @@ EOF
   git add .
   git commit -m "chore(sandbox): scaffold claude infra test directory" --no-verify -q
 
-  log_step "Claude Sandbox"
+  log_step "Claude sandbox"
   log_info "init   — seeds .claude/ workflow docs"
   log_info "sync   — diffs and updates managed role prompts"
   log_info "prompt — generates master prompts from installed rules"

@@ -16,15 +16,15 @@ stage_setup() {
   log_step "Initializing Husky"
   bunx husky
 
-  log_step "Setting Script Permissions"
+  log_step "Setting script permissions"
   chmod +x scripts/*.sh
   log_info "Scripts made executable"
 
-  log_step "Applying Auto-fixes"
+  log_step "Applying auto-fixes"
   bun run lint:fix
   log_info "Lint autofix applied to scaffolded files"
 
-  log_step "Running Verification"
+  log_step "Running verification"
   if bash scripts/verify.sh; then
     log_info "All checks passed"
   else

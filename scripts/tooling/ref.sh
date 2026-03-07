@@ -9,7 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Tooling Ref Usage"
+  log_step "Tooling ref usage"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling ref [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Drops reference docs only. No config or dependency changes."
@@ -106,7 +106,7 @@ main() {
   local pending=()
 
   echo -e "${GREY}┌${NC}" >&2
-  echo -e "${GREY}├${NC} ${WHITE}Scanning References: $stack${NC}" >&2
+  echo -e "${GREY}├${NC} ${WHITE}Scanning references: $stack${NC}" >&2
   collect_references "$stack" "$target" pending
 
   if [ "${#pending[@]}" -eq 0 ]; then
@@ -126,7 +126,7 @@ main() {
     exit 0
   fi
 
-  log_step "Applying Changes"
+  log_step "Applying changes"
   apply_references "$target" "${pending[@]}"
 
   echo -e "${GREY}└${NC}\n" >&2

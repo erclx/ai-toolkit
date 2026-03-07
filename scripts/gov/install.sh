@@ -12,7 +12,7 @@ RULES_SOURCE_DIR="$PROJECT_ROOT/.cursor/rules"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Governance Install"
+  log_step "Governance install"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk gov install [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
@@ -116,7 +116,7 @@ cmd_install() {
     exit 0
   fi
 
-  log_step "Resolving Stack: $stack"
+  log_step "Resolving stack: $stack"
 
   local found=()
   local missing=()
@@ -158,7 +158,7 @@ cmd_install() {
     exit 0
   fi
 
-  log_step "Installing Rules"
+  log_step "Installing rules"
 
   local dest_dir="$target/.cursor/rules"
   mkdir -p "$dest_dir"

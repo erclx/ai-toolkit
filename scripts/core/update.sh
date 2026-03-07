@@ -16,11 +16,11 @@ main() {
 
   echo -e "${GREY}┌${NC}"
 
-  log_step "Interactive Dependency Update"
+  log_step "Interactive dependency update"
   echo -e "${GREY}│${NC}"
   bun update --interactive
 
-  log_step "Verifying Project Health"
+  log_step "Verifying project health"
   if [ -f "$SCRIPT_DIR/verify.sh" ]; then
     VERIFY_NESTED=true "$SCRIPT_DIR/verify.sh"
     log_info "All checks passed"

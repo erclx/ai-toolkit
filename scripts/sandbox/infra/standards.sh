@@ -25,7 +25,7 @@ stage_setup() {
   git add .
   git commit -m "chore(sandbox): scaffold standards test directories" --no-verify -q
 
-  log_step "Standards Sandbox"
+  log_step "Standards sandbox"
   log_info "install/ — clean target, no standards present"
   log_info "sync/    — stale standards/ present"
 

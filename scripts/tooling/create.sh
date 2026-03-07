@@ -9,7 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Tooling Create Usage"
+  log_step "Tooling create usage"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling create [stack]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Creates a new stack with stub manifest, reference, configs, and seeds."
@@ -48,7 +48,7 @@ main() {
   fi
 
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Creating Stack: $stack${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Creating stack: $stack${NC}"
 
   mkdir -p "$dest/configs"
   log_add "tooling/$stack/configs/"

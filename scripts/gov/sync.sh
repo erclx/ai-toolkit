@@ -9,7 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Governance Sync Usage"
+  log_step "Governance sync usage"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk gov sync [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs rules already installed in the target project."
@@ -85,7 +85,7 @@ open_diffs() {
 }
 
 apply_changes() {
-  log_step "Applying Changes"
+  log_step "Applying changes"
   while IFS= read -r entry; do
     local src="${entry%%|*}"
     local dest="${entry##*|}"
@@ -131,7 +131,7 @@ main() {
   DRIFTED_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
 
-  log_step "Scanning Rules"
+  log_step "Scanning rules"
   local count
   count=$(collect_changes "$TARGET_PATH")
 

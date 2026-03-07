@@ -12,7 +12,7 @@ use_config() {
 }
 
 stage_setup() {
-  log_step "Configuring PR Environment ($ANCHOR_REPO)"
+  log_step "Configuring PR environment ($ANCHOR_REPO)"
 
   git config user.email "${GITHUB_ORG}@github.com"
   git config user.name "Eric"

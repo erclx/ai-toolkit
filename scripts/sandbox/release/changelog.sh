@@ -8,7 +8,7 @@ use_config() {
 }
 
 stage_setup() {
-  log_step "Setting up Changelog Environment"
+  log_step "Setting up changelog environment"
 
   cat <<'EOF' >CHANGELOG.md
 # Changelog

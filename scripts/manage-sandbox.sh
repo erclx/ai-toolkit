@@ -37,7 +37,7 @@ clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
   local repo_url="git@github.com:${GITHUB_ORG}/$repo_name.git"
 
-  log_step "Cloning Anchor Repository ($repo_name)"
+  log_step "Cloning anchor repository ($repo_name)"
 
   if [ -d "$SANDBOX" ]; then
     rm -rf "$SANDBOX"
@@ -55,7 +55,7 @@ clone_anchor() {
 }
 
 setup_ssh() {
-  log_step "Security Authentication"
+  log_step "Security authentication"
 
   if [ -z "$SSH_AUTH_SOCK" ]; then
     eval "$(ssh-agent -s)" >/dev/null
@@ -296,7 +296,7 @@ handle_post_execution_prompt() {
 
 cmd_clean() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Removing Sandbox${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Removing sandbox${NC}"
   rm -rf "$SANDBOX"
   log_rem ".sandbox/"
   echo -e "${GREY}└${NC}\n"
@@ -310,7 +310,7 @@ reset_sandbox() {
     log_error "No sandbox found. Run \`aitk sandbox\` first."
   fi
 
-  echo -e "${GREY}├${NC} ${WHITE}Checking Sandbox State${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Checking sandbox state${NC}"
 
   local has_baseline=0
   (cd "$SANDBOX" && git rev-parse sandbox-baseline >/dev/null 2>&1) && has_baseline=1
@@ -352,7 +352,7 @@ reset_sandbox() {
     exit 0
   fi
 
-  log_step "Resetting Sandbox"
+  log_step "Resetting sandbox"
   (
     cd "$SANDBOX"
     git reset --hard sandbox-baseline --quiet

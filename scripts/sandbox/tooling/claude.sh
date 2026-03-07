@@ -5,7 +5,7 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 stage_setup() {
-  log_step "Initializing Package"
+  log_step "Initializing package"
   cat <<'EOF' >package.json
 {
   "name": "sandbox-claude-workflow",
@@ -21,7 +21,7 @@ node_modules/
 EOF
   log_info ".gitignore created"
 
-  log_step "Injecting Governance Rules"
+  log_step "Injecting governance rules"
   "$PROJECT_ROOT/scripts/manage-gov.sh" install base "."
   log_info "Base rules injected into .cursor/rules/"
 

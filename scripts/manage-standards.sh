@@ -59,7 +59,7 @@ open_diffs() {
 
 apply_changes() {
   local target="$1"
-  log_step "Applying Changes"
+  log_step "Applying changes"
   while IFS= read -r entry; do
     local src="${entry%%|*}"
     local dest="${entry##*|}"
@@ -77,7 +77,7 @@ cmd_install() {
   local dest_dir="$target/standards"
   mkdir -p "$dest_dir"
 
-  log_step "Installing Standards"
+  log_step "Installing standards"
 
   local count=0
   while IFS= read -r file; do
@@ -135,7 +135,7 @@ cmd_sync() {
   DRIFTED_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
 
-  log_step "Scanning Standards"
+  log_step "Scanning standards"
   local count
   count=$(collect_sync_changes "$target")
 

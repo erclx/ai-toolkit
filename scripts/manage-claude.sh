@@ -13,7 +13,7 @@ CLAUDE_MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Claude Workflow"
+  log_step "Claude workflow"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk claude [command] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
@@ -160,7 +160,7 @@ cmd_init() {
     exit 1
   fi
 
-  log_step "Applying Changes"
+  log_step "Applying changes"
 
   if [ "${#pending[@]}" -gt 0 ]; then
     apply_seeds "$target" "${pending[@]}"
@@ -239,7 +239,7 @@ cmd_sync() {
     ;;
   esac
 
-  log_step "Applying Changes"
+  log_step "Applying changes"
   for file in "${drifted[@]}"; do
     cp "$CLAUDE_SEEDS_DIR/$file" "$target/.claude/$file"
     log_add ".claude/$file"
