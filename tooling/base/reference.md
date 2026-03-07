@@ -61,6 +61,9 @@
 - Sections: `## Summary`, `## Key Changes`, `## Technical Context`, `## Testing`.
 - Visuals: HTML comment only — never a visible section header.
 - Follow `standards/pr.md`: imperative mood, no "This PR" opener, no buzzwords, name specific files and functions.
+- CI workflow: `.github/workflows/verify.yml`. Runs on pull requests targeting `main` and on `workflow_dispatch`.
+- Workflow steps: checkout, setup Bun (latest), `bun install --frozen-lockfile`, install `shfmt` and `shellcheck` via apt, then `check:format`, `check:spell`, `check:shell`.
+- Does not run `format` before asserting — CI asserts only. Format must be clean before push.
 
 ## Gitignore
 
