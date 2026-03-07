@@ -215,8 +215,9 @@ commit_environment_setup() {
 }
 
 setup_sandbox_assets() {
-  inject_documentation
-  configure_agent_settings
+  [ -n "$SANDBOX_INJECT_STANDARDS" ] && inject_documentation
+  [ -n "$SANDBOX_INJECT_GOV" ] && inject_gov_rules
+  [ -n "$SANDBOX_INJECT_GEMINI" ] && configure_agent_settings
   commit_environment_setup
 }
 
