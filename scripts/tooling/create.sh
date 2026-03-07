@@ -9,10 +9,10 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Tooling Scaffold Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling scaffold [stack]"
+  log_step "Tooling Create Usage"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling create [stack]"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  Scaffolds a new stack with stub manifest, reference, configs, and seeds."
+  echo -e "${GREY}│${NC}  Creates a new stack with stub manifest, reference, configs, and seeds."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack   Name of the new stack to create"
@@ -31,10 +31,10 @@ main() {
   local stack="$1"
 
   if [ -z "$stack" ]; then
-    echo -e "${GREY}│${NC}" >&2
-    echo -ne "${GREEN}◆${NC} Stack name? " >&2
+    echo -e "${GREY}│${NC}"
+    echo -ne "${GREEN}◆${NC} Stack name? "
     read -r stack
-    echo -e "\033[1A\r\033[K${GREY}◇${NC} Stack name? ${WHITE}${stack}${NC}" >&2
+    echo -e "\033[1A\r\033[K${GREY}◇${NC} Stack name? ${WHITE}${stack}${NC}"
   fi
 
   if [ -z "$stack" ]; then
@@ -47,8 +47,8 @@ main() {
     log_error "Stack already exists: $stack"
   fi
 
-  echo -e "${GREY}┌${NC}" >&2
-  log_step "Scaffolding Stack: $stack"
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Creating Stack: $stack${NC}"
 
   mkdir -p "$dest/configs"
   log_add "tooling/$stack/configs/"
@@ -85,8 +85,8 @@ EOF
 EOF
   log_add "tooling/$stack/reference.md"
 
-  echo -e "${GREY}└${NC}\n" >&2
-  echo -e "${GREEN}✓ Stack scaffolded${NC}" >&2
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Stack created${NC}"
 }
 
 main "$@"

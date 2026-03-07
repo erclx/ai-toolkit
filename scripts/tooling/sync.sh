@@ -287,7 +287,7 @@ scan_configs() {
   local stack="$1"
   local target="$2"
 
-  log_step "Scanning Configs"
+  echo -e "${GREY}├${NC} ${WHITE}Scanning Configs${NC}" >&2
 
   collect_stack_configs "$stack" "$target" NEW_FILES DRIFTED_FILES MATCHING_FILES
 

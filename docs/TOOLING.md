@@ -50,17 +50,17 @@ Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` 
 
 ## CLI
 
-| Command                           | What it does                                                 |
-| --------------------------------- | ------------------------------------------------------------ |
-| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                   |
-| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents              |
-| `aitk tooling scaffold`           | Scaffold a new stack folder with stub manifest and reference |
+| Command                           | What it does                                               |
+| --------------------------------- | ---------------------------------------------------------- |
+| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                 |
+| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents            |
+| `aitk tooling create`             | Create a new stack folder with stub manifest and reference |
 
 ## Common workflows
 
 Sync to a fresh project: `aitk tooling` → sync → pick stack → enter path.
 
-Scaffold a new stack: `aitk tooling scaffold` → enter name → stub structure created in `tooling/<name>/`.
+Scaffold a new stack: `aitk tooling create` → enter name → stub structure created in `tooling/<name>/`.
 
 ## Testing
 
@@ -68,7 +68,7 @@ Each stack has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `aitk`
 
 ## Adding a new stack
 
-1. Run `aitk tooling scaffold` to generate the stub structure
+1. Run `aitk tooling create` to generate the stub structure
 2. Add golden config files to `tooling/<n>/configs/`
 3. Add pre-populated seed files to `tooling/<n>/seeds/`
 4. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`

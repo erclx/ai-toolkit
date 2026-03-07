@@ -106,7 +106,7 @@ main() {
   local pending=()
 
   echo -e "${GREY}┌${NC}" >&2
-  log_step "Scanning References: $stack"
+  echo -e "${GREY}├${NC} ${WHITE}Scanning References: $stack${NC}" >&2
   collect_references "$stack" "$target" pending
 
   if [ "${#pending[@]}" -eq 0 ]; then

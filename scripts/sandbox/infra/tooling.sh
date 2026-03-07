@@ -22,11 +22,11 @@ EOF
   git commit -m "chore(sandbox): scaffold tooling infra test directory" --no-verify -q
 
   log_step "Tooling Sandbox"
-  log_info "sync     — syncs configs, seeds, deps, and gitignore for a stack"
-  log_info "ref      — drops reference docs only"
-  log_info "scaffold — scaffolds a new stack stub"
+  log_info "sync   — syncs configs, seeds, deps, and gitignore for a stack"
+  log_info "ref    — drops reference docs only"
+  log_info "create — creates a new stack stub"
 
-  select_option "Which scenario?" "sync" "ref" "scaffold"
+  select_option "Which scenario?" "sync" "ref" "create"
 
   case "$SELECTED_OPTION" in
   "sync")
@@ -37,9 +37,9 @@ EOF
     log_step "Running: aitk tooling ref"
     "$PROJECT_ROOT/scripts/tooling/ref.sh" base .
     ;;
-  "scaffold")
-    log_step "Running: aitk tooling scaffold"
-    "$PROJECT_ROOT/scripts/tooling/scaffold.sh"
+  "create")
+    log_step "Running: aitk tooling create"
+    "$PROJECT_ROOT/scripts/tooling/create.sh"
     ;;
   esac
 }
