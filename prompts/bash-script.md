@@ -105,15 +105,15 @@ log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1"; }
 
 ### Section Headers
 
-`log_step` includes a leading blank `│` line to visually separate sections in multi-section scripts. For **single-section scripts**, skip `log_step` and use a raw echo to avoid unnecessary vertical space:
+`log_step` includes a leading blank `│` line to visually separate sections. Always use a raw `echo` for the **first** section header after `┌` — regardless of total section count — to avoid an unwanted blank line. Use `log_step` for all subsequent sections where breathing room between sections is intentional:
 
 ```bash
-# multi-section: use log_step (adds breathing room between sections)
-log_step "Build"
-log_step "Deploy"
+# first section after ┌: always raw echo (no leading blank line)
+echo -e "${GREY}├${NC} ${WHITE}Build${NC}"
 
-# single-section: use raw echo (no leading blank line)
-echo -e "${GREY}├${NC} ${WHITE}Snapshot${NC}"
+# subsequent sections: use log_step (blank │ line is intentional)
+log_step "Deploy"
+log_step "Verify"
 ```
 
 ### Interactive Prompts (Must transition `◆` → `◇`)
@@ -234,7 +234,7 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  log_step "First Section"
+  echo -e "${GREY}├${NC} ${WHITE}First Section${NC}"
 
   [Script logic with timeline maintained]
 
@@ -287,7 +287,7 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  log_step "Project Setup"
+  echo -e "${GREY}├${NC} ${WHITE}Project Setup${NC}"
 
   ask "Project name?" "PROJECT_NAME" "my-app"
 
@@ -315,5 +315,5 @@ Before responding, verify:
 - Logging is concise: no "Starting.../Finished..." bloat, no intermediate variable logging.
 - `log_add` is used for all file, entry, and key writes.
 - `log_info` is used for status confirmations only, not writes.
-- Single-section scripts use raw `echo` for the section header instead of `log_step`.
+- First section after `┌` always uses raw `echo`, never `log_step`.
 - File ends with exactly one empty line.
