@@ -16,7 +16,7 @@ log_error() {
   exit 1
 }
 
-OUTPUT_FILE=".claude/PROJECT.md"
+OUTPUT_FILE=".claude/.tmp/project/PROJECT-SNAPSHOT.md"
 
 check_dependencies() {
   command -v find >/dev/null 2>&1 || log_error "find not installed"
