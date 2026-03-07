@@ -85,7 +85,7 @@ cmd_install() {
     filename=$(basename "$file")
     cp "$file" "$dest_dir/$filename"
     log_add "standards/$filename"
-    ((count++))
+    count=$((count + 1))
   done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
 
   echo -e "${GREY}└${NC}\n"
@@ -117,7 +117,7 @@ collect_sync_changes() {
       log_warn "standards/$filename"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
-      ((count++))
+      count=$((count + 1))
     else
       log_info "standards/$filename"
     fi
