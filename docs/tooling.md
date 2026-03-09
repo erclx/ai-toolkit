@@ -6,7 +6,7 @@ Golden configs in `configs/` are the source of truth. Seeds, references, sandbox
 
 ## Structure
 
-```
+```plaintext
 tooling/
 ├── base/
 │   ├── configs/       ← authoritative, always overwrite on sync

@@ -6,7 +6,7 @@ Governance manages the rules that guide AI agents working in projects. Rules syn
 
 ## Structure
 
-```
+```plaintext
 .cursor/rules/         ← source rules (.mdc), organized by domain
 .cursor/stacks/        ← stack definitions (.toml), declare which rules belong to a stack
 scripts/

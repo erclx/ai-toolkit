@@ -10,7 +10,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 > **Setup:** Run `aitk claude init` in a new project to interactively seed this structure.
 
-```
+```plaintext
 .claude/
 ├── PLANNER.md           ← system prompt for planning, auto-injected by aitk claude prompt
 ├── REQUIREMENTS.md      ← project goals, non-goals, MVP scope
@@ -62,7 +62,7 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 
 ## Core implementation loop
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────────┐
 │  SESSION START (new chat tab)                        │
 │  1. `aitk claude prompt`     (generates .tmp/ files) │

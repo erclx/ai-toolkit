@@ -6,7 +6,7 @@ Sandboxes provision isolated project states for testing scripts, configs, and AI
 
 ## Structure
 
-```
+```plaintext
 scripts/sandbox/
 ├── tooling/
 │   ├── base.sh        ← tests base golden configs

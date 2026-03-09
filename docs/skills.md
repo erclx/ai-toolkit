@@ -6,7 +6,7 @@ Skills are thin pointers that route Claude to the right docs automatically. They
 
 ## Structure
 
-```
+```plaintext
 .claude/skills/        ← internal skills, aitk repo only
 claude/skills/         ← plugin skills, installable in target projects
 ```

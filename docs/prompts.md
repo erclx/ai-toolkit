@@ -6,7 +6,7 @@ Prompts are system prompt generators for AI-assisted authoring tasks. Each promp
 
 ## Structure
 
-```
+```plaintext
 prompts/          ← system prompt generators
 docs/
 └── prompts.md    ← this file

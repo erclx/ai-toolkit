@@ -4,7 +4,7 @@ Gemini CLI extension and command definitions for the AI Toolkit.
 
 ## Structure
 
-```
+```plaintext
 gemini/
 ├── commands/
 │   ├── dev/

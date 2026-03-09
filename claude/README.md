@@ -4,7 +4,7 @@ Claude Code plugin and skills for the AI Toolkit.
 
 ## Structure
 
-```
+```plaintext
 claude/
 ├── skills/              ← Claude Code skills (auto-discovered by plugin)
 │   ├── git-commit/      ← generate conventional commit message from staged changes

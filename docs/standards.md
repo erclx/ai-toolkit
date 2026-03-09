@@ -6,7 +6,7 @@ Standards are markdown docs that define developer workflow conventions. They syn
 
 ## Structure
 
-```
+```plaintext
 standards/             ← source standards (.md)
 scripts/
 └── manage-standards.sh ← entry point (aitk standards)

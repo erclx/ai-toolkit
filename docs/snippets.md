@@ -6,7 +6,7 @@ Snippets are small, reusable prompts invokable from Claude or Gemini chat via th
 
 ## Structure
 
-```
+```plaintext
 snippets/          ← invokable prompt snippets
 docs/
 └── snippets.md    ← this file

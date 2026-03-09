@@ -6,7 +6,7 @@ The claude stack seeds the `.claude/` workflow directory into a project.
 
 ## Structure
 
-```
+```plaintext
 .claude/
 ├── PLANNER.md         ← system prompt for planning sessions, auto-injected by aitk claude prompt
 ├── TASKS.md           ← persistent task tracker, source of truth for progress
