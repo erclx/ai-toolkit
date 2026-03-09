@@ -7,7 +7,7 @@ description: Edits and creates standards documents in the ai-toolkit repo. Use w
 
 Before editing, read:
 
-- `docs/GOVERNANCE.md` — standards section covering install vs sync, adding standards
+- `docs/governance.md` — standards section covering install vs sync, adding standards
 - `prompts/standards-reference.md` — conventions for writing standards docs
 
 Follow them exactly.

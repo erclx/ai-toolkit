@@ -7,8 +7,8 @@ description: Edits and creates bash scripts for the ai-toolkit repo. Use when mo
 
 Before editing, read:
 
-- `docs/SANDBOX.md` — sandbox system, stage_setup pattern, provisioning flow
-- `docs/TOOLING.md` — tooling system, configs vs seeds vs manifests
+- `docs/sandbox.md` — sandbox system, stage_setup pattern, provisioning flow
+- `docs/tooling.md` — tooling system, configs vs seeds vs manifests
 - `prompts/bash-script.md` — bash script conventions and style rules
 
 Follow them exactly.

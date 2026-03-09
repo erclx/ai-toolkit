@@ -7,7 +7,7 @@ description: Edits and creates tooling stacks, configs, seeds, and manifests in 
 
 Before editing, read:
 
-- `docs/TOOLING.md` — tooling system overview, configs vs seeds vs references, extends chain
+- `docs/tooling.md` — tooling system overview, configs vs seeds vs references, extends chain
 - `prompts/tooling-reference.md` — conventions for writing tooling reference docs
 
 Follow them exactly.

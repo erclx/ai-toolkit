@@ -7,7 +7,7 @@ description: Edits and creates governance rules and stack definitions in the ai-
 
 Before editing, read:
 
-- `docs/GOVERNANCE.md` — governance system overview, numbering scheme, install vs sync, stacks
+- `docs/governance.md` — governance system overview, numbering scheme, install vs sync, stacks
 - `prompts/cursor-rules.md` — conventions for writing .mdc rule files
 
 Follow them exactly.

@@ -59,8 +59,8 @@ Run `aitk` from the repo root.
 
 - Gemini CLI commands: see [gemini/README.md](gemini/README.md)
 - Claude Code commands and skills: see [claude/README.md](claude/README.md)
-- Prompt generators: see [docs/PROMPTS.md](docs/PROMPTS.md)
-- Snippets: see [docs/SNIPPETS.md](docs/SNIPPETS.md)
+- Prompt generators: see [docs/prompts.md](docs/prompts.md)
+- Snippets: see [docs/snippets.md](docs/snippets.md)
 
 ## Architecture
 
