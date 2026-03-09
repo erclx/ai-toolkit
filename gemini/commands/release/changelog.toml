@@ -1,6 +1,14 @@
 description = "Generate semantic changelog entry"
 
 prompt = """
+## ROLE
+
+You generate changelog entries from git commits.
+
+## CONTEXT
+
+{{args}}
+
 ## OBSERVATION
 
 <DATA_CONTEXT>
@@ -16,14 +24,6 @@ prompt = """
 !{TAG=$(git describe --tags --abbrev=0 2>/dev/null); if [ -n "$TAG" ]; then git log --pretty=format:"%h %s" --no-merges "$TAG"..HEAD; else git log --pretty=format:"%h %s" --no-merges; fi}
 </NEW_COMMITS>
 </DATA_CONTEXT>
-
-## ROLE
-
-You generate changelog entries from git commits.
-
-## CONTEXT
-
-{{args}}
 
 ## TASK & CONSTRAINTS
 

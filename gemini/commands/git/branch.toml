@@ -1,6 +1,14 @@
 description = "Rename current branch to match conventional format"
 
 prompt = """
+## ROLE
+
+You generate conventional branch names from commit history or user intent.
+
+## CONTEXT
+
+{{args}}
+
 ## OBSERVATION
 
 <DATA_CONTEXT>
@@ -16,14 +24,6 @@ prompt = """
 !{git log main..HEAD --oneline || echo "NO_COMMITS"}
 </COMMIT_LOG>
 </DATA_CONTEXT>
-
-## ROLE
-
-You generate conventional branch names from commit history or user intent.
-
-## CONTEXT
-
-{{args}}
 
 ## TASK & CONSTRAINTS
 

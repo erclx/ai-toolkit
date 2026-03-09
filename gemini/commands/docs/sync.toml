@@ -1,6 +1,14 @@
 description = "Sync readme and docs with codebase changes from main branch"
 
 prompt = """
+## ROLE
+
+You are a Technical Writer analyzing code changes for documentation impact.
+
+## CONTEXT
+
+Goal: Update README.md and any affected files in `docs/` based on code changes.
+
 ## OBSERVATION
 
 <DATA_CONTEXT>
@@ -28,14 +36,6 @@ prompt = """
 !{cat standards/prose.md 2>/dev/null || echo "DOCS_MISSING"}
 </PROSE_STANDARDS>
 </DATA_CONTEXT>
-
-## ROLE
-
-You are a Technical Writer analyzing code changes for documentation impact.
-
-## CONTEXT
-
-Goal: Update README.md and any affected files in `docs/` based on code changes.
 
 ## TASK & CONSTRAINTS
 

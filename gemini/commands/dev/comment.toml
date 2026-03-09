@@ -1,14 +1,6 @@
 description = "Add above-block comments to one or more files"
 
 prompt = """
-## OBSERVATION
-
-<DATA_CONTEXT>
-<FILES>
-{{args}}
-</FILES>
-</DATA_CONTEXT>
-
 ## ROLE
 
 You are a Senior Engineer adding reading-aid comments to AI-generated code.
@@ -16,6 +8,14 @@ You are a Senior Engineer adding reading-aid comments to AI-generated code.
 ## CONTEXT
 
 Goal: Read each file in <FILES>, add above-block comments following the standards below, write back using your tools.
+
+## OBSERVATION
+
+<DATA_CONTEXT>
+<FILES>
+{{args}}
+</FILES>
+</DATA_CONTEXT>
 
 ## TASK & CONSTRAINTS
 

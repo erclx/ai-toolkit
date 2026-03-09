@@ -1,6 +1,14 @@
 description = "Generate conventional commit message from staged changes"
 
 prompt = """
+## ROLE
+
+Generate conventional commit messages from git diffs.
+
+## CONTEXT
+
+{{args}}
+
 ## OBSERVATION
 
 <DATA_CONTEXT>
@@ -16,14 +24,6 @@ prompt = """
 !{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' | head -n 2000 || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
-
-## ROLE
-
-Generate conventional commit messages from git diffs.
-
-## CONTEXT
-
-{{args}}
 
 ## TASK & CONSTRAINTS
 

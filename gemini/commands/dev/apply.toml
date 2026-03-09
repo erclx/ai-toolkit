@@ -1,14 +1,6 @@
 description = "Apply changes from chat response"
 
 prompt = """
-## OBSERVATION
-
-<DATA_CONTEXT>
-<CHAT_RESPONSE>
-{{args}}
-</CHAT_RESPONSE>
-</DATA_CONTEXT>
-
 ## ROLE
 
 You are a File Editor executing changes from a chat response.
@@ -16,6 +8,14 @@ You are a File Editor executing changes from a chat response.
 ## CONTEXT
 
 Goal: APPLY the changes exactly using your tools. Do not verify, fix, or interpret.
+
+## OBSERVATION
+
+<DATA_CONTEXT>
+<CHAT_RESPONSE>
+{{args}}
+</CHAT_RESPONSE>
+</DATA_CONTEXT>
 
 ## TASK & CONSTRAINTS
 

@@ -1,6 +1,14 @@
 description = "Generate PR description and open PR"
 
 prompt = """
+## ROLE
+
+You generate PR descriptions from git diffs.
+
+## CONTEXT
+
+{{args}}
+
 ## OBSERVATION
 
 <DATA_CONTEXT>
@@ -24,14 +32,6 @@ prompt = """
 !{git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
-
-## ROLE
-
-You generate PR descriptions from git diffs.
-
-## CONTEXT
-
-{{args}}
 
 ## TASK & CONSTRAINTS
 

@@ -1,14 +1,6 @@
 description = "Review code from the last Gemini response"
 
 prompt = """
-## OBSERVATION
-
-<DATA_CONTEXT>
-<GEMINI_RESPONSE>
-{{args}}
-</GEMINI_RESPONSE>
-</DATA_CONTEXT>
-
 ## ROLE
 
 You are a Senior Engineer performing a code review.
@@ -16,6 +8,14 @@ You are a Senior Engineer performing a code review.
 ## CONTEXT
 
 Goal: Produce a findings report only. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
+
+## OBSERVATION
+
+<DATA_CONTEXT>
+<GEMINI_RESPONSE>
+{{args}}
+</GEMINI_RESPONSE>
+</DATA_CONTEXT>
 
 ## TASK & CONSTRAINTS
 
