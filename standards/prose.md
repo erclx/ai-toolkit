@@ -23,6 +23,7 @@
 
 - Use dashes (`-`) not asterisks (`*`) for bulleted lists
 - Wrap commands, API names, file paths, and code identifiers in backticks
+- Use a language identifier on all fenced code blocks (`markdown`, `typescript`, `plaintext`); never use a bare ` ``` `
 - Do not over-format with excessive bold, italic, or header usage
 - Do not use horizontal rules or dividers (`---`)
 - Do not use em dashes (`—`); use a comma, period, or restructure the sentence instead
