@@ -24,6 +24,10 @@
 - `## Testing`: specify exact commands or test cases run; always use bullet points, never prose
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
+## Formatting
+
+- End every bullet point with a period
+
 ## Examples
 
 ### Template
@@ -57,17 +61,17 @@ Update auth middleware to enforce jwt expiration checks. # imperative + direct o
 
 ## Key Changes
 
-- Add `verifyExpiration()` to `src/auth/validators.ts` # specific function + file path
-- Refactor `AuthService.authenticate()` to handle 401 codes # named component + clear change
+- Add `verifyExpiration()` to `src/auth/validators.ts`. # specific function + file path
+- Refactor `AuthService.authenticate()` to handle 401 codes. # named component + clear change
 
 ## Technical Context
 
-- Migration to stateless session management for horizontal scalability # why, not what
+- Migration to stateless session management for horizontal scalability. # why, not what
 
 ## Testing
 
 - `npm run test:auth` # exact command
-- Verified expired token rejection in staging # edge case
+- Verified expired token rejection in staging. # edge case
 ```
 
 ### Incorrect
@@ -79,7 +83,7 @@ This PR updates the authentication system to be more robust. # "This PR" opener 
 
 ## Key Changes
 
-- Updated auth middleware files # vague, no specific component
+- Updated auth middleware files # vague, no specific component, no period
 - The old system used to check tokens differently # describes historical behavior
 
 ## Testing
