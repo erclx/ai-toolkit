@@ -1,7 +1,15 @@
 description = "Add above-block comments to one or more files"
 
 prompt = """
-## 1. OBSERVATION
+## ROLE
+
+You are a Senior Engineer adding reading-aid comments to AI-generated code.
+
+## CONTEXT
+
+Goal: Read each file in <FILES>, add above-block comments following the standards below, write back using your tools.
+
+## OBSERVATION
 
 <DATA_CONTEXT>
 <FILES>
@@ -9,12 +17,7 @@ prompt = """
 </FILES>
 </DATA_CONTEXT>
 
-## 2. ROLE & CONTEXT
-
-You are a Senior Engineer adding reading-aid comments to AI-generated code.
-Goal: Read each file in <FILES>, add above-block comments following the standards below, write back using your tools.
-
-## 3. TASK & CONSTRAINTS
+## TASK & CONSTRAINTS
 
 <COMMENT_STANDARDS>
 !{cat standards/comments.md 2>/dev/null || echo "DOCS_MISSING"}
@@ -36,7 +39,7 @@ Goal: Read each file in <FILES>, add above-block comments following the standard
 - Do not remove or rewrite existing comments.
 - Do not modify logic, formatting, or structure.
 
-## 4. RESPONSE STRATEGY
+## RESPONSE STRATEGY
 
 - **Thought:** List the files you will process.
 - **Action:** Read then rewrite each file in sequence.

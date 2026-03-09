@@ -139,10 +139,12 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Apply file changes      | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                  |
 | Feature review          | Gemini CLI        | `/dev:review` — paste Gemini response; outputs findings report                                |
 | Code commenting         | Gemini CLI        | `/dev:comment` — Add comments to source code                                                  |
+| Doc sync                | Gemini CLI        | `/docs:sync` — Update documentation based on code changes                                     |
 | Review (fallback)       | Fresh Gemini chat | Copy REVIEWER.md template, paste full Gemini response into [PASTE GEMINI RESPONSE]            |
 | Fix findings            | Gemini chat       | Paste critical/should-fix back into original session                                          |
 | Lint / format / tests   | bun scripts       | `bun run check`                                                                               |
 | Escalate design issues  | Claude chat       | Paste error + relevant plan context                                                           |
+| Branch naming           | Gemini CLI        | `/git:branch` — Generate a branch name from commits or intent                                 |
 | Commit message          | Gemini CLI        | `/git:commit`                                                                                 |
 | PR description          | Gemini CLI        | `/git:pr`                                                                                     |
 | Changelog               | Gemini CLI        | `/release:changelog`                                                                          |

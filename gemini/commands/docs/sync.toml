@@ -1,7 +1,15 @@
 description = "Sync readme and docs with codebase changes from main branch"
 
 prompt = """
-## 1. OBSERVATION
+## ROLE
+
+You are a Technical Writer analyzing code changes for documentation impact.
+
+## CONTEXT
+
+Goal: Update README.md and any affected files in `docs/` based on code changes.
+
+## OBSERVATION
 
 <DATA_CONTEXT>
 <CURRENT_README>
@@ -29,12 +37,7 @@ prompt = """
 </PROSE_STANDARDS>
 </DATA_CONTEXT>
 
-## 2. ROLE & CONTEXT
-
-You are a Technical Writer analyzing code changes for documentation impact.
-Goal: Update README.md and any affected files in `docs/` based on code changes.
-
-## 3. TASK & CONSTRAINTS
+## TASK & CONSTRAINTS
 
 ### Must Do
 
@@ -53,14 +56,14 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 - Do not invent features not present in the diff.
 - Do not touch sections unrelated to the code changes.
 
-## 4. RESPONSE STRATEGY
+## RESPONSE STRATEGY
 
 - **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES> → classify user-facing or internal → map to affected docs → plan surgical edits per file
 - **Preview:** Output impact analysis, then wait silently for confirmation
 - **Execute:** On confirmation, use `file_edit` for each affected file
 - **Report:** "✅ Docs updated: [list]" or "⏭️ No changes applied"
 
-## 5. PREVIEW FORMAT
+## PREVIEW FORMAT
 
 # PREVIEW
 

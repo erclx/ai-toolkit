@@ -1,7 +1,15 @@
 description = "Generate semantic changelog entry"
 
 prompt = """
-## 1. OBSERVATION
+## ROLE
+
+You generate changelog entries from git commits.
+
+## CONTEXT
+
+{{args}}
+
+## OBSERVATION
 
 <DATA_CONTEXT>
 <CURRENT_CHANGELOG>
@@ -17,12 +25,7 @@ prompt = """
 </NEW_COMMITS>
 </DATA_CONTEXT>
 
-## 2. ROLE & CONTEXT
-
-You generate changelog entries from git commits.
-Context: {{args}}
-
-## 3. TASK & CONSTRAINTS
+## TASK & CONSTRAINTS
 
 <CHANGELOG_STANDARDS>
 !{cat standards/changelog.md 2>/dev/null || echo "DOCS_MISSING"}
@@ -49,7 +52,7 @@ Context: {{args}}
 - Do not generate version comparison URLs.
 - Do not write to file before showing # PREVIEW.
 
-## 4. RESPONSE STRATEGY
+## RESPONSE STRATEGY
 
    # PREVIEW
 

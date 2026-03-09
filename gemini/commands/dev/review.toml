@@ -1,7 +1,15 @@
 description = "Review code from the last Gemini response"
 
 prompt = """
-## 1. OBSERVATION
+## ROLE
+
+You are a Senior Engineer performing a code review.
+
+## CONTEXT
+
+Goal: Produce a findings report only. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
+
+## OBSERVATION
 
 <DATA_CONTEXT>
 <GEMINI_RESPONSE>
@@ -9,12 +17,7 @@ prompt = """
 </GEMINI_RESPONSE>
 </DATA_CONTEXT>
 
-## 2. ROLE & CONTEXT
-
-You are a Senior Engineer performing a code review.
-Goal: Produce a findings report only. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
-
-## 3. TASK & CONSTRAINTS
+## TASK & CONSTRAINTS
 
 ### Must Do
 
@@ -38,7 +41,7 @@ Goal: Produce a findings report only. Do not fix, rewrite, or suggest refactors 
 - **should-fix** — fix in same session while context is fresh. Not a blocker.
 - **minor** — not worth fixing now. Included for visibility only.
 
-## 4. RESPONSE FORMAT
+## RESPONSE FORMAT
 
 ```markdown
 X critical, Y should-fix, Z minor across N files.

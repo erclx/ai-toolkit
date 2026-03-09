@@ -1,7 +1,15 @@
 description = "Generate conventional commit message from staged changes"
 
 prompt = """
-## 1. OBSERVATION
+## ROLE
+
+Generate conventional commit messages from git diffs.
+
+## CONTEXT
+
+{{args}}
+
+## OBSERVATION
 
 <DATA_CONTEXT>
 <STAGED_FILES>
@@ -17,12 +25,7 @@ prompt = """
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 
-## 2. ROLE & CONTEXT
-
-Generate conventional commit messages from git diffs.
-Context: {{args}}
-
-## 3. TASK & CONSTRAINTS
+## TASK & CONSTRAINTS
 
 <COMMIT_STANDARDS>
 !{cat standards/commit.md 2>/dev/null || echo "DOCS_MISSING"}
@@ -43,7 +46,7 @@ Context: {{args}}
 - Do not invent scopes/types outside <COMMIT_STANDARDS>.
 - Do not verify, confirm, or check the working directory after executing the commit. Stop immediately.
 
-## 4. RESPONSE FORMAT
+## RESPONSE FORMAT
 
    # PREVIEW
 
