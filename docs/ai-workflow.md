@@ -18,7 +18,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 ├── DESIGN.md            ← color, typography, spacing, and motion decisions (UI projects only)
 ├── WIREFRAMES.md        ← ASCII wireframes for planning, structure and layout only (UI projects only)
 ├── TASKS.md             ← persistent task tracker, source of truth for progress
-├── REVIEWER.md          ← system prompt for code review, copy-paste into fresh chat
+├── REVIEWER.md          ← system prompt for code review, fallback for browser tab review flow
 └── IMPLEMENTER.md       ← system prompt for code generation, read by aitk claude prompt
 ```
 
@@ -32,7 +32,7 @@ Role prompts are agent instructions. They open with `# System Prompt: [Role]` an
 
 **`IMPLEMENTER.md`** — System prompt for code generation. Receives plan context and governance rules via `aitk claude prompt`. Paste into Gemini pro chat to start implementation.
 
-**`REVIEWER.md`** — System prompt for per-feature code review. Copy the template, paste the full Gemini response into `[PASTE GEMINI RESPONSE]`, send to a fresh Gemini chat. Managed by `aitk`; use `aitk claude sync` to sync.
+**`REVIEWER.md`** — Fallback system prompt for code review in a browser tab. Use when you want a deeper review outside the normal loop. For standard per-feature review, use `/dev:review` instead.
 
 ### State documents
 
@@ -81,8 +81,8 @@ State documents are project artifacts. They open with `# [Name]` and track proje
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │  CODE GENERATION                                     │
-│  1. `aitk claude prompt`                               │
-│  2. Paste source files into `.tmp/IMPLEMENTER.md`      │
+│  1. `aitk claude prompt`                             │
+│  2. Paste source files into `.tmp/IMPLEMENTER.md`    │
 │  3. Paste final prompt into Gemini pro chat          │
 │  → responds with plan restatement + complete files   │
 │  → may include COMMANDS section with install steps   │
@@ -91,11 +91,9 @@ State documents are project artifacts. They open with `# [Name]` and track proje
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │  REVIEW                                              │
-│  Copy full Gemini response                           │
-│  Open REVIEWER.md → paste response into               │
-│  [PASTE GEMINI RESPONSE]                             │
-│  Paste into fresh Gemini chat                        │
+│  → /dev:review [paste Gemini response]               │
 │  → findings report (critical / should-fix / minor)  │
+│  Fallback: use REVIEWER.md in a fresh browser tab    │
 └──────────────────────┬──────────────────────────────┘
                        │
           ┌────────────┴────────────┐
@@ -139,7 +137,8 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Generate master prompts | aitk claude       | `aitk claude prompt` — injects context into PLANNER and IMPLEMENTER, copies REVIEWER to .tmp/ |
 | Code generation         | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                    |
 | Apply file changes      | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                  |
-| Feature review          | Fresh Gemini chat | Copy REVIEWER.md template, paste full Gemini response into [PASTE GEMINI RESPONSE]            |
+| Feature review          | Gemini CLI        | `/dev:review` — paste Gemini response; outputs findings report                                |
+| Review (fallback)       | Fresh Gemini chat | Copy REVIEWER.md template, paste full Gemini response into [PASTE GEMINI RESPONSE]            |
 | Fix findings            | Gemini chat       | Paste critical/should-fix back into original session                                          |
 | Lint / format / tests   | bun scripts       | `bun run check`                                                                               |
 | Escalate design issues  | Claude chat       | Paste error + relevant plan context                                                           |
