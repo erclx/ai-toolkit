@@ -1,6 +1,6 @@
 ---
 name: aitk-governance
-description: Edits and creates governance rules and stack definitions in the ai-toolkit repo. Use when modifying .cursor/rules/, .cursor/stacks/, or working with governance install and sync.
+description: Governance rules and stack definitions. Use when modifying .cursor/rules/, .cursor/stacks/, or working with governance install and sync.
 ---
 
 # aitk Governance

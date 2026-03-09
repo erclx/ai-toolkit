@@ -1,6 +1,6 @@
 ---
 name: aitk-snippets
-description: Edits and creates snippet files in the ai-toolkit repo. Use when modifying snippets/, adding new snippets, renaming slugs, or updating snippet content. Triggers on "add a snippet", "edit a snippet", "new snippet", or any mention of snippets/ files.
+description: Snippet files for Claude and Gemini chat invocation. Use when modifying snippets/, adding new snippets, renaming slugs, or updating snippet content. Triggers on "add a snippet", "edit a snippet", "new snippet".
 ---
 
 # aitk Snippets

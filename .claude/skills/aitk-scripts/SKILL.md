@@ -1,6 +1,6 @@
 ---
 name: aitk-scripts
-description: Edits and creates bash scripts in the ai-toolkit repo. Use when modifying scripts/, adding or editing sandbox scenarios, editing manage-*.sh entry points, or working with shared lib/ functions. Do NOT use for tooling stack configs, governance rules, or standards — those have their own skills.
+description: Bash scripts for the aitk repo. Use when modifying scripts/, adding or editing sandbox scenarios, editing manage-*.sh entry points, or working with shared lib/ functions. Do NOT use for tooling stack configs, governance rules, or standards.
 ---
 
 # aitk Scripts
