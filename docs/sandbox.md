@@ -27,6 +27,7 @@ scripts/sandbox/
 │   └── pr.sh          ← PR description scenario for testing /git:pr
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
+│   ├── comment.sh     ← code comment scenario for testing /dev:comment
 │   └── review.sh      ← code findings scenario for testing /dev:review
 ├── docs/
 │   └── sync.sh        ← stale README and docs scenario for testing /docs:sync

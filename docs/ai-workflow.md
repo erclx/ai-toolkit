@@ -138,6 +138,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Code generation         | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                    |
 | Apply file changes      | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                  |
 | Feature review          | Gemini CLI        | `/dev:review` — paste Gemini response; outputs findings report                                |
+| Code commenting         | Gemini CLI        | `/dev:comment` — Add comments to source code                                                  |
 | Review (fallback)       | Fresh Gemini chat | Copy REVIEWER.md template, paste full Gemini response into [PASTE GEMINI RESPONSE]            |
 | Fix findings            | Gemini chat       | Paste critical/should-fix back into original session                                          |
 | Lint / format / tests   | bun scripts       | `bun run check`                                                                               |
