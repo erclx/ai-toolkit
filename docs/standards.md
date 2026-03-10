@@ -19,6 +19,7 @@ scripts/
 | `branch.md`    | Branch naming format and type conventions   |
 | `changelog.md` | Changelog format and entry conventions      |
 | `ci.md`        | GitHub Actions workflow and job conventions |
+| `comments.md`  | Code commenting conventions                 |
 | `commit.md`    | Commit message format and type conventions  |
 | `pr.md`        | Pull request title and body conventions     |
 | `prose.md`     | Voice, structure, formatting, and language  |
