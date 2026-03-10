@@ -8,35 +8,39 @@
 - Separate the comment from unrelated code above with a blank line.
 - No blank line between the comment and the block it describes.
 - Lowercase, no punctuation.
-- Use either a short phrase or `subject: reason`, mix freely, whatever fits.
+- Use either a short phrase or `subject: reason` — use the `subject:` prefix when the why is tied to a specific system or constraint. Mix freely, whatever fits.
 - No JSDoc noise.
+- Before adding a comment, ask: would this still add information if the variable or function name was removed? If no, skip it.
 
 ## Examples
 
 ### Good
 
 ```typescript
-const CANCELLABLE_STATUSES = ['pending', 'processing']
+// os: default open file limit on linux
+const MAX_CONNECTIONS = 1024
 
-// db: limit transaction size
-const MAX_BULK = 50
+// redis: key without ttl persists forever
+await cache.set(key, value, { ttl: 60 })
 
-// stripe: skip duplicate webhook
-if (await isEventProcessed(event.id)) return
+// process jobs individually so one failure doesn't block the whole queue
+for (const job of jobs) {
+  try {
+    await process(job)
+  } catch {
+    results.push({ id: job.id, ok: false })
+  }
+}
 
-// retry limit matches stripe's webhook timeout window
-const MAX_RETRIES = 3
+// s3: empty string is a valid key prefix, null means unset
+const prefix = config.prefix ?? ''
 ```
 
 ### Bad
 
 ```typescript
-// cancels order if status allows it
-if (!CANCELLABLE_STATUSES.includes(order.status)) throw ...  // restates the constant name
+// check if user is active
+if (!user.isActive) throw ...  // restates what the condition already says
 
-// loop through users and check if active
-const activeUsers = users.filter(u => u.isActive);  // restates the code exactly
-
-// send notification to user
-await notify(order.userId, { type: "order_cancelled" });  // restates the function name
+const TIMEOUT = 8000  // no comment — non-obvious value, origin and intent unclear
 ```

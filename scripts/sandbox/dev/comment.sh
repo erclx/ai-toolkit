@@ -51,9 +51,7 @@ export async function cancelOrder(id: string, reason?: string) {
     data: { status: "cancelled", cancelReason: reason ?? null },
   });
 
-  if (order.userId) {
-    await notify(order.userId, { type: "order_cancelled", orderId: id });
-  }
+  await notify(order.userId, { type: "order_cancelled", orderId: id });
 
   return updated;
 }
@@ -62,5 +60,5 @@ EOF
   log_step "SCENARIO READY: dev:comment above-block comments test"
   log_info "Context: 'src/api/orders.ts' has three functions, no existing comments."
   log_info "Action:  /dev:comment src/api/orders.ts"
-  log_info "Expect:  comment added to MAX_BULK and bulkFulfil, getOrder and cancelOrder left clean"
+  log_info "Expect:  comment added to MAX_BULK and bulkFulfil; getOrder and cancelOrder left clean"
 }
