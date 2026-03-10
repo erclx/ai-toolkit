@@ -76,7 +76,7 @@ cmd_install() {
   local dest_dir="$target/standards"
   mkdir -p "$dest_dir"
 
-  echo -e "${GREY}├${NC} ${WHITE}Installing standards${NC}"
+  log_step "Installing standards"
 
   local count=0
   while IFS= read -r file; do
