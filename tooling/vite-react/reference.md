@@ -75,6 +75,18 @@
 - Web server: `bun run dev` on port 5173, reuse existing server locally.
 - Trace: `on-first-retry`.
 
+## Screenshots
+
+- File: `e2e/screenshot.ts` — seeded once, user-owned. Edit the config section to match the app.
+- Split into `CONFIG` and `ENGINE` sections — only the config section changes per project.
+- `ROUTES` defines named app routes with viewport dimensions.
+- `STATES` is an array of `{ name, setup? }` — adding a new state is one object.
+- `colorScheme` set via Playwright context — no UI interaction needed.
+- Run `bun run screenshot` — builds, starts preview server, captures, outputs to `screenshots/` (gitignored).
+- Preview server runs on port 4173 (`BASE_URL` in the script matches `vite preview` default).
+- Node 22+ required for `--experimental-strip-types`. On older versions use `bunx tsx e2e/screenshot.ts`.
+- Review one route and one color scheme per AI session, not everything at once.
+
 ## Setup Script
 
 - File: `scripts/setup.sh`. Destructive — deletes `.git` and self-removes after running. Run once immediately after scaffolding.
@@ -83,7 +95,7 @@
 - Updates `package.json`: sets `name`, resets `version` to `0.1.0`, injects `verify`, `clean`, `update` scripts, removes `setup`.
 - Updates `index.html` `<title>` to match derived title.
 - Copies `.env.example` → `.env` if `.env` does not exist.
-- Wipes `.git`, re-inits with `--initial-branch=main`, makes scripts executable, commits everything as `chore(root): initialize <name>`.
+- Wipes `.git`, re-inits with `--initial-branch=main`, makes scripts executable, commits everything as `chore(root): initialize <n>`.
 - Renames project folder to match kebab-case name if needed.
 - Offers to open in VS Code or Cursor and installs dependencies if an editor is launched.
 
@@ -134,3 +146,4 @@
 - `test:e2e:report` — `playwright show-report`
 - `check:full` — `./scripts/verify.sh && bun run test:e2e`
 - `setup` — `./scripts/setup.sh`
+- `screenshot` — `bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts`

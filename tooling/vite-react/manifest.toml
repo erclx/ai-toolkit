@@ -54,6 +54,7 @@ packages = [
 "test:e2e:report" = "playwright show-report"
 "check:full" = "./scripts/verify.sh && bun run test:e2e"
 "setup" = "./scripts/setup.sh"
+"screenshot" = "bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts"
 
 [gitignore]
 "# Build" = ["dist/"]
