@@ -1,4 +1,4 @@
-# AI Toolkit Context
+# Toolkit Context
 
 CLI toolkit for managing governance rules, tooling configs, and developer standards across projects. Rules are authored in `.cursor/rules/`, distributed via governance sync. Standards sync as plain markdown. Tooling stacks are scaffolded from `tooling/` manifests.
 

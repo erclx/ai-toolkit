@@ -1,12 +1,12 @@
-# AI Toolkit
+# Toolkit
 
 CLI toolkit for managing governance rules, tooling configs, and developer standards across projects.
 
 ## Installation
 
 ```bash
-git clone git@github.com:erclx/ai-toolkit.git
-cd ai-toolkit
+git clone git@github.com:erclx/toolkit.git
+cd toolkit
 bun install
 bun link
 gemini extensions link ./gemini

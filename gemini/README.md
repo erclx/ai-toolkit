@@ -1,6 +1,6 @@
 # Gemini
 
-Gemini CLI extension and command definitions for the AI Toolkit.
+Gemini CLI extension and command definitions for the Toolkit.
 
 ## Structure
 

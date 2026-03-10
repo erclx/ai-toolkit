@@ -1,4 +1,4 @@
-# AI Toolkit Context
+# Toolkit Context
 
 CLI toolkit for managing governance rules, tooling configs, and developer standards across projects. Rules are authored in `.cursor/rules/`, compiled into Gemini CLI commands via `scripts/build-gov.sh`, and distributed to target projects. Standards sync directly as plain markdown files.
 

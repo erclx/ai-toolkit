@@ -10,7 +10,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "AI Toolkit"
+  log_step "Toolkit"
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk [command]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"

@@ -1,6 +1,6 @@
 # Claude
 
-Claude Code plugin and skills for the AI Toolkit.
+Claude Code plugin and skills for the Toolkit.
 
 ## Structure
 
@@ -25,11 +25,11 @@ claude/
 ## Setup
 
 ```bash
-claude --plugin-dir /path/to/ai-toolkit/claude
+claude --plugin-dir /path/to/toolkit/claude
 ```
 
 Add to your shell config to load automatically:
 
 ```bash
-alias claude='claude --plugin-dir /path/to/ai-toolkit/claude'
+alias claude='claude --plugin-dir /path/to/toolkit/claude'
 ```
