@@ -91,7 +91,7 @@
 
 - `# Build` — `dist/`
 - `# Coverage` — `coverage/`
-- `# Playwright` — `test-results/`, `playwright-report/`, `blob-report/`, `playwright/.cache/`
+- `# Playwright` — `test-results/`, `playwright-report/`, `blob-report/`, `playwright/.cache/`, `screenshots/`
 - `# VS Code` — `.vscode/*`, `!.vscode/extensions.json`, `!.vscode/settings.json`
 
 ## VS Code (Extend)
