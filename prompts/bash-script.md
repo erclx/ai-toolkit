@@ -116,8 +116,8 @@ log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1"; }
 ```bash
 # opening title block: ┌ alone, then │ Title, then first section with raw echo
 echo -e "${GREY}┌${NC}"
-echo -e "${GREY}│${NC} ${WHITE}Script Title${NC}"
-echo -e "${GREY}├${NC} ${WHITE}First Section${NC}"
+echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
+echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
 
 # subsequent sections: use log_step (blank │ line is intentional)
 log_step "Deploy"
@@ -241,8 +241,8 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}Script Title${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}First Section${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
 
   [Script logic with timeline maintained]
 
@@ -300,7 +300,7 @@ main() {
 
   ask "Project name?" "PROJECT_NAME" "my-app"
 
-  log_step "Installing Dependencies"
+  log_step "Installing dependencies"
   npm install vite
   log_add "vite@latest"
 
