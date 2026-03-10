@@ -129,7 +129,7 @@ cmd_init() {
   local pending=()
   local gi_pending=()
 
-  echo -e "${GREY}├${NC} ${WHITE}Scanning .claude/${NC}"
+  log_step "Scanning .claude/"
   collect_seeds "$target" pending
 
   log_step "Scanning .gitignore"
@@ -181,7 +181,7 @@ cmd_sync() {
   local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md" "DESIGN.md" "WIREFRAMES.md")
   local drifted=()
 
-  echo -e "${GREY}├${NC} ${WHITE}Managed${NC}"
+  log_step "Managed"
   for name in "${managed[@]}"; do
     local src="$CLAUDE_SEEDS_DIR/$name"
     local dest="$target/.claude/$name"
