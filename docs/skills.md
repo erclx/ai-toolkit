@@ -2,16 +2,16 @@
 
 ## Overview
 
-Skills are thin pointers that route Claude to the right docs automatically. They use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body and follows the file references inside it. No content is duplicated in skills — docs are the source of truth.
+Skills are thin pointers that route Claude to the right docs automatically. They use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body and follows the file references inside it. No content is duplicated in skills. Docs are the source of truth.
 
 ## Structure
 
 ```plaintext
-.claude/skills/        ← internal skills, aitk repo only
+.claude/skills/        ← internal skills, toolkit repo only
 claude/skills/         ← plugin skills, installable in target projects
 ```
 
-Internal skills are available in the aitk repo only. Plugin skills are namespaced as `ai-toolkit:skill-name` and available in any project that loads the plugin.
+Internal skills are available in the toolkit repo only. Plugin skills are namespaced as `toolkit:skill-name` and available in any project that loads the plugin.
 
 ## Internal skills
 
@@ -27,15 +27,15 @@ Internal skills are available in the aitk repo only. Plugin skills are namespace
 
 ## Plugin skills
 
-| Skill                   | Points to                               |
-| ----------------------- | --------------------------------------- |
-| `ai-toolkit:git-commit` | `standards/commit.md`                   |
-| `ai-toolkit:git-pr`     | `standards/pr.md`, `standards/prose.md` |
-| `ai-toolkit:git-branch` | `standards/branch.md`                   |
+| Skill                | Points to                               |
+| -------------------- | --------------------------------------- |
+| `toolkit:git-commit` | `standards/commit.md`                   |
+| `toolkit:git-pr`     | `standards/pr.md`, `standards/prose.md` |
+| `toolkit:git-branch` | `standards/branch.md`                   |
 
 ## Invocation
 
-Skills auto-trigger when Claude matches a query against the description. Invoke manually with `/skill-name` or `/ai-toolkit:skill-name` for plugin skills.
+Skills auto-trigger when Claude matches a query against the description. Invoke manually with `/skill-name` or `/toolkit:skill-name` for plugin skills.
 
 Priority order when names conflict: enterprise > personal > project > plugin.
 
