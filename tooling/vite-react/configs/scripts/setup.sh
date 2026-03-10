@@ -211,7 +211,7 @@ prompt_editor() {
   "VS Code")
     if command -v code &>/dev/null; then
       code "$NEW_PATH" >/dev/null 2>&1 &
-      log_info "Launching VS Code..."
+      log_info "Launching VS Code"
       auto_install=true
     else
       log_warn "'code' not found in PATH"
@@ -220,7 +220,7 @@ prompt_editor() {
   "Cursor")
     if command -v cursor &>/dev/null; then
       cursor "$NEW_PATH" >/dev/null 2>&1 &
-      log_info "Launching Cursor..."
+      log_info "Launching Cursor"
       auto_install=true
     else
       log_warn "'cursor' not found in PATH"
@@ -242,7 +242,7 @@ install_dependencies() {
 
 print_next_steps() {
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Setup Complete!${NC}"
+  echo -e "${GREEN}✓ Setup complete${NC}"
   if [ "$AUTO_INSTALL" = true ]; then
     echo -e "  Run ${WHITE}\`bun run dev\`${NC} to start development"
   else
@@ -257,7 +257,7 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  log_step "Vite React setup"
+  echo -e "${GREY}├${NC} ${WHITE}Vite React setup${NC}"
 
   configure_identity
   update_metadata

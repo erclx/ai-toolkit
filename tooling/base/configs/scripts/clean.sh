@@ -25,7 +25,7 @@ main() {
 
   echo -e "${GREY}┌${NC}"
 
-  log_step "Cleaning artifacts"
+  echo -e "${GREY}├${NC} ${WHITE}Cleaning artifacts${NC}"
   rm -rf node_modules
 
   log_rem "node_modules/"
@@ -39,7 +39,7 @@ main() {
   log_info "Dependencies installed"
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Success!${NC}"
+  echo -e "${GREEN}✓ Clean complete${NC}"
 }
 
 main "$@"
