@@ -31,9 +31,6 @@ type ChromeGlobal = {
   }
 }
 
-// ─── Config ──────────────────────────────────────────────────────────────────
-// Edit this section to match your extension's surfaces, storage, and UI states.
-
 const SURFACES: Surface[] = [
   { name: 'popup', width: 320, height: 500 },
   { name: 'sidepanel', width: 400, height: 800 },
@@ -47,12 +44,7 @@ const SEED: SeedData | null = {
   value: [],
 }
 
-const STATES: AppState[] = [
-  { name: 'default' },
-]
-
-// ─── Engine ───────────────────────────────────────────────────────────────────
-// No edits needed below this line.
+const STATES: AppState[] = [{ name: 'default' }]
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const screenshotsDir = path.join(__dirname, '..', 'screenshots')
@@ -60,7 +52,9 @@ const pathToExtension = path.join(__dirname, '..', 'dist')
 
 fs.mkdirSync(screenshotsDir, { recursive: true })
 
-async function launchWithExtension(seed: SeedData | null): Promise<BrowserContext> {
+async function launchWithExtension(
+  seed: SeedData | null,
+): Promise<BrowserContext> {
   const ctx = await chromium.launchPersistentContext('', {
     channel: 'chromium',
     args: [
