@@ -29,19 +29,19 @@ main() {
 
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
 
-  echo -e "${GREY}├${NC} ${WHITE}1. Formatting${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Formatting${NC}"
   run_check "bun run format" "Format failed"
   log_info "Format applied"
 
-  log_step "2. Format Check"
+  log_step "Format check"
   run_check "bun run check:format" "Format check failed"
   log_info "Format check passed"
 
-  log_step "3. Spelling"
+  log_step "Spelling"
   run_check "bun run check:spell" "Spell check failed"
   log_info "Spell check passed"
 
-  log_step "4. Shell"
+  log_step "Shell"
   run_check "bun run check:shell" "Shell check failed"
   log_info "Shell check passed"
 

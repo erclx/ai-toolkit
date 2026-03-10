@@ -36,31 +36,31 @@ main() {
   check_dependencies
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
 
-  echo -e "${GREY}├${NC} ${WHITE}1. Formatting${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Formatting${NC}"
   run_check "bun run format" "Format failed"
   log_info "Format applied"
 
-  log_step "2. Type Check"
+  log_step "Type check"
   run_check "bun run typecheck" "Type check failed"
   log_info "Type check passed"
 
-  log_step "3. Lint"
+  log_step "Lint"
   run_check "bun run lint" "Lint failed"
   log_info "Lint passed"
 
-  log_step "4. Format Check"
+  log_step "Format check"
   run_check "bun run check:format" "Format check failed"
   log_info "Format check passed"
 
-  log_step "5. Spelling"
+  log_step "Spelling"
   run_check "bun run check:spell" "Spell check failed"
   log_info "Spell check passed"
 
-  log_step "6. Unit Tests"
+  log_step "Unit tests"
   run_check "bun run test:run" "Unit tests failed"
   log_info "Unit tests passed"
 
-  log_step "7. Build"
+  log_step "Build"
   run_check "bun run build" "Build failed"
   log_info "Build passed"
 
