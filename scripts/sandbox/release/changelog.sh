@@ -8,7 +8,7 @@ use_config() {
 }
 
 stage_setup() {
-  log_step "Setting up changelog environment"
+  echo -e "${GREY}├${NC} ${WHITE}Setting up changelog environment${NC}"
 
   cat <<'EOF' >CHANGELOG.md
 # Changelog
@@ -40,8 +40,8 @@ EOF
   git add .gitignore
   git commit -m "chore(gitignore): update gitignore rules" -q
 
-  log_step "SCENARIO READY: Unreleased Commits"
-  log_info "Context: v1.0.0 tag exists. New feats/fixes + noise."
+  log_step "Scenario ready: unreleased commits"
+  log_info "Context: v1.0.0 tag exists, new feats/fixes + noise"
   log_info "Action:  gemini release:changelog"
-  log_info "Expect:  Updates CHANGELOG.md with structured entries"
+  log_info "Expect:  updates CHANGELOG.md with structured entries"
 }

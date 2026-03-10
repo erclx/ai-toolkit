@@ -37,7 +37,7 @@ stage_setup() {
     log_warn "Verification failed — check configs"
   fi
 
-  log_step "SCENARIO READY: Vite React Tooling Test"
-  log_info "Context: Golden configs from tooling/base + tooling/vite-react applied"
-  log_info "Action:  Inspect configs, run 'bun run check' to verify"
+  log_step "Scenario ready: Vite React tooling test"
+  log_info "Context: golden configs from tooling/base + tooling/vite-react applied"
+  log_info "Action:  inspect configs, run 'bun run check' to verify"
 }

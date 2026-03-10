@@ -24,7 +24,7 @@ EOF
   log_step "Running gemini sync"
   inject_tooling_configs "gemini" "."
 
-  log_step "SCENARIO READY: Gemini Tooling Init"
+  log_step "Scenario ready: Gemini tooling init"
   log_info "Context: Empty project with .gemini/settings.json seeded"
   log_info "Verify:  .gemini/settings.json exists with gemini-2.5-flash model"
   log_info "Verify:  .gemini/.tmp/ is gitignored"

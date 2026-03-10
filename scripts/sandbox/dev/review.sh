@@ -45,8 +45,8 @@ export function mergeUser(base: object, patch: object) {
 ```
 EOF
 
-  log_step "SCENARIO READY: dev:review code findings test"
-  log_info "Context: 'mock-response.md' contains a Gemini reply with three bugs."
+  log_step "Scenario ready: dev:review code findings test"
+  log_info "Context: 'mock-response.md' contains a Gemini reply with three bugs"
   log_info "Action:  gemini dev:review \"\$(cat mock-response.md)\""
-  log_info "Expect:  Findings report grouping bugs by severity across src/api/users.ts"
+  log_info "Expect:  findings report grouping bugs by severity across src/api/users.ts"
 }
