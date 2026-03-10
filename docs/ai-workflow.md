@@ -53,12 +53,14 @@ State documents are project artifacts. They open with `# [Name]` and track proje
 `aitk claude prompt` generates master prompts for planning and code generation.
 
 - Reads `.claude/PLANNER.md` and `.claude/IMPLEMENTER.md` as templates
-- Injects all `.mdc` files from `.cursor/rules/` into IMPLEMENTER's `{{GOVERNANCE_RULES}}`
+- Injects all `.mdc` files from `.cursor/rules/` into IMPLEMENTER's `{{GOVERNANCE_RULES}}` using `scripts/lib/gov.sh`
 - Auto-injects TASKS, REQUIREMENTS, ARCHITECTURE into both PLANNER and IMPLEMENTER
 - Auto-injects DESIGN and WIREFRAMES into PLANNER only
 - Leaves IMPLEMENTER's source context as `[PASTE RELEVANT SOURCE FILES]` for manual fill
 - Writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`
 - Run `aitk gov sync` first when switching stacks
+
+`aitk gov build` generates a standalone rules file at `.cursor/.tmp/rules.md` using the same underlying functions from `scripts/lib/gov.sh`. Paste it directly into any AI chat without running the full prompt flow.
 
 ## Core implementation loop
 
@@ -135,6 +137,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Sync managed prompts    | aitk claude       | `aitk claude sync` — diff managed role prompts against seed and apply                         |
 | Planning (all docs)     | Claude chat       | Paste `.tmp/PLANNER.md`; context is pre-injected                                              |
 | Generate master prompts | aitk claude       | `aitk claude prompt` — injects context into PLANNER and IMPLEMENTER, copies REVIEWER to .tmp/ |
+| Build standalone rules  | aitk gov          | `aitk gov build` — concatenate rules into .cursor/.tmp/rules.md for direct paste              |
 | Code generation         | Gemini pro chat   | Paste .tmp/IMPLEMENTER.md, fill SOURCE with relevant files                                    |
 | Apply file changes      | Gemini CLI        | `/dev:apply` — file writer only, no planning                                                  |
 | Feature review          | Gemini CLI        | `/dev:review` — paste Gemini response; outputs findings report                                |
@@ -150,6 +153,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Changelog               | Gemini CLI        | `/release:changelog`                                                                          |
 | Install gov rules       | aitk              | `aitk gov install [stack] [path]`                                                             |
 | Sync gov rules          | aitk              | `aitk gov sync [path]`                                                                        |
+| Build rules payload     | aitk              | `aitk gov build [path]`                                                                       |
 | Install standards       | aitk              | `aitk standards install [path]`                                                               |
 | Sync standards          | aitk              | `aitk standards sync [path]`                                                                  |
 
