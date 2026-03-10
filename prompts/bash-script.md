@@ -198,9 +198,7 @@ select_option() {
 ```bash
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}Script name${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage${NC}"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./script.sh [options]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} ./script.sh [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
