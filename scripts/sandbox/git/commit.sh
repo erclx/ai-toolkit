@@ -16,8 +16,8 @@ stage_setup() {
   echo 'export const MAX_CONNECTIONS = 5;' >config.js
   git add config.js
 
-  log_step "SCENARIO READY: Staged Changes (Config Update)"
-  log_info "Context: Modified 'config.js' (MAX_CONNECTIONS string -> number)"
+  log_step "Scenario ready: staged changes (config update)"
+  log_info "Context: modified 'config.js' (MAX_CONNECTIONS string -> number)"
   log_info "Action:  gemini git:commit \"update config limit\""
-  log_info "Expect:  Generates conventional commit message"
+  log_info "Expect:  generates conventional commit message"
 }

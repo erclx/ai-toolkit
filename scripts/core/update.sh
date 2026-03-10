@@ -16,7 +16,7 @@ main() {
 
   echo -e "${GREY}┌${NC}"
 
-  log_step "Interactive dependency update"
+  echo -e "${GREY}├${NC} ${WHITE}Interactive dependency update${NC}"
   echo -e "${GREY}│${NC}"
   bun update --interactive
 
@@ -29,7 +29,7 @@ main() {
   fi
 
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Update Complete.${NC}"
+  echo -e "${GREEN}✓ Update complete${NC}"
 }
 
 main "$@"

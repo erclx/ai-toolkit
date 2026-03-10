@@ -19,15 +19,15 @@ stage_setup() {
   echo "messy code" >wip.js
   git add . && git commit -m "feat(wip): messy work in progress" -q
 
-  log_step "SCENARIO READY: Branch Naming Compliance"
+  log_step "Scenario ready: branch naming compliance"
 
-  log_info "Test A (Current Branch): 'temp/wip-stuff'"
+  log_info "Test A (current branch): 'temp/wip-stuff'"
   log_info "  Action: gemini git:branch"
   log_info "  Expect: Suggest rename to 'feat/wip-messy-work'"
 
   echo -e "${GREY}│${NC}"
 
-  log_info "Test B (Toggle): 'git checkout feat/clean-feature'"
+  log_info "Test B (toggle): 'git checkout feat/clean-feature'"
   log_info "  Action: gemini git:branch"
   log_info "  Expect: '✅ Branch name already follows conventions'"
 }

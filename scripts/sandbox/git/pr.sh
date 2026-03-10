@@ -32,8 +32,8 @@ EOF
   git add utils.js
   git commit -m "feat(utils): add capitalize helper" -q
 
-  log_step "SCENARIO READY: Feature Branch"
-  log_info "Context: Branch 'feature/string-utils' with un-pushed commits"
+  log_step "Scenario ready: feature branch"
+  log_info "Context: branch 'feature/string-utils' with un-pushed commits"
   log_info "Action:  gemini git:pr"
-  log_info "Expect:  Agent renames branch -> pushes -> opens draft PR"
+  log_info "Expect:  agent renames branch -> pushes -> opens draft PR"
 }

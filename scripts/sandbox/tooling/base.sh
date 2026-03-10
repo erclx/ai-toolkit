@@ -34,7 +34,7 @@ EOF
     log_warn "Verification failed — check configs"
   fi
 
-  log_step "SCENARIO READY: Base Tooling Test"
-  log_info "Context: Golden configs from tooling/base applied"
-  log_info "Action:  Inspect configs, run 'bun run check' to verify"
+  log_step "Scenario ready: base tooling test"
+  log_info "Context: golden configs from tooling/base applied"
+  log_info "Action:  inspect configs, run 'bun run check' to verify"
 }

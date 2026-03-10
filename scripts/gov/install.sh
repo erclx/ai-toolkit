@@ -12,8 +12,7 @@ RULES_SOURCE_DIR="$PROJECT_ROOT/.cursor/rules"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Governance install"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk gov install [stack] [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov install [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack         Name of the stack to install (e.g., base, node, react)"
@@ -104,7 +103,7 @@ cmd_install() {
   local target_abs
   target_abs=$(cd "$target" && pwd)
   if [ "$target_abs" = "$PROJECT_ROOT" ]; then
-    log_error "Cannot install into ai-toolkit root."
+    log_error "Cannot install into toolkit root."
   fi
 
   local rules=()

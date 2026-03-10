@@ -29,7 +29,7 @@ main() {
 
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
 
-  log_step "1. Formatting"
+  echo -e "${GREY}├${NC} ${WHITE}1. Formatting${NC}"
   run_check "bun run format" "Format failed"
   log_info "Format applied"
 

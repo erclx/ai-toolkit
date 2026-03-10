@@ -9,8 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Tooling usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling [command] [stack] [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk tooling [command] [stack] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    sync      ${GREY}# Sync configs, seeds, deps, and references (default)${NC}"

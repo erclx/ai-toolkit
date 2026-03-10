@@ -9,8 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Governance sync usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk gov sync [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov sync [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs rules already installed in the target project."
   echo -e "${GREY}│${NC}  To add new rules, use 'aitk gov install' instead."
@@ -124,7 +123,7 @@ main() {
   local TARGET_ABS
   TARGET_ABS=$(cd "$TARGET_PATH" && pwd)
   if [ "$TARGET_ABS" = "$PROJECT_ROOT" ]; then
-    log_error "Cannot sync to ai-toolkit root. Files here are the source of truth."
+    log_error "Cannot sync to toolkit root. Files here are the source of truth."
   fi
 
   PENDING_FILE=$(mktemp)

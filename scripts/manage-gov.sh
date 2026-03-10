@@ -9,8 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Governance"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk gov [command]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov [command]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    install   ${GREY}# Bootstrap rules for a stack into a project${NC}"

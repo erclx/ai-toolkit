@@ -31,7 +31,7 @@ stage_setup() {
     log_warn "Verification failed — check configs"
   fi
 
-  log_step "SCENARIO READY: Chrome Tooling Test"
-  log_info "Context: Golden configs from tooling/vite-react + tooling/chrome applied"
-  log_info "Action:  Inspect configs, run 'bun run check' to verify"
+  log_step "Scenario ready: Chrome tooling test"
+  log_info "Context: golden configs from tooling/vite-react + tooling/chrome applied"
+  log_info "Action:  inspect configs, run 'bun run check' to verify"
 }

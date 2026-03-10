@@ -16,6 +16,8 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 ### Visual Timeline
 
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
+- Open the timeline once at the very start of `main()` with `┌` alone, followed immediately by `│ Title` — before any logic, prompts, or checks.
+- Close the timeline once at the very end with `└`. Never open or close mid-script.
 - Use state transitions for interactive prompts: `◆` (active) → `◇` (inactive).
 - Do not add diamonds (`◆`/`◇`) to non-interactive log functions.
 - On cancellation: show `◇ ... Cancelled`, exit 1, no `log_error` call.
@@ -37,6 +39,7 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 
 - Show external tool output by default (git, npm, gh, etc.).
 - Include context in error messages: `log_error "npm install failed: check package.json"`.
+- Use sentence case for all log messages (proper nouns and product names retain their casing).
 - Do not echo command names before running them (output speaks for itself).
 - Do not log "Starting..." and "Finished..." around every action.
 - Do not log intermediate variable assignments.
@@ -50,7 +53,8 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 ### Timeline Structure
 
 ```bash
-┌                    # Start boundary
+┌                    # Start boundary (alone on its own line)
+│ Title              # Script or context title (immediately after ┌)
 │                    # Persistent vertical line (grey)
 ├ Section Branch     # Section headers (no diamond)
 │ ✓ Log message      # Info/success logs
@@ -107,11 +111,13 @@ log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1"; }
 
 ### Section Headers
 
-`log_step` includes a leading blank `│` line to visually separate sections. Always use a raw `echo` for the **first** section header after `┌` — regardless of total section count — to avoid an unwanted blank line. Use `log_step` for all subsequent sections where breathing room between sections is intentional:
+`log_step` includes a leading blank `│` line to visually separate sections. Always use a raw `echo` for the **first** section header after the title block — regardless of total section count — to avoid an unwanted blank line. Use `log_step` for all subsequent sections where breathing room between sections is intentional:
 
 ```bash
-# first section after ┌: always raw echo (no leading blank line)
-echo -e "${GREY}├${NC} ${WHITE}Build${NC}"
+# opening title block: ┌ alone, then │ Title, then first section with raw echo
+echo -e "${GREY}┌${NC}"
+echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
+echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
 
 # subsequent sections: use log_step (blank │ line is intentional)
 log_step "Deploy"
@@ -192,8 +198,7 @@ select_option() {
 ```bash
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Script Usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} ./script.sh [options]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} ./script.sh [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
@@ -236,7 +241,8 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}First Section${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
 
   [Script logic with timeline maintained]
 
@@ -289,11 +295,12 @@ main() {
   check_dependencies
 
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Project Setup${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}Project Setup${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Installing dependencies${NC}"
 
   ask "Project name?" "PROJECT_NAME" "my-app"
 
-  log_step "Installing Dependencies"
+  log_step "Installing dependencies"
   npm install vite
   log_add "vite@latest"
 
@@ -310,12 +317,14 @@ main "$@"
 Before responding, verify:
 
 - File starts with shebang, `set -e`, `set -o pipefail` and uses exactly 2 spaces for indentation.
+- Timeline opens with `┌` alone, followed by `│ Title` on the next line.
 - Timeline (`│`) appears in all log functions and interactive prompts use `◆` → `◇` transitions.
+- All log messages use sentence case (proper nouns and product names exempt).
 - Only defined color variables are used in the script.
 - Cancellation shows single `◇ ... Cancelled` line without subsequent `log_error`.
 - Functions follow single responsibility: each does one thing, `main()` delegates to helpers.
 - Logging is concise: no "Starting.../Finished..." bloat, no intermediate variable logging.
 - `log_add` is used for all file, entry, and key writes.
 - `log_info` is used for status confirmations only, not writes.
-- First section after `┌` always uses raw `echo`, never `log_step`.
+- First section after title block always uses raw `echo`, never `log_step`.
 - File ends with exactly one empty line.

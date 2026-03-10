@@ -15,8 +15,7 @@ CLAUDE_DIR="$PWD/.claude"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Claude Prompt"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk claude prompt"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk claude prompt"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Generates master prompts from installed cursor rules."
   echo -e "${GREY}│${NC}  Reads templates from .claude/PLANNER.md and .claude/IMPLEMENTER.md."
@@ -177,6 +176,7 @@ main() {
   local count
   count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
 
+  echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Reading .cursor/rules ($count found)${NC}"
 
   while IFS= read -r file; do

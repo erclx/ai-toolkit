@@ -65,8 +65,8 @@ Each sandbox is a `.sh` file with two optional hook functions and a required `st
 ```bash
 stage_setup() {
   # scaffold scenario state
-  # end with SCENARIO READY instructions
-  log_step "SCENARIO READY: ..."
+  # end with scenario ready instructions
+  log_step "Scenario ready: ..."
   log_info "Action:  what to run"
   log_info "Expect:  what should happen"
 }

@@ -13,8 +13,7 @@ CLAUDE_MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Claude workflow"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk claude [command] [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk claude [command] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
@@ -42,7 +41,7 @@ validate_target() {
   target_abs=$(cd "$target" && pwd)
 
   if [ "$target_abs" = "$PROJECT_ROOT" ]; then
-    log_error "Cannot init claude workflow in ai-toolkit root."
+    log_error "Cannot init claude workflow in toolkit root."
   fi
 }
 

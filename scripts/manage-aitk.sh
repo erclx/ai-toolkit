@@ -10,8 +10,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Toolkit"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk [command]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk [command]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    sandbox [cat:cmd]  ${GREY}# Provision and run sandbox scenarios${NC}"
@@ -66,7 +65,7 @@ main() {
     ;;
   *)
     echo -e "${GREY}┌${NC}"
-    log_error "Unknown command: $1. Run 'aitk --help' for usage."
+    log_error "Unknown command '$1'. Run 'aitk --help' for usage."
     ;;
   esac
 }

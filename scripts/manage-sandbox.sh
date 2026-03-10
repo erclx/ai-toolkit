@@ -11,8 +11,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  log_step "Sandbox"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk sandbox [cat:cmd]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk sandbox [cat:cmd]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    cat:cmd   ${GREY}# Scenario to provision (e.g. git:commit)${NC}"
@@ -127,11 +126,8 @@ validate_environment() {
   local current_command="$2"
 
   if [ ! -d "$SANDBOX_DIR" ]; then
-    echo -e "${GREY}┌${NC}"
     log_error "Sandbox directory not found at: $SANDBOX_DIR"
   fi
-
-  echo -e "${GREY}┌${NC}"
 
   if [[ "$PWD" == *".sandbox"* ]]; then
     log_warn "Detected execution inside .sandbox. Switching to project root..."
@@ -233,9 +229,9 @@ initialize_sandbox_environment() {
   local current_category="$1"
   local current_command="$2"
 
-  validate_environment "$current_category" "$current_command"
   load_sandbox_script "$current_category" "$current_command"
   [[ "$(type -t use_config)" == "function" ]] && use_config
+  validate_environment "$current_category" "$current_command"
   provision_sandbox "$current_category" "$current_command"
   setup_sandbox_assets
 }
@@ -283,7 +279,7 @@ handle_post_execution_prompt() {
         cursor "$SANDBOX"
       else
         log_warn "Cursor CLI command 'cursor' not found."
-        log_info "Sandbox Path: $SANDBOX"
+        log_info "Sandbox path: $SANDBOX"
       fi
     else
       echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
@@ -295,7 +291,6 @@ handle_post_execution_prompt() {
 }
 
 cmd_clean() {
-  echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Removing sandbox${NC}"
   rm -rf "$SANDBOX"
   log_rem ".sandbox/"
@@ -304,8 +299,6 @@ cmd_clean() {
 }
 
 reset_sandbox() {
-  echo -e "${GREY}┌${NC}"
-
   if [ ! -d "$SANDBOX/.git" ]; then
     log_error "No sandbox found. Run \`aitk sandbox\` first."
   fi
@@ -375,9 +368,11 @@ main() {
     show_help
   fi
 
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}aitk sandbox${NC}"
+
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
-    echo -e "${GREY}┌${NC}"
-    log_error "Context Error: You must run this command from inside the 'ai-toolkit' repository."
+    log_error "Context error: you must run this command from inside the toolkit repository."
   fi
 
   SANDBOX="$PROJECT_ROOT/.sandbox"
@@ -398,7 +393,6 @@ main() {
   local command="$_COMMAND"
 
   initialize_sandbox_environment "$category" "$command"
-
   execute_sandbox_and_commit
 
   handle_post_execution_prompt "$category" "$command"

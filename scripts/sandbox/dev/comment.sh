@@ -57,8 +57,8 @@ export async function cancelOrder(id: string, reason?: string) {
 }
 EOF
 
-  log_step "SCENARIO READY: dev:comment above-block comments test"
-  log_info "Context: 'src/api/orders.ts' has three functions, no existing comments."
+  log_step "Scenario ready: dev:comment above-block comments test"
+  log_info "Context: 'src/api/orders.ts' has three functions, no existing comments"
   log_info "Action:  /dev:comment src/api/orders.ts"
   log_info "Expect:  comment added to MAX_BULK and bulkFulfil; getOrder and cancelOrder left clean"
 }
