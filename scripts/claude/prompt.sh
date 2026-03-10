@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/gov.sh"
 
 RULES_DIR="$PWD/.cursor/rules"
 IMPLEMENTER_TEMPLATE="$PWD/.claude/IMPLEMENTER.md"
@@ -44,57 +45,6 @@ check_dependencies() {
   if [ ! -f "$PLANNER_TEMPLATE" ]; then
     log_error "PLANNER.md not found at .claude/PLANNER.md. Run \`aitk claude init\` first."
   fi
-}
-
-strip_frontmatter() {
-  local file="$1"
-  local in_frontmatter=0
-  local past_frontmatter=0
-
-  while IFS= read -r line; do
-    if [ "$past_frontmatter" -eq 1 ]; then
-      echo "$line"
-      continue
-    fi
-
-    if [ "$in_frontmatter" -eq 0 ] && [ "$line" = "---" ]; then
-      in_frontmatter=1
-      continue
-    fi
-
-    if [ "$in_frontmatter" -eq 1 ] && [ "$line" = "---" ]; then
-      past_frontmatter=1
-      continue
-    fi
-
-    if [ "$in_frontmatter" -eq 0 ]; then
-      echo "$line"
-    fi
-  done <"$file"
-}
-
-build_rules_payload() {
-  local payload_file
-  payload_file=$(mktemp)
-
-  local last_file
-  last_file=$(find "$RULES_DIR" -type f -name "*.mdc" | sort | tail -n 1)
-
-  while IFS= read -r file; do
-    local filename
-    filename=$(basename "$file" .mdc)
-
-    echo "### $filename" >>"$payload_file"
-    echo "" >>"$payload_file"
-    echo '```markdown' >>"$payload_file"
-    strip_frontmatter "$file" | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
-    echo '```' >>"$payload_file"
-    [[ "$file" != "$last_file" ]] && echo "" >>"$payload_file"
-  done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
-
-  sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$payload_file"
-
-  echo "$payload_file"
 }
 
 substitute_placeholder() {
@@ -140,7 +90,7 @@ inject_placeholder_file() {
 
 build_implementer() {
   local payload_file
-  payload_file=$(build_rules_payload)
+  payload_file=$(build_rules_payload "$RULES_DIR")
 
   local output_file="$OUTPUT_DIR/IMPLEMENTER.md"
   cp "$IMPLEMENTER_TEMPLATE" "$output_file"
@@ -148,7 +98,7 @@ build_implementer() {
   substitute_placeholder "{{GOVERNANCE_RULES}}" "$payload_file" "$output_file"
   rm "$payload_file"
 
-  log_step "Injecting Implementer Context"
+  log_step "Injecting Implementer context"
   inject_placeholder_file "TASKS.md" "{{TASKS}}" "$output_file"
   inject_placeholder_file "REQUIREMENTS.md" "{{REQUIREMENTS}}" "$output_file"
   inject_placeholder_file "ARCHITECTURE.md" "{{ARCHITECTURE}}" "$output_file"
@@ -158,7 +108,7 @@ build_planner() {
   local output_file="$OUTPUT_DIR/PLANNER.md"
   cp "$PLANNER_TEMPLATE" "$output_file"
 
-  log_step "Injecting Planner Context"
+  log_step "Injecting Planner context"
   inject_placeholder_file "TASKS.md" "{{TASKS}}" "$output_file"
   inject_placeholder_file "REQUIREMENTS.md" "{{REQUIREMENTS}}" "$output_file"
   inject_placeholder_file "ARCHITECTURE.md" "{{ARCHITECTURE}}" "$output_file"

@@ -12,7 +12,10 @@ Governance manages the rules that guide AI agents working in projects. Rules syn
 scripts/
 ├── gov/
 │   ├── install.sh      ← bootstraps rules for a stack into a target project
-│   └── sync.sh         ← syncs existing rules to external projects
+│   ├── sync.sh         ← syncs existing rules to external projects
+│   └── build.sh        ← concatenates installed rules into .cursor/.tmp/rules.md
+├── lib/
+│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload
 └── manage-gov.sh       ← entry point (aitk gov)
 ```
 
@@ -30,7 +33,7 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)  |
 | `900+`    | workflow (Node, tooling, etc.)                     |
 
-**Install vs sync** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack — it overwrites. `aitk gov sync` updates rules already present in the target — it never adds new files. Use install once to set up, use sync to keep up to date.
+**Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack — it overwrites. `aitk gov sync` updates rules already present in the target — it never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.cursor/.tmp/rules.md`, stripping frontmatter — useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the rules payload.
 
 Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed.
 
@@ -49,8 +52,9 @@ Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional 
 | --------------------------------- | ------------------------------------------------------- |
 | `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a target project       |
 | `aitk gov sync [path]`            | Update rules already present in target (never adds new) |
+| `aitk gov build [path]`           | Concatenate installed rules into .cursor/.tmp/rules.md  |
 
-`aitk gov` with no args shows a picker: `install` or `sync`.
+`aitk gov` with no args shows a picker: `install`, `sync`, or `build`.
 
 ## Workflow
 
@@ -67,6 +71,16 @@ To sync updates to an existing project:
 aitk gov sync ../my-app
 # only diffs rules already present — never adds new files
 ```
+
+To generate a concatenated rules file:
+
+```bash
+aitk gov build
+# strips frontmatter, concatenates all .mdc files
+# writes .cursor/.tmp/rules.md — paste into any AI chat
+```
+
+`aitk claude prompt` uses the same underlying logic from `scripts/lib/gov.sh` to inject rules into IMPLEMENTER.md.
 
 ## Adding a new rule
 
@@ -85,3 +99,4 @@ rules = ["200-react", "250-tailwind"]
 
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional/addon complexity in stack definitions.
+- `strip_frontmatter` and `build_rules_payload` live in `scripts/lib/gov.sh` and are sourced by both `gov/build.sh` and `claude/prompt.sh`.

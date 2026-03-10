@@ -18,10 +18,11 @@ Run `aitk` from the repo root.
 
 ### Governance
 
-| Command                           | Description                                |
-| --------------------------------- | ------------------------------------------ |
-| `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a project |
-| `aitk gov sync [path]`            | Update existing rules in a project         |
+| Command                           | Description                                            |
+| --------------------------------- | ------------------------------------------------------ |
+| `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a project             |
+| `aitk gov sync [path]`            | Update existing rules in a project                     |
+| `aitk gov build [path]`           | Concatenate installed rules into .cursor/.tmp/rules.md |
 
 ### Standards
 
