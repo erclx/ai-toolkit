@@ -9,6 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 CLAUDE_SEEDS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude"
+CLAUDE_CONFIGS_DIR="$PROJECT_ROOT/tooling/claude/configs/.claude"
 CLAUDE_MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"
 
 show_help() {
@@ -183,7 +184,7 @@ cmd_sync() {
 
   log_step "Managed"
   for name in "${managed[@]}"; do
-    local src="$CLAUDE_SEEDS_DIR/$name"
+    local src="$CLAUDE_CONFIGS_DIR/$name"
     local dest="$target/.claude/$name"
 
     if [ ! -f "$dest" ]; then
@@ -220,7 +221,7 @@ cmd_sync() {
   case "$SELECTED_OPTION" in
   "Review diffs")
     for file in "${drifted[@]}"; do
-      code --diff "$CLAUDE_SEEDS_DIR/$file" "$target/.claude/$file"
+      code --diff "$CLAUDE_CONFIGS_DIR/$file" "$target/.claude/$file"
     done
     select_option "Apply ${#drifted[@]} update(s)?" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" = "Cancel" ] && {
@@ -238,7 +239,7 @@ cmd_sync() {
 
   log_step "Applying changes"
   for file in "${drifted[@]}"; do
-    cp "$CLAUDE_SEEDS_DIR/$file" "$target/.claude/$file"
+    cp "$CLAUDE_CONFIGS_DIR/$file" "$target/.claude/$file"
     log_add ".claude/$file"
   done
 

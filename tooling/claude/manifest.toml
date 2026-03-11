@@ -5,7 +5,10 @@ runtime = ""
 scaffold = ""
 
 [sync]
-source = "seeds"
+source = "configs"
+
+[scripts]
+"snapshot" = "./scripts/core/snapshot.sh"
 
 [gitignore]
 "# Claude" = [".claude/.tmp/"]

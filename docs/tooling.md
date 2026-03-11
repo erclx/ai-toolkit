@@ -23,7 +23,8 @@ tooling/
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 ├── claude/
-│   ├── seeds/         ← .claude/ workflow docs (role prompts and state docs)
+│   ├── configs/       ← role prompts (PLANNER.md, etc), always overwrite
+│   ├── seeds/         ← state docs (REQUIREMENTS.md, etc), user-owned
 │   ├── manifest.toml  ← gitignore only, no configs or deps
 │   └── reference.md
 ├── cursor/
@@ -39,7 +40,7 @@ tooling/
 
 Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong.
 
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. Workflow docs (`.claude/`) are seeded once and never touched by tooling again. Sync appends only what's missing and never overwrites. Stacks ship seeds pre-populated with terms they introduce, such as `shellcheck` and `vitest`.
+Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds; they are created once and then owned by the user. Sync appends only what's missing and never overwrites. Stacks ship seeds pre-populated with terms they introduce, such as `shellcheck` and `vitest`.
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain.
 
