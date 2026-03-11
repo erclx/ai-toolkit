@@ -44,7 +44,7 @@ Run `aitk` from the repo root.
 | Command              | Description                                             |
 | -------------------- | ------------------------------------------------------- |
 | `aitk claude init`   | Seed .claude/ workflow docs and sync .gitignore         |
-| `aitk claude sync`   | Diff managed role prompts against seed and apply        |
+| `aitk claude sync`   | Sync managed role prompts, overwriting local changes    |
 | `aitk claude prompt` | Generate master prompts for planning and implementation |
 
 ### Sandbox

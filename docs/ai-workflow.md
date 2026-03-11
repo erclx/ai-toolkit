@@ -28,7 +28,7 @@ All planning docs live in `.claude/` at the project root. Git tracked, part of t
 
 Role prompts are agent instructions. They open with `# System Prompt: [Role]` and define behavior for a specific agent mode.
 
-**`PLANNER.md`** — System prompt for Claude planning sessions. Defines role, sync format, output rules, and planning behavior. Context (TASKS, REQUIREMENTS, ARCHITECTURE, DESIGN) is auto-injected by `aitk claude prompt`. Paste `.tmp/PLANNER.md` to start a session. Managed by `aitk`; use `aitk claude sync` to sync.
+**`PLANNER.md`** — System prompt for Claude planning sessions. Defines role, sync format, output rules, and planning behavior. Context (TASKS, REQUIREMENTS, ARCHITECTURE, DESIGN) is auto-injected by `aitk claude prompt`. Paste `.tmp/PLANNER.md` to start a session. Managed by `aitk`; use `aitk claude sync` to sync. Local changes will be overwritten.
 
 **`IMPLEMENTER.md`** — System prompt for code generation. Receives plan context and governance rules via `aitk claude prompt`. Paste into Gemini pro chat to start implementation.
 
@@ -134,7 +134,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Stage                   | Tool              | Command / Note                                                                                |
 | ----------------------- | ----------------- | --------------------------------------------------------------------------------------------- |
 | Scaffold .claude/       | aitk claude       | `aitk claude init` — seed .claude/ docs and sync .gitignore                                   |
-| Sync managed prompts    | aitk claude       | `aitk claude sync` — diff managed role prompts against seed and apply                         |
+| Sync managed prompts    | aitk claude       | `aitk claude sync` — sync managed role prompts, overwriting local changes                     |
 | Planning (all docs)     | Claude chat       | Paste `.tmp/PLANNER.md`; context is pre-injected                                              |
 | Generate master prompts | aitk claude       | `aitk claude prompt` — injects context into PLANNER and IMPLEMENTER, copies REVIEWER to .tmp/ |
 | Build standalone rules  | aitk gov          | `aitk gov build` — concatenate rules into .cursor/.tmp/rules.md for direct paste              |
