@@ -15,15 +15,15 @@ Internal skills are available in the toolkit repo only. Plugin skills are namesp
 
 ## Internal skills
 
-| Skill             | Points to                                                                   |
-| ----------------- | --------------------------------------------------------------------------- |
-| `aitk-prompts`    | `docs/prompts.md`, `prompts/meta-prompt.md`                                 |
-| `aitk-scripts`    | `docs/sandbox.md`, `docs/tooling.md`, `prompts/bash-script.md`              |
-| `aitk-standards`  | `docs/standards.md`, `standards/prose.md`, `prompts/standards-reference.md` |
-| `aitk-snippets`   | `docs/snippets.md`                                                          |
-| `aitk-gemini`     | `prompts/gemini-cli.md`                                                     |
-| `aitk-governance` | `docs/governance.md`, `prompts/cursor-rules.md`                             |
-| `aitk-tooling`    | `docs/tooling.md`, `prompts/tooling-reference.md`                           |
+| Skill             | Points to                                                                         |
+| ----------------- | --------------------------------------------------------------------------------- |
+| `aitk-prompts`    | `docs/prompts.md`, `prompts/meta-prompt.md`                                       |
+| aitk-scripts      | `docs/scripts.md`, `docs/sandbox.md`, `docs/tooling.md`, `prompts/bash-script.md` |
+| `aitk-standards`  | `docs/standards.md`, `standards/prose.md`, `prompts/standards-reference.md`       |
+| `aitk-snippets`   | `docs/snippets.md`                                                                |
+| `aitk-gemini`     | `prompts/gemini-cli.md`                                                           |
+| `aitk-governance` | `docs/governance.md`, `prompts/cursor-rules.md`                                   |
+| `aitk-tooling`    | `docs/tooling.md`, `prompts/tooling-reference.md`                                 |
 
 ## Plugin skills
 

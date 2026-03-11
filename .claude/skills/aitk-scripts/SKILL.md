@@ -7,6 +7,7 @@ description: Bash scripts for scripts/ and sandbox scenarios. Use when modifying
 
 Before editing, read:
 
+- `docs/scripts.md` — scripts structure, core scripts, lib function responsibilities
 - `docs/sandbox.md` — sandbox system, stage_setup pattern, provisioning flow
 - `docs/tooling.md` — tooling system context (sandboxes reference tooling stacks)
 - `prompts/bash-script.md` — bash script conventions and style rules
