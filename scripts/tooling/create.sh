@@ -72,6 +72,7 @@ packages = []
 [scripts]
 
 [gitignore]
+# "# Section header" = [".foo/.tmp/"]
 EOF
   log_add "tooling/$stack/manifest.toml"
 

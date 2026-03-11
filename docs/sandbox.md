@@ -12,6 +12,7 @@ scripts/sandbox/
 │   ├── base.sh        ← tests base golden configs
 │   ├── vite-react.sh  ← tests vite-react configs against anchor repo
 │   ├── claude.sh      ← tests claude tooling stack configs against anchor repo
+│   ├── cursor.sh      ← tests cursor IDE playground
 │   ├── chrome.sh      ← tests chrome extension tooling configs against anchor repo
 │   ├── gemini.sh      ← tests gemini settings.json config injection
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied

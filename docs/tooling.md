@@ -26,6 +26,9 @@ tooling/
 │   ├── seeds/         ← .claude/ workflow docs (role prompts and state docs)
 │   ├── manifest.toml  ← gitignore only, no configs or deps
 │   └── reference.md
+├── cursor/
+│   ├── manifest.toml  ← gitignore only
+│   └── reference.md
 └── gemini/
     ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
     ├── manifest.toml  ← gitignore only, no deps or scripts

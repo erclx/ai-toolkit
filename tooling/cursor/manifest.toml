@@ -1,0 +1,8 @@
+[stack]
+name = "cursor"
+extends = ""
+runtime = ""
+scaffold = ""
+
+[gitignore]
+"# Cursor" = [".cursor/.tmp/"]
