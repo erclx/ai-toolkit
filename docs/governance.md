@@ -15,7 +15,7 @@ scripts/
 │   ├── sync.sh         ← syncs existing rules to external projects
 │   └── build.sh        ← concatenates installed rules into .cursor/.tmp/rules.md
 ├── lib/
-│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload
+│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload; sourced by gov/build.sh and claude/prompt.sh
 └── manage-gov.sh       ← entry point (aitk gov)
 ```
 

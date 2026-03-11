@@ -61,25 +61,25 @@ Each stack has a `manifest.toml` that controls what sync does. Below is the full
 name = "stack-name"     # must match the folder name under tooling/
 extends = "parent"      # parent stack to inherit from, empty string if none
 runtime = "runtime-name"      # reserved: package manager for this stack (not active yet)
-scaffold = "scaffold-command"  # reserved: bootstrap command (not active yet)
+scaffold = "scaffold-command"  # bootstrap command; read today by sandbox/tooling/upstream.sh, not yet by aitk tooling sync
+```
 
+`name` must match the folder name exactly. `extends` is the parent stack — configs, seeds, scripts, deps, and gitignore all resolve through the chain. Leave empty if no parent.
+
+`runtime` is reserved and not yet read by any script. `scaffold` is partially active: `scripts/sandbox/tooling/upstream.sh` reads it today to provision raw upstream templates. It is not yet used by `aitk tooling sync`. Declare both fields now so the intent is captured; leave as empty string if not applicable.
+
+`[stack]` is the only required block. `[dependencies.dev]`, `[scripts]`, and `[gitignore]` are all optional — omit any section the stack does not need.
+
+```toml
 [dependencies.dev]
-packages = [
-  "package-name@version",
-]
+packages = []
 
 [scripts]
 "script-key" = "command --flag"
 
 [gitignore]
-"# Group label" = ["pattern/", ".file"]
+"# group-label" = ["pattern/", ".file"]
 ```
-
-`name` must match the folder name exactly. `extends` is the parent stack — configs, seeds, scripts, deps, and gitignore all resolve through the chain. Leave empty if no parent.
-
-`runtime` and `scaffold` are reserved fields, not yet read by any script. `runtime` will drive package manager selection (e.g. `bun`, `uv`). `scaffold` will drive project bootstrapping — a command run once to initialize a new project from the stack. Declare them now so the intent is captured; leave empty string if not applicable to the stack.
-
-`[stack]` is the only required block. `[dependencies.dev]`, `[scripts]`, and `[gitignore]` are all optional — omit any section the stack does not need.
 
 `[dependencies.dev]` injects into `devDependencies` in the target `package.json`. Only missing packages are added. Include a version tag or use `@latest`.
 
