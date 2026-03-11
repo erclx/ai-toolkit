@@ -63,21 +63,19 @@ extends = ""
 runtime = ""
 scaffold = ""
 
-[sync]
-source = "configs"
-
 [dependencies.dev]
 packages = []
 
 [scripts]
+"script-key" = "command --flag"
 
 [gitignore]
-# "# Section header" = [".foo/.tmp/"]
+"# $stack" = ["pattern/", ".file"]
 EOF
   log_add "tooling/$stack/manifest.toml"
 
   cat >"$dest/reference.md" <<EOF
-# TOOLING $(echo "$stack" | tr '[:lower:]' '[:upper:]' | tr '-' ' ') REFERENCE
+# Tooling $stack reference
 
 ## Overview
 
