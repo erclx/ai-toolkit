@@ -148,6 +148,7 @@ Note: Gemini CLI is a file writer only via /dev:apply.
 | Lint / format / tests   | bun scripts       | `bun run check`                                                                               |
 | Escalate design issues  | Claude chat       | Paste error + relevant plan context                                                           |
 | Branch naming           | Gemini CLI        | `/git:branch` — Generate a branch name from commits or intent                                 |
+| Branch splitting        | Gemini CLI        | `/git:split` — Split mixed commits into focused branches                                      |
 | Commit message          | Gemini CLI        | `/git:commit`                                                                                 |
 | PR description          | Gemini CLI        | `/git:pr`                                                                                     |
 | Changelog               | Gemini CLI        | `/release:changelog`                                                                          |
