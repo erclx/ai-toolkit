@@ -36,6 +36,9 @@ main() {
     show_help
   fi
 
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}aitk tooling${NC}"
+
   local command="$1"
 
   if [ -z "$command" ]; then
@@ -56,7 +59,6 @@ main() {
     exec "$PROJECT_ROOT/scripts/tooling/create.sh" "$@"
     ;;
   *)
-    echo -e "${GREY}┌${NC}"
     log_error "Unknown command: $command. Use 'sync', 'ref', 'create', or --help."
     ;;
   esac

@@ -28,6 +28,9 @@ main() {
     show_help
   fi
 
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}aitk gov${NC}"
+
   local command="$1"
 
   if [ -z "$command" ]; then
@@ -48,7 +51,6 @@ main() {
     exec "$PROJECT_ROOT/scripts/gov/build.sh" "$@"
     ;;
   *)
-    echo -e "${GREY}┌${NC}"
     log_error "Unknown command: $command. Use 'install', 'sync', or 'build'."
     ;;
   esac
