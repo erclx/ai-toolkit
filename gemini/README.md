@@ -17,6 +17,7 @@ gemini/
 │   │   ├── branch.toml      ← rename current branch to conventional format
 │   │   ├── commit.toml      ← generate conventional commit message from staged changes
 │   │   ├── pr.toml          ← generate PR description and open draft
+│   │   ├── stage.toml       ← group staged files for batch commits
 │   │   └── split.toml       ← Split mixed commits into separate branches
 │   └── release/
 │       └── changelog.toml   ← generate changelog entry from commit history
@@ -30,6 +31,7 @@ gemini/
 | `/git:commit`        | Generate a conventional commit message from staged changes |
 | `/git:branch`        | Rename current branch to match conventional format         |
 | `/git:pr`            | Generate a PR description and open a draft                 |
+| `/git:stage`         | Group staged files for batch commits                       |
 | `/git:split`         | Split mixed commits into separate branches                 |
 | `/dev:apply`         | Apply file changes from a chat response                    |
 | `/dev:comment`       | Add comments to source code                                |

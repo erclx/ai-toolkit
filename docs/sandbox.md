@@ -26,6 +26,7 @@ scripts/sandbox/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
 │   ├── pr.sh          ← PR description scenario for testing /git:pr
+│   ├── stage.sh       ← staged changes scenario for testing /git:stage
 │   └── split.sh       ← mixed commits scenario for testing /git:split
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
