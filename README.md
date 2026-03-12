@@ -9,8 +9,12 @@ git clone git@github.com:erclx/toolkit.git
 cd toolkit
 bun install
 bun link
-gemini extensions link ./gemini
 ```
+
+## Setup guides
+
+- Claude Code plugin and skills: see [claude/README.md](claude/README.md)
+- Gemini CLI extension and commands: see [gemini/README.md](gemini/README.md)
 
 ## CLI
 
@@ -56,18 +60,7 @@ Run `aitk` from the repo root.
 | `aitk sandbox reset`     | Restore sandbox to baseline                  |
 | `aitk sandbox clean`     | Wipe sandbox                                 |
 
-## AI
-
-- Gemini CLI commands: see [gemini/README.md](gemini/README.md)
-- Claude Code commands and skills: see [claude/README.md](claude/README.md)
-- Prompt generators: see [docs/prompts.md](docs/prompts.md)
-- Snippets: see [docs/snippets.md](docs/snippets.md)
-
-## Architecture
-
-Governance rules (`.cursor/rules/`) and standards (`standards/`) are the source of truth. Stack definitions (`.cursor/stacks/`) declare which rules belong to each stack. Tooling stacks live in `tooling/` and sync to target projects as concrete files.
-
-See [docs/](docs/) for detailed documentation on governance, tooling, sandboxes, standards, and AI workflow.
+See [`docs/`](docs/) for full documentation.
 
 ## Support
 
