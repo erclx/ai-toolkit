@@ -17,7 +17,7 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
 - Open the timeline once at the very start of `main()` with `┌` alone, followed immediately by `│ Title` — before any logic, prompts, or checks.
-- Close the timeline with `└` via `trap close_timeline EXIT` registered immediately after the `┌` open. Do not print `└` manually. Never open or close mid-script.
+- Close the timeline with `└` via `trap close_timeline EXIT` registered immediately after the `┌` open. On success paths, disable the trap with `trap - EXIT` then print `└\n` and the success message manually — this ensures the success message appears outside the timeline. On cancellation and error paths, do not print `└` manually — the trap owns those exits.
 - Use state transitions for interactive prompts: `◆` (active) → `◇` (inactive).
 - Do not add diamonds (`◆`/`◇`) to non-interactive log functions.
 - On cancellation: show `◇ ... Cancelled`, exit 1, no `log_error` call. Both `ask()` and `select_option()` must handle escape cancellation identically.
@@ -291,7 +291,9 @@ main() {
 
   [Script logic with timeline maintained]
 
-  echo -e "\n${GREEN}✓ Final success message${NC}"
+  trap - EXIT
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Final success message${NC}"
 }
 
 main "$@"
@@ -387,7 +389,7 @@ Before responding, verify:
 
 - File starts with shebang, `set -e`, `set -o pipefail` and uses exactly 2 spaces for indentation.
 - Timeline opens with `┌` alone, followed by `│ Title` on the next line.
-- Timeline closes via `trap close_timeline EXIT` registered immediately after the title block. No manual `└` echo anywhere.
+- Timeline closes via `trap close_timeline EXIT` registered immediately after the title block. Success paths use `trap - EXIT` then manual `└\n` then success message. Cancellation and error paths never print `└` manually — trap owns those.
 - `close_timeline` is defined and prints `└`.
 - Timeline (`│`) appears in all log functions and interactive prompts use `◆` → `◇` transitions.
 - `ask()` uses `\r\033[K` to rewrite the `◆` line in place. No `\033[1A` cursor-up sequences.
