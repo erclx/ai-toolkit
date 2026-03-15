@@ -35,6 +35,22 @@ Run `aitk` from the repo root.
 | `aitk standards install [path]` | Install standards to a project |
 | `aitk standards sync [path]`    | Sync standards to a project    |
 
+### Snippets
+
+| Command                                   | Description                              |
+| ----------------------------------------- | ---------------------------------------- |
+| `aitk snippets install [category] [path]` | Install snippets for a category          |
+| `aitk snippets sync [path]`               | Sync snippets already present in project |
+| `aitk snippets create`                    | Create a new snippet and register it     |
+
+### Tooling
+
+| Command                                   | Description                              |
+| ----------------------------------------- | ---------------------------------------- |
+| `aitk snippets install [category] [path]` | Install snippets for a category          |
+| `aitk snippets sync [path]`               | Sync snippets already present in project |
+| `aitk snippets create`                    | Create a new snippet and register it     |
+
 ### Tooling
 
 | Command                           | Description                                                      |

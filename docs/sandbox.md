@@ -20,6 +20,7 @@ scripts/sandbox/
 │   ├── cursor.sh      ← Cursor IDE playground with full governance injected
 │   ├── gov.sh         ← interactive tests for governance commands
 │   ├── standards.sh   ← interactive tests for standards commands
+│   ├── snippets.sh    ← interactive tests for snippets commands
 │   ├── claude.sh      ← interactive tests for claude workflow commands
 │   └── tooling.sh     ← interactive tests for tooling commands
 ├── git/

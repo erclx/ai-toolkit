@@ -1,0 +1,11 @@
+[base]
+slugs = [
+    "chat-mode",
+    "senior-mode",
+    "claude-edit",
+    "session-notes",
+    "code-search",
+]
+
+[claude]
+slugs = ["claude-plan", "code-review", "claude-docs", "claude-tasks"]
