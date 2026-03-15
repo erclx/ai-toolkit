@@ -156,6 +156,7 @@ main() {
   log_info ".claude/.tmp/IMPLEMENTER.md"
   log_info ".claude/.tmp/REVIEWER.md"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Master prompts ready${NC}"
 }

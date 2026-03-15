@@ -180,6 +180,7 @@ main() {
 
   cmd_install "$@"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Rules installed${NC}"
 }

@@ -85,6 +85,7 @@ EOF
 EOF
   log_add "tooling/$stack/reference.md"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Stack created${NC}"
 }

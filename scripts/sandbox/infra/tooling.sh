@@ -31,15 +31,15 @@ EOF
   case "$SELECTED_OPTION" in
   "sync")
     log_step "Running: aitk tooling sync"
-    "$PROJECT_ROOT/scripts/tooling/sync.sh" base .
+    exec "$PROJECT_ROOT/scripts/tooling/sync.sh" base .
     ;;
   "ref")
     log_step "Running: aitk tooling ref"
-    "$PROJECT_ROOT/scripts/tooling/ref.sh" base .
+    exec "$PROJECT_ROOT/scripts/tooling/ref.sh" base .
     ;;
   "create")
     log_step "Running: aitk tooling create"
-    "$PROJECT_ROOT/scripts/tooling/create.sh"
+    exec "$PROJECT_ROOT/scripts/tooling/create.sh"
     ;;
   esac
 }

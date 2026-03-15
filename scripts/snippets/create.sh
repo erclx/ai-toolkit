@@ -159,7 +159,9 @@ main() {
 
   cmd_create
 
-  echo -e "\n${GREEN}✓ Snippet created${NC}"
+  trap - EXIT
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Snippet created${NC}"
 }
 
 main "$@"

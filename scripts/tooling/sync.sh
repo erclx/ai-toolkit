@@ -496,6 +496,7 @@ main() {
 
   inject_tooling_manifest "$stack" "$target"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ Tooling sync complete${NC}" >&2
 }

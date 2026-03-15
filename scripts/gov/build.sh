@@ -58,6 +58,7 @@ cmd_build() {
 
   log_add ".cursor/.tmp/rules.md"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Rules built ($count rules → .cursor/.tmp/rules.md)${NC}"
 }

@@ -169,6 +169,7 @@ main() {
 
   apply_changes "$TARGET_PATH"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count snippets)${NC}"
 }

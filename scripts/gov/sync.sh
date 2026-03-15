@@ -169,6 +169,7 @@ main() {
 
   apply_changes
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count rules)${NC}" >&2
 }

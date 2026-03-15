@@ -130,6 +130,7 @@ main() {
   log_step "Applying changes"
   apply_references "$target" "${pending[@]}"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ References synced${NC}" >&2
 }
