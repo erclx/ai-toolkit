@@ -63,6 +63,30 @@ collect_seeds() {
       _pending+=("$file")
     fi
   done < <(find "$CLAUDE_SEEDS_DIR" -maxdepth 1 -type f | sort)
+
+  while IFS= read -r file; do
+    local name
+    name=$(basename "$file")
+    local dest="$dest_dir/$name"
+
+    if [ -f "$dest" ]; then
+      log_info "$name"
+    else
+      log_add "$name"
+      _pending+=("$file")
+    fi
+  done < <(find "$CLAUDE_CONFIGS_DIR" -maxdepth 1 -type f | sort)
+
+  local claude_md="$PROJECT_ROOT/tooling/claude/seeds/CLAUDE.md"
+  if [ -f "$claude_md" ]; then
+    local dest="$target/CLAUDE.md"
+    if [ -f "$dest" ]; then
+      log_info "CLAUDE.md"
+    else
+      log_add "CLAUDE.md"
+      _pending+=("$claude_md")
+    fi
+  fi
 }
 
 apply_seeds() {
@@ -76,8 +100,13 @@ apply_seeds() {
   for file in "${files[@]}"; do
     local name
     name=$(basename "$file")
-    cp "$file" "$dest_dir/$name"
-    log_add ".claude/$name"
+    if [[ "$file" == */seeds/CLAUDE.md ]]; then
+      cp "$file" "$target/$name"
+      log_add "$name"
+    else
+      cp "$file" "$dest_dir/$name"
+      log_add ".claude/$name"
+    fi
   done
 }
 
@@ -139,13 +168,21 @@ cmd_init() {
   local total=$((${#pending[@]} + ${#gi_pending[@]}))
 
   if [ "$total" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude already initialized${NC}"
     return
   fi
 
   local summary=""
-  [ "${#pending[@]}" -gt 0 ] && summary+="${#pending[@]} .claude"
+  local claude_md_count=0
+  for f in "${pending[@]}"; do [[ "$f" == */seeds/CLAUDE.md ]] && claude_md_count=1; done
+  local dot_claude_count=$((${#pending[@]} - claude_md_count))
+  [ "$dot_claude_count" -gt 0 ] && summary+="${dot_claude_count} .claude"
+  [ "$claude_md_count" -gt 0 ] && {
+    [ -n "$summary" ] && summary+=", "
+    summary+="1 CLAUDE.md"
+  }
   [ "${#gi_pending[@]}" -gt 0 ] && {
     [ -n "$summary" ] && summary+=", "
     summary+="${#gi_pending[@]} .gitignore"
@@ -155,7 +192,6 @@ cmd_init() {
 
   if [ "$SELECTED_OPTION" = "Cancel" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 1
   fi
 
@@ -169,6 +205,7 @@ cmd_init() {
     merge_gitignore "claude" "$target"
   fi
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Claude ready${NC}"
 }
@@ -211,6 +248,7 @@ cmd_sync() {
   done
 
   if [ "${#drifted[@]}" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude workflow up to date${NC}"
     return
@@ -226,13 +264,11 @@ cmd_sync() {
     select_option "Apply ${#drifted[@]} update(s)?" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" = "Cancel" ] && {
       log_warn "Cancelled"
-      echo -e "${GREY}└${NC}"
       exit 1
     }
     ;;
   "Cancel")
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 1
     ;;
   esac
@@ -243,6 +279,7 @@ cmd_sync() {
     log_add ".claude/$file"
   done
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Claude workflow synced${NC}"
 }
