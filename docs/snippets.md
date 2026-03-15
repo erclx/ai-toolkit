@@ -7,8 +7,8 @@ Snippets are small, reusable prompts invokable from Claude or Gemini chat via th
 ## Structure
 
 ```plaintext
-snippets/              ← invokable prompt snippets
 snippets/
+├── *.md               ← invokable prompt snippets
 └── snippets.toml      ← category definitions (slug lists)
 docs/
 └── snippets.md        ← this file
