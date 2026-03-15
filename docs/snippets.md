@@ -24,7 +24,7 @@ docs/
 
 ## Categories
 
-Snippets are organized into categories in `snippets.toml`. Each category is a named list of slugs. There is no inheritance — categories are flat file lists.
+Snippets are organized into categories in `snippets.toml`. Each category is a named list of slugs. There is no inheritance; categories are flat file lists.
 
 | Category | Slugs                                                           |
 | -------- | --------------------------------------------------------------- |
@@ -68,8 +68,9 @@ To sync updates to an existing project:
 
 ```bash
 aitk snippets sync ../my-app
-# only diffs snippets already present — never adds new files
 ```
+
+`sync` diffs all `.md` files already present in the target `snippets/` folder against the toolkit source. It is not category-aware, it only updates what is already there, never adds new files.
 
 To create a new snippet:
 
@@ -85,7 +86,7 @@ Use `aitk snippets create` — it handles both the TOML entry and the file. To a
 
 ## Adding a category
 
-Use `aitk snippets create` and select `New category` when prompted. To add manually: append a new section to `snippets.toml`:
+Use `aitk snippets create` and select `new category` when prompted. To add manually: append a new section to `snippets.toml`:
 
 ```toml
 [my-category]
