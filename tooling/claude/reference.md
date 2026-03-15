@@ -2,20 +2,22 @@
 
 ## Overview
 
-The claude stack installs the `.claude/` workflow directory into a project. Role prompts are managed configs that overwrite on sync; drift is always wrong. State docs are seeds, written once and never overwritten by tooling.
+The claude stack installs the `.claude/` workflow directory into a project. Role prompts are managed configs that overwrite on sync; drift is always wrong. State docs are seeds, written once and never overwritten by tooling. `CLAUDE.md` is a seed, filled in per project after init.
 
 ## Structure
 
 ```plaintext
 .claude/
 ├── PLANNER.md         ← managed. System prompt for planning sessions, auto-injected by aitk claude prompt
-├── REVIEWER.md        ← managed. System prompt for code review, copy-paste into fresh chat
+├── REVIEWER.md        ← managed. System prompt for code review, invoked via code-review snippet in Claude Code
 ├── IMPLEMENTER.md     ← managed. System prompt for code generation, read by aitk claude prompt
+├── CLAUDE.md          ← seeded. Project context and rules, auto-loaded by Claude Code each session
 ├── TASKS.md           ← seeded. Persistent task tracker, source of truth for progress
 ├── REQUIREMENTS.md    ← seeded. Project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md    ← seeded. Technical design decisions and open questions
 ├── DESIGN.md          ← seeded. Color, typography, spacing, and motion decisions
 ├── WIREFRAMES.md      ← seeded. ASCII wireframes for planning, structure and layout only
+├── GOV.md             ← manual. Governance rules, generated via aitk gov build, copied once
 └── .tmp/              ← ephemeral scratch space, gitignored
 
 scripts/
@@ -34,3 +36,8 @@ scripts/
 | `aitk claude sync`   | Diffs managed role prompts against configs and applies updates. Reports seeded file status.                    |
 | `aitk claude prompt` | Injects context into `PLANNER.md` and `IMPLEMENTER.md`, copies `REVIEWER.md` to `.tmp/`, writes all to `.tmp/` |
 | `npm run snapshot`   | Writes project file tree to `.claude/.tmp/SNAPSHOT.md`                                                         |
+
+## Notes
+
+- `GOV.md` is not managed by tooling. Run `aitk gov build` and copy the output to `.claude/GOV.md` once per project. Regenerate only when governance rules change.
+- `CLAUDE.md` ships as a seed with placeholder project name, description, and key paths. Fill these in after init.
