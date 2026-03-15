@@ -15,13 +15,14 @@ show_help() {
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk snippets install [category] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
-  echo -e "${GREY}│${NC}    category      Category name (e.g., base, claude)"
+  echo -e "${GREY}│${NC}    category      Category name, or 'all' (e.g., base, claude, all)"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
+  echo -e "${GREY}│${NC}    aitk snippets install all"
   echo -e "${GREY}│${NC}    aitk snippets install base"
   echo -e "${GREY}│${NC}    aitk snippets install claude ../my-app"
   echo -e "${GREY}└${NC}"
@@ -40,7 +41,7 @@ select_category() {
     log_error "No categories found in snippets.toml"
   fi
 
-  select_option "Select category to install:" "${categories[@]}"
+  select_option "Select category to install:" "all" "${categories[@]}"
   echo "$SELECTED_OPTION"
 }
 
@@ -79,16 +80,32 @@ resolve_slugs() {
   done <"$TOML"
 }
 
+resolve_all_slugs() {
+  local -n _all_slugs=$1
+  local seen=()
+
+  while IFS= read -r category; do
+    local cat_slugs=()
+    resolve_slugs "$category" cat_slugs
+    for slug in "${cat_slugs[@]}"; do
+      local already=0
+      for s in "${seen[@]}"; do
+        [ "$s" = "$slug" ] && already=1 && break
+      done
+      if [ "$already" -eq 0 ]; then
+        _all_slugs+=("$slug")
+        seen+=("$slug")
+      fi
+    done
+  done < <(list_categories)
+}
+
 cmd_install() {
   local category="$1"
   local target="${2:-.}"
 
   if [ -z "$category" ]; then
     category=$(select_category)
-  fi
-
-  if ! grep -q "^\[$category\]" "$TOML"; then
-    log_error "Category not found: $category"
   fi
 
   local target_abs
@@ -98,15 +115,22 @@ cmd_install() {
   fi
 
   local slugs=()
-  resolve_slugs "$category" slugs
+  if [ "$category" = "all" ]; then
+    resolve_all_slugs slugs
+    log_step "Resolving all categories"
+  else
+    if ! grep -q "^\[$category\]" "$TOML"; then
+      log_error "Category not found: $category"
+    fi
+    resolve_slugs "$category" slugs
+    log_step "Resolving category: $category"
+  fi
 
   if [ "${#slugs[@]}" -eq 0 ]; then
     log_warn "No slugs defined for category: $category"
     echo -e "${GREY}└${NC}"
     exit 0
   fi
-
-  log_step "Resolving category: $category"
 
   local found=()
   local missing=()
