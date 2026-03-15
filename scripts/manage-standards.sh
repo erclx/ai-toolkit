@@ -73,7 +73,7 @@ cmd_install() {
   target=$(validate_target "$target")
   guard_root "$target"
 
-  local dest_dir="$target/standards"
+  local dest_dir="${target%/}/standards"
 
   log_step "Scanning standards"
 
@@ -150,7 +150,7 @@ cmd_sync() {
 
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
-  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
+  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"; close_timeline' EXIT
 
   log_step "Scanning standards"
   local count

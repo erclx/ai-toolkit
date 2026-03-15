@@ -112,7 +112,6 @@ cmd_install() {
 
   if [ "${#rules[@]}" -eq 0 ]; then
     log_warn "No rules defined for stack: $stack"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -154,7 +153,6 @@ cmd_install() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 

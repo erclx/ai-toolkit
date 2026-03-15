@@ -138,7 +138,6 @@ main() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 

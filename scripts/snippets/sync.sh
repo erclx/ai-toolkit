@@ -129,13 +129,14 @@ main() {
 
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
-  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
+  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"; close_timeline' EXIT
 
   log_step "Scanning snippets"
   local count
   count=$(collect_changes "$TARGET_PATH")
 
   if [ "$count" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
     exit 0
@@ -156,13 +157,11 @@ main() {
     select_option "Apply $count changes?" "Yes" "No"
     [ "$SELECTED_OPTION" == "No" ] && {
       log_warn "Sync cancelled"
-      echo -e "${GREY}└${NC}"
       exit 0
     }
     ;;
   "No")
     log_warn "Sync cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
     ;;
   esac

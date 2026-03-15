@@ -49,6 +49,13 @@ cmd_build() {
     log_info "$(basename "$file")"
   done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
 
+  select_option "Build $count rules to .cursor/.tmp/rules.md?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" = "No" ]; then
+    log_warn "Cancelled"
+    exit 0
+  fi
+
   log_step "Building rules payload"
   local payload_file
   payload_file=$(build_rules_payload "$rules_dir")

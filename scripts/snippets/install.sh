@@ -129,7 +129,6 @@ cmd_install() {
 
   if [ "${#slugs[@]}" -eq 0 ]; then
     log_warn "No slugs defined for category: $category"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -156,7 +155,6 @@ cmd_install() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 

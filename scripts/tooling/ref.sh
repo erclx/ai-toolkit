@@ -111,6 +111,7 @@ main() {
   collect_references "$stack" "$target" pending
 
   if [ "${#pending[@]}" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ References up to date${NC}" >&2
     exit 0
@@ -123,7 +124,6 @@ main() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}" >&2
     exit 0
   fi
 

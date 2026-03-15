@@ -431,6 +431,7 @@ main() {
   scan_configs "$stack" "$target"
 
   if [ "$TOTAL_CHANGES" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ Everything up to date${NC}" >&2
     exit 0
@@ -475,13 +476,11 @@ main() {
     select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" == "Cancel" ] && {
       log_warn "Sync cancelled"
-      echo -e "${GREY}└${NC}" >&2
       exit 0
     }
     ;;
   "Cancel")
     log_warn "Sync cancelled"
-    echo -e "${GREY}└${NC}" >&2
     exit 0
     ;;
   esac
