@@ -83,6 +83,7 @@ Claude-specific snippets require the `.claude/` workflow to be set up.
 
 | Slug           | When to use                                                |
 | -------------- | ---------------------------------------------------------- |
+| `claude-plan`  | Start of session, plan a feature with full doc context     |
 | `code-review`  | After implementation, triggers REVIEWER.md role            |
 | `claude-docs`  | After review, syncs `.claude/` docs with session decisions |
 | `claude-tasks` | End of session, updates TASKS.md progress and status       |
