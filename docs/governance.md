@@ -54,7 +54,7 @@ Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional 
 | `aitk gov sync [path]`            | Update rules already present in target (never adds new) |
 | `aitk gov build [path]`           | Concatenate installed rules into .cursor/.tmp/rules.md  |
 
-`aitk gov` with no args shows a picker: `install`, `sync`, or `build`.
+`aitk gov` with no args shows an interactive picker for `install`, `sync`, or `build`. Commands that write files require confirmation before running.
 
 ## Workflow
 

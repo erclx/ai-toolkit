@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+trap close_timeline EXIT
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -110,6 +111,7 @@ main() {
   collect_references "$stack" "$target" pending
 
   if [ "${#pending[@]}" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ References up to date${NC}" >&2
     exit 0
@@ -122,13 +124,13 @@ main() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}" >&2
     exit 0
   fi
 
   log_step "Applying changes"
   apply_references "$target" "${pending[@]}"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ References synced${NC}" >&2
 }

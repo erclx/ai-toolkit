@@ -73,20 +73,38 @@ cmd_install() {
   target=$(validate_target "$target")
   guard_root "$target"
 
-  local dest_dir="$target/standards"
-  mkdir -p "$dest_dir"
+  local dest_dir="${target%/}/standards"
+
+  log_step "Scanning standards"
+
+  local files=()
+  while IFS= read -r file; do
+    local filename
+    filename=$(basename "$file")
+    log_info "standards/$filename"
+    files+=("$file")
+  done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
+
+  local count=${#files[@]}
+
+  select_option "Install $count standards to $dest_dir?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" = "No" ]; then
+    log_warn "Cancelled"
+    exit 0
+  fi
 
   log_step "Installing standards"
 
-  local count=0
-  while IFS= read -r file; do
+  mkdir -p "$dest_dir"
+  for file in "${files[@]}"; do
     local filename
     filename=$(basename "$file")
     cp "$file" "$dest_dir/$filename"
     log_add "standards/$filename"
-    count=$((count + 1))
-  done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
+  done
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Standards installed${NC} ${GREY}($count files)${NC}"
 }
@@ -132,13 +150,14 @@ cmd_sync() {
 
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
-  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
+  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"; close_timeline' EXIT
 
   log_step "Scanning standards"
   local count
   count=$(collect_sync_changes "$target")
 
   if [ "$count" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
     exit 0
@@ -159,19 +178,18 @@ cmd_sync() {
     select_option "Apply $count changes?" "Yes" "No"
     [ "$SELECTED_OPTION" == "No" ] && {
       log_warn "Sync cancelled"
-      echo -e "${GREY}└${NC}"
       exit 0
     }
     ;;
   "No")
     log_warn "Sync cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
     ;;
   esac
 
   apply_changes "$target"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count standards)${NC}"
 }
@@ -183,6 +201,7 @@ main() {
 
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}│${NC} ${WHITE}aitk standards${NC}"
+  trap close_timeline EXIT
 
   local command="$1"
 

@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+trap close_timeline EXIT
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -128,13 +129,14 @@ main() {
 
   PENDING_FILE=$(mktemp)
   DRIFTED_FILE=$(mktemp)
-  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"' EXIT
+  trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"; close_timeline' EXIT
 
   log_step "Scanning rules"
   local count
   count=$(collect_changes "$TARGET_PATH")
 
   if [ "$count" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ Everything up to date${NC}" >&2
     exit 0
@@ -155,19 +157,18 @@ main() {
     select_option "Apply $count changes?" "Yes" "No"
     [ "$SELECTED_OPTION" == "No" ] && {
       log_warn "Sync cancelled"
-      echo -e "${GREY}└${NC}" >&2
       exit 0
     }
     ;;
   "No")
     log_warn "Sync cancelled"
-    echo -e "${GREY}└${NC}" >&2
     exit 0
     ;;
   esac
 
   apply_changes
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count rules)${NC}" >&2
 }

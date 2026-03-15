@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+trap close_timeline EXIT
 
 SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
 TOML="$PROJECT_ROOT/snippets/snippets.toml"
@@ -24,13 +25,6 @@ show_help() {
 
 list_categories() {
   grep '^\[' "$TOML" | tr -d '[]' | sort
-}
-
-ask_input() {
-  local prompt_text="$1"
-  echo -ne "${GREY}│${NC}\n${GREEN}◆${NC} ${prompt_text} "
-  read -r ASKED_INPUT
-  echo -e "\033[1A\r\033[K${GREY}◇${NC} ${prompt_text} ${WHITE}${ASKED_INPUT}${NC}"
 }
 
 slug_error() {
@@ -53,43 +47,32 @@ slug_error() {
 ask_slug() {
   local error
   while true; do
-    ask_input "Snippet slug?"
-    error=$(slug_error "$ASKED_INPUT")
+    ask "Snippet slug?" "SLUG_INPUT"
+    error=$(slug_error "$SLUG_INPUT")
     if [ -z "$error" ]; then
-      SLUG="$ASKED_INPUT"
+      SLUG="$SLUG_INPUT"
       break
     fi
     log_warn "Invalid slug: $error"
   done
 }
 
-validate_category() {
-  local name="$1"
-  if [[ ! "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
-    log_error "Invalid category '$name'. Use kebab-case only (e.g. my-category)."
-  fi
-  if grep -q "^\[$name\]" "$TOML"; then
-    log_error "Category '$name' already exists."
-  fi
-}
-
 ask_category_name() {
-  local error
   while true; do
-    ask_input "Category name?"
-    if [ -z "$ASKED_INPUT" ]; then
+    ask "Category name?" "CATEGORY_INPUT"
+    if [ -z "$CATEGORY_INPUT" ]; then
       log_warn "Category name cannot be empty"
       continue
     fi
-    if [[ ! "$ASKED_INPUT" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+    if [[ ! "$CATEGORY_INPUT" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
       log_warn "Invalid category: kebab-case only (e.g. my-category)"
       continue
     fi
-    if grep -q "^\[$ASKED_INPUT\]" "$TOML"; then
-      log_warn "Category '$ASKED_INPUT' already exists"
+    if grep -q "^\[$CATEGORY_INPUT\]" "$TOML"; then
+      log_warn "Category '$CATEGORY_INPUT' already exists"
       continue
     fi
-    CATEGORY_NAME="$ASKED_INPUT"
+    CATEGORY_NAME="$CATEGORY_INPUT"
     break
   done
 }
@@ -176,6 +159,7 @@ main() {
 
   cmd_create
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Snippet created${NC}"
 }

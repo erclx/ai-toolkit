@@ -61,11 +61,11 @@ Run `aitk` from the repo root.
 
 ### Claude
 
-| Command              | Description                                             |
-| -------------------- | ------------------------------------------------------- |
-| `aitk claude init`   | Seed .claude/ workflow docs and sync .gitignore         |
-| `aitk claude sync`   | Sync managed role prompts, overwriting local changes    |
-| `aitk claude prompt` | Generate master prompts for planning and implementation |
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `aitk claude init`   | Bootstrap Claude workflow with CLAUDE.md and .claude/ docs |
+| `aitk claude sync`   | Sync managed role prompts, overwriting local changes       |
+| `aitk claude prompt` | Generate master prompts for planning and implementation    |
 
 ### Sandbox
 

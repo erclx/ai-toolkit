@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+trap close_timeline EXIT
 
 SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
 TOML="$PROJECT_ROOT/snippets/snippets.toml"
@@ -128,7 +129,6 @@ cmd_install() {
 
   if [ "${#slugs[@]}" -eq 0 ]; then
     log_warn "No slugs defined for category: $category"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -155,7 +155,6 @@ cmd_install() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -176,6 +175,7 @@ main() {
 
   cmd_install "$@"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Snippets installed${NC}"
 }

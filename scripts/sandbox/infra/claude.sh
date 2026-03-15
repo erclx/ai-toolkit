@@ -32,17 +32,17 @@ EOF
   case "$SELECTED_OPTION" in
   "init")
     log_step "Running: aitk claude init"
-    "$PROJECT_ROOT/scripts/manage-claude.sh" init .
+    exec "$PROJECT_ROOT/scripts/manage-claude.sh" init .
     ;;
   "sync")
     log_step "Running: aitk claude sync"
-    "$PROJECT_ROOT/scripts/manage-claude.sh" sync .
+    exec "$PROJECT_ROOT/scripts/manage-claude.sh" sync .
     ;;
   "prompt")
     log_step "Running: aitk claude init"
     "$PROJECT_ROOT/scripts/manage-claude.sh" init .
     log_step "Running: aitk claude prompt"
-    "$PROJECT_ROOT/scripts/claude/prompt.sh"
+    exec "$PROJECT_ROOT/scripts/claude/prompt.sh"
     ;;
   esac
 }

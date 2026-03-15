@@ -42,15 +42,15 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk gov install"
-    "$PROJECT_ROOT/scripts/manage-gov.sh" install base install/
+    exec "$PROJECT_ROOT/scripts/gov/install.sh" base install/
     ;;
   "sync")
     log_step "Running: aitk gov sync"
-    "$PROJECT_ROOT/scripts/manage-gov.sh" sync sync/
+    exec "$PROJECT_ROOT/scripts/gov/sync.sh" sync/
     ;;
   "build")
     log_step "Running: aitk gov build"
-    "$PROJECT_ROOT/scripts/manage-gov.sh" build build/
+    exec "$PROJECT_ROOT/scripts/gov/build.sh" build/
     ;;
   esac
 }

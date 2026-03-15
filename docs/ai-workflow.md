@@ -21,7 +21,7 @@ All planning docs live in `.claude/` at the project root.
 └── GOV.md           ← governance rules, generated once via aitk gov build
 ```
 
-Run `aitk claude init` to seed this structure in a new project. Run `aitk gov build` and copy the output to `.claude/GOV.md` once. Regenerate only when rules change.
+Run `aitk claude init` to seed the `.claude/` directory, default prompt templates, and a root `CLAUDE.md` file. Run `aitk gov build` and copy the output to `.claude/GOV.md` once. Regenerate only when rules change.
 
 ## Scenarios
 

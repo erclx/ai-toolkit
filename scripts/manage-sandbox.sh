@@ -286,6 +286,7 @@ handle_post_execution_prompt() {
     fi
   fi
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sandbox Ready${NC}"
 }
@@ -294,6 +295,7 @@ cmd_clean() {
   echo -e "${GREY}├${NC} ${WHITE}Removing sandbox${NC}"
   rm -rf "$SANDBOX"
   log_rem ".sandbox/"
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sandbox clean${NC}"
 }
@@ -335,6 +337,7 @@ reset_sandbox() {
 
   if [ "$is_dirty" -eq 0 ]; then
     log_info "At baseline"
+    trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Sandbox at baseline${NC}"
     exit 0
@@ -345,7 +348,6 @@ reset_sandbox() {
   select_option "Reset sandbox to initial state?" "Yes" "No"
   if [ "$SELECTED_OPTION" == "No" ]; then
     log_warn "Reset cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -363,6 +365,7 @@ reset_sandbox() {
   )
   log_info "Sandbox reset to baseline"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Sandbox reset complete${NC}"
 }
@@ -374,6 +377,7 @@ main() {
 
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}│${NC} ${WHITE}aitk sandbox${NC}"
+  trap close_timeline EXIT
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
     log_error "Context error: you must run this command from inside the toolkit repository."

@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+trap close_timeline EXIT
 source "$PROJECT_ROOT/scripts/lib/gov.sh"
 
 show_help() {
@@ -48,6 +49,13 @@ cmd_build() {
     log_info "$(basename "$file")"
   done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
 
+  select_option "Build $count rules to .cursor/.tmp/rules.md?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" = "No" ]; then
+    log_warn "Cancelled"
+    exit 0
+  fi
+
   log_step "Building rules payload"
   local payload_file
   payload_file=$(build_rules_payload "$rules_dir")
@@ -57,6 +65,7 @@ cmd_build() {
 
   log_add ".cursor/.tmp/rules.md"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Rules built ($count rules → .cursor/.tmp/rules.md)${NC}"
 }

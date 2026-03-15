@@ -23,8 +23,8 @@ tooling/
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 ├── claude/
-│   ├── configs/       ← role prompts (PLANNER.md, etc), always overwrite
-│   ├── seeds/         ← state docs (REQUIREMENTS.md, etc), user-owned
+│   ├── configs/       ← Role prompts (e.g. PLANNER.md). Seeded on `init`, overwritten on `sync`.
+│   ├── seeds/         ← User-owned docs (e.g. REQUIREMENTS.md) and CLAUDE.md. Seeded on `init`.
 │   ├── manifest.toml  ← gitignore only, no configs or deps
 │   └── reference.md
 ├── cursor/
@@ -89,11 +89,11 @@ packages = []
 
 ## CLI
 
-| Command                           | What it does                                               |
-| --------------------------------- | ---------------------------------------------------------- |
-| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                 |
-| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents            |
-| `aitk tooling create`             | Create a new stack folder with stub manifest and reference |
+| Command                           | What it does                                                                       |
+| --------------------------------- | ---------------------------------------------------------------------------------- |
+| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                                         |
+| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                                    |
+| `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation) |
 
 ## Common workflows
 

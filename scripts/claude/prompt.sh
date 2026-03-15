@@ -7,6 +7,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/gov.sh"
+trap close_timeline EXIT
 
 RULES_DIR="$PWD/.cursor/rules"
 IMPLEMENTER_TEMPLATE="$PWD/.claude/IMPLEMENTER.md"
@@ -137,7 +138,6 @@ main() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -155,6 +155,7 @@ main() {
   log_info ".claude/.tmp/IMPLEMENTER.md"
   log_info ".claude/.tmp/REVIEWER.md"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Master prompts ready${NC}"
 }

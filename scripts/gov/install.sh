@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+trap close_timeline EXIT
 
 STACKS_DIR="$PROJECT_ROOT/.cursor/stacks"
 RULES_SOURCE_DIR="$PROJECT_ROOT/.cursor/rules"
@@ -111,7 +112,6 @@ cmd_install() {
 
   if [ "${#rules[@]}" -eq 0 ]; then
     log_warn "No rules defined for stack: $stack"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -153,7 +153,6 @@ cmd_install() {
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
-    echo -e "${GREY}└${NC}"
     exit 0
   fi
 
@@ -179,6 +178,7 @@ main() {
 
   cmd_install "$@"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Rules installed${NC}"
 }

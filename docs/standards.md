@@ -33,7 +33,7 @@ scripts/
 | `aitk standards install [path]` | Copy all standards into a target project (overwrites) |
 | `aitk standards sync [path]`    | Update standards already present in target            |
 
-`aitk standards` with no args shows a picker: `install` or `sync`.
+`aitk standards` with no args shows a picker for `install` or `sync`. The install command requires confirmation before writing files.
 
 ## Workflow
 

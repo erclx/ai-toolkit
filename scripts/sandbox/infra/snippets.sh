@@ -35,15 +35,15 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk snippets install"
-    "$PROJECT_ROOT/scripts/manage-snippets.sh" install base install/
+    exec "$PROJECT_ROOT/scripts/snippets/install.sh" base install/
     ;;
   "sync")
     log_step "Running: aitk snippets sync"
-    "$PROJECT_ROOT/scripts/manage-snippets.sh" sync sync/
+    exec "$PROJECT_ROOT/scripts/snippets/sync.sh" sync/
     ;;
   "create")
     log_step "Running: aitk snippets create"
-    "$PROJECT_ROOT/scripts/manage-snippets.sh" create
+    exec "$PROJECT_ROOT/scripts/snippets/create.sh"
     ;;
   esac
 }

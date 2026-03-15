@@ -34,11 +34,11 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk standards install"
-    "$PROJECT_ROOT/scripts/manage-standards.sh" install install/
+    exec "$PROJECT_ROOT/scripts/manage-standards.sh" install install/
     ;;
   "sync")
     log_step "Running: aitk standards sync"
-    "$PROJECT_ROOT/scripts/manage-standards.sh" sync sync/
+    exec "$PROJECT_ROOT/scripts/manage-standards.sh" sync sync/
     ;;
   esac
 }

@@ -7,6 +7,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
+trap close_timeline EXIT
 
 declare -A SEEN_CONFIGS
 declare -A SEEN_SEEDS
@@ -430,6 +431,7 @@ main() {
   scan_configs "$stack" "$target"
 
   if [ "$TOTAL_CHANGES" -eq 0 ]; then
+    trap - EXIT
     echo -e "${GREY}└${NC}\n" >&2
     echo -e "${GREEN}✓ Everything up to date${NC}" >&2
     exit 0
@@ -474,13 +476,11 @@ main() {
     select_option "Apply $TOTAL_CHANGES changes ($summary)?" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" == "Cancel" ] && {
       log_warn "Sync cancelled"
-      echo -e "${GREY}└${NC}" >&2
       exit 0
     }
     ;;
   "Cancel")
     log_warn "Sync cancelled"
-    echo -e "${GREY}└${NC}" >&2
     exit 0
     ;;
   esac
@@ -495,6 +495,7 @@ main() {
 
   inject_tooling_manifest "$stack" "$target"
 
+  trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ Tooling sync complete${NC}" >&2
 }
