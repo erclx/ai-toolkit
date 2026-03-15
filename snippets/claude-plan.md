@@ -1,0 +1,1 @@
+Help me plan [feature]. Clarify before planning. For UI work, generate ASCII wireframes before the task list, layout and component hierarchy only. State test strategy explicitly for every task: unit, integration, e2e, or none. Flag risks directly. Update `.claude/` docs when done.

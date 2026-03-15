@@ -22,13 +22,17 @@ docs/
 
 ## Snippets
 
-| Slug            | Purpose                             |
-| --------------- | ----------------------------------- |
-| `chat-mode`     | Session opener for tool behavior    |
-| `senior-mode`   | Senior-level judgment, discuss only |
-| `claude-edit`   | Generate Claude Code edit prompt    |
-| `session-notes` | Capture session decisions           |
-| `code-search`   | Generate a git grep bash script     |
+| Slug            | Purpose                                             |
+| --------------- | --------------------------------------------------- |
+| `chat-mode`     | Session opener for tool behavior                    |
+| `senior-mode`   | Senior-level judgment, discuss only                 |
+| `claude-edit`   | Generate Claude Code edit prompt                    |
+| `session-notes` | Capture session decisions                           |
+| `code-search`   | Generate a git grep bash script                     |
+| `claude-plan`   | Plan a feature, update `.claude/` docs when done    |
+| `code-review`   | Adopt REVIEWER.md role, review changes against main |
+| `claude-docs`   | Sync `.claude/` docs with session decisions         |
+| `claude-tasks`  | Update TASKS.md progress and status                 |
 
 ## Adding a snippet
 

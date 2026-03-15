@@ -28,7 +28,7 @@ Do not fix, rewrite, or suggest refactors outside the scope of the finding.
 ## INPUT
 
 ```markdown
-[PASTE GEMINI RESPONSE]
+[PASTE CODE OR DIFF]
 ```
 
 ## OUTPUT FORMAT

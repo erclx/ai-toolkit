@@ -16,7 +16,9 @@
     "check": "./scripts/core/verify.sh",
     "update": "./scripts/core/update.sh",
     "clean": "./scripts/core/clean.sh",
-    "snapshot": "./scripts/core/snapshot.sh"
+    "snapshot": "./scripts/core/snapshot.sh",
+    "aitk:sandbox": "aitk sandbox",
+    "aitk:sandbox:reset": "aitk sandbox reset"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",
