@@ -19,6 +19,10 @@ log_rem() { echo -e "${GREY}│${NC} ${RED}-${NC} $1" >&2; }
 
 pipe_output() { while IFS= read -r line; do echo -e "${GREY}│${NC}  $line" >&2; done; }
 
+close_timeline() {
+  echo -e "${GREY}└${NC}" >&2
+}
+
 require_project_root() {
   if [[ "$PWD" == *".sandbox"* ]]; then
     echo -e "${GREY}┌${NC}" >&2
@@ -28,6 +32,42 @@ require_project_root() {
     echo -e "${GREY}┌${NC}" >&2
     log_error "Context Error: You must run this command from inside the repository."
   fi
+}
+
+ask() {
+  local prompt_text=$1
+  local var_name=$2
+  local default_val=$3
+  local input=""
+  local char
+  local display_default=""
+  if [ -n "$default_val" ]; then
+    display_default=" (${default_val})"
+  fi
+  echo -e "${GREY}│${NC}" >&2
+  echo -ne "${GREEN}◆${NC} ${prompt_text}${display_default} " >&2
+  while IFS= read -r -s -n1 char; do
+    if [[ $char == $'\x1b' ]]; then
+      read -rsn2 -t 0.001 _ || true
+      echo -ne "\r\033[K" >&2
+      echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+      exit 1
+    elif [[ $char == $'\x7f' || $char == $'\x08' ]]; then
+      if [ -n "$input" ]; then
+        input="${input%?}"
+        echo -ne "\b \b" >&2
+      fi
+    elif [[ -z "$char" ]]; then
+      break
+    else
+      input+="$char"
+      echo -n "$char" >&2
+    fi
+  done
+  [ -z "$input" ] && input="$default_val"
+  echo -ne "\r\033[K" >&2
+  echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${input}${NC}" >&2
+  export "$var_name"="$input"
 }
 
 select_option() {
@@ -41,7 +81,7 @@ select_option() {
 
   while true; do
     for i in "${!options[@]}"; do
-      if [ "$i" -eq $cur ]; then
+      if [ "$i" -eq "$cur" ]; then
         echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}" >&2
       else
         echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}" >&2
@@ -56,16 +96,18 @@ select_option() {
         if [[ "$key_seq" == "[B" ]]; then cur=$(((cur + 1) % count)); fi
       else
         echo -ne "\033[$((count + 1))A\033[J" >&2
-        log_error "Selection cancelled"
+        echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+        exit 1
       fi
       ;;
     "k") cur=$(((cur - 1 + count) % count)) ;;
     "j") cur=$(((cur + 1) % count)) ;;
-    "") break ;;
     "q")
       echo -ne "\033[$((count + 1))A\033[J" >&2
-      log_error "Selection cancelled"
+      echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
+      exit 1
       ;;
+    "") break ;;
     esac
     echo -ne "\033[${count}A" >&2
   done
