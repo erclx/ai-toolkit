@@ -35,7 +35,7 @@ gemini/
 | `/git:split`         | Split mixed commits into separate branches                 |
 | `/dev:apply`         | Apply file changes from a chat response                    |
 | `/dev:comment`       | Add comments to source code                                |
-| `/dev:review`        | Review code for bugs and quality issues                    |
+| `/dev:review`        | Review code from a pasted response or branch diff vs main  |
 | `/docs:sync`         | Sync README and docs with codebase changes                 |
 | `/release:changelog` | Generate a changelog entry from commit history             |
 

@@ -32,7 +32,7 @@ scripts/sandbox/
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment
-│   └── review.sh      ← code findings scenario for testing /dev:review
+│   └── review.sh      ← scenarios for /dev:review (branch diff, pasted response)
 ├── docs/
 │   └── sync.sh        ← stale README and docs scenario for testing /docs:sync
 └── release/

@@ -100,7 +100,7 @@ Deterministic scripts with zero AI tokens and zero variability.
 
 | Command              | What it does                                        |
 | -------------------- | --------------------------------------------------- |
-| `/dev:review`        | Findings report from pasted response, fallback only |
+| `/dev:review`        | Review branch changes vs main, or a pasted response |
 | `/dev:apply`         | Write files from AI response, fallback only         |
 | `/dev:comment`       | Add comments to source code                         |
 | `/docs:sync`         | Sync README and docs with codebase changes          |
