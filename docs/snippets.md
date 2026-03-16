@@ -29,7 +29,7 @@ Snippets are organized into categories in `snippets.toml`. Each category is a na
 | Category | Slugs                                                           |
 | -------- | --------------------------------------------------------------- |
 | `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search |
-| `claude` | claude-plan, code-review, claude-docs, claude-tasks             |
+| `claude` | claude-plan, code-review, claude-docs                           |
 
 ## Snippets
 
@@ -43,7 +43,6 @@ Snippets are organized into categories in `snippets.toml`. Each category is a na
 | `claude-plan`   | Plan a feature, update `.claude/` docs when done    |
 | `code-review`   | Adopt REVIEWER.md role, review changes against main |
 | `claude-docs`   | Sync `.claude/` docs with session decisions         |
-| `claude-tasks`  | Update TASKS.md progress and status                 |
 
 ## CLI
 

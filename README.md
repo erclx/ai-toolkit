@@ -45,14 +45,6 @@ Run `aitk` from the repo root.
 
 ### Tooling
 
-| Command                                   | Description                              |
-| ----------------------------------------- | ---------------------------------------- |
-| `aitk snippets install [category] [path]` | Install snippets for a category          |
-| `aitk snippets sync [path]`               | Sync snippets already present in project |
-| `aitk snippets create`                    | Create a new snippet and register it     |
-
-### Tooling
-
 | Command                           | Description                                                      |
 | --------------------------------- | ---------------------------------------------------------------- |
 | `aitk tooling [stack] [path]`     | Sync golden configs, seeds, deps, and .gitignore                 |
