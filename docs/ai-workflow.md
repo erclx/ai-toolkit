@@ -31,29 +31,30 @@ Run `aitk claude prompt` to build the context payload. Work in Claude chat for p
 
 Switch to Claude Code for implementation. It reads CLAUDE.md automatically and has full file access, no pasting needed.
 
-- Implement the feature, run `bun run check`, fix failures, iterate until verify passes
-- Invoke the `code-review` snippet when implementation feels done. Claude Code reads REVIEWER.md and produces a findings report against main.
-- Feed critical findings back into the same Claude Code session and fix.
-- Invoke the `claude-docs` snippet. Claude Code checks ARCHITECTURE.md, DESIGN.md, TASKS.md, REQUIREMENTS.md and updates anything that drifted during implementation.
+- Invoke `claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
+- Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
+- Run `gemini dev:review` in terminal, copy valid findings to Claude Code and fix, then run `git:commit`
+- Invoke `claude-docs` to sync `.claude/` docs and run `git:stage` to group staged files for the commit
 
-When done, run pre-PR steps in parallel terminal instances:
+Then run in parallel terminal instances:
 
 ```bash
 # Terminal 1
-gemini docs:sync
+gemini git:branch
 
 # Terminal 2
-gemini release:changelog
+gemini docs:sync
 
 # Terminal 3
+gemini release:changelog
+
+# Terminal 4
 gemini git:pr
 ```
 
-Then: `/git:branch` → `/git:stage` → `/git:commit`
-
 ### UI polish
 
-Screenshot the component, open a Claude chat session, describe the change. Claude chat generates an edit prompt with the relevant class names or structure tweaks. Paste it into Claude Code, or write the edit prompt yourself if it's simple enough.
+Verify the change manually in the browser. Use `claude-ui-test` if you need Claude Code to produce a browser verification checklist for the session. For the fix itself, describe the change in Claude chat or Claude Code directly.
 
 ### Quick fix
 
@@ -63,15 +64,11 @@ Screenshot the component, open a Claude chat session, describe the change. Claud
 
 ### Review
 
-Invoke the `code-review` snippet in the active Claude Code session:
-
-> Read `.claude/REVIEWER.md`, adopt the role, and review all files changed on this branch against main.
-
-For a deeper review with fresh context, open a new Claude chat tab and paste REVIEWER.md + relevant code.
+Run `gemini dev:review` in terminal. Copy valid findings to Claude Code and fix. If nothing is valid, do nothing. For a deeper review with fresh context, invoke `claude-review` in Claude Code. It reads REVIEWER.md and produces a findings report against main.
 
 ## Feedback routing
 
-```
+```plaintext
 verify fails  → Claude Code (it has implementation context)
 design fails  → new Claude chat session (planning problem)
 review finds  → Claude Code (same implementation session)
@@ -81,11 +78,15 @@ review finds  → Claude Code (same implementation session)
 
 Claude-specific snippets require the `.claude/` workflow to be set up.
 
-| Slug          | When to use                                                |
-| ------------- | ---------------------------------------------------------- |
-| `claude-plan` | Start of session, plan a feature with full doc context     |
-| `code-review` | After implementation, triggers REVIEWER.md role            |
-| `claude-docs` | After review, syncs `.claude/` docs with session decisions |
+| Slug              | When to use                                                      |
+| ----------------- | ---------------------------------------------------------------- |
+| `claude-feature`  | Before implementation, scan for code-level conflicts             |
+| `claude-plan`     | Start of planning session, plan a feature with full doc context  |
+| `claude-review`   | After implementation, triggers REVIEWER.md role in Claude Code   |
+| `claude-docs`     | After implementation, syncs `.claude/` docs with session changes |
+| `claude-tell`     | In Claude chat, produce doc blocks and Claude Code handoff       |
+| `claude-ui-test`  | After implementation, generate manual browser verification steps |
+| `claude-ux-audit` | Standalone session, UX/UI audit of existing features             |
 
 ## Prompt generation
 
