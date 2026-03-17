@@ -1,0 +1,1 @@
+List what I need to verify manually in the browser for the changes made in this session. Group by feature. For each item, state what to do and what to expect. Skip anything covered by unit tests. Output a concise checklist only.

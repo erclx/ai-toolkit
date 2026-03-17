@@ -8,4 +8,12 @@ slugs = [
 ]
 
 [claude]
-slugs = ["claude-plan", "code-review", "claude-docs", "claude-tasks"]
+slugs = [
+    "claude-plan",
+    "claude-review",
+    "claude-docs",
+    "claude-tell",
+    "claude-feature",
+    "claude-ui-test",
+    "claude-ux-audit",
+]
