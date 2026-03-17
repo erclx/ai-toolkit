@@ -2,7 +2,7 @@
 
 ## Overview
 
-Skills are thin pointers that route Claude to the right docs automatically. They use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body and follows the file references inside it. No content is duplicated in skills. Docs are the source of truth.
+Skills provide Claude Code with domain-specific constraints and rules inline, so it can act immediately without reading all docs. Each skill body contains actionable rules for its domain. Full reference docs are the fallback for edge cases and deeper context. Skills use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body.
 
 ## Structure
 
@@ -15,19 +15,20 @@ Internal skills are available in the toolkit repo only. Plugin skills are namesp
 
 ## Internal skills
 
-| Skill             | Points to                                                                         |
-| ----------------- | --------------------------------------------------------------------------------- |
-| `aitk-prompts`    | `docs/prompts.md`, `prompts/meta-prompt.md`                                       |
-| aitk-scripts      | `docs/scripts.md`, `docs/sandbox.md`, `docs/tooling.md`, `prompts/bash-script.md` |
-| `aitk-standards`  | `docs/standards.md`, `standards/prose.md`, `prompts/standards-reference.md`       |
-| `aitk-snippets`   | `docs/snippets.md`                                                                |
-| `aitk-gemini`     | `prompts/gemini-cli.md`                                                           |
-| `aitk-governance` | `docs/governance.md`, `prompts/cursor-rules.md`                                   |
-| `aitk-tooling`    | `docs/tooling.md`, `prompts/tooling-reference.md`                                 |
+| Skill             | Full reference                                                              |
+| ----------------- | --------------------------------------------------------------------------- |
+| `aitk-prompts`    | `docs/prompts.md`, `prompts/meta-prompt.md`                                 |
+| `aitk-scripts`    | `docs/scripts.md`, `docs/sandbox.md`, `prompts/bash-script.md`              |
+| `aitk-standards`  | `docs/standards.md`, `standards/prose.md`, `prompts/standards-reference.md` |
+| `aitk-snippets`   | `docs/snippets.md`                                                          |
+| `aitk-gemini`     | `gemini/README.md`, `prompts/gemini-cli.md`                                 |
+| `aitk-governance` | `docs/governance.md`, `prompts/cursor-rules.md`                             |
+| `aitk-tooling`    | `docs/tooling.md`, `prompts/tooling-reference.md`                           |
+| `aitk-claude`     | `claude/README.md`, `standards/skill.md`                                    |
 
 ## Plugin skills
 
-| Skill                | Points to                               |
+| Skill                | Full reference                          |
 | -------------------- | --------------------------------------- |
 | `toolkit:git-commit` | `standards/commit.md`                   |
 | `toolkit:git-pr`     | `standards/pr.md`, `standards/prose.md` |
