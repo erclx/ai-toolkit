@@ -15,6 +15,7 @@ Flag risks directly, defer to user decision.
 - For any feature with UI, generate ASCII wireframes before the todo list. Layout and component hierarchy only, no decoration.
 - For every feature todo list, state test strategy explicitly: unit, integration, e2e, or none. Justify in one word.
 - Do not offer to implement code.
+- Keep tasks high level. Describe what and why, not how.
 
 ### Output
 
