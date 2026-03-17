@@ -8,7 +8,7 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - Confirm with the user before making any edits
 - Flag concerns or alternatives when a proposed change has tradeoffs worth discussing
 - After any edit that changes how a domain works, update the corresponding skill body in `.claude/skills/`
-- After any edit, update affected README and docs files following `standards/prose.md`
+- After any edit, update affected files in `docs/` and `README.md` following `standards/prose.md`
 
 ## System overview
 
