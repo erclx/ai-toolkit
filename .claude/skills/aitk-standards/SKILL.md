@@ -1,14 +1,26 @@
 ---
 name: aitk-standards
-description: Standards documents and overview docs. Use when modifying standards/, creating new workflow standards, working with standards install and sync, or editing any file in docs/.
+description: Workflow standards and docs/. Use for adding standards, editing docs/, or working with install and sync.
 ---
 
 # Standards
 
-Before editing, read:
+## Scope
 
-- `docs/standards.md` — standards system overview, install vs sync, adding standards
-- `standards/prose.md` — voice, structure, formatting, and language conventions for all human-readable docs
-- `prompts/standards-reference.md` — conventions for writing standards docs
+- Standards cover workflow conventions only. Code style belongs in governance rules, not here.
+- No stack variation, no extends chain. Standards are the same across every project.
 
-Follow them exactly.
+## Prose rules
+
+- Active voice, present tense
+- Sentence case for all headings (H1, H2, H3)
+- No `Note that`, `Basically`, `Essentially`, `That being said`
+- No `seamless`, `robust`, `powerful`, `allows`
+- No gerund openers (`Leveraging...`, `Building on...`)
+- No em dashes. Use a comma, period, or restructure.
+
+## Full reference
+
+- `docs/standards.md`: system overview, install vs sync, adding standards
+- `standards/prose.md`: full voice, structure, formatting, and language rules
+- `prompts/standards-reference.md`: conventions for writing standards docs

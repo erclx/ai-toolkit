@@ -1,12 +1,36 @@
 ---
 name: aitk-gemini
-description: Gemini CLI command definitions. Use when modifying gemini/commands/, creating new Gemini commands, or working with the TOML prompt structure.
+description: Gemini CLI command definitions in TOML. Use for adding or modifying commands, categories, or sandbox tests.
 ---
 
 # Gemini
 
-Before editing, read:
+## Commands
 
-- `prompts/gemini-cli.md` — conventions for Gemini CLI command structure and TOML format
+- Commands are deterministic scripts with zero AI tokens. No variability, no inference.
+- Each command is a `.toml` file. Structure and required fields are defined in `prompts/gemini-cli.md`.
+- Commands are organized by category. Read `gemini/README.md` for existing categories and commands before adding.
+- Commands are invoked as `/category:command` in Gemini CLI.
 
-Follow them exactly.
+## Sync checklist
+
+When adding a new command:
+
+- Create `.toml` in `gemini/commands/<category>/`
+- Create corresponding `scripts/sandbox/<category>/<cmd>.sh`
+- Add the command to the commands table in `gemini/README.md`
+
+When modifying a command:
+
+- Verify the corresponding sandbox test still reflects the change
+- Update the commands table in `gemini/README.md` if the description changed
+
+When adding a new category:
+
+- Create the category folder in both `gemini/commands/` and `scripts/sandbox/`
+- Add the category and command to `gemini/README.md`
+
+## Full reference
+
+- `gemini/README.md`: existing commands inventory and setup
+- `prompts/gemini-cli.md`: full conventions for command structure and TOML format

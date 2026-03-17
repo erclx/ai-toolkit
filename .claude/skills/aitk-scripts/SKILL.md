@@ -1,15 +1,35 @@
 ---
 name: aitk-scripts
-description: Bash scripts for scripts/ and sandbox scenarios. Use when modifying scripts/, adding or editing sandbox scenarios, editing manage-*.sh entry points, or working with shared lib/ functions. Do NOT use for tooling stack configs, governance rules, or standards.
+description: Bash scripts, sandbox scenarios, and lib functions. Use for manage-*.sh, sandbox hooks, or shared lib/ functions.
 ---
 
 # Scripts
 
-Before editing, read:
+## Entry points
 
-- `docs/scripts.md` — scripts structure, core scripts, lib function responsibilities
-- `docs/sandbox.md` — sandbox system, stage_setup pattern, provisioning flow
-- `docs/tooling.md` — tooling system context (sandboxes reference tooling stacks)
-- `prompts/bash-script.md` — bash script conventions and style rules
+- `manage-*.sh` files dispatch to subcommands only. No logic lives in entry points directly.
+- Each `manage-*.sh` maps to one domain. Do not cross domains in a single entry point.
 
-Follow them exactly.
+## Lib functions
+
+- `lib/` contains shared functions sourced by scripts. Never duplicate logic that already exists there.
+- Each lib file owns one concern. Read `docs/scripts.md` for responsibilities before adding or modifying.
+- When adding a function to `lib/`, check if any existing script duplicates the logic and consolidate.
+
+## Sandbox pattern
+
+- Each sandbox defines three hooks: `use_config` (flags before provisioning), `use_anchor` (remote repo as base), `stage_setup` (scenario state after provisioning).
+- Only `stage_setup` is required. End it with `log_step` describing what to run and what to expect.
+- Default behavior: no standards, no gov rules, no Gemini settings, auto-commit on. Declare only the flags you need in `use_config`.
+
+## Sync checklist
+
+When adding a command to any `manage-*.sh`:
+
+- Update the corresponding scenario list in `scripts/sandbox/infra/*.sh`
+
+## Full reference
+
+- `docs/scripts.md`: scripts structure, core scripts, lib responsibilities
+- `docs/sandbox.md`: sandbox system, hook pattern, provisioning flow
+- `prompts/bash-script.md`: bash style rules

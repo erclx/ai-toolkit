@@ -1,12 +1,13 @@
 # Toolkit Context
 
-CLI toolkit for managing governance rules, tooling configs, and developer standards across projects. Rules are authored in `.cursor/rules/`, compiled into Gemini CLI commands via `scripts/build-gov.sh`, and distributed to target projects. Standards sync directly as plain markdown files.
+CLI toolkit for managing AI workflows, developer standards, and project tooling across repositories.
 
-## Key Paths
+## Key paths
 
-- `gemini/commands/**/*.toml` — Gemini CLI command definitions
-- `claude/commands/` — Claude Code slash commands
-- `.cursor/rules/` — governance rules compiled into prompts
-- `standards/` — reference docs synced to target projects
-- `tooling/` — golden configs and manifests per stack
-- `scripts/` — build, sync, sandbox, and prompt generation scripts
+- `gemini/commands/`: Gemini CLI command definitions
+- `.cursor/rules/`: governance rules
+- `standards/`: reference docs synced to target projects
+- `tooling/`: golden configs and manifests per stack
+- `snippets/`: reusable prompt snippets
+- `prompts/`: system prompt generators
+- `scripts/`: build, sync, sandbox, and prompt generation scripts
