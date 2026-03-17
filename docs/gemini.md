@@ -1,4 +1,4 @@
-# Gemini
+# Gemini extension
 
 Gemini CLI extension and command definitions for the Toolkit.
 
@@ -18,13 +18,21 @@ gemini/
 │   │   ├── commit.toml      ← generate conventional commit message from staged changes
 │   │   ├── pr.toml          ← generate PR description and open draft
 │   │   ├── stage.toml       ← group staged files for batch commits
-│   │   └── split.toml       ← Split mixed commits into separate branches
+│   │   └── split.toml       ← split mixed commits into separate branches
 │   └── release/
 │       └── changelog.toml   ← generate changelog entry from commit history
 └── gemini-extension.json    ← extension manifest, points contextFileName to GEMINI.md
 ```
 
+## Setup
+
+```bash
+gemini extensions link ./gemini
+```
+
 ## Commands
+
+Commands are deterministic scripts with zero AI tokens and zero variability. Each command is a `.toml` file organized by category and invoked as `/category:command` in Gemini CLI. See `prompts/gemini-cli.md` for authoring conventions.
 
 | Command              | Description                                                |
 | -------------------- | ---------------------------------------------------------- |
@@ -39,8 +47,10 @@ gemini/
 | `/docs:sync`         | Sync README and docs with codebase changes                 |
 | `/release:changelog` | Generate a changelog entry from commit history             |
 
-## Setup
+## Adding a command
 
-```bash
-gemini extensions link ./gemini
-```
+1. Create `.toml` in `gemini/commands/<category>/`
+2. Create corresponding `scripts/sandbox/<category>/<cmd>.sh`
+3. Add the command to the commands table above
+
+To add a new category, create the folder in both `gemini/commands/` and `scripts/sandbox/`, then add the category and command to this file.

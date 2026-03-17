@@ -13,8 +13,8 @@ bun link
 
 ## Setup guides
 
-- Claude Code plugin and skills: see [claude/README.md](claude/README.md)
-- Gemini CLI extension and commands: see [gemini/README.md](gemini/README.md)
+- Claude Code plugin and skills: see [docs/claude.md](docs/claude.md)
+- Gemini CLI extension and commands: see [docs/gemini.md](docs/gemini.md)
 
 ## CLI
 
