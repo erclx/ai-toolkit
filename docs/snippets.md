@@ -20,29 +20,34 @@ docs/
 - Kebab-case, no capitals, no underscores
 - Plain markdown only, no YAML frontmatter
 - One focused purpose per snippet; if it needs sections it's a system prompt, not a snippet
+- Use `<placeholder>` syntax for fill-in values, never `[placeholder]`
 - Sync to the Chrome extension from `snippets/`
 
 ## Categories
 
 Snippets are organized into categories in `snippets.toml`. Each category is a named list of slugs. There is no inheritance; categories are flat file lists.
 
-| Category | Slugs                                                           |
-| -------- | --------------------------------------------------------------- |
-| `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search |
-| `claude` | claude-plan, code-review, claude-docs                           |
+| Category | Slugs                                                                                                 |
+| -------- | ----------------------------------------------------------------------------------------------------- |
+| `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search                                       |
+| `claude` | claude-plan, claude-review, claude-docs, claude-tell, claude-feature, claude-ui-test, claude-ux-audit |
 
 ## Snippets
 
-| Slug            | Purpose                                             |
-| --------------- | --------------------------------------------------- |
-| `chat-mode`     | Session opener for tool behavior                    |
-| `senior-mode`   | Senior-level judgment, discuss only                 |
-| `claude-edit`   | Generate Claude Code edit prompt                    |
-| `session-notes` | Capture session decisions                           |
-| `code-search`   | Generate a git grep bash script                     |
-| `claude-plan`   | Plan a feature, update `.claude/` docs when done    |
-| `code-review`   | Adopt REVIEWER.md role, review changes against main |
-| `claude-docs`   | Sync `.claude/` docs with session decisions         |
+| Slug              | Purpose                                             |
+| ----------------- | --------------------------------------------------- |
+| `chat-mode`       | Session opener for tool behavior                    |
+| `senior-mode`     | Senior-level judgment, discuss only                 |
+| `claude-edit`     | Generate Claude Code edit prompt                    |
+| `session-notes`   | Capture session decisions                           |
+| `code-search`     | Generate a git grep bash script                     |
+| `claude-plan`     | Plan a feature, update `.claude/` docs when done    |
+| `claude-review`   | Adopt REVIEWER.md role, review changes against main |
+| `claude-docs`     | Sync `.claude/` docs with session decisions         |
+| `claude-tell`     | Produce doc blocks and Claude Code handoff          |
+| `claude-feature`  | Scan codebase before implementing a feature         |
+| `claude-ui-test`  | Manual browser verification checklist               |
+| `claude-ux-audit` | UX/UI audit of existing features                    |
 
 ## CLI
 
