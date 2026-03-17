@@ -20,6 +20,7 @@ show_help() {
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
   echo -e "${GREY}│${NC}    sync      ${GREY}# Diff managed role prompts against seed and apply${NC}"
   echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules${NC}"
+  echo -e "${GREY}│${NC}    gov       ${GREY}# Build governance rules and write to .claude/GOV.md${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
@@ -32,6 +33,8 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk claude init ../my-app"
   echo -e "${GREY}│${NC}    aitk claude sync ../my-app"
   echo -e "${GREY}│${NC}    aitk claude prompt"
+  echo -e "${GREY}│${NC}    aitk claude gov"
+  echo -e "${GREY}│${NC}    aitk claude gov ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -284,6 +287,55 @@ cmd_sync() {
   echo -e "${GREEN}✓ Claude workflow synced${NC}"
 }
 
+cmd_gov() {
+  local target="${1:-.}"
+
+  validate_target "$target"
+
+  local rules_dir="$target/.cursor/rules"
+  local output_file="$target/.claude/GOV.md"
+
+  if [ ! -d "$rules_dir" ] || ! ls "$rules_dir"/*.mdc >/dev/null 2>&1; then
+    log_error "No rules found at $rules_dir. Run \`aitk gov install\` first."
+  fi
+
+  local count
+  count=$(find "$rules_dir" -type f -name "*.mdc" | wc -l | tr -d ' ')
+
+  log_step "Reading .cursor/rules ($count found)"
+
+  while IFS= read -r file; do
+    log_info "$(basename "$file")"
+  done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
+
+  select_option "Build $count rules to .claude/GOV.md?" "Yes" "No"
+
+  if [ "$SELECTED_OPTION" = "No" ]; then
+    log_warn "Cancelled"
+    exit 0
+  fi
+
+  log_step "Building governance payload"
+
+  source "$PROJECT_ROOT/scripts/lib/gov.sh"
+  local payload_file
+  payload_file=$(build_rules_payload "$rules_dir")
+
+  mkdir -p "$target/.claude"
+  {
+    echo "# Governance"
+    echo ""
+    cat "$payload_file"
+  } >"$output_file"
+  rm -f "$payload_file"
+
+  log_add ".claude/GOV.md"
+
+  trap - EXIT
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ GOV.md ready ($count rules → .claude/GOV.md)${NC}"
+}
+
 main() {
   if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     show_help
@@ -296,7 +348,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "sync" "prompt"
+    select_option "Claude command?" "init" "sync" "prompt" "gov"
     command="$SELECTED_OPTION"
   else
     shift
@@ -312,8 +364,11 @@ main() {
   prompt)
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh" "$@"
     ;;
+  gov)
+    cmd_gov "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'init', 'sync', or 'prompt'."
+    log_error "Unknown command: $command. Use 'init', 'sync', 'prompt', or 'gov'."
     ;;
   esac
 }

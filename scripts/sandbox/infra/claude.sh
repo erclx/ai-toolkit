@@ -26,8 +26,9 @@ EOF
   log_info "init   — seeds .claude/ workflow docs"
   log_info "sync   — diffs and updates managed role prompts"
   log_info "prompt — generates master prompts from installed rules"
+  log_info "gov    — builds .claude/GOV.md from installed rules"
 
-  select_option "Which scenario?" "init" "sync" "prompt"
+  select_option "Which scenario?" "init" "sync" "prompt" "gov"
 
   case "$SELECTED_OPTION" in
   "init")
@@ -43,6 +44,12 @@ EOF
     "$PROJECT_ROOT/scripts/manage-claude.sh" init .
     log_step "Running: aitk claude prompt"
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh"
+    ;;
+  "gov")
+    log_step "Running: aitk claude init"
+    "$PROJECT_ROOT/scripts/manage-claude.sh" init .
+    log_step "Running: aitk claude gov"
+    exec "$PROJECT_ROOT/scripts/manage-claude.sh" gov .
     ;;
   esac
 }

@@ -18,10 +18,10 @@ All planning docs live in `.claude/` at the project root.
 ├── TASKS.md         ← persistent task tracker, source of truth
 ├── REVIEWER.md      ← system prompt for code review
 ├── IMPLEMENTER.md   ← context prompt for implementation sessions
-└── GOV.md           ← governance rules, generated once via aitk gov build
+└── GOV.md           ← governance rules, generated via aitk claude gov
 ```
 
-Run `aitk claude init` to seed the `.claude/` directory, default prompt templates, and a root `CLAUDE.md` file. Run `aitk gov build` and copy the output to `.claude/GOV.md` once. Regenerate only when rules change.
+Run `aitk claude init` to seed the `.claude/` directory, default prompt templates, and a root `CLAUDE.md` file. Run `aitk gov install` to install rules into `.cursor/rules/`, then run `aitk claude gov` to build `GOV.md`. Regenerate only when rules change.
 
 ## Scenarios
 
@@ -92,7 +92,7 @@ Claude-specific snippets require the `.claude/` workflow to be set up.
 
 `aitk claude prompt` reads `PLANNER.md` and `IMPLEMENTER.md`, injects governance rules from `.cursor/rules/` and context docs, and writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`.
 
-Run `aitk gov sync` first when switching stacks. Run `aitk gov build` to generate a standalone rules file at `.cursor/.tmp/rules.md` for pasting directly into any AI chat, or copy to `.claude/GOV.md` for automatic loading in Claude Code sessions.
+Run `aitk gov sync` first when switching stacks. Run `aitk claude gov` to build `.claude/GOV.md` from installed rules; Claude Code loads this automatically each session. Run `aitk gov build` to generate a standalone rules file at `.cursor/.tmp/rules.md` for pasting directly into any AI chat.
 
 ## Gemini CLI commands
 
