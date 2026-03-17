@@ -82,6 +82,8 @@ aitk gov build
 
 `aitk claude prompt` uses the same underlying logic from `scripts/lib/gov.sh` to inject rules into IMPLEMENTER.md.
 
+`aitk claude gov` also uses `scripts/lib/gov.sh` to build `.claude/GOV.md`, a file loaded automatically by Claude Code to provide session-level governance context. This differs from `aitk gov build`, which is for generating a single-use rules payload for pasting into other AI chat environments.
+
 ## Adding a new rule
 
 Create a `.mdc` file anywhere under `.cursor/rules/` using the numbering convention above. It is auto-discovered with no other changes needed. To include it in a stack, add it to the `rules` array in the relevant `.cursor/stacks/*.toml` file.

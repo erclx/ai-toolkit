@@ -58,6 +58,7 @@ Run `aitk` from the repo root.
 | `aitk claude init`   | Bootstrap Claude workflow with CLAUDE.md and .claude/ docs |
 | `aitk claude sync`   | Sync managed role prompts, overwriting local changes       |
 | `aitk claude prompt` | Generate master prompts for planning and implementation    |
+| `aitk claude gov`    | Build governance rules into .claude/GOV.md                 |
 
 ### Sandbox
 
