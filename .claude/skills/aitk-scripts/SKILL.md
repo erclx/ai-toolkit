@@ -27,6 +27,7 @@ description: Bash scripts, sandbox scenarios, and lib functions. Use for manage-
 When adding a command to any `manage-*.sh`:
 
 - Update the corresponding scenario list in `scripts/sandbox/infra/*.sh`
+- Update the CLI table in `README.md`
 
 ## Full reference
 
