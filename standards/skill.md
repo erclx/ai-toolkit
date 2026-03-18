@@ -60,7 +60,7 @@ description: Reviews code for bugs, clarity, and standards compliance. Use when 
 
 Before reviewing, read:
 
-- \`standards/code.md\`: coding standards and conventions
+- `standards/code.md`: coding standards and conventions
 
 ## Guards
 

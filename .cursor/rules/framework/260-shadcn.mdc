@@ -9,17 +9,17 @@ priority: 260
 
 ## Component authoring
 
-- Use \`React.ComponentProps<typeof Primitive>\` over \`React.forwardRef\`, as forwardRef is deprecated in React 19.
+- Use `React.ComponentProps<typeof Primitive>` over `React.forwardRef`, as forwardRef is deprecated in React 19.
 - Add `data-slot="component-name"` to every primitive root for Tailwind targeting.
 
 ## Tokens and styling
 
-- Use semantic color tokens (\`bg-background\`, \`text-foreground\`, \`border-border\`). Never use hardcoded colors like \`bg-white\` or \`text-gray-900\`.
+- Use semantic color tokens (`bg-background`, `text-foreground`, `border-border`). Never use hardcoded colors like `bg-white` or `text-gray-900`.
 - Use `cn()` from `@/lib/utils` for all className merging and conditional classes.
-- Do not override shadcn component internals with arbitrary classes. Extend via \`className\` prop only.
+- Do not override shadcn component internals with arbitrary classes. Extend via `className` prop only.
 
 ## Composition
 
 - Compose shadcn primitives as documented. Do not destructure or restructure internal component trees.
-- Use \`asChild\` prop with \`<Slot>\` for polymorphic rendering. Do not wrap in extra DOM elements.
-- Use \`sonner\` for toasts, as the \`toast\` component is deprecated.
+- Use `asChild` prop with `<Slot>` for polymorphic rendering. Do not wrap in extra DOM elements.
+- Use `sonner` for toasts, as the `toast` component is deprecated.
