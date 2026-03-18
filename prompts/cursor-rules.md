@@ -16,7 +16,7 @@ Optimize for token efficiency and developer experience.
 ### YAML Frontmatter
 
 - If `alwaysApply: true`, OMIT `globs` entirely. If `alwaysApply: false`, INCLUDE `globs` with comma-separated string patterns.
-- Write `description` in sentence case (capitalize first letter), specific enough for Cursor routing — mention key technologies. Bad: `"coding standards"`. Good: `"Typescript strict type safety and import patterns"`.
+- Write `description` in sentence case (capitalize first letter), specific enough for Cursor routing. Mention key technologies. Bad: `"coding standards"`. Good: `"Typescript strict type safety and import patterns"`.
 
 ### File Organization
 
@@ -31,7 +31,7 @@ Optimize for token efficiency and developer experience.
 
 ## OUTPUT FORMAT
 
-**Type A — Global (one per project):**
+**Type A: Global (one per project):**
 
 ```markdown
 ---
@@ -50,7 +50,7 @@ priority: 1
 - {{principle_2}}
 ```
 
-**Type B — Modular (per domain):**
+**Type B: Modular (per domain):**
 
 ```markdown
 ---
@@ -111,5 +111,5 @@ Before responding, verify:
 - Correct rule type (A or B) with appropriate template applied.
 - If `alwaysApply: true`, `globs` key is completely absent.
 - `description` is sentence case (first letter capitalized) and mentions specific technologies or concerns for accurate routing.
-- H1 all-caps, H2 sentence case, grouped by domain concern — not flat RULES/CONSTRAINTS.
+- H1 all-caps, H2 sentence case, grouped by domain concern. Do not use flat RULES/CONSTRAINTS.
 - Total output under ~40 lines.
