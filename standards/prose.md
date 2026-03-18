@@ -24,6 +24,8 @@
 - Use dashes (`-`) not asterisks (`*`) for bulleted lists
 - Wrap commands, API names, file paths, and code identifiers in backticks
 - Use a language identifier on all fenced code blocks (`markdown`, `typescript`, `plaintext`); never use a bare ` ``` `
+- In ASCII tree diagrams, use `←` for inline annotations; never use `#`
+- For key path lists, use colon format: `- \`src/\`: description`; never use an em dash
 - Do not over-format with excessive bold, italic, or header usage
 - Do not use horizontal rules or dividers (`---`)
 - Do not use em dashes (`—`); use a comma, period, or restructure the sentence instead
