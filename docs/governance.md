@@ -39,12 +39,12 @@ Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional 
 
 ## Stacks
 
-| Stack    | Extends | Rules                                                                                  |
-| -------- | ------- | -------------------------------------------------------------------------------------- |
-| `base`   | -       | 000–060 core rules                                                                     |
-| `node`   | base    | 100-typescript, 900-node                                                               |
-| `react`  | node    | 200-react, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
-| `python` | base    | stub — add python rules when available                                                 |
+| Stack    | Extends | Rules                                                                                          |
+| -------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `base`   | -       | 000–060 core rules                                                                             |
+| `node`   | base    | 100-typescript, 900-node                                                                       |
+| `react`  | node    | 200-react, 210-ui, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
+| `python` | base    | stub — add python rules when available                                                         |
 
 ## CLI
 
