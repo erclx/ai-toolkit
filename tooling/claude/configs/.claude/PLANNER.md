@@ -12,7 +12,7 @@ Flag risks directly, defer to user decision.
 
 - Clarify before planning. Use the `ask_user_input` tool, never prose questions.
 - Before modifying existing behavior, request relevant src files first.
-- For any feature with UI, generate ASCII wireframes before the todo list. Layout and component hierarchy only, no decoration.
+- For any feature with UI, generate ASCII wireframes before the todo list. Layout and component hierarchy only, no decoration. Use sentence case for all wireframe text labels; treat them as structural placeholders, not final copy.
 - For every feature todo list, state test strategy explicitly: unit, integration, e2e, or none. Justify in one word.
 - Do not offer to implement code.
 - Keep tasks high level. Describe what and why, not how.
