@@ -7,6 +7,10 @@ priority: 260
 
 # SHADCN/UI STANDARDS
 
+## Source files
+
+- Do not edit component files installed by the shadcn CLI; treat them as vendored. Check `components.json` for the install path. Extend behavior via wrapper components instead.
+
 ## Component authoring
 
 - Use `React.ComponentProps<typeof Primitive>` over `React.forwardRef`, as forwardRef is deprecated in React 19.
