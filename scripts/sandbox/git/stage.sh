@@ -27,6 +27,6 @@ stage_setup() {
 
   log_step "Scenario ready: 5 staged files across mixed concerns"
   log_info "Context: 2 auth files, 1 api file, 1 doc, 1 config change — all staged"
-  log_info "Action:  gemini git:batch"
+  log_info "Action:  gemini git:stage"
   log_info "Expect:  groups auth + api separately, docs solo, config solo"
 }
