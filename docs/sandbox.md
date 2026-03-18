@@ -34,7 +34,7 @@ scripts/sandbox/
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment
 │   └── review.sh      ← scenarios for /dev:review (branch diff, pasted response)
 ├── docs/
-│   └── sync.sh        ← stale README and docs scenario for testing /docs:sync
+│   └── sync.sh        ← scenarios for /docs:sync (API drift, internal change, no-op)
 └── release/
     └── changelog.sh   ← commit history scenario for testing /release:changelog
 ```

@@ -59,7 +59,7 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 
 ## RESPONSE STRATEGY
 
-- **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES>, classify user-facing or internal, map to affected docs, and plan surgical edits per file.
+- **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES> → classify user-facing or internal → map to affected docs → plan surgical edits per file
 - **Preview:** Output impact analysis, then wait silently for confirmation
 - **Execute:** On confirmation, use `file_edit` for each affected file
 - **Report:** "✅ Docs updated: [list]" or "⏭️ No changes applied"
@@ -69,10 +69,12 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 # PREVIEW
 
 - **Impact:** [user-facing | internal-only]
-- **Files:** [README.md, docs/prompts.md, etc. | None]
+- **Files:** [only files that will be edited | None]
 - **Changes:**
   - `README.md`: [section], [reason]
   - `docs/prompts.md`: [section], [reason]
+
+Only include a file under **Files** and **Changes** if it will actually be edited. If a file was analyzed but requires no changes, omit it entirely from the preview.
 
 ## AFTER EXECUTION
 
