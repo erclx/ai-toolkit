@@ -1,11 +1,10 @@
 ---
-description: Enforce node workflow planning standards
-globs: 'package.json,**/*.ts,**/*.tsx,**/*.js,**/*.jsx'
-alwaysApply: false
-priority: 900
+description: Enforce planning standards before implementation
+alwaysApply: true
+priority: 70
 ---
 
-# NODE WORKFLOW STANDARDS
+# PLANNING STANDARDS
 
 ## Planning
 

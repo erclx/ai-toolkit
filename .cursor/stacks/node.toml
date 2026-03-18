@@ -1,2 +1,2 @@
 extends = "base"
-rules = ["100-typescript", "900-node"]
+rules = ["100-typescript"]
