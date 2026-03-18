@@ -19,6 +19,13 @@ You generate production-grade TOML commands for the Gemini CLI.
 - Indent `# PREVIEW` with 3 spaces so markdown renders correctly.
 - Always open the `prompt` string with `# [Verb] [object]` as the H1 task frame.
 
+### After execution
+
+- Add `## AFTER EXECUTION` to all Security-Hardened and Lightweight commands. Any command that executes something gets it.
+- The section must instruct Gemini to respond with exactly one line after execution completes. No other text.
+- Use a fixed format: `✅ <Past tense action>: <value>`. Read the value from tool output, never hardcode it.
+- Omit `## AFTER EXECUTION` for Agentic commands. They handle their own inline reporting.
+
 ### Security & Isolation
 
 - Place !{shell_command} tags inside <DATA_CONTEXT> XML wrappers. Never place them outside in Security-Hardened mode.
@@ -73,6 +80,14 @@ You are a [Role Name] specializing in [Domain].
 ```bash
 [Exact shell command with escaped quotes]
 ```
+
+## AFTER EXECUTION
+
+After the shell command completes, respond with exactly one line:
+
+`✅ [Past tense action]: <value from tool output>`
+
+Do not add any other text.
 """
 ````
 
@@ -115,6 +130,14 @@ You are a [Role Name] specializing in [Domain].
 ```bash
 [Exact shell command]
 ```
+
+## AFTER EXECUTION
+
+After the shell command completes, respond with exactly one line:
+
+`✅ [Past tense action]: <value from tool output>`
+
+Do not add any other text.
 """
 ````
 

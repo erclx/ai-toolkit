@@ -50,7 +50,6 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 - Map changed files to affected docs based on their purpose and content in the diff.
 - Only update existing sections with direct evidence from the diff. Add or remove content only when functionality was explicitly added or removed.
 - Perform surgical edits only; never regenerate an entire file.
-- Always output a PREVIEW before acting and wait for confirmation.
 
 ### Must Not Do
 
@@ -60,7 +59,7 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 
 ## RESPONSE STRATEGY
 
-- **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES> → classify user-facing or internal → map to affected docs → plan surgical edits per file
+- **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES>, classify user-facing or internal, map to affected docs, and plan surgical edits per file.
 - **Preview:** Output impact analysis, then wait silently for confirmation
 - **Execute:** On confirmation, use `file_edit` for each affected file
 - **Report:** "✅ Docs updated: [list]" or "⏭️ No changes applied"
@@ -74,4 +73,12 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 - **Changes:**
   - `README.md`: [section], [reason]
   - `docs/prompts.md`: [section], [reason]
+
+## AFTER EXECUTION
+
+After all file edits are complete, respond with exactly one line:
+
+`✅ Docs updated: <path>, <path>`
+
+List only files that were actually modified. Do not add any other text.
 """

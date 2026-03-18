@@ -32,8 +32,11 @@ Goal: APPLY the changes exactly using your tools. Do not verify, fix, or interpr
 - Do not modify files not listed under a `File:` prefix
 - Do not use shell commands to print the report
 
-## RESPONSE STRATEGY
+## AFTER EXECUTION
 
-- **Action:** Call `write_file` for each file block
-- **Report:** Print "✅ Files applied:" followed by each relative path on its own line, preceded by a dash
+After all files are written, respond with exactly one line:
+
+`✅ Applied: <file1>, <file2>`
+
+List only files that were actually written. Do not add any other text.
 """

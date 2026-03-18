@@ -61,4 +61,12 @@ Generate conventional commit messages from git diffs.
 ```bash
 git commit -m "<type>(<scope>): <subject>"
 ```
+
+## AFTER EXECUTION
+
+After the shell command completes, respond with exactly one line:
+
+`✅ Committed: <type>(<scope>): <subject>`
+
+Do not add any other text.
 """

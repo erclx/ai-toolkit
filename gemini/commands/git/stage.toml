@@ -43,9 +43,9 @@ You group staged files by concern and generate conventional commit messages for 
 - Check <STAGED_FILES>: if NO_STAGED_FILES, output `echo "✅ No staged changes. Use git add to stage files first."` and stop.
 - Check <COMMIT_STANDARDS>: if DOCS_MISSING, output `echo "❌ Error: Reference file 'standards/commit.md' not found."` and stop.
 - Analyze <GIT_DIFF_RAW> to understand what each file changes and why.
-- Group files by shared concern. A group is a single commit; files belong together when they implement or modify the same logical unit (e.g., all files for a new feature, all config changes, all test updates for a module).
+- Group files by shared concern. A group is a single commit. Files belong together when they implement or modify the same logical unit (e.g., all files for a new feature, all config changes, all test updates for a module).
 - A file that clearly stands alone (unrelated type, scope, or purpose) is its own group.
-- Order commits by dependency — if one group's files are imported or referenced by another group, commit the dependency first.
+- Order commits by dependency. If one group's files are imported or referenced by another group, commit the dependency first.
 - Generate one `git commit` command per group using `-m` with the message and the exact file paths for that group only.
 - Use `git add` to stage only that group's files before each commit (since we unstage all first).
 - Prefix the full command sequence with `git restore --staged .` to unstage everything, then stage + commit each group in order.
@@ -83,4 +83,12 @@ git add <file1> <file2> && git commit -m "<type>(<scope>): <subject>"
 # Commit 2: <subject>
 git add <file3> && git commit -m "<type>(<scope>): <subject>"
 ```
+
+## AFTER EXECUTION
+
+After all commits complete, respond with exactly one line:
+
+`✅ Committed: <n> commits`
+
+Do not add any other text.
 """

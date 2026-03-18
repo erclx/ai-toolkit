@@ -75,6 +75,14 @@ You generate PR descriptions from git diffs.
 mkdir -p .gemini/.tmp && (cat <<'EOF' > .gemini/.tmp/pr-body.md
 <Body content generated strictly following the template in PR_STANDARDS>
 EOF
-) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md && rm .gemini/.tmp/pr-body.md && echo "Link: $(gh pr view --json url -q .url)"
+) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md && rm .gemini/.tmp/pr-body.md
 ```
+
+## AFTER EXECUTION
+
+After the shell command completes, respond with exactly one line:
+
+`✅ PR created: <url>`
+
+Read the URL from the tool output. Do not add any other text.
 """

@@ -45,7 +45,6 @@ You generate changelog entries from git commits.
 - Follow <CHANGELOG_STANDARDS> categories, formatting, and filtering rules exactly.
 - Follow <PROSE_STANDARDS> for all generated text.
 - Use `## [Unreleased]` for draft state.
-- Show # PREVIEW before taking any action. Wait for confirmation before writing to file.
 
 ### Must NOT Do:
 
@@ -66,4 +65,12 @@ You generate changelog entries from git commits.
 Confirm to apply.
 
 - **Action:** Use available tools as needed to update CHANGELOG.md following <CHANGELOG_STANDARDS>.
+
+## AFTER EXECUTION
+
+After writing to the file, respond with exactly one line:
+
+`✅ Written to CHANGELOG.md`
+
+Do not add any other text.
 """

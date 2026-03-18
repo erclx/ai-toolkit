@@ -80,4 +80,12 @@ If LOCAL_ONLY, print:
 ```bash
 git branch -m <current> <suggested>
 ```
+
+## AFTER EXECUTION
+
+After the shell command completes, respond with exactly one line:
+
+`✅ Renamed: <current> → <suggested>`
+
+Do not add any other text.
 """
