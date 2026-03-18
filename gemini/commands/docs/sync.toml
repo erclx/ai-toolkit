@@ -72,6 +72,6 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 - **Impact:** [user-facing | internal-only]
 - **Files:** [README.md, docs/prompts.md, etc. | None]
 - **Changes:**
-  - `README.md` — [section] — [reason]
-  - `docs/prompts.md` — [section] — [reason]
+  - `README.md`: [section], [reason]
+  - `docs/prompts.md`: [section], [reason]
 """

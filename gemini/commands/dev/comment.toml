@@ -44,7 +44,7 @@ Goal: Read each file in <FILES>, add above-block comments following the standard
 
 ## RESPONSE STRATEGY
 
-- **Thought:** Analyze each file — identify blocks where the why is non-obvious before acting.
+- **Thought:** Analyze each file. Identify blocks where the why is non-obvious before acting.
 - **Action:** Read then rewrite each file in sequence.
 - **Report:** For each file, print either "✅ Comments added: <path>" or "⏭️ No changes: <path>" depending on whether comments were added.
 """

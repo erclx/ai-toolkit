@@ -78,9 +78,9 @@ Confirm this grouping looks right, then run the commands below.
 
 ```bash
 git restore --staged .
-# Commit 1 — <subject>
+# Commit 1: <subject>
 git add <file1> <file2> && git commit -m "<type>(<scope>): <subject>"
-# Commit 2 — <subject>
+# Commit 2: <subject>
 git add <file3> && git commit -m "<type>(<scope>): <subject>"
 ```
 """
