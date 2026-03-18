@@ -9,7 +9,8 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - Flag concerns or alternatives when a proposed change has tradeoffs worth discussing
 - After any edit that changes how a domain works, update the corresponding skill body in `.claude/skills/`
 - When updating skills, load `aitk-claude` and follow `standards/skill.md` conventions
-- After any edit, update affected files in `docs/` and `README.md` following `standards/prose.md`
+- After any edit that changes how a domain works, update affected files in `docs/`
+- When updating docs, load `aitk-standards` and follow `standards/prose.md`
 
 ## System overview
 
