@@ -19,7 +19,7 @@
 
 - Structure: `[What it does] + [When to use it] + [Key trigger phrases]`
 - Include specific phrases users would say to trigger it
-- Be specific, not vague — Claude routes based on this field alone
+- Be specific, not vague. Claude routes based on this field alone.
 - Add negative triggers if skill is over-triggering: `Do NOT use for X`
 
 ## Body
@@ -60,7 +60,7 @@ description: Reviews code for bugs, clarity, and standards compliance. Use when 
 
 Before reviewing, read:
 
-- `standards/code.md` — coding standards and conventions
+- \`standards/code.md\`: coding standards and conventions
 
 ## Guards
 
