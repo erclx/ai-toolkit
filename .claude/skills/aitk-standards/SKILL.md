@@ -1,6 +1,6 @@
 ---
 name: aitk-standards
-description: Workflow standards and docs/. Use for adding standards, editing docs/, or working with install and sync.
+description: Standards system and docs. Use for managing standards/, editing docs/, prose conventions, or install and sync.
 ---
 
 # Standards
