@@ -34,18 +34,18 @@ gemini extensions link ./gemini
 
 Commands are deterministic scripts with zero AI tokens and zero variability. Each command is a `.toml` file organized by category and invoked as `/category:command` in Gemini CLI. See `prompts/gemini-cli.md` for authoring conventions.
 
-| Command              | Description                                                                           |
-| -------------------- | ------------------------------------------------------------------------------------- |
-| `/git:commit`        | Generate a conventional commit message from staged changes                            |
-| `/git:branch`        | Rename current branch to match conventional format                                    |
-| /git:pr              | Generate a PR description and open a draft (includes guard for 'draft/init' branches) |
-| `/git:stage`         | Group staged files for batch commits                                                  |
-| `/git:split`         | Split mixed commits into separate branches                                            |
-| `/dev:apply`         | Apply file changes from a chat response                                               |
-| `/dev:comment`       | Add comments to source code                                                           |
-| `/dev:review`        | Review code from a pasted response or branch diff vs main                             |
-| `/docs:sync`         | Sync README and docs with codebase changes                                            |
-| `/release:changelog` | Generate a changelog entry from commit history                                        |
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `/git:commit`        | Generate a conventional commit message from staged changes |
+| `/git:branch`        | Rename current branch to match conventional format         |
+| `/git:pr`            | Generate a PR description and open a draft                 |
+| `/git:stage`         | Group staged files for batch commits                       |
+| `/git:split`         | Split mixed commits into separate branches                 |
+| `/dev:apply`         | Apply file changes from a chat response                    |
+| `/dev:comment`       | Add comments to source code                                |
+| `/dev:review`        | Review code from a pasted response or branch diff vs main  |
+| `/docs:sync`         | Sync README and docs with codebase changes                 |
+| `/release:changelog` | Generate a changelog entry from commit history             |
 
 ## Adding a command
 
