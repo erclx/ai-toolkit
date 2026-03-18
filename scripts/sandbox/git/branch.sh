@@ -4,6 +4,7 @@ set -e
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
+  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {

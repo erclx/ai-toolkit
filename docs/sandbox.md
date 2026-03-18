@@ -85,6 +85,7 @@ use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"  # skip auto-commit after stage_setup
   export SANDBOX_INJECT_STANDARDS="true"  # inject standards/ into sandbox
   export SANDBOX_INJECT_GOV="true"        # inject .cursor/rules/ into sandbox
+  export SANDBOX_INJECT_CONTEXT="true"    # inject GEMINI.md into sandbox root
   export SANDBOX_INJECT_GEMINI="true"     # inject .gemini/settings.json into sandbox
 }
 ```
