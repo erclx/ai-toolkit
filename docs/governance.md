@@ -33,7 +33,7 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)  |
 | `900+`    | workflow (Node, tooling, etc.)                     |
 
-**Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack — it overwrites. `aitk gov sync` updates rules already present in the target — it never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.cursor/.tmp/rules.md`, stripping frontmatter — useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the rules payload.
+**Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.cursor/.tmp/rules.md`, stripping frontmatter. This is useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the rules payload.
 
 Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed.
 
@@ -41,7 +41,7 @@ Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional 
 
 | Stack    | Extends | Rules                                                                                  |
 | -------- | ------- | -------------------------------------------------------------------------------------- |
-| `base`   | —       | 000–060 core rules                                                                     |
+| `base`   | -       | 000–060 core rules                                                                     |
 | `node`   | base    | 100-typescript, 900-node                                                               |
 | `react`  | node    | 200-react, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
 | `python` | base    | stub — add python rules when available                                                 |
@@ -69,7 +69,7 @@ To sync updates to an existing project:
 
 ```bash
 aitk gov sync ../my-app
-# only diffs rules already present — never adds new files
+# only diffs rules already present, never adds new files
 ```
 
 To generate a concatenated rules file:
@@ -77,7 +77,7 @@ To generate a concatenated rules file:
 ```bash
 aitk gov build
 # strips frontmatter, concatenates all .mdc files
-# writes .cursor/.tmp/rules.md — paste into any AI chat
+# writes .cursor/.tmp/rules.md, paste into any AI chat
 ```
 
 `aitk claude prompt` uses the same underlying logic from `scripts/lib/gov.sh` to inject rules into IMPLEMENTER.md.

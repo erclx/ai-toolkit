@@ -92,7 +92,7 @@ aitk snippets create
 
 ## Adding a snippet
 
-Use `aitk snippets create` — it handles both the TOML entry and the file. To add manually: create a `.md` file in `snippets/` using a kebab-case slug as the filename, then add the slug to the relevant category in `snippets.toml`.
+Use `aitk snippets create`; it handles both the TOML entry and the file. To add manually: create a `.md` file in `snippets/` using a kebab-case slug as the filename, then add the slug to the relevant category in `snippets.toml`.
 
 ## Adding a category
 

@@ -38,7 +38,7 @@ Omit VALIDATION for simple single-purpose prompts.
 
 **ROLE Guidelines:** Use 1-3 lines based on complexity. One sentence per line.
 
-**Pattern A — Flat constraints (single concern or <5 total):**
+**Pattern A: Flat constraints (single concern or <5 total):**
 
 ```markdown
 # [DESCRIPTIVE NAME]
@@ -82,7 +82,7 @@ Before responding, verify:
 - [Specific check]
 ```
 
-**Pattern B — Grouped constraints (multiple domains, 5+ total):**
+**Pattern B: Grouped constraints (multiple domains, 5+ total):**
 
 ```markdown
 # [DESCRIPTIVE NAME]

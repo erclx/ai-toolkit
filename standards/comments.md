@@ -8,7 +8,7 @@
 - Separate the comment from unrelated code above with a blank line.
 - No blank line between the comment and the block it describes.
 - Lowercase, no punctuation.
-- Use either a short phrase or `subject: reason` — use the `subject:` prefix when the why is tied to a specific system or constraint. Mix freely, whatever fits.
+- Use either a short phrase or `subject: reason`. Use the `subject:` prefix when the why is tied to a specific system or constraint. Mix freely, whatever fits.
 - No JSDoc noise.
 - Before adding a comment, ask: would this still add information if the variable or function name was removed? If no, skip it.
 
@@ -42,5 +42,5 @@ const prefix = config.prefix ?? ''
 // check if user is active
 if (!user.isActive) throw ...  // restates what the condition already says
 
-const TIMEOUT = 8000  // no comment — non-obvious value, origin and intent unclear
+const TIMEOUT = 8000  // no comment, non-obvious value, origin and intent unclear
 ```

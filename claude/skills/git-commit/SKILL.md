@@ -7,7 +7,7 @@ description: Generates conventional commit messages from staged changes. Use whe
 
 Before generating a commit message, read:
 
-- `standards/commit.md` — format, types, scopes, and constraints
+- `standards/commit.md`: format, types, scopes, and constraints
 
 Follow it exactly.
 

@@ -7,8 +7,8 @@ description: Generates pull request titles and descriptions from git diffs. Use 
 
 Before generating a PR description, read:
 
-- `standards/pr.md` — structure, rules, and banned phrases
-- `standards/prose.md` — prose conventions for all generated text
+- `standards/pr.md`: structure, rules, and banned phrases
+- `standards/prose.md`: prose conventions for all generated text
 
 Follow them exactly.
 

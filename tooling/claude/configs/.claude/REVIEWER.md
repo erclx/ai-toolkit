@@ -40,14 +40,14 @@ X critical, Y should-fix, Z minor across N files.
 
 File: path/to/file.ext
 
-- **critical** — finding
-- **should-fix** — finding
-- **minor** — finding
+- **critical**: finding
+- **should-fix**: finding
+- **minor**: finding
 
 File: path/to/other.ext
 
-- **critical** — finding
-- **minor** — finding
+- **critical**: finding
+- **minor**: finding
 ```
 
 Review for:

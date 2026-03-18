@@ -20,7 +20,7 @@
 
 - Add `**/*.{js,jsx,ts,tsx}` → `["eslint --fix --max-warnings 0", "prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`.
 - Extend prettier glob to include `css`: `**/*.{json,css,md,mdc}` → `["prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`.
-- Each file type runs cspell once via its own glob — no standalone cspell glob.
+- Each file type runs cspell once via its own glob. No standalone cspell glob.
 
 ## ESLint
 
@@ -77,19 +77,19 @@
 
 ## Screenshots
 
-- File: `e2e/screenshot.ts` — seeded once, user-owned. Edit the config section to match the app.
-- Split into `CONFIG` and `ENGINE` sections — only the config section changes per project.
+- File: `e2e/screenshot.ts`. Seeded once, user-owned. Edit the config section to match the app.
+- Split into `CONFIG` and `ENGINE` sections. Only the config section changes per project.
 - `ROUTES` defines named app routes with viewport dimensions.
 - `STATES` is an array of `{ name, setup? }` — adding a new state is one object.
-- `colorScheme` set via Playwright context — no UI interaction needed.
-- Run `bun run screenshot` — builds, starts preview server, captures, outputs to `screenshots/` (gitignored).
+- `colorScheme` set via Playwright context. No UI interaction needed.
+- Run `bun run screenshot`. Builds, starts preview server, captures, outputs to `screenshots/` (gitignored).
 - Preview server runs on port 4173 (`BASE_URL` in the script matches `vite preview` default).
 - Node 22+ required for `--experimental-strip-types`. On older versions use `bunx tsx e2e/screenshot.ts`.
 - Review one route and one color scheme per AI session, not everything at once.
 
 ## Setup Script
 
-- File: `scripts/setup.sh`. Destructive — deletes `.git` and self-removes after running. Run once immediately after scaffolding.
+- File: `scripts/setup.sh`. Destructive: deletes `.git` and self-removes after running. Run once immediately after scaffolding.
 - Prompts for project name, normalizes to kebab-case.
 - Derives a title-cased display name from the project name for use in `index.html`.
 - Updates `package.json`: sets `name`, resets `version` to `0.1.0`, injects `verify`, `clean`, `update` scripts, removes `setup`.
@@ -101,10 +101,10 @@
 
 ## Gitignore (Extend)
 
-- `# Build` — `dist/`
-- `# Coverage` — `coverage/`
-- `# Playwright` — `test-results/`, `playwright-report/`, `blob-report/`, `playwright/.cache/`, `screenshots/`
-- `# VS Code` — `.vscode/*`, `!.vscode/extensions.json`, `!.vscode/settings.json`
+- `# Build`: `dist/`
+- `# Coverage`: `coverage/`
+- `# Playwright`: `test-results/`, `playwright-report/`, `blob-report/`, `playwright/.cache/`, `screenshots/`
+- `# VS Code`: `.vscode/*`, `!.vscode/extensions.json`, `!.vscode/settings.json`
 
 ## VS Code (Extend)
 
@@ -116,7 +116,7 @@
 - Add steps before base checks: typecheck → lint.
 - Add steps after base checks: unit tests → production build.
 - Full order: typecheck → lint → format → spelling → unit tests → build.
-- Note: `run_check` does not pipe successful output — output is only shown on failure.
+- Note: `run_check` does not pipe successful output. Output is only shown on failure.
 
 ## CI Workflow
 
@@ -131,19 +131,19 @@
 
 ## Package Scripts (Extend)
 
-- `dev` — `vite`
-- `build` — `tsc -b && vite build`
-- `preview` — `vite preview`
-- `lint` — `eslint . --max-warnings 0`
-- `lint:fix` — `eslint . --fix --max-warnings 0`
-- `typecheck` — `tsc --noEmit`
-- `test` — `vitest`
-- `test:run` — `vitest run --reporter=verbose`
-- `test:ui` — `vitest --ui`
-- `test:coverage` — `vitest run --coverage`
-- `test:e2e` — `playwright test`
-- `test:e2e:ui` — `playwright test --ui`
-- `test:e2e:report` — `playwright show-report`
-- `check:full` — `./scripts/verify.sh && bun run test:e2e`
-- `setup` — `./scripts/setup.sh`
-- `screenshot` — `bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts`
+- `dev`: `vite`
+- `build`: `tsc -b && vite build`
+- `preview`: `vite preview`
+- `lint`: `eslint . --max-warnings 0`
+- `lint:fix`: `eslint . --fix --max-warnings 0`
+- `typecheck`: `tsc --noEmit`
+- `test`: `vitest`
+- `test:run`: `vitest run --reporter=verbose`
+- `test:ui`: `vitest --ui`
+- `test:coverage`: `vitest run --coverage`
+- `test:e2e`: `playwright test`
+- `test:e2e:ui`: `playwright test --ui`
+- `test:e2e:report`: `playwright show-report`
+- `check:full`: `./scripts/verify.sh && bun run test:e2e`
+- `setup`: `./scripts/setup.sh`
+- `screenshot`: `bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts`

@@ -7,7 +7,7 @@ description: Generates and validates conventional branch names. Use when naming 
 
 Before generating a branch name, read:
 
-- `standards/branch.md` — format, types, length limit, and constraints
+- `standards/branch.md`: format, types, length limit, and constraints
 
 Follow it exactly.
 

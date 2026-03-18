@@ -19,7 +19,7 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 - Open the timeline once at the very start of `main()` with `┌` alone, followed immediately by `│ Title` — before any logic, prompts, or checks.
 - Close the timeline via `trap close_timeline EXIT`, registered immediately after the `┌` open.
 - On success: disable with `trap - EXIT`, then print `└\n` and the success message manually.
-- On cancellation and error: never print `└` manually — the trap owns those exits.
+- On cancellation and error: never print `└` manually. The trap owns those exits.
 - Use state transitions for interactive prompts: `◆` (active) → `◇` (inactive).
 - Do not add diamonds (`◆`/`◇`) to non-interactive log functions.
 - On cancellation: show `◇ ... Cancelled`, exit 1, no `log_error` call. Both `ask()` and `select_option()` must handle escape cancellation identically.
@@ -102,7 +102,7 @@ NC='\033[0m'            # Reset
 
 ### Timeline Lifecycle
 
-Define `close_timeline` and register it as a trap immediately after opening `┌`. This guarantees `└` prints on every exit path — normal completion, `exit 1` from cancellation, or unexpected errors. Do not print `└` manually anywhere else.
+Define `close_timeline` and register it as a trap immediately after opening `┌`. This guarantees `└` prints on every exit path: normal completion, `exit 1` from cancellation, or unexpected errors. Do not print `└` manually anywhere else.
 
 ```bash
 close_timeline() {
@@ -132,7 +132,7 @@ log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1"; }
 
 ### Section Headers
 
-`log_step` includes a leading blank `│` line to visually separate sections. Always use a raw `echo` for the **first** section header after the title block — regardless of total section count — to avoid an unwanted blank line. Use `log_step` for all subsequent sections where breathing room between sections is intentional:
+`log_step` includes a leading blank `│` line to visually separate sections. Always use a raw `echo` for the **first** section header after the title block, regardless of total section count, to avoid an unwanted blank line. Use `log_step` for all subsequent sections where breathing room between sections is intentional:
 
 ```bash
 # opening title block: ┌ alone, then │ Title, then first section with raw echo
@@ -391,7 +391,7 @@ Before responding, verify:
 
 - File starts with shebang, `set -e`, `set -o pipefail` and uses exactly 2 spaces for indentation.
 - Timeline opens with `┌` alone, followed by `│ Title` on the next line.
-- Timeline closes via `trap close_timeline EXIT` registered immediately after the title block. Success paths use `trap - EXIT` then manual `└\n` then success message. Cancellation and error paths never print `└` manually — trap owns those.
+- Timeline closes via `trap close_timeline EXIT` registered immediately after the title block. Success paths use `trap - EXIT` then manual `└\n` then success message. Cancellation and error paths never print `└` manually. The trap owns those.
 - `close_timeline` is defined and prints `└`.
 - Timeline (`│`) appears in all log functions and interactive prompts use `◆` → `◇` transitions.
 - `ask()` uses `\r\033[K` to rewrite the `◆` line in place. No `\033[1A` cursor-up sequences.

@@ -51,9 +51,9 @@ Goal: Produce a findings report only. Do not fix, rewrite, or suggest refactors 
 
 ### Severity
 
-- **critical** — blocks the feature. Broken in production if shipped.
-- **should-fix** — fix in same session while context is fresh. Not a blocker.
-- **minor** — not worth fixing now. Included for visibility only.
+- **critical**: blocks the feature. Broken in production if shipped.
+- **should-fix**: fix in same session while context is fresh. Not a blocker.
+- **minor**: not worth fixing now. Included for visibility only.
 
 ## RESPONSE FORMAT
 
@@ -62,9 +62,9 @@ X critical, Y should-fix, Z minor across N files.
 
 File: path/to/file.ext
 
-- **critical** — finding
-- **should-fix** — finding
-- **minor** — finding
+- **critical**: finding
+- **should-fix**: finding
+- **minor**: finding
 ```
 
 Review for:
