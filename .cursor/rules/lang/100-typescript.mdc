@@ -29,6 +29,7 @@ priority: 100
 - Use built-in utility types (`Partial`, `Pick`, `Omit`) over manual type manipulation.
 - Prefer `readonly` properties for data objects.
 - Do not use non-null assertions.
+- Use `Promise.all()` for independent async operations to avoid serial waterfalls.
 
 ## Imports and configuration
 
@@ -36,7 +37,3 @@ priority: 100
 - Import from the module's source file directly; avoid barrel `index` re-exports.
 - Use `import type` for type-only imports to enable proper tree-shaking.
 - Enable `strict: true` in tsconfig.json with no exceptions.
-
-## Async patterns
-
-- Use `Promise.all()` for independent operations to avoid serial waterfalls.

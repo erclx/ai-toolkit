@@ -39,3 +39,13 @@ priority: 200
 ## Composition and props
 
 - Avoid prop drilling beyond 2 levels; use context or composition.
+
+## Error boundaries and Suspense
+
+- Place error boundaries at route level; place Suspense at data-fetching boundaries.
+- Do not use a single root-level error boundary as the only safety net.
+
+## Accessibility
+
+- Use semantic HTML elements over `div`/`span` where a native element exists (`button`, `nav`, `main`, `section`).
+- Add `aria-label` to interactive elements that have no visible text label.

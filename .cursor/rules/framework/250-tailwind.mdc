@@ -11,9 +11,6 @@ priority: 250
 
 - Use `@theme` for design tokens that generate utility classes; use `:root` for plain CSS variables with no utility counterpart.
 - Define dark mode color overrides in `.dark { }` at root level, not inside `@layer base`.
-
-## Dark mode
-
 - Always pair light and dark utilities explicitly: `bg-white dark:bg-gray-900`.
 
 ## Layout and spacing

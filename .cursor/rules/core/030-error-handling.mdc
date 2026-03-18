@@ -6,25 +6,25 @@ priority: 30
 
 # ERROR HANDLING STANDARDS
 
-## Boundary Validation
+## Boundary validation
 
 - Validate inputs at system boundaries; reject invalid data immediately.
 - Do not use exceptions for control flow.
 
-## Error Classification
+## Error classification
 
 - Distinguish expected failures (validation, not found) from unexpected failures (null reference, network timeout).
 - Return structured error types for recoverable failures; propagate exceptions for programmer errors.
 
-## Error Propagation
+## Error propagation
 
 - Handle errors at the layer that has enough context to respond meaningfully; do not catch and rethrow without adding value.
 - Do not silently ignore errors.
 
-## Error Reporting
+## Error reporting
 
 - Include actionable context in error messages; never expose internal implementation details.
 
-## Retry Behavior
+## Retry behavior
 
 - Retry only idempotent operations with bounded attempts and backoff.

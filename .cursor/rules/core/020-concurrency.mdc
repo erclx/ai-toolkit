@@ -6,18 +6,19 @@ priority: 20
 
 # CONCURRENCY STANDARDS
 
-## Async Lifecycle
+## Async lifecycle
 
 - Make async operations cancellable; clean up on scope exit or caller cancellation.
 - Coordinate dependent async operations explicitly; document execution order.
 - Set explicit timeouts on all external async operations.
 - Do not fire-and-forget async operations without cleanup handlers.
+- Batch independent async operations; avoid sequential execution when parallelizable.
 
-## Race Conditions
+## Race conditions
 
 - Do not ignore race conditions in concurrent flows.
 - Protect shared mutable state with locks, queues, or single-writer patterns.
 
-## Failure Handling
+## Failure handling
 
 - Handle partial failures in batched operations independently; do not fail the entire batch for a single error.

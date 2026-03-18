@@ -29,7 +29,6 @@ priority: 10
 - Use factory functions or builders for test data; avoid inline object literals.
 - Always await async operations; avoid fire-and-forget promises in tests.
 
-## Selection and verification
+## Verification
 
-- Select elements by accessibility attributes first.
 - Do not use snapshot testing for verification.

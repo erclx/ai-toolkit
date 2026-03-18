@@ -6,18 +6,17 @@ priority: 40
 
 # PERFORMANCE STANDARDS
 
-## Resource Loading
+## Resource loading
 
 - Lazy load resources at architectural boundaries, not inline.
 - Do not import entire modules when subsets are sufficient.
 
-## Execution Efficiency
+## Execution efficiency
 
-- Batch independent operations; avoid sequential execution when parallelizable.
 - Defer non-critical work until after primary output completes.
 - Do not fetch data inside loops.
 
-## Data Handling
+## Data handling
 
 - Paginate or stream unbounded data sets.
 - Do not optimize without measurement.

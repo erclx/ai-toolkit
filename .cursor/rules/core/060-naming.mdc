@@ -15,6 +15,6 @@ priority: 60
 - Prefix event handlers with `handle`: `handleClick`, `handleSubmit`.
 - Name collections as plurals; name items as singulars: `users` / `user`.
 
-## Test Naming
+## Test naming
 
-- Name tests using "should" or descriptive phrases: "should validate email format".
+- Name tests with descriptive phrases that state the expected behavior.
