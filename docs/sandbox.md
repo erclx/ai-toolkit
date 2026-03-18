@@ -39,7 +39,7 @@ scripts/sandbox/
     └── changelog.sh   ← commit history scenario for testing /release:changelog
 ```
 
-All sandboxes provision into `.sandbox/` at the repo root. Git history initializes fresh each run. A `sandbox-baseline` tag marks the post-setup state for `aitk reset`.
+All sandboxes provision into `.sandbox/` at the repo root. Git history initializes fresh each run. A `refs/sandbox/baseline` ref marks the post-setup state for `aitk reset`.
 
 ## Running
 

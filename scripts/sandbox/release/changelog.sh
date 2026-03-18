@@ -8,8 +8,6 @@ use_config() {
 }
 
 stage_setup() {
-  echo -e "${GREY}├${NC} ${WHITE}Setting up changelog environment${NC}"
-
   cat <<'EOF' >CHANGELOG.md
 # Changelog
 
@@ -26,8 +24,9 @@ EOF
 
   git add CHANGELOG.md
   git commit -m "chore(docs): init changelog" -q
-  git tag v1.0.0
 
+  git tag v1.0.0
+  git checkout -b feat/auth-and-api -q
   touch auth.js
   git add auth.js
   git commit -m "feat(auth): add jwt validation logic" -q
@@ -39,8 +38,7 @@ EOF
   echo "node_modules" >>.gitignore
   git add .gitignore
   git commit -m "chore(gitignore): update gitignore rules" -q
-
-  log_step "Scenario ready: unreleased commits"
+  log_step "Scenario ready: unreleased commits on feat/auth-and-api"
   log_info "Context: v1.0.0 tag exists, new feats/fixes + noise"
   log_info "Action:  gemini release:changelog"
   log_info "Expect:  updates CHANGELOG.md with structured entries"

@@ -253,8 +253,8 @@ commit_sandbox_changes() {
 tag_sandbox_baseline() {
   (
     cd "$SANDBOX"
-    git tag -f sandbox-baseline >/dev/null 2>&1
-    git write-tree | xargs -I {} git tag -f sandbox-baseline-index {} >/dev/null 2>&1
+    git update-ref refs/sandbox/baseline HEAD >/dev/null 2>&1
+    git write-tree | xargs -I {} git update-ref refs/sandbox/baseline-index {} >/dev/null 2>&1
   )
 }
 
@@ -309,7 +309,7 @@ reset_sandbox() {
   echo -e "${GREY}├${NC} ${WHITE}Sandbox state${NC}"
 
   local has_baseline=0
-  (cd "$SANDBOX" && git rev-parse sandbox-baseline >/dev/null 2>&1) && has_baseline=1
+  (cd "$SANDBOX" && git rev-parse refs/sandbox/baseline >/dev/null 2>&1) && has_baseline=1
 
   if [ "$has_baseline" -eq 0 ]; then
     log_error "No baseline found. Re-provision with \`aitk sandbox <cat>:<cmd>\`."
@@ -318,12 +318,12 @@ reset_sandbox() {
   local is_dirty=0
   (
     cd "$SANDBOX"
-    if [ "$(git rev-parse HEAD)" != "$(git rev-parse sandbox-baseline)" ]; then
+    if [ "$(git rev-parse HEAD)" != "$(git rev-parse refs/sandbox/baseline)" ]; then
       exit 1
     fi
     local current_index baseline_index
     current_index=$(git write-tree)
-    baseline_index=$(git rev-parse sandbox-baseline-index 2>/dev/null || echo "")
+    baseline_index=$(git rev-parse refs/sandbox/baseline-index 2>/dev/null || echo "")
     if [ -n "$baseline_index" ] && [ "$current_index" != "$baseline_index" ]; then
       exit 1
     fi
@@ -354,10 +354,10 @@ reset_sandbox() {
   log_step "Resetting sandbox"
   (
     cd "$SANDBOX"
-    git reset --hard sandbox-baseline --quiet
+    git reset --hard refs/sandbox/baseline --quiet
     git clean -fd --quiet
     local baseline_index
-    baseline_index=$(git rev-parse sandbox-baseline-index 2>/dev/null || echo "")
+    baseline_index=$(git rev-parse refs/sandbox/baseline-index 2>/dev/null || echo "")
     if [ -n "$baseline_index" ] && [ "$baseline_index" != "$(git write-tree)" ]; then
       git read-tree "$baseline_index"
       git checkout-index -a -f
