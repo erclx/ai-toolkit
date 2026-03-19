@@ -49,6 +49,9 @@ gemini docs:sync
 gemini release:changelog
 
 # Terminal 4
+gemini tasks:flush
+
+# Terminal 5
 gemini git:pr
 ```
 
@@ -110,3 +113,4 @@ Deterministic scripts with zero AI tokens and zero variability.
 | `/git:pr`            | Generate PR description                             |
 | `/git:split`         | Split mixed commits into separate branches          |
 | `/release:changelog` | Generate changelog from commit history              |
+| `/tasks:flush`       | Move completed tasks to Done and archive overflow   |
