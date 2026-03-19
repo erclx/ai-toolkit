@@ -34,7 +34,9 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk claude sync ../my-app"
   echo -e "${GREY}│${NC}    aitk claude prompt"
   echo -e "${GREY}│${NC}    aitk claude gov"
+  echo -e "${GREY}│${NC}    aitk claude gov planner"
   echo -e "${GREY}│${NC}    aitk claude gov ../my-app"
+  echo -e "${GREY}│${NC}    aitk claude gov planner ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -288,27 +290,63 @@ cmd_sync() {
 }
 
 cmd_gov() {
-  local target="${1:-.}"
+  local stack=""
+  local target="."
+
+  if [ -n "${1:-}" ] && [[ ! "${1}" =~ ^[./] ]]; then
+    stack="$1"
+    shift
+  fi
+  target="${1:-.}"
 
   validate_target "$target"
 
   local rules_dir="$target/.cursor/rules"
-  local output_file="$target/.claude/GOV.md"
+  local output_file
+  local stack_filter=""
+  local count
+
+  if [ -n "$stack" ]; then
+    local stack_file="$PROJECT_ROOT/.cursor/stacks/${stack}.toml"
+    if [ ! -f "$stack_file" ]; then
+      log_error "Stack '$stack' not found at $stack_file."
+    fi
+    local upper_stack
+    upper_stack=$(echo "$stack" | tr '[:lower:]' '[:upper:]')
+    output_file="$target/.claude/GOV-${upper_stack}.md"
+    stack_filter=$(grep '^rules' "$stack_file" | sed 's/rules = \[//;s/\]//' | tr -d '"' | tr ',' ' ' | xargs)
+    count=$(echo "$stack_filter" | wc -w | tr -d ' ')
+  else
+    output_file="$target/.claude/GOV.md"
+    count=$(find "$rules_dir" -type f -name "*.mdc" | wc -l | tr -d ' ')
+  fi
 
   if [ ! -d "$rules_dir" ] || ! ls "$rules_dir"/*.mdc >/dev/null 2>&1; then
     log_error "No rules found at $rules_dir. Run \`aitk gov install\` first."
   fi
 
-  local count
-  count=$(find "$rules_dir" -type f -name "*.mdc" | wc -l | tr -d ' ')
+  local output_name
+  output_name=$(basename "$output_file")
 
   log_step "Reading .cursor/rules ($count found)"
 
-  while IFS= read -r file; do
-    log_info "$(basename "$file")"
-  done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
+  if [ -n "$stack_filter" ]; then
+    for name in $stack_filter; do
+      local f
+      f=$(find "$rules_dir" -type f -name "${name}.mdc" | head -n 1)
+      if [ -n "$f" ]; then
+        log_info "$(basename "$f")"
+      else
+        log_warn "${name}.mdc not found"
+      fi
+    done
+  else
+    while IFS= read -r file; do
+      log_info "$(basename "$file")"
+    done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
+  fi
 
-  select_option "Build $count rules to .claude/GOV.md?" "Yes" "No"
+  select_option "Build $count rules to .claude/${output_name}?" "Yes" "No"
 
   if [ "$SELECTED_OPTION" = "No" ]; then
     log_warn "Cancelled"
@@ -319,7 +357,7 @@ cmd_gov() {
 
   source "$PROJECT_ROOT/scripts/lib/gov.sh"
   local payload_file
-  payload_file=$(build_rules_payload "$rules_dir")
+  payload_file=$(build_rules_payload "$rules_dir" "$stack_filter")
 
   mkdir -p "$target/.claude"
   {
@@ -329,11 +367,11 @@ cmd_gov() {
   } >"$output_file"
   rm -f "$payload_file"
 
-  log_add ".claude/GOV.md"
+  log_add ".claude/${output_name}"
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ GOV.md ready ($count rules → .claude/GOV.md)${NC}"
+  echo -e "${GREEN}✓ ${output_name} ready ($count rules → .claude/${output_name})${NC}"
 }
 
 main() {
