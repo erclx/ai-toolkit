@@ -2,10 +2,11 @@
 
 [One-line description]
 
-## Key paths
+## Rules
 
-- `src/`: [description]
-- `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
+- Follow `standards/prose.md` for all document edits
+- When editing any doc, read surrounding content first and match its depth, length, and tone
+- Keep `.claude/` docs current as decisions are made
 
 ## Before making changes
 
@@ -16,7 +17,11 @@
 - Check `.claude/REQUIREMENTS.md` for feature scope and non-goals
 - Check `.claude/GOV.md` for coding standards before writing or editing any code
 
-## Rules
+## Key paths
 
-- Follow `standards/prose.md` for all document edits
-- Keep `.claude/` docs current as decisions are made
+- `src/`: [description]
+- `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
+
+## Memory
+
+- Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
