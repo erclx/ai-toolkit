@@ -119,6 +119,19 @@ build_planner() {
     log_warn "standards/prose.md not found, skipping"
   fi
 
+  local planner_stack="$PROJECT_ROOT/.cursor/stacks/planner.toml"
+  if [ -f "$planner_stack" ] && grep -qF "{{GOV_PLANNER}}" "$output_file" 2>/dev/null; then
+    local stack_filter
+    stack_filter=$(grep '^rules' "$planner_stack" | sed 's/rules = \[//;s/\]//' | tr -d '"' | tr ',' ' ' | xargs)
+    local gov_payload
+    gov_payload=$(build_rules_payload "$RULES_DIR" "$stack_filter")
+    substitute_placeholder "{{GOV_PLANNER}}" "$gov_payload" "$output_file"
+    rm -f "$gov_payload"
+    log_info "GOV-PLANNER (planner stack)"
+  elif ! [ -f "$planner_stack" ]; then
+    log_warn "planner stack not found, skipping {{GOV_PLANNER}}"
+  fi
+
   inject_placeholder_file "TASKS.md" "{{TASKS}}" "$output_file"
   inject_placeholder_file "REQUIREMENTS.md" "{{REQUIREMENTS}}" "$output_file"
   inject_placeholder_file "ARCHITECTURE.md" "{{ARCHITECTURE}}" "$output_file"

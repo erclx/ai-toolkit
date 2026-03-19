@@ -24,13 +24,19 @@ Flag risks directly, defer to user decision.
 
 ### Prose
 
+<prose>
 {{PROSE}}
+</prose>
 
 ### Debug
 
 - Diagnose fast, suggest fix, skip re-explaining the project.
 
 ## CONTEXT
+
+<gov>
+{{GOV_PLANNER}}
+</gov>
 
 <tasks>
 {{TASKS}}
