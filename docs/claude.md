@@ -40,12 +40,13 @@ Invoke with `/skill-name` or let Claude auto-trigger by matching against the ski
 
 ## CLI
 
-| Command              | Description                                                  |
-| -------------------- | ------------------------------------------------------------ |
-| `aitk claude init`   | Seed `.claude/` workflow docs and `CLAUDE.md` into a project |
-| `aitk claude sync`   | Diff managed role prompts against source and apply updates   |
-| `aitk claude prompt` | Generate master prompts from installed governance rules      |
-| `aitk claude gov`    | Build governance rules into `.claude/GOV.md`                 |
+| Command                   | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `aitk claude init`        | Seed `.claude/` workflow docs and `CLAUDE.md` into a project |
+| `aitk claude sync`        | Diff managed role prompts against source and apply updates   |
+| `aitk claude prompt`      | Generate master prompts from installed governance rules      |
+| `aitk claude gov`         | Build governance rules into `.claude/GOV.md`                 |
+| `aitk claude gov [stack]` | Build a stack-filtered subset into `.claude/GOV-[STACK].md`  |
 
 ### init
 
@@ -57,12 +58,16 @@ Diffs the three managed role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.
 
 ### prompt
 
-Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects governance rules from `.cursor/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `WIREFRAMES.md`), and writes output to `.claude/.tmp/`. Also injects `standards/prose.md` into `PLANNER.md` and copies `REVIEWER.md` to `.claude/.tmp/`.
+Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and writes output to `.claude/.tmp/`. Also copies `REVIEWER.md` to `.claude/.tmp/`.
+
+For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from the `planner` stack, and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `WIREFRAMES.md`).
+
+For `IMPLEMENTER.md`: injects all governance rules from `.cursor/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`).
 
 Prerequisites: run `aitk claude init` first, then `aitk gov install` to install rules for your stack.
 
 ### gov
 
-Reads all `.mdc` files from `.cursor/rules/`, strips frontmatter, concatenates them, and writes `.claude/GOV.md`. Claude Code loads this file automatically each session to provide governance context inline.
+Reads `.mdc` files from `.cursor/rules/`, strips frontmatter, concatenates them, and writes `.claude/GOV.md`. Claude Code loads this file automatically each session to provide governance context inline. Pass an optional stack name to build a filtered subset into `.claude/GOV-[STACK].md`.
 
 Prerequisites: run `aitk gov install` first to populate `.cursor/rules/`.

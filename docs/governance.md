@@ -38,12 +38,13 @@ Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional 
 
 ## Stacks
 
-| Stack    | Extends | Rules                                                                                          |
-| -------- | ------- | ---------------------------------------------------------------------------------------------- |
-| `base`   | -       | 000–070 core rules                                                                             |
-| `node`   | base    | 100-typescript                                                                                 |
-| `react`  | node    | 200-react, 210-ui, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
-| `python` | base    | stub — add python rules when available                                                         |
+| Stack     | Extends | Rules                                                                                          |
+| --------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `base`    | -       | 000–070 core rules                                                                             |
+| `node`    | base    | 100-typescript                                                                                 |
+| `react`   | node    | 200-react, 210-ui, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
+| `python`  | base    | stub — add python rules when available                                                         |
+| `planner` | -       | 210-ui — injected into PLANNER.md by `aitk claude prompt`; not installed into projects         |
 
 ## CLI
 
@@ -100,4 +101,4 @@ rules = ["200-react", "250-tailwind"]
 
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional/addon complexity in stack definitions.
-- `strip_frontmatter` and `build_rules_payload` live in `scripts/lib/gov.sh` and are sourced by both `gov/build.sh` and `claude/prompt.sh`.
+- `strip_frontmatter` and `build_rules_payload` live in `scripts/lib/gov.sh` and are sourced by both `gov/build.sh` and `claude/prompt.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names; when provided, only those rules are included in the payload.
