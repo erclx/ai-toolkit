@@ -14,7 +14,7 @@ What does not belong:
 - "In progress" or "Blocked" sections; note those inline on the Up next entry instead
 - How something will be implemented
 
-Two sections only: Up next and Done. When completing a task, append it at the bottom of Done (newest last). When Done exceeds 10 entries, move the oldest to `.claude/TASKS-ARCHIVE.md`; do this automatically when adding a Done entry that would push past the limit.
+Two sections only: Up next and Done. When completing a task, mark it `[x]` in place within "Up next"; do not move it. Done is capped at 10 entries; oldest entries overflow to `.claude/TASKS-ARCHIVE.md`.
 
 ## Up next
 

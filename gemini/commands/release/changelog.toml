@@ -18,12 +18,8 @@ You generate changelog entries from git commits.
 !{cat CHANGELOG.md 2>/dev/null || echo "NO_CHANGELOG"}
 </CURRENT_CHANGELOG>
 
-<LATEST_TAG>
-!{git describe --tags --abbrev=0 2>/dev/null || echo "No tags found"}
-</LATEST_TAG>
-
 <NEW_COMMITS>
-!{TAG=$(git describe --tags --abbrev=0 2>/dev/null); if [ -n "$TAG" ]; then git log --pretty=format:"%h %s" --no-merges "$TAG"..HEAD; else git log --pretty=format:"%h %s" --no-merges; fi}
+!{git log --pretty=format:"%h %s" --no-merges main..HEAD}
 </NEW_COMMITS>
 </DATA_CONTEXT>
 
@@ -48,7 +44,7 @@ You generate changelog entries from git commits.
 
 ### Must NOT Do:
 
-- Do not modify or delete entries under released version headers. Only append to `[Unreleased]` or create a new version.
+- Do not modify, reorder, or remove any existing entries under any version header, including `[Unreleased]`. Only append new entries.
 - Do not include commits excluded by <CHANGELOG_STANDARDS>.
 - Do not generate version comparison URLs.
 - Do not write to file before showing # PREVIEW.

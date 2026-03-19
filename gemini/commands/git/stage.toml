@@ -23,7 +23,7 @@ You group staged files by concern and generate conventional commit messages for 
 </DIFF_STAT>
 
 <GIT_DIFF_RAW>
-!{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' | head -n 3000 || echo "NO_DIFF"}
+!{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 
