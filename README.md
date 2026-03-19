@@ -53,12 +53,13 @@ Run `aitk` from the repo root.
 
 ### Claude
 
-| Command              | Description                                                |
-| -------------------- | ---------------------------------------------------------- |
-| `aitk claude init`   | Bootstrap Claude workflow with CLAUDE.md and .claude/ docs |
-| `aitk claude sync`   | Sync managed role prompts, overwriting local changes       |
-| `aitk claude prompt` | Generate master prompts for planning and implementation    |
-| `aitk claude gov`    | Build governance rules into .claude/GOV.md                 |
+| Command                   | Description                                                |
+| ------------------------- | ---------------------------------------------------------- |
+| `aitk claude init`        | Bootstrap Claude workflow with CLAUDE.md and .claude/ docs |
+| `aitk claude sync`        | Sync managed role prompts, overwriting local changes       |
+| `aitk claude prompt`      | Generate master prompts for planning and implementation    |
+| `aitk claude gov`         | Build governance rules into .claude/GOV.md                 |
+| `aitk claude gov [stack]` | Build a stack-filtered subset into .claude/GOV-[STACK].md  |
 
 ### Sandbox
 

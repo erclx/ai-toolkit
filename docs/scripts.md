@@ -52,4 +52,4 @@ scripts/
 
 **`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator; it ties together missing dep installation, script injection, and gitignore merging in one call.
 
-**`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Both consumers call the same function. Don't duplicate this logic if adding a third.
+**`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names; when provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
