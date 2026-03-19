@@ -7,7 +7,9 @@ All output must comply with the governance rules below without exception.
 
 ## GOVERNANCE RULES
 
+<gov>
 {{GOVERNANCE_RULES}}
+</gov>
 
 ## CRITICAL CONSTRAINTS
 
