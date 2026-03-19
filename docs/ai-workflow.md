@@ -13,8 +13,8 @@ All planning docs live in `.claude/` at the project root.
 ├── PLANNER.md       ← system prompt for planning sessions
 ├── REQUIREMENTS.md  ← goals, non-goals, MVP scope
 ├── ARCHITECTURE.md  ← technical design decisions
-├── DESIGN.md        ← color, typography, spacing (UI projects)
-├── WIREFRAMES.md    ← ASCII layout sketches (UI projects)
+├── DESIGN.md        ← visual intent and token decisions (UI projects)
+├── WIREFRAMES.md    ← ASCII wireframes; layout, UI copy, and interaction rules (UI projects)
 ├── TASKS.md         ← persistent task tracker, source of truth
 ├── REVIEWER.md      ← system prompt for code review
 ├── IMPLEMENTER.md   ← context prompt for implementation sessions
