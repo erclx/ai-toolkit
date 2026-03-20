@@ -1,5 +1,5 @@
 ---
-description: Enforce opinionated react architecture and component patterns
+description: Enforce opinionated React architecture and component patterns
 globs: '**/*.tsx,**/*.ts'
 alwaysApply: false
 priority: 200
@@ -20,16 +20,16 @@ priority: 200
 
 ## Component patterns
 
-- Use function declarations for components, not arrow functions.
+- Use function declarations for components over arrow functions.
 - Define TypeScript interfaces for props immediately above the component.
 - Use `<>` shorthand for fragments unless key prop is required.
-- Use stable, unique keys for list items; never use array index.
-- Extract components when JSX exceeds a single responsibility; prefer composition of small components.
+- Use stable, unique keys for list items over array index.
+- Extract components when JSX exceeds a single responsibility.
 
 ## State and effects
 
 - Encapsulate data fetching and complex effects in custom hooks.
-- Do not use `useEffect` for derived state; use `useMemo`.
+- Use `useMemo` for derived state over `useEffect`.
 
 ## Memoization
 
@@ -42,10 +42,13 @@ priority: 200
 
 ## Error boundaries and Suspense
 
-- Place error boundaries at route level; place Suspense at data-fetching boundaries.
+- Place error boundaries at route level.
+- Place Suspense at data-fetching boundaries.
 - Do not use a single root-level error boundary as the only safety net.
 
 ## Accessibility
 
-- Use semantic HTML elements over `div`/`span` where a native element exists (`button`, `nav`, `main`, `section`).
-- Add `aria-label` to interactive elements that have no visible text label.
+- Use semantic HTML elements over `div`/`span` where a native element exists.
+- Add `aria-label` to interactive elements with no visible text label.
+- Always provide an `alt` prop on `<img>` elements.
+- Use `alt=""` for decorative images with no informational value.

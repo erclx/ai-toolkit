@@ -1,5 +1,5 @@
 ---
-description: Enforce web frontend security and xss prevention
+description: Enforce web frontend security and XSS prevention
 globs: '**/*.tsx,**/*.jsx,**/*.html'
 alwaysApply: false
 priority: 350
@@ -13,7 +13,8 @@ priority: 350
 
 ## Content sanitization
 
-- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent; never use without sanitization.
+- Sanitize all user-generated content rendered via `dangerouslySetInnerHTML` using DOMPurify or equivalent.
+- Never use `dangerouslySetInnerHTML` without sanitization.
 
 ## Input validation
 
@@ -22,7 +23,7 @@ priority: 350
 ## Storage and tokens
 
 - Do not store sensitive data (tokens, passwords, PII) in `localStorage` or `sessionStorage`.
-- Store authentication tokens in httpOnly cookies; never expose to JavaScript.
+- Store authentication tokens in httpOnly cookies over exposing them to JavaScript.
 
 ## Third-party scripts
 

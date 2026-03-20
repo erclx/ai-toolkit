@@ -25,9 +25,16 @@ priority: 210
 ## Error messages
 
 - State what to do, not what went wrong: `Enter a valid email` over `Email is invalid`.
-- Keep messages short and actionable; one sentence maximum.
+- Keep messages short and actionable.
+- One sentence maximum.
 
 ## Placeholder text
 
-- Show format examples, not instructions: `name@example.com` over `Enter your email here`.
+- Show format examples over instructions: `name@example.com` over `Enter your email here`.
 - Reserve instructions for labels or helper text below the input.
+
+## Alt text
+
+- Describe the content or function of the image, not its appearance.
+- Keep alt text concise; avoid prefixes like "Image of" or "Photo of".
+- Alt text for functional images (icons, buttons) should describe the action, not the graphic.
