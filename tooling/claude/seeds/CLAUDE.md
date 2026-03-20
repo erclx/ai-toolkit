@@ -2,12 +2,6 @@
 
 [One-line description]
 
-## Rules
-
-- Follow `standards/prose.md` for all document edits
-- When editing any doc, read surrounding content first and match its depth, length, and tone
-- Keep `.claude/` docs current as decisions are made
-
 ## Before making changes
 
 - Check `.claude/TASKS.md` for current scope and status
@@ -16,6 +10,12 @@
 - Check `.claude/DESIGN.md` for tokens, typography, spacing, and component rules
 - Check `.claude/REQUIREMENTS.md` for feature scope and non-goals
 - Check `.claude/GOV.md` for coding standards before writing or editing any code
+
+## Rules
+
+- Follow `standards/prose.md` for all document edits
+- When editing any doc, read surrounding content first and match its depth, length, and tone
+- Keep `.claude/` docs current as decisions are made
 
 ## Key paths
 
