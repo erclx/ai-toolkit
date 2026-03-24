@@ -32,9 +32,6 @@ check_dependencies() {
 }
 
 build_source_map() {
-  # Populates SOURCE_MAP_KEYS and SOURCE_MAP_VALS in parallel arrays.
-  # Root files: slug = filename without .md
-  # Folder files: slug = {folder}-{filename without .md}
   SOURCE_MAP_KEYS=()
   SOURCE_MAP_VALS=()
 
