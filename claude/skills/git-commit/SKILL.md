@@ -32,6 +32,8 @@ Run these commands in parallel to gather git context:
 - **Message:** `<type>(<scope>): <subject>`
 - **Length:** <count>/72
 
+After outputting the preview, execute the final command immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
+
 ### Final command
 
 ```bash

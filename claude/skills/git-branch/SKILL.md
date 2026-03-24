@@ -41,6 +41,8 @@ If EXISTS on remote, warn and stop:
 ⚠️ Branch exists on remote. Rename manually via GitHub UI or gh CLI to avoid breaking open PRs.
 ```
 
+After outputting the preview, execute the final command immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
+
 ### Final command
 
 Only output if LOCAL_ONLY:

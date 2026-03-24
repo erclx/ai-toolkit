@@ -44,4 +44,4 @@ Run these commands in parallel to gather context:
 
 ### Action
 
-On confirmation, append the new entries to `CHANGELOG.md` following changelog.md format exactly.
+After outputting the preview, append the new entries to `CHANGELOG.md` following changelog.md format exactly. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.

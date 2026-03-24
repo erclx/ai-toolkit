@@ -53,6 +53,8 @@ Run these commands in parallel to gather git context:
 
 **All <total> commits accounted for.**
 
+After outputting the preview, execute the final commands immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
+
 ### Final commands
 
 ```bash
