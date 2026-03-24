@@ -17,6 +17,7 @@ show_help() {
   echo -e "${GREY}│${NC}    gov [command]      ${GREY}# Governance commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    standards [cmd]    ${GREY}# Standards commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    snippets [cmd]     ${GREY}# Snippets commands (install, sync)${NC}"
+  echo -e "${GREY}│${NC}    prompts [cmd]      ${GREY}# Prompts commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks (sync, ref, create)${NC}"
   echo -e "${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}"
   echo -e "${GREY}│${NC}"
@@ -33,6 +34,8 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk standards sync ../my-app"
   echo -e "${GREY}│${NC}    aitk snippets install base ../my-app"
   echo -e "${GREY}│${NC}    aitk snippets sync ../my-app"
+  echo -e "${GREY}│${NC}    aitk prompts install scripting ../my-app"
+  echo -e "${GREY}│${NC}    aitk prompts sync ../my-app"
   echo -e "${GREY}│${NC}    aitk tooling sync base"
   echo -e "${GREY}│${NC}    aitk tooling create"
   echo -e "${GREY}│${NC}    aitk claude prompt"
@@ -61,6 +64,10 @@ main() {
   snippets)
     shift
     exec "$PROJECT_ROOT/scripts/manage-snippets.sh" "$@"
+    ;;
+  prompts)
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-prompts.sh" "$@"
     ;;
   tooling)
     shift
