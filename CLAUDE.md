@@ -43,4 +43,16 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 - `bun run check`: lint, format, spell check
 - `bun run format`: auto-fix formatting
-- `bun run clean`: remove generated artifacts
+
+## Spelling
+
+- Add unknown words to the appropriate dictionary defined in `cspell.json`
+- Keep dictionary files sorted alphabetically
+
+## Snippets
+
+- When a snippet is referenced with `@`, execute its instructions immediately using available session context
+
+## Memory
+
+- Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
