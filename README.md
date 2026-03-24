@@ -43,6 +43,13 @@ Run `aitk` from the repo root.
 | `aitk snippets sync [path]`               | Sync snippets already present in project |
 | `aitk snippets create`                    | Create a new snippet and register it     |
 
+### Prompts
+
+| Command                                  | Description                             |
+| ---------------------------------------- | --------------------------------------- |
+| `aitk prompts install [category] [path]` | Install prompts for a category          |
+| `aitk prompts sync [path]`               | Sync prompts already present in project |
+
 ### Tooling
 
 | Command                           | Description                                                      |

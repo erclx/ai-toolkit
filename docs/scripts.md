@@ -14,6 +14,8 @@ scripts/
 ├── manage-claude.sh     ← aitk claude entry point
 ├── manage-sandbox.sh    ← aitk sandbox entry point
 ├── manage-tooling.sh    ← aitk tooling entry point
+├── manage-snippets.sh   ← aitk snippets entry point
+├── manage-prompts.sh    ← aitk prompts entry point
 ├── config.sh            ← shared project config (GITHUB_ORG, DEFAULT_GEMINI_MODEL)
 ├── core/
 │   ├── verify.sh        ← runs all checks: format, spell, shell
