@@ -13,7 +13,11 @@ Follow it exactly.
 
 ## Context
 
-Run `scripts/context.sh` to gather git context before generating a branch name.
+Run these commands in parallel to gather git context:
+
+- `git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
+- `git rev-parse --verify "origin/$(git branch --show-current)" 2>/dev/null && echo "EXISTS" || echo "LOCAL_ONLY"`
+- `git log main..HEAD --oneline 2>/dev/null || echo "NO_COMMITS"`
 
 ## Guards
 
@@ -21,7 +25,7 @@ Run `scripts/context.sh` to gather git context before generating a branch name.
 - If branch name already follows conventions, stop: `✅ Branch name already follows conventions.`
 - If no commits and no args provided, stop: `❌ No commits or description to derive a branch name from.`
 
-## Response Format
+## Response format
 
 ### Preview
 
