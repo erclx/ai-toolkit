@@ -4,25 +4,37 @@
 
 Prompts are system prompt generators for AI-assisted authoring tasks. Each prompt defines a role, constraints, and output format for generating a specific artifact type. They are machine-readable specs optimized for token efficiency and deterministic output.
 
+Select prompts can be installed into target projects via `aitk prompts install`. Only prompts registered in `prompts.toml` are installable; toolkit-internal prompts stay in this repo only.
+
 ## Structure
 
 ```plaintext
-prompts/          ← system prompt generators
+prompts/
+├── *.md              ← system prompt generators
+└── prompts.toml      ← category definitions (name lists)
 docs/
-└── prompts.md    ← this file
+└── prompts.md        ← this file
 ```
+
+## Categories
+
+Prompts are organized into categories in `prompts.toml`. Each category is a named list of prompt file stems. There is no inheritance; categories are flat file lists.
+
+| Category    | Names       |
+| ----------- | ----------- |
+| `scripting` | bash-script |
 
 ## Prompts
 
-| File                     | Generates                                    |
-| ------------------------ | -------------------------------------------- |
-| `bash-script.md`         | Production-grade Bash scripts with visual UI |
-| `claude-skill.md`        | Claude Code skill SKILL.md files             |
-| `cursor-rules.md`        | Cursor .mdc rule files                       |
-| `gemini-cli.md`          | Gemini CLI TOML command files                |
-| `meta-prompt.md`         | System prompts from raw user ideas           |
-| `standards-reference.md` | Standards reference markdown files           |
-| `tooling-reference.md`   | Tooling stack reference.md files             |
+| File                     | Generates                                    | Exportable |
+| ------------------------ | -------------------------------------------- | ---------- |
+| `bash-script.md`         | Production-grade Bash scripts with visual UI | Yes        |
+| `claude-skill.md`        | Claude Code skill SKILL.md files             | No         |
+| `cursor-rules.md`        | Cursor .mdc rule files                       | No         |
+| `gemini-cli.md`          | Gemini CLI TOML command files                | No         |
+| `meta-prompt.md`         | System prompts from raw user ideas           | No         |
+| `standards-reference.md` | Standards reference markdown files           | No         |
+| `tooling-reference.md`   | Tooling stack reference.md files             | No         |
 
 ## Conventions
 
@@ -32,6 +44,48 @@ docs/
 - Every prompt includes `## ROLE`, `## CRITICAL CONSTRAINTS`, `## OUTPUT FORMAT`
 - Include `## VALIDATION` when the output involves multi-step logic or edge cases
 
+## CLI
+
+| Command                                  | Description                                                          |
+| ---------------------------------------- | -------------------------------------------------------------------- |
+| `aitk prompts install [category] [path]` | Copy prompts for a category into a project, use `all` for everything |
+| `aitk prompts sync [path]`               | Update prompts already present (never adds new)                      |
+
+`aitk prompts` with no args shows a picker: `install` or `sync`.
+
+## Workflow
+
+To install prompts into a new project:
+
+```bash
+aitk prompts install scripting ../my-app
+aitk prompts install all ../my-app
+```
+
+To sync updates to an existing project:
+
+```bash
+aitk prompts sync ../my-app
+```
+
+`sync` diffs all `.md` files already present in the target `prompts/` folder against the toolkit source. It is not category-aware; it only updates what is already there, never adds new files.
+
 ## Adding a prompt
 
 Create a `.md` file in `prompts/` following the all-caps heading convention. Include role, constraints, output format, at least one complete example, and a validation checklist if the output is complex.
+
+To make a prompt installable, register it in `prompts.toml` under the appropriate category:
+
+```toml
+[scripting]
+names = ["bash-script", "your-new-prompt"]
+```
+
+## Adding a category
+
+Append a new section to `prompts.toml`:
+
+```toml
+[my-category]
+names = ["prompt-one", "prompt-two"]
+```

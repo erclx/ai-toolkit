@@ -30,6 +30,13 @@ scripts/
 │   ├── sync.sh          ← full tooling sync: configs, seeds, deps, scripts, gitignore
 │   ├── ref.sh           ← drops reference docs only
 │   └── create.sh        ← creates new stack stub
+├── snippets/
+│   ├── install.sh       ← copies slugs for a category into a target project
+│   ├── sync.sh          ← diffs and updates snippets already present in target
+│   └── create.sh        ← creates a new snippet and registers it in snippets.toml
+├── prompts/
+│   ├── install.sh       ← copies prompts for a category into a target project
+│   └── sync.sh          ← diffs and updates prompts already present in target
 ├── claude/
 │   └── prompt.sh        ← generates master prompts from installed rules + context docs
 ├── sandbox/             ← scenario scripts, see docs/sandbox.md
