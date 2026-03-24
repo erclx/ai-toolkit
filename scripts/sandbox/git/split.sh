@@ -46,5 +46,5 @@ EOF
   log_step "Scenario ready: mixed commits on feat/user-auth"
   log_info "Context: 6 commits ahead of main — 3 auth feature, 1 chore/scripts, 2 docs"
   log_info "Action:  gemini git:split"
-  log_info "Expect:  groups feature commits separately, proposes chore + docs branches"
+  log_info "Expect:  renames feat/user-auth to primary concern; proposes chore + docs as secondary branches"
 }

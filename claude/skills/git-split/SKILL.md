@@ -34,8 +34,9 @@ Run these commands in parallel to gather git context:
 - Group commits by concern using both commit messages and file paths.
 - Prefer fewer branches: combine related commits into one branch.
 - Only split into separate branches when concerns are clearly independent.
-- The current feature branch stays as-is and is not listed as a new branch.
-- Propose one new branch per independent concern following branch.md format.
+- Identify the primary concern of the current branch. Rename the current branch to reflect that concern using `git branch -m`. Secondary concerns are extracted as new focused branches off main via cherry-pick.
+- If no single concern dominates (dumping-ground branch with no clear primary), split all commits into new focused branches and add `git branch -d <current>` to delete the original.
+- Propose one new branch per secondary concern following branch.md format.
 - Do not include push commands — that is the developer's decision.
 
 ## Response format
@@ -45,22 +46,25 @@ Run these commands in parallel to gather git context:
 **Current branch:** <branch_name>
 **Total commits ahead of main:** <count>
 
-| Group           | Branch               | Commits | Count |
-| --------------- | -------------------- | ------- | ----- |
-| Feature (stays) | <current_branch>     | <shas>  | <n>   |
-| <concern>       | <type>/<description> | <shas>  | <n>   |
+| Group            | Branch                        | Commits | Count |
+| ---------------- | ----------------------------- | ------- | ----- |
+| Primary (rename) | <current_branch> → <new_name> | <shas>  | <n>   |
+| <concern>        | <type>/<description>          | <shas>  | <n>   |
 
 **All <total> commits accounted for.**
 
 ### Final commands
 
 ```bash
-# Create and cherry-pick each branch
+# Rename current branch to reflect primary concern
+git branch -m <current_branch> <new_name>
+
+# Create and cherry-pick each secondary branch
 git checkout main && git checkout -b <branch> && git cherry-pick <sha> <sha>
 git checkout main && git checkout -b <branch> && git cherry-pick <sha>
 
-# Return to your feature branch
-git checkout <current_branch>
+# Return to primary branch
+git checkout <new_name>
 
 # After sibling PRs are merged to main, rebase:
 # git rebase main
@@ -70,6 +74,6 @@ git checkout <current_branch>
 
 Respond with exactly one line:
 
-`✅ Created: <branch1>, <branch2>`
+`✅ Renamed: <old> → <new> | Created: <branch1>, <branch2>`
 
 Do not add any other text.
