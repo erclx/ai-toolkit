@@ -2,7 +2,7 @@
 
 ## Overview
 
-Snippets are small, reusable prompts invokable from Claude or Gemini chat via the Chrome extension using `slug:prompt` format. Each snippet is a focused plain markdown file with no frontmatter and no structure requirements.
+Snippets are small, reusable prompts stored as plain markdown files. Invoke them from Claude or Gemini chat via the Chrome extension, or directly in Claude Code. For authoring conventions and invocation details, see `standards/snippets.md`.
 
 ## Structure
 
@@ -14,42 +14,37 @@ docs/
 └── snippets.md        ← this file
 ```
 
-## Conventions
-
-Snippets follow strict authoring conventions detailed in `standards/snippets.md`. Key conventions include:
-
-- Filename is the slug (e.g., `claude-edit.md` is invoked as `claude-edit`).
-- Kebab-case filenames.
-- Plain markdown only; no YAML frontmatter.
-- One focused purpose per snippet.
-- Use `<placeholder>` syntax for fill-in values.
-- Sync to the Chrome extension from `snippets/`.
-
 ## Categories
 
 Snippets are organized into categories in `snippets.toml`. Each category is a named list of slugs. There is no inheritance; categories are flat file lists.
 
-| Category | Slugs                                                                                                 |
-| -------- | ----------------------------------------------------------------------------------------------------- |
-| `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search                                       |
-| `claude` | claude-plan, claude-review, claude-docs, claude-tell, claude-feature, claude-ui-test, claude-ux-audit |
+| Category | Slugs                                                                                                                                                                  |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search, create-snippet, claude-steps                                                                          |
+| `claude` | claude-plan, claude-review, claude-docs, claude-tell, claude-feature, claude-ui-test, claude-ux-audit, claude-figma, claude-tasks, claude-docs-sync, claude-seed-audit |
 
 ## Snippets
 
-| Slug              | Purpose                                             |
-| ----------------- | --------------------------------------------------- |
-| `chat-mode`       | Session opener for tool behavior                    |
-| `senior-mode`     | Senior-level judgment, discuss only                 |
-| `claude-edit`     | Generate Claude Code edit prompt                    |
-| `session-notes`   | Capture session decisions                           |
-| `code-search`     | Generate a git grep bash script                     |
-| `claude-plan`     | Plan a feature, update `.claude/` docs when done    |
-| `claude-review`   | Adopt REVIEWER.md role, review changes against main |
-| `claude-docs`     | Sync `.claude/` docs with session decisions         |
-| `claude-tell`     | Produce doc blocks and Claude Code handoff          |
-| `claude-feature`  | Scan codebase before implementing a feature         |
-| `claude-ui-test`  | Manual browser verification checklist               |
-| `claude-ux-audit` | UX/UI audit of existing features                    |
+| Slug                | Purpose                                             |
+| ------------------- | --------------------------------------------------- |
+| `chat-mode`         | Session opener for tool behavior                    |
+| `senior-mode`       | Senior-level judgment, discuss only                 |
+| `claude-edit`       | Generate Claude Code edit prompt                    |
+| `session-notes`     | Capture session decisions                           |
+| `code-search`       | Generate a git grep bash script                     |
+| `claude-plan`       | Plan a feature, update `.claude/` docs when done    |
+| `claude-review`     | Adopt REVIEWER.md role, review changes against main |
+| `claude-docs`       | Sync `.claude/` docs with session decisions         |
+| `claude-tell`       | Produce doc blocks and Claude Code handoff          |
+| `claude-feature`    | Scan codebase before implementing a feature         |
+| `claude-ui-test`    | Manual browser verification checklist               |
+| `claude-ux-audit`   | UX/UI audit of existing features                    |
+| `create-snippet`    | Draft a new snippet (chat/Chrome extension)         |
+| `claude-steps`      | Request step-by-step instructions for any process   |
+| `claude-figma`      | Generate Figma instructions from a design spec      |
+| `claude-tasks`      | Promote complete tasks and archive overflow         |
+| `claude-docs-sync`  | Sync public docs with recent code changes           |
+| `claude-seed-audit` | Audit seed files against toolkit source of truth    |
 
 ## CLI
 

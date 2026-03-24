@@ -1,6 +1,4 @@
-I want to implement: <feature or task name>
-
-Scan relevant source files and tell me:
+I want to implement the following. Scan relevant source files and tell me:
 
 1. Which files will be touched
 2. Any code-level conflicts or risks with existing implementation

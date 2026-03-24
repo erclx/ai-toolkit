@@ -1,4 +1,4 @@
-Write a bash script that searches for <pattern> across the project.
+Write a bash script that searches for the following pattern across the project.
 
 - Use `git grep` to respect `.gitignore`
 - Output format: filename on one line, matches indented below with line numbers

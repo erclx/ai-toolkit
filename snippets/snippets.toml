@@ -5,6 +5,8 @@ slugs = [
     "claude-edit",
     "session-notes",
     "code-search",
+    "create-snippet",
+    "claude-steps",
 ]
 
 [claude]
@@ -16,4 +18,8 @@ slugs = [
     "claude-feature",
     "claude-ui-test",
     "claude-ux-audit",
+    "claude-figma",
+    "claude-tasks",
+    "claude-docs-sync",
+    "claude-seed-audit",
 ]
