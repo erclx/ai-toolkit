@@ -18,10 +18,10 @@ docs/
 
 Snippets are organized into categories in `snippets.toml`. Each category is a named list of slugs. There is no inheritance; categories are flat file lists.
 
-| Category | Slugs                                                                                                                                               |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search, create-snippet, claude-steps                                                       |
-| `claude` | claude-plan, claude-review, claude-docs, claude-tell, claude-feature, claude-ui-test, claude-ux-audit, claude-figma, claude-tasks, claude-docs-sync |
+| Category | Slugs                                                                                                                                                                  |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`   | chat-mode, senior-mode, claude-edit, session-notes, code-search, create-snippet, claude-steps                                                                          |
+| `claude` | claude-plan, claude-review, claude-docs, claude-tell, claude-feature, claude-ui-test, claude-ux-audit, claude-figma, claude-tasks, claude-docs-sync, claude-seed-audit |
 
 ## Snippets
 
