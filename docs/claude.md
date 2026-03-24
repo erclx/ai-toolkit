@@ -36,7 +36,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 
 | Skill               | Description                                                |
 | ------------------- | ---------------------------------------------------------- |
-| `create-snippet`    | Create a new snippet and register it in snippets.toml      |
+| `create-snippet`    | Create a new snippet file in snippets/                     |
 | `git-branch`        | Rename current branch to match conventional format         |
 | `git-commit`        | Generate a conventional commit message from staged changes |
 | `git-pr`            | Generate a PR description and open a pull request          |
