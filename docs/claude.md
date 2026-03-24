@@ -37,6 +37,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | Skill               | Description                                                |
 | ------------------- | ---------------------------------------------------------- |
 | `create-snippet`    | Create a new snippet file in snippets/                     |
+| `docs-sync`         | Sync project docs to reflect all changes since main        |
 | `git-branch`        | Rename current branch to match conventional format         |
 | `git-commit`        | Generate a conventional commit message from staged changes |
 | `git-pr`            | Generate a PR description and open a pull request          |
