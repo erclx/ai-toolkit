@@ -11,7 +11,7 @@ description: Reusable prompt snippets for Claude and Gemini. Use for adding snip
 - Kebab-case only, no capitals, no underscores.
 - Plain markdown only. No YAML frontmatter, no structure requirements.
 - One focused purpose per snippet. If it needs sections it is a system prompt, not a snippet.
-- `<placeholder>` syntax for fill-in values, never `[placeholder]`.
+- No user fill-in placeholders; if a value depends on context, the user adds it after invocation.
 
 ## Categories
 
