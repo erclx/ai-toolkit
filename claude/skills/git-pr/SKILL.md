@@ -45,3 +45,11 @@ BODY
   && rm .claude/.tmp/pr-body.md \
   && echo "Link: $(gh pr view --json url -q .url)"
 ```
+
+## After execution
+
+Respond with exactly one line:
+
+`✅ PR: <url>`
+
+Do not add any other text.

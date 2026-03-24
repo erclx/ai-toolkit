@@ -65,3 +65,11 @@ git checkout <current_branch>
 # After sibling PRs are merged to main, rebase:
 # git rebase main
 ```
+
+## After execution
+
+Respond with exactly one line:
+
+`✅ Created: <branch1>, <branch2>`
+
+Do not add any other text.

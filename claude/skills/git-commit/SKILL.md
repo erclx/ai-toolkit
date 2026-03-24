@@ -37,3 +37,11 @@ Run these commands in parallel to gather git context:
 ```bash
 git commit -m "<type>(<scope>): <subject>"
 ```
+
+## After execution
+
+Respond with exactly one line:
+
+`✅ Committed: <type>(<scope>): <subject>`
+
+Do not add any other text.

@@ -48,3 +48,11 @@ Only output if LOCAL_ONLY:
 ```bash
 git branch -m <current> <suggested>
 ```
+
+## After execution
+
+Respond with exactly one line:
+
+`✅ Renamed: <current> → <suggested>`
+
+Do not add any other text.

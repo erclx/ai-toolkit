@@ -57,3 +57,11 @@ git add <file1> <file2> && git commit -m "<type>(<scope>): <subject>"
 # Commit 2: <subject>
 git add <file3> && git commit -m "<type>(<scope>): <subject>"
 ```
+
+## After execution
+
+Respond with exactly one line:
+
+`✅ Committed: <n> commits`
+
+Do not add any other text.
