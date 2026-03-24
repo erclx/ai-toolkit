@@ -44,6 +44,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-split`         | Split a mixed-commit branch into focused branches off main |
 | `git-stage`         | Batch-commit staged files grouped by concern               |
 | `release-changelog` | Generate a changelog entry from commits since main         |
+| `git-ship`          | Run the full post-feature workflow in one sequence         |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. See `standards/skill.md` for authoring conventions.
 
