@@ -19,31 +19,26 @@ Base snippets live at the root with no prefix. Category snippets live in a named
 
 ## Categories
 
-| Category | Slugs                                                                                                                                                                   |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base`   | chat-mode, senior-mode, session-notes, code-search, create-snippet                                                                                                      |
-| `claude` | claude-docs, claude-docs-sync, claude-edit, claude-feature, claude-figma, claude-review, claude-seed-audit, claude-steps, claude-tasks, claude-ui-test, claude-ux-audit |
+| Category | Slugs                                                                                     |
+| -------- | ----------------------------------------------------------------------------------------- |
+| `base`   | chat-mode, senior-mode, session-notes, code-search, create-snippet                        |
+| `claude` | claude-edit, claude-figma, claude-seed-audit, claude-steps, claude-tasks, claude-ux-audit |
 
 ## Snippets
 
-| Slug                | Purpose                                             |
-| ------------------- | --------------------------------------------------- |
-| `chat-mode`         | Session opener for tool behavior                    |
-| `senior-mode`       | Senior-level judgment, discuss only                 |
-| `session-notes`     | Capture session decisions                           |
-| `code-search`       | Generate a git grep bash script                     |
-| `create-snippet`    | Draft a new snippet (chat/Chrome extension)         |
-| `claude-docs`       | Sync `.claude/` docs with session decisions         |
-| `claude-docs-sync`  | Sync public docs with recent code changes           |
-| `claude-edit`       | Generate Claude Code edit prompt                    |
-| `claude-feature`    | Scan codebase before implementing a feature         |
-| `claude-figma`      | Generate Figma instructions from a design spec      |
-| `claude-review`     | Adopt REVIEWER.md role, review changes against main |
-| `claude-seed-audit` | Audit seed files against toolkit source of truth    |
-| `claude-steps`      | Request step-by-step instructions for any process   |
-| `claude-tasks`      | Promote complete tasks and archive overflow         |
-| `claude-ui-test`    | Manual browser verification checklist               |
-| `claude-ux-audit`   | UX/UI audit of existing features                    |
+| Slug                | Purpose                                           |
+| ------------------- | ------------------------------------------------- |
+| `chat-mode`         | Session opener for tool behavior                  |
+| `senior-mode`       | Senior-level judgment, discuss only               |
+| `session-notes`     | Capture session decisions                         |
+| `code-search`       | Generate a git grep bash script                   |
+| `create-snippet`    | Draft a new snippet (chat/Chrome extension)       |
+| `claude-edit`       | Generate Claude Code edit prompt                  |
+| `claude-figma`      | Generate Figma instructions from a design spec    |
+| `claude-seed-audit` | Audit seed files against toolkit source of truth  |
+| `claude-steps`      | Request step-by-step instructions for any process |
+| `claude-tasks`      | Promote complete tasks and archive overflow       |
+| `claude-ux-audit`   | UX/UI audit of existing features                  |
 
 ## CLI
 
