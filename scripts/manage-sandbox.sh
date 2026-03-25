@@ -161,6 +161,7 @@ init_empty_sandbox() {
 
   cat <<EOF >"$SANDBOX/.gitignore"
 .gemini/.tmp/
+.claude/.tmp/
 node_modules
 EOF
   (

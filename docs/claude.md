@@ -60,7 +60,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-branch`        | Rename current branch to match conventional format                    |
 | `git-commit`        | Generate a conventional commit message from staged changes            |
 | `git-pr`            | Generate a PR description and open a pull request                     |
-| `git-split`         | Split a mixed-commit branch into focused branches off main            |
+| `git-split`         | Split a mixed-commit branch into focused branches and open PRs        |
 | `git-stage`         | Batch-commit staged files grouped by concern                          |
 | `release-changelog` | Generate a changelog entry from commits since main                    |
 | `git-ship`          | Run the full post-feature workflow in one sequence                    |
