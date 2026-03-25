@@ -7,6 +7,7 @@ Claude Code plugin and skills for the Toolkit.
 ```plaintext
 claude/
 ├── skills/              ← plugin skills (auto-discovered by plugin)
+│   ├── ai-sync/             ← suggest edits to CLAUDE.md and GEMINI.md based on recent changes
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── git-branch/          ← rename current branch to conventional format
@@ -37,9 +38,10 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 
 | Skill               | Description                                                      |
 | ------------------- | ---------------------------------------------------------------- |
+| `ai-sync`           | Suggest edits to CLAUDE.md and GEMINI.md based on recent changes |
 | `claude-feature`    | Plan a feature by reading Claude setup and scanning source files |
 | `create-snippet`    | Create a new snippet file in snippets/                           |
-| `docs-sync`         | Sync project docs to reflect all changes since main              |
+| `docs-sync`         | Rewrite stale README.md and docs/\*.md sections since main       |
 | `git-branch`        | Rename current branch to match conventional format               |
 | `git-commit`        | Generate a conventional commit message from staged changes       |
 | `git-pr`            | Generate a PR description and open a pull request                |
