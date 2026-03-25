@@ -5,9 +5,10 @@ description: Creates a new snippet file in snippets/. Use when asked to create a
 
 # Create snippet
 
-Before creating, read:
+Read these files in parallel:
 
 - `standards/snippets.md`: authoring conventions, invocation channels, use patterns
+- `standards/prose.md`: prose conventions for all generated text
 
 ## Steps
 

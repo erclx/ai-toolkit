@@ -5,16 +5,14 @@ description: Generates pull request titles and descriptions from git diffs. Use 
 
 # Git PR
 
-Before generating a PR description, read:
+## Context
+
+Read these files in parallel:
 
 - `standards/pr.md`: structure, rules, and banned phrases
 - `standards/prose.md`: prose conventions for all generated text
 
-Follow them exactly.
-
-## Context
-
-Run these commands in parallel to gather git context:
+Then run these commands in parallel to gather git context:
 
 - `git remote get-url origin 2>/dev/null || echo "NO_REMOTE"`
 - `git branch --show-current 2>/dev/null || echo "unknown"`

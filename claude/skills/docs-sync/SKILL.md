@@ -5,12 +5,10 @@ description: Rewrites stale README.md and docs/*.md sections based on changes si
 
 # Docs sync
 
-Before updating any docs, read:
+Read these files in parallel:
 
 - `standards/prose.md`: prose conventions for all generated text
 - `standards/readme.md`: README structure, required sections, and content rules
-
-Follow them exactly.
 
 ## Context
 
@@ -31,7 +29,7 @@ Discover docs dynamically. Do not hardcode paths:
 - Glob `README.md` at project root
 - Glob `docs/**/*.md`
 
-Read each discovered file.
+Read each discovered file in parallel.
 
 ## Analysis
 
