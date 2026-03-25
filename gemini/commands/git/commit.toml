@@ -62,6 +62,8 @@ Generate conventional commit messages from git diffs.
 git commit -m "<type>(<scope>): <subject>"
 ```
 
+Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
+
 ## AFTER EXECUTION
 
 After the shell command completes, respond with exactly one line:

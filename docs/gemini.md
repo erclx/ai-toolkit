@@ -19,10 +19,8 @@ gemini/
 │   │   ├── pr.toml          ← generate PR description and open draft
 │   │   ├── stage.toml       ← group staged files for batch commits
 │   │   └── split.toml       ← split mixed commits into separate branches
-│   ├── release/
-│   │   └── changelog.toml   ← generate changelog entry from commit history
-│   └── tasks/
-│       └── flush.toml       ← move completed tasks to Done and archive overflow
+│   └── release/
+│       └── changelog.toml   ← generate changelog entry from commit history
 └── gemini-extension.json    ← extension manifest, points contextFileName to GEMINI.md
 ```
 
@@ -48,7 +46,6 @@ Commands are deterministic scripts with zero AI tokens and zero variability. Eac
 | `/dev:review`        | Review code from a pasted response or branch diff vs main  |
 | `/docs:sync`         | Sync README and docs with codebase changes                 |
 | `/release:changelog` | Generate a changelog entry from commit history             |
-| `/tasks:flush`       | Move completed tasks to Done and archive overflow          |
 
 ## Adding a command
 

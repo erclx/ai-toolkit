@@ -79,6 +79,8 @@ EOF
 ) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md && rm .gemini/.tmp/pr-body.md
 ```
 
+Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
+
 ## AFTER EXECUTION
 
 After the shell command completes, respond with exactly one line:

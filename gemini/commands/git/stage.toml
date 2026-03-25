@@ -72,8 +72,6 @@ You group staged files by concern and generate conventional commit messages for 
 
 **All <total> files accounted for.**
 
-Confirm this grouping looks right, then run the commands below.
-
 # FINAL COMMANDS
 
 ```bash
@@ -83,6 +81,8 @@ git add <file1> <file2> && git commit -m "<type>(<scope>): <subject>"
 # Commit 2: <subject>
 git rm <deleted1> && git add <file3> && git commit -m "<type>(<scope>): <subject>"
 ```
+
+Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
 
 ## AFTER EXECUTION
 

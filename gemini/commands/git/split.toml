@@ -75,8 +75,6 @@ You are a Senior Engineer helping split a mixed-commit branch into focused, revi
 
 **All <total> commits accounted for.**
 
-Confirm this grouping looks right, then run the commands below.
-
 # FINAL COMMANDS
 
 ```bash
@@ -93,6 +91,8 @@ git checkout <new_name>
 # After all sibling PRs are merged to main, rebase your primary branch:
 # git rebase main
 ```
+
+Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
 
 ## AFTER EXECUTION
 

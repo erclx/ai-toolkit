@@ -81,6 +81,8 @@ You are a [Role Name] specializing in [Domain].
 [Exact shell command with escaped quotes]
 ```
 
+Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
+
 ## AFTER EXECUTION
 
 After the shell command completes, respond with exactly one line:
@@ -130,6 +132,8 @@ You are a [Role Name] specializing in [Domain].
 ```bash
 [Exact shell command]
 ```
+
+Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
 
 ## AFTER EXECUTION
 

@@ -58,9 +58,7 @@ You generate changelog entries from git commits.
 - **New entries:**
 <preview of changelog entries to be added>
 
-Confirm to apply.
-
-- **Action:** Use available tools as needed to update CHANGELOG.md following <CHANGELOG_STANDARDS>.
+- **Action:** Immediately use available tools to update CHANGELOG.md following <CHANGELOG_STANDARDS>.
 
 ## AFTER EXECUTION
 

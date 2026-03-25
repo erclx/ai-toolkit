@@ -61,8 +61,7 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 ## RESPONSE STRATEGY
 
 - **Thought:** Analyze <CODE_DIFF> and <CHANGED_FILES> → classify user-facing or internal → map to affected docs → plan surgical edits per file
-- **Preview:** Output impact analysis, then wait silently for confirmation
-- **Execute:** On confirmation, use `file_edit` for each affected file
+- **Preview:** Output impact analysis, then immediately use `write_file` for each affected file
 - **Report:** "✅ Docs updated: [list]" or "⏭️ No changes applied"
 
 ## PREVIEW FORMAT
