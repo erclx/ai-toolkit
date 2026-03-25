@@ -17,6 +17,7 @@ gemini/
 │   │   ├── branch.toml      ← rename current branch to conventional format
 │   │   ├── commit.toml      ← generate conventional commit message from staged changes
 │   │   ├── pr.toml          ← generate PR description and open PR
+│   │   ├── ship.toml        ← sync docs, commit, rename branch, and open PR
 │   │   ├── stage.toml       ← group staged files for batch commits
 │   │   └── split.toml       ← split mixed commits into separate branches
 │   └── release/
@@ -32,10 +33,11 @@ gemini extensions link ./gemini
 
 ## Commands
 
-Commands are deterministic scripts with zero AI tokens and zero variability. Each command is a `.toml` file organized by category and invoked as `/category:command` in Gemini CLI. See `prompts/gemini-cli.md` for authoring conventions.
+Each command is a `.toml` file organized by category and invoked as `/category:command` in Gemini CLI. Atomic commands handle a single operation; `/git:ship` is a multi-phase workflow that chains all release steps in one session. See `prompts/gemini-cli.md` for authoring conventions.
 
 | Command              | Description                                                |
 | -------------------- | ---------------------------------------------------------- |
+| `/git:ship`          | Sync docs, commit by concern, rename branch, and open PR   |
 | `/git:commit`        | Generate a conventional commit message from staged changes |
 | `/git:branch`        | Rename current branch to match conventional format         |
 | `/git:pr`            | Generate a PR description and open a PR                    |
