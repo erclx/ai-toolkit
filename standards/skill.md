@@ -34,7 +34,7 @@ Skills provide Claude Code with domain-specific constraints and rules inline, so
 - Link to `references/` files explicitly so Claude knows to load them
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Headers: sentence case for all levels (H1, H2, H3)
-- When reading multiple independent files, read them in parallel to reduce latency
+- When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
 
 ## Scripts
 
