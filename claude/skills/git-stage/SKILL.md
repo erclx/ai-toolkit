@@ -5,12 +5,10 @@ description: Groups staged files by concern and generates one conventional commi
 
 # Git stage
 
-Before generating commit groups, read:
+Read these files in parallel:
 
 - `standards/commit.md`: format, types, scopes, and constraints
 - `standards/prose.md`: prose conventions for all generated text
-
-Follow them exactly.
 
 ## Context
 

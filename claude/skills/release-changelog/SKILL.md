@@ -5,12 +5,10 @@ description: Generates a changelog entry from commits since main and appends it 
 
 # Release changelog
 
-Before generating entries, read:
+Read these files in parallel:
 
 - `standards/changelog.md`: categories, formatting, and filtering rules
 - `standards/prose.md`: prose conventions for all generated text
-
-Follow them exactly.
 
 ## Context
 
