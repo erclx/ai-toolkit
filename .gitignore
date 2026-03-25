@@ -14,3 +14,4 @@ node_modules/
 
 # Claude
 .claude/.tmp
+.claude/memory/
