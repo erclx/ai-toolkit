@@ -18,6 +18,17 @@ claude/
 │   └── release-changelog/   ← generate changelog entry from commits since main
 └── .claude-plugin/
     └── plugin.json      ← plugin manifest
+
+.claude/skills/          ← internal skills (toolkit repo only)
+├── aitk-claude/             ← Claude plugin and tooling domain
+├── aitk-gemini/             ← Gemini commands domain
+├── aitk-governance/         ← Cursor rules domain
+├── aitk-prompts/            ← system prompt templates domain
+├── aitk-scripts/            ← bash scripts domain
+├── aitk-snippets/           ← snippets domain
+├── aitk-standards/          ← standards and docs domain
+├── aitk-tooling/            ← tooling stacks domain
+└── aitk-session-resume/     ← resume in-progress work from memory
 ```
 
 ## Setup
@@ -51,6 +62,22 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-ship`          | Run the full post-feature workflow in one sequence               |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. See `standards/skill.md` for authoring conventions.
+
+## Internal skills
+
+Internal skills live in `.claude/skills/` and are toolkit-only. They are not installed into target projects.
+
+| Skill                 | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| `aitk-claude`         | Load before editing plugin skills or `docs/claude.md` |
+| `aitk-gemini`         | Load before editing Gemini commands                   |
+| `aitk-governance`     | Load before editing Cursor rules or stack definitions |
+| `aitk-prompts`        | Load before editing system prompt templates           |
+| `aitk-scripts`        | Load before editing scripts or sandbox scenarios      |
+| `aitk-snippets`       | Load before editing snippets or `snippets.toml`       |
+| `aitk-standards`      | Load before editing standards or docs                 |
+| `aitk-tooling`        | Load before editing tooling stacks or golden configs  |
+| `aitk-session-resume` | Resume in-progress work from memory at session start  |
 
 ## CLI
 
