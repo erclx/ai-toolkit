@@ -2,7 +2,7 @@
 
 A concise reference for when to reach for which tool, organized by what you're trying to do.
 
-> **Mental model:** Claude chat for planning. Claude Code for implementation, git, and release. Gemini CLI for review and task management.
+> **Mental model:** Claude chat to seed context at the start of a project and populate `.claude/` docs. Claude Code for everything after: implementation, docs, git, and release. Gemini CLI is available throughout, used as needed rather than at prescribed steps.
 
 ## Documents
 
@@ -27,20 +27,18 @@ Run `aitk claude init` to seed the `.claude/` directory, default prompt template
 
 ### New feature
 
-Run `aitk claude prompt` to build the context payload. Work in Claude chat for planning. It holds context across the whole feature so wireframes, task lists, and decisions stay in the same session.
+Work in Claude Code directly. It reads CLAUDE.md automatically and has full file access, no pasting needed.
 
-Switch to Claude Code for implementation. It reads CLAUDE.md automatically and has full file access, no pasting needed.
-
-- Invoke `claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
+- Invoke `toolkit:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
 - For UI changes, invoke `toolkit:claude-ui-test` to generate a browser verification checklist before review
 - Run `gemini dev:review` in terminal, copy valid findings to Claude Code and fix
-- If decisions diverged from the original plan (design pivots, requirement changes), invoke `claude-docs` to update `.claude/` planning docs before shipping
+- If decisions diverged from the original plan (design pivots, requirement changes), invoke `toolkit:claude-docs` to update `.claude/` planning docs before shipping
 - Invoke `toolkit:git-ship` to sync docs, commit by concern, rename branch, and open PR
 
 ### UI polish
 
-Verify the change manually in the browser. Use `claude-ui-test` if you need Claude Code to produce a browser verification checklist for the session. For the fix itself, describe the change in Claude chat or Claude Code directly.
+Verify the change manually in the browser. Invoke `toolkit:claude-ui-test` if you need a browser verification checklist for the session. For the fix itself, describe the change in Claude Code directly.
 
 ### Quick fix
 
@@ -50,7 +48,17 @@ Verify the change manually in the browser. Use `claude-ui-test` if you need Clau
 
 ### Review
 
-Run `gemini dev:review` in terminal. Copy valid findings to Claude Code and fix. If nothing is valid, do nothing. For a deeper review with fresh context, invoke `claude-review` in Claude Code. It reads REVIEWER.md and produces a findings report against main.
+Run `gemini dev:review` in terminal. Copy valid findings to Claude Code and fix. If nothing is valid, do nothing.
+
+## Skills
+
+| Skill                    | When to use                                                 |
+| ------------------------ | ----------------------------------------------------------- |
+| `toolkit:claude-feature` | Before implementation, scan for conflicts and ambiguities   |
+| `toolkit:claude-docs`    | When decisions diverged from plan, update `.claude/` docs   |
+| `toolkit:claude-ui-test` | After UI changes, generate a browser verification checklist |
+| `toolkit:ai-sync`        | When structure changes, review `CLAUDE.md` and `GEMINI.md`  |
+| `toolkit:git-ship`       | Post-feature: sync docs, commit, rename branch, open PR     |
 
 ## Maintenance
 
@@ -66,15 +74,12 @@ review finds  → Claude Code (same implementation session)
 
 ## Snippets
 
-Claude-specific snippets require the `.claude/` workflow to be set up.
+Claude-specific snippets require the `.claude/` workflow to be set up. For the full list, see `docs/snippets.md`.
 
-| Slug              | When to use                                                        |
-| ----------------- | ------------------------------------------------------------------ |
-| `claude-feature`  | Before implementation, scan for code-level conflicts               |
-| `claude-review`   | After implementation, triggers REVIEWER.md role in Claude Code     |
-| `claude-ui-test`  | After implementation, generate manual browser verification steps   |
-| `claude-docs`     | When decisions diverged from plan, update `.claude/` planning docs |
-| `claude-ux-audit` | Standalone session, UX/UI audit of existing features               |
+| Slug              | When to use                                          |
+| ----------------- | ---------------------------------------------------- |
+| `claude-ux-audit` | Standalone session, UX/UI audit of existing features |
+| `claude-tasks`    | Promote complete tasks and archive overflow          |
 
 ## Prompt generation
 
