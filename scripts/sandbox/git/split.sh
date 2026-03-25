@@ -2,6 +2,10 @@
 set -e
 set -o pipefail
 
+use_anchor() {
+  export ANCHOR_REPO="toolkit-sandbox"
+}
+
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
@@ -10,11 +14,14 @@ use_config() {
 
 stage_setup() {
   git init -q
-  git config user.email "architect@example.com"
-  git config user.name "Senior Architect"
+  git config user.email "${GITHUB_ORG}@github.com"
+  git config user.name "Eric"
 
   echo "# My App" >README.md
   git add . && git commit -m "chore(project): init" -q
+
+  git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
+  git push --force origin HEAD:main
 
   git checkout -b feat/user-auth -q
 
@@ -46,5 +53,5 @@ EOF
   log_step "Scenario ready: mixed commits on feat/user-auth"
   log_info "Context: 6 commits ahead of main — 3 auth feature, 1 chore/scripts, 2 docs"
   log_info "Action:  gemini git:split"
-  log_info "Expect:  renames feat/user-auth to primary concern; proposes chore + docs as secondary branches"
+  log_info "Expect:  renames feat/user-auth to primary concern; creates chore + docs secondary branches, pushes, and opens PRs"
 }

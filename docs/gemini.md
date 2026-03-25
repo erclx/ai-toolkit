@@ -16,7 +16,7 @@ gemini/
 │   ├── git/
 │   │   ├── branch.toml      ← rename current branch to conventional format
 │   │   ├── commit.toml      ← generate conventional commit message from staged changes
-│   │   ├── pr.toml          ← generate PR description and open draft
+│   │   ├── pr.toml          ← generate PR description and open PR
 │   │   ├── stage.toml       ← group staged files for batch commits
 │   │   └── split.toml       ← split mixed commits into separate branches
 │   └── release/
@@ -38,9 +38,9 @@ Commands are deterministic scripts with zero AI tokens and zero variability. Eac
 | -------------------- | ---------------------------------------------------------- |
 | `/git:commit`        | Generate a conventional commit message from staged changes |
 | `/git:branch`        | Rename current branch to match conventional format         |
-| `/git:pr`            | Generate a PR description and open a draft                 |
+| `/git:pr`            | Generate a PR description and open a PR                    |
 | `/git:stage`         | Group staged files for batch commits                       |
-| `/git:split`         | Split mixed commits into separate branches                 |
+| `/git:split`         | Split mixed commits into separate branches and open PRs    |
 | `/dev:apply`         | Apply file changes from a chat response                    |
 | `/dev:comment`       | Add comments to source code                                |
 | `/dev:review`        | Review code from a pasted response or branch diff vs main  |

@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 use_anchor() {
-  export ANCHOR_REPO="gemini-cli-sandbox"
+  export ANCHOR_REPO="toolkit-sandbox"
 }
 
 use_config() {

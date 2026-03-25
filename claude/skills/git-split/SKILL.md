@@ -5,11 +5,12 @@ description: Splits a mixed-commit branch into focused branches off main using c
 
 # Git split
 
-Before proposing a split, read:
+Before proposing a split, read in parallel:
 
 - `standards/branch.md`: format, types, length limit, and constraints
+- `standards/pr.md`: PR title format, body sections, and content rules
 
-Follow it exactly.
+Follow both exactly.
 
 ## Context
 
@@ -37,7 +38,6 @@ Run these commands in parallel to gather git context:
 - Identify the primary concern of the current branch. Rename the current branch to reflect that concern using `git branch -m`. Secondary concerns are extracted as new focused branches off main via cherry-pick.
 - If no single concern dominates (dumping-ground branch with no clear primary), split all commits into new focused branches and add `git branch -d <current>` to delete the original.
 - Propose one new branch per secondary concern following branch.md format.
-- Do not include push commands — that is the developer's decision.
 
 ## Response format
 
@@ -61,9 +61,22 @@ After outputting the preview, execute the final commands immediately. Claude Cod
 # Rename current branch to reflect primary concern
 git branch -m <current_branch> <new_name>
 
-# Create and cherry-pick each secondary branch
-git checkout main && git checkout -b <branch> && git cherry-pick <sha> <sha>
-git checkout main && git checkout -b <branch> && git cherry-pick <sha>
+# Create, cherry-pick, push, and open PR for each secondary branch
+mkdir -p .claude/.tmp
+git checkout main && git checkout -b <branch> && git cherry-pick <sha> <sha> \
+  && git push -u origin <branch> \
+  && (cat <<'BODY' > .claude/.tmp/pr-body-<branch>.md
+<body following pr.md template, written from the cherry-picked commits>
+BODY
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-body-<branch>.md \
+  && rm .claude/.tmp/pr-body-<branch>.md
+git checkout main && git checkout -b <branch> && git cherry-pick <sha> \
+  && git push -u origin <branch> \
+  && (cat <<'BODY' > .claude/.tmp/pr-body-<branch>.md
+<body following pr.md template, written from the cherry-picked commits>
+BODY
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-body-<branch>.md \
+  && rm .claude/.tmp/pr-body-<branch>.md
 
 # Return to primary branch
 git checkout <new_name>
@@ -76,6 +89,6 @@ git checkout <new_name>
 
 Respond with exactly one line:
 
-`✅ Renamed: <old> → <new> | Created: <branch1>, <branch2>`
+`✅ Renamed: <old> → <new> | PRs: <url1>, <url2>`
 
 Do not add any other text.
