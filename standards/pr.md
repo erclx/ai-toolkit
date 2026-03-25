@@ -20,8 +20,8 @@
 
 - `## Summary`: 1-2 sentences following `<Action Verb> <Direct Object> to <Result>`, expand for clarity if needed
 - `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not "auth handler"); always use bullet points, never prose
-- `## Technical Context`: 1-2 lines of architectural reasoning explaining why, not what; use bullet points when multiple reasons, single sentence acceptable when only one
-- `## Testing`: specify exact commands or test cases run; always use bullet points, never prose
+- `## Technical Context` (optional): 1-2 lines of architectural reasoning explaining why, not what; omit for docs, config, or trivial changes; use bullet points when multiple reasons, single sentence acceptable when only one
+- `## Testing`: specify exact commands or test cases run; use `- [ ]` checkboxes, never prose
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
 ## Formatting
@@ -48,8 +48,8 @@
 
 ## Testing
 
-- <Specific command or test case>
-- <Edge case verified>
+- [ ] <Specific command or test case>
+- [ ] <Edge case verified>
 ```
 
 ### Correct
@@ -70,8 +70,8 @@ Update auth middleware to enforce jwt expiration checks. # imperative + direct o
 
 ## Testing
 
-- `npm run test:auth` # exact command
-- Verified expired token rejection in staging. # edge case
+- [ ] `npm run test:auth` # exact command
+- [ ] Verified expired token rejection in staging. # edge case
 ```
 
 ### Incorrect
