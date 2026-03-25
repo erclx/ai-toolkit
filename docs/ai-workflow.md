@@ -38,8 +38,6 @@ Switch to Claude Code for implementation. It reads CLAUDE.md automatically and h
 - If decisions diverged from the original plan (design pivots, requirement changes), invoke `claude-docs` to update `.claude/` planning docs before shipping
 - Invoke `toolkit:git-ship` to sync docs, commit by concern, rename branch, and open PR
 
-> **Planned:** `toolkit:claude-ui-test` (diff-aware UI checklist skill) and `toolkit:claude-docs` (capture mid-cycle decisions to REQUIREMENTS.md, TASKS.md, ARCHITECTURE.md).
-
 ### UI polish
 
 Verify the change manually in the browser. Use `claude-ui-test` if you need Claude Code to produce a browser verification checklist for the session. For the fix itself, describe the change in Claude chat or Claude Code directly.
@@ -70,13 +68,13 @@ review finds  → Claude Code (same implementation session)
 
 Claude-specific snippets require the `.claude/` workflow to be set up.
 
-| Slug              | When to use                                                                |
-| ----------------- | -------------------------------------------------------------------------- |
-| `claude-feature`  | Before implementation, scan for code-level conflicts                       |
-| `claude-review`   | After implementation, triggers REVIEWER.md role in Claude Code             |
-| `claude-ui-test`  | After implementation, generate UI verification steps (becoming skill)      |
-| `claude-docs`     | When decisions diverged from plan, update `.claude/` docs (becoming skill) |
-| `claude-ux-audit` | Standalone session, UX/UI audit of existing features                       |
+| Slug              | When to use                                                        |
+| ----------------- | ------------------------------------------------------------------ |
+| `claude-feature`  | Before implementation, scan for code-level conflicts               |
+| `claude-review`   | After implementation, triggers REVIEWER.md role in Claude Code     |
+| `claude-ui-test`  | After implementation, generate manual browser verification steps   |
+| `claude-docs`     | When decisions diverged from plan, update `.claude/` planning docs |
+| `claude-ux-audit` | Standalone session, UX/UI audit of existing features               |
 
 ## Prompt generation
 

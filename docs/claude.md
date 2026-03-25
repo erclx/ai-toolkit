@@ -8,7 +8,9 @@ Claude Code plugin and skills for the Toolkit.
 claude/
 ├── skills/              ← plugin skills (auto-discovered by plugin)
 │   ├── ai-sync/             ← suggest edits to CLAUDE.md and GEMINI.md based on recent changes
+│   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
+│   ├── claude-ui-test/      ← generate a manual browser verification checklist from session context
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── git-branch/          ← rename current branch to conventional format
 │   ├── git-commit/          ← generate conventional commit message from staged changes
@@ -47,19 +49,21 @@ alias claude='claude --plugin-dir /path/to/toolkit/claude'
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-| Skill               | Description                                                      |
-| ------------------- | ---------------------------------------------------------------- |
-| `ai-sync`           | Suggest edits to CLAUDE.md and GEMINI.md based on recent changes |
-| `claude-feature`    | Plan a feature by reading Claude setup and scanning source files |
-| `create-snippet`    | Create a new snippet file in snippets/                           |
-| `docs-sync`         | Rewrite stale README.md and docs/\*.md sections since main       |
-| `git-branch`        | Rename current branch to match conventional format               |
-| `git-commit`        | Generate a conventional commit message from staged changes       |
-| `git-pr`            | Generate a PR description and open a pull request                |
-| `git-split`         | Split a mixed-commit branch into focused branches off main       |
-| `git-stage`         | Batch-commit staged files grouped by concern                     |
-| `release-changelog` | Generate a changelog entry from commits since main               |
-| `git-ship`          | Run the full post-feature workflow in one sequence               |
+| Skill               | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| `ai-sync`           | Suggest edits to CLAUDE.md and GEMINI.md based on recent changes      |
+| `claude-docs`       | Update .claude/ planning docs to reflect mid-cycle decisions          |
+| `claude-feature`    | Plan a feature by reading Claude setup and scanning source files      |
+| `claude-ui-test`    | Generate a manual browser verification checklist from session context |
+| `create-snippet`    | Create a new snippet file in snippets/                                |
+| `docs-sync`         | Rewrite stale README.md and docs/\*.md sections since main            |
+| `git-branch`        | Rename current branch to match conventional format                    |
+| `git-commit`        | Generate a conventional commit message from staged changes            |
+| `git-pr`            | Generate a PR description and open a pull request                     |
+| `git-split`         | Split a mixed-commit branch into focused branches off main            |
+| `git-stage`         | Batch-commit staged files grouped by concern                          |
+| `release-changelog` | Generate a changelog entry from commits since main                    |
+| `git-ship`          | Run the full post-feature workflow in one sequence                    |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. See `standards/skill.md` for authoring conventions.
 
