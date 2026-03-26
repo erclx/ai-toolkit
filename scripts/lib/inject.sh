@@ -89,7 +89,7 @@ merge_seed_file() {
   local added=0
   while IFS= read -r word; do
     [ -z "$word" ] && continue
-    if ! grep -qxF "$word" "$dest"; then
+    if ! grep -qxF -- "$word" "$dest"; then
       echo "$word" >>"$dest"
       added=$((added + 1))
     fi
@@ -124,6 +124,7 @@ inject_tooling_seeds() {
   while IFS= read -r file; do
     local rel="${file#"$seeds_dir"/}"
     local dest="$target_path/$rel"
+    [ -f "$dest" ] && continue
     merge_seed_file "$file" "$dest"
     log_add "$rel"
   done < <(find "$seeds_dir" -type f | sort)
