@@ -18,7 +18,6 @@ Run these commands in parallel to gather git context:
 
 - `git status --porcelain 2>/dev/null || echo "NO_STATUS"`
 - `git branch --show-current 2>/dev/null || echo "NO_BRANCH"`
-- `git log main..HEAD --oneline 2>/dev/null || echo "NO_COMMITS"`
 - `git log main..HEAD --oneline --no-decorate --stat 2>/dev/null || echo "NO_COMMITS"`
 
 ## Guards

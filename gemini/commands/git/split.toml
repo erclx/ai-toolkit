@@ -22,10 +22,6 @@ You are a Senior Engineer helping split a mixed-commit branch into focused, revi
 !{git branch --show-current || echo "NO_BRANCH"}
 </CURRENT_BRANCH>
 
-<COMMITS_AHEAD>
-!{git log main..HEAD --oneline || echo "NO_COMMITS"}
-</COMMITS_AHEAD>
-
 <COMMIT_DETAILS>
 !{git log main..HEAD --oneline --no-decorate --stat || echo "NO_COMMITS"}
 </COMMIT_DETAILS>
@@ -48,7 +44,7 @@ You are a Senior Engineer helping split a mixed-commit branch into focused, revi
 - Check <PR_STANDARDS>: if DOCS_MISSING, output `echo "❌ Error: Reference file 'standards/pr.md' not found."` and stop.
 - Check <WORKING_TREE>: if not empty (unstaged or staged changes present), output `echo "❌ Error: Working tree is dirty. Commit or stash changes before splitting."` and stop.
 - Check <CURRENT_BRANCH>: if `main` or `master`, output `echo "❌ Error: Already on main. Nothing to split."` and stop.
-- Check <COMMITS_AHEAD>: if NO_COMMITS, output `echo "❌ Error: No commits ahead of main."` and stop.
+- Check <COMMIT_DETAILS>: if NO_COMMITS, output `echo "❌ Error: No commits ahead of main."` and stop.
 - Group commits by concern using both commit messages and file paths in <COMMIT_DETAILS>.
 - Prefer fewer branches: combine commits that touch related areas into one branch. Only split into separate branches when concerns are clearly independent.
 - Identify the primary concern of the current branch. Rename it using `git branch -m` to reflect that concern. Extract secondary concerns as new focused branches off main via cherry-pick.
