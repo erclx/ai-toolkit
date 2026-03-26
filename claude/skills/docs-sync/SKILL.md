@@ -14,13 +14,13 @@ Read these files in parallel:
 
 Run these commands in parallel:
 
-- `git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
-- `git diff --name-only main..HEAD 2>/dev/null || echo "NO_FILES"`
+- `git diff --cached main -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
+- `git diff --cached --name-only main 2>/dev/null || echo "NO_FILES"`
 - `git status --short 2>/dev/null || echo "NO_STATUS"`
 
 ## Guards
 
-- If `git diff main..HEAD` output is empty and `git status --short` output is empty, stop: `❌ No changes since main. Nothing to sync.`
+- If `git diff --cached main` output is empty and `git status --short` output is empty, stop: `❌ No changes since main. Nothing to sync.`
 
 ## Discovery
 

@@ -19,7 +19,7 @@ You generate changelog entries from git commits.
 </CURRENT_CHANGELOG>
 
 <NEW_COMMITS>
-!{git log --pretty=format:"%h %s" --no-merges main..HEAD}
+!{git log --pretty=format:"%h %s" --no-merges main..HEAD || echo "NO_COMMITS"}
 </NEW_COMMITS>
 
 <STAGED_DIFF>

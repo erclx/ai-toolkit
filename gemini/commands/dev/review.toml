@@ -19,7 +19,7 @@ Goal: Produce a findings report only. Do not fix, rewrite, or suggest refactors 
 </REVIEW_INPUT>
 
 <BRANCH_DIFF>
-!{if [ -z "$(echo '{{args}}' | tr -d '[:space:]')" ]; then git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' 2>/dev/null || echo "NO_DIFF"; else echo "ARGS_MODE"; fi}
+!{if [ -z "$(echo '{{args}}' | tr -d '[:space:]')" ]; then git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"; else echo "ARGS_MODE"; fi}
 </BRANCH_DIFF>
 
 <CHANGED_FILES>

@@ -23,7 +23,7 @@ Generate conventional commit messages from git diffs.
 </GIT_DIFF_SUMMARY>
 
 <GIT_DIFF_RAW>
-!{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
+!{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*-lock.json' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 

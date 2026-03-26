@@ -19,7 +19,7 @@ You generate conventional branch names from commit history or user intent.
 </CURRENT_BRANCH>
 
 <REMOTE_STATUS>
-!{git rev-parse --verify origin/$(git branch --show-current) 2>/dev/null && echo "EXISTS" || echo "LOCAL_ONLY"}
+!{git rev-parse --verify "origin/$(git branch --show-current)" 2>/dev/null && echo "EXISTS" || echo "LOCAL_ONLY"}
 </REMOTE_STATUS>
 
 <COMMIT_LOG>

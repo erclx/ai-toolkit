@@ -23,11 +23,11 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 </CURRENT_DOCS>
 
 <CHANGED_FILES>
-!{git diff main --name-only || echo "NO_DIFF"}
+!{git diff --cached main --name-only || echo "NO_DIFF"}
 </CHANGED_FILES>
 
 <CODE_DIFF>
-!{git diff main -- ':(exclude)*.test.*' ':(exclude)*.spec.*' ':(exclude)*.lock' ':(exclude)*.lockb' || echo "NO_DIFF"}
+!{git diff --cached main -- ':(exclude)*.test.*' ':(exclude)*.spec.*' ':(exclude)*.lock' || echo "NO_DIFF"}
 </CODE_DIFF>
 
 <README_STANDARDS>

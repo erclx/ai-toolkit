@@ -10,7 +10,7 @@ description: Reviews CLAUDE.md and GEMINI.md against recent changes and outputs 
 Run these commands in parallel:
 
 - `git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
-- `git diff --name-only main..HEAD 2>/dev/null || echo "NO_FILES"`
+- `git diff --name-status main..HEAD 2>/dev/null || echo "NO_FILES"`
 - `git status --short 2>/dev/null || echo "NO_STATUS"`
 
 ## Guards
