@@ -47,7 +47,7 @@ Each command is a `.toml` file organized by category and invoked as `/category:c
 | `/dev:comment`       | Add comments to source code                                |
 | `/dev:review`        | Review code from a pasted response or branch diff vs main  |
 | `/docs:sync`         | Sync README and docs with codebase changes                 |
-| `/release:changelog` | Generate a changelog entry from commit history             |
+| `/release:changelog` | Generate a changelog entry from commits and staged changes |
 
 ## Adding a command
 
