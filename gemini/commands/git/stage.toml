@@ -49,6 +49,7 @@ You group staged files by concern and generate conventional commit messages for 
 - Generate one `git commit` command per group using `-m` with the message and the exact file paths for that group only.
 - Use `git add` to stage only that group's files before each commit (since we unstage all first). For deleted files, use `git rm <file>` instead of `git add <file>`.
 - Prefix the full command sequence with `git restore --staged .` to unstage everything, then stage + commit each group in order.
+- Count characters in each `<type>(<scope>): <subject>` line. Shorten any subject that exceeds 72 characters and update the preview table before writing final commands.
 
 ### Must NOT Do:
 

@@ -47,6 +47,8 @@ Run these commands in parallel to gather git context:
 
 **All <total> files accounted for.**
 
+Count characters in each `<type>(<scope>): <subject>` line. Shorten any subject that exceeds 72 characters and update the table.
+
 After outputting the preview, execute the final command immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
 ### Final command
