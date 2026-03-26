@@ -31,7 +31,7 @@ You generate PR descriptions from git diffs.
 </DIFF_STATS>
 
 <GIT_DIFF_RAW>
-!{git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*.lockb' ':(exclude)*-lock.json' ':(exclude)*-lock.yaml' || echo "NO_DIFF"}
+!{git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' || echo "NO_DIFF"}
 </GIT_DIFF_RAW>
 </DATA_CONTEXT>
 
