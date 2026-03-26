@@ -18,7 +18,8 @@ claude/
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
 │   ├── release-changelog/   ← generate changelog entry from commits since main
-│   └── session-resume/      ← resume in-progress work from memory at session start
+│   ├── session-resume/      ← resume in-progress work from memory at session start
+│   └── toolkit-sync/        ← commit and ship a toolkit sync in a target project
 └── .claude-plugin/
     └── plugin.json      ← plugin manifest
 
@@ -64,6 +65,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-stage`         | Batch-commit staged files grouped by concern                          |
 | `release-changelog` | Generate a changelog entry from commits and staged changes since main |
 | `git-ship`          | Run the full post-feature workflow in one sequence                    |
+| `toolkit-sync`      | Commit and ship a toolkit sync: stage, commit, branch, and open PR    |
 | `session-resume`    | Resume in-progress work from memory at session start                  |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. See `standards/skill.md` for authoring conventions.
