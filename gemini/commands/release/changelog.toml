@@ -21,6 +21,10 @@ You generate changelog entries from git commits.
 <NEW_COMMITS>
 !{git log --pretty=format:"%h %s" --no-merges main..HEAD}
 </NEW_COMMITS>
+
+<STAGED_DIFF>
+!{git diff --cached -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_STAGED"}
+</STAGED_DIFF>
 </DATA_CONTEXT>
 
 ## TASK & CONSTRAINTS
@@ -41,6 +45,7 @@ You generate changelog entries from git commits.
 - Follow <CHANGELOG_STANDARDS> categories, formatting, and filtering rules exactly.
 - Follow <PROSE_STANDARDS> for all generated text.
 - Use `## [Unreleased]` for draft state.
+- If <STAGED_DIFF> is not NO_STAGED, synthesize additional entries from the diff for changes not yet reflected in <NEW_COMMITS>.
 
 ### Must NOT Do:
 

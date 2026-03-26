@@ -126,7 +126,7 @@ Before running any phase:
 ### Phase 3: Changelog
 
 - If <CHANGELOG_EXISTS> is NO: output `⏭️ Phase 3: skipped (no CHANGELOG.md)` and continue.
-- Generate a new `## [Unreleased]` entry from <COMMIT_LOG> following <CHANGELOG_STANDARDS>.
+- Generate a new `## [Unreleased]` entry from <COMMIT_LOG> following <CHANGELOG_STANDARDS>. If <STAGED_DIFF> or <UNSTAGED_DIFF> contain changes not reflected in <COMMIT_LOG>, synthesize additional entries from those diffs.
 - Append it immediately after the opening header in <CURRENT_CHANGELOG> using write_file. Do not modify existing entries.
 - Run `git add CHANGELOG.md && git commit -m "docs(changelog): add unreleased entry"`.
 - Output: `✅ Phase 3: changelog updated`
