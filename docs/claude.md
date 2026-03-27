@@ -10,6 +10,7 @@ claude/
 │   ├── ai-sync/             ← suggest edits to CLAUDE.md and GEMINI.md based on recent changes
 │   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
+│   ├── claude-review/       ← review all changes since main using the project's reviewer role
 │   ├── claude-ui-test/      ← generate a manual browser verification checklist from session context
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
@@ -57,6 +58,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `ai-sync`           | Suggest edits to CLAUDE.md and GEMINI.md based on recent changes      |
 | `claude-docs`       | Update .claude/ planning docs to reflect mid-cycle decisions          |
 | `claude-feature`    | Plan a feature by reading Claude setup and scanning source files      |
+| `claude-review`     | Review all changes since main using the project's reviewer role       |
 | `claude-ui-test`    | Generate a manual browser verification checklist from session context |
 | `create-snippet`    | Create a new snippet file in snippets/                                |
 | `docs-sync`         | Rewrite stale README.md and docs/\*.md sections since main            |
@@ -70,7 +72,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `toolkit-sync`      | Commit and ship a toolkit sync: stage, commit, branch, and open PR    |
 | `session-resume`    | Resume in-progress work from memory at session start                  |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`ai-sync`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`ai-sync`, `claude-review`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. See `standards/skill.md` for authoring conventions.
 
 ## Internal skills
 
