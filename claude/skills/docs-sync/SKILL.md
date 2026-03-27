@@ -5,7 +5,7 @@ description: Rewrites stale README.md and docs/*.md sections based on changes si
 
 # Docs sync
 
-Read these files in parallel:
+Read these files from the project root in parallel:
 
 - `standards/prose.md`: prose conventions for all generated text
 - `standards/readme.md`: README structure, required sections, and content rules

@@ -30,16 +30,17 @@ Skills provide Claude Code with domain-specific constraints and rules inline, so
 
 - Use imperative voice throughout
 - Front-load critical instructions
-- Keep `SKILL.md` under 5,000 words — move detailed docs to `references/`
+- Keep `SKILL.md` under 5,000 words; move detailed docs to `references/`
 - Link to `references/` files explicitly so Claude knows to load them
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Headers: sentence case for all levels (H1, H2, H3)
 - When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
+- When referencing project files, include "from the project root" in the read instruction
 
 ## Scripts
 
 - Use `scripts/` for operations that must be deterministic or repetitive
-- Claude executes scripts and receives stdout — scripts are not loaded into context
+- Claude executes scripts and receives stdout; scripts are not loaded into context
 - Use XML tags in script output for reliable parsing: `<SECTION>content</SECTION>`
 - Use `#!/usr/bin/env bash` shebang
 - Always include `2>/dev/null || echo "FALLBACK"` guards on git and shell commands
@@ -68,7 +69,7 @@ description: Reviews code for bugs, clarity, and standards compliance. Use when 
 
 # Code review
 
-Before reviewing, read:
+Before reviewing, read from the project root:
 
 - `standards/code.md`: coding standards and conventions
 

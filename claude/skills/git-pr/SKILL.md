@@ -7,7 +7,7 @@ description: Generates pull request titles and descriptions from git diffs. Use 
 
 ## Context
 
-Read these files in parallel:
+Read these files from the project root in parallel:
 
 - `standards/pr.md`: structure, rules, and banned phrases
 - `standards/prose.md`: prose conventions for all generated text
