@@ -7,7 +7,8 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 ## Invocation channels
 
 - Chrome extension: type `>slug` in a supported chat UI (claude.ai, gemini.google.com) to insert the snippet text inline
-- Claude Code terminal: prefix the file path with `@` (e.g. `@snippets/claude-feature.md`); Claude reads it and follows the instructions (snippets install flat, so the path is always `snippets/{slug}.md` regardless of source folder structure)
+- Claude Code terminal: prefix the file path with `@` (e.g. `@snippets/claude-feature.md`)
+- Snippets always install flat as `snippets/{slug}.md` regardless of source folder structure
 
 ## Use patterns
 
@@ -17,9 +18,9 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 
 ## Authoring
 
-- One focused purpose per snippet; if it needs headers or multiple goals, it is a system prompt
-- Self-contained; no references to external files or assumed prior context
-- No user fill-in placeholders; if a value depends on context, the user adds it after invocation
+- One focused purpose per snippet. If it needs headers or multiple goals, use a system prompt instead.
+- Self-contained. No references to external files or assumed prior context.
+- No user fill-in placeholders. If a value depends on context, the user adds it after invocation.
 - Plain markdown only; no YAML frontmatter, no headers, no nested structure
 - Filename is the slug: kebab-case, no capitals, no underscores
 

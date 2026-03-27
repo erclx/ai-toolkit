@@ -5,8 +5,9 @@
 - Structure: `<type>/<description>` or `<type>/<ticket>-<description>`
 - Length: 50 characters maximum
 - Casing: kebab-case only, no underscores or camelCase
-- Description: 2 words maximum, 3 only when genuinely needed for specificity; capture the core change, do not transcribe commit messages verbatim
-- When commits span multiple related changes, the description reflects the unifying concern, not the most recent commit subject (e.g., `feat/git-commands` not the last commit's subject)
+- Description: 2 words maximum, 3 only when genuinely needed for specificity
+- Capture the core change, not the commit message verbatim
+- For branches with multiple commits, use the unifying concern as the description.
 - Do not duplicate type in description (e.g., `feat/feature-login`)
 
 ## Types

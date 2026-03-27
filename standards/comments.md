@@ -4,11 +4,13 @@
 
 - One short comment per logical block, not per line.
 - Explain why, not what. Never restate what the code already shows, including error messages.
-- Above the block only. Never inline end of line.
+- Above the block only. Never at end of line.
 - Separate the comment from unrelated code above with a blank line.
 - No blank line between the comment and the block it describes.
 - Lowercase, no punctuation.
-- Use either a short phrase or `subject: reason`. Use the `subject:` prefix when the why is tied to a specific system or constraint. Mix freely, whatever fits.
+- Format as a short phrase or `subject: reason`
+- Use the `subject:` prefix when the why is tied to a specific system or constraint
+- Mix formats freely
 - No JSDoc noise.
 - Before adding a comment, ask: would this still add information if the variable or function name was removed? If no, skip it.
 

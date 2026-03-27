@@ -20,8 +20,12 @@
 
 - `## Summary`: 1-2 sentences following `<Action Verb> <Direct Object> to <Result>`, expand for clarity if needed
 - `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not "auth handler"); always use bullet points, never prose
-- `## Technical Context` (optional): 1-2 lines of architectural reasoning explaining why, not what; omit for docs, config, or trivial changes; use bullet points when multiple reasons, single sentence acceptable when only one
-- `## Testing` (optional): specify exact commands or test cases run; omit for docs, config, or trivial sync changes; use `- [ ]` checkboxes, never prose
+- `## Technical Context` (optional): 1-2 lines of architectural reasoning explaining why, not what
+- Omit Technical Context for docs, config, or trivial changes
+- Use bullet points for multiple reasons, one sentence for a single reason
+- `## Testing` (optional): specify exact commands or test cases run
+- Omit Testing for docs, config, or trivial sync changes
+- Use `- [ ]` checkboxes, never prose
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
 ## Formatting

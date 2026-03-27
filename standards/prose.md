@@ -14,7 +14,8 @@
 ## Structure
 
 - H1 for document title, H2 for main sections, H3 for subsections
-- Use sentence case for all headings, including H1, H2, and H3 (proper nouns and product names retain their casing)
+- Use sentence case for all headings (H1, H2, H3)
+- Proper nouns and product names retain their casing in headings
 - Front-load key information in each paragraph; keep paragraphs concise and scannable
 - Every sentence must provide new information; remove redundant context
 - Use prose by default; reserve bullets for discrete, unrelated items
@@ -28,7 +29,7 @@
 - For key path lists, use colon format: `- \`src/\`: description`; never use an em dash
 - Do not over-format with excessive bold, italic, or header usage
 - Do not use horizontal rules or dividers (`---`)
-- Do not use em dashes (`—`); use a comma, period, or restructure the sentence instead
+- Do not use em dashes (`—`). Restructure sentences that rely on asides rather than substituting punctuation.
 - Use descriptive anchor text for links; avoid `click here` or `read more`
 
 ## Language

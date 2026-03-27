@@ -5,6 +5,7 @@ behaviour
 bradlc
 bunx
 changelog
+changelogithub
 codenames
 commitlint
 conventionals

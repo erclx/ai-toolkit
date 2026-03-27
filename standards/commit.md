@@ -23,9 +23,11 @@
 ## Scope
 
 - Single lowercase word representing a system component
-- Prefer single word; use kebab-case only when two words are genuinely needed for specificity
+- Prefer single word
+- Use kebab-case only when two words are genuinely needed for specificity
 - Do not use specific filenames as scopes
 - Do not use a scope that duplicates the type
+- Write scopes for release readability. They surface in `changelogithub` release notes.
 
 ## Subject
 
@@ -33,7 +35,8 @@
 - Describe the actual technical change, not that something changed
 - Do not use vague verbs (`improve`, `refine`, `enhance`)
 - Do not repeat the scope in the subject line
-- Use single quotes if quoting; no backslash escaping or internal double quotes
+- Use single quotes if quoting
+- No backslash escaping or internal double quotes
 - No conversational filler or introductory phrases
 
 ## Examples
