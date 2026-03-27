@@ -17,7 +17,6 @@ Then run these commands in parallel to gather git context:
 - `git remote get-url origin 2>/dev/null || echo "NO_REMOTE"`
 - `git branch --show-current 2>/dev/null || echo "unknown"`
 - `git log main..HEAD --oneline 2>/dev/null || echo "NO_COMMITS"`
-- `git diff main..HEAD --stat 2>/dev/null || echo "NO_STATS"`
 - `git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
 
 ## Guards

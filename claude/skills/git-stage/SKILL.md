@@ -15,7 +15,6 @@ Read these files from the project root in parallel:
 Run these commands in parallel to gather git context:
 
 - `git diff --cached --name-status 2>/dev/null || echo "NO_STAGED_FILES"`
-- `git diff --cached --stat 2>/dev/null || echo "NO_STAT"`
 - `git diff --cached -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
 
 ## Guards
