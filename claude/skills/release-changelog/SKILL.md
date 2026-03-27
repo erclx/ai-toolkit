@@ -1,6 +1,7 @@
 ---
 name: release-changelog
 description: Generates a changelog entry from commits and staged changes since main and appends it to CHANGELOG.md. Use when cutting a release, asking "update the changelog", or writing release notes.
+disable-model-invocation: true
 ---
 
 # Release changelog

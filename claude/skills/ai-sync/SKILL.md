@@ -1,6 +1,7 @@
 ---
 name: ai-sync
 description: Reviews CLAUDE.md and GEMINI.md against recent changes and outputs specific suggested edits as diff blocks. Use when structural changes affect AI behavior rules, key paths, or workflow conventions. Do NOT auto-write. Suggestions only.
+disable-model-invocation: true
 ---
 
 # AI sync
