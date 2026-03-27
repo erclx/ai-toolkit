@@ -37,6 +37,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - `.claude/skills/`: internal skills, toolkit repo only
 - `snippets/`: reusable prompt snippets for Claude and Gemini chat
 - `prompts/`: system prompt generators for AI-assisted authoring tasks
+- `docs/`: human-readable reference docs for each toolkit domain
 - `scripts/`: build, sync, sandbox, and prompt generation scripts
 
 ## Commands
