@@ -5,7 +5,7 @@ description: Generates a changelog entry from commits and staged changes since m
 
 # Release changelog
 
-Read these files in parallel:
+Read these files from the project root in parallel:
 
 - `standards/changelog.md`: categories, formatting, and filtering rules
 - `standards/prose.md`: prose conventions for all generated text

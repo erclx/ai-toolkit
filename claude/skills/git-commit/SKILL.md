@@ -5,7 +5,7 @@ description: Generates conventional commit messages from staged changes. Use whe
 
 # Git Commit
 
-Before generating a commit message, read:
+Before generating a commit message, read from the project root:
 
 - `standards/commit.md`: format, types, scopes, and constraints
 

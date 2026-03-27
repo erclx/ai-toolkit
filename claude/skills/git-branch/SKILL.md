@@ -5,7 +5,7 @@ description: Generates and validates conventional branch names. Use when naming 
 
 # Git Branch
 
-Before generating a branch name, read:
+Before generating a branch name, read from the project root:
 
 - `standards/branch.md`: format, types, length limit, and constraints
 

@@ -5,7 +5,7 @@ description: Splits a mixed-commit branch into focused branches off main using c
 
 # Git split
 
-Before proposing a split, read in parallel:
+Before proposing a split, read from the project root in parallel:
 
 - `standards/branch.md`: format, types, length limit, and constraints
 - `standards/pr.md`: PR title format, body sections, and content rules
