@@ -20,7 +20,7 @@ Run these commands in parallel:
 
 ## Discovery
 
-Read these in parallel, skipping any that do not exist:
+Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`
 - `GEMINI.md`

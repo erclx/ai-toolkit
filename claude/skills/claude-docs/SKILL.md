@@ -12,7 +12,7 @@ description: Updates .claude/ planning docs to reflect decisions made during the
 
 ## Step 1: read current docs
 
-Read these in parallel, skipping any that do not exist:
+Read these in parallel from the project root, skipping any that do not exist:
 
 - `.claude/TASKS.md`
 - `.claude/REQUIREMENTS.md`

@@ -12,7 +12,7 @@ description: Plans a feature by reading the project's Claude setup and scanning 
 
 ## Step 1: read the Claude setup
 
-Read these in parallel, skipping any that do not exist:
+Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
