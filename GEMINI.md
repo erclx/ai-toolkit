@@ -10,6 +10,7 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - `tooling/`: golden configs and manifests per stack
 - `snippets/`: reusable prompt snippets
 - `prompts/`: system prompt generators
+- `docs/`: human-readable reference docs for each toolkit domain
 - `scripts/`: build, sync, sandbox, and prompt generation scripts
 
 ## Behavior
