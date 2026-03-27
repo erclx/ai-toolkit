@@ -12,12 +12,14 @@ claude/
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
 │   ├── claude-ui-test/      ← generate a manual browser verification checklist from session context
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
+│   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
 │   ├── git-branch/          ← rename current branch to conventional format
 │   ├── git-commit/          ← generate conventional commit message from staged changes
 │   ├── git-pr/              ← generate PR description and open pull request
+│   ├── git-ship/            ← run the full post-feature workflow in one sequence
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
-│   ├── release-changelog/   ← generate changelog entry from commits since main
+│   ├── release-changelog/   ← generate changelog entry from commits and staged changes since main
 │   ├── session-resume/      ← resume in-progress work from memory at session start
 │   └── toolkit-sync/        ← commit and ship a toolkit sync in a target project
 └── .claude-plugin/
