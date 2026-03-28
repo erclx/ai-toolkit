@@ -5,7 +5,7 @@
 - Standard: Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) with [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Hierarchy: H1 title, H2 version+date or `[Unreleased]`, H3 category
 - Entry format: `- component: description`
-- No prose; use concise bullet points
+- No prose. Use concise bullet points.
 
 ## Categories
 

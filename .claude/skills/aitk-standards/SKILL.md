@@ -17,7 +17,7 @@ description: Standards system and docs. Use for managing standards/, editing doc
 - No `Note that`, `Basically`, `Essentially`, `That being said`
 - No `seamless`, `robust`, `powerful`, `allows`
 - No gerund openers (`Leveraging...`, `Building on...`)
-- No em dashes. Use a comma, period, or restructure.
+- No em dashes or semicolons. Rewrite or restructure the sentence to avoid them.
 
 ## Full reference
 

@@ -2,7 +2,7 @@
 
 ## What a snippet is
 
-A snippet is a short, focused prompt stored as a plain markdown file. Invoke one to insert a prepared instruction into any AI chat without retyping it. Snippets cover one purpose each; if a prompt needs headers or multiple goals, it belongs in a system prompt.
+A snippet is a short, focused prompt stored as a plain markdown file. Invoke one to insert a prepared instruction into any AI chat without retyping it. Each snippet covers one purpose. If a prompt needs headers or multiple goals, use a system prompt instead.
 
 ## Invocation channels
 
@@ -12,9 +12,9 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 
 ## Use patterns
 
-- Run-as-is: invoke and send immediately; the snippet is self-contained and needs no extra context
+- Run-as-is: invoke and send immediately. The snippet is self-contained and needs no extra context.
 - Invoke-then-add-context: invoke the snippet, then append specifics in the same message (e.g. invoke `claude-feature`, then add the feature name or extra constraints)
-- Invoke-on-history: invoke after a discussion; the snippet uses prior conversation as implicit context with no additional input needed (e.g. invoke `claude-figma` after discussing a design)
+- Invoke-on-history: invoke after a discussion. The snippet uses prior conversation as implicit context with no additional input needed (e.g. invoke `claude-figma` after discussing a design).
 
 ## Authoring
 
