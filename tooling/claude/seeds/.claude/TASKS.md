@@ -14,16 +14,13 @@ What does not belong:
 - "In progress" or "Blocked" sections; note those inline on the Up next entry instead
 - How something will be implemented
 
-Two sections only: Up next and Done. When completing a task, mark it `[x]` in place within "Up next" and do not move it. Done is capped at 10 entries. Oldest entries overflow to `.claude/TASKS-ARCHIVE.md`.
+Two sections only: Up next and Done. When completing a task, mark it `[x]` in place within "Up next" and do not move it. Done is capped at 10 entries. Oldest entries overflow to `.claude/TASKS-ARCHIVE.md`. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
 
 ## Up next
 
-### Feature N: description
+### Nothing queued
 
-- [ ] Todo item: what done looks like
-- [ ] Todo item: what done looks like
-
-> Test strategy: justification
+- No tasks currently
 
 ## Done
 
