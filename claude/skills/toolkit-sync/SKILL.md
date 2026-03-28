@@ -38,7 +38,11 @@ For any folder not in this map, use the folder name as-is.
 
 Run `git diff --name-only main 2>/dev/null` and collect the unique top-level folders from the output. Map each to its label using the table above.
 
-For each domain folder, run `git diff --name-only main -- <folder> 2>/dev/null` to get the specific files changed. Use the filenames to write a one-line description of what changed (e.g. `prose.md, readme.md` → `prose and readme conventions`).
+For each domain folder, run `git diff --name-only main -- <folder> 2>/dev/null` to get the specific files changed. Use the filenames to write a one-line description of what changed (e.g. `prose.md, readme.md` → `prose and readme conventions`). Also determine the verb for each domain:
+
+- All files new → `Add`
+- All files deleted → `Remove`
+- Otherwise → `Update`
 
 ## Preview
 
@@ -80,7 +84,7 @@ Sync <domains> from toolkit.
 
 ## Key Changes
 
-- Sync `<folder>/` - <one-liner of what changed>.
+- <Verb> `<folder>/` <one-liner of what changed>.
 <repeat per domain>
 ```
 
