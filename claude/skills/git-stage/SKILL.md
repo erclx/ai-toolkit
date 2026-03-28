@@ -30,7 +30,7 @@ Run these commands in parallel to gather git context:
 - A file that clearly stands alone is its own group.
 - Order commits by dependency: commit dependencies before the files that import them.
 - Prefix the full command sequence with `git restore --staged .` to unstage everything, then stage and commit each group in order.
-- Files with status `D` in the name-status output are deleted; use `git rm <file>` for those. Files with `A` or `M` use `git add <file>`.
+- For `D` status files, use `git rm <file>`. For `A` or `M` files, use `git add <file>`.
 
 ## Response format
 
