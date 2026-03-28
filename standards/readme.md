@@ -20,7 +20,7 @@
 
 ## Content
 
-- Use relative paths for repository files; use absolute URLs for external resources
+- Use relative paths for repository files. Use absolute URLs for external resources.
 - Do not use absolute URLs for files within the repository
 - Include practical usage snippets demonstrating core functionality
 - For libraries/tools: include API quickstart

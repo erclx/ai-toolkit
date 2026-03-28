@@ -2,7 +2,7 @@
 
 ## Overview
 
-Skills provide Claude Code with domain-specific constraints and rules inline, so it can act immediately without reading all docs. Each skill body contains actionable rules for its domain. Full reference docs are the fallback for edge cases and deeper context. Skills use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body.
+Skills give Claude Code domain-specific constraints and rules inline, so it can act immediately without reading all docs. Each skill body contains actionable rules for its domain. Full reference docs are the fallback for edge cases and deeper context. Skills use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body.
 
 ## Structure
 
