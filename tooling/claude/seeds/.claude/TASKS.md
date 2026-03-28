@@ -1,6 +1,6 @@
 # Tasks
 
-Track what is being built and why, at the level of features and outcomes. Not implementation steps or technical decisions; those live in ARCHITECTURE.md. Update this doc whenever a task is started, completed, or scope changes.
+Track what is being built and why, at the level of features and outcomes. Not implementation steps or technical decisions. Those live in `ARCHITECTURE.md`. Update this doc whenever a task is started, completed, or scope changes.
 
 What belongs:
 
@@ -14,7 +14,7 @@ What does not belong:
 - "In progress" or "Blocked" sections; note those inline on the Up next entry instead
 - How something will be implemented
 
-Two sections only: Up next and Done. When completing a task, mark it `[x]` in place within "Up next"; do not move it. Done is capped at 10 entries; oldest entries overflow to `.claude/TASKS-ARCHIVE.md`.
+Two sections only: Up next and Done. When completing a task, mark it `[x]` in place within "Up next" and do not move it. Done is capped at 10 entries. Oldest entries overflow to `.claude/TASKS-ARCHIVE.md`.
 
 ## Up next
 

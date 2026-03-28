@@ -7,14 +7,14 @@ What belongs:
 - The problem being solved and for whom
 - User-facing goals stated as outcomes, not implementation
 - Explicit non-goals: scope boundaries that prevent feature creep. Mark deferred items "(deferred)" to signal they are not permanently excluded.
-- MVP features as a numbered list: feature name and one-line description; no implementation detail
-- Tech stack as a plain list of tools; rationale lives in ARCHITECTURE.md
+- MVP features as a numbered list: feature name and one-line description. No implementation detail.
+- Tech stack as a plain list of tools. Rationale lives in `ARCHITECTURE.md`.
 - Hard constraints that shape all decisions
 
 What does not belong:
 
 - Implementation details, API names, or internal component references
-- Rationale for tech choices; that lives in ARCHITECTURE.md
+- Rationale for tech choices. That lives in `ARCHITECTURE.md`.
 - Anything that describes how a feature is built rather than what it does
 
 ## Problem

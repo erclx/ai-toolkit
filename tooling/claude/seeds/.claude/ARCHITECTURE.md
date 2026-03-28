@@ -11,9 +11,9 @@ What belongs:
 
 What does not belong:
 
-- Setup commands or install instructions; those live in README
-- How individual functions work line by line; that belongs in code comments
-- Full type definitions; those live in code. Reference the shape conceptually if needed.
+- Setup commands and install instructions live in README.
+- How individual functions work line by line. Put those in code comments.
+- Full type definitions. They live in code. Reference the shape conceptually if needed.
 
 Name each decision clearly. Give the reasoning, especially for non-obvious choices. Skip entries where the rationale is self-evident.
 
