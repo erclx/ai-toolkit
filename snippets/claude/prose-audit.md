@@ -1,1 +1,1 @@
-Audit the current file against `standards/prose.md`. Rewrite each violation thoughtfully. Do not lazily swap punctuation out. A semicolon replaced with a period is not a fix. Read the surrounding context and restructure or rephrase as needed.
+Audit the files in context against `standards/prose.md`. Rewrite each violation thoughtfully. Do not lazily swap punctuation out. A semicolon replaced with a period is not a fix. Read the surrounding context and restructure or rephrase as needed.
