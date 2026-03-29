@@ -22,7 +22,3 @@ If `prompts/claude-skill.md` is present, read it for additional guidance on skil
 1. Draft the full `SKILL.md` from the user's description
 2. Confirm the skill name and full content with the user before writing
 3. Write to `.claude/skills/<name>/SKILL.md`
-
-## After writing
-
-Remind the user: if this skill is intended as a plugin for other projects, copy the folder to `claude/skills/` in the toolkit repo and add it to the skills table in `docs/claude.md`.
