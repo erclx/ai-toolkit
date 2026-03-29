@@ -13,6 +13,7 @@ show_help() {
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk [command]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
+  echo -e "${GREY}│${NC}    sync [path]        ${GREY}# Sync all installed domains in a project${NC}"
   echo -e "${GREY}│${NC}    sandbox [cat:cmd]  ${GREY}# Provision and run sandbox scenarios${NC}"
   echo -e "${GREY}│${NC}    gov [command]      ${GREY}# Governance commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    standards [cmd]    ${GREY}# Standards commands (install, sync)${NC}"
@@ -28,6 +29,7 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk sandbox clean       ${GREY}# Wipe the sandbox${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
+  echo -e "${GREY}│${NC}    aitk sync ../my-app"
   echo -e "${GREY}│${NC}    aitk sandbox git:commit"
   echo -e "${GREY}│${NC}    aitk gov install react"
   echo -e "${GREY}│${NC}    aitk gov sync ../my-app"
@@ -49,6 +51,10 @@ main() {
   fi
 
   case "$1" in
+  sync)
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-sync.sh" "$@"
+    ;;
   sandbox)
     shift
     exec "$PROJECT_ROOT/scripts/manage-sandbox.sh" "$@"
