@@ -24,6 +24,14 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 - Plain markdown only. No YAML frontmatter, no headers, no nested structure.
 - Filename is the slug: kebab-case, no capitals, no underscores
 
+## Structure
+
+- Lead with a verb. Open with an imperative that states the job immediately.
+- One instruction per sentence. Do not stack multiple actions into one sentence.
+- For sequential steps, use a numbered list with one action per item.
+- When the output has a fixed shape, show it in a fenced code block with a language identifier.
+- Put constraints and exclusions last, not inline with the main instructions.
+
 ## Examples
 
 ### Correct
