@@ -1,6 +1,6 @@
 ---
 name: git-branch
-description: Generates and validates conventional branch names. Use when naming a new branch, renaming an existing branch, or asking "what should I name this branch".
+description: Generates and validates conventional branch names. Use for any branch naming or renaming.
 ---
 
 # Git Branch

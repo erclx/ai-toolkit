@@ -74,7 +74,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `toolkit-sync`      | Commit and ship a toolkit sync: stage, commit, branch, and open PR    |
 | `session-resume`    | Resume in-progress work from memory at session start                  |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`ai-sync`, `claude-review`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`ai-sync`, `claude-review`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
 ## Internal skills
 

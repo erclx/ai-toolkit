@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Generates conventional commit messages from staged changes. Use when writing a commit message, checking commit format, or asking "what should my commit say".
+description: Generates conventional commit messages from staged changes. Use for any git commit.
 ---
 
 # Git Commit

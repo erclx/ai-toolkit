@@ -1,6 +1,6 @@
 ---
 name: git-stage
-description: Groups staged files by concern and generates one conventional commit per group. Use when committing mixed changes, asking "how should I split these commits", or wanting to batch-commit staged files by concern.
+description: Groups staged files by concern and generates one conventional commit per group. Use when committing mixed changes by concern.
 ---
 
 # Git stage

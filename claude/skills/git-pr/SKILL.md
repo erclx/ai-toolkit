@@ -1,6 +1,6 @@
 ---
 name: git-pr
-description: Generates pull request titles and descriptions from git diffs. Use when opening a PR, writing a PR body, or asking "create a PR" or "open a pull request".
+description: Generates pull request titles and descriptions from git diffs. Use for any PR creation or update.
 ---
 
 # Git PR
