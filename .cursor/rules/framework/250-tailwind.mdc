@@ -20,7 +20,7 @@ priority: 250
 - Never use floats or absolute positioning for flow.
 - Use `gap-*` for sibling spacing over margins.
 - Use `size-*` over `w-* h-*` for equal dimensions.
-- Mobile-first: default styles apply to mobile; use `sm:` and up to override.
+- Mobile-first: default styles apply to mobile. Use `sm:` and up to override.
 
 ## Class application
 

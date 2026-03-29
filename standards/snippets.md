@@ -21,7 +21,7 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 - One focused purpose per snippet. If it needs headers or multiple goals, use a system prompt instead.
 - Self-contained. No references to external files or assumed prior context.
 - No user fill-in placeholders. If a value depends on context, the user adds it after invocation.
-- Plain markdown only; no YAML frontmatter, no headers, no nested structure
+- Plain markdown only. No YAML frontmatter, no headers, no nested structure.
 - Filename is the slug: kebab-case, no capitals, no underscores
 
 ## Examples

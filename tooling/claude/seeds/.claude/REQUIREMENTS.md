@@ -1,6 +1,6 @@
 # Requirements
 
-Describe what the product does and why. Not how it works; that lives in ARCHITECTURE.md. Update this doc when scope changes, goals shift, or a non-goal is promoted to a feature.
+Describe what the product does and why. Not how it works. That lives in ARCHITECTURE.md. Update this doc when scope changes, goals shift, or a non-goal is promoted to a feature.
 
 What belongs:
 

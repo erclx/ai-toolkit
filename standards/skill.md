@@ -30,7 +30,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 
 - Use imperative voice throughout
 - Front-load critical instructions
-- Keep `SKILL.md` under 5,000 words; move detailed docs to `references/`
+- Keep `SKILL.md` under 5,000 words. Move detailed docs to `references/`.
 - Link to `references/` files explicitly so Claude knows to load them
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Headers: sentence case for all levels (H1, H2, H3)
@@ -40,7 +40,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 ## Scripts
 
 - Use `scripts/` for operations that must be deterministic or repetitive
-- Claude executes scripts and receives stdout; scripts are not loaded into context
+- Claude executes scripts and receives stdout. Scripts are not loaded into context.
 - Use XML tags in script output for reliable parsing: `<SECTION>content</SECTION>`
 - Use `#!/usr/bin/env bash` shebang
 - Always include `2>/dev/null || echo "FALLBACK"` guards on git and shell commands

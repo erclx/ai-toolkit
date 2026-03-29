@@ -13,9 +13,9 @@ What belongs:
 
 What does not belong:
 
-- Implementation details (event listeners, API call counts, storage keys); those live in ARCHITECTURE.md
-- Visual decisions (colors, spacing, typography); those live in DESIGN.md
-- Pixel values or final measurements; verify those in the browser
+- Implementation details (event listeners, API call counts, storage keys). Those live in ARCHITECTURE.md.
+- Visual decisions (colors, spacing, typography). Those live in DESIGN.md.
+- Pixel values or final measurements. Verify those in the browser.
 
 Use `←` for inline annotations inside diagrams. Use sentence case for all text labels. Document state variants as separate subsections when the layout changes. Keep behavior bullets to UX only: what the user sees and does, not how the code handles it.
 

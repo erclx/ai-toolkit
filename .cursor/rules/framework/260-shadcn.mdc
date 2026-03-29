@@ -9,7 +9,7 @@ priority: 260
 
 ## Source files
 
-- Do not edit component files installed by the shadcn CLI; treat them as vendored.
+- Do not edit component files installed by the shadcn CLI. Treat them as vendored.
 - Check `components.json` for the install path.
 - Extend behavior via wrapper components over modifying installed files.
 

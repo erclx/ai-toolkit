@@ -11,7 +11,7 @@ Optimize for token efficiency and developer experience.
 ### Rule Types
 
 - Use Type A for global persona and core principles. Use Type B for file-specific tooling rules.
-- Do not redefine persona in Type B rules; only Type A defines "Who I am."
+- Do not redefine persona in Type B rules. Only Type A defines "Who I am."
 
 ### YAML Frontmatter
 

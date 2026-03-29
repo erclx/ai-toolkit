@@ -12,7 +12,7 @@ priority: 20
 - Coordinate dependent async operations explicitly. Document execution order.
 - Set explicit timeouts on all external async operations.
 - Do not fire-and-forget async operations without cleanup handlers.
-- Batch independent async operations; avoid sequential execution when parallelizable.
+- Batch independent async operations. Do not run them sequentially when parallelizable.
 
 ## Race conditions
 

@@ -6,4 +6,4 @@ For each file in the context map:
 2. Compare against the source of truth content provided
 3. Identify sections or instructions present in the source but missing or outdated in the project version
 
-Propose surgical additions only. Do not remove or overwrite existing content; project files are user-owned and may contain project-specific customizations.
+Propose surgical additions only. Do not remove or overwrite existing content. Project files are user-owned and may contain project-specific customizations.

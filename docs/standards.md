@@ -2,7 +2,7 @@
 
 ## Overview
 
-Standards are markdown docs that define developer workflow conventions. They sync directly to target projects and are consumed by AI agents and developers alike. Standards cover workflow conventions, not code style; code style belongs in governance rules.
+Standards are markdown docs that define developer workflow conventions. They sync directly to target projects and are consumed by AI agents and developers alike. Standards cover workflow conventions, not code style. Code style belongs in governance rules.
 
 ## Structure
 

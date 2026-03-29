@@ -12,7 +12,7 @@ priority: 300
 - Use Vitest for unit and integration tests.
 - Co-locate unit tests with their respective components.
 - Use `userEvent` over synthetic events for interaction simulation.
-- Use MSW for network mocking; avoid manual fetch or axios mocks.
+- Use MSW for network mocking. Do not mock fetch or axios manually.
 - Select elements by accessibility attributes first (`getByRole`, `getByLabelText`).
 
 ## End-to-end

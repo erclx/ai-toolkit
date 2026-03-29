@@ -15,7 +15,7 @@ docs/
 └── snippets.md        ← this file
 ```
 
-Base snippets live at the root with no prefix. Category snippets live in a named subfolder; the folder name becomes the slug prefix on install. A snippet at `claude/docs.md` installs as `claude-docs.md` and is invoked as `@claude-docs`.
+Base snippets live at the root with no prefix. Category snippets live in a named subfolder. The folder name becomes the slug prefix on install. A snippet at `claude/docs.md` installs as `claude-docs.md` and is invoked as `@claude-docs`.
 
 ## Categories
 
@@ -85,7 +85,7 @@ aitk snippets create
 
 ## Adding a snippet
 
-Use `aitk snippets create`; it handles the file and folder creation. For manual additions or authoring best practices, refer to `standards/snippets.md`. To add manually: create a `.md` file in the correct folder using a kebab-case name, following the path conventions above.
+Use `aitk snippets create`. It handles the file and folder creation. For manual additions or authoring best practices, refer to `standards/snippets.md`. To add manually: create a `.md` file in the correct folder using a kebab-case name, following the path conventions above.
 
 ## Adding a category
 

@@ -14,7 +14,7 @@ priority: 210
 
 ## Punctuation
 
-- Do not use em dashes (`—`); use a comma, period, or restructure the sentence.
+- Do not use em dashes (`—`). Use a comma or period, or restructure the sentence.
 - Do not add punctuation to button labels or short action strings.
 
 ## Button copy
@@ -36,5 +36,5 @@ priority: 210
 ## Alt text
 
 - Describe the content or function of the image, not its appearance.
-- Keep alt text concise; avoid prefixes like "Image of" or "Photo of".
+- Keep alt text concise. Do not prefix with "Image of" or "Photo of".
 - Alt text for functional images (icons, buttons) should describe the action, not the graphic.

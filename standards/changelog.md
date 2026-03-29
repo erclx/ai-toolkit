@@ -15,7 +15,7 @@
 ## Entries
 
 - Include only user-facing changes
-- Descriptions are fragments; do not end entries with a period
+- Descriptions are fragments. Do not end entries with a period.
 - No bold formatting for component names in entries
 - Exclude internal refactors, typos, CI/CD updates, and dependency bumps unless they affect functionality
 - Do not mix developer-focused and user-focused changes in the same entry

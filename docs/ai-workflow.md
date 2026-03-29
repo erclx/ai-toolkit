@@ -14,7 +14,7 @@ All planning docs live in `.claude/` at the project root.
 ├── REQUIREMENTS.md  ← goals, non-goals, MVP scope
 ├── ARCHITECTURE.md  ← technical design decisions
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
-├── WIREFRAMES.md    ← ASCII wireframes; layout, UI copy, and interaction rules (UI projects)
+├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
 ├── TASKS.md         ← persistent task tracker, source of truth
 ├── REVIEWER.md      ← system prompt for code review
 ├── IMPLEMENTER.md   ← context prompt for implementation sessions
@@ -48,7 +48,7 @@ Verify the change manually in the browser. Invoke `toolkit:claude-ui-test` if yo
 
 ### Review
 
-Run `gemini dev:review` in terminal, or invoke `toolkit:claude-review` in a fresh Claude Code session. Both produce a findings report; copy valid findings to your implementation session and fix. If nothing is valid, do nothing. Always review in a separate session from implementation to preserve reviewer independence.
+Run `gemini dev:review` in terminal, or invoke `toolkit:claude-review` in a fresh Claude Code session. Both produce a findings report. Copy valid findings to your implementation session and fix. If nothing is valid, do nothing. Always review in a separate session from implementation to preserve reviewer independence.
 
 ## Skills
 
@@ -63,7 +63,7 @@ Run `gemini dev:review` in terminal, or invoke `toolkit:claude-review` in a fres
 
 ## Maintenance
 
-Invoke `toolkit:ai-sync` manually when structural changes affect key paths, commands, skill names, or workflow conventions in `CLAUDE.md`. It reviews `CLAUDE.md` and `GEMINI.md` against the diff and outputs suggested edits as diff blocks; it does not write. `toolkit:git-ship` prompts you to run it when structural changes are detected.
+Invoke `toolkit:ai-sync` manually when structural changes affect key paths, commands, skill names, or workflow conventions in `CLAUDE.md`. It reviews `CLAUDE.md` and `GEMINI.md` against the diff and outputs suggested edits as diff blocks. It does not write. `toolkit:git-ship` prompts you to run it when structural changes are detected.
 
 ## Feedback routing
 
@@ -86,7 +86,7 @@ Claude-specific snippets require the `.claude/` workflow to be set up. For the f
 
 `aitk claude prompt` reads `PLANNER.md` and `IMPLEMENTER.md`, injects governance rules from `.cursor/rules/`, context docs, and `standards/prose.md`, and writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`.
 
-Run `aitk gov sync` first when switching stacks. Run `aitk claude gov` to build `.claude/GOV.md` from installed rules; Claude Code loads this automatically each session. Run `aitk gov build` to generate a standalone rules file at `.cursor/.tmp/rules.md` for pasting directly into any AI chat.
+Run `aitk gov sync` first when switching stacks. Run `aitk claude gov` to build `.claude/GOV.md` from installed rules. Claude Code loads this automatically each session. Run `aitk gov build` to generate a standalone rules file at `.cursor/.tmp/rules.md` for pasting directly into any AI chat.
 
 ## Gemini CLI commands
 

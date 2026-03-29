@@ -23,6 +23,7 @@
 ## Formatting
 
 - Use dashes (`-`) not asterisks (`*`) for bulleted lists
+- Do not end single-sentence or fragment bullets with a period. Use periods when a bullet contains two or more sentences.
 - Wrap commands, API names, file paths, and code identifiers in backticks
 - Use a language identifier on all fenced code blocks (`markdown`, `typescript`, `plaintext`). Never use a bare ` ``` `
 - In ASCII tree diagrams, use `←` for inline annotations. Never use `#`.

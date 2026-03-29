@@ -15,7 +15,7 @@ scripts/
 │   ├── sync.sh         ← syncs existing rules to external projects
 │   └── build.sh        ← concatenates installed rules into .cursor/.tmp/rules.md
 ├── lib/
-│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload; sourced by gov/build.sh and claude/prompt.sh
+│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload (sourced by gov/build.sh and claude/prompt.sh)
 └── manage-gov.sh       ← entry point (aitk gov)
 ```
 
@@ -38,13 +38,13 @@ Stacks live in `.cursor/stacks/` as toml files. Each stack declares an optional 
 
 ## Stacks
 
-| Stack     | Extends | Rules                                                                                                      |
-| --------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| `base`    | -       | 000–070 core rules                                                                                         |
-| `node`    | base    | 100-typescript                                                                                             |
-| `react`   | node    | 200-react, 210-ui, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web             |
-| `python`  | base    | stub — add python rules when available                                                                     |
-| `planner` | -       | 210-ui — used by `aitk claude prompt` to inject UI copy rules into PLANNER.md; not installed into projects |
+| Stack     | Extends | Rules                                                                                                     |
+| --------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| `base`    | -       | 000–070 core rules                                                                                        |
+| `node`    | base    | 100-typescript                                                                                            |
+| `react`   | node    | 200-react, 210-ui, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web            |
+| `python`  | base    | placeholder. Add python rules when available                                                              |
+| `planner` | -       | 210-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects |
 
 ## CLI
 

@@ -4,7 +4,7 @@
 
 Prompts are system prompt generators for AI-assisted authoring tasks. Each prompt defines a role, constraints, and output format for generating a specific artifact type. They are machine-readable specs optimized for token efficiency and deterministic output.
 
-Select prompts can be installed into target projects via `aitk prompts install`. Only prompts registered in `prompts.toml` are installable; toolkit-internal prompts stay in this repo only.
+Select prompts can be installed into target projects via `aitk prompts install`. Only prompts registered in `prompts.toml` are installable. Toolkit-internal prompts stay in this repo only.
 
 ## Structure
 
@@ -18,7 +18,7 @@ docs/
 
 ## Categories
 
-Prompts are organized into categories in `prompts.toml`. Each category is a named list of prompt file stems. There is no inheritance; categories are flat file lists.
+Prompts are organized into categories in `prompts.toml`. Each category is a named list of prompt file stems. There is no inheritance. Categories are flat file lists.
 
 | Category    | Names       |
 | ----------- | ----------- |

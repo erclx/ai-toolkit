@@ -4,7 +4,7 @@
 
 - H1 title, H2 major sections, H3 subsections
 - Use sentence case for all headings (proper nouns and product names retain their casing)
-- Project description in plain text directly under H1; 2-3 sentences maximum
+- Project description in plain text directly under H1. Keep it to 2-3 sentences.
 - Use proper heading hierarchy to enable GitHub's auto-generated table of contents
 - Do not create deeply nested heading structures that harm scannability
 - Do not use horizontal rules or dividers (`---`)
@@ -13,10 +13,10 @@
 
 - Required: project description, installation/setup, usage examples, support/help resources
 - Optional: badges (at top, before description), features, contributing (link to `CONTRIBUTING.md`), license (link to `LICENSE`)
-- Do not include full API documentation; link to separate docs instead
-- Do not include license text; reference the `LICENSE` file
-- Do not include detailed contribution guidelines; reference `CONTRIBUTING.md`
-- Do not include extensive troubleshooting guides; use wiki or separate documentation
+- Do not include full API documentation. Link to separate docs instead.
+- Do not include license text. Reference the `LICENSE` file.
+- Do not include detailed contribution guidelines. Reference `CONTRIBUTING.md`.
+- Do not include extensive troubleshooting guides. Use a wiki or separate documentation.
 
 ## Content
 

@@ -11,7 +11,7 @@
 - Use imperative mood for all content (`add`, `fix`, `refactor`)
 - Do not start with "This PR," "This commit," "Included are," or "I have"
 - Do not use buzzwords (`seamless`, `robust`, `game-changer`, `enhanced`)
-- Do not describe historical behavior or unchanged code; describe new behavior only
+- Do not describe historical behavior or unchanged code. Describe new behavior only.
 - Do not include future promises or speculative documentation
 - Do not explain obvious changes (formatting, renaming variables)
 - Do not duplicate commit messages verbatim
@@ -19,7 +19,7 @@
 ## Sections
 
 - `## Summary`: 1-2 sentences following `<Action Verb> <Direct Object> to <Result>`, expand for clarity if needed
-- `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not "auth handler"); always use bullet points, never prose
+- `## Key Changes`: name actual files, functions, or modules (e.g., `AuthService.verify()` not "auth handler"). Always use bullet points, never prose.
 - `## Technical Context` (optional): 1-2 lines of architectural reasoning explaining why, not what
 - Omit Technical Context for docs, config, or trivial changes
 - Use bullet points for multiple reasons, one sentence for a single reason

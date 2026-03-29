@@ -19,4 +19,4 @@ priority: 50
 ## Log safety
 
 - Do not log credentials, tokens, or personally identifiable information.
-- Do not log implementation details; log observable behavior.
+- Log observable behavior, not implementation details.

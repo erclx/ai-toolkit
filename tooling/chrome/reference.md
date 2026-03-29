@@ -51,7 +51,7 @@ The chrome stack layers a Chrome Extension setup using CRXJS and Vite on top of 
 - Split into `CONFIG` and `ENGINE` sections. Only the config section changes per project.
 - `SURFACES` defines each extension page with its real-world dimensions.
 - `SEED` injects data into `chrome.storage.local` via `addInitScript` before the page loads. Set to `null` if no seed data needed.
-- `STATES` is an array of `{ name, setup? }` — adding a new state is one object.
+- `STATES` is an array of `{ name, setup? }`. Adding a new state is one object.
 - Empty state uses a separate context with no seed data so storage is genuinely clean.
 - `emulateMedia({ colorScheme })` toggles light/dark without UI interaction.
 - Run `bun run screenshot`. Builds first, then captures. Outputs to `screenshots/` (gitignored via vite-react).

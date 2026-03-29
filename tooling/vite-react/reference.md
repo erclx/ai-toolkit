@@ -42,7 +42,7 @@
 
 - Build: `tsc -b` before `vite build`.
 - Type check: `tsc --noEmit` as standalone script.
-- Do not template full tsconfigs — use Vite scaffold defaults.
+- Do not template full tsconfigs. Use Vite scaffold defaults.
 - Root `tsconfig.json` must include `tsconfig.e2e.json` in references.
 - `tsconfig.app.json` must include `vitest/globals` and `@testing-library/jest-dom` in `types`.
 - `tsconfig.app.json` must include `paths: { "@/*": ["./src/*"] }` to match vite alias.
@@ -80,7 +80,7 @@
 - File: `e2e/screenshot.ts`. Seeded once, user-owned. Edit the config section to match the app.
 - Split into `CONFIG` and `ENGINE` sections. Only the config section changes per project.
 - `ROUTES` defines named app routes with viewport dimensions.
-- `STATES` is an array of `{ name, setup? }` — adding a new state is one object.
+- `STATES` is an array of `{ name, setup? }`. Adding a new state is one object.
 - `colorScheme` set via Playwright context. No UI interaction needed.
 - Run `bun run screenshot`. Builds, starts preview server, captures, outputs to `screenshots/` (gitignored).
 - Preview server runs on port 4173 (`BASE_URL` in the script matches `vite preview` default).

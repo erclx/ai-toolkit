@@ -8,7 +8,7 @@ The gemini stack seeds `.gemini/settings.json` with a baseline model config into
 
 - Config: `.gemini/settings.json` at root.
 - Model: `gemini-2.5-flash` (default seed, user-owned after init).
-- Gitignored — local override, never commit.
+- Gitignored. Treat as a local override and never commit.
 
 ## GEMINI.md
 
@@ -16,4 +16,4 @@ The seed drops a `GEMINI.md` at the project root. Gemini CLI reads this file aut
 
 ## Gitignore
 
-- `# Gemini` — `.gemini/.tmp/`, `.gemini/settings.json`
+- `# Gemini`: `.gemini/.tmp/`, `.gemini/settings.json`

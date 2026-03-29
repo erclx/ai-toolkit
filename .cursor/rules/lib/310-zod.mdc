@@ -21,5 +21,5 @@ priority: 310
 
 ## Schema safety
 
-- Do not use `z.any()`; use `z.unknown()` for truly ambiguous inputs.
-- Do not use `.passthrough()`; prefer `.strict()` at boundaries or explicit `.pick()`/`.omit()`.
+- Use `z.unknown()` for truly ambiguous inputs instead of `z.any()`.
+- Prefer `.strict()` at boundaries or explicit `.pick()`/`.omit()` over `.passthrough()`.

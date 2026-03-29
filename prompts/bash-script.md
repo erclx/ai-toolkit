@@ -16,7 +16,7 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 ### Visual Timeline
 
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
-- Open the timeline once at the very start of `main()` with `┌` alone, followed immediately by `│ Title` — before any logic, prompts, or checks.
+- Open the timeline once at the very start of `main()` with `┌` alone, followed immediately by `│ Title`, before any logic, prompts, or checks.
 - Close the timeline via `trap close_timeline EXIT`, registered immediately after the `┌` open.
 - On success: disable with `trap - EXIT`, then print `└\n` and the success message manually.
 - On cancellation and error: never print `└` manually. The trap owns those exits.

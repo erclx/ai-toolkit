@@ -1,4 +1,4 @@
 - Respond with senior-level judgment
 - No edits, just discuss
 - Assess what is good and what is bad first, then give a concise overview of what needs to change
-- Minimal and necessary only; no nice-to-haves, no overthinking, no padding
+- Minimal and necessary only. No nice-to-haves, no overthinking, no padding.

@@ -44,9 +44,9 @@ Seeds are user-owned files that grow with the project. Dictionary files (`.cspel
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain.
 
-Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only; existing entries are never touched.
+Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched.
 
-Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Similar to seeds, only missing entries are added; existing dependencies or scripts are not modified or overwritten.
+Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Similar to seeds, only missing entries are added. Existing dependencies or scripts are not modified or overwritten.
 
 ## Extends chain
 
@@ -61,14 +61,14 @@ Each stack has a `manifest.toml` that controls what sync does. Below is the full
 name = "stack-name"     # must match the folder name under tooling/
 extends = "parent"      # parent stack to inherit from, empty string if none
 runtime = "runtime-name"      # reserved: package manager for this stack (not active yet)
-scaffold = "scaffold-command"  # bootstrap command; read today by sandbox/tooling/upstream.sh, not yet by aitk tooling sync
+scaffold = "scaffold-command"  # bootstrap command, read today by sandbox/tooling/upstream.sh, not yet by aitk tooling sync
 ```
 
-`name` must match the folder name exactly. `extends` is the parent stack; configs, seeds, scripts, deps, and gitignore all resolve through the chain. Leave empty if no parent.
+`name` must match the folder name exactly. `extends` is the parent stack. Configs, seeds, scripts, deps, and gitignore all resolve through the chain. Leave empty if no parent.
 
 `runtime` is reserved and not yet read by any script. `scaffold` is partially active: `scripts/sandbox/tooling/upstream.sh` reads it today to provision raw upstream templates. It is not yet used by `aitk tooling sync`. Declare both fields now so the intent is captured. Use an empty string if not applicable.
 
-`[stack]` is the only required block. `[dependencies.dev]`, `[scripts]`, and `[gitignore]` are all optional — omit any section the stack does not need.
+`[stack]` is the only required block. `[dependencies.dev]`, `[scripts]`, and `[gitignore]` are all optional. Omit any section the stack does not need.
 
 ```toml
 [dependencies.dev]
@@ -83,7 +83,7 @@ packages = []
 
 `[dependencies.dev]` injects into `devDependencies` in the target `package.json`. Only missing packages are added. Include a version tag or use `@latest`.
 
-`[scripts]` injects into the `scripts` block of the target `package.json`. Only missing keys are added. Both key and value must use double quotes — unquoted keys are not parsed.
+`[scripts]` injects into the `scripts` block of the target `package.json`. Only missing keys are added. Both key and value must use double quotes. Unquoted keys are not parsed.
 
 `[gitignore]` appends to the target `.gitignore`. The quoted header becomes a comment, each path is appended as its own line. Additive only.
 

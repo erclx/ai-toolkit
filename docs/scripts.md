@@ -2,7 +2,7 @@
 
 ## Overview
 
-`scripts/` contains all CLI entry points, core maintenance scripts, sandbox provisioning, and shared library functions. Entry points delegate to subcommands; lib functions are sourced, never executed directly.
+`scripts/` contains all CLI entry points, core maintenance scripts, sandbox provisioning, and shared library functions. Entry points delegate to subcommands. Lib functions are sourced, never executed directly.
 
 ## Structure
 
@@ -59,6 +59,6 @@ scripts/
 
 **`ui.sh`**: source this in any script that needs terminal output. Provides the color palette, all `log_*` functions, interactive prompts (`select_option`, `ask`), and `require_project_root`.
 
-**`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator; it ties together missing dep installation, script injection, and gitignore merging in one call.
+**`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
 **`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names. When provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
