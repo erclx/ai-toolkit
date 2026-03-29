@@ -6,6 +6,7 @@ Add a `###` block using the task description provided in this session:
 ### <title>
 
 - [ ] <outcome>
+- [ ] <outcome if multiple steps>
 
 > Test strategy: <type and brief justification>
 ```
