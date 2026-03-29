@@ -20,16 +20,17 @@ docs/
 
 Prompts are organized into categories in `prompts.toml`. Each category is a named list of prompt file stems. There is no inheritance. Categories are flat file lists.
 
-| Category    | Names       |
-| ----------- | ----------- |
-| `scripting` | bash-script |
+| Category    | Names        |
+| ----------- | ------------ |
+| `claude`    | claude-skill |
+| `scripting` | bash-script  |
 
 ## Prompts
 
 | File                     | Generates                                    | Exportable |
 | ------------------------ | -------------------------------------------- | ---------- |
 | `bash-script.md`         | Production-grade Bash scripts with visual UI | Yes        |
-| `claude-skill.md`        | Claude Code skill SKILL.md files             | No         |
+| `claude-skill.md`        | Claude Code skill SKILL.md files             | Yes        |
 | `cursor-rules.md`        | Cursor .mdc rule files                       | No         |
 | `gemini-cli.md`          | Gemini CLI TOML command files                | No         |
 | `meta-prompt.md`         | System prompts from raw user ideas           | No         |

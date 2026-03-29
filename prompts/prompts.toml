@@ -1,3 +1,8 @@
+[claude]
+names = [
+    "claude-skill",
+]
+
 [scripting]
 names = [
     "bash-script",
