@@ -41,6 +41,13 @@ Run `aitk` from the repo root.
 | `aitk standards install [path]` | Install standards to a project |
 | `aitk standards sync [path]`    | Sync standards to a project    |
 
+### Antigravity
+
+| Command                                   | Description                              |
+| ----------------------------------------- | ---------------------------------------- |
+| `aitk antigravity install [group] [path]` | Install Antigravity workflows to project |
+| `aitk antigravity sync [path]`            | Sync Antigravity workflows in project    |
+
 ### Snippets
 
 | Command                                   | Description                              |
