@@ -12,6 +12,6 @@ Add a `###` block using the task description provided in this session:
 ```
 
 1. Remove `### Nothing queued` from "Up next" if present.
-2. Append the new block to the bottom of "Up next", before `## Done`.
+2. Append the new block to the bottom of "Up next".
 
 Preserve all other formatting and content exactly.

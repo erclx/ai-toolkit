@@ -1,13 +1,10 @@
-Read `.claude/TASKS.md` and `.claude/TASKS-ARCHIVE.md`. Before proceeding, re-read the preamble of `TASKS.md` (everything above `## Up next`) to understand the rules for this file.
+Read `.claude/TASKS.md` and `.claude/TASKS-ARCHIVE.md`.
 
-1. Promote complete tasks. In "Up next", find every `###` block that has at least one checkbox and where all checkboxes are `[x]`:
-   - Append the entire block to the bottom of "Done", after all existing entries
-   - Remove the block from "Up next"
-   - Skip blocks with no checkboxes
+Find every `###` block in "Up next" that has at least one checkbox and where all checkboxes are `[x]`:
 
-2. Archive overflow. Count `###` blocks in "Done". If the count exceeds 10, move the oldest half (rounded down) to the bottom of `.claude/TASKS-ARCHIVE.md` and remove them from "Done".
-
-3. Sync the placeholder. If "Up next" has at least one `###` block with checkboxes (checked or unchecked), remove `### Nothing queued` if present. If "Up next" has no `###` blocks with checkboxes, insert `### Nothing queued` if not already present:
+1. Append each completed block to the bottom of `.claude/TASKS-ARCHIVE.md`, in the order they appear in "Up next".
+2. Remove each completed block from "Up next".
+3. Sync the placeholder. If "Up next" still has at least one `###` block with checkboxes (checked or unchecked), remove `### Nothing queued` if present. If "Up next" has no `###` blocks with checkboxes, insert `### Nothing queued` if not already present:
 
 ```markdown
 ### Nothing queued
@@ -15,4 +12,4 @@ Read `.claude/TASKS.md` and `.claude/TASKS-ARCHIVE.md`. Before proceeding, re-re
 - No tasks currently
 ```
 
-Preserve all formatting and content exactly.
+Skip blocks with no checkboxes. Preserve all formatting and content exactly.

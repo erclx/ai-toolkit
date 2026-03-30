@@ -13,6 +13,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── IMPLEMENTER.md     ← managed. System prompt for code generation, read by aitk claude prompt
 ├── CLAUDE.md          ← seeded. Project context and rules, auto-loaded by Claude Code each session
 ├── TASKS.md           ← seeded. Persistent task tracker, source of truth for progress
+├── TASKS-ARCHIVE.md   ← seeded. Completed tasks moved here from TASKS.md
 ├── REQUIREMENTS.md    ← seeded. Project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md    ← seeded. Technical design decisions and open questions
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it

@@ -26,22 +26,22 @@ Base snippets live at the root with no prefix. Category snippets live in a named
 
 ## Snippets
 
-| Slug                 | Purpose                                                            |
-| -------------------- | ------------------------------------------------------------------ |
-| `chat-mode`          | Session opener for tool behavior                                   |
-| `senior-mode`        | Senior-level judgment, discuss only                                |
-| `session-notes`      | Capture session decisions                                          |
-| `code-search`        | Generate a git grep bash script                                    |
-| `create-snippet`     | Draft a new snippet (chat/Chrome extension)                        |
-| `web-research`       | Search the web and synthesize findings into a decision-ready block |
-| `claude-edit`        | Generate Claude Code edit prompt                                   |
-| `claude-figma`       | Generate Figma instructions from a design spec                     |
-| `claude-prose-audit` | Audit a file's prose against `standards/prose.md`                  |
-| `claude-seed-audit`  | Audit seed files against toolkit source of truth                   |
-| `claude-steps`       | Request step-by-step instructions for any process                  |
-| `claude-tasks-add`   | Add a new task block to the "Up next" queue                        |
-| `claude-tasks-done`  | Promote complete tasks, archive overflow, and sync the placeholder |
-| `claude-ux-audit`    | UX/UI audit of existing features                                   |
+| Slug                 | Purpose                                                                   |
+| -------------------- | ------------------------------------------------------------------------- |
+| `chat-mode`          | Session opener for tool behavior                                          |
+| `senior-mode`        | Senior-level judgment, discuss only                                       |
+| `session-notes`      | Capture session decisions                                                 |
+| `code-search`        | Generate a git grep bash script                                           |
+| `create-snippet`     | Draft a new snippet (chat/Chrome extension)                               |
+| `web-research`       | Search the web and synthesize findings into a decision-ready block        |
+| `claude-edit`        | Generate Claude Code edit prompt                                          |
+| `claude-figma`       | Generate Figma instructions from a design spec                            |
+| `claude-prose-audit` | Audit a file's prose against `standards/prose.md`                         |
+| `claude-seed-audit`  | Audit seed files against toolkit source of truth                          |
+| `claude-steps`       | Request step-by-step instructions for any process                         |
+| `claude-tasks-add`   | Add a new task block to the "Up next" queue                               |
+| `claude-tasks-done`  | Move completed task blocks to `TASKS-ARCHIVE.md` and sync the placeholder |
+| `claude-ux-audit`    | UX/UI audit of existing features                                          |
 
 ## CLI
 
