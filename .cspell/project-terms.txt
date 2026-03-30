@@ -42,6 +42,7 @@ shellcheck
 shfmt
 sonner
 ssot
+subfolders
 timonwong
 unmatch
 unrequested

@@ -17,16 +17,17 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 
 The toolkit has seven domains. Each maps to a skill. Load the skill before editing anything in that domain.
 
-| Task type                                                         | Skill to load     |
-| ----------------------------------------------------------------- | ----------------- |
-| Modifying `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/`    | `aitk-scripts`    |
-| Modifying `tooling/`, manifests, golden configs, seeds            | `aitk-tooling`    |
-| Modifying `standards/`, `docs/`                                   | `aitk-standards`  |
-| Modifying `.cursor/rules/`, `.cursor/stacks/`                     | `aitk-governance` |
-| Modifying `snippets/`, `snippets.toml`                            | `aitk-snippets`   |
-| Modifying `prompts/`                                              | `aitk-prompts`    |
-| Modifying `gemini/commands/`, `gemini/README.md`                  | `aitk-gemini`     |
-| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/` | `aitk-claude`     |
+| Task type                                                         | Skill to load      |
+| ----------------------------------------------------------------- | ------------------ |
+| Modifying `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/`    | `aitk-scripts`     |
+| Modifying `tooling/`, manifests, golden configs, seeds            | `aitk-tooling`     |
+| Modifying `standards/`, `docs/`                                   | `aitk-standards`   |
+| Modifying `.cursor/rules/`, `.cursor/stacks/`                     | `aitk-governance`  |
+| Modifying `snippets/`, `snippets.toml`                            | `aitk-snippets`    |
+| Modifying `prompts/`                                              | `aitk-prompts`     |
+| Modifying `gemini/commands/`, `gemini/README.md`                  | `aitk-gemini`      |
+| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/` | `aitk-claude`      |
+| Modifying `antigravity/workflows/`, `workflows.toml`              | `aitk-antigravity` |
 
 ## Key paths
 
@@ -40,6 +41,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - `prompts/`: system prompt generators for AI-assisted authoring tasks
 - `docs/`: human-readable reference docs for each toolkit domain
 - `scripts/`: build, sync, sandbox, and prompt generation scripts
+- `antigravity/`: workflow source and group manifest for Antigravity sync
 
 ## Commands
 

@@ -12,6 +12,7 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - `prompts/`: system prompt generators
 - `docs/`: human-readable reference docs for each toolkit domain
 - `scripts/`: build, sync, sandbox, and prompt generation scripts
+- `antigravity/`: workflow source and group manifest for Antigravity sync
 
 ## Behavior
 

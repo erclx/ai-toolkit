@@ -1,0 +1,25 @@
+[groups.git]
+description = "Git workflow automation (commit, branch, PR, ship)"
+workflows = [
+    "git-branch.md",
+    "git-commit.md",
+    "git-pr.md",
+    "git-ship.md",
+    "git-split.md",
+    "git-stage.md",
+]
+
+[groups.docs]
+description = "Documentation sync"
+workflows = [
+    "docs-sync.md",
+]
+
+[groups.review]
+description = "Code and AI review workflows"
+workflows = [
+    "claude-docs.md",
+    "claude-feature.md",
+    "claude-review.md",
+    "claude-ui-test.md",
+]

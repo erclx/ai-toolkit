@@ -17,12 +17,13 @@ scripts/sandbox/
 │   ├── gemini.sh      ← tests gemini settings.json config injection
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
 ├── infra/
-│   ├── cursor.sh      ← Cursor IDE playground with full governance injected
-│   ├── gov.sh         ← interactive tests for governance commands
-│   ├── standards.sh   ← interactive tests for standards commands
-│   ├── snippets.sh    ← interactive tests for snippets commands
-│   ├── claude.sh      ← interactive tests for claude workflow commands
-│   └── tooling.sh     ← interactive tests for tooling commands
+│   ├── cursor.sh         ← Cursor IDE playground with full governance injected
+│   ├── gov.sh            ← interactive tests for governance commands
+│   ├── standards.sh      ← interactive tests for standards commands
+│   ├── snippets.sh       ← interactive tests for snippets commands
+│   ├── claude.sh         ← interactive tests for claude workflow commands
+│   ├── tooling.sh        ← interactive tests for tooling commands
+│   └── antigravity.sh    ← interactive tests for antigravity install and sync
 ├── git/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch

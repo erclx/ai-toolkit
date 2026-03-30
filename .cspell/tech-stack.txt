@@ -4,6 +4,7 @@ cspell
 elif
 fastapi
 gitattributes
+gsub
 heredoc
 mypy
 nextjs
