@@ -1,0 +1,45 @@
+---
+description: Enforce UI copy and text standards for rendered strings in React components
+globs: '**/*.tsx,**/*.jsx'
+alwaysApply: false
+priority: 210
+---
+
+# UI COPY STANDARDS
+
+## Casing
+
+- Use sentence case for all rendered UI text: headings, labels, nav items, tab titles, and dialog titles.
+- Retain original casing for proper nouns and product names: `GitHub`, `macOS`, `TypeScript`.
+
+## Punctuation
+
+- Do not use em dashes (`—`). Use a comma or period, or restructure the sentence.
+- Do not add punctuation to button labels or short action strings.
+
+## Button copy
+
+- Use imperative verbs for actions: `Save`, `Delete`, `Connect`, `Cancel`.
+- Avoid padded phrasing: `Save` over `Save changes`, `Delete` over `Click to delete`.
+
+## Error messages
+
+- State what to do, not what went wrong: `Enter a valid email` over `Email is invalid`.
+- Keep messages short and actionable.
+- One sentence maximum.
+
+## Placeholder text
+
+- Show format examples over instructions: `name@example.com` over `Enter your email here`.
+- Reserve instructions for labels or helper text below the input.
+
+## Feedback
+
+- After a successful mutation (save, sync, import), show brief inline feedback before navigating away or resetting the form.
+- Feedback must be transient: fade or dismiss automatically after 2–3 seconds. Do not require user dismissal.
+
+## Alt text
+
+- Describe the content or function of the image, not its appearance.
+- Keep alt text concise. Do not prefix with "Image of" or "Photo of".
+- Alt text for functional images (icons, buttons) should describe the action, not the graphic.

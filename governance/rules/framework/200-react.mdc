@@ -1,0 +1,47 @@
+---
+description: Enforce opinionated React architecture and component patterns
+globs: '**/*.tsx,**/*.ts'
+alwaysApply: false
+priority: 200
+---
+
+# REACT ARCHITECTURE STANDARDS
+
+## Export conventions
+
+- Use named exports exclusively for components and hooks.
+- Do not use default exports.
+
+## Project structure
+
+- Place domain logic in `src/features/` and restrict `src/components/` to shared UI.
+- Do not place feature-specific components in the global components folder.
+- Import environment variables only from the validated configuration module.
+
+## Component patterns
+
+- Use function declarations for components over arrow functions.
+- Define TypeScript interfaces for props immediately above the component.
+- Use `<>` shorthand for fragments unless key prop is required.
+- Use stable, unique keys for list items over array index.
+- Extract components when JSX exceeds a single responsibility.
+
+## State and effects
+
+- Encapsulate data fetching and complex effects in custom hooks.
+- Use `useMemo` for derived state over `useEffect`.
+
+## Memoization
+
+- Memoize components receiving non-primitive props with `React.memo`.
+- Use `useCallback` for handler props passed to children.
+
+## Composition and props
+
+- Avoid prop drilling beyond 2 levels. Use context or composition.
+
+## Error boundaries and Suspense
+
+- Place error boundaries at route level.
+- Place Suspense at data-fetching boundaries.
+- Do not use a single root-level error boundary as the only safety net.

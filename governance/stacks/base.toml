@@ -1,0 +1,2 @@
+extends = ""
+rules = ["000-constitution", "010-testing", "020-concurrency", "030-error-handling", "040-performance", "050-logging", "060-naming", "070-planning"]
