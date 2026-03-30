@@ -21,6 +21,7 @@ show_help() {
   echo -e "${GREY}│${NC}    prompts [cmd]      ${GREY}# Prompts commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks (sync, ref, create)${NC}"
   echo -e "${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}"
+  echo -e "${GREY}│${NC}    antigravity [cmd]  ${GREY}# Antigravity workflows (install, sync)${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Sandbox:${NC}"
   echo -e "${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}"
@@ -41,6 +42,8 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk tooling sync base"
   echo -e "${GREY}│${NC}    aitk tooling create"
   echo -e "${GREY}│${NC}    aitk claude prompt"
+  echo -e "${GREY}│${NC}    aitk antigravity install git ../my-app"
+  echo -e "${GREY}│${NC}    aitk antigravity sync ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -82,6 +85,10 @@ main() {
   claude)
     shift
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" "$@"
+    ;;
+  antigravity)
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-antigravity.sh" "$@"
     ;;
   *)
     echo -e "${GREY}┌${NC}"
