@@ -27,13 +27,23 @@ Run `aitk claude init` to seed the `.claude/` directory, default prompt template
 
 ### New feature
 
-Work in Claude Code directly. It reads CLAUDE.md automatically and has full file access, no pasting needed.
+Split each feature across two sessions. Session 1 covers planning and implementation. Session 2 covers review and ship. Starting session 2 fresh keeps the reviewer independent and prevents context from accumulating across the full workflow.
+
+#### Session 1
+
+Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
 - Invoke `toolkit:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
-- For UI changes, invoke `toolkit:claude-ui-test` to generate a browser verification checklist before review
-- Run `gemini dev:review` in terminal, or open a fresh session and invoke `toolkit:claude-review`. Copy valid findings to Claude Code and fix.
-- If decisions diverged from the original plan (design pivots, requirement changes), invoke `toolkit:claude-docs` to update `.claude/` planning docs before shipping
+- For UI changes, invoke `toolkit:claude-ui-test` to generate a browser verification checklist
+  End the session once the feature works and tests pass. Invoke `toolkit:claude-docs` to capture any decisions made during implementation before closing.
+
+#### Session 2
+
+Start a fresh Claude Code session. The diff is sufficient context for both review and ship.
+
+- Invoke `toolkit:claude-review` to review all changes since main and output a findings report
+- Fix any valid findings
 - Invoke `toolkit:git-ship` to sync docs, commit by concern, rename branch, and open PR
 
 ### UI polish
@@ -48,7 +58,7 @@ Verify the change manually in the browser. Invoke `toolkit:claude-ui-test` if yo
 
 ### Review
 
-Run `gemini dev:review` in terminal, or invoke `toolkit:claude-review` in a fresh Claude Code session. Both produce a findings report. Copy valid findings to your implementation session and fix. If nothing is valid, do nothing. Always review in a separate session from implementation to preserve reviewer independence.
+Invoke `toolkit:claude-review` at the start of session 2. It reads all changed files and outputs a findings report. Fix valid findings before invoking `toolkit:git-ship`. If nothing is valid, skip directly to ship.
 
 ## Skills
 
@@ -68,9 +78,9 @@ Invoke `toolkit:ai-sync` manually when structural changes affect key paths, comm
 ## Feedback routing
 
 ```plaintext
-verify fails  → Claude Code (it has implementation context)
+verify fails  → Session 1 (it has implementation context)
 design fails  → new Claude chat session (planning problem)
-review finds  → Claude Code (same implementation session)
+review finds  → Session 2 (fix alongside review, before ship)
 ```
 
 ## Snippets
