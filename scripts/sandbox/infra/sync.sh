@@ -4,37 +4,48 @@ set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
+use_anchor() {
+  export ANCHOR_REPO="toolkit-sandbox"
+}
+
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_INJECT_STANDARDS="true"
+  export SANDBOX_INJECT_GOV="true"
 }
 
 stage_setup() {
-  mkdir -p sync/standards
-  mkdir -p sync/.cursor/rules
-
   local src_standards="$PROJECT_ROOT/standards"
   local src_rules="$PROJECT_ROOT/governance/rules"
+
+  git config user.email "${GITHUB_ORG}@github.com"
+  git config user.name "Eric"
+
+  git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file")
-    cp "$file" "sync/standards/$filename"
-    echo "<!-- stale -->" >>"sync/standards/$filename"
+    echo "<!-- stale -->" >>"standards/$filename"
   done < <(find "$src_standards" -type f -name "*.md" | sort | head -n 2)
 
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file")
-    cp "$file" "sync/.cursor/rules/$filename"
-    echo "# stale" >>"sync/.cursor/rules/$filename"
+    echo "# stale" >>".cursor/rules/$filename"
   done < <(find "$src_rules" -type f -name "*.mdc" | sort | head -n 2)
 
   git add .
-  git commit -m "chore(sandbox): scaffold sync test directory" --no-verify -q
+  git commit -m "chore(sandbox): make standards and governance stale" --no-verify -q
+
+  git push --force origin HEAD:main -q
+  git push origin --delete chore/toolkit-sync -q 2>/dev/null || true
 
   log_step "Sync sandbox"
-  log_info "sync/ — stale standards/ and .cursor/rules/ present"
+  log_info "Anchor: $ANCHOR_REPO"
+  log_info "Stale: standards/ (2 files), .cursor/rules/ (2 files)"
+  log_info "Remote: git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
   log_step "Running: aitk sync"
-  exec "$PROJECT_ROOT/scripts/manage-sync.sh" sync/
+  exec "$PROJECT_ROOT/scripts/manage-sync.sh" .
 }
