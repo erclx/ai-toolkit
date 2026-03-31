@@ -319,14 +319,22 @@ cmd_gov() {
   payload_file=$(build_rules_payload "$rules_dir")
 
   mkdir -p "$target/.claude"
+  local tmp_file
+  tmp_file=$(mktemp)
   {
     echo "# Governance"
     echo ""
     cat "$payload_file"
-  } >"$output_file"
+  } >"$tmp_file"
   rm -f "$payload_file"
 
-  log_add ".claude/GOV.md"
+  if [ -f "$output_file" ] && diff -q "$tmp_file" "$output_file" >/dev/null 2>&1; then
+    rm -f "$tmp_file"
+    log_info ".claude/GOV.md"
+  else
+    mv "$tmp_file" "$output_file"
+    log_add ".claude/GOV.md"
+  fi
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
