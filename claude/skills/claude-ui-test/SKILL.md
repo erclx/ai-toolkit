@@ -24,6 +24,8 @@ Exclude anything covered by unit or integration tests.
 
 Group by feature area. For each item, write one line: what to do, then what to expect. Keep it scannable.
 
+Use `- [ ]` checkbox syntax for every item, not plain `-` bullets.
+
 **What to verify:**
 
 **<Feature area>**
