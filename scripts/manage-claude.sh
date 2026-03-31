@@ -302,11 +302,14 @@ cmd_gov() {
     log_info "$(basename "$file")"
   done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
 
-  select_option "Build $count rules to .claude/GOV.md?" "Yes" "No"
-
-  if [ "$SELECTED_OPTION" = "No" ]; then
-    log_warn "Cancelled"
-    exit 0
+  if [ "${AITK_NON_INTERACTIVE:-}" = "1" ]; then
+    log_info "Rebuilding GOV.md (non-interactive)"
+  else
+    select_option "Build $count rules to .claude/GOV.md?" "Yes" "No"
+    if [ "$SELECTED_OPTION" = "No" ]; then
+      log_warn "Cancelled"
+      exit 0
+    fi
   fi
 
   log_step "Building governance payload"
