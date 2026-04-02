@@ -10,7 +10,8 @@
 - Config: `.prettierrc` (JSON) at root.
 - Rules: `semi: false`, `singleQuote: true`.
 - Add parser overrides for non-standard extensions (e.g., `.mdc` → `markdown`).
-- Ignore paths via `.gitignore`. Do not create `.prettierignore`.
+- Ignore paths via `.gitignore` and `.prettierignore`. Pass both as `--ignore-path` on all prettier invocations.
+- `.prettierignore` is a user-owned seed. It is created empty on install. Projects add their own entries.
 - Use `--log-level warn` on all prettier invocations to suppress per-file `(unchanged)` output.
 
 ## Dev Dependencies
@@ -52,7 +53,7 @@
   - `commit-msg` → `bunx commitlint --edit "$1"`
   - `pre-push` → `bun run check`
 - Lint-staged globs:
-  - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`
+  - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`
   - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 - Note: lint-staged handles its own glob expansion and passes matched files as arguments. `**/*.sh` is safe here, unlike in package.json scripts.
 
@@ -94,9 +95,9 @@
 ## Package Scripts
 
 - `check:spell`: runs cspell across all files, shows context on failures.
-- `check:format`: checks prettier and shfmt formatting without writing. shfmt targets `scripts/` directory directly. Uses `--log-level warn` to suppress unchanged file output.
+- `check:format`: checks prettier and shfmt formatting without writing. shfmt targets `scripts/` directory directly. Uses `--log-level warn` and both `--ignore-path .gitignore --ignore-path .prettierignore`.
 - `check:shell`: runs shellcheck at warning severity via `find scripts -name '*.sh'` (shellcheck has no directory mode).
-- `format`: writes prettier and shfmt formatting in place. shfmt targets `scripts/` directory directly. Uses `--log-level warn` to suppress unchanged file output.
+- `format`: writes prettier and shfmt formatting in place. shfmt targets `scripts/` directory directly. Uses `--log-level warn` and both `--ignore-path .gitignore --ignore-path .prettierignore`.
 - `prepare`: initializes husky hooks (runs automatically on `bun install`).
 - `check`: runs `scripts/verify.sh`, the full verification suite. Auto-formats before asserting.
 - `clean`: runs `scripts/clean.sh`, wipes and reinstalls dependencies.
