@@ -265,7 +265,9 @@ collect_stack_deps() {
 
     local pkg_name
     pkg_name=$(echo "$line" | tr -d '"[],' | xargs)
-    pkg_name="${pkg_name%%@*}"
+    if [[ "$pkg_name" != @* ]]; then
+      pkg_name="${pkg_name%%@*}"
+    fi
     [ -z "$pkg_name" ] && continue
 
     [[ -v SEEN_DEPS["$pkg_name"] ]] && continue
