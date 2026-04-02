@@ -120,7 +120,5 @@ Sync auto-discovers the new stack.
 ## Notes
 
 - Commit golden config changes with `--no-verify`. Lint-staged runs on the template files themselves, not project source.
-- `cspell.json` references `.cspell/` dictionaries. Seeds must exist, even if empty, or cspell errors on missing paths.
 - Tooling configs are concrete files and skip the governance build compilation step.
-- Gemini stack seeds `.gemini/settings.json` only. No deps, no scripts. It gitignores `.gemini/.tmp/` and the user-owned `.gemini/settings.json`.
 - In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped by the parser.
