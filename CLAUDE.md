@@ -12,6 +12,7 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - After any edit that changes how a domain works, update affected files in `docs/`
 - When updating docs, load `aitk-standards` and follow `standards/prose.md`
 - For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
+- Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
 
 ## System overview
 
