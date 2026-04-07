@@ -9,7 +9,8 @@ description: CLI entry point, bash scripts, sandbox scenarios, and lib functions
 
 - `src/cli.ts` is the `aitk` entry point. It registers subcommands via commander and dispatches each to the corresponding `manage-*.sh` script via execa.
 - `src/exec.ts` resolves `PROJECT_ROOT` from `import.meta.dir` and exports `execScript`, the shared spawn helper.
-- `src/commands/*.ts` each export a `register` function. One file per domain. All are pass-through dispatchers in phase 1.
+- `src/ui.ts` wraps `@clack/prompts` with cancel handling. Exports `intro`, `outro`, `select`, `confirm`.
+- `src/commands/*.ts` each export a `register` function. One file per domain. Most are pass-through dispatchers. `sandbox.ts` uses native clack prompts for the interactive picker, then execs bash with the resolved command.
 - Use `@/` absolute imports (mapped to `src/` in `tsconfig.json`).
 
 ## Bash entry points

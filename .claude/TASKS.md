@@ -37,13 +37,14 @@ Key detail: set `PROJECT_ROOT` env var before spawning child bash processes.
 
 ### Phase 2 — Migrate sandbox interactive prompts to clack
 
-Replace bash `select_option` in sandbox with native `@clack/prompts` calls. Scope TBD (at minimum: category/command picker).
+Replace bash `select_option` in sandbox with native `@clack/prompts` calls. Scope: category/command picker only. Reset confirmation and cursor post-prompt stay in bash.
 
-| File                      | Status  | Notes                                                              |
-| ------------------------- | ------- | ------------------------------------------------------------------ |
-| `src/commands/sandbox.ts` | pending | Native clack prompts for category/command picker                   |
-| `src/ui.ts`               | pending | Shared wrapper around `@clack/prompts` matching timeline aesthetic |
-| `package.json`            | pending | Add `@clack/prompts`                                               |
+| File                        | Status | Notes                                                                    |
+| --------------------------- | ------ | ------------------------------------------------------------------------ |
+| `src/commands/sandbox.ts`   | done   | Native clack prompts for category/command picker, execs bash with result |
+| `src/ui.ts`                 | done   | Shared wrapper: intro, outro, select, confirm with cancel guard          |
+| `package.json`              | done   | Added `@clack/prompts` dependency                                        |
+| `scripts/manage-sandbox.sh` | done   | Added `--no-header` flag to suppress `┌` when TS owns the timeline       |
 
 ### Phase 3 — Gradual domain migration (future)
 
@@ -53,11 +54,11 @@ Pull interactive logic into TypeScript per domain as each is touched. No fixed s
 
 Run after Phase 1 and Phase 2 are working.
 
-| Task                                          | Status  | Notes                                                                 |
-| --------------------------------------------- | ------- | --------------------------------------------------------------------- |
-| Update `docs/scripts.md`                      | pending | Document TS entry point, `src/` structure, how dispatch works         |
-| Update `docs/sandbox.md`                      | pending | Phase 2 changes how sandbox interactive prompts work                  |
-| Update `.claude/skills/aitk-scripts/SKILL.md` | pending | Skill body must reflect `src/` directory and TS dispatch layer        |
-| Update `CLAUDE.md` system overview            | pending | Add `src/` to key paths, update domain table for scripts row          |
-| Update `.cspell/tech-stack.txt`               | pending | Add `clack`, `execa`, `commander`, `tsconfig`                         |
-| Update `package.json` scripts                 | pending | Verify `check:shell` find path still works, add lint for TS if needed |
+| Task                                          | Status | Notes                                                        |
+| --------------------------------------------- | ------ | ------------------------------------------------------------ |
+| Update `docs/scripts.md`                      | done   | Added `ui.ts` to tree, updated `sandbox.ts` description      |
+| Update `docs/sandbox.md`                      | skip   | Describes behavior not implementation, no change needed      |
+| Update `.claude/skills/aitk-scripts/SKILL.md` | done   | Added `ui.ts` and updated dispatch layer section for Phase 2 |
+| Update `CLAUDE.md` system overview            | done   | Already had `src/` in key paths from Phase 1                 |
+| Update `.cspell/tech-stack.txt`               | done   | All words already present from Phase 1                       |
+| Update `package.json` scripts                 | done   | `check:shell` path unchanged, no TS lint needed yet          |

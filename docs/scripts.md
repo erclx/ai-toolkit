@@ -12,8 +12,9 @@
 src/
 ├── cli.ts               ← aitk entry point (bun shebang, commander)
 ├── exec.ts              ← shared helper: resolve PROJECT_ROOT, spawn bash via execa
+├── ui.ts                ← shared @clack/prompts wrapper: intro, outro, select, confirm
 └── commands/
-    ├── sandbox.ts       ← pass-through to manage-sandbox.sh
+    ├── sandbox.ts       ← interactive clack prompts, then execs manage-sandbox.sh
     ├── sync.ts          ← pass-through to manage-sync.sh
     ├── gov.ts           ← pass-through to manage-gov.sh
     ├── standards.ts     ← pass-through to manage-standards.sh
