@@ -1,7 +1,10 @@
 axios
+clack
+commander
 crxjs
 cspell
 elif
+execa
 fastapi
 gitattributes
 gsub
@@ -23,6 +26,7 @@ tabindex
 tanstack
 tolower
 toupper
+tsconfig
 uv
 uvicorn
 vite
