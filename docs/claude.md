@@ -97,6 +97,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | `aitk claude sync`   | Diff managed role prompts against source and apply updates   |
 | `aitk claude prompt` | Generate master prompts from installed governance rules      |
 | `aitk claude gov`    | Build governance rules into `.claude/GOV.md`                 |
+| `aitk claude setup`  | Install user-level Claude config to `~/.claude/`             |
 
 ### init
 
@@ -121,3 +122,9 @@ Prerequisites: run `aitk claude init` first, then `aitk gov install` to install 
 Reads `.mdc` files from `.cursor/rules/`, strips frontmatter, concatenates them, and writes `.claude/GOV.md`. Claude Code loads this file automatically each session to provide governance context inline. `aitk sync` regenerates it automatically if `.claude/GOV.md` already exists in the target.
 
 Prerequisites: run `aitk gov install` first to populate `.cursor/rules/`.
+
+### setup
+
+Copies `statusline-command.sh` from `tooling/claude/user/` to `~/.claude/` and patches `~/.claude/settings.json` to register it as the statusline command. Idempotent — skips files that already match. Run once per machine after cloning the toolkit.
+
+The statusline renders as: `Sonnet 4.6 | 40k / 200k | 20%`. Fields are model name, tokens used vs context window size, and remaining percentage. The percentage shows a `⚠` prefix when below 15%.
