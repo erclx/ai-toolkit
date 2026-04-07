@@ -61,3 +61,9 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
 - Follow `standards/prose.md` when writing memory file content
+
+## Wiki
+
+- Check `wiki/index.md` when a topic might be covered, then read the relevant page before answering
+- Propose additions or corrections when you learn something not covered, but do not write to wiki files without confirmation
+- When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge

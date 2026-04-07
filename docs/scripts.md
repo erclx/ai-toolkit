@@ -18,6 +18,7 @@ scripts/
 ├── manage-snippets.sh       ← aitk snippets entry point
 ├── manage-prompts.sh        ← aitk prompts entry point
 ├── manage-antigravity.sh    ← aitk antigravity entry point
+├── manage-wiki.sh           ← aitk wiki entry point
 ├── config.sh            ← shared project config (GITHUB_ORG, DEFAULT_GEMINI_MODEL)
 ├── core/
 │   ├── verify.sh        ← runs all checks: format, spell, shell
@@ -41,6 +42,8 @@ scripts/
 │   └── sync.sh          ← diffs and updates prompts already present in target
 ├── claude/
 │   └── prompt.sh        ← generates master prompts from installed rules + context docs
+├── wiki/
+│   └── init.sh          ← scaffolds wiki/ folder with stub index.md
 ├── sandbox/             ← scenario scripts, see docs/sandbox.md
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option
