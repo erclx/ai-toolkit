@@ -81,6 +81,12 @@ Run `aitk` from the repo root.
 | `aitk claude gov`    | Build governance rules into .claude/GOV.md                  |
 | `aitk claude setup`  | Install user-level Claude config (statusline) to ~/.claude/ |
 
+### Wiki
+
+| Command          | Description                              |
+| ---------------- | ---------------------------------------- |
+| `aitk wiki init` | Scaffold wiki/ folder with stub index.md |
+
 ### Sandbox
 
 | Command                  | Description                                  |
