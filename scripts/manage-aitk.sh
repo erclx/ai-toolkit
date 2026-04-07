@@ -21,6 +21,7 @@ show_help() {
   echo -e "${GREY}│${NC}    prompts [cmd]      ${GREY}# Prompts commands (install, sync)${NC}"
   echo -e "${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks (sync, ref, create)${NC}"
   echo -e "${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}"
+  echo -e "${GREY}│${NC}    wiki [cmd]         ${GREY}# Wiki commands (init)${NC}"
   echo -e "${GREY}│${NC}    antigravity [cmd]  ${GREY}# Antigravity workflows (install, sync)${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Sandbox:${NC}"
@@ -85,6 +86,10 @@ main() {
   claude)
     shift
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" "$@"
+    ;;
+  wiki)
+    shift
+    exec "$PROJECT_ROOT/scripts/manage-wiki.sh" "$@"
     ;;
   antigravity)
     shift
