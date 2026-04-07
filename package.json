@@ -21,6 +21,7 @@
     "aitk:sandbox:reset": "aitk sandbox reset"
   },
   "dependencies": {
+    "@clack/prompts": "^1.2.0",
     "commander": "^13.1.0",
     "execa": "^9.5.2"
   },
