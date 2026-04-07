@@ -8,6 +8,9 @@
 # Dependencies
 node_modules/
 
+# Governance
+.cursor/rules/
+
 # Tooling
 .gemini/.tmp/
 .gemini/settings.json
