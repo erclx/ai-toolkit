@@ -39,6 +39,7 @@ scripts/
 | `aitk claude sync`   | Diffs managed role prompts against configs and applies updates. Reports seeded file status.                    |
 | `aitk claude prompt` | Injects context into `PLANNER.md` and `IMPLEMENTER.md`, copies `REVIEWER.md` to `.tmp/`, writes all to `.tmp/` |
 | `aitk claude gov`    | Builds governance rules from `.cursor/rules/` and writes to `.claude/GOV.md`                                   |
+| `aitk claude setup`  | Copies `statusline-command.sh` to `~/.claude/` and patches `~/.claude/settings.json`. Run once per machine.    |
 | `npm run snapshot`   | Writes project file tree to `.claude/.tmp/SNAPSHOT.md`                                                         |
 
 ## Notes
