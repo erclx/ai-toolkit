@@ -2,13 +2,31 @@
 
 ## Overview
 
-`scripts/` contains all CLI entry points, core maintenance scripts, sandbox provisioning, and shared library functions. Entry points delegate to subcommands. Lib functions are sourced, never executed directly.
+`src/` is the TypeScript CLI entry point. It uses commander to register subcommands and execa to dispatch each one to the corresponding `manage-*.sh` script in `scripts/`. All domain logic remains in bash.
+
+`scripts/` contains core maintenance scripts, sandbox provisioning, domain entry points, and shared library functions. Lib functions are sourced, never executed directly.
 
 ## Structure
 
 ```plaintext
+src/
+├── cli.ts               ← aitk entry point (bun shebang, commander)
+├── exec.ts              ← shared helper: resolve PROJECT_ROOT, spawn bash via execa
+├── ui.ts                ← shared @clack/prompts wrapper: intro, outro, select, confirm
+└── commands/
+    ├── sandbox.ts       ← interactive clack prompts, then execs manage-sandbox.sh
+    ├── sync.ts          ← pass-through to manage-sync.sh
+    ├── gov.ts           ← pass-through to manage-gov.sh
+    ├── standards.ts     ← pass-through to manage-standards.sh
+    ├── snippets.ts      ← pass-through to manage-snippets.sh
+    ├── prompts.ts       ← pass-through to manage-prompts.sh
+    ├── tooling.ts       ← pass-through to manage-tooling.sh
+    ├── claude.ts        ← pass-through to manage-claude.sh
+    ├── wiki.ts          ← pass-through to manage-wiki.sh
+    └── antigravity.ts   ← pass-through to manage-antigravity.sh
+
 scripts/
-├── manage-aitk.sh       ← top-level aitk dispatcher
+├── manage-aitk.sh       ← legacy dispatcher (kept for reference)
 ├── manage-sync.sh       ← aitk sync entry point
 ├── manage-gov.sh        ← aitk gov entry point
 ├── manage-standards.sh  ← aitk standards entry point

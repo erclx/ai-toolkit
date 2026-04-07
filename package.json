@@ -5,12 +5,12 @@
   "private": true,
   "description": "Infrastructure and quality tooling for developer workflows",
   "bin": {
-    "aitk": "./scripts/manage-aitk.sh"
+    "aitk": "./src/cli.ts"
   },
   "scripts": {
     "check:spell": "cspell '**' --no-progress --color --show-context",
-    "format": "prettier --write --log-level warn --ignore-path .gitignore . && shfmt --write --indent 2 scripts/ tooling/",
-    "check:format": "prettier --check --log-level warn --ignore-path .gitignore . && shfmt --diff --indent 2 scripts/ tooling/",
+    "format": "prettier --write --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --write --indent 2 scripts/ tooling/",
+    "check:format": "prettier --check --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --diff --indent 2 scripts/ tooling/",
     "check:shell": "find scripts tooling -name '*.sh' -exec shellcheck --severity=warning {} +",
     "prepare": "husky",
     "check": "./scripts/core/verify.sh",
@@ -20,9 +20,15 @@
     "aitk:sandbox": "aitk sandbox",
     "aitk:sandbox:reset": "aitk sandbox reset"
   },
+  "dependencies": {
+    "@clack/prompts": "^1.2.0",
+    "commander": "^13.1.0",
+    "execa": "^9.5.2"
+  },
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^20.4.1",
+    "@types/bun": "^1.2.10",
     "cspell": "^8.17.1",
     "husky": "^9.1.7",
     "prettier": "^3.8.1",

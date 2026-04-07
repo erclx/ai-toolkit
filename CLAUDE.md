@@ -12,22 +12,23 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - After any edit that changes how a domain works, update affected files in `docs/`
 - When updating docs, load `aitk-standards` and follow `standards/prose.md`
 - For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
+- Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
 
 ## System overview
 
 The toolkit has seven domains. Each maps to a skill. Load the skill before editing anything in that domain.
 
-| Task type                                                         | Skill to load      |
-| ----------------------------------------------------------------- | ------------------ |
-| Modifying `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/`    | `aitk-scripts`     |
-| Modifying `tooling/`, manifests, golden configs, seeds            | `aitk-tooling`     |
-| Modifying `standards/`, `docs/`                                   | `aitk-standards`   |
-| Modifying `governance/rules/`, `governance/stacks/`               | `aitk-governance`  |
-| Modifying `snippets/`, `snippets.toml`                            | `aitk-snippets`    |
-| Modifying `prompts/`                                              | `aitk-prompts`     |
-| Modifying `gemini/commands/`, `gemini/README.md`                  | `aitk-gemini`      |
-| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/` | `aitk-claude`      |
-| Modifying `antigravity/workflows/`, `workflows.toml`              | `aitk-antigravity` |
+| Task type                                                              | Skill to load      |
+| ---------------------------------------------------------------------- | ------------------ |
+| Modifying `src/`, `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/` | `aitk-scripts`     |
+| Modifying `tooling/`, manifests, golden configs, seeds                 | `aitk-tooling`     |
+| Modifying `standards/`, `docs/`                                        | `aitk-standards`   |
+| Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance`  |
+| Modifying `snippets/`, `snippets.toml`                                 | `aitk-snippets`    |
+| Modifying `prompts/`                                                   | `aitk-prompts`     |
+| Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`      |
+| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`      |
+| Modifying `antigravity/workflows/`, `workflows.toml`                   | `aitk-antigravity` |
 
 ## Key paths
 
@@ -39,8 +40,9 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - `.claude/skills/`: internal skills, toolkit repo only
 - `snippets/`: reusable prompt snippets for Claude and Gemini chat
 - `prompts/`: system prompt generators for AI-assisted authoring tasks
+- `src/`: TypeScript CLI entry point, commander subcommands, exec helper
 - `docs/`: human-readable reference docs for each toolkit domain
-- `scripts/`: build, sync, sandbox, and prompt generation scripts
+- `scripts/`: bash domain scripts, core maintenance, sandbox, and prompt generation
 - `antigravity/`: workflow source and group manifest for Antigravity sync
 
 ## Commands

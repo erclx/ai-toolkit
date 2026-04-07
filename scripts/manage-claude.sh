@@ -284,8 +284,6 @@ cmd_sync() {
 cmd_gov() {
   local target="${1:-.}"
 
-  validate_target "$target"
-
   local rules_dir="$target/.cursor/rules"
   local output_file="$target/.claude/GOV.md"
 

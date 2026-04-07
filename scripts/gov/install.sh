@@ -101,8 +101,6 @@ cmd_install() {
     log_error "Stack not found: $stack"
   fi
 
-  guard_root "$target"
-
   local rules=()
   resolve_rules "$stack" rules
 
