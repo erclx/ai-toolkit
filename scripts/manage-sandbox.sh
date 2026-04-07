@@ -300,7 +300,7 @@ handle_post_execution_prompt() {
 }
 
 cmd_clean() {
-  echo -e "${GREY}├${NC} ${WHITE}Removing sandbox${NC}"
+  log_step "Removing sandbox"
   rm -rf "$SANDBOX"
   log_rem ".sandbox/"
   trap - EXIT
@@ -379,12 +379,25 @@ reset_sandbox() {
 }
 
 main() {
+  local no_header=0
+  if [[ "$1" == "--no-header" ]]; then
+    no_header=1
+    shift
+  fi
+
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk sandbox${NC}"
+  if [[ "$no_header" -eq 0 ]]; then
+    echo -e "${GREY}┌${NC}"
+    echo -e "${GREY}│${NC} ${WHITE}aitk sandbox${NC}"
+  else
+    log_step() {
+      log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
+      echo -e "${GREY}├${NC} ${WHITE}$1${NC}" >&2
+    }
+  fi
   trap close_timeline EXIT
 
   if [[ "$PWD" != "$PROJECT_ROOT"* ]]; then
