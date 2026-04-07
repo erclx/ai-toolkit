@@ -1,11 +1,18 @@
 ---
 name: aitk-scripts
-description: Bash scripts, sandbox scenarios, and lib functions. Use for manage-*.sh, sandbox hooks, or shared lib/ functions.
+description: CLI entry point, bash scripts, sandbox scenarios, and lib functions. Use for src/, manage-*.sh, sandbox hooks, or shared lib/ functions.
 ---
 
 # Scripts
 
-## Entry points
+## TypeScript dispatch layer
+
+- `src/cli.ts` is the `aitk` entry point. It registers subcommands via commander and dispatches each to the corresponding `manage-*.sh` script via execa.
+- `src/exec.ts` resolves `PROJECT_ROOT` from `import.meta.dir` and exports `execScript`, the shared spawn helper.
+- `src/commands/*.ts` each export a `register` function. One file per domain. All are pass-through dispatchers in phase 1.
+- Use `@/` absolute imports (mapped to `src/` in `tsconfig.json`).
+
+## Bash entry points
 
 - `manage-*.sh` files dispatch to subcommands only. No logic lives in entry points directly.
 - Each `manage-*.sh` maps to one domain. Do not cross domains in a single entry point.
