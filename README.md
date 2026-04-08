@@ -75,9 +75,10 @@ Run `aitk` from the repo root.
 
 | Command              | Description                                                 |
 | -------------------- | ----------------------------------------------------------- |
-| `aitk claude init`   | Bootstrap Claude workflow with CLAUDE.md and .claude/ docs  |
-| `aitk claude sync`   | Sync managed role prompts, overwriting local changes        |
-| `aitk claude prompt` | Generate master prompts for planning and implementation     |
+| `aitk claude init`   | Seed .claude/ project docs and CLAUDE.md into a project     |
+| `aitk claude roles`  | Install role prompts (planner, implementer, reviewer)       |
+| `aitk claude sync`   | Diff managed files against source and apply updates         |
+| `aitk claude prompt` | Generate master prompts from installed rules (needs roles)  |
 | `aitk claude gov`    | Build governance rules into .claude/GOV.md                  |
 | `aitk claude setup`  | Install user-level Claude config (statusline) to ~/.claude/ |
 

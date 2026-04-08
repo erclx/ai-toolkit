@@ -2,26 +2,25 @@
 
 A concise reference for when to reach for which tool, organized by what you're trying to do.
 
-> **Mental model:** Claude chat to seed context at the start of a project and populate `.claude/` docs. Claude Code for everything after: implementation, docs, git, and release. Gemini CLI is available throughout, used as needed rather than at prescribed steps.
+> **Mental model:** Claude Code for everything: planning, implementation, review, docs, git, and release. Gemini CLI is available throughout, used as needed rather than at prescribed steps.
 
 ## Documents
 
-All planning docs live in `.claude/` at the project root.
+Project docs live in `.claude/` at the project root.
 
 ```plaintext
 .claude/
-├── PLANNER.md       ← system prompt for planning sessions
 ├── REQUIREMENTS.md  ← goals, non-goals, MVP scope
 ├── ARCHITECTURE.md  ← technical design decisions
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
 ├── TASKS.md         ← persistent task tracker, source of truth
-├── REVIEWER.md      ← system prompt for code review
-├── IMPLEMENTER.md   ← context prompt for implementation sessions
 └── GOV.md           ← governance rules, generated via aitk claude gov
 ```
 
-Run `aitk claude init` to seed the `.claude/` directory, default prompt templates, and a root `CLAUDE.md` file. Run `aitk gov install` to install rules into `.cursor/rules/`, then run `aitk claude gov` to build `GOV.md`. Regenerate only when rules change.
+Run `aitk claude init` to seed the `.claude/` directory and a root `CLAUDE.md` file. Run `aitk gov install` to install rules into `.cursor/rules/`, then run `aitk claude gov` to build `GOV.md`. Regenerate only when rules change.
+
+Role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) are available via `aitk claude roles` for chat-based AI workflows but are not part of the default install. See [docs/claude.md](claude.md) for details.
 
 ## Scenarios
 
@@ -68,12 +67,7 @@ Invoke `toolkit:claude-review` at the start of session 2. It reads all changed f
 | `toolkit:claude-review`  | In a fresh session, review all changes since main           |
 | `toolkit:claude-docs`    | When decisions diverged from plan, update `.claude/` docs   |
 | `toolkit:claude-ui-test` | After UI changes, generate a browser verification checklist |
-| `toolkit:ai-sync`        | When structure changes, review `CLAUDE.md` and `GEMINI.md`  |
 | `toolkit:git-ship`       | Post-feature: sync docs, commit, rename branch, open PR     |
-
-## Maintenance
-
-Invoke `toolkit:ai-sync` manually when structural changes affect key paths, commands, skill names, or workflow conventions in `CLAUDE.md`. It reviews `CLAUDE.md` and `GEMINI.md` against the diff and outputs suggested edits as diff blocks. It does not write. `toolkit:git-ship` prompts you to run it when structural changes are detected.
 
 ## Feedback routing
 
@@ -93,9 +87,9 @@ Claude-specific snippets require the `.claude/` workflow to be set up. For the f
 | `claude-tasks-add`  | Add a new task block to the "Up next" queue          |
 | `claude-tasks-done` | Move completed task blocks to `TASKS-ARCHIVE.md`     |
 
-## Prompt generation
+## Prompt generation (roles only)
 
-`aitk claude prompt` reads `PLANNER.md` and `IMPLEMENTER.md`, injects governance rules from `.cursor/rules/`, context docs, and `standards/prose.md`, and writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`.
+`aitk claude prompt` reads `PLANNER.md` and `IMPLEMENTER.md`, injects governance rules from `.cursor/rules/`, context docs, and `standards/prose.md`, and writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`. This requires roles to be installed via `aitk claude roles`.
 
 Run `aitk gov sync` first when switching stacks. Run `aitk claude gov` to build `.claude/GOV.md` from installed rules. Claude Code loads this automatically each session. Run `aitk gov build` to generate a standalone rules file at `.cursor/.tmp/rules.md` for pasting directly into any AI chat.
 
