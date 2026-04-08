@@ -34,7 +34,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 - `governance/rules/`: governance rules
 - `standards/`: reference docs synced to target projects
-- `tooling/`: golden configs and manifests per stack
+- `tooling/`: golden configs (base), references, and manifests per stack
 - `gemini/commands/`: Gemini CLI command definitions
 - `claude/skills/`: plugin skills installable in target projects
 - `.claude/skills/`: internal skills, toolkit repo only
@@ -44,6 +44,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - `docs/`: human-readable reference docs for each toolkit domain
 - `scripts/`: bash domain scripts, core maintenance, sandbox, and prompt generation
 - `antigravity/`: workflow source and group manifest for Antigravity sync
+- `wiki/`: internal reference pages for tools, workflows, and concepts
 
 ## Commands
 
