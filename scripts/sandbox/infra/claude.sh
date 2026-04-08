@@ -23,25 +23,32 @@ EOF
   git commit -m "chore(sandbox): scaffold claude infra test directory" --no-verify -q
 
   log_step "Claude sandbox"
-  log_info "init   — seeds .claude/ workflow docs"
-  log_info "sync   — diffs and updates managed role prompts"
-  log_info "prompt — generates master prompts from installed rules"
+  log_info "init   — seeds .claude/ project docs"
+  log_info "roles  — installs role prompts (planner, implementer, reviewer)"
+  log_info "sync   — diffs managed files against source and applies updates"
+  log_info "prompt — generates master prompts from installed rules (requires roles)"
   log_info "gov    — builds .claude/GOV.md from installed rules"
 
-  select_option "Which scenario?" "init" "sync" "prompt" "gov"
+  select_option "Which scenario?" "init" "roles" "sync" "prompt" "gov"
 
   case "$SELECTED_OPTION" in
   "init")
     log_step "Running: aitk claude init"
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" init .
     ;;
+  "roles")
+    log_step "Running: aitk claude init"
+    "$PROJECT_ROOT/scripts/manage-claude.sh" init .
+    log_step "Running: aitk claude roles"
+    exec "$PROJECT_ROOT/scripts/manage-claude.sh" roles .
+    ;;
   "sync")
     log_step "Running: aitk claude sync"
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" sync .
     ;;
   "prompt")
-    log_step "Running: aitk claude init"
-    "$PROJECT_ROOT/scripts/manage-claude.sh" init .
+    log_step "Running: aitk claude init --roles"
+    "$PROJECT_ROOT/scripts/manage-claude.sh" init --roles .
     log_step "Running: aitk claude prompt"
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh"
     ;;
