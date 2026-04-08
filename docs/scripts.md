@@ -12,9 +12,9 @@
 src/
 ├── cli.ts               ← aitk entry point (bun shebang, commander)
 ├── exec.ts              ← shared helper: resolve PROJECT_ROOT, spawn bash via execa
-├── ui.ts                ← shared @clack/prompts wrapper: intro, outro, select, confirm
+├── ui.ts                ← shared terminal UI: intro, outro, select, confirm (matches lib/ui.sh style)
 └── commands/
-    ├── sandbox.ts       ← interactive clack prompts, then execs manage-sandbox.sh
+    ├── sandbox.ts       ← interactive select prompts, then execs manage-sandbox.sh
     ├── sync.ts          ← pass-through to manage-sync.sh
     ├── gov.ts           ← pass-through to manage-gov.sh
     ├── standards.ts     ← pass-through to manage-standards.sh
@@ -26,7 +26,6 @@ src/
     └── antigravity.ts   ← pass-through to manage-antigravity.sh
 
 scripts/
-├── manage-aitk.sh       ← legacy dispatcher (kept for reference)
 ├── manage-sync.sh       ← aitk sync entry point
 ├── manage-gov.sh        ← aitk gov entry point
 ├── manage-standards.sh  ← aitk standards entry point
