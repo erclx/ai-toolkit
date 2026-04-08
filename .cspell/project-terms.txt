@@ -31,6 +31,7 @@ navigations
 oneline
 parallelizable
 pipefail
+promptname
 Pushback
 recompiles
 sandboxed
