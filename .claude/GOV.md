@@ -26,7 +26,7 @@ Your primary directive is to maintain long-term system health over short-term co
 - Favor explicit behavior over implicit magic or conventions.
 - Ensure data and configuration reside in designated Single Source of Truth locations.
 - Treat data as immutable unless mutation is explicitly required.
-  </rule>
+</rule>
 
 <rule name="010-testing">
 # TESTING STANDARDS
@@ -60,7 +60,7 @@ Your primary directive is to maintain long-term system health over short-term co
 ## Verification
 
 - Do not use snapshot testing for verification.
-  </rule>
+</rule>
 
 <rule name="020-concurrency">
 # CONCURRENCY STANDARDS
@@ -81,7 +81,7 @@ Your primary directive is to maintain long-term system health over short-term co
 ## Failure handling
 
 - Handle partial failures in batched operations independently. Do not fail the entire batch for a single error.
-  </rule>
+</rule>
 
 <rule name="030-error-handling">
 # ERROR HANDLING STANDARDS
@@ -111,7 +111,7 @@ Your primary directive is to maintain long-term system health over short-term co
 ## Retry behavior
 
 - Retry only idempotent operations with bounded attempts and backoff.
-  </rule>
+</rule>
 
 <rule name="040-performance">
 # PERFORMANCE STANDARDS
@@ -130,7 +130,7 @@ Your primary directive is to maintain long-term system health over short-term co
 
 - Paginate or stream unbounded data sets.
 - Do not optimize without measurement.
-  </rule>
+</rule>
 
 <rule name="050-logging">
 # LOGGING STANDARDS
@@ -149,7 +149,7 @@ Your primary directive is to maintain long-term system health over short-term co
 
 - Do not log credentials, tokens, or personally identifiable information.
 - Log observable behavior, not implementation details.
-  </rule>
+</rule>
 
 <rule name="060-naming">
 # NAMING STANDARDS
@@ -167,7 +167,7 @@ Your primary directive is to maintain long-term system health over short-term co
 ## Test naming
 
 - Name tests with descriptive phrases that state the expected behavior.
-  </rule>
+</rule>
 
 <rule name="070-planning">
 # PLANNING STANDARDS
@@ -179,7 +179,7 @@ Your primary directive is to maintain long-term system health over short-term co
 - Propose the simplest solution that satisfies the requirement before implementing complex patterns.
 - Write or update tests as part of every implementation plan.
 - Do not modify code without a confirmed plan.
-  </rule>
+</rule>
 
 <rule name="100-typescript">
 # TYPESCRIPT STANDARDS
@@ -215,4 +215,4 @@ Your primary directive is to maintain long-term system health over short-term co
 - Import from the module's source file directly over barrel `index` re-exports.
 - Use `import type` for type-only imports.
 - Enable `strict: true` in tsconfig.json with no exceptions.
-  </rule>
+</rule>
