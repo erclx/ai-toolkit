@@ -6,7 +6,7 @@ scaffold = ""
 
 [dependencies.dev]
 packages = [
-  "eslint@^9",
+  "eslint",
   "eslint-config-prettier",
   "eslint-plugin-check-file",
   "eslint-plugin-react-hooks",
