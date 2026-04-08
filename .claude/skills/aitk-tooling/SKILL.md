@@ -1,15 +1,16 @@
 ---
 name: aitk-tooling
-description: Tooling stacks, golden configs, seeds, and manifests. Use for stack creation, manifest authoring, or config sync.
+description: Tooling stacks, golden configs, seeds, references, and manifests. Use for stack creation, manifest authoring, or config sync.
 ---
 
 # Tooling
 
-## Configs and seeds
+## Configs, seeds, and references
 
-- Configs in `configs/` always overwrite on sync. Drift is always wrong.
+- Configs in `configs/` always overwrite on sync. Drift is always wrong. Only the `base` stack ships golden configs.
 - Seeds in `seeds/` are user-owned and merge-only. Never overwrite them.
 - `reference.md` files are AI audit context synced to `tooling/<stack>.md` in target projects via `aitk tooling ref`.
+- Reference-only stacks (like `vite-react`) have no `configs/` directory. The agent reads the reference and generates configs adapted to the specific project.
 
 ## Manifests
 
@@ -19,7 +20,8 @@ description: Tooling stacks, golden configs, seeds, and manifests. Use for stack
 
 ## Adding a new stack
 
-- Use `aitk tooling create` to generate the stub structure, then fill in configs, seeds, `manifest.toml`, and `reference.md`.
+- Use `aitk tooling create` to generate the stub structure, then fill in seeds, `manifest.toml`, and `reference.md`.
+- For stacks with golden configs, add files to `configs/` and create `scripts/sandbox/tooling/<n>.sh`.
 - Sync auto-discovers new stacks. No other changes needed.
 
 ## Sync checklist
@@ -28,9 +30,13 @@ When modifying files in `configs/`:
 
 - Update `reference.md` for the affected stack to reflect the change
 
+When modifying a reference-only stack:
+
+- Update `reference.md` directly (no configs to keep in sync)
+
 When adding a new stack:
 
-- Create `scripts/sandbox/tooling/<n>.sh`
+- For golden config stacks, create `scripts/sandbox/tooling/<n>.sh`
 
 When adding deps or scripts to `manifest.toml`:
 
@@ -38,5 +44,5 @@ When adding deps or scripts to `manifest.toml`:
 
 ## Full reference
 
-- `docs/tooling.md`: system overview, configs vs seeds, extends chain, manifest authoring
+- `docs/tooling.md`: system overview, configs vs seeds vs references, extends chain, manifest authoring
 - `prompts/tooling-reference.md`: conventions for writing reference.md docs

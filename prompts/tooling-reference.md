@@ -66,7 +66,7 @@ _(Omit section if stack introduces no commands)_
 
 **Example:**
 
-Input: stack name `vite-react`, configs for Prettier, ESLint, Vitest pasted in.
+Input: stack name `vite-react`, description of ESLint, Vitest, Playwright setup.
 
 Output (excerpt):
 
@@ -77,7 +77,7 @@ Output (excerpt):
 
 ## Overview
 
-The vite-react stack layers a React + TypeScript + Tailwind frontend setup on top of base tooling.
+The vite-react stack covers Vite + React + TypeScript projects: web apps and Chrome extensions. It provides ESLint, Vitest, Playwright, Tailwind, and supporting scripts.
 
 ## Prettier (extend)
 

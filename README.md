@@ -63,13 +63,19 @@ Run `aitk` from the repo root.
 | `aitk prompts install [category] [path]` | Install prompts for a category          |
 | `aitk prompts sync [path]`               | Sync prompts already present in project |
 
+### Init
+
+| Command            | Description                                               |
+| ------------------ | --------------------------------------------------------- |
+| `aitk init [path]` | Bootstrap a project with base tooling and toolkit domains |
+
 ### Tooling
 
-| Command                           | Description                                                      |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `aitk tooling [stack] [path]`     | Sync golden configs, seeds, deps, and .gitignore                 |
-| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                  |
-| `aitk tooling create`             | Create a new stack with stub manifest, reference, configs, seeds |
+| Command                           | Description                                           |
+| --------------------------------- | ----------------------------------------------------- |
+| `aitk tooling [stack] [path]`     | Sync configs, seeds, deps, and .gitignore for a stack |
+| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents       |
+| `aitk tooling create`             | Create a new stack with stub manifest and reference   |
 
 ### Claude
 

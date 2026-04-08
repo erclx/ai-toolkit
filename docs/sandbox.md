@@ -10,13 +10,11 @@ Sandboxes provision isolated project states for testing scripts, configs, and AI
 scripts/sandbox/
 ├── tooling/
 │   ├── base.sh        ← tests base golden configs
-│   ├── vite-react.sh  ← tests vite-react configs against anchor repo
 │   ├── claude.sh      ← tests claude tooling stack configs against anchor repo
-│   ├── cursor.sh      ← tests cursor gitignore injection
-│   ├── chrome.sh      ← tests chrome extension tooling configs against anchor repo
 │   ├── gemini.sh      ← tests gemini settings.json config injection
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
 ├── infra/
+│   ├── init.sh           ← end-to-end test for aitk init project bootstrapping
 │   ├── cursor.sh         ← Cursor IDE playground with full governance injected
 │   ├── gov.sh            ← interactive tests for governance commands
 │   ├── standards.sh      ← interactive tests for standards commands
