@@ -71,7 +71,7 @@ The vite-react stack covers Vite + React + TypeScript projects: web apps and Chr
 - Exclude: `node_modules`, `dist`, `e2e`, `.{idea,git,cache,output,temp}`.
 - Coverage: `v8` provider, reporters `text`, `json`, `html`. Exclude `node_modules/`, `src/test/setup.ts`, `e2e/`.
 - Web apps: merge config from `vite.config.ts` using `mergeConfig` and `defineConfig`.
-- Chrome extensions: use standalone config (do not merge from `vite.config.ts` — plugins like crxjs break vitest). Declare `@vitejs/plugin-react` and `@tailwindcss/vite` directly. Add `**/release/**` to excludes and `manifest.config.ts`, `**/*.d.ts` to coverage excludes.
+- Chrome extensions: use standalone config. Do not merge from `vite.config.ts` because plugins like crxjs break vitest. Declare `@vitejs/plugin-react` and `@tailwindcss/vite` directly. Add `**/release/**` to excludes and `manifest.config.ts`, `**/*.d.ts` to coverage excludes.
 
 ## Playwright
 
@@ -81,7 +81,7 @@ The vite-react stack covers Vite + React + TypeScript projects: web apps and Chr
 - CI behavior: `forbidOnly`, 2 retries, 1 worker, `list` reporter.
 - Local behavior: no retries, default workers, `html` reporter.
 - Web apps: test all browsers (chromium, firefox, webkit). Use `webServer` pointing to `bun run dev` on port 5173, reuse existing server locally. Set `baseURL: http://localhost:5173`.
-- Chrome extensions: chromium only (Firefox and WebKit cannot run extensions). No `baseURL` or `webServer` — tests load the built extension directly. Must use bundled `chromium` channel.
+- Chrome extensions: chromium only (Firefox and WebKit cannot run extensions). No `baseURL` or `webServer`. Tests load the built extension directly. Must use bundled `chromium` channel.
 
 ## E2E fixtures (Chrome extensions only)
 
