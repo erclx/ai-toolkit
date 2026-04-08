@@ -130,7 +130,7 @@ Prerequisites: run `aitk gov install` first to populate `.cursor/rules/`.
 
 ### setup
 
-Copies `statusline-command.sh` from `tooling/claude/user/` to `~/.claude/` and patches `~/.claude/settings.json` to register it as the statusline command. Idempotent — skips files that already match. Run once per machine after cloning the toolkit.
+Copies `statusline-command.sh` from `tooling/claude/user/` to `~/.claude/` and patches `~/.claude/settings.json` to register it as the statusline command. Idempotent. Skips files that already match. Run once per machine after cloning the toolkit.
 
 The statusline renders as: `Sonnet 4.6 | 40k / 200k | 20%`. Fields are model name, tokens used vs context window size, and remaining percentage. The percentage shows a `⚠` prefix when below 15%.
 
@@ -152,17 +152,17 @@ Use both: run `claude-review` locally before pushing, then let Code Review catch
 
 ### Planning
 
-| Aspect     | Plan mode                                         | Ultraplan                                               | `claude-feature` skill                                                      |
-| ---------- | ------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------- |
-| What       | Permission mode — Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                   |
-| Activation | `Shift+Tab` or `/plan`                            | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                           |
-| Output     | Free-form plan in terminal                        | Rich plan in browser with inline comments and reactions | Structured output: files to touch, risks, questions                         |
-| Context    | Whatever Claude reads during exploration          | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, WIREFRAMES, GOV |
+| Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                      |
+| ---------- | ------------------------------------------------ | ------------------------------------------------------- | --------------------------------------------------------------------------- |
+| What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                   |
+| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                           |
+| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: files to touch, risks, questions                         |
+| Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, WIREFRAMES, GOV |
 
 Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.
 
 ### Roles vs agentic mode
 
-The toolkit originally shipped role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) for chat-based AI workflows where you paste generated master prompts with injected governance rules. Claude Code's agentic mode makes this unnecessary — it reads `CLAUDE.md` and `.claude/GOV.md` directly, skills handle orchestration, and plan mode handles the "think before you act" workflow natively.
+The toolkit originally shipped role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) for chat-based AI workflows where you paste generated master prompts with injected governance rules. Claude Code's agentic mode makes this unnecessary. It reads `CLAUDE.md` and `.claude/GOV.md` directly, skills handle orchestration, and plan mode handles the "think before you act" workflow natively.
 
 Roles are still available via `aitk claude roles` for teams that prefer chat-based workflows or use other AI tools that benefit from structured role prompts.
