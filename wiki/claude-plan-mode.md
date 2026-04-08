@@ -23,6 +23,18 @@ Each option also offers to clear the planning context before proceeding.
 
 Press `Shift+Tab` again to leave plan mode without approving the plan.
 
+## Ultraplan
+
+Ultraplan runs planning on Anthropic's cloud infrastructure instead of locally. The terminal stays free while Claude drafts the plan. Output appears in a browser review UI on `claude.ai/code` with inline comments, emoji reactions, and section navigation. After review, implement on the web or teleport the plan back to your terminal.
+
+Trigger it three ways:
+
+- `/ultraplan <prompt>` as a slash command
+- Include the word "ultraplan" anywhere in a normal prompt
+- Choose "refine with Ultraplan" from the local plan approval dialog
+
+Requires Team or Enterprise plan, a GitHub repo, and Claude Code on the web access (v2.1.91+).
+
 ## When to use it
 
 Plan mode is useful before complex refactors, when exploring an unfamiliar codebase, or any time you want oversight of the direction before changes take effect. The key difference from default mode: Claude completes all analysis first, then waits for approval, rather than prompting action by action.
