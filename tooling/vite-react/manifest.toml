@@ -2,10 +2,7 @@
 name = "vite-react"
 extends = "base"
 runtime = "bun"
-scaffold = "bunx create-vite@latest {{name}} --template react-ts"
-
-[sync]
-source = "configs"
+scaffold = ""
 
 [dependencies.dev]
 packages = [
@@ -35,7 +32,7 @@ packages = [
   "@vitejs/plugin-react",
   "tailwindcss",
   "@tailwindcss/vite",
-  "prettier-plugin-tailwindcss"
+  "prettier-plugin-tailwindcss",
 ]
 
 [scripts]

@@ -2,24 +2,30 @@
 
 > Extends: `base`. Apply base stack first.
 
-## Prettier (Extend)
+## Overview
+
+The vite-react stack covers Vite + React + TypeScript projects: web apps and Chrome extensions. It provides ESLint, Vitest, Playwright, Tailwind, and supporting scripts. No golden configs are shipped. The agent reads this reference and generates configs adapted to the specific project.
+
+## Scaffold checklist
+
+1. Scaffold with the appropriate tool (`bunx create-vite@latest`, `bunx create-crxjs@latest`, `bunx create-next-app@latest`, etc.)
+2. Install base tooling: `aitk tooling sync base .`
+3. Install vite-react deps: `aitk tooling sync vite-react .`
+4. Create: `eslint.config.js`, `vitest.config.ts`, `playwright.config.ts`
+5. Create: `src/test/setup.ts`, `e2e/screenshot.ts`, `tsconfig.e2e.json`
+6. Update: `tsconfig.app.json` (add paths, types), `tsconfig.json` (add e2e reference)
+7. Run `bun run lint:fix` to auto-fix scaffolded files
+8. Run `bun run check` to verify
+
+## Prettier (extend)
 
 - Add `jsxSingleQuote: true`.
 - Add `prettier-plugin-tailwindcss` to plugins array.
 
-## Dev Dependencies (Extend)
+## Lint-Staged (extend)
 
-- ESLint: `eslint`, `eslint-config-prettier`, `eslint-plugin-check-file`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `eslint-plugin-simple-import-sort`, `eslint-plugin-vitest`, `globals`, `typescript-eslint`, `@eslint/js`.
-- TypeScript: `typescript`, `@types/react`, `@types/react-dom`, `@types/node`.
-- Vitest: `vitest`, `@vitest/coverage-v8`, `@vitest/ui`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`.
-- Playwright: `@playwright/test`.
-- Vite: `vite`, `@vitejs/plugin-react`.
-- Tailwind: `tailwindcss`, `@tailwindcss/vite`, `prettier-plugin-tailwindcss`.
-
-## Lint-Staged (Extend)
-
-- Add `**/*.{js,jsx,ts,tsx}` → `["eslint --fix --max-warnings 0", "prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`.
-- Extend prettier glob to include `css`: `**/*.{json,css,md,mdc}` → `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`.
+- Add `**/*.{js,jsx,ts,tsx}` glob: `["eslint --fix --max-warnings 0", "prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`.
+- Extend prettier glob to include `css`: `**/*.{json,css,md,mdc}` with `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`.
 - Each file type runs cspell once via its own glob. No standalone cspell glob.
 
 ## ESLint
@@ -27,7 +33,7 @@
 - Config: `eslint.config.js` (flat config, ESM).
 - Imports: `defineConfig` and `globalIgnores` from `eslint/config` (not from a plugin).
 - Structure: define named config objects as constants, compose them in `defineConfig` array.
-- Order: ignores → base JS → typescript-eslint → feature conventions → react → testing → prettier (last).
+- Order: ignores, base JS, typescript-eslint, feature conventions, react, testing, prettier (last).
 - Extends: `@eslint/js` recommended, `typescript-eslint` recommended, `eslint-config-prettier` (last to disable formatting conflicts).
 - Unused variables: `@typescript-eslint/no-unused-vars` with `argsIgnorePattern: "^_"`.
 - Import sorting: `simple-import-sort/imports` and `simple-import-sort/exports` as errors.
@@ -42,7 +48,7 @@
 
 - Build: `tsc -b` before `vite build`.
 - Type check: `tsc --noEmit` as standalone script.
-- Do not template full tsconfigs. Use Vite scaffold defaults.
+- Do not template full tsconfigs. Use scaffold defaults.
 - Root `tsconfig.json` must include `tsconfig.e2e.json` in references.
 - `tsconfig.app.json` must include `vitest/globals` and `@testing-library/jest-dom` in `types`.
 - `tsconfig.app.json` must include `paths: { "@/*": ["./src/*"] }` to match vite alias.
@@ -52,84 +58,101 @@
 
 - Config: `vite.config.ts`.
 - Plugins: `@vitejs/plugin-react`, `@tailwindcss/vite`.
-- Path alias: `@` → `./src`.
-- Supports `VITE_BASE_URL` env variable for base path.
+- Path alias: `@` mapped to `./src`.
+- Web apps: support `VITE_BASE_URL` env variable for base path.
+- Chrome extensions: use `crx({ manifest })` and `zip()` plugins instead. Set `server.port: 5173`, `server.strictPort: true`, `server.hmr.clientPort: 5173`. Allow `chrome-extension://` CORS origin. No `loadEnv` or `VITE_BASE_URL`.
 
 ## Vitest
 
-- Config: `vitest.config.ts` merging from `vite.config.ts`.
+- Config: `vitest.config.ts`.
 - Environment: `jsdom`.
 - Globals: `true`.
 - Setup file: `src/test/setup.ts` (imports `@testing-library/jest-dom`, runs `cleanup` after each test).
 - Exclude: `node_modules`, `dist`, `e2e`, `.{idea,git,cache,output,temp}`.
 - Coverage: `v8` provider, reporters `text`, `json`, `html`. Exclude `node_modules/`, `src/test/setup.ts`, `e2e/`.
+- Web apps: merge config from `vite.config.ts` using `mergeConfig` and `defineConfig`.
+- Chrome extensions: use standalone config (do not merge from `vite.config.ts` — plugins like crxjs break vitest). Declare `@vitejs/plugin-react` and `@tailwindcss/vite` directly. Add `**/release/**` to excludes and `manifest.config.ts`, `**/*.d.ts` to coverage excludes.
 
 ## Playwright
 
 - Config: `playwright.config.ts`.
 - Test directory: `e2e/`.
-- Base URL: `http://localhost:5173`.
-- Projects: `chromium`, `firefox`, `webkit`.
+- Trace: `on-first-retry`.
 - CI behavior: `forbidOnly`, 2 retries, 1 worker, `list` reporter.
 - Local behavior: no retries, default workers, `html` reporter.
-- Web server: `bun run dev` on port 5173, reuse existing server locally.
-- Trace: `on-first-retry`.
+- Web apps: test all browsers (chromium, firefox, webkit). Use `webServer` pointing to `bun run dev` on port 5173, reuse existing server locally. Set `baseURL: http://localhost:5173`.
+- Chrome extensions: chromium only (Firefox and WebKit cannot run extensions). No `baseURL` or `webServer` — tests load the built extension directly. Must use bundled `chromium` channel.
+
+## E2E fixtures (Chrome extensions only)
+
+- File: `e2e/fixtures.ts`. Extends Playwright base `test` with `context` and `extensionId` fixtures.
+- `context`: launches persistent browser context with extension loaded from `dist/`.
+- `extensionId`: extracted from service worker URL. Not hardcoded.
+- `use` renamed to `apply` to avoid React hooks ESLint rule.
+- `waitForEvent('serviceworker')` blocks until MV3 service worker registers.
 
 ## Screenshots
 
-- File: `e2e/screenshot.ts`. Seeded once, user-owned. Edit the config section to match the app.
+- File: `e2e/screenshot.ts`. Seeded once, user-owned.
 - Split into `CONFIG` and `ENGINE` sections. Only the config section changes per project.
-- `ROUTES` defines named app routes with viewport dimensions.
 - `STATES` is an array of `{ name, setup? }`. Adding a new state is one object.
-- `colorScheme` set via Playwright context. No UI interaction needed.
-- Run `bun run screenshot`. Builds, starts preview server, captures, outputs to `screenshots/` (gitignored).
-- Preview server runs on port 4173 (`BASE_URL` in the script matches `vite preview` default).
-- Node 22+ required for `--experimental-strip-types`. On older versions use `bunx tsx e2e/screenshot.ts`.
-- Review one route and one color scheme per AI session, not everything at once.
+- `colorScheme` set via `emulateMedia`. No UI interaction needed.
+- Output to `screenshots/` (gitignored).
+- Node 22+ required for `--experimental-strip-types`. On older versions use `bunx tsx`.
+- Review one route/surface and one color scheme per AI session, not everything at once.
+- Web apps: define `ROUTES` with named app routes and viewport dimensions. Run via `bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts`. Preview server on port 4173.
+- Chrome extensions: define `SURFACES` with extension page dimensions. Use `SEED` to inject data into `chrome.storage.local` via `addInitScript`. Empty state uses a separate context with no seed data. Run via `bun run build && node --experimental-strip-types e2e/screenshot.ts`.
 
-## Setup Script
+## Chrome extension manifest
+
+- File: `manifest.config.ts` using `defineManifest` from `@crxjs/vite-plugin`.
+- Read `name` and `version` from `package.json`.
+- Entry points: `src/popup/index.html`, `src/sidepanel/index.html`, `src/background/index.ts`, `src/content/main.tsx`.
+- Permissions: `sidePanel`, `contentSettings`, `storage`.
+- Icon: `public/logo.png` at size 48.
+
+## Setup script
 
 - File: `scripts/setup.sh`. Destructive: deletes `.git` and self-removes after running. Run once immediately after scaffolding.
-- Prompts for project name, normalizes to kebab-case.
-- Derives a title-cased display name from the project name for use in `index.html`.
-- Updates `package.json`: sets `name`, resets `version` to `0.1.0`, injects `verify`, `clean`, `update` scripts, removes `setup`.
-- Updates `index.html` `<title>` to match derived title.
-- Copies `.env.example` → `.env` if `.env` does not exist.
-- Wipes `.git`, re-inits with `--initial-branch=main`, makes scripts executable, commits everything as `chore(root): initialize <n>`.
-- Renames project folder to match kebab-case name if needed.
-- Offers to open in VS Code or Cursor and installs dependencies if an editor is launched.
+- Prompt for project name, normalize to kebab-case.
+- Derive title-cased display name for HTML titles.
+- Update `package.json`: set `name`, reset `version` to `0.1.0`, inject `verify`, `clean`, `update` scripts, remove `setup`.
+- Update `<title>` tags in HTML files.
+- Wipe `.git`, re-init with `--initial-branch=main`, make scripts executable, commit everything as `chore(root): initialize <name>`.
+- Rename project folder to match kebab-case name if needed.
+- Offer to open in VS Code or Cursor and install dependencies if an editor is launched.
 
-## Gitignore (Extend)
+## Verify script (extend)
+
+- Add steps before base checks: typecheck, lint.
+- Add steps after base checks: unit tests, production build.
+- Full order: typecheck, lint, format, spelling, unit tests, build.
+
+## CI workflow
+
+- File: `.github/workflows/verify.yml`.
+- Trigger: pull requests to `main` + `workflow_dispatch`.
+- All jobs: checkout, setup bun (latest), `bun install --frozen-lockfile`.
+- `static-checks`: install shfmt and shellcheck, typecheck, lint, check:format, check:spell, check:shell.
+- `unit-tests`: `bun run test:coverage`.
+- `build-verify`: `bun run build`.
+- Web apps: add `e2e-tests` job (depends on all above). Cache Playwright browsers, install chromium if cache miss, run `test:e2e --project=chromium`, upload report artifact on failure (7 day retention).
+- Chrome extensions: no E2E job in CI (extensions cannot run Playwright against a dev server).
+
+## VS Code (extend)
+
+- Extensions: add `dbaeumer.vscode-eslint`, `bradlc.vscode-tailwindcss`, `ms-playwright.playwright`, `vitest.explorer`.
+- Settings: add `editor.defaultFormatter: "esbenp.prettier-vscode"`, `editor.codeActionsOnSave: { "source.fixAll.eslint": "explicit" }`, `files.associations: { "*.css": "tailwindcss" }`.
+
+## Gitignore (extend)
 
 - `# Build`: `dist/`
 - `# Coverage`: `coverage/`
 - `# Playwright`: `test-results/`, `playwright-report/`, `blob-report/`, `playwright/.cache/`, `screenshots/`
 - `# VS Code`: `.vscode/*`, `!.vscode/extensions.json`, `!.vscode/settings.json`
+- Chrome extensions additionally: `# Chrome Extension`: `*.crx`, `*.pem`. `# Release`: `release/`.
 
-## VS Code (Extend)
-
-- Extensions: add `dbaeumer.vscode-eslint`, `bradlc.vscode-tailwindcss`, `ms-playwright.playwright`, `vitest.explorer`.
-- Settings: add `editor.defaultFormatter: "esbenp.prettier-vscode"`, `editor.codeActionsOnSave: { "source.fixAll.eslint": "explicit" }`, `files.associations: { "*.css": "tailwindcss" }`.
-
-## Verify Script (Extend)
-
-- Add steps before base checks: typecheck → lint.
-- Add steps after base checks: unit tests → production build.
-- Full order: typecheck → lint → format → spelling → unit tests → build.
-- Note: `run_check` does not pipe successful output. Output is only shown on failure.
-
-## CI Workflow
-
-- File: `.github/workflows/verify.yml`.
-- Trigger: pull requests to `main` + `workflow_dispatch`.
-- Jobs run in parallel except E2E which depends on all others.
-- All jobs: checkout → setup bun (latest) → `bun install --frozen-lockfile`.
-- `static-checks`: install shfmt and shellcheck, typecheck, lint, check:format, check:spell, check:shell.
-- `unit-tests`: `bun run test:coverage`.
-- `build-verify`: `bun run build`.
-- `e2e-tests` (needs all above): cache Playwright browsers, install chromium if cache miss, run `test:e2e --project=chromium`, upload report artifact on failure (7 day retention).
-
-## Package Scripts (Extend)
+## Package scripts (extend)
 
 - `dev`: `vite`
 - `build`: `tsc -b && vite build`
@@ -146,4 +169,4 @@
 - `test:e2e:report`: `playwright show-report`
 - `check:full`: `./scripts/verify.sh && bun run test:e2e`
 - `setup`: `./scripts/setup.sh`
-- `screenshot`: `bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts`
+- `screenshot`: web apps use `bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts`. Chrome extensions use `bun run build && node --experimental-strip-types e2e/screenshot.ts`.
