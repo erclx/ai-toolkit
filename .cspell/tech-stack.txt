@@ -21,6 +21,7 @@ pnpm
 pycache
 pydantic
 pyproject
+sidepanel
 pytest
 tabindex
 tanstack
