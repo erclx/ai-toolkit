@@ -18,8 +18,8 @@
 
 ## Lint-Staged (Extend)
 
-- Add `**/*.{js,jsx,ts,tsx}` → `["eslint --fix --max-warnings 0", "prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`.
-- Extend prettier glob to include `css`: `**/*.{json,css,md,mdc}` → `["prettier --write --ignore-path .gitignore", "cspell --no-must-find-files"]`.
+- Add `**/*.{js,jsx,ts,tsx}` → `["eslint --fix --max-warnings 0", "prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`.
+- Extend prettier glob to include `css`: `**/*.{json,css,md,mdc}` → `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`.
 - Each file type runs cspell once via its own glob. No standalone cspell glob.
 
 ## ESLint

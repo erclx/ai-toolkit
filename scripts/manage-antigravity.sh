@@ -126,7 +126,6 @@ cmd_install() {
   local group="$1"
   local target="${2:-.}"
   target=$(validate_target "$target")
-  guard_root "$target"
 
   if [ -z "$group" ]; then
     group=$(select_group)
