@@ -1,2 +1,2 @@
 extends = ""
-rules = ["210-ui"]
+rules = ["400-ui"]

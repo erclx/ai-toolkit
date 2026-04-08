@@ -1,2 +1,2 @@
 extends = "node"
-rules = ["200-react", "210-ui", "220-a11y", "230-forms", "250-tailwind", "300-testing-ts", "310-zod", "320-tanstack-query", "350-security-web"]
+rules = ["200-react", "250-tailwind", "300-testing-ts", "310-zod", "320-tanstack-query", "350-security-web", "400-ui", "410-a11y", "420-forms", "430-ux-completeness"]

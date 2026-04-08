@@ -1,0 +1,42 @@
+---
+description: Keyboard interaction, focus management, and ARIA accessibility for React UI
+globs: '**/*.tsx,**/*.jsx'
+alwaysApply: false
+priority: 410
+---
+
+# ACCESSIBILITY AND KEYBOARD STANDARDS
+
+## Focus styles
+
+- All interactive elements must use the project focus ring. Do not define per-component focus styles.
+- Never apply `outline-none` without a custom focus ring in the same rule.
+- Focus ring must have 3:1 contrast against its background in both light and dark modes.
+
+## Keyboard interaction model
+
+- Tab / Shift+Tab: move focus sequentially through interactive elements in DOM order.
+- Enter: activates buttons and links, submits forms.
+- Space: activates buttons and checkboxes, toggles selection in listboxes.
+- Arrow keys: navigate within composite widgets. Do not let them exit the widget.
+- Escape: closes any overlay, popover, dialog, or dropdown. Cancels in-progress edits.
+- Do not introduce non-standard key bindings for common actions.
+
+## Composite widgets
+
+- Roving tabindex for interactive collections: one item in the tab sequence at a time.
+- Combobox: arrow keys navigate options, Enter selects, Escape closes, typing filters.
+
+## Focus management
+
+- Move focus into any overlay, popover, or dialog on open. Return focus to the trigger on close.
+- Never move focus on hover. Only on keyboard input or explicit pointer activation.
+
+## ARIA semantics
+
+- Use semantic HTML over custom elements: `<button>` over `<div onClick>`, `<a>` over `<span onClick>`.
+- A `<div>` with `onClick` requires `role`, `tabIndex="0"`, and keyboard handlers. Use `<button>` instead.
+- Set role on custom controls: `role="combobox"`, `role="listbox"`, `role="menu"`, `role="option"`.
+- Synchronize state attributes with visual state: `aria-expanded`, `aria-selected`, `aria-checked`, `aria-disabled`.
+- Add `aria-label` or `aria-labelledby` to interactive elements with no visible text label.
+- Always provide `alt` on `<img>`. Use `alt=""` for decorative images.

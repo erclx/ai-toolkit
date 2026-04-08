@@ -21,7 +21,7 @@ scripts/
 
 ## Key decisions
 
-Rules flatten on sync. They live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`) under `governance/rules/` for toolkit organization, then flatten into `.cursor/rules/` on sync because Cursor reads rules flat.
+Rules flatten on sync. They live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `ui/`) under `governance/rules/` for toolkit organization, then flatten into `.cursor/rules/` on sync because Cursor reads rules flat.
 
 Rules follow a numbering scheme by domain. When adding a rule, pick a number in the appropriate range:
 
@@ -29,8 +29,9 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | --------- | ------------------------------------------------------------ |
 | `000–099` | core (constitution, testing, error handling, planning, etc.) |
 | `100–199` | lang (TypeScript, etc.)                                      |
-| `200–299` | framework (React, Tailwind, Shadcn, etc.)                    |
+| `200–299` | framework (React, Tailwind, shadcn, etc.)                    |
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)            |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness)          |
 
 **Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.cursor/.tmp/rules.md`, stripping frontmatter. This is useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the rules payload.
 
@@ -38,13 +39,13 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## Stacks
 
-| Stack     | Extends | Rules                                                                                                               |
-| --------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
-| `base`    | -       | 000–070 core rules                                                                                                  |
-| `node`    | base    | 100-typescript                                                                                                      |
-| `react`   | node    | 200-react, 210-ui, 220-a11y, 230-forms, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web |
-| `python`  | base    | placeholder. Add python rules when available                                                                        |
-| `planner` | -       | 210-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects           |
+| Stack     | Extends | Rules                                                                                                                                    |
+| --------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`    | -       | 000–070 core rules                                                                                                                       |
+| `node`    | base    | 100-typescript                                                                                                                           |
+| `react`   | node    | 200-react, 250-tailwind, 300-testing-ts, 310-zod, 320-tanstack-query, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
+| `python`  | base    | placeholder. Add python rules when available                                                                                             |
+| `planner` | -       | 400-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects                                |
 
 ## CLI
 
