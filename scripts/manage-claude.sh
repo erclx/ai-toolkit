@@ -23,10 +23,6 @@ show_help() {
   echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules (requires roles)${NC}"
   echo -e "${GREY}│${NC}    gov       ${GREY}# Build governance rules and write to .claude/GOV.md${NC}"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    --roles       ${GREY}# Include role prompts with init${NC}"
-  echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
-  echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
@@ -359,6 +355,48 @@ cmd_sync() {
   echo -e "${GREEN}✓ Claude workflow synced${NC}"
 }
 
+cmd_setup() {
+  local user_dir="$PROJECT_ROOT/tooling/claude/user"
+  local dest_dir="$HOME/.claude"
+  local script_src="$user_dir/statusline-command.sh"
+  local script_dest="$dest_dir/statusline-command.sh"
+  local settings_dest="$dest_dir/settings.json"
+  local status_line_cmd="bash $script_dest"
+
+  mkdir -p "$dest_dir"
+
+  log_step "Statusline script"
+  if [ -f "$script_dest" ] && diff -q "$script_src" "$script_dest" >/dev/null 2>&1; then
+    log_info "statusline-command.sh"
+  else
+    cp "$script_src" "$script_dest"
+    chmod +x "$script_dest"
+    log_add "statusline-command.sh"
+  fi
+
+  log_step "Settings"
+  local current_cmd=""
+  [ -f "$settings_dest" ] && current_cmd=$(jq -r '.statusLine.command // empty' "$settings_dest" 2>/dev/null)
+
+  if [ "$current_cmd" = "$status_line_cmd" ]; then
+    log_info "statusLine"
+  else
+    local tmp
+    tmp=$(mktemp)
+    if [ -f "$settings_dest" ]; then
+      jq --arg cmd "$status_line_cmd" '.statusLine = {"type": "command", "command": $cmd}' "$settings_dest" >"$tmp"
+    else
+      jq -n --arg cmd "$status_line_cmd" '.statusLine = {"type": "command", "command": $cmd}' >"$tmp"
+    fi
+    mv "$tmp" "$settings_dest"
+    log_add "statusLine → ~/.claude/settings.json"
+  fi
+
+  trap - EXIT
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Claude user config ready${NC}"
+}
+
 cmd_gov() {
   local target="${1:-.}"
 
@@ -429,7 +467,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "roles" "sync" "prompt" "gov"
+    select_option "Claude command?" "init" "sync" "prompt" "gov"
     command="$SELECTED_OPTION"
   else
     shift
@@ -451,8 +489,11 @@ main() {
   gov)
     cmd_gov "$@"
     ;;
+  setup)
+    cmd_setup "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'init', 'roles', 'sync', 'prompt', or 'gov'."
+    log_error "Unknown command: $command. Use 'init', 'sync', 'prompt', or 'gov'."
     ;;
   esac
 }
