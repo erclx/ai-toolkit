@@ -1,4 +1,5 @@
 agentic
+automatable
 aitk
 arch
 behaviour
