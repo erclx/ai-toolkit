@@ -11,7 +11,7 @@ node_modules/
 # Governance
 .cursor/rules/
 
-# Tooling
+# Gemini
 .gemini/.tmp/
 .gemini/settings.json
 
