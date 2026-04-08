@@ -28,6 +28,7 @@ EOF
   log_info "sync   — diffs managed files against source and applies updates"
   log_info "prompt — generates master prompts from installed rules (requires roles)"
   log_info "gov    — builds .claude/GOV.md from installed rules"
+  log_info "setup  — installs user-level config to ~/.claude/"
 
   select_option "Which scenario?" "init" "roles" "sync" "prompt" "gov"
 
@@ -57,6 +58,10 @@ EOF
     "$PROJECT_ROOT/scripts/manage-claude.sh" init .
     log_step "Running: aitk claude gov"
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" gov .
+    ;;
+  "setup")
+    log_step "Running: aitk claude setup"
+    exec "$PROJECT_ROOT/scripts/manage-claude.sh" setup
     ;;
   esac
 }
