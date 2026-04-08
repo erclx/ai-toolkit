@@ -392,11 +392,6 @@ main() {
   if [[ "$no_header" -eq 0 ]]; then
     echo -e "${GREY}┌${NC}"
     echo -e "${GREY}│${NC} ${WHITE}aitk sandbox${NC}"
-  else
-    log_step() {
-      log_step() { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
-      echo -e "${GREY}├${NC} ${WHITE}$1${NC}" >&2
-    }
   fi
   trap close_timeline EXIT
 

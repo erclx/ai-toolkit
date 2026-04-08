@@ -9,32 +9,34 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 CLAUDE_SEEDS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude"
-CLAUDE_CONFIGS_DIR="$PROJECT_ROOT/tooling/claude/configs/.claude"
+CLAUDE_ROLES_DIR="$PROJECT_ROOT/tooling/claude/roles"
 CLAUDE_MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk claude [command] [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk claude [command] [options] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
-  echo -e "${GREY}│${NC}    sync      ${GREY}# Diff managed role prompts against seed and apply${NC}"
-  echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules${NC}"
+  echo -e "${GREY}│${NC}    roles     ${GREY}# Install role prompts (planner, implementer, reviewer)${NC}"
+  echo -e "${GREY}│${NC}    sync      ${GREY}# Diff managed files against source and apply updates${NC}"
+  echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules (requires roles)${NC}"
   echo -e "${GREY}│${NC}    gov       ${GREY}# Build governance rules and write to .claude/GOV.md${NC}"
+  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
+  echo -e "${GREY}│${NC}    --roles       ${GREY}# Include role prompts with init${NC}"
+  echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
-  echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    aitk claude init"
-  echo -e "${GREY}│${NC}    aitk claude init ../my-app"
+  echo -e "${GREY}│${NC}    aitk claude init --roles"
+  echo -e "${GREY}│${NC}    aitk claude roles ../my-app"
   echo -e "${GREY}│${NC}    aitk claude sync ../my-app"
   echo -e "${GREY}│${NC}    aitk claude prompt"
   echo -e "${GREY}│${NC}    aitk claude gov"
-  echo -e "${GREY}│${NC}    aitk claude gov ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -61,19 +63,6 @@ collect_seeds() {
     fi
   done < <(find "$CLAUDE_SEEDS_DIR" -maxdepth 1 -type f | sort)
 
-  while IFS= read -r file; do
-    local name
-    name=$(basename "$file")
-    local dest="$dest_dir/$name"
-
-    if [ -f "$dest" ]; then
-      log_info "$name"
-    else
-      log_add "$name"
-      _pending+=("$file")
-    fi
-  done < <(find "$CLAUDE_CONFIGS_DIR" -maxdepth 1 -type f | sort)
-
   local claude_md="$PROJECT_ROOT/tooling/claude/seeds/CLAUDE.md"
   if [ -f "$claude_md" ]; then
     local dest="$target/CLAUDE.md"
@@ -84,6 +73,25 @@ collect_seeds() {
       _pending+=("$claude_md")
     fi
   fi
+}
+
+collect_roles() {
+  local target="$1"
+  local -n _role_pending=$2
+  local dest_dir="$target/.claude"
+
+  while IFS= read -r file; do
+    local name
+    name=$(basename "$file")
+    local dest="$dest_dir/$name"
+
+    if [ -f "$dest" ]; then
+      log_info "$name"
+    else
+      log_add "$name"
+      _role_pending+=("$file")
+    fi
+  done < <(find "$CLAUDE_ROLES_DIR" -maxdepth 1 -type f | sort)
 }
 
 apply_seeds() {
@@ -149,20 +157,40 @@ collect_gitignore_entries() {
 }
 
 cmd_init() {
-  local target="${1:-.}"
+  local include_roles=0
+  local target="."
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --roles)
+      include_roles=1
+      shift
+      ;;
+    *)
+      target="$1"
+      shift
+      ;;
+    esac
+  done
 
   validate_target "$target"
 
   local pending=()
+  local role_pending=()
   local gi_pending=()
 
   log_step "Scanning .claude/"
   collect_seeds "$target" pending
 
+  if [ "$include_roles" -eq 1 ]; then
+    log_step "Scanning roles"
+    collect_roles "$target" role_pending
+  fi
+
   log_step "Scanning .gitignore"
   collect_gitignore_entries "$target" gi_pending
 
-  local total=$((${#pending[@]} + ${#gi_pending[@]}))
+  local total=$((${#pending[@]} + ${#role_pending[@]} + ${#gi_pending[@]}))
 
   if [ "$total" -eq 0 ]; then
     trap - EXIT
@@ -179,6 +207,10 @@ cmd_init() {
   [ "$claude_md_count" -gt 0 ] && {
     [ -n "$summary" ] && summary+=", "
     summary+="1 CLAUDE.md"
+  }
+  [ "${#role_pending[@]}" -gt 0 ] && {
+    [ -n "$summary" ] && summary+=", "
+    summary+="${#role_pending[@]} roles"
   }
   [ "${#gi_pending[@]}" -gt 0 ] && {
     [ -n "$summary" ] && summary+=", "
@@ -198,6 +230,10 @@ cmd_init() {
     apply_seeds "$target" "${pending[@]}"
   fi
 
+  if [ "${#role_pending[@]}" -gt 0 ]; then
+    apply_seeds "$target" "${role_pending[@]}"
+  fi
+
   if [ "${#gi_pending[@]}" -gt 0 ]; then
     merge_gitignore "claude" "$target"
   fi
@@ -207,32 +243,74 @@ cmd_init() {
   echo -e "${GREEN}✓ Claude ready${NC}"
 }
 
+cmd_roles() {
+  local target="${1:-.}"
+
+  validate_target "$target"
+
+  local role_pending=()
+
+  log_step "Scanning roles"
+  collect_roles "$target" role_pending
+
+  if [ "${#role_pending[@]}" -eq 0 ]; then
+    trap - EXIT
+    echo -e "${GREY}└${NC}\n"
+    echo -e "${GREEN}✓ Roles already installed${NC}"
+    return
+  fi
+
+  select_option "Install ${#role_pending[@]} role(s)?" "Apply all" "Cancel"
+
+  if [ "$SELECTED_OPTION" = "Cancel" ]; then
+    log_warn "Cancelled"
+    exit 1
+  fi
+
+  log_step "Applying changes"
+  apply_seeds "$target" "${role_pending[@]}"
+
+  trap - EXIT
+  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREEN}✓ Roles installed${NC}"
+}
+
 cmd_sync() {
   local target="${1:-.}"
 
   validate_target "$target"
 
-  local managed=("PLANNER.md" "REVIEWER.md" "IMPLEMENTER.md")
+  local roles=("PLANNER.md" "REVIEWER.md" "IMPLEMENTER.md")
   local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md" "DESIGN.md" "WIREFRAMES.md")
   local drifted=()
+  local has_roles=0
 
-  log_step "Managed"
-  for name in "${managed[@]}"; do
-    local src="$CLAUDE_CONFIGS_DIR/$name"
-    local dest="$target/.claude/$name"
-
-    if [ ! -f "$dest" ]; then
-      log_warn "$name missing — run \`aitk claude init\`"
-      continue
-    fi
-
-    if diff -q "$src" "$dest" >/dev/null 2>&1; then
-      log_info "$name"
-    else
-      log_warn "$name"
-      drifted+=("$name")
+  for name in "${roles[@]}"; do
+    if [ -f "$target/.claude/$name" ]; then
+      has_roles=1
+      break
     fi
   done
+
+  if [ "$has_roles" -eq 1 ]; then
+    log_step "Roles"
+    for name in "${roles[@]}"; do
+      local src="$CLAUDE_ROLES_DIR/$name"
+      local dest="$target/.claude/$name"
+
+      if [ ! -f "$dest" ]; then
+        log_info "$name (not installed)"
+        continue
+      fi
+
+      if diff -q "$src" "$dest" >/dev/null 2>&1; then
+        log_info "$name"
+      else
+        log_warn "$name"
+        drifted+=("$name")
+      fi
+    done
+  fi
 
   log_step "Seeded"
   for name in "${seeded[@]}"; do
@@ -251,12 +329,12 @@ cmd_sync() {
     return
   fi
 
-  select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} managed)?" "Review diffs" "Apply all" "Cancel"
+  select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} roles)?" "Review diffs" "Apply all" "Cancel"
 
   case "$SELECTED_OPTION" in
   "Review diffs")
     for file in "${drifted[@]}"; do
-      code --diff "$CLAUDE_CONFIGS_DIR/$file" "$target/.claude/$file"
+      code --diff "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
     done
     select_option "Apply ${#drifted[@]} update(s)?" "Apply all" "Cancel"
     [ "$SELECTED_OPTION" = "Cancel" ] && {
@@ -272,7 +350,7 @@ cmd_sync() {
 
   log_step "Applying changes"
   for file in "${drifted[@]}"; do
-    cp "$CLAUDE_CONFIGS_DIR/$file" "$target/.claude/$file"
+    cp "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
     log_add ".claude/$file"
   done
 
@@ -351,7 +429,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "sync" "prompt" "gov"
+    select_option "Claude command?" "init" "roles" "sync" "prompt" "gov"
     command="$SELECTED_OPTION"
   else
     shift
@@ -360,6 +438,9 @@ main() {
   case "$command" in
   init)
     cmd_init "$@"
+    ;;
+  roles)
+    cmd_roles "$@"
     ;;
   sync)
     cmd_sync "$@"
@@ -371,7 +452,7 @@ main() {
     cmd_gov "$@"
     ;;
   *)
-    log_error "Unknown command: $command. Use 'init', 'sync', 'prompt', or 'gov'."
+    log_error "Unknown command: $command. Use 'init', 'roles', 'sync', 'prompt', or 'gov'."
     ;;
   esac
 }

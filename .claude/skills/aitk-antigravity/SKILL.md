@@ -16,6 +16,7 @@ description: Antigravity workflow source. Use for editing antigravity/workflows/
 - Follow `standards/antigravity.md` for all workflow authoring
 - Only add workflows that are useful in any project. Toolkit-specific operations don't belong here.
 - Keep `workflows.toml` groups coherent. Add new workflows to the right group.
+- When modifying a workflow, check if a corresponding plugin skill exists in `claude/skills/` or gemini command in `gemini/commands/` and update it to match.
 
 ## When adding a workflow
 
