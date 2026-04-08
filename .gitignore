@@ -15,6 +15,9 @@ node_modules/
 .gemini/.tmp/
 .gemini/settings.json
 
+# Antigravity
+.agent/
+
 # Claude
 .claude/.tmp
 .claude/memory/
