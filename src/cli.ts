@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
+import { register as init } from '@/commands/init'
 import { register as sandbox } from '@/commands/sandbox'
 import { register as sync } from '@/commands/sync'
 import { register as gov } from '@/commands/gov'
@@ -22,6 +23,7 @@ function showHelp(): void {
     `${GREY}├${NC} ${WHITE}Usage:${NC} aitk [command]`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Commands:${NC}`,
+    `${GREY}│${NC}    init [path]        ${GREY}# Bootstrap a project with toolkit domains${NC}`,
     `${GREY}│${NC}    sync [path]        ${GREY}# Sync all installed domains in a project${NC}`,
     `${GREY}│${NC}    sandbox [cat:cmd]  ${GREY}# Provision and run sandbox scenarios${NC}`,
     `${GREY}│${NC}    gov [command]      ${GREY}# Governance commands (install, sync)${NC}`,
@@ -49,6 +51,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk snippets sync ../my-app`,
     `${GREY}│${NC}    aitk prompts install scripting ../my-app`,
     `${GREY}│${NC}    aitk prompts sync ../my-app`,
+    `${GREY}│${NC}    aitk init ../my-app`,
     `${GREY}│${NC}    aitk tooling sync base`,
     `${GREY}│${NC}    aitk tooling create`,
     `${GREY}│${NC}    aitk claude prompt`,
@@ -72,6 +75,7 @@ program.on('option:help', () => {
 })
 program.option('-h, --help', 'Show help')
 
+init(program)
 sandbox(program)
 sync(program)
 gov(program)
