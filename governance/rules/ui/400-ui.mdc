@@ -32,14 +32,3 @@ priority: 400
 
 - Show format examples over instructions: `name@example.com` over `Enter your email here`.
 - Reserve instructions for labels or helper text below the input.
-
-## Feedback
-
-- After a successful mutation (save, sync, import), show brief inline feedback before navigating away or resetting the form.
-- Feedback must be transient: fade or dismiss automatically. Do not require user dismissal.
-
-## Alt text
-
-- Describe the content or function of the image, not its appearance.
-- Keep alt text concise. Do not prefix with "Image of" or "Photo of".
-- Alt text for functional images (icons, buttons) should describe the action, not the graphic.

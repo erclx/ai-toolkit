@@ -40,3 +40,5 @@ priority: 410
 - Synchronize state attributes with visual state: `aria-expanded`, `aria-selected`, `aria-checked`, `aria-disabled`.
 - Add `aria-label` or `aria-labelledby` to interactive elements with no visible text label.
 - Always provide `alt` on `<img>`. Use `alt=""` for decorative images.
+- Describe the content or function of the image, not its appearance. Do not prefix with "Image of" or "Photo of".
+- Alt text for functional images (icons, buttons) should describe the action, not the graphic.
