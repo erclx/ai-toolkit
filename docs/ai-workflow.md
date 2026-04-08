@@ -34,7 +34,7 @@ Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full fi
 
 - Invoke `toolkit:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
-- For UI changes, invoke `toolkit:claude-ui-test` to generate a browser verification checklist
+- For UI changes, invoke `toolkit:claude-ui-test` to generate and run Playwright e2e tests
   End the session once the feature works and tests pass. Invoke `toolkit:claude-docs` to capture any decisions made during implementation before closing.
 
 #### Session 2
@@ -47,7 +47,7 @@ Start a fresh Claude Code session. The diff is sufficient context for both revie
 
 ### UI polish
 
-Verify the change manually in the browser. Invoke `toolkit:claude-ui-test` if you need a browser verification checklist for the session. For the fix itself, describe the change in Claude Code directly.
+Verify the change manually in the browser. Invoke `toolkit:claude-ui-test` if you need e2e tests and a visual verification checklist for the session. For the fix itself, describe the change in Claude Code directly.
 
 ### Quick fix
 
@@ -61,13 +61,13 @@ Invoke `toolkit:claude-review` at the start of session 2. It reads all changed f
 
 ## Skills
 
-| Skill                    | When to use                                                 |
-| ------------------------ | ----------------------------------------------------------- |
-| `toolkit:claude-feature` | Before implementation, scan for conflicts and ambiguities   |
-| `toolkit:claude-review`  | In a fresh session, review all changes since main           |
-| `toolkit:claude-docs`    | When decisions diverged from plan, update `.claude/` docs   |
-| `toolkit:claude-ui-test` | After UI changes, generate a browser verification checklist |
-| `toolkit:git-ship`       | Post-feature: sync docs, commit, rename branch, open PR     |
+| Skill                    | When to use                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `toolkit:claude-feature` | Before implementation, scan for conflicts and ambiguities       |
+| `toolkit:claude-review`  | In a fresh session, review all changes since main               |
+| `toolkit:claude-docs`    | When decisions diverged from plan, update `.claude/` docs       |
+| `toolkit:claude-ui-test` | After UI changes, generate and run e2e tests + visual checklist |
+| `toolkit:git-ship`       | Post-feature: sync docs, commit, rename branch, open PR         |
 
 ## Feedback routing
 

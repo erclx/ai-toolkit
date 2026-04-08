@@ -2,7 +2,7 @@
 description: Form validation timing, save-blocking, and derived state for React forms
 globs: '**/*.tsx,**/*.jsx'
 alwaysApply: false
-priority: 230
+priority: 420
 ---
 
 # FORM STANDARDS
@@ -10,15 +10,19 @@ priority: 230
 ## Validation timing
 
 - Validate on blur, not on every keystroke. Exception: realtime feedback that is explicitly part of the feature (e.g. character count, live search).
+- After a field shows its first error (on blur), re-validate on every change so the error clears as soon as the input becomes valid.
+- Apply the same validation timing to all fields in a form. Do not mix blur-only and change-only validation within one form.
 - Do not show an error on a field the user has never touched.
 
 ## Save blocking
 
-- Block save when any required field is invalid or has never been touched.
+- Block save when any required field is empty, invalid, or has never been touched.
+- Treat whitespace-only values as empty for required fields.
 
 ## Error placement
 
 - Show the error directly under the field that caused it, not under an unrelated field.
+- When a change to field A causes a conflict involving field B, show the error under field A (the field the user just edited), not under field B.
 
 ## Input sanitization
 

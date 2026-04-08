@@ -20,7 +20,7 @@ Optimize for token efficiency and developer experience.
 
 ### File Organization
 
-- Assign numeric prefix matching task category: `000-099` global, `100-199` languages, `200-299` frameworks, `300-399` testing, `900-999` workflow.
+- Assign numeric prefix matching task category: `000-099` global, `100-199` languages, `200-299` frameworks, `300-399` testing, `400-499` UI, `900-999` workflow.
 - Keep rule files under ~40 lines. Split into separate focused files if larger.
 
 ### Rule Content
