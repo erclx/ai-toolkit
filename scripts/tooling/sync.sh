@@ -354,6 +354,11 @@ scan_configs() {
     fi
 
     DEP_CHANGES=${#MISSING_DEPS[@]}
+  else
+    local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
+    if grep -qE '^\[(scripts|dependencies)' "$manifest" 2>/dev/null; then
+      log_warn "Skipped scripts and deps: no package.json found (run 'bun init' to enable)"
+    fi
   fi
 
   log_step "Scanning gitignore"

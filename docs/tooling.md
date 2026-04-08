@@ -2,7 +2,7 @@
 
 ## Overview
 
-Golden configs in `configs/` are the source of truth. Seeds, references, sandboxes, and AI audit commands all consume them. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
+The tooling system manages project setup through two mechanisms: golden configs for universal base tooling, and reference docs for stack-specific guidance. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
 
 ## Structure
 
@@ -14,21 +14,13 @@ tooling/
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md   ← prose intent and rationale (for humans and AI)
 ├── vite-react/
-│   ├── configs/       ← only files that differ from or extend base
-│   ├── seeds/
-│   ├── manifest.toml  ← extends = "base"
-│   └── reference.md
-├── chrome/
-│   ├── configs/       ← golden config files
-│   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
-│   └── reference.md
+│   ├── seeds/         ← user-owned dictionary seeds
+│   ├── manifest.toml  ← extends = "base", deps, scripts, gitignore
+│   └── reference.md   ← unified guide for all TS web projects (React, Chrome, Astro, Next)
 ├── claude/
 │   ├── configs/       ← Role prompts (e.g. PLANNER.md). Seeded on `init`, overwritten on `sync`.
 │   ├── seeds/         ← User-owned docs (e.g. REQUIREMENTS.md) and CLAUDE.md. Seeded on `init`.
 │   ├── manifest.toml  ← gitignore only, no configs or deps
-│   └── reference.md
-├── cursor/
-│   ├── manifest.toml  ← gitignore only
 │   └── reference.md
 └── gemini/
     ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
@@ -36,13 +28,13 @@ tooling/
     └── reference.md
 ```
 
-## Configs vs seeds vs references vs gitignore
+## Configs, seeds, and references
 
-Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong.
+Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. Only the `base` stack ships golden configs.
 
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what's missing and never overwrites. Stacks ship seeds pre-populated with terms they introduce, such as `shellcheck` and `vitest`.
+Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
 
-References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain.
+References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. The `vite-react` stack is reference-only: the agent reads the reference and generates configs adapted to the specific project. No golden configs are shipped for stack-specific tooling.
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched.
 
@@ -91,29 +83,34 @@ packages = []
 
 | Command                           | What it does                                                                       |
 | --------------------------------- | ---------------------------------------------------------------------------------- |
+| `aitk init [path]`                | Bootstrap a project with base tooling and toolkit domains                          |
 | `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                                         |
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                                    |
 | `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation) |
 
 ## Common workflows
 
-Sync to a fresh project: `aitk tooling` → sync → pick stack → enter path.
+Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, snippets, and wiki in one command. Optional domains (standards, prompts, antigravity) are offered interactively.
 
-Scaffold a new stack: `aitk tooling create` → enter name → stub structure created in `tooling/<name>/`.
+Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, and seeds (no configs to copy).
+
+Drop reference docs: `aitk tooling ref vite-react ../my-app` copies `tooling/vite-react.md` to the target project for the agent to use.
+
+Scaffold a new stack: `aitk tooling create` generates the stub structure in `tooling/<name>/`.
 
 ## Testing
 
-Each stack has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `aitk` → tooling → pick scenario. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms.
+Each stack with golden configs has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `aitk` sandbox tooling. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms.
+
+Reference-only stacks like `vite-react` are validated by scaffolding a real project, letting the agent set up configs from the reference, and running `bun run check`.
 
 ## Adding a new stack
 
 1. Run `aitk tooling create` to generate the stub structure
-2. Add golden config files to `tooling/<n>/configs/`
-3. Add pre-populated seed files to `tooling/<n>/seeds/`
-4. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`
-5. Fill in `reference.md` with prose documentation
-6. Create `scripts/sandbox/tooling/<n>.sh`: inject configs, seeds, manifest, run verify
-7. Test via `aitk` → tooling → `<n>`
+2. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`
+3. Fill in `reference.md` with prose documentation
+4. For stacks with golden configs, add files to `configs/` and create `scripts/sandbox/tooling/<n>.sh`
+5. For reference-only stacks, add seed files to `seeds/` if needed
 
 Sync auto-discovers the new stack.
 
