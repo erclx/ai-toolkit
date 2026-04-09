@@ -10,4 +10,5 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Claude Code plan mode](claude-plan-mode.md): read-only exploration and plan approval flow
 - [Claude Code MCP](claude-mcp.md): server configuration, scopes, authentication, and tool naming
 - [Claude Code permissions](claude-permissions.md): modes, allow/ask/deny rules, and rule syntax
+- [Ollama](ollama.md): local model setup, model tiers, context tuning, and web search
 - [Prose influences](prose-influences.md): industry style guides behind prose.md and AI-specific additions
