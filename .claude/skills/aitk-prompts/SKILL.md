@@ -21,7 +21,7 @@ description: System prompt templates for AI authoring. Use for adding prompts, e
 ## Exportable prompts
 
 - Prompts in `prompts.toml` are installable into target projects via `aitk prompts install`.
-- Toolkit-internal prompts (cursor-rules, gemini-cli, claude-skill, meta-prompt, standards-reference, tooling-reference) are not registered and must not be added to `prompts.toml`.
+- Toolkit-internal prompts (cursor-rules, gemini-cli, meta-prompt, standards-reference, tooling-reference) are not registered and must not be added to `prompts.toml`.
 - When adding an exportable prompt, register it under the appropriate category in `prompts.toml` using the file stem as the name.
 
 ## Sync checklist

@@ -61,7 +61,7 @@ Prompts are organized into categories in `prompts.toml`. Each category is a name
 To install prompts into a new project:
 
 ```bash
-aitk prompts install scripting ../my-app
+aitk prompts install infra ../my-app
 aitk prompts install all ../my-app
 ```
 
@@ -80,7 +80,7 @@ Create a `.md` file in `prompts/` following the all-caps heading convention. Inc
 To make a prompt installable, register it in `prompts.toml` under the appropriate category:
 
 ```toml
-[scripting]
+[infra]
 names = ["bash-script", "your-new-prompt"]
 ```
 

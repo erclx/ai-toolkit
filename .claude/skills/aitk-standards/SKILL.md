@@ -12,12 +12,16 @@ description: Standards system and docs. Use when editing files in standards/ or 
 
 ## Prose rules
 
-- Active voice, present tense
+- Active voice, default to present tense
 - Sentence case for all headings (H1, H2, H3)
-- No `Note that`, `Basically`, `Essentially`, `That being said`
-- No `seamless`, `robust`, `powerful`, `allows`
+- No `Note that`, `Basically`, `Essentially`, `That being said`, `Overall`, `In summary`
+- No `seamless`, `robust`, `powerful`, `allows`, `leverage`
 - No gerund openers (`Leveraging...`, `Building on...`)
-- No em dashes or semicolons. Rewrite or restructure the sentence to avoid them.
+- No padded verb phrases (`in order to` → `to`, `ensure that X` → `set X`)
+- No participant address (`Let's`, `Here's`, `Here are`)
+- No em dashes, semicolons, or parenthetical asides in prose
+- Keep paragraphs to four sentences or fewer
+- Keep bullets tight. Multi-sentence bullets belong in prose.
 
 ## Full reference
 
