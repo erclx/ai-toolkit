@@ -2,7 +2,6 @@
 
 Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `standards/prose.md` when writing or editing any wiki page.
 
-- [Bun](bun.md): bun init, bun create, project scaffolding and templates
 - [Claude Code](claude-code.md): CLI flags, CLAUDE.md, hooks, memory, and MCP
 - [Claude Code commands](claude-commands.md): full built-in slash command reference
 - [Claude Code hooks](claude-hooks.md): event hooks, configuration, and behavior control
