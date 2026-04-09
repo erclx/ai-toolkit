@@ -9,6 +9,7 @@ description: Generates pull request titles and descriptions from git diffs. Use 
 
 Read these files from the project root in parallel:
 
+- `standards/branch.md`: branch format, valid types, and constraints
 - `standards/pr.md`: structure, rules, and banned phrases
 - `standards/prose.md`: prose conventions for all generated text
 
@@ -21,7 +22,7 @@ Then run these commands in parallel to gather git context:
 
 ## Guards
 
-- If branch name does not match `<type>/<description>` format (valid types: `feat`, `fix`, `refactor`, `docs`, `chore`, `perf`, `test`, `style`, `build`, `ci`, `revert`), stop and output:
+- If branch name does not match `<type>/<description>` format (valid types are defined in `standards/branch.md`), stop and output:
   `❌ Branch name does not follow conventions. Run /git-branch to rename first.`
 - If no commits ahead of main, stop and output:
   `❌ No commits ahead of main. Nothing to PR.`

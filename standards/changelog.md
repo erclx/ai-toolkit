@@ -9,7 +9,7 @@
 
 ## Categories
 
-- Use `Added`, `Changed`, `Fixed`, `Deprecated`, `Security` as H3 headers
+- Use `Added`, `Changed`, `Fixed`, `Deprecated`, `Removed`, `Security` as H3 headers
 - Do not include version sections with no meaningful changes
 
 ## Entries

@@ -52,7 +52,7 @@ aitk antigravity sync ../my-app
 
 ## Adding a workflow
 
-Create a `.md` file in `antigravity/workflows/` adhering to `standards/antigravity.md`. Open `antigravity/workflows.toml` and add the filename to the appropriate group array. Run `aitk antigravity sync` to update an existing project, or `aitk antigravity install` to push to new projects.
+Create a `.md` file in `antigravity/workflows/` adhering to `prompts/antigravity-workflow.md`. Open `antigravity/workflows.toml` and add the filename to the appropriate group array. Run `aitk antigravity sync` to update an existing project, or `aitk antigravity install` to push to new projects.
 
 ## Notes
 

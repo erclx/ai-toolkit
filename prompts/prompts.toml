@@ -1,9 +1,11 @@
-[claude]
+[authoring]
 names = [
+    "antigravity-workflow",
     "claude-skill",
 ]
 
-[scripting]
+[infra]
 names = [
     "bash-script",
+    "ci-workflow",
 ]
