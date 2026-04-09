@@ -33,7 +33,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Keep `SKILL.md` under 5,000 words. Move detailed docs to `references/`.
 - Link to `references/` files explicitly so Claude knows to load them
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
-- Headers: sentence case for all levels (H1, H2, H3)
+- Use sentence case for all headings (H1, H2, H3)
 - When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
 - When referencing project files, include "from the project root" in the read instruction
 
