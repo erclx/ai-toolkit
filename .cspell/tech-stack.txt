@@ -11,12 +11,14 @@ gitattributes
 gsub
 heredoc
 labelledby
+modelfile
 mypy
 nextjs
 noopener
 noreferrer
 nullglob
 nvmrc
+ollama
 pip
 pnpm
 pycache
