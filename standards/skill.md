@@ -36,6 +36,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Use sentence case for all headings (H1, H2, H3)
 - When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
 - When referencing project files, include "from the project root" in the read instruction
+- State rules, not inventories. Reference docs for lists that change. Enumerating items in a skill body creates drift when items are added or removed.
 
 ## Scripts
 
