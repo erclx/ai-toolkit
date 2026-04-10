@@ -36,23 +36,17 @@ build_source_map() {
   SOURCE_MAP_VALS=()
 
   while IFS= read -r f; do
-    local filename parent slug
-    filename=$(basename "$f" .md)
-    parent=$(basename "$(dirname "$f")")
-    if [ "$parent" = "snippets" ]; then
-      slug="$filename"
-    else
-      slug="${parent}-${filename}"
-    fi
-    SOURCE_MAP_KEYS+=("$slug")
+    local rel
+    rel="${f#"$SNIPPETS_SOURCE/"}"
+    SOURCE_MAP_KEYS+=("$rel")
     SOURCE_MAP_VALS+=("$f")
   done < <(find "$SNIPPETS_SOURCE" -type f -name "*.md" | sort)
 }
 
 lookup_source() {
-  local slug="$1"
+  local rel="$1"
   for i in "${!SOURCE_MAP_KEYS[@]}"; do
-    if [ "${SOURCE_MAP_KEYS[$i]}" = "$slug" ]; then
+    if [ "${SOURCE_MAP_KEYS[$i]}" = "$rel" ]; then
       echo "${SOURCE_MAP_VALS[$i]}"
       return
     fi
@@ -82,23 +76,22 @@ collect_changes() {
   local count=0
 
   while IFS= read -r dest_file; do
-    local filename slug src_file
-    filename=$(basename "$dest_file")
-    slug="${filename%.md}"
-    src_file=$(lookup_source "$slug")
+    local rel src_file
+    rel="${dest_file#"$target_snippets_dir/"}"
+    src_file=$(lookup_source "$rel")
 
     if [ -z "$src_file" ] || [ ! -f "$src_file" ]; then
-      log_warn "$filename (not in toolkit source, skipping)"
+      log_warn "$rel (not in toolkit source, skipping)"
       continue
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "snippets/$filename"
+      log_warn "snippets/$rel"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       count=$((count + 1))
     else
-      log_info "snippets/$filename"
+      log_info "snippets/$rel"
     fi
   done < <(find "$target_snippets_dir" -type f -name "*.md" | sort)
 

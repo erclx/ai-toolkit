@@ -72,11 +72,7 @@ ask_name() {
   local label
   local error
 
-  if [ "$is_base" = "true" ]; then
-    label="Snippet slug?"
-  else
-    label="Snippet name (slug without '${category}-' prefix)?"
-  fi
+  label="Snippet name?"
 
   while true; do
     ask "$label" "NAME_INPUT"
@@ -119,16 +115,16 @@ cmd_create() {
   local name="$NAME"
 
   local dest_path
-  local slug
+  local install_path
   if [ "$is_base" = "true" ]; then
     dest_path="$SNIPPETS_SOURCE/$name.md"
-    slug="$name"
+    install_path="snippets/$name"
   else
     dest_path="$SNIPPETS_SOURCE/$category/$name.md"
-    slug="${category}-${name}"
+    install_path="snippets/$category/$name"
   fi
 
-  log_info "Slug: @${slug}"
+  log_info "Installs as: @${install_path}"
 
   log_step "Creating file"
 

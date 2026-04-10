@@ -67,45 +67,26 @@ collect_files_for_category() {
 
 collect_all_files() {
   local -n _all=$1
-  local seen=()
 
   collect_files_for_category "base" _all
 
   while IFS= read -r category; do
-    local cat_files=()
-    collect_files_for_category "$category" cat_files
-    for f in "${cat_files[@]}"; do
-      local slug
-      slug=$(derive_slug "$f")
-      local already=0
-      for s in "${seen[@]}"; do
-        [ "$s" = "$slug" ] && already=1 && break
-      done
-      if [ "$already" -eq 0 ]; then
-        _all+=("$f")
-        seen+=("$slug")
-      fi
-    done
+    collect_files_for_category "$category" _all
   done < <(find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
 }
 
-derive_slug() {
+derive_dest_rel_path() {
   local filepath="$1"
-  local filename
-  filename=$(basename "$filepath" .md)
   local parent
   parent=$(basename "$(dirname "$filepath")")
+  local filename
+  filename=$(basename "$filepath")
 
   if [ "$parent" = "snippets" ]; then
     echo "$filename"
   else
-    echo "${parent}-${filename}"
+    echo "${parent}/${filename}"
   fi
-}
-
-derive_dest_name() {
-  local filepath="$1"
-  echo "$(derive_slug "$filepath").md"
 }
 
 cmd_install() {
@@ -136,7 +117,7 @@ cmd_install() {
   fi
 
   for f in "${files[@]}"; do
-    log_info "$(derive_slug "$f")"
+    log_info "$(derive_dest_rel_path "$f")"
   done
 
   local dest_dir="$target_abs/snippets"
@@ -151,13 +132,13 @@ cmd_install() {
 
   log_step "Installing snippets"
 
-  mkdir -p "$dest_dir"
-
   for f in "${files[@]}"; do
-    local dest_name
-    dest_name=$(derive_dest_name "$f")
-    cp "$f" "$dest_dir/$dest_name"
-    log_add "snippets/$dest_name"
+    local rel_path
+    rel_path=$(derive_dest_rel_path "$f")
+    local dest_file="$dest_dir/$rel_path"
+    mkdir -p "$(dirname "$dest_file")"
+    cp "$f" "$dest_file"
+    log_add "snippets/$rel_path"
   done
 }
 
