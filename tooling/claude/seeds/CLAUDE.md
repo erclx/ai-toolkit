@@ -13,9 +13,10 @@
 
 ## Rules
 
-- For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
-- Before editing any doc, re-read `standards/prose.md` and the document's own preamble
-- When editing any doc, read surrounding content first and match its depth, length, and tone
+- When a folder has an `index.md`, check it before reading individual files in that folder.
+- For any navigable markdown folder, add an `index.md` listing each file with a one-line description.
+- When editing any markdown file, follow `standards/prose.md`.
+- When editing any markdown file, read surrounding content first and match its depth, length, and tone
 
 ## Key paths
 

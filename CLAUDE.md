@@ -14,6 +14,8 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - After editing scripts in a domain that has a sandbox scenario, run `aitk sandbox infra:{domain} install` and `aitk sandbox infra:{domain} sync` to verify. Skip `create` scenarios. They require interactive input and will loop on empty input.
 - For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
 - Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
+- When a folder has an `index.md`, check it before reading individual files in that folder.
+- For any navigable markdown folder, add an `index.md` listing each file with a one-line description.
 
 ## System overview
 
@@ -68,6 +70,5 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 ## Wiki
 
-- Check `wiki/index.md` when a topic might be covered, then read the relevant page before answering
-- Propose additions or corrections when you learn something not covered, but do not write to wiki files without confirmation
+- Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
 - When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge
