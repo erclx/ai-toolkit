@@ -53,6 +53,12 @@ ask() {
   if [ -n "$default_val" ]; then
     display_default=" (${default_val})"
   fi
+  if [[ "${AITK_NON_INTERACTIVE:-}" == "1" ]]; then
+    echo -e "${GREY}│${NC}" >&2
+    echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${default_val}${NC}" >&2
+    export "$var_name"="$default_val"
+    return
+  fi
   echo -e "${GREY}│${NC}" >&2
   echo -ne "${GREEN}◆${NC} ${prompt_text}${display_default} " >&2
   while IFS= read -r -s -n1 char; do
@@ -85,6 +91,14 @@ select_option() {
   local options=("$@")
   local cur=0
   local count=${#options[@]}
+
+  if [[ "${AITK_NON_INTERACTIVE:-}" == "1" ]]; then
+    echo -e "${GREY}│${NC}" >&2
+    echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[0]}${NC}" >&2
+    export SELECTED_OPTION="${options[0]}"
+    return
+  fi
+
   echo -e "${GREY}│${NC}" >&2
   echo -ne "${GREEN}◆${NC} ${prompt_text}\n" >&2
 

@@ -416,6 +416,11 @@ main() {
   local category="$_CATEGORY"
   local command="$_COMMAND"
 
+  if [ -n "${2:-}" ]; then
+    export SANDBOX_SCENARIO="$2"
+    export AITK_NON_INTERACTIVE="1"
+  fi
+
   initialize_sandbox_environment "$category" "$command"
   execute_sandbox_and_commit
 
