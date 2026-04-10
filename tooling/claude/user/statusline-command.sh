@@ -5,13 +5,19 @@ remaining=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 ctx_size=$(echo "$input" | jq -r '.context_window.context_window_size // empty')
 
+real_ctx="$ctx_size"
+if [[ "${ANTHROPIC_BASE_URL:-}" == *"localhost"* ]] && command -v ollama &>/dev/null; then
+  ollama_ctx=$(ollama ps 2>/dev/null | awk 'NR>1 {print $7; exit}')
+  [ -n "$ollama_ctx" ] && real_ctx="$ollama_ctx"
+fi
+
 parts=""
 
 [ -n "$model" ] && parts="$model"
 
 if [ -n "$used_pct" ] && [ -n "$ctx_size" ]; then
   used_k=$(awk "BEGIN {printf \"%.0f\", ($used_pct/100)*$ctx_size/1000}")
-  total_k=$(awk "BEGIN {printf \"%.0f\", $ctx_size/1000}")
+  total_k=$(awk "BEGIN {printf \"%.0f\", $real_ctx/1000}")
   tokens_part="${used_k}k / ${total_k}k"
   [ -n "$parts" ] && parts="$parts | $tokens_part" || parts="$tokens_part"
 fi
