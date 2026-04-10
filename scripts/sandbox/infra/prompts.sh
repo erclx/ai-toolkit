@@ -39,7 +39,7 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk prompts install"
-    exec "$PROJECT_ROOT/scripts/prompts/install.sh" scripting install/
+    exec "$PROJECT_ROOT/scripts/prompts/install.sh" infra install/
     ;;
   "sync")
     log_step "Running: aitk prompts sync"

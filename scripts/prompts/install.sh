@@ -163,6 +163,11 @@ cmd_install() {
     cp "$PROMPTS_SOURCE/$slug.md" "$dest_dir/$slug.md"
     log_add "prompts/$slug.md"
   done
+
+  if [ -f "$PROMPTS_SOURCE/index.md" ]; then
+    cp "$PROMPTS_SOURCE/index.md" "$dest_dir/index.md"
+    log_add "prompts/index.md"
+  fi
 }
 
 main() {
