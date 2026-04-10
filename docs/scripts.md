@@ -51,7 +51,7 @@ scripts/
 │   ├── ref.sh           ← drops reference docs only
 │   └── create.sh        ← creates new stack stub
 ├── snippets/
-│   ├── install.sh       ← copies slugs for a category into a target project
+│   ├── install.sh       ← copies snippets for a category into a target project, preserving folder structure
 │   ├── sync.sh          ← diffs and updates snippets already present in target
 │   └── create.sh        ← creates a new snippet file in the correct category folder
 ├── prompts/
