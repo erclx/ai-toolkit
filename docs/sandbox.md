@@ -51,7 +51,7 @@ aitk sandbox reset                  # restore sandbox to baseline
 aitk sandbox clean                  # wipe sandbox entirely
 ```
 
-When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Infra scenario scripts read `SANDBOX_SCENARIO` to skip the picker and route directly to the named scenario. Skip `create` scenarios — they require required input with no default and will loop on empty input.
+When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Infra scenario scripts read `SANDBOX_SCENARIO` to skip the picker and route directly to the named scenario. Skip `create` scenarios. They require user input with no default and loop on empty input.
 
 After provisioning, your terminal cwd may need a refresh. Add this to `.zshrc` or `.bashrc`:
 
