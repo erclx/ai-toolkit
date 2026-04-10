@@ -1,6 +1,6 @@
 ---
 name: git-ship
-description: Runs the full post-feature workflow in sequence: sync docs, stage and commit, rename branch, and open PR. Use after implementing a feature, or when asked to "ship", "ship this", or "ship it".
+description: Runs the full post-feature workflow by syncing docs, staging commits, renaming the branch, and opening a PR. Use after implementing a feature, or when asked to "ship", "ship this", or "ship it".
 disable-model-invocation: true
 ---
 
