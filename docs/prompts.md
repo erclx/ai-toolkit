@@ -10,6 +10,7 @@ Select prompts can be installed into target projects via `aitk prompts install`.
 
 ```plaintext
 prompts/
+├── index.md          ← navigation index (always installed)
 ├── *.md              ← system prompt generators
 └── prompts.toml      ← category definitions (name lists)
 docs/
