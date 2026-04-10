@@ -87,7 +87,7 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 ## lib
 
-**`ui.sh`**: source this in any script that needs terminal output. Provides the color palette, all `log_*` functions, interactive prompts (`select_option`, `ask`), `guard_root` (rejects toolkit root as a target), and `require_project_root`.
+**`ui.sh`**: source this in any script that needs terminal output. Provides the color palette, all `log_*` functions, `select_option` and `ask` for user prompts, `guard_root` (rejects toolkit root as a target), and `require_project_root`. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking.
 
 **`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
