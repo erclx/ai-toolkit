@@ -16,16 +16,12 @@ stage_setup() {
   local src_snippets="$PROJECT_ROOT/snippets"
 
   while IFS= read -r file; do
-    local name parent slug
-    name=$(basename "$file" .md)
-    parent=$(basename "$(dirname "$file")")
-    if [ "$parent" = "snippets" ]; then
-      slug="$name"
-    else
-      slug="${parent}-${name}"
-    fi
-    cp "$file" "sync/snippets/${slug}.md"
-    echo "<!-- stale -->" >>"sync/snippets/${slug}.md"
+    local rel parent
+    rel="${file#"$src_snippets/"}"
+    parent=$(dirname "sync/snippets/$rel")
+    mkdir -p "$parent"
+    cp "$file" "sync/snippets/$rel"
+    echo "<!-- stale -->" >>"sync/snippets/$rel"
   done < <(find "$src_snippets" -type f -name "*.md" | sort | head -n 2)
 
   git add .
