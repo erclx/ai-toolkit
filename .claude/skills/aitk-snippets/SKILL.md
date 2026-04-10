@@ -7,7 +7,7 @@ description: Reusable prompt snippets for Claude and Gemini. Use for adding snip
 
 ## Conventions
 
-- Filename is the local name. `claude/docs.md` installs and is invoked as `claude-docs`.
+- Filename is the local name. `claude/edit.md` installs as `snippets/claude/edit.md` and is invoked as `@snippets/claude/edit`.
 - Kebab-case only, no capitals, no underscores.
 - Plain markdown only. No YAML frontmatter.
 - One focused purpose per snippet. If it needs sections it is a system prompt, not a snippet.
@@ -15,10 +15,11 @@ description: Reusable prompt snippets for Claude and Gemini. Use for adding snip
 
 ## Categories
 
-- Base snippets live at `snippets/` root with no prefix. Slug = filename.
-- Category snippets live in `snippets/{category}/`. Slug = `{category}-{filename}`.
+- Base snippets live at `snippets/` root. Invoked as `@snippets/{name}`.
+- Category snippets live in `snippets/{category}/`. Invoked as `@snippets/{category}/{name}`.
+- Folder structure is preserved on install. No flattening, no prefix.
 - No TOML manifest. The folder structure is the source of truth.
-- Use `aitk snippets create` to add a snippet. It prompts for category, writes the file, and confirms the derived slug.
+- Use `aitk snippets create` to add a snippet. It prompts for category, writes the file, and confirms the install path.
 - To add manually: create a `.md` file in the correct folder.
 
 ## Sync checklist
