@@ -30,7 +30,12 @@ EOF
   log_info "gov    — builds .claude/GOV.md from installed rules"
   log_info "setup  — installs user-level config to ~/.claude/"
 
-  select_option "Which scenario?" "init" "roles" "sync" "prompt" "gov"
+  local scenario="${SANDBOX_SCENARIO:-}"
+  if [ -n "$scenario" ]; then
+    SELECTED_OPTION="$scenario"
+  else
+    select_option "Which scenario?" "init" "roles" "sync" "prompt" "gov"
+  fi
 
   case "$SELECTED_OPTION" in
   "init")

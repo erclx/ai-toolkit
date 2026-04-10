@@ -29,7 +29,12 @@ stage_setup() {
   log_info "install/ — clean target, no prompts present"
   log_info "sync/    — stale prompts/ present"
 
-  select_option "Which scenario?" "install" "sync"
+  local scenario="${SANDBOX_SCENARIO:-}"
+  if [ -n "$scenario" ]; then
+    SELECTED_OPTION="$scenario"
+  else
+    select_option "Which scenario?" "install" "sync"
+  fi
 
   case "$SELECTED_OPTION" in
   "install")

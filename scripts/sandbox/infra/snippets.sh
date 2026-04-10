@@ -32,7 +32,12 @@ stage_setup() {
   log_info "sync/    — stale snippets/ present"
   log_info "create   — runs against toolkit source directly"
 
-  select_option "Which scenario?" "install" "sync" "create"
+  local scenario="${SANDBOX_SCENARIO:-}"
+  if [ -n "$scenario" ]; then
+    SELECTED_OPTION="$scenario"
+  else
+    select_option "Which scenario?" "install" "sync" "create"
+  fi
 
   case "$SELECTED_OPTION" in
   "install")
