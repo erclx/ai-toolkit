@@ -45,10 +45,13 @@ All sandboxes provision into `.sandbox/` at the repo root. Git history initializ
 ## Running
 
 ```bash
-aitk sandbox          # interactive category + command picker
-aitk sandbox reset    # restore sandbox to baseline
-aitk sandbox clean    # wipe sandbox entirely
+aitk sandbox                        # interactive category + command picker
+aitk sandbox infra:gov install      # run a specific scenario non-interactively
+aitk sandbox reset                  # restore sandbox to baseline
+aitk sandbox clean                  # wipe sandbox entirely
 ```
+
+When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Infra scenario scripts read `SANDBOX_SCENARIO` to skip the picker and route directly to the named scenario. Skip `create` scenarios. They require user input with no default and loop on empty input.
 
 After provisioning, your terminal cwd may need a refresh. Add this to `.zshrc` or `.bashrc`:
 

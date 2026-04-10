@@ -37,7 +37,12 @@ stage_setup() {
   log_info "sync/    — stale .cursor/rules/ present"
   log_info "build/   — full .cursor/rules/ present, generates .cursor/.tmp/rules.md"
 
-  select_option "Which scenario?" "install" "sync" "build"
+  local scenario="${SANDBOX_SCENARIO:-}"
+  if [ -n "$scenario" ]; then
+    SELECTED_OPTION="$scenario"
+  else
+    select_option "Which scenario?" "install" "sync" "build"
+  fi
 
   case "$SELECTED_OPTION" in
   "install")

@@ -26,7 +26,12 @@ EOF
   log_info "ref    — drops reference docs only"
   log_info "create — creates a new stack stub"
 
-  select_option "Which scenario?" "sync" "ref" "create"
+  local scenario="${SANDBOX_SCENARIO:-}"
+  if [ -n "$scenario" ]; then
+    SELECTED_OPTION="$scenario"
+  else
+    select_option "Which scenario?" "sync" "ref" "create"
+  fi
 
   case "$SELECTED_OPTION" in
   "sync")

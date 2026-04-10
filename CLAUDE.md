@@ -11,6 +11,7 @@ CLI toolkit for managing AI workflows, developer standards, and project tooling 
 - When updating skills, load `aitk-claude` and follow `standards/skill.md` conventions
 - After any edit that changes how a domain works, update affected files in `docs/`
 - When updating docs, load `aitk-standards` and follow `standards/prose.md`
+- After editing scripts in a domain that has a sandbox scenario, run `aitk sandbox infra:{domain} install` and `aitk sandbox infra:{domain} sync` to verify. Skip `create` scenarios. They require interactive input and will loop on empty input.
 - For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
 - Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
 
