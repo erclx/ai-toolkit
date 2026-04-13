@@ -41,6 +41,7 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 ## Language
 
+- Use American English spelling. Prefer `-ize` over `-ise`, `-or` over `-our`, `-er` over `-re` (`organize`, `analyze`, `summarize`, `recognize`, `behavior`, `color`, `center`)
 - Do not use marketing buzzwords (`seamless`, `robust`, `powerful`, `revolutionary`, `enhanced`, `allows`, `leverage`)
 - Do not use vague qualifiers (`simply`, `just`, `easily`, `quickly`, `very`, `really`)
 - Do not start sentences with filler (`Note that`, `Basically`, `Essentially`, `It should be noted`, `Overall`, `In summary`, `In conclusion`)
