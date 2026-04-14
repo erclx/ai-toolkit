@@ -44,6 +44,7 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 | `base`    | -       | 000–070 core rules                                                                                                   |
 | `node`    | base    | 100-typescript                                                                                                       |
 | `react`   | node    | 200-react, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
+| `astro`   | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                   |
 | `planner` | -       | 400-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects            |
 
 ## CLI
