@@ -9,6 +9,7 @@ description: Cursor governance rules and stack definitions. Use for adding rules
 
 - Rules live in `governance/rules/` organized by domain subdirectory, but flatten into `.cursor/rules/` on sync. Cursor reads flat.
 - Rules follow a numbering scheme by domain. Read `docs/governance.md` for the ranges before picking a number.
+- Follow `prompts/cursor-rules.md` for frontmatter, heading style, and bullet conventions when writing a new `.mdc` file.
 - New `.mdc` file anywhere under `governance/rules/` is auto-discovered. No other changes needed to register it.
 - `strip_frontmatter` and `build_rules_payload` live in `scripts/lib/gov.sh`, sourced by both `gov/build.sh` and `claude/prompt.sh`. Do not duplicate.
 
