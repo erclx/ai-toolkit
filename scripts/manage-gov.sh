@@ -16,6 +16,7 @@ show_help() {
   echo -e "${GREY}│${NC}    install [stack] [path]   ${GREY}# Bootstrap rules for a stack into a project${NC}"
   echo -e "${GREY}│${NC}    sync [path]              ${GREY}# Update rules already present in target${NC}"
   echo -e "${GREY}│${NC}    build [path]             ${GREY}# Concatenate rules into .cursor/.tmp/rules.md${NC}"
+  echo -e "${GREY}│${NC}    list [options]           ${GREY}# List available stacks and rules${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
@@ -28,14 +29,14 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk gov${NC}"
+  echo -e "${GREY}┌${NC}" >&2
+  echo -e "${GREY}│${NC} ${WHITE}aitk gov${NC}" >&2
   trap close_timeline EXIT
 
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Gov command?" "install" "sync" "build"
+    select_option "Gov command?" "install" "sync" "build" "list"
     command="$SELECTED_OPTION"
   else
     shift
@@ -51,8 +52,11 @@ main() {
   build)
     exec "$PROJECT_ROOT/scripts/gov/build.sh" "$@"
     ;;
+  list)
+    exec "$PROJECT_ROOT/scripts/gov/list.sh" "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'install', 'sync', or 'build'."
+    log_error "Unknown command: $command. Use 'install', 'sync', 'build', or 'list'."
     ;;
   esac
 }

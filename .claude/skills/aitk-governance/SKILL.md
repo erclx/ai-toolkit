@@ -17,6 +17,8 @@ description: Cursor governance rules and stack definitions. Use for adding rules
 
 - Stack `.toml` files live in `governance/stacks/`. `extends` resolves recursively and the full deduplicated rule set is installed.
 - New stack: create a `.toml` in `governance/stacks/`, set `extends`, list rule names without `.mdc`.
+- `aitk gov install <stack> --add rule1,rule2 [path]` layers extras on top of a stack without authoring a new stack.
+- `aitk gov list [--json]` emits the catalog. Use `--json` from skills and scripts. Never hardcode stack or rule names in skill bodies.
 
 ## Sync checklist
 

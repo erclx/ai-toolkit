@@ -49,13 +49,14 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## CLI
 
-| Command                           | What it does                                            |
-| --------------------------------- | ------------------------------------------------------- |
-| `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a target project       |
-| `aitk gov sync [path]`            | Update rules already present in target (never adds new) |
-| `aitk gov build [path]`           | Concatenate installed rules into .cursor/.tmp/rules.md  |
+| Command                                         | What it does                                            |
+| ----------------------------------------------- | ------------------------------------------------------- |
+| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a target project       |
+| `aitk gov sync [path]`                          | Update rules already present in target (never adds new) |
+| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/rules.md  |
+| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                        |
 
-`aitk gov` with no args shows an interactive picker for `install`, `sync`, or `build`. Commands that write files require confirmation before running.
+`aitk gov` with no args shows an interactive picker for `install`, `sync`, `build`, or `list`. Commands that write files require confirmation before running.
 
 ## Workflow
 
@@ -64,6 +65,13 @@ To set up a new project:
 ```bash
 aitk gov install react ../my-app
 # resolves react → node → base, copies all matching rules
+```
+
+To layer extra rules on top of a stack without creating a new stack definition:
+
+```bash
+aitk gov install astro --add 200-react,260-shadcn,300-testing-ts ../my-app
+# installs astro stack rules plus the three extras, deduped
 ```
 
 To sync updates to an existing project:
@@ -79,6 +87,14 @@ To generate a concatenated rules file:
 aitk gov build
 # strips frontmatter, concatenates all .mdc files
 # writes .cursor/.tmp/rules.md, paste into any AI chat
+```
+
+To inspect available stacks and rules:
+
+```bash
+aitk gov list                       # formatted catalog
+aitk gov list --json                # machine-readable, for skills and scripts
+aitk gov list --stacks              # stacks only
 ```
 
 `aitk claude prompt` uses the same underlying logic from `scripts/lib/gov.sh` to inject rules into IMPLEMENTER.md.

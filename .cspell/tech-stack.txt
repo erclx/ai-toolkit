@@ -26,6 +26,7 @@ pydantic
 pyproject
 sidepanel
 pytest
+rlength
 statusline
 tabindex
 tanstack
