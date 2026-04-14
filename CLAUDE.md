@@ -2,7 +2,7 @@
 
 CLI toolkit for managing AI workflows, developer standards, and project tooling across repositories.
 
-## Behaviour
+## Behavior
 
 - Plan before editing: propose what files will change and why before touching anything
 - Confirm with the user before making any edits

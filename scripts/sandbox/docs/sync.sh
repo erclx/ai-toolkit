@@ -82,7 +82,7 @@ EOF
     git add . && git commit -m "test(server): add unit tests for start function" -q
 
     log_step "Scenario ready: no-op"
-    log_info "Context: test file added, no changes to public API or user-facing behaviour"
+    log_info "Context: test file added, no changes to public API or user-facing behavior"
     log_info "Action:  gemini docs:sync"
     log_info "Expect:  preview shows Files: None, no documentation updates required"
     ;;
