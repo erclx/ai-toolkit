@@ -57,6 +57,10 @@ Run these commands in parallel:
 
 **All <total> commits accounted for.**
 
+If Mode is Stacked, append this line to the preview:
+
+`⚠️ Merge these PRs with **Rebase and merge** on GitHub. Squash-merge rewrites SHAs and will cause add/add conflicts on every downstream PR.`
+
 After outputting the preview, execute the final commands immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
 ### Final commands
