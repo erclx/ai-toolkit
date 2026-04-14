@@ -2,6 +2,8 @@
 
 CLI toolkit for managing governance rules, tooling configs, and developer standards across projects.
 
+Designed for agent consumption. Every command has a non-interactive mode and a catalog view, so Claude Code skills and other agents can orchestrate the toolkit as well as humans can.
+
 ## Installation
 
 ```bash
@@ -28,11 +30,12 @@ Run `aitk` from the repo root.
 
 ### Governance
 
-| Command                           | Description                                            |
-| --------------------------------- | ------------------------------------------------------ |
-| `aitk gov install [stack] [path]` | Bootstrap rules for a stack into a project             |
-| `aitk gov sync [path]`            | Update existing rules in a project                     |
-| `aitk gov build [path]`           | Concatenate installed rules into .cursor/.tmp/rules.md |
+| Command                                         | Description                                            |
+| ----------------------------------------------- | ------------------------------------------------------ |
+| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a project             |
+| `aitk gov sync [path]`                          | Update existing rules in a project                     |
+| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/rules.md |
+| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                       |
 
 ### Standards
 

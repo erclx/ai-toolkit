@@ -2,6 +2,17 @@
 
 CLI toolkit for managing AI workflows, developer standards, and project tooling across repositories.
 
+## Design principles
+
+The toolkit is agent-first. Every surface is designed so a Claude Code skill or other agent can orchestrate it as well as a human. When adding or changing a CLI command, verify each of these holds. See `.claude/ARCHITECTURE.md` for the patterns that implement each principle.
+
+- Every command has a non-interactive path via args or `AITK_NON_INTERACTIVE=1`. Never require a TTY.
+- Data goes to stdout. UI and logs go to stderr. JSON output must pipe clean through any wrapper.
+- Every domain has a `list` command with `--json` so skills read catalogs at runtime. Never hardcode names in skills.
+- Extend existing commands with flags over creating bespoke variants. Prefer `--add` and similar composition over stack explosion.
+- The toolkit is the source of truth. Authoring happens here, target projects consume via install and sync.
+- Skills detect and call the CLI. They do not reimplement CLI logic.
+
 ## Behavior
 
 - Plan before editing: propose what files will change and why before touching anything
