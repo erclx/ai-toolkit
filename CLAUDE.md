@@ -63,6 +63,12 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 - When a snippet is referenced with `@`, execute its instructions immediately using available session context
 
+## Tasks
+
+- Only create a task in `.claude/TASKS.md` for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
+- Do not add tasks retroactively for work already completed. Completed work is visible in git.
+- When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. Delete the plan when the task ships.
+
 ## Memory
 
 - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
