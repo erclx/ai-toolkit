@@ -2,7 +2,6 @@ agentic
 automatable
 aitk
 arch
-behaviour
 bradlc
 bunx
 changelog
