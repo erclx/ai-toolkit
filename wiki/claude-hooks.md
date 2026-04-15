@@ -6,11 +6,32 @@ Configure hooks in `settings.json` under the `hooks` key. Project-level hooks go
 
 ## Key events
 
+Tool lifecycle:
+
 - `PreToolUse`: fires before a tool call. Can block the action or modify the tool input
-- `PostToolUse`: fires after a tool call succeeds. Cannot undo the action, but can inject feedback to Claude
-- `UserPromptSubmit`: fires when the user submits a prompt. Can block or inject additional context
-- `Stop`: fires when Claude finishes a response. Can block completion to keep Claude working
-- `SessionStart`: fires when a session starts or resumes. Useful for loading environment variables
+- `PostToolUse`: fires after a tool call succeeds. Cannot undo, but can inject feedback to Claude
+- `PostToolUseFailure`: fires when a tool execution fails
+- `PermissionRequest`: fires when a permission dialog is about to show. Does not run in non-interactive mode
+- `PermissionDenied`: fires when the auto-mode classifier denies a tool call
+
+Session and turn lifecycle:
+
+- `SessionStart` / `SessionEnd`: fires when a session begins, resumes, or terminates
+- `UserPromptSubmit`: fires when the user submits a prompt. Can block or inject context
+- `Stop` / `StopFailure`: fires when Claude finishes a response, or when a turn ends due to API error. `Stop` can block completion to keep Claude working
+- `PreCompact` / `PostCompact`: fires around context compaction
+
+Subagents and tasks:
+
+- `SubagentStart` / `SubagentStop`: fires when a subagent spawns and finishes
+- `TaskCreated` / `TaskCompleted`: fires around `TaskCreate` calls
+
+Environment and watching:
+
+- `InstructionsLoaded`: fires when a `CLAUDE.md` or `.claude/rules/*.md` loads
+- `ConfigChange`, `CwdChanged`, `FileChanged`: fire on config/working-directory/file changes
+- `WorktreeCreate` / `WorktreeRemove`: fire around worktree lifecycle
+- `Notification`, `TeammateIdle`, `Elicitation`, `ElicitationResult`: niche events for notifications, agent teams, and MCP elicitation
 
 ## Configuration
 
@@ -74,5 +95,6 @@ Multiple matching hooks run in parallel. When hooks conflict, the most restricti
 
 - Deny rules in settings always win. A hook cannot grant permissions that a deny rule blocks
 - `PostToolUse` cannot prevent the action. The tool has already run
-- Use `PreToolUse` for automated decisions in non-interactive (`-p`) mode, not `PermissionRequest`
+- `PermissionRequest` does not fire in non-interactive (`-p`) mode. Use `PreToolUse` for automated decisions there
+- Hook entries support `if`, `timeout`, `async`, and `once` fields. `if` filters by permission rule pattern so the hook only spawns for matching tool calls
 - Shell profile side effects (like `echo` in `~/.zshrc`) can corrupt hook JSON. Guard interactive-only output with `if [[ $- == *i* ]]`

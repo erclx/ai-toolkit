@@ -10,6 +10,8 @@ Auto-triggering is the default. Claude loads a skill when it matches the current
 
 Skill descriptions load into context at session start so Claude knows what is available. Full skill content loads only when the skill is invoked.
 
+The combined `description` plus `when_to_use` text is capped at 1,536 characters per skill in the listing. Front-load the key use case so it survives truncation. The total budget across all skills scales to about 1% of the context window. Override with the `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable.
+
 ## Installation locations
 
 Skills are discovered from multiple locations. Higher priority wins when names conflict:
@@ -23,22 +25,49 @@ Nested `.claude/skills/` directories in subdirectories are discovered automatica
 
 ## Frontmatter
 
+All fields are optional. Only `description` is recommended.
+
 ```yaml
 ---
 name: skill-name
 description: what it does and when Claude should use it
-disable-model-invocation: true # user-invoked only
-allowed-tools: Read, Grep, Glob # restrict tool access
+when_to_use: extra trigger context appended to description
+argument-hint: '[issue-number]'
+disable-model-invocation: true # only the user can invoke
+user-invocable: false # only Claude can invoke
+allowed-tools: Read Grep Glob # pre-approve tools while skill is active
+model: claude-opus-4-6 # override session model
+effort: high # override session effort level
+context: fork # run as a forked subagent
+agent: Explore # subagent type when context: fork
+hooks: ... # skill-scoped hooks
+paths: 'src/api/**/*.ts' # auto-load only when matching files are in scope
+shell: bash # shell for inline `!command` blocks
 ---
 ```
 
-The `description` field is critical. Claude routes based on it alone when deciding whether to auto-trigger.
+The `description` field drives auto-trigger routing. Strengthen it with `when_to_use` for trigger phrases.
+
+### String substitutions
+
+Skill content supports placeholders that are substituted before Claude sees the prompt.
+
+- `$ARGUMENTS`: full argument string passed after the slash command
+- `$ARGUMENTS[N]` or `$N`: positional argument by zero-based index
+- `${CLAUDE_SESSION_ID}`: current session ID
+- `${CLAUDE_SKILL_DIR}`: directory containing this `SKILL.md`. Useful for referencing bundled scripts
+
+Shell-execution blocks run at render time, so Claude sees the output rather than the command. Use `` !`command` `` for inline calls or open a fenced block with ` ```! ` for multi-line scripts. Disable shell execution with `disableSkillShellExecution: true` in settings.
 
 ## Plugins
 
 A plugin is a packaged distribution of skills, hooks, agents, and MCP servers. Plugins live in their own directory with a `plugin.json` manifest and namespace their components to prevent conflicts.
 
-Install plugins via `/plugin` or by referencing them in settings. Use `/reload-plugins` to pick up changes after updates.
+Browse marketplaces with `/plugin`. Install with `/plugin install <name>@<marketplace>` or by listing them under `enabledPlugins` in settings. Use `/reload-plugins` to pick up changes after updates.
+
+Marketplace plugins are cached under `~/.claude/plugins/cache/`. Skill discovery follows symlinks but does not traverse outside the plugin root.
+
+Tune skill listing visibility with `skillOverrides` in settings. Each entry is one of `on` (default), `name-only` (hide the description), `user-invocable-only` (hide from Claude but keep `/name`), or `off`.
 
 Plugin structure:
 
