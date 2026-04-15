@@ -2,6 +2,8 @@
 
 Track what is being built and why, at the level of features and outcomes. No code-level steps or technical decisions. Those live in `ARCHITECTURE.md`. Update this doc whenever a task is started, completed, or scope changes.
 
+When a task needs execution detail beyond this board, link to a plan in `.claude/plans/` from the task block's intro paragraph. Delete the plan when the task ships.
+
 What belongs:
 
 - Task entries describing observable behavior: short bullet per item, one outcome per line
