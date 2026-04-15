@@ -47,16 +47,6 @@ Sandbox `infra/*` scripts already route via `SANDBOX_SCENARIO`, but `git/*`, `de
 
 > Test strategy: manual, run each multi-scenario script with `aitk sandbox <cat>:<cmd> <scenario>` and verify the matching setup runs without TTY input.
 
-### Catalog emitters for other domains
-
-Unlocks the detect-pick-execute skill pattern (proven by `gov-install`) for snippets, tooling, and standards. Each emitter is a thin `list.sh` mirroring `scripts/gov/list.sh` with the domain's own catalog files.
-
-- [ ] `aitk snippets list` emits available snippet categories and entries with `--json` support
-- [ ] `aitk tooling list` emits available stacks with extends chain and dep summary, with `--json` support
-- [ ] `aitk standards list` emits available standards with descriptions and `--json` support
-
-> Test strategy: manual, run each with and without `--json`, parse JSON output via bun and confirm stacks and entries match source files.
-
 ### Init-project skill for one-shot toolkit setup
 
 Orchestrates the onboarding chain so a freshly scaffolded project is toolkit-ready in a single skill invocation. Pairs with `gov-install` which handles the governance leg. Skill detects package manager and tech, then chains the toolkit installers with sensible defaults.

@@ -16,6 +16,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    install   ${GREY}# Copy all standards into a project (overwrites)${NC}"
   echo -e "${GREY}│${NC}    sync      ${GREY}# Update standards already present in a project${NC}"
+  echo -e "${GREY}│${NC}    list      ${GREY}# List available standards with descriptions${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
@@ -197,7 +198,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Standards command?" "install" "sync"
+    select_option "Standards command?" "install" "sync" "list"
     command="$SELECTED_OPTION"
   else
     shift
@@ -210,8 +211,11 @@ main() {
   sync)
     cmd_sync "$@"
     ;;
+  list)
+    exec "$PROJECT_ROOT/scripts/standards/list.sh" "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'install', 'sync', or --help."
+    log_error "Unknown command: $command. Use 'install', 'sync', 'list', or --help."
     ;;
   esac
 }

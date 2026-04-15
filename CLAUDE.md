@@ -38,7 +38,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 | Modifying `tooling/`, manifests, golden configs, seeds                 | `aitk-tooling`     |
 | Modifying `standards/`, `docs/`                                        | `aitk-standards`   |
 | Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance`  |
-| Modifying `snippets/`, `snippets.toml`                                 | `aitk-snippets`    |
+| Modifying `snippets/`                                                  | `aitk-snippets`    |
 | Modifying `prompts/`                                                   | `aitk-prompts`     |
 | Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`      |
 | Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`      |

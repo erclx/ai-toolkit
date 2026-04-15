@@ -43,6 +43,7 @@ Run `aitk` from the repo root.
 | ------------------------------- | ------------------------------ |
 | `aitk standards install [path]` | Install standards to a project |
 | `aitk standards sync [path]`    | Sync standards to a project    |
+| `aitk standards list [--json]`  | Emit catalog of standards      |
 
 ### Antigravity
 
@@ -53,11 +54,12 @@ Run `aitk` from the repo root.
 
 ### Snippets
 
-| Command                                   | Description                              |
-| ----------------------------------------- | ---------------------------------------- |
-| `aitk snippets install [category] [path]` | Install snippets for a category          |
-| `aitk snippets sync [path]`               | Sync snippets already present in project |
-| `aitk snippets create`                    | Create a new snippet and register it     |
+| Command                                                 | Description                              |
+| ------------------------------------------------------- | ---------------------------------------- |
+| `aitk snippets install [category] [path]`               | Install snippets for a category          |
+| `aitk snippets sync [path]`                             | Sync snippets already present in project |
+| `aitk snippets create`                                  | Create a new snippet and register it     |
+| `aitk snippets list [--categories\|--entries] [--json]` | Emit catalog of categories and entries   |
 
 ### Prompts
 
@@ -79,6 +81,7 @@ Run `aitk` from the repo root.
 | `aitk tooling [stack] [path]`     | Sync configs, seeds, deps, and .gitignore for a stack |
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents       |
 | `aitk tooling create`             | Create a new stack with stub manifest and reference   |
+| `aitk tooling list [--json]`      | Emit catalog of stacks with extends and dep summary   |
 
 ### Claude
 

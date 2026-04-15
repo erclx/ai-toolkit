@@ -25,12 +25,13 @@ EOF
   log_info "sync   — syncs configs, seeds, deps, and gitignore for a stack"
   log_info "ref    — drops reference docs only"
   log_info "create — creates a new stack stub"
+  log_info "list   — read-only catalog dump, no target needed"
 
   local scenario="${SANDBOX_SCENARIO:-}"
   if [ -n "$scenario" ]; then
     SELECTED_OPTION="$scenario"
   else
-    select_option "Which scenario?" "sync" "ref" "create"
+    select_option "Which scenario?" "sync" "ref" "create" "list"
   fi
 
   case "$SELECTED_OPTION" in
@@ -45,6 +46,10 @@ EOF
   "create")
     log_step "Running: aitk tooling create"
     exec "$PROJECT_ROOT/scripts/tooling/create.sh"
+    ;;
+  "list")
+    log_step "Running: aitk tooling list"
+    exec "$PROJECT_ROOT/scripts/tooling/list.sh"
     ;;
   esac
 }

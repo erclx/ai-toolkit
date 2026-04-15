@@ -28,7 +28,7 @@ Each domain exposes a `list` command that dumps its catalog in human and machine
 - JSON emitted manually, no `jq` dependency
 - Frontmatter parsing via `awk` in the script. Avoid sourcing a shared parser until a second domain needs it.
 
-Other domains without `list` yet: snippets, tooling, standards, prompts. See `.claude/TASKS.md`.
+Other domains without `list` yet: prompts. See `.claude/TASKS.md`.
 
 ## Composable flags over bespoke stacks
 

@@ -16,6 +16,7 @@ show_help() {
   echo -e "${GREY}│${NC}    install [category] [path]   ${GREY}# Copy slugs for a category to a project${NC}"
   echo -e "${GREY}│${NC}    sync [path]                 ${GREY}# Update snippets already present in target${NC}"
   echo -e "${GREY}│${NC}    create                      ${GREY}# Create a new snippet and register it${NC}"
+  echo -e "${GREY}│${NC}    list [options]              ${GREY}# List available categories and entries${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
@@ -35,7 +36,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Snippets command?" "install" "sync" "create"
+    select_option "Snippets command?" "install" "sync" "create" "list"
     command="$SELECTED_OPTION"
   else
     shift
@@ -51,8 +52,11 @@ main() {
   create)
     exec "$PROJECT_ROOT/scripts/snippets/create.sh" "$@"
     ;;
+  list)
+    exec "$PROJECT_ROOT/scripts/snippets/list.sh" "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'install', 'sync', 'create', or --help."
+    log_error "Unknown command: $command. Use 'install', 'sync', 'create', 'list', or --help."
     ;;
   esac
 }
