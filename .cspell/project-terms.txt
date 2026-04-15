@@ -1,6 +1,7 @@
 agentic
 automatable
 aitk
+anthropics
 arch
 bradlc
 bunx
@@ -22,6 +23,8 @@ geminiignore
 gtest
 headerless
 heredocs
+hesreallyhim
+hookify
 invokable
 jsdom
 lintstagedrc
@@ -29,8 +32,10 @@ lockfiles
 logicgate
 mkhl
 navigations
+obra
 oneline
 parallelizable
+pentesting
 pipefail
 powerup
 promptname
@@ -52,6 +57,7 @@ subdirs
 subfolders
 timonwong
 toolname
+trailofbits
 ultraplan
 unmatch
 unrequested
@@ -59,6 +65,7 @@ vitejs
 wireframes
 worktree
 worktrees
+wshobson
 xclip
 xsel
 yolo
