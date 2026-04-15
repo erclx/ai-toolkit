@@ -37,16 +37,6 @@ Task block format:
 
 ## Up next
 
-### Non-interactive scenario routing across all sandbox scripts
-
-Sandbox `infra/*` scripts already route via `SANDBOX_SCENARIO`, but `git/*`, `dev/*`, and `docs/*` rely on `select_option`'s first-option fallback when non-interactive. This blocks agents from triggering specific scenarios automatically (e.g. running `stacked` after a `git-split` skill change). Adding a `select_or_route_scenario` helper to `lib/ui.sh` and switching multi-scenario scripts over keeps the change DRY.
-
-- [ ] Every multi-scenario sandbox script routes to the named scenario when `SANDBOX_SCENARIO` is set
-- [ ] `aitk sandbox <category>:<command> <scenario>` provisions the right scenario without prompts
-- [ ] Single-scenario scripts unchanged
-
-> Test strategy: manual, run each multi-scenario script with `aitk sandbox <cat>:<cmd> <scenario>` and verify the matching setup runs without TTY input.
-
 ### Init-project skill for one-shot toolkit setup
 
 Orchestrates the onboarding chain so a freshly scaffolded project is toolkit-ready in a single skill invocation. Pairs with `gov-install` which handles the governance leg. Skill detects package manager and tech, then chains the toolkit installers with sensible defaults.

@@ -13,7 +13,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_option "Which scenario?" "independent" "stacked"
+  select_or_route_scenario "Which scenario?" "independent" "stacked"
 
   log_step "Configuring split environment ($ANCHOR_REPO)"
 
@@ -82,6 +82,9 @@ EOF
     log_info "Context: logger -> payments -> refactor-using-logger (refactor depends on both prior groups)"
     log_info "Action:  gemini git:split"
     log_info "Expect:  Stacked mode; 3 stacked branches/PRs; merge-loop instructions in response"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

@@ -29,13 +29,13 @@ scripts/sandbox/
 │   ├── pr.sh          ← PR description scenario for testing /git:pr
 │   ├── stage.sh       ← staged changes scenario for testing /git:stage
 │   ├── split.sh       ← scenarios for /git:split (independent, stacked)
-│   └── ship.sh        ← full post-feature workflow scenario for testing /git:ship
+│   └── ship.sh        ← scenarios for /git:ship (without-changelog, with-changelog)
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment
-│   └── review.sh      ← scenarios for /dev:review (branch diff, pasted response)
+│   └── review.sh      ← scenarios for /dev:review (args, branch-diff)
 ├── docs/
-│   └── sync.sh        ← scenarios for /docs:sync (API drift, internal change, no-op)
+│   └── sync.sh        ← scenarios for /docs:sync (feature, chore, noop)
 └── release/
     └── changelog.sh   ← commit history scenario for testing /release:changelog
 ```
@@ -51,7 +51,7 @@ aitk sandbox reset                  # restore sandbox to baseline
 aitk sandbox clean                  # wipe sandbox entirely
 ```
 
-When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Infra scenario scripts read `SANDBOX_SCENARIO` to skip the picker and route directly to the named scenario. Skip `create` scenarios. They require user input with no default and loop on empty input.
+When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Multi-scenario scripts call `select_or_route_scenario` from `lib/ui.sh`, which reads `SANDBOX_SCENARIO` and skips the picker when set. Passing a scenario name that does not match any option aborts with an `Unknown scenario` error. Skip `create` scenarios. They require user input with no default and loop on empty input.
 
 After provisioning, your terminal cwd may need a refresh. Add this to `.zshrc` or `.bashrc`:
 

@@ -102,12 +102,13 @@ Run `aitk` from the repo root.
 
 ### Sandbox
 
-| Command                  | Description                                  |
-| ------------------------ | -------------------------------------------- |
-| `aitk sandbox`           | Interactive scenario picker                  |
-| `aitk sandbox [cat:cmd]` | Provision and run specific sandbox scenarios |
-| `aitk sandbox reset`     | Restore sandbox to baseline                  |
-| `aitk sandbox clean`     | Wipe sandbox                                 |
+| Command                             | Description                                                 |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `aitk sandbox`                      | Interactive scenario picker                                 |
+| `aitk sandbox [cat:cmd]`            | Provision a sandbox scenario with interactive scenario pick |
+| `aitk sandbox [cat:cmd] <scenario>` | Provision a specific scenario without prompts               |
+| `aitk sandbox reset`                | Restore sandbox to baseline                                 |
+| `aitk sandbox clean`                | Wipe sandbox                                                |
 
 See [`docs/`](docs/) for full documentation.
 

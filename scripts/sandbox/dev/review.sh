@@ -5,10 +5,10 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 stage_setup() {
-  select_option "Which scenario?" "Args mode (pasted response)" "Branch diff mode (vs main)"
+  select_or_route_scenario "Which scenario?" "args" "branch-diff"
 
   case "$SELECTED_OPTION" in
-  "Args mode (pasted response)")
+  "args")
     mkdir -p src/api
 
     cat <<'EOF' >mock-response.md
@@ -55,7 +55,7 @@ EOF
     log_info "Expect:  findings report grouping bugs by severity across src/api/users.ts"
     ;;
 
-  "Branch diff mode (vs main)")
+  "branch-diff")
     mkdir -p src/api
 
     git checkout -b feat/orders >/dev/null 2>&1
@@ -86,6 +86,9 @@ EOF
     log_info "Context: on feat/orders, one commit ahead of main with three reviewable bugs"
     log_info "Action:  gemini dev:review"
     log_info "Expect:  findings report against branch diff — no args needed"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

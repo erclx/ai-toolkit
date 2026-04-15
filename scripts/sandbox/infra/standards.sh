@@ -30,12 +30,7 @@ stage_setup() {
   log_info "sync/    — stale standards/ present"
   log_info "list     — read-only catalog dump, no target needed"
 
-  local scenario="${SANDBOX_SCENARIO:-}"
-  if [ -n "$scenario" ]; then
-    SELECTED_OPTION="$scenario"
-  else
-    select_option "Which scenario?" "install" "sync" "list"
-  fi
+  select_or_route_scenario "Which scenario?" "install" "sync" "list"
 
   case "$SELECTED_OPTION" in
   "install")
@@ -49,6 +44,9 @@ stage_setup() {
   "list")
     log_step "Running: aitk standards list"
     exec "$PROJECT_ROOT/scripts/standards/list.sh"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

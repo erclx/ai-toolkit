@@ -38,12 +38,7 @@ stage_setup() {
   log_info "build/   — full .cursor/rules/ present, generates .cursor/.tmp/rules.md"
   log_info "list     — read-only catalog dump, no target needed"
 
-  local scenario="${SANDBOX_SCENARIO:-}"
-  if [ -n "$scenario" ]; then
-    SELECTED_OPTION="$scenario"
-  else
-    select_option "Which scenario?" "install" "sync" "build" "list"
-  fi
+  select_or_route_scenario "Which scenario?" "install" "sync" "build" "list"
 
   case "$SELECTED_OPTION" in
   "install")
@@ -61,6 +56,9 @@ stage_setup() {
   "list")
     log_step "Running: aitk gov list"
     exec "$PROJECT_ROOT/scripts/gov/list.sh"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

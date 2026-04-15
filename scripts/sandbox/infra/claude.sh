@@ -30,12 +30,7 @@ EOF
   log_info "gov    — builds .claude/GOV.md from installed rules"
   log_info "setup  — installs user-level config to ~/.claude/"
 
-  local scenario="${SANDBOX_SCENARIO:-}"
-  if [ -n "$scenario" ]; then
-    SELECTED_OPTION="$scenario"
-  else
-    select_option "Which scenario?" "init" "roles" "sync" "prompt" "gov"
-  fi
+  select_or_route_scenario "Which scenario?" "init" "roles" "sync" "prompt" "gov" "setup"
 
   case "$SELECTED_OPTION" in
   "init")
@@ -67,6 +62,9 @@ EOF
   "setup")
     log_step "Running: aitk claude setup"
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" setup
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

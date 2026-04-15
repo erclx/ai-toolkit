@@ -85,6 +85,21 @@ ask() {
   export "$var_name"="$input"
 }
 
+select_or_route_scenario() {
+  local prompt_text=$1
+  shift
+  local options=("$@")
+
+  if [ -n "${SANDBOX_SCENARIO:-}" ]; then
+    echo -e "${GREY}│${NC}" >&2
+    echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${SANDBOX_SCENARIO}${NC}" >&2
+    export SELECTED_OPTION="$SANDBOX_SCENARIO"
+    return
+  fi
+
+  select_option "$prompt_text" "${options[@]}"
+}
+
 select_option() {
   local prompt_text=$1
   shift

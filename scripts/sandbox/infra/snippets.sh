@@ -33,12 +33,7 @@ stage_setup() {
   log_info "create   — runs against toolkit source directly"
   log_info "list     — read-only catalog dump, no target needed"
 
-  local scenario="${SANDBOX_SCENARIO:-}"
-  if [ -n "$scenario" ]; then
-    SELECTED_OPTION="$scenario"
-  else
-    select_option "Which scenario?" "install" "sync" "create" "list"
-  fi
+  select_or_route_scenario "Which scenario?" "install" "sync" "create" "list"
 
   case "$SELECTED_OPTION" in
   "install")
@@ -56,6 +51,9 @@ stage_setup() {
   "list")
     log_step "Running: aitk snippets list"
     exec "$PROJECT_ROOT/scripts/snippets/list.sh"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }
