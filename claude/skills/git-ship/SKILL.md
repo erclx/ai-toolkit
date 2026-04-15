@@ -14,11 +14,12 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 
 ## Sequence
 
-1. Invoke `toolkit:docs-sync` to sync docs against changes since main
-2. Run `git add -A` to stage any files docs-sync wrote
-3. Invoke `toolkit:git-stage` to group staged changes and commit by concern
-4. Invoke `toolkit:git-branch` to rename branch to match conventional format
-5. Invoke `toolkit:git-pr` to push branch and open pull request
+1. Invoke `toolkit:claude-docs` to sync internal planning docs against session decisions
+2. Invoke `toolkit:docs-sync` to sync public docs against changes since main
+3. Run `git add -A` to stage any files the sync skills wrote
+4. Invoke `toolkit:git-stage` to group staged changes and commit by concern
+5. Invoke `toolkit:git-branch` to rename branch to match conventional format
+6. Invoke `toolkit:git-pr` to push branch and open pull request
 
 ## After completion
 

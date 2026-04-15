@@ -14,11 +14,12 @@ Run the full post-feature workflow by invoking each step in sequence. After each
 
 ## Sequence
 
-2. Run the `/docs-sync` workflow to sync docs against changes since main
-3. Run `git add -A` to stage any files docs-sync wrote
-4. Run the `/git-stage` workflow to group staged changes and commit by concern
-5. Run the `/git-branch` workflow to rename branch to match conventional format
-6. Run the `/git-pr` workflow to push branch and open pull request
+2. Run the `/claude-docs` workflow to sync internal planning docs against session decisions
+3. Run the `/docs-sync` workflow to sync public docs against changes since main
+4. Run `git add -A` to stage any files the sync workflows wrote
+5. Run the `/git-stage` workflow to group staged changes and commit by concern
+6. Run the `/git-branch` workflow to rename branch to match conventional format
+7. Run the `/git-pr` workflow to push branch and open pull request
 
 ## After completion
 
