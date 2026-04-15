@@ -31,12 +31,13 @@ stage_setup() {
   log_info "install/ — clean target, no snippets present"
   log_info "sync/    — stale snippets/ present"
   log_info "create   — runs against toolkit source directly"
+  log_info "list     — read-only catalog dump, no target needed"
 
   local scenario="${SANDBOX_SCENARIO:-}"
   if [ -n "$scenario" ]; then
     SELECTED_OPTION="$scenario"
   else
-    select_option "Which scenario?" "install" "sync" "create"
+    select_option "Which scenario?" "install" "sync" "create" "list"
   fi
 
   case "$SELECTED_OPTION" in
@@ -51,6 +52,10 @@ stage_setup() {
   "create")
     log_step "Running: aitk snippets create"
     exec "$PROJECT_ROOT/scripts/snippets/create.sh"
+    ;;
+  "list")
+    log_step "Running: aitk snippets list"
+    exec "$PROJECT_ROOT/scripts/snippets/list.sh"
     ;;
   esac
 }

@@ -47,13 +47,14 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 
 ## CLI
 
-| Command                                   | Description                                                        |
-| ----------------------------------------- | ------------------------------------------------------------------ |
-| `aitk snippets install [category] [path]` | Copy slugs for a category into a project, use `all` for everything |
-| `aitk snippets sync [path]`               | Update snippets already present (never adds new)                   |
-| `aitk snippets create`                    | Create a new snippet file in the correct category folder           |
+| Command                                                 | Description                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------ |
+| `aitk snippets install [category] [path]`               | Copy slugs for a category into a project, use `all` for everything |
+| `aitk snippets sync [path]`                             | Update snippets already present (never adds new)                   |
+| `aitk snippets create`                                  | Create a new snippet file in the correct category folder           |
+| `aitk snippets list [--categories\|--entries] [--json]` | Emit catalog of categories and entries                             |
 
-`aitk snippets` with no args shows a picker: `install`, `sync`, or `create`.
+`aitk snippets` with no args shows a picker: `install`, `sync`, `create`, or `list`.
 
 ## Workflow
 

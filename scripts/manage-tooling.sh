@@ -15,6 +15,7 @@ show_help() {
   echo -e "${GREY}│${NC}    sync      ${GREY}# Sync configs, seeds, deps, and references (default)${NC}"
   echo -e "${GREY}│${NC}    ref       ${GREY}# Drop reference docs only, no config changes${NC}"
   echo -e "${GREY}│${NC}    create    ${GREY}# Create a new stack with stub manifest and reference${NC}"
+  echo -e "${GREY}│${NC}    list      ${GREY}# List available stacks with extends chain and dep summary${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack         Name of the tooling stack (e.g., base, vite-react)"
@@ -43,7 +44,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Tooling command?" "sync" "ref" "create"
+    select_option "Tooling command?" "sync" "ref" "create" "list"
     command="$SELECTED_OPTION"
   else
     shift
@@ -59,8 +60,11 @@ main() {
   create)
     exec "$PROJECT_ROOT/scripts/tooling/create.sh" "$@"
     ;;
+  list)
+    exec "$PROJECT_ROOT/scripts/tooling/list.sh" "$@"
+    ;;
   *)
-    log_error "Unknown command: $command. Use 'sync', 'ref', 'create', or --help."
+    log_error "Unknown command: $command. Use 'sync', 'ref', 'create', 'list', or --help."
     ;;
   esac
 }

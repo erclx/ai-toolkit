@@ -87,6 +87,7 @@ packages = []
 | `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                                         |
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                                    |
 | `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation) |
+| `aitk tooling list [--json]`      | Emit catalog of stacks with extends chain and dep summary                          |
 
 ## Common workflows
 

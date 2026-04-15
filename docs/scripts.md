@@ -50,11 +50,15 @@ scripts/
 ├── tooling/
 │   ├── sync.sh          ← full tooling sync: configs, seeds, deps, scripts, gitignore
 │   ├── ref.sh           ← drops reference docs only
-│   └── create.sh        ← creates new stack stub
+│   ├── create.sh        ← creates new stack stub
+│   └── list.sh          ← emits catalog of stacks with extends chain and dep summary, supports --json
 ├── snippets/
 │   ├── install.sh       ← copies snippets for a category into a target project, preserving folder structure
 │   ├── sync.sh          ← diffs and updates snippets already present in target
-│   └── create.sh        ← creates a new snippet file in the correct category folder
+│   ├── create.sh        ← creates a new snippet file in the correct category folder
+│   └── list.sh          ← emits catalog of categories and entries, supports --json
+├── standards/
+│   └── list.sh          ← emits catalog of standards with descriptions, supports --json
 ├── prompts/
 │   ├── install.sh       ← copies prompts for a category into a target project
 │   └── sync.sh          ← diffs and updates prompts already present in target
