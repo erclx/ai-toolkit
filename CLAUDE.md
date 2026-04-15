@@ -23,6 +23,7 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 - After any edit that changes how a domain works, update affected files in `docs/`
 - When updating docs, load `aitk-standards` and follow `standards/prose.md`
 - After editing scripts in a domain that has a sandbox scenario, run `aitk sandbox infra:{domain} install` and `aitk sandbox infra:{domain} sync` to verify. Skip `create` scenarios. They require interactive input and will loop on empty input.
+- When a domain has a `create` command (`aitk tooling create`, `aitk snippets create`), invoke it rather than hand-creating the folder structure. Pass inputs as args and prefix with `AITK_NON_INTERACTIVE=1` when no prompting is needed.
 - For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
 - Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
