@@ -37,6 +37,26 @@ Task block format:
 
 ## Up next
 
+### Systematic debugging skill for root-cause enforcement
+
+Adapt the root-cause-first pattern from `obra/superpowers` into a toolkit-native skill that auto-triggers on bug reports and test failures. Forces a brief investigation loop before Claude proposes a fix, and demands an architectural rethink after three failed attempts. See `.claude/plans/systematic-debugging-skill.md` for scope decisions and execution steps.
+
+- [ ] Outcome: when a test fails or a bug surfaces mid-session, Claude states a hypothesis and tests one variable before drafting a fix
+- [ ] Outcome: after three failed fix attempts the skill stops further fixes and prompts for architectural review
+- [ ] Outcome: the trigger does not fire on trivial edits where no failure has been observed
+
+> Test strategy: manual, seed a failing test in a sandbox project and verify the skill auto-activates, the hypothesis step is taken, and the three-fix circuit-breaker engages.
+
+### Reconcile overlap across agent documentation surfaces
+
+Each rule or knowledge item should live in exactly one of three surfaces: project instructions, domain-scoped skills, narrative references. Today the same guidance appears in more than one place, creating drift risk as the repo grows. See `.claude/plans/agent-docs-audit.md` for ownership rules and execution steps.
+
+- [ ] Outcome: every agent-facing rule has a single canonical owner and non-canonical mentions become pointers
+- [ ] Outcome: ownership rules are documented in one agent-readable location so future edits know where to place new content
+- [ ] Outcome: the drift-check mechanism is either verified as sufficient or a gap is recorded
+
+> Test strategy: manual, spot-check three previously-duplicated rules and confirm they now appear in one surface with pointers from the others.
+
 ### Init-project skill for one-shot toolkit setup
 
 Orchestrates the onboarding chain so a freshly scaffolded project is toolkit-ready in a single skill invocation. Pairs with `gov-install` which handles the governance leg. Skill detects package manager and tech, then chains the toolkit installers with sensible defaults.
