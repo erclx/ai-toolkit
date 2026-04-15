@@ -21,6 +21,7 @@ claude/
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
 │   ├── gov-install/         ← detect project stack and install matching governance rules
+│   ├── init-project/        ← detect project type and run one-shot `aitk init` with resolved flags
 │   ├── release-changelog/   ← generate changelog entry from commits and staged changes since main
 │   └── session-resume/      ← resume from tracked work and relevant context at session start
 └── .claude-plugin/
@@ -68,6 +69,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-split`         | Split a mixed-commit branch into focused branches and open PRs                     |
 | `git-stage`         | Batch-commit staged files grouped by concern                                       |
 | `gov-install`       | Detect project stack from files and install matching governance rules              |
+| `init-project`      | Detect project type and run one-shot `aitk init` with resolved flags               |
 | `release-changelog` | Generate a changelog entry from commits and staged changes since main              |
 | `git-ship`          | Run the full post-feature workflow in one sequence                                 |
 | `session-resume`    | Resume from tracked work and relevant context at session start                     |

@@ -70,9 +70,11 @@ Run `aitk` from the repo root.
 
 ### Init
 
-| Command            | Description                                               |
-| ------------------ | --------------------------------------------------------- |
-| `aitk init [path]` | Bootstrap a project with base tooling and toolkit domains |
+| Command                    | Description                                               |
+| -------------------------- | --------------------------------------------------------- |
+| `aitk init [path] [flags]` | Bootstrap a project with base tooling and toolkit domains |
+
+Flags: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,prompts,antigravity`, `--skip wiki`. Passing any flag skips the interactive optional-domain picker.
 
 ### Tooling
 
