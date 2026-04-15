@@ -11,6 +11,7 @@ commitlint
 conventionals
 cspell
 dbaeumer
+dontAsk
 e2e
 erclx
 esac
@@ -31,11 +32,13 @@ navigations
 oneline
 parallelizable
 pipefail
+powerup
 promptname
 Pushback
 recompiles
 retargeted
 retargets
+ripgreprc
 sandboxed
 sandboxing
 scannability
@@ -45,6 +48,7 @@ shellcheck
 shfmt
 sonner
 ssot
+subdirs
 subfolders
 timonwong
 toolname
@@ -53,6 +57,8 @@ unmatch
 unrequested
 vitejs
 wireframes
+worktree
+worktrees
 xclip
 xsel
 yolo
