@@ -85,7 +85,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | `aitk-governance` | Load before editing Cursor rules or stack definitions |
 | `aitk-prompts`    | Load before editing system prompt templates           |
 | `aitk-scripts`    | Load before editing scripts or sandbox scenarios      |
-| `aitk-snippets`   | Load before editing snippets or `snippets.toml`       |
+| `aitk-snippets`   | Load before editing snippets                          |
 | `aitk-standards`  | Load before editing standards or docs                 |
 | `aitk-tooling`    | Load before editing tooling stacks or golden configs  |
 
