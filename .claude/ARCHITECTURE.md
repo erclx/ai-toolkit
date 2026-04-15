@@ -6,7 +6,8 @@ Pattern library for how the toolkit implements its agent-first design principles
 
 Every CLI command honors `AITK_NON_INTERACTIVE=1`. The flag short-circuits `select_option` and `ask` in `scripts/lib/ui.sh` to return the first option or the default value, so skills and scripts can call any command without a TTY.
 
-- `scripts/lib/ui.sh:56,95` implement the fallback
+- `scripts/lib/ui.sh:56,110` implement the fallback
+- `select_or_route_scenario` in `scripts/lib/ui.sh` is the deterministic counterpart for sandbox pickers. It reads `SANDBOX_SCENARIO` and skips `select_option` entirely when set. Agents call `aitk sandbox <cat>:<cmd> <scenario>`, which sets the env var and routes to a specific case arm. Unknown scenario names fail fast via a `*) log_error ...` default arm in each script.
 - Sandbox scenarios set both `AITK_NON_INTERACTIVE=1` and `SANDBOX_SCENARIO=<name>` to drive tests deterministically
 - New commands that add pickers must test the non-interactive path
 

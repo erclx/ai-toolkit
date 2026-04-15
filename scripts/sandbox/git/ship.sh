@@ -12,7 +12,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_option "Which scenario?" "without changelog" "with changelog"
+  select_or_route_scenario "Which scenario?" "without-changelog" "with-changelog"
 
   git config user.email "${GITHUB_ORG}@github.com"
   git config user.name "Dev"
@@ -49,7 +49,7 @@ EOF
   echo 'export function register(app) { app.get("/health", () => healthCheck()); }' >src/routes/health.js
 
   case "$SELECTED_OPTION" in
-  "with changelog")
+  "with-changelog")
     printf "# Changelog\n\n## [0.1.0]\n\n- Initial release\n" >CHANGELOG.md
 
     log_step "Scenario ready: with changelog"
@@ -57,11 +57,14 @@ EOF
     log_info "Action:  /git:ship"
     log_info "Expect:  README updated, changes committed, branch renamed, PR opened, changelog appended"
     ;;
-  "without changelog")
+  "without-changelog")
     log_step "Scenario ready: without changelog"
     log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, no CHANGELOG.md"
     log_info "Action:  /git:ship"
     log_info "Expect:  README updated, changes committed, branch renamed, PR opened, changelog step skipped"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

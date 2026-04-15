@@ -27,12 +27,7 @@ EOF
   log_info "create — creates a new stack stub"
   log_info "list   — read-only catalog dump, no target needed"
 
-  local scenario="${SANDBOX_SCENARIO:-}"
-  if [ -n "$scenario" ]; then
-    SELECTED_OPTION="$scenario"
-  else
-    select_option "Which scenario?" "sync" "ref" "create" "list"
-  fi
+  select_or_route_scenario "Which scenario?" "sync" "ref" "create" "list"
 
   case "$SELECTED_OPTION" in
   "sync")
@@ -50,6 +45,9 @@ EOF
   "list")
     log_step "Running: aitk tooling list"
     exec "$PROJECT_ROOT/scripts/tooling/list.sh"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

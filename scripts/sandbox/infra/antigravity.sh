@@ -29,12 +29,7 @@ stage_setup() {
   log_info "install/ — clean target, no workflows present"
   log_info "sync/    — stale workflows/ present"
 
-  local scenario="${SANDBOX_SCENARIO:-}"
-  if [ -n "$scenario" ]; then
-    SELECTED_OPTION="$scenario"
-  else
-    select_option "Which scenario?" "install" "sync"
-  fi
+  select_or_route_scenario "Which scenario?" "install" "sync"
 
   case "$SELECTED_OPTION" in
   "install")
@@ -44,6 +39,9 @@ stage_setup() {
   "sync")
     log_step "Running: aitk antigravity sync"
     exec "$PROJECT_ROOT/scripts/manage-antigravity.sh" sync sync/
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

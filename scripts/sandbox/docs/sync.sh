@@ -7,7 +7,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_option "Which scenario?" "Feature change (API drift)" "Internal change (chore/noise)" "No-op (internal changes only)"
+  select_or_route_scenario "Which scenario?" "feature" "chore" "noop"
 
   mkdir -p src
 
@@ -37,7 +37,7 @@ EOF
   git add . && git commit -m "feat(server): add base config and start function" -q
 
   case "$SELECTED_OPTION" in
-  "Feature change (API drift)")
+  "feature")
     git checkout -b feature/drift -q
 
     cat <<'EOF' >src/server.ts
@@ -53,7 +53,7 @@ EOF
     log_info "Expect:  README updated to reflect port 3000 and debug parameter"
     ;;
 
-  "Internal change (chore/noise)")
+  "chore")
     git checkout -b chore/noise -q
 
     sed -i 's/Starting.../Server is booting up.../g' src/server.ts
@@ -65,7 +65,7 @@ EOF
     log_info "Expect:  no documentation updates required"
     ;;
 
-  "No-op (internal changes only)")
+  "noop")
     git checkout -b test/server-unit-tests -q
 
     mkdir -p src/__tests__
@@ -85,6 +85,9 @@ EOF
     log_info "Context: test file added, no changes to public API or user-facing behavior"
     log_info "Action:  gemini docs:sync"
     log_info "Expect:  preview shows Files: None, no documentation updates required"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

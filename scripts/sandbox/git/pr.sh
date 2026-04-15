@@ -13,7 +13,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_option "Which scenario?" "feature-branch" "draft-guard"
+  select_or_route_scenario "Which scenario?" "feature-branch" "draft-guard"
 
   case "$SELECTED_OPTION" in
   "feature-branch")
@@ -53,6 +53,9 @@ EOF
     log_info "Context: user forgot to run /git:branch before /git:pr"
     log_info "Action:  gemini git:pr"
     log_info "Expect:  guard warning — branch looks unset, run /git:branch first"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
     ;;
   esac
 }

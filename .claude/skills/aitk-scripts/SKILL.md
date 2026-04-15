@@ -29,6 +29,7 @@ description: CLI entry point, bash scripts, sandbox scenarios, and lib functions
 - Each sandbox defines three hooks: `use_config` (flags before provisioning), `use_anchor` (remote repo as base), `stage_setup` (scenario state after provisioning).
 - Only `stage_setup` is required. End it with `log_step` describing what to run and what to expect.
 - Default behavior: no standards, no gov rules, no Gemini settings, auto-commit on. Declare only the flags you need in `use_config`.
+- For multi-scenario scripts, call `select_or_route_scenario "Which scenario?" "a" "b"` instead of `select_option`. It reads `SANDBOX_SCENARIO` to skip the picker when set by `aitk sandbox <cat>:<cmd> <scenario>`. End every scenario `case` with a `*) log_error "Unknown scenario: $SELECTED_OPTION" ;;` arm. Use slug-style scenario names (no spaces) so agents can pass them without quoting.
 
 ## Sync checklist
 
