@@ -22,7 +22,7 @@ claude/
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
 │   ├── gov-install/         ← detect project stack and install matching governance rules
 │   ├── release-changelog/   ← generate changelog entry from commits and staged changes since main
-│   └── session-resume/      ← resume in-progress work from memory at session start
+│   └── session-resume/      ← resume from tracked work and relevant context at session start
 └── .claude-plugin/
     └── plugin.json      ← plugin manifest
 
@@ -70,7 +70,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `gov-install`       | Detect project stack from files and install matching governance rules              |
 | `release-changelog` | Generate a changelog entry from commits and staged changes since main              |
 | `git-ship`          | Run the full post-feature workflow in one sequence                                 |
-| `session-resume`    | Resume in-progress work from memory at session start                               |
+| `session-resume`    | Resume from tracked work and relevant context at session start                     |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-review`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 

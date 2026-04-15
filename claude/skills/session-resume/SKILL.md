@@ -1,28 +1,32 @@
 ---
 name: session-resume
-description: Resumes a previous session by reading memory and summarizing in-progress work. Use when starting a new session, or when asked to "pick up where we left off", "what was I working on", or "resume".
+description: Resumes a previous session by reading tracked work and relevant context. Use when starting a new session, or when asked to "pick up where we left off", "what was I working on", or "resume".
 ---
 
 # Session resume
 
-## Step 1: read memory
+## Step 1: read tracked work
 
-Read `.claude/memory/MEMORY.md`. Then read each memory file it references in parallel.
+Read these from the project root in parallel, skipping any that do not exist:
 
-If `.claude/memory/MEMORY.md` does not exist or has no entries, stop: `✅ No in-progress work found. Start a new task.`
+- `.claude/TASKS.md`: the backlog
+- `.claude/plans/*.md`: execution detail for in-progress tasks
+- `.claude/memory/MEMORY.md` and any memory files relevant to the top backlog item
+
+If all three surfaces are absent or empty, stop: `✅ No tracked work found. Start a new task.`
 
 ## Step 2: summarize
 
-For each memory entry, output:
+Output three sections:
 
-**In progress:** one-line description of the task
-**Context:** one or two sentences on where things stand and what was decided
-**Next action:** the specific thing to do first
+**Up next:** one line per task in `TASKS.md` under "Up next", preserving order.
 
-## Step 3: offer cleanup
+**Active plans:** one line per file in `.claude/plans/`, linking each to its task in `TASKS.md`. Say "None" if empty.
 
-After summarizing, list each entry by number and ask which to remove:
+**Relevant context:** two or three memory entries that inform the top backlog item. Skip if none apply.
 
-`Remove any completed entries? Reply with numbers (e.g. 1, 3) or 'none'.`
+## Step 3: recommend
 
-For each entry the user marks for removal, delete the memory file and remove its line from `MEMORY.md`.
+End with one line: `Start with: <first Up next item>` and note whether it has a linked plan.
+
+Do not offer to remove entries. Task completion moves blocks to `TASKS-ARCHIVE.md` when work ships. Plan files are deleted per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume.
