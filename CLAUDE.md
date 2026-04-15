@@ -27,7 +27,7 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 - For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
 - Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For any navigable markdown folder, add an `index.md` listing each file with a one-line description.
+- For any navigable markdown folder, add an `index.md` listing each file with a one-line description. Exception: scratch folders like `.claude/plans/` and `.claude/review/` where contents change frequently or are gitignored.
 
 ## System overview
 
