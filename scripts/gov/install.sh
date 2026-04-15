@@ -13,18 +13,20 @@ RULES_SOURCE_DIR="$PROJECT_ROOT/governance/rules"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov install [stack] [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov install [stack] [--add rules] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack         Name of the stack to install (e.g., base, node, react)"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
+  echo -e "${GREY}│${NC}    --add rules   ${GREY}# Comma-separated rule names to layer on top of the stack${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    aitk gov install react"
   echo -e "${GREY}│${NC}    aitk gov install node ../my-app"
+  echo -e "${GREY}│${NC}    aitk gov install astro --add 200-react,260-shadcn ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -90,8 +92,30 @@ find_rule_file() {
 }
 
 cmd_install() {
-  local stack="$1"
-  local target="${2:-.}"
+  local stack=""
+  local target="."
+  local add_rules=""
+  local positional=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --add)
+      add_rules="$2"
+      shift 2
+      ;;
+    --add=*)
+      add_rules="${1#--add=}"
+      shift
+      ;;
+    *)
+      positional+=("$1")
+      shift
+      ;;
+    esac
+  done
+
+  stack="${positional[0]:-}"
+  target="${positional[1]:-.}"
 
   if [ -z "$stack" ]; then
     stack=$(select_stack)
@@ -104,12 +128,32 @@ cmd_install() {
   local rules=()
   resolve_rules "$stack" rules
 
+  if [ -n "$add_rules" ]; then
+    local IFS_BACKUP="$IFS"
+    IFS=',' read -ra extras <<<"$add_rules"
+    IFS="$IFS_BACKUP"
+    for extra in "${extras[@]}"; do
+      extra="${extra# }"
+      extra="${extra% }"
+      [ -z "$extra" ] && continue
+      local already=0
+      for r in "${rules[@]}"; do
+        [ "$r" = "$extra" ] && already=1 && break
+      done
+      [ "$already" -eq 0 ] && rules+=("$extra")
+    done
+  fi
+
   if [ "${#rules[@]}" -eq 0 ]; then
     log_warn "No rules defined for stack: $stack"
     exit 0
   fi
 
-  log_step "Resolving stack: $stack"
+  if [ -n "$add_rules" ]; then
+    log_step "Resolving stack: $stack + extras"
+  else
+    log_step "Resolving stack: $stack"
+  fi
 
   local found=()
   local missing=()

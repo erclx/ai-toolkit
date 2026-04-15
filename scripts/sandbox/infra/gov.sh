@@ -36,18 +36,19 @@ stage_setup() {
   log_info "install/ — clean target, no rules present"
   log_info "sync/    — stale .cursor/rules/ present"
   log_info "build/   — full .cursor/rules/ present, generates .cursor/.tmp/rules.md"
+  log_info "list     — read-only catalog dump, no target needed"
 
   local scenario="${SANDBOX_SCENARIO:-}"
   if [ -n "$scenario" ]; then
     SELECTED_OPTION="$scenario"
   else
-    select_option "Which scenario?" "install" "sync" "build"
+    select_option "Which scenario?" "install" "sync" "build" "list"
   fi
 
   case "$SELECTED_OPTION" in
   "install")
-    log_step "Running: aitk gov install"
-    exec "$PROJECT_ROOT/scripts/gov/install.sh" base install/
+    log_step "Running: aitk gov install astro --add 200-react install/"
+    exec "$PROJECT_ROOT/scripts/gov/install.sh" astro --add 200-react install/
     ;;
   "sync")
     log_step "Running: aitk gov sync"
@@ -56,6 +57,10 @@ stage_setup() {
   "build")
     log_step "Running: aitk gov build"
     exec "$PROJECT_ROOT/scripts/gov/build.sh" build/
+    ;;
+  "list")
+    log_step "Running: aitk gov list"
+    exec "$PROJECT_ROOT/scripts/gov/list.sh"
     ;;
   esac
 }

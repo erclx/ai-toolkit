@@ -20,8 +20,8 @@ Optimize for token efficiency and developer experience.
 
 ### File Organization
 
-- Assign numeric prefix matching task category: `000-099` global, `100-199` languages, `200-299` frameworks, `300-399` testing, `400-499` UI, `900-999` workflow.
-- Keep rule files under ~40 lines. Split into separate focused files if larger.
+- Assign numeric prefix matching task category: `000-099` core, `100-199` lang, `200-299` framework, `300-399` lib, `400-499` ui.
+- Keep rule files concise, around 40-50 lines. Split into separate focused files when a rule grows beyond a single domain concern.
 
 ### Rule Content
 
@@ -31,7 +31,7 @@ Optimize for token efficiency and developer experience.
 
 ## OUTPUT FORMAT
 
-**Type A: Global (one per project):**
+**Type A: Global (always-on, no globs):**
 
 ```markdown
 ---
@@ -112,4 +112,4 @@ Before responding, verify:
 - If `alwaysApply: true`, `globs` key is completely absent.
 - `description` is sentence case (first letter capitalized) and mentions specific technologies or concerns for accurate routing.
 - H1 all-caps, H2 sentence case, grouped by domain concern. Do not use flat RULES/CONSTRAINTS.
-- Total output under ~40 lines.
+- Total output around 40-50 lines.
