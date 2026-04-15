@@ -1,6 +1,6 @@
 ---
 name: init-project
-description: Detects a freshly scaffolded project's type and runs `aitk init` with resolved stack, snippets, and opt-in optional domains in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `gov-install` for that.
+description: Detects a new project's type and runs `aitk init` with resolved stack, snippets, and optional domains in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `gov-install` instead.
 ---
 
 # Init project
@@ -30,7 +30,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 ## Resolve arguments
 
 - **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base`.
-- **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `globs` points at that technology and pass it via `--add`. Dedupe against stack rules.
+- **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `globs` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
 - **Snippets:** default to `all`. Narrow only if the user asked for a specific category.
 - **Optional domains (`--with`):**
   - `standards`: include if `docs/`, `standards/`, or `.claude/` already exists in the project
