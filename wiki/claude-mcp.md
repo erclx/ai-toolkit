@@ -53,7 +53,7 @@ Reset project approval choices with `claude mcp reset-project-choices`.
 
 ## Authentication
 
-HTTP servers that require OAuth trigger a browser-based flow automatically. Claude Code handles dynamic client registration by default.
+HTTP servers that require OAuth trigger a browser-based flow automatically. Claude Code handles dynamic client registration by default and supports modern protected-resource metadata (RFC 9728).
 
 For servers with a pre-registered redirect URI, fix the callback port:
 
@@ -67,7 +67,7 @@ To use pre-configured credentials:
 claude mcp add --transport http --client-id your-id --client-secret --callback-port 8080 myserver https://mcp.example.com/mcp
 ```
 
-Use `/mcp` in a session and select a server to authenticate or revoke access.
+Use `/mcp` in a session and select a server to authenticate or revoke access. Servers configured both locally and through claude.ai connectors are deduplicated and the local entry wins.
 
 ## Tool and prompt naming
 
@@ -91,3 +91,18 @@ Type `@` in a prompt to see available resources from connected servers. Resource
 ## /mcp command
 
 Run `/mcp` in a session to list connected servers, authenticate with remote servers, and manage connections. Plugin-provided servers appear here alongside manually configured ones.
+
+## Server-side helpers
+
+Stdio server subprocesses receive these environment variables, useful for routing or telemetry:
+
+- `CLAUDE_CODE_MCP_SERVER_NAME`: the server name as configured
+- `CLAUDE_CODE_MCP_SERVER_URL`: the server URL when applicable
+
+Set `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` to strip the parent shell's environment from spawned subprocesses, leaving only variables explicitly passed via `--env`.
+
+A server can return `_meta["anthropic/maxResultSizeChars"]` on a tool result to override the default cap, up to 500K characters.
+
+## Elicitation
+
+Servers can request structured input from the user mid-task using the MCP elicitation protocol. The `Elicitation` and `ElicitationResult` [hooks](claude-hooks.md) fire around these prompts.

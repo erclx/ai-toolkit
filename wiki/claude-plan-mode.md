@@ -7,17 +7,19 @@ Plan mode tells Claude to research and propose changes without executing them. C
 - Press `Shift+Tab` from default mode
 - Prefix a single prompt with `/plan`
 - Start a session with `claude --permission-mode plan`
+- Set `permissions.defaultMode: "plan"` in settings to start every session in plan mode
 
 ## How it works
 
-In plan mode, Claude reads files without restriction but requires approval for all writes, shell commands, and network requests. When the plan is ready, Claude presents four options:
+In plan mode, Claude reads files without restriction but requires approval for all writes, shell commands, and network requests. When the plan is ready, Claude presents five options:
 
 - Approve and continue in auto mode
 - Approve and auto-accept file edits only
 - Approve and review each edit manually (default mode)
 - Keep planning with feedback
+- Refine with Ultraplan (browser-based review, see below)
 
-Each option also offers to clear the planning context before proceeding.
+Each approve option also offers to clear the planning context first.
 
 ## Exiting without approving
 

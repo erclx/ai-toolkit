@@ -27,6 +27,7 @@ pyproject
 sidepanel
 pytest
 rlength
+semgrep
 statusline
 tabindex
 tanstack
