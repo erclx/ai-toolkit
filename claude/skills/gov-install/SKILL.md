@@ -9,7 +9,7 @@ Automates `aitk gov install` by inferring the stack and extras from the current 
 
 ## Read the catalog
 
-Run this first to load the current stacks and rules. Never hardcode names — the catalog is the source of truth.
+Run this first to load the current stacks and rules. Never hardcode names. The catalog is the source of truth.
 
 ```bash
 aitk gov list --json 2>/dev/null
@@ -19,8 +19,8 @@ aitk gov list --json 2>/dev/null
 
 Read these from the project root in parallel:
 
-- `package.json` — dependencies and devDependencies
-- Root config files — `astro.config.*`, `next.config.*`, `vite.config.*`, `tailwind.config.*`, `tsconfig.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`
+- `package.json`: dependencies and devDependencies
+- Root config files: `astro.config.*`, `next.config.*`, `vite.config.*`, `tailwind.config.*`, `tsconfig.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`
 - `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md` if present
 - Directory structure via `ls -1` of the project root and `src/` if present
 
