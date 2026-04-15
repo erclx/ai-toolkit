@@ -11,4 +11,4 @@ source = "configs"
 "snapshot" = "./scripts/snapshot.sh"
 
 [gitignore]
-"# Claude" = [".claude/.tmp/", ".claude/memory/"]
+"# Claude" = [".claude/.tmp/", ".claude/memory/", ".claude/plans/", ".claude/review/"]

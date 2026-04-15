@@ -47,12 +47,22 @@ For each doc with relevant changes, apply updates following these rules:
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
+## Step 4: sweep stale feature plans
+
+Delete every file matching `.claude/plans/feature-*.md` from the project root. These are scratch plans produced by `claude-feature` and are obsolete once a session reaches ship.
+
+Output one line per file removed:
+
+`🧹 Deleted: .claude/plans/feature-<slug>.md`
+
+If no matching files exist, skip this step silently.
+
 ## After completion
 
 Output one line per file updated:
 
 `✅ Updated: <filename>`
 
-If no files needed changes, output:
+If no files needed changes and no feature plans were swept, output:
 
 `✅ No changes needed.`

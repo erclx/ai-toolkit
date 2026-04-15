@@ -83,3 +83,11 @@ File: path/to/other.ext
 ```
 
 If nothing is wrong, say so: `✅ No findings.`
+
+## Step 5: persist the report
+
+Write the full findings report, including the summary line and per-file blocks, to `.claude/review/latest.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/latest.md` after the chat report.
+
+If there are no findings, write `✅ No findings.` to the file with a timestamp.
+
+The `.claude/review/` directory is gitignored. Do not stage or commit the file.

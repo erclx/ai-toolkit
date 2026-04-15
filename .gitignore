@@ -21,3 +21,5 @@ node_modules/
 # Claude
 .claude/.tmp
 .claude/memory/
+.claude/plans/
+.claude/review/

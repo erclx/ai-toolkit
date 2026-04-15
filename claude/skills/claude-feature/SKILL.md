@@ -34,4 +34,30 @@ Based on the feature description, identify and read source files that are direct
 
 **Questions:** numbered list of things to resolve before starting. If none, write `None identified.`
 
+## Step 4: persist the plan
+
+Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan block (Files to touch, Risks, Questions) to `.claude/plans/feature-<slug>.md` from the project root. Create the directory if it does not exist.
+
+File format:
+
+```markdown
+# Feature: <short title>
+
+<feature description>
+
+**Files to touch:**
+
+- `path/to/file`: reason
+
+**Risks:**
+
+- <risk>
+
+**Questions:**
+
+1. <question>
+```
+
+Output `📝 Wrote .claude/plans/feature-<slug>.md` after the chat plan.
+
 Stop here. Do not proceed to implementation until the user explicitly says to continue.

@@ -55,7 +55,16 @@ If all changes are automatable, skip the manual checklist:
 
 `✅ All changes covered by e2e tests. No manual verification needed.`
 
+## Persist the checklist
+
+When a manual checklist is produced, write it to `.claude/review/ui-checklist.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/ui-checklist.md` after the chat checklist.
+
+Skip the file write when all changes are covered by e2e tests and no checklist was produced.
+
+The `.claude/review/` directory is gitignored. Do not stage or commit the file.
+
 ## Output order
 
 1. Write and run e2e tests (report pass/fail)
 2. Output manual checklist for visual-only items (if any)
+3. Persist checklist to file (if one was produced)
