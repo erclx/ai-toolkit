@@ -34,7 +34,7 @@ Run these commands in parallel to gather git context:
 - Group commits by concern using both commit messages and file paths.
 - Prefer fewer branches: combine related commits into one branch.
 - Only split into separate branches when concerns are clearly independent.
-- Identify the primary concern of the current branch. Rename the current branch to reflect that concern using `git branch -m`. Secondary concerns are extracted as new focused branches via cherry-pick.
+- Identify the primary concern of the current branch. Rename it using `git branch -m` if the current name does not already match. Skip the rename if it already matches. Secondary concerns are extracted as new focused branches via cherry-pick.
 - If no single concern dominates (dumping-ground branch with no clear primary), split all commits into new focused branches and add `git branch -d <current>` to delete the original.
 - Propose one new branch per secondary concern following branch.md format.
 - Classify groups as independent or stacked before generating commands.
@@ -49,17 +49,19 @@ Run these commands in parallel to gather git context:
 **Total commits ahead of main:** <count>
 **Mode:** Independent | Stacked
 
-| Group            | Branch                        | Base           | Commits | Count |
-| ---------------- | ----------------------------- | -------------- | ------- | ----- |
-| Primary (rename) | <current_branch> → <new_name> | main           | <shas>  | <n>   |
-| <concern>        | <type>/<description>          | main           | <shas>  | <n>   |
-| <concern>        | <type>/<description>          | <prior-branch> | <shas>  | <n>   |
+| Group     | Branch               | Base           | Commits | Count |
+| --------- | -------------------- | -------------- | ------- | ----- |
+| <concern> | <type>/<description> | main           | <shas>  | <n>   |
+| <concern> | <type>/<description> | <prior-branch> | <shas>  | <n>   |
 
 **All <total> commits accounted for.**
 
+- For the primary concern (the current branch), show `<current_branch> → <new_name>` only when renaming. Show just `<current_branch>` if the existing name already matches the concern.
+- For stacked mode, list rows in merge order: branches based on `main` first, then each layer above. For independent mode, list the primary concern first.
+
 If Mode is Stacked, append this line to the preview:
 
-`⚠️ Merge these PRs with **Rebase and merge** on GitHub. Squash-merge rewrites SHAs and will cause add/add conflicts on every downstream PR.`
+`🔁 Sequential squash-merge loop. Squash-merge each PR bottom-up with --delete-branch. After each merge, signal me so I can restack the next branch onto main before you merge it.`
 
 After outputting the preview, execute the final commands immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
@@ -122,3 +124,17 @@ Respond with exactly one line:
 `✅ Renamed: <old> → <new> | PRs: <url1>, <url2>`
 
 Do not add any other text.
+
+## Stacked merge loop
+
+When the user signals the previous stacked PR has merged, restack the next one.
+
+1. Rebase and push. The own-commit-count comes from the original split table.
+   `git fetch origin main && git checkout <branch> && git rebase --onto origin/main HEAD~<own-commit-count> && git push --force-with-lease`
+2. Verify the PR's base auto-retargeted to main with `gh pr view <num> --json baseRefName`. If not, `gh pr edit <num> --base main`.
+3. Reply: `✅ <branch> rebased onto main. Ready for squash-merge.`
+
+Edge cases:
+
+- If this branch's commits modify a file added by an unmerged upstream PR, wait for that PR to merge before rebasing.
+- If the PR was orphaned by base-branch deletion, recreate it with `gh pr create --base main --head <branch>` and a regenerated body.
