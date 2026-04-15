@@ -41,9 +41,9 @@ Task block format:
 
 Orchestrates the onboarding chain so a freshly scaffolded project is toolkit-ready in a single skill invocation. Pairs with `gov-install` which handles the governance leg. Skill detects package manager and tech, then chains the toolkit installers with sensible defaults.
 
-- [ ] A single skill invocation in a new project runs init, governance install, standards install, snippets install, and claude init
-- [ ] Skill detects project type from root files and picks matching stacks and categories from each domain's catalog
-- [ ] Skill surfaces each step and its resolved arguments in a preview before executing
-- [ ] Skill handles gaps (no matching rule or stack) by deferring to the relevant author skill instead of guessing
+- [x] A single skill invocation in a new project runs init, governance install, standards install, snippets install, and claude init
+- [x] Skill detects project type from root files and picks matching stacks and categories from each domain's catalog
+- [x] Skill surfaces each step and its resolved arguments in a preview before executing
+- [x] Skill handles gaps (no matching rule or stack) by deferring to the relevant author skill instead of guessing
 
 > Test strategy: manual, run the skill in a sandbox project with known fixtures (Astro, React, Python) and verify the resolved chain for each.

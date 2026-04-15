@@ -14,7 +14,7 @@ scripts/sandbox/
 │   ├── gemini.sh      ← tests gemini settings.json config injection
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
 ├── infra/
-│   ├── init.sh           ← end-to-end test for aitk init project bootstrapping
+│   ├── init.sh           ← scenarios for aitk init (default, with-flags)
 │   ├── cursor.sh         ← Cursor IDE playground with full governance injected
 │   ├── gov.sh            ← interactive tests for governance commands
 │   ├── standards.sh      ← interactive tests for standards commands

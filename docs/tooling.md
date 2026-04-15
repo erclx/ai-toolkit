@@ -83,7 +83,7 @@ packages = []
 
 | Command                           | What it does                                                                       |
 | --------------------------------- | ---------------------------------------------------------------------------------- |
-| `aitk init [path]`                | Bootstrap a project with base tooling and toolkit domains                          |
+| `aitk init [path] [flags]`        | Bootstrap a project with base tooling and toolkit domains                          |
 | `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                                         |
 | `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                                    |
 | `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation) |
@@ -91,7 +91,7 @@ packages = []
 
 ## Common workflows
 
-Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, snippets, and wiki in one command. Optional domains (standards, prompts, antigravity) are offered interactively.
+Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, snippets, and wiki in one command. Optional domains (standards, prompts, antigravity) are offered interactively. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,prompts,antigravity`, `--skip wiki`. The `init-project` skill resolves these from project detection and runs the chain in one shot.
 
 Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, and seeds (no configs to copy).
 

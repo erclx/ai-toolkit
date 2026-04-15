@@ -29,6 +29,7 @@ When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
 - Add the skill to the skills table in `docs/claude.md`
+- Do not create a matching Gemini command or Antigravity workflow unless explicitly requested. Parity only applies when an existing counterpart changes.
 
 When modifying a skill:
 
