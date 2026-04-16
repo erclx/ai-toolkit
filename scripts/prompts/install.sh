@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/index.sh"
 trap close_timeline EXIT
 
 PROMPTS_SOURCE="$PROJECT_ROOT/prompts"
@@ -164,10 +165,8 @@ cmd_install() {
     log_add "prompts/$slug.md"
   done
 
-  if [ -f "$PROMPTS_SOURCE/index.md" ]; then
-    cp "$PROMPTS_SOURCE/index.md" "$dest_dir/index.md"
-    log_add "prompts/index.md"
-  fi
+  write_index "$dest_dir" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
+  log_add "prompts/index.md"
 }
 
 main() {

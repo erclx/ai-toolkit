@@ -38,10 +38,11 @@ scripts/
 ├── manage-wiki.sh           ← aitk wiki entry point
 ├── config.sh            ← shared project config (GITHUB_ORG, DEFAULT_GEMINI_MODEL)
 ├── core/
-│   ├── verify.sh        ← runs all checks: format, spell, shell
+│   ├── verify.sh        ← runs all checks: format, spell, shell, index drift
 │   ├── update.sh        ← interactive dependency update + verify
 │   ├── clean.sh         ← wipes node_modules, clears cache, reinstalls
-│   └── snapshot.sh      ← writes PROJECT-SNAPSHOT.md to .claude/.tmp/project/
+│   ├── snapshot.sh      ← writes PROJECT-SNAPSHOT.md to .claude/.tmp/project/
+│   └── regen-indexes.sh ← regenerates prompts/index.md and standards/index.md
 ├── gov/
 │   ├── install.sh       ← bootstraps rules for a stack into a target project, supports --add for extras
 │   ├── sync.sh          ← diffs and updates rules already present in target
@@ -70,17 +71,19 @@ scripts/
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
-    └── gov.sh           ← strip_frontmatter, build_rules_payload
+    ├── gov.sh           ← strip_frontmatter, build_rules_payload
+    └── index.sh         ← read_h1_title, write_index, domain title and subtitle constants
 ```
 
 ## Core scripts
 
-| Script        | `bun run`  | What it does                                                                                   |
-| ------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `verify.sh`   | `check`    | Runs format, format check, spell check, shell check in sequence                                |
-| `update.sh`   | `update`   | Interactive dep update via `bun update --interactive`, then verify                             |
-| `clean.sh`    | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                              |
-| `snapshot.sh` | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context |
+| Script             | `bun run`  | What it does                                                                                   |
+| ------------------ | ---------- | ---------------------------------------------------------------------------------------------- |
+| `verify.sh`        | `check`    | Runs format, format check, spell check, shell check, and index drift check in sequence         |
+| `update.sh`        | `update`   | Interactive dep update via `bun update --interactive`, then verify                             |
+| `clean.sh`         | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                              |
+| `snapshot.sh`      | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context |
+| `regen-indexes.sh` |            | Rewrites `prompts/index.md` and `standards/index.md` from the files present in each folder     |
 
 ## manage-sync.sh
 
@@ -109,3 +112,5 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 **`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names. When provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
 
 **`tooling.sh`**: defines `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.
+
+**`index.sh`**: sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, and `scripts/core/regen-indexes.sh`. Exposes `read_h1_title` (reads the first H1 from a markdown file) and `write_index` (scans a directory for `*.md` files and writes an `index.md` listing each one with its H1 as the description). Per-domain title and subtitle strings (`PROMPTS_INDEX_TITLE`, `PROMPTS_INDEX_SUBTITLE`, `STANDARDS_INDEX_TITLE`, `STANDARDS_INDEX_SUBTITLE`) live here too so install, sync, and the toolkit's own regen step all emit the same header.

@@ -10,12 +10,14 @@ Select prompts can be installed into target projects via `aitk prompts install`.
 
 ```plaintext
 prompts/
-├── index.md          ← navigation index (always installed)
+├── index.md          ← generated from installed files on install and sync
 ├── *.md              ← system prompt generators
 └── prompts.toml      ← category definitions (name lists)
 docs/
 └── prompts.md        ← this file
 ```
+
+`index.md` is a generated file. `aitk prompts install` and `aitk prompts sync` rewrite it in the target based on which prompts are present. Do not hand-edit it in a target project.
 
 ## Categories
 

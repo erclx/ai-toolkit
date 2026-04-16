@@ -37,6 +37,11 @@ main() {
   run_check "bun run check:format" "Format check failed"
   log_info "Format check passed"
 
+  log_step "Indexes"
+  run_check "bash $PROJECT_ROOT/scripts/core/regen-indexes.sh" "Index regen failed"
+  run_check "git diff --exit-code --quiet prompts/index.md standards/index.md" "Indexes drifted. Run bun run check and commit the updated index files."
+  log_info "Indexes clean"
+
   log_step "Spelling"
   run_check "bun run check:spell" "Spell check failed"
   log_info "Spell check passed"
