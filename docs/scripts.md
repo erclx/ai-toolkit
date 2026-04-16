@@ -1,3 +1,9 @@
+---
+title: Scripts
+description: Bash scripts, lib functions, sandbox hooks
+category: Domain references
+---
+
 # Scripts reference
 
 ## Overview
@@ -62,7 +68,8 @@ scripts/
 │   └── list.sh          ← emits catalog of standards with descriptions, supports --json
 ├── prompts/
 │   ├── install.sh       ← copies prompts for a category into a target project
-│   └── sync.sh          ← diffs and updates prompts already present in target
+│   ├── sync.sh          ← diffs and updates prompts already present in target
+│   └── list.sh          ← emits catalog of prompts with descriptions, supports --json
 ├── claude/
 │   └── prompt.sh        ← generates master prompts from installed rules + context docs
 ├── wiki/
@@ -72,18 +79,18 @@ scripts/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
     ├── gov.sh           ← strip_frontmatter, build_rules_payload
-    └── index.sh         ← read_h1_title, write_index, domain title and subtitle constants
+    └── index.sh         ← read_frontmatter_field, write_index, domain title and subtitle constants
 ```
 
 ## Core scripts
 
-| Script             | `bun run`  | What it does                                                                                   |
-| ------------------ | ---------- | ---------------------------------------------------------------------------------------------- |
-| `verify.sh`        | `check`    | Runs format, format check, spell check, shell check, and index drift check in sequence         |
-| `update.sh`        | `update`   | Interactive dep update via `bun update --interactive`, then verify                             |
-| `clean.sh`         | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                              |
-| `snapshot.sh`      | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context |
-| `regen-indexes.sh` |            | Rewrites `prompts/index.md` and `standards/index.md` from the files present in each folder     |
+| Script             | `bun run`  | What it does                                                                                          |
+| ------------------ | ---------- | ----------------------------------------------------------------------------------------------------- |
+| `verify.sh`        | `check`    | Runs format, format check, spell check, shell check, and index drift check in sequence                |
+| `update.sh`        | `update`   | Interactive dep update via `bun update --interactive`, then verify                                    |
+| `clean.sh`         | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                     |
+| `snapshot.sh`      | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context        |
+| `regen-indexes.sh` |            | Rewrites `prompts/`, `standards/`, `docs/`, and `wiki/` index.md files from each folder's frontmatter |
 
 ## manage-sync.sh
 

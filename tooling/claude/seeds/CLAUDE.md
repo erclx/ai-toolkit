@@ -14,7 +14,7 @@
 ## Rules
 
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For folders where an agent browses to pick a document, add an `index.md` listing each file with a one-line description. Code folders and scratch folders do not need one.
+- For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 - When editing any markdown file, follow `standards/prose.md`.
 - When editing any markdown file, read surrounding content first and match its depth, length, and tone
 

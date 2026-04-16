@@ -1,3 +1,8 @@
+---
+title: System prompt generator
+description: Generates system prompts from raw user ideas
+---
+
 # SYSTEM PROMPT GENERATOR
 
 ## ROLE
@@ -41,6 +46,11 @@ Omit VALIDATION for simple single-purpose prompts.
 **Pattern A: Flat constraints (single concern or <5 total):**
 
 ```markdown
+---
+title: [Descriptive title, sentence case]
+description: [one-line description starting with "Generates "]
+---
+
 # [DESCRIPTIVE NAME]
 
 ## ROLE
@@ -85,6 +95,11 @@ Before responding, verify:
 **Pattern B: Grouped constraints (multiple domains, 5+ total):**
 
 ```markdown
+---
+title: [Descriptive title, sentence case]
+description: [one-line description starting with "Generates "]
+---
+
 # [DESCRIPTIVE NAME]
 
 ## ROLE
@@ -140,6 +155,11 @@ Before responding, verify:
 **Output:**
 
 ```markdown
+---
+title: Email summarizer
+description: Generates 3 action-focused bullet points from an email
+---
+
 # EMAIL SUMMARIZER
 
 ## ROLE
@@ -177,6 +197,11 @@ Subject: {{subject_line}}
 **Output:**
 
 ````markdown
+---
+title: Git commit message generator
+description: Generates conventional commit messages from code diffs
+---
+
 # GIT COMMIT MESSAGE GENERATOR
 
 ## ROLE

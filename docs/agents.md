@@ -1,3 +1,9 @@
+---
+title: Agents
+description: CLI catalog and invocation rules for agents
+category: Agent surface
+---
+
 # Agents
 
 CLI catalog and invocation rules for agents working in this repository.
@@ -31,7 +37,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `tooling`     | `list`, `sync`, `ref`, `create`                             |
 | `snippets`    | `list`, `install`, `sync`, `create`                         |
 | `standards`   | `list`, `install`, `sync`                                   |
-| `prompts`     | `install`, `sync`                                           |
+| `prompts`     | `list`, `install`, `sync`                                   |
 | `gov`         | `list`, `install`, `sync`, `build`                          |
 | `claude`      | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
 | `antigravity` | `install`, `sync`                                           |
@@ -63,6 +69,7 @@ Use these to discover what's available instead of hardcoding names.
 | `aitk tooling list --json`      | Stacks, extends chain, dep and script counts |
 | `aitk snippets list --json`     | Snippet slugs and folders                    |
 | `aitk standards list --json`    | Standards docs                               |
+| `aitk prompts list --json`      | Prompts with descriptions                    |
 | `aitk gov list --json`          | Governance stacks and rule sets              |
 | `aitk claude seeds list --json` | Seed doc sources with content                |
 | `aitk claude roles list --json` | Role prompt sources with content             |

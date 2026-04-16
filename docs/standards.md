@@ -1,3 +1,9 @@
+---
+title: Standards
+description: Authoring conventions synced to projects
+category: Domain references
+---
+
 # Standards system
 
 ## Overview
@@ -14,7 +20,7 @@ scripts/
 └── manage-standards.sh ← entry point (aitk standards)
 ```
 
-`index.md` is a generated file. `aitk standards install` and `aitk standards sync` rewrite it in the target based on which standards are present. Do not hand-edit it in a target project.
+`index.md` is a generated file. `aitk standards install` and `aitk standards sync` rewrite it in the target based on which standards are present, reading each file's frontmatter for the link label and description. Do not hand-edit it in a target project.
 
 ## Standards
 
@@ -57,7 +63,7 @@ aitk standards sync ../my-app
 
 ## Adding a standard
 
-Create a `.md` file in `standards/`. No build step needed. Run `aitk standards install` to push to a new project or `aitk standards sync` to update an existing one.
+Create a `.md` file in `standards/`. Start the file with a frontmatter block containing `title` and `description` (see `standards/prose.md`). No build step needed. Run `aitk standards install` to push to a new project or `aitk standards sync` to update an existing one.
 
 ## Notes
 

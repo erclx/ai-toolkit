@@ -67,6 +67,7 @@ Run `aitk` from the repo root.
 | ---------------------------------------- | --------------------------------------- |
 | `aitk prompts install [category] [path]` | Install prompts for a category          |
 | `aitk prompts sync [path]`               | Sync prompts already present in project |
+| `aitk prompts list [--json]`             | Emit catalog of prompts                 |
 
 ### Init
 
