@@ -57,7 +57,9 @@ If all changes are automatable, skip the manual checklist:
 
 ## Persist the checklist
 
-When a manual checklist is produced, write it to `.claude/review/ui-checklist.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/ui-checklist.md` after the chat checklist.
+Derive a slug from the current git branch: run `git branch --show-current` and replace any `/` with `-`. If the result is empty (detached HEAD), use `latest`.
+
+When a manual checklist is produced, write it to `.claude/review/ui-checklist-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/ui-checklist-<slug>.md` after the chat checklist.
 
 Skip the file write when all changes are covered by e2e tests and no checklist was produced.
 

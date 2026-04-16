@@ -60,4 +60,6 @@ File format:
 
 Output `📝 Wrote .claude/plans/feature-<slug>.md` after the chat plan.
 
+The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
+
 Stop here. Do not proceed to implementation until the user explicitly says to continue.
