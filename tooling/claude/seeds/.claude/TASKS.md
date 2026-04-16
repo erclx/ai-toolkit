@@ -2,7 +2,7 @@
 
 Track what is being built and why, at the level of features and outcomes. No code-level steps or technical decisions. Those live in `ARCHITECTURE.md`. Update this doc whenever a task is started, completed, or scope changes.
 
-When a task needs execution detail beyond this board, link to a plan in `.claude/plans/` from the task block's intro paragraph. Delete the plan when the task ships.
+When a task needs execution detail beyond this board, create a plan in `.claude/plans/` and add a `Plan:` line under the title pointing to it. On ship, delete the plan file and remove the `Plan:` line from the block.
 
 What belongs:
 
@@ -24,10 +24,12 @@ Title form by task type:
 
 One section only: Up next. Completed blocks stay in Up next until archived manually. Do not move them automatically. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
 
-Task block format:
+Task block format. Include the `Plan:` line only when a `.claude/plans/` file exists for the task:
 
 ```markdown
 ### Title
+
+Plan: .claude/plans/feature-<slug>.md
 
 - [ ] Outcome: what done looks like
 - [ ] Outcome: what done looks like
