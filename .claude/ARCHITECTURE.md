@@ -56,6 +56,14 @@ Rules, stacks, snippets, prompts, and standards are authored in this repo. Targe
 - `aitk gov sync` updates rules already present in target, never adds new files
 - If a skill detects a gap (e.g., no Python rule), it routes back to the toolkit for authoring rather than writing in the target
 
+## Generated files
+
+Files that describe what is installed, not what is authored, are generated from target state on install and sync. The toolkit never copies them wholesale. Each install and sync path ends by calling `write_index` in `scripts/lib/index.sh` to rewrite the file from the files actually present in the target.
+
+- `prompts/index.md` and `standards/index.md` use this pattern. Targets that installed only one prompt category get an index listing that category alone, not the toolkit's full catalog.
+- Authors and agents do not hand-edit these files. The next sync regenerates them and any hand edit is lost.
+- `scripts/core/regen-indexes.sh` regenerates the toolkit's own source indexes. `scripts/core/verify.sh` runs it and fails on drift, so `bun run check` blocks a PR that adds a new prompt or standard without the matching index update.
+
 ## Where patterns live
 
 - Shared bash: `scripts/lib/` (`ui.sh`, `gov.sh`, `inject.sh`, `tooling.sh`)

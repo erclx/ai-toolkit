@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/index.sh"
 
 STANDARDS_DIR="$PROJECT_ROOT/standards"
 
@@ -18,17 +19,6 @@ show_help() {
   echo -e "${GREY}│${NC}    -h, --help   ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
   exit 0
-}
-
-read_h1_title() {
-  local file="$1"
-  awk '
-    /^# / {
-      sub(/^# +/, "", $0)
-      print $0
-      exit
-    }
-  ' "$file"
 }
 
 json_escape() {

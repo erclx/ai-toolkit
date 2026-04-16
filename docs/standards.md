@@ -8,11 +8,13 @@ Standards are markdown docs that define developer workflow conventions. They syn
 
 ```plaintext
 standards/
-├── index.md            ← navigation index (always installed)
+├── index.md            ← generated from installed files on install and sync
 ├── *.md                ← source standards
 scripts/
 └── manage-standards.sh ← entry point (aitk standards)
 ```
+
+`index.md` is a generated file. `aitk standards install` and `aitk standards sync` rewrite it in the target based on which standards are present. Do not hand-edit it in a target project.
 
 ## Standards
 

@@ -58,6 +58,7 @@ punkpeye
 Pushback
 rawfile
 recompiles
+regen
 retargeted
 retargets
 ripgreprc

@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/index.sh"
 
 STANDARDS_SOURCE="$PROJECT_ROOT/standards"
 
@@ -73,6 +74,7 @@ cmd_install() {
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file")
+    [ "$filename" = "index.md" ] && continue
     log_info "standards/$filename"
     files+=("$file")
   done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
@@ -96,6 +98,9 @@ cmd_install() {
     log_add "standards/$filename"
   done
 
+  write_index "$dest_dir" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
+  log_add "standards/index.md"
+
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Standards installed${NC} ${GREY}($count files)${NC}"
@@ -115,6 +120,7 @@ collect_sync_changes() {
   while IFS= read -r dest_file; do
     local filename
     filename=$(basename "$dest_file")
+    [ "$filename" = "index.md" ] && continue
     local src_file="$STANDARDS_SOURCE/$filename"
 
     if [ ! -f "$src_file" ]; then
@@ -149,6 +155,7 @@ cmd_sync() {
   count=$(collect_sync_changes "$target")
 
   if [ "$count" -eq 0 ]; then
+    write_index "$target/standards" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
@@ -180,6 +187,8 @@ cmd_sync() {
   esac
 
   apply_changes "$target"
+  write_index "$target/standards" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
+  log_add "standards/index.md"
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"

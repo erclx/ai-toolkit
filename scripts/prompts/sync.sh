@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/index.sh"
 trap close_timeline EXIT
 
 PROMPTS_SOURCE="$PROJECT_ROOT/prompts"
@@ -55,6 +56,7 @@ collect_changes() {
   while IFS= read -r dest_file; do
     local filename
     filename=$(basename "$dest_file")
+    [ "$filename" = "index.md" ] && continue
     local src_file="$PROMPTS_SOURCE/$filename"
 
     if [ ! -f "$src_file" ]; then
@@ -132,6 +134,7 @@ main() {
   count=$(collect_changes "$TARGET_PATH")
 
   if [ "$count" -eq 0 ]; then
+    write_index "$TARGET_PATH/prompts" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
@@ -163,6 +166,8 @@ main() {
   esac
 
   apply_changes "$TARGET_PATH"
+  write_index "$TARGET_PATH/prompts" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
+  log_add "prompts/index.md"
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"

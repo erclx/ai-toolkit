@@ -33,13 +33,15 @@ tooling/
 - `claude` is the current exclusion. Route claude work through `aitk claude` instead.
 - Any future folder under `tooling/` that is not a real stack routes through the same helper.
 
-## Configs, seeds, and references
+## Configs, seeds, references, and generated files
 
 Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. Only the `base` stack ships golden configs.
 
 Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. The `vite-react` stack is reference-only: the agent reads the reference and generates configs adapted to the specific project. No golden configs are shipped for stack-specific tooling.
+
+Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched.
 
