@@ -18,7 +18,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it
 ├── WIREFRAMES.md      ← seeded. ASCII wireframes for layout, UI copy, interaction rules, and meaningful states
 ├── GOV.md             ← generated. Governance rules built from installed .cursor/rules via aitk claude gov
-├── settings.json      ← seeded. Baseline Claude Code permissions, user-owned after init
+├── settings.json      ← seeded. Baseline Claude Code config, user-owned after init
 ├── plans/             ← execution detail for multi-step tasks, gitignored. `feature-*.md` entries swept by claude-docs.
 ├── review/            ← scratch for claude-review and claude-ui-test output, gitignored
 ├── .tmp/              ← ephemeral scratch space, gitignored
