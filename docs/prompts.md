@@ -1,3 +1,9 @@
+---
+title: Prompts
+description: System prompt templates for AI authoring
+category: Domain references
+---
+
 # Prompts system
 
 ## Overview
@@ -17,7 +23,7 @@ docs/
 └── prompts.md        ← this file
 ```
 
-`index.md` is a generated file. `aitk prompts install` and `aitk prompts sync` rewrite it in the target based on which prompts are present. Do not hand-edit it in a target project.
+`index.md` is a generated file. `aitk prompts install` and `aitk prompts sync` rewrite it in the target based on which prompts are present, reading each file's frontmatter for the link label and description. Do not hand-edit it in a target project.
 
 ## Categories
 
@@ -30,20 +36,23 @@ Prompts are organized into categories in `prompts.toml`. Each category is a name
 
 ## Prompts
 
-| File                      | Generates                                    | Exportable |
-| ------------------------- | -------------------------------------------- | ---------- |
-| `antigravity-workflow.md` | Antigravity workflow markdown files          | Yes        |
-| `bash-script.md`          | Production-grade Bash scripts with visual UI | Yes        |
-| `ci-workflow.md`          | GitHub Actions CI workflow files             | Yes        |
-| `claude-skill.md`         | Claude Code skill SKILL.md files             | Yes        |
-| `cursor-rules.md`         | Cursor .mdc rule files                       | No         |
-| `gemini-cli.md`           | Gemini CLI TOML command files                | No         |
-| `meta-prompt.md`          | System prompts from raw user ideas           | No         |
-| `standards-reference.md`  | Standards reference markdown files           | No         |
-| `tooling-reference.md`    | Tooling stack reference.md files             | No         |
+What each prompt generates lives in its frontmatter `description`. Browse `prompts/index.md` or run `aitk prompts list` for the full catalog.
+
+| File                      | Exportable |
+| ------------------------- | ---------- |
+| `antigravity-workflow.md` | Yes        |
+| `bash-script.md`          | Yes        |
+| `ci-workflow.md`          | Yes        |
+| `claude-skill.md`         | Yes        |
+| `cursor-rules.md`         | No         |
+| `gemini-cli.md`           | No         |
+| `meta-prompt.md`          | No         |
+| `standards-reference.md`  | No         |
+| `tooling-reference.md`    | No         |
 
 ## Conventions
 
+- Frontmatter `title` and `description` are required on every prompt. See `standards/prose.md` for the style rule.
 - All-caps H1 title: `# BASH SCRIPT ARCHITECT`
 - All-caps H2 sections: `## ROLE`, `## CRITICAL CONSTRAINTS`
 - Title case H3 subsections: `### Must Do`, `### Must Not Do`
@@ -56,8 +65,9 @@ Prompts are organized into categories in `prompts.toml`. Each category is a name
 | ---------------------------------------- | -------------------------------------------------------------------- |
 | `aitk prompts install [category] [path]` | Copy prompts for a category into a project, use `all` for everything |
 | `aitk prompts sync [path]`               | Update prompts already present (never adds new)                      |
+| `aitk prompts list [--json]`             | Emit catalog of prompts with descriptions                            |
 
-`aitk prompts` with no args shows a picker: `install` or `sync`.
+`aitk prompts` with no args shows a picker: `install`, `sync`, or `list`.
 
 ## Workflow
 
@@ -78,7 +88,7 @@ aitk prompts sync ../my-app
 
 ## Adding a prompt
 
-Create a `.md` file in `prompts/` following the all-caps heading convention. Include role, constraints, output format, at least one complete example, and a validation checklist if the output is complex.
+Create a `.md` file in `prompts/` following the all-caps heading convention. Start the file with a frontmatter block containing `title` and `description` (see `standards/prose.md`). Include role, constraints, output format, at least one complete example, and a validation checklist if the output is complex.
 
 To make a prompt installable, register it in `prompts.toml` under the appropriate category:
 

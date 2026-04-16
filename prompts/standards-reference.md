@@ -1,3 +1,8 @@
+---
+title: Standards reference generator
+description: Generates standards reference markdown files
+---
+
 # STANDARDS REFERENCE GENERATOR
 
 ## ROLE
@@ -23,6 +28,11 @@ Optimize for token efficiency and deterministic AI consumption.
 **Single-topic template:**
 
 ````markdown
+---
+title: {{Topic name}} reference
+description: {{one-line description of what this standard covers}}
+---
+
 # {{TOPIC_NAME}} reference
 
 ## Rules
@@ -50,6 +60,11 @@ Optimize for token efficiency and deterministic AI consumption.
 **Multi-topic template:**
 
 ````markdown
+---
+title: {{Topic name}} reference
+description: {{one-line description of what this standard covers}}
+---
+
 # {{TOPIC_NAME}} reference
 
 ## {{Concern group 1}}
@@ -82,6 +97,11 @@ Optimize for token efficiency and deterministic AI consumption.
 > **Filename:** `standards/commit.md`
 
 ````markdown
+---
+title: Commit reference
+description: Commit message format and type conventions
+---
+
 # Commit message reference
 
 ## Format
@@ -124,6 +144,7 @@ docs(api): improve documentation            # vague verb + lacks specificity
 
 Before responding, verify:
 
+- Frontmatter block starts the file with `title` and `description`.
 - Flat structure for single-topic, grouped H2s for multi-topic.
 - Examples use `### Correct` / `### Incorrect` with inline `# reason` comments.
 - No filler prose, no multi-line code blocks.

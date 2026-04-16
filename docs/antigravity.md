@@ -1,3 +1,9 @@
+---
+title: Antigravity
+description: Antigravity workflow source and sync
+category: Domain references
+---
+
 # Antigravity system
 
 ## Overview

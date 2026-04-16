@@ -1,3 +1,8 @@
+---
+title: Commit reference
+description: Commit message format and type conventions
+---
+
 # Commit message reference
 
 ## Format

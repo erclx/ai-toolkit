@@ -1,3 +1,9 @@
+---
+title: Tooling
+description: Stacks, configs, seeds, references, manifests
+category: Domain references
+---
+
 # Tooling system
 
 ## Overview

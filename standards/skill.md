@@ -1,3 +1,8 @@
+---
+title: Claude skill reference
+description: Claude skill structure and authoring rules
+---
+
 # Claude skill reference
 
 ## Overview

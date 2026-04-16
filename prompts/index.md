@@ -2,12 +2,12 @@
 
 System prompt templates for AI-assisted authoring. Each file generates a role-specific system prompt for a specific artifact type.
 
-- [`antigravity-workflow.md`](antigravity-workflow.md): ANTIGRAVITY WORKFLOW GENERATOR
-- [`bash-script.md`](bash-script.md): BASH SCRIPT ARCHITECT
-- [`ci-workflow.md`](ci-workflow.md): CI WORKFLOW ARCHITECT
-- [`claude-skill.md`](claude-skill.md): CLAUDE SKILL GENERATOR
-- [`cursor-rules.md`](cursor-rules.md): CURSOR MDC RULE GENERATOR
-- [`gemini-cli.md`](gemini-cli.md): GEMINI CLI COMMAND GENERATOR
-- [`meta-prompt.md`](meta-prompt.md): SYSTEM PROMPT GENERATOR
-- [`standards-reference.md`](standards-reference.md): STANDARDS REFERENCE GENERATOR
-- [`tooling-reference.md`](tooling-reference.md): TOOLING REFERENCE GENERATOR
+- [Antigravity workflow generator](antigravity-workflow.md): Generates Antigravity workflow markdown files
+- [Bash script architect](bash-script.md): Generates production bash scripts with visual UI and error handling
+- [CI workflow architect](ci-workflow.md): Generates GitHub Actions CI workflow files
+- [Claude skill generator](claude-skill.md): Generates Claude Code SKILL.md files
+- [Cursor rule generator](cursor-rules.md): Generates Cursor .mdc rule files
+- [Gemini CLI command generator](gemini-cli.md): Generates Gemini CLI TOML command files
+- [System prompt generator](meta-prompt.md): Generates system prompts from raw user ideas
+- [Standards reference generator](standards-reference.md): Generates standards reference markdown files
+- [Tooling reference generator](tooling-reference.md): Generates tooling stack reference files

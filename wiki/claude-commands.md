@@ -1,3 +1,8 @@
+---
+title: Claude Code commands
+description: Full built-in slash command reference
+---
+
 # Claude Code commands
 
 Built-in slash commands available in every Claude Code session. Some commands depend on your plan, platform, or environment and may not appear for all users.

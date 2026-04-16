@@ -1,3 +1,8 @@
+---
+title: Cursor rule generator
+description: Generates Cursor .mdc rule files
+---
+
 # CURSOR MDC RULE GENERATOR
 
 ## ROLE

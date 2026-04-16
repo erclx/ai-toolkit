@@ -1,3 +1,8 @@
+---
+title: Snippet reference
+description: Snippet reference and authoring conventions
+---
+
 # Snippet reference
 
 ## What a snippet is

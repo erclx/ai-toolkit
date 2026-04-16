@@ -8,11 +8,11 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/index.sh"
 
-STANDARDS_DIR="$PROJECT_ROOT/standards"
+PROMPTS_DIR="$PROJECT_ROOT/prompts"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk standards list [options]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk prompts list [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --json       ${GREY}# Emit machine-readable JSON${NC}"
@@ -29,30 +29,30 @@ json_escape() {
 }
 
 list_text() {
-  log_step "Standards"
-  local file name title
+  log_step "Prompts"
+  local file name description
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
-    title=$(read_frontmatter_field "$file" "description")
-    log_info "$name — $title"
-  done < <(find "$STANDARDS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+    description=$(read_frontmatter_field "$file" "description")
+    log_info "$name — $description"
+  done < <(find "$PROMPTS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 }
 
 list_json() {
   local first=1
-  local file name title
+  local file name description
   printf '['
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
-    title=$(read_frontmatter_field "$file" "description")
+    description=$(read_frontmatter_field "$file" "description")
     if [ "$first" -eq 0 ]; then
       printf ','
     fi
-    printf '{"name":"%s","description":"%s"}' "$name" "$(json_escape "$title")"
+    printf '{"name":"%s","description":"%s"}' "$name" "$(json_escape "$description")"
     first=0
-  done < <(find "$STANDARDS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  done < <(find "$PROMPTS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
   printf ']'
 }
 
@@ -71,7 +71,7 @@ main() {
   done
 
   if [ "$json" -eq 1 ]; then
-    printf '{"standards":'
+    printf '{"prompts":'
     list_json
     printf '}\n'
     exit 0

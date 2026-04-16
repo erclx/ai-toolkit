@@ -39,37 +39,23 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Feature: curated descriptions for prompts and standards catalogs
+### Feature: curated descriptions for every indexed folder
 
-Plan: `.claude/plans/feature-frontmatter-descriptions.md`
+- [x] Outcome: every prompt, standard, doc, and wiki file carries `title` and `description` frontmatter, with `category` on docs
+- [x] Outcome: generated `prompts/index.md`, `standards/index.md`, `docs/index.md`, and `wiki/index.md` show the curated title and description from frontmatter
+- [x] Outcome: `aitk standards list` and the new `aitk prompts list` read the same frontmatter, so catalog output matches the index
+- [x] Outcome: `bun run check` fails if any indexed file is missing required frontmatter
+- [x] Outcome: authoring docs and skills describe the new frontmatter convention so new files in any indexed folder include it by default
+- [x] Outcome: `standards/prose.md` owns the canonical style rule for frontmatter descriptions; domain docs link to it
 
-- [ ] Outcome: every prompt and standard file carries a frontmatter `description` field with a one-line summary
-- [ ] Outcome: generated `prompts/index.md` and `standards/index.md` show the curated description instead of the file's H1 title
-- [ ] Outcome: `aitk standards list` (and the future `aitk prompts list`) read the same description field, so catalog output matches the index
-- [ ] Outcome: authoring docs and skills describe the new frontmatter convention so new prompts and standards include it by default
+> Test strategy: manual, regenerate indexes in the toolkit and confirm each entry uses the curated title and description, then install a subset into a fresh target and confirm parity
 
-> Test strategy: manual, regenerate indexes in the toolkit and confirm each entry uses the curated description, then install a subset into a fresh target and confirm the target index uses the same curated descriptions
+### Chore: auto-regenerate every folder that has an index.md
 
-### Chore: align toolkit's `.claude/` docs with seed preamble style
+- [ ] Outcome: index regeneration walks the repo and rewrites every `index.md` it finds, without a hardcoded folder list
+- [ ] Outcome: a new folder with an `index.md` plus frontmatter-bearing siblings picks up on the next `bun run check` with no script edit
+- [ ] Outcome: folders opt out via `auto: false` in the index's own frontmatter, so curated hand-edited indexes are preserved
+- [ ] Outcome: the walker skips scratch and vendored paths (`node_modules`, `.git`, `.claude/plans/`, `.claude/review/`, `dist/`, `build/`)
+- [ ] Outcome: each `index.md` lists only its immediate siblings; subfolders are never traversed into the parent index
 
-- [x] Outcome: `.claude/ARCHITECTURE.md` opens with the "What belongs / What does not belong" block matching the seed in `tooling/claude/seeds/.claude/ARCHITECTURE.md`
-- [x] Outcome: toolkit has no DESIGN, REQUIREMENTS, or WIREFRAMES files, so no additional preambles needed (CLI-only repo, no UI)
-- [x] Outcome: existing content is preserved below the preamble, no substantive edits to the sections that follow
-
-> Test strategy: manual, diff each toolkit `.claude/*.md` against the matching seed preamble and confirm the preamble sections align
-
-### Chore: emit preamble header from claude gov generator
-
-- [x] Outcome: `aitk claude gov` output begins with a regenerate pointer line matching the seed in `tooling/claude/seeds/.claude/GOV.md`
-- [x] Outcome: the toolkit's own `.claude/GOV.md` carries the preamble after a regen
-- [x] Outcome: the preamble in the seed matches what the generator emits, so target projects see the same header
-
-> Test strategy: manual, regenerate `.claude/GOV.md` via `aitk claude gov` and confirm the preamble is the first line, then regenerate in a fresh sandbox target and confirm parity
-
-### Chore: clarify content ownership between CLAUDE.md, ARCHITECTURE.md, and docs
-
-- [x] Outcome: toolkit's `.claude/ARCHITECTURE.md` deleted (redundant with `docs/` in a solo-dev repo with a full docs system); unique contributor patterns redistributed to `docs/<domain>.md` files, design principles stay inline in `CLAUDE.md`
-- [x] Outcome: `docs/tooling.md` is the single canonical home for the configs, seeds, references, and generated-files vocabulary
-- [x] Outcome: no concept described in two places with two different framings; "Generated files" duplicate resolved by removing the toolkit's ARCHITECTURE.md copy
-
-> Test strategy: manual, open each affected doc in turn and confirm each concept lives in exactly one surface with pointers elsewhere
+> Test strategy: manual, add a fresh folder with an `index.md` plus a file with frontmatter, run `bun run check`, and confirm regeneration; repeat with an `auto: false` index and confirm it is left alone

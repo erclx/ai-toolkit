@@ -28,7 +28,7 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 
 - For any git operation (commits, PRs, branch naming), use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For folders where an agent browses to pick a document (`docs/`, `standards/`, `wiki/`), add an `index.md` listing each file with a one-line description. Code folders and scratch folders (`.claude/plans/`, `.claude/review/`) do not need one.
+- For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 
 ## Content ownership
 

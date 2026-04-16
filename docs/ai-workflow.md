@@ -1,3 +1,9 @@
+---
+title: AI workflow
+description: Overarching AI workflow across domains
+category: Agent surface
+---
+
 # AI workflow reference
 
 A concise reference for when to reach for which tool, organized by what you're trying to do.

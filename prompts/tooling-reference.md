@@ -1,3 +1,8 @@
+---
+title: Tooling reference generator
+description: Generates tooling stack reference files
+---
+
 # TOOLING REFERENCE GENERATOR
 
 ## ROLE

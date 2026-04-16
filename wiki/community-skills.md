@@ -1,3 +1,8 @@
+---
+title: Community skills and plugins
+description: Notable third-party skills, official Anthropic plugins, and curated lists
+---
+
 # Community skills and plugins
 
 Notable Claude Code skills, plugins, and curated lists from outside this toolkit. Use as a reference for patterns worth adapting into `claude/skills/`. Figures and feature claims are a snapshot from 2026-04-15 and drift fast. Re-verify before copying.

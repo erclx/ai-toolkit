@@ -1,3 +1,8 @@
+---
+title: Prose reference
+description: Voice, structure, formatting, and language rules for reference markdown
+---
+
 # Prose reference
 
 Applies to markdown reference docs, READMEs, and inline documentation in repos. Not scoped for blogs, emails, changelogs, or commit messages.
@@ -34,7 +39,7 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - For key path lists, use colon format: `- \`src/\`: description`. Never use an em dash.
 - Do not introduce a list with a "Here are the X:" or "The following X:" lead-in
 - Do not over-format with excessive bold, italic, or header usage
-- Do not use horizontal rules or dividers (`---`)
+- Do not use horizontal rules or dividers (`---`) in body content. The `---` delimiters of a YAML frontmatter block at the top of the file are allowed.
 - Do not use em dashes (`—`) or semicolons (`;`). Rewrite or restructure the sentence to avoid them.
 - Do not use parenthetical asides in prose (`the config (which is optional) controls...`). Split into its own sentence or drop it. Parentheses in rule definitions for grouping examples are fine.
 - Use descriptive anchor text for links. Avoid `click here` or `read more`.
@@ -53,6 +58,14 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - Do not hedge in clusters (`It might be worth considering`, `You may want to think about`). Either recommend or state the tradeoff.
 - State recommendations directly. Do not use false balance (`While X is true, Y is also important`).
 - Do not write in overly academic or corporate language
+
+## Frontmatter descriptions
+
+When frontmatter carries a short `title` or `description` used for catalog display:
+
+- `title`: sentence case, under 60 characters, no trailing period. Proper nouns retain their casing.
+- `description`: sentence case, under 100 characters, no trailing period, no leading article (`the`, `a`).
+- Do not mechanically reuse the H1 as the description.
 
 ## Examples
 

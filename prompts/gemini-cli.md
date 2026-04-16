@@ -1,3 +1,8 @@
+---
+title: Gemini CLI command generator
+description: Generates Gemini CLI TOML command files
+---
+
 # GEMINI CLI COMMAND GENERATOR
 
 ## ROLE

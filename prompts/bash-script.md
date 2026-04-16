@@ -1,3 +1,8 @@
+---
+title: Bash script architect
+description: Generates production bash scripts with visual UI and error handling
+---
+
 # BASH SCRIPT ARCHITECT
 
 ## ROLE

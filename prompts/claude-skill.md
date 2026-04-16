@@ -1,3 +1,8 @@
+---
+title: Claude skill generator
+description: Generates Claude Code SKILL.md files
+---
+
 # CLAUDE SKILL GENERATOR
 
 ## ROLE

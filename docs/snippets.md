@@ -1,3 +1,9 @@
+---
+title: Snippets
+description: Reusable prompt snippets for Claude and Gemini
+category: Domain references
+---
+
 # Snippets system
 
 ## Overview

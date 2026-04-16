@@ -1,3 +1,8 @@
+---
+title: Antigravity workflow generator
+description: Generates Antigravity workflow markdown files
+---
+
 # ANTIGRAVITY WORKFLOW GENERATOR
 
 ## ROLE
