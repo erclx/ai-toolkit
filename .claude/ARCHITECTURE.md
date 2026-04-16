@@ -26,7 +26,7 @@ Each domain exposes a `list` command that dumps its catalog in human and machine
 
 - `scripts/gov/list.sh` is the reference implementation
 - Flags follow a shared pattern: `--stacks`, `--rules`, `--json`, scoped to whatever the domain exposes
-- JSON emitted manually, no `jq` dependency
+- JSON emitted manually in most domains. `claude seeds list` and `claude roles list` use `jq` for safe escaping of multi-line markdown content.
 - Frontmatter parsing via `awk` in the script. Avoid sourcing a shared parser until a second domain needs it.
 
 Other domains without `list` yet: prompts. See `.claude/TASKS.md`.
