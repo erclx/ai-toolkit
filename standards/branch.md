@@ -1,3 +1,8 @@
+---
+title: Branch reference
+description: Branch naming format and type conventions
+---
+
 # Branch reference
 
 ## Format

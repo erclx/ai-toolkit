@@ -1,3 +1,9 @@
+---
+title: Extensions
+description: External browser and editor extensions
+category: Infrastructure
+---
+
 # Extensions
 
 External browser and editor extensions used in the toolkit workflow.

@@ -1,3 +1,8 @@
+---
+title: Prose influences
+description: Industry style guides behind prose.md and AI-specific additions
+---
+
 # Prose influences
 
 The rules in `standards/prose.md` draw from three industry style guides plus AI-specific additions.

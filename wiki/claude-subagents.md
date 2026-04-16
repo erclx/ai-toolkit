@@ -1,3 +1,8 @@
+---
+title: Claude Code subagents
+description: When and how a skill should spawn a subagent, parallel vs sequential, and pitfalls
+---
+
 # Claude Code subagents
 
 A subagent is a separate Claude session spawned from the main thread through the `Agent` tool. It runs in its own fresh context, does its own tool calls, and returns a single final message to the parent. Subagents are the right tool when a task needs independence, isolation, or parallel lenses that a same-session invocation cannot give.

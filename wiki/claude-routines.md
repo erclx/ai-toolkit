@@ -1,3 +1,8 @@
+---
+title: Claude Code routines
+description: Cloud-run agents triggered by schedule, API, or GitHub events
+---
+
 # Claude Code routines
 
 A routine is a saved Claude Code configuration that runs autonomously on Anthropic-managed cloud infrastructure. Each routine bundles a prompt, one or more GitHub repositories, an environment, MCP connectors, and one or more triggers. Runs continue when your laptop is closed.

@@ -1,3 +1,9 @@
+---
+title: Claude
+description: Claude plugin skills and tooling
+category: Domain references
+---
+
 # Claude tooling
 
 Claude Code plugin and skills for the Toolkit.

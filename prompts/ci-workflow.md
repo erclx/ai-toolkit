@@ -1,3 +1,8 @@
+---
+title: CI workflow architect
+description: Generates GitHub Actions CI workflow files
+---
+
 # CI WORKFLOW ARCHITECT
 
 ## ROLE

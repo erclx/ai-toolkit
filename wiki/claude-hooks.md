@@ -1,3 +1,8 @@
+---
+title: Claude Code hooks
+description: Event hooks, configuration, and behavior control
+---
+
 # Claude Code hooks
 
 Hooks are shell commands that run in response to Claude Code events. The harness executes them, not Claude. Use hooks to enforce rules, auto-format files, inject context, or block actions.

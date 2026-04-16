@@ -1,3 +1,8 @@
+---
+title: Changelog reference
+description: Changelog format and entry conventions
+---
+
 # Changelog reference
 
 ## Format

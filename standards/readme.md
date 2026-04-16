@@ -1,3 +1,8 @@
+---
+title: Readme reference
+description: Readme structure and content conventions
+---
+
 # Readme reference
 
 ## Structure

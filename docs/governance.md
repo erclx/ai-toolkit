@@ -1,3 +1,9 @@
+---
+title: Governance
+description: Cursor rules, stacks, install and sync
+category: Domain references
+---
+
 # Governance system
 
 ## Overview

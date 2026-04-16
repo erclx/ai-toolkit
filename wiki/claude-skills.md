@@ -1,3 +1,8 @@
+---
+title: Claude Code skills
+description: Skills, plugins, invocation, and installation
+---
+
 # Claude Code skills
 
 A skill is a reusable instruction set that extends Claude's behavior. Skills are defined in a `SKILL.md` file with YAML frontmatter and markdown content. Unlike built-in commands which execute fixed logic, skills let Claude orchestrate work with its tools: reading files, running commands, and adapting to context. A skill you define in `.claude/skills/` becomes a `/command` invoked the same way as any built-in. See [Claude Code commands](claude-commands.md) for the full list of what ships built-in.

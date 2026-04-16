@@ -1,3 +1,8 @@
+---
+title: Claude Code MCP
+description: Server configuration, scopes, authentication, and tool naming
+---
+
 # Claude Code MCP
 
 MCP (Model Context Protocol) connects external tools and data sources to Claude Code. Each server exposes tools, prompts, and resources that appear alongside built-in tools in the session.

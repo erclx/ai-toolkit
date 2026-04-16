@@ -1,3 +1,8 @@
+---
+title: Claude Code memory
+description: CLAUDE.md hierarchy, auto-memory, and rules files
+---
+
 # Claude Code memory
 
 Claude Code carries knowledge across sessions through two mechanisms: `CLAUDE.md` files you write, and auto-memory notes Claude writes itself.

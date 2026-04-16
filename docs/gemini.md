@@ -1,3 +1,9 @@
+---
+title: Gemini
+description: Gemini CLI command definitions
+category: Domain references
+---
+
 # Gemini extension
 
 Gemini CLI extension and command definitions for the Toolkit.

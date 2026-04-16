@@ -1,3 +1,8 @@
+---
+title: Ollama
+description: Local models via Ollama with tiers, context config, statusline, and web search
+---
+
 # Ollama
 
 Run Claude Code against local models served by Ollama instead of the Anthropic API.

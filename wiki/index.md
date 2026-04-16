@@ -3,17 +3,17 @@
 Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `standards/prose.md` when writing or editing any wiki page.
 
 - [Claude Code](claude-code.md): CLI flags, CLAUDE.md, hooks, memory, and MCP
-- [Claude Code commands](claude-commands.md): full built-in slash command reference
-- [Claude Code hooks](claude-hooks.md): event hooks, configuration, and behavior control
+- [Claude Code commands](claude-commands.md): Full built-in slash command reference
+- [Claude Code hooks](claude-hooks.md): Event hooks, configuration, and behavior control
+- [Claude Code MCP](claude-mcp.md): Server configuration, scopes, authentication, and tool naming
 - [Claude Code memory](claude-memory.md): CLAUDE.md hierarchy, auto-memory, and rules files
-- [Claude Code skills](claude-skills.md): skills, plugins, invocation, and installation
-- [Claude Code subagents](claude-subagents.md): when and how a skill should spawn a subagent, parallel vs sequential, and pitfalls
-- [Community skills and plugins](community-skills.md): notable third-party skills, official Anthropic plugins, and curated lists
-- [Claude Code plan mode](claude-plan-mode.md): read-only exploration and plan approval flow
-- [Claude Code MCP](claude-mcp.md): server configuration, scopes, authentication, and tool naming
-- [Claude Code permissions](claude-permissions.md): modes, allow/ask/deny rules, and rule syntax
-- [Claude Code routines](claude-routines.md): cloud-run agents triggered by schedule, API, or GitHub events
-- [Ollama](ollama.md): run Claude Code on local models, model tiers, context window config, statusline, and web search
-- [Visual wireframes](visual-wireframes.md): tooling research for a visual companion to the ASCII wireframe seed
-- [Community MCP servers](community-mcp-servers.md): curated list of MCP servers for development and productivity, with rankings and install notes
-- [Prose influences](prose-influences.md): industry style guides behind prose.md and AI-specific additions
+- [Claude Code permissions](claude-permissions.md): Modes, allow/ask/deny rules, and rule syntax
+- [Claude Code plan mode](claude-plan-mode.md): Read-only exploration and plan approval flow
+- [Claude Code routines](claude-routines.md): Cloud-run agents triggered by schedule, API, or GitHub events
+- [Claude Code skills](claude-skills.md): Skills, plugins, invocation, and installation
+- [Claude Code subagents](claude-subagents.md): When and how a skill should spawn a subagent, parallel vs sequential, and pitfalls
+- [Community MCP servers](community-mcp-servers.md): Curated list of MCP servers with rankings and install notes
+- [Community skills and plugins](community-skills.md): Notable third-party skills, official Anthropic plugins, and curated lists
+- [Ollama](ollama.md): Local models via Ollama with tiers, context config, statusline, and web search
+- [Prose influences](prose-influences.md): Industry style guides behind prose.md and AI-specific additions
+- [Visual wireframes](visual-wireframes.md): Tooling research for a visual companion to the ASCII wireframe seed
