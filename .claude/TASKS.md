@@ -37,21 +37,4 @@ Task block format:
 
 ## Up next
 
-### Eliminate double-write in skills that persist output
-
-`claude-feature`, `claude-review`, `claude-ux-audit`, and `claude-ui-test` all generate output twice: once in chat, then the same content to a file. This wastes tokens and makes the user wait through duplicate generation. Each skill should write the file directly and output only the path.
-
-- [ ] Outcome: all four skills write output to file only, then print the path
-- [ ] Outcome: `claude-autoship` still reads `.claude/review/review-<slug>.md` without changes (file contract unchanged)
-
-> Test strategy: manual, invoke each skill in its sandbox and confirm output appears once (in the file) with a path reference in chat.
-
-### Autoship should inline git-ship steps instead of invoking it
-
-`claude-autoship` step 7 calls `toolkit:git-ship`, but git-ship has `disable-model-invocation: true` which blocks the Skill tool. Claude works around it by reimplementing the steps ad-hoc, which is fragile and incomplete (observed: no PR opened, plan file deleted prematurely). Autoship should own the ship sequence directly — docs-sync, commit by concern, branch rename, push, PR open — instead of delegating to a restricted skill.
-
-- [ ] Outcome: autoship step 7 lists the ship sub-steps inline in SKILL.md
-- [ ] Outcome: git-ship remains `disable-model-invocation: true` (no change)
-- [ ] Outcome: autoship sandbox completes end-to-end including PR creation
-
-> Test strategy: manual, run `/claude-autoship` in `claude:autoship` sandbox and confirm PR opens on `erclx/toolkit-sandbox`.
+### Nothing queued
