@@ -65,9 +65,9 @@ The toolkit now uses subagents in `claude-autoship` to run `claude-review` with 
 
 Goal: add `wiki/claude-subagents.md` covering how subagents scope context, the three cases to reach for them in a skill (independence, context isolation, parallel lenses), parallel vs sequential invocation, and pitfalls. Use the `claude-code-guide` agent in a fresh session for current Anthropic docs.
 
-- [ ] Outcome: `wiki/claude-subagents.md` exists with a decision guide for skill authors
-- [ ] Outcome: `wiki/index.md` links to the new page
-- [ ] Outcome: scattered mentions in other wiki pages link to the new page where relevant
+- [x] Outcome: `wiki/claude-subagents.md` exists with a decision guide for skill authors
+- [x] Outcome: `wiki/index.md` links to the new page
+- [x] Outcome: scattered mentions in other wiki pages link to the new page where relevant
 
 > Test strategy: manual, cross-read with `wiki/claude-skills.md` and `claude/skills/claude-autoship/SKILL.md` to confirm claims about subagent scoping align.
 
