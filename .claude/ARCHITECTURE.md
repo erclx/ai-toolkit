@@ -56,9 +56,25 @@ Rules, stacks, snippets, prompts, and standards are authored in this repo. Targe
 - `aitk gov sync` updates rules already present in target, never adds new files
 - If a skill detects a gap (e.g., no Python rule), it routes back to the toolkit for authoring rather than writing in the target
 
+## UI framing across exec boundaries
+
+`manage-*.sh` dispatchers that hand off via `exec` lose any trap set in the parent, so a parent-opened `┌` block never closes. Each subcommand script under `scripts/<domain>/` owns its own frame: open `┌` and print a title line at the top of `main()`, before any `select_option` or `ask` call. Only open the parent frame in the dispatcher when the picker is needed to resolve the subcommand name, then close it with `└` before `exec`.
+
+- `scripts/manage-tooling.sh` is the reference for conditional parent framing
+- `scripts/tooling/{list,ref,sync,create}.sh` each open `┌` and print `│ aitk tooling <subcommand>` at the top of `main()`
+- Prompts and `log_*` calls assume a frame is open. Opening the frame early prevents dangling `│` output on error paths.
+
+## Tooling stack exclusions
+
+`tooling/claude/` is storage for the `aitk claude` CLI, not a discoverable tooling stack. `scripts/lib/tooling.sh` centralizes the exclusion list and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Any future folder under `tooling/` that is not a real stack routes through the same helper.
+
+- `scripts/lib/tooling.sh` defines `TOOLING_STACK_EXCLUDE`
+- `scripts/tooling/{list,ref,sync,create}.sh` consume the helper for discovery and name validation
+- Excluded names print a redirect error pointing at the correct CLI and exit 1
+
 ## Where patterns live
 
-- Shared bash: `scripts/lib/` (`ui.sh`, `gov.sh`, `inject.sh`)
+- Shared bash: `scripts/lib/` (`ui.sh`, `gov.sh`, `inject.sh`, `tooling.sh`)
 - Per-domain logic: `scripts/<domain>/*.sh`
 - CLI dispatch: `src/cli.ts` via commander to `scripts/manage-*.sh`
 - Skills (plugin, for target projects): `claude/skills/`

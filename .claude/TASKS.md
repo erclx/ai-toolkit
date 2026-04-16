@@ -35,7 +35,34 @@ Task block format:
 > Test strategy: <unit | component | e2e | visual | manual>, what is being verified
 ```
 
-## Up next
+### Chore: remove the project snapshot script from claude tooling
+
+- [x] Outcome: `aitk claude init` no longer installs a snapshot script into target projects
+- [x] Outcome: claude tooling docs no longer reference the snapshot command
+
+> Test strategy: manual, run `aitk claude init` in a fresh target and confirm the snapshot script is not present
+
+### Chore: collapse claude out of the tooling stack interface
+
+Plan: `.claude/plans/feature-collapse-claude-stack.md`
+
+- [x] Outcome: `aitk tooling list` no longer shows claude as a stack
+- [x] Outcome: `aitk tooling sync claude` fails or is unavailable
+- [x] Outcome: `aitk claude` is the only documented surface for installing and syncing claude assets
+- [x] Outcome: tooling docs note the claude exception
+
+> Test strategy: manual, run `aitk tooling list` and confirm claude is absent, then run `aitk tooling sync claude` and confirm it exits cleanly
+
+### Feature: aitk sync includes claude role drift
+
+Plan: `.claude/plans/feature-sync-claude-drift.md`
+
+- [x] Outcome: `aitk sync` detects the claude workflow directory and runs role sync alongside other domains
+- [x] Outcome: role drift appears in the combined sync PR body under a claude domain line
+- [x] Outcome: `aitk sync` prints a seed-sync skill hint when claude is present
+- [x] Outcome: seed audits remain a manual skill invocation
+
+> Test strategy: manual, run `aitk sync` against a target with claude roles installed and verify role drift lands in the combined PR
 
 ### Chore: research visual tooling to augment claude wireframes
 
