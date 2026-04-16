@@ -39,15 +39,6 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Feature: generated domain indexes on install and sync
-
-- [x] Outcome: `aitk prompts install` writes a `prompts/index.md` in the target that contains only entries for installed files
-- [x] Outcome: `aitk prompts sync` regenerates the target's `prompts/index.md` based on what is present
-- [x] Outcome: `aitk standards install` and `aitk standards sync` apply the same pattern to `standards/index.md`
-- [x] Outcome: docs describe the new generated file category alongside configs, seeds, and references
-
-> Test strategy: manual, install a subset of prompts in a fresh target and confirm the generated index lists only installed entries, then add and remove files to verify the index tracks each change
-
 ### Feature: curated descriptions for prompts and standards catalogs
 
 Plan: `.claude/plans/feature-frontmatter-descriptions.md`
@@ -58,3 +49,27 @@ Plan: `.claude/plans/feature-frontmatter-descriptions.md`
 - [ ] Outcome: authoring docs and skills describe the new frontmatter convention so new prompts and standards include it by default
 
 > Test strategy: manual, regenerate indexes in the toolkit and confirm each entry uses the curated description, then install a subset into a fresh target and confirm the target index uses the same curated descriptions
+
+### Chore: align toolkit's `.claude/` docs with seed preamble style
+
+- [ ] Outcome: `.claude/ARCHITECTURE.md` opens with the "What belongs / What does not belong" block matching the seed in `tooling/claude/seeds/.claude/ARCHITECTURE.md`
+- [ ] Outcome: any other toolkit `.claude/` doc missing its seed preamble (DESIGN, REQUIREMENTS, WIREFRAMES) gains one
+- [ ] Outcome: existing content is preserved below the preamble, no substantive edits to the sections that follow
+
+> Test strategy: manual, diff each toolkit `.claude/*.md` against the matching seed preamble and confirm the preamble sections align
+
+### Chore: emit preamble header from claude gov generator
+
+- [ ] Outcome: `aitk claude gov` output begins with a regenerate pointer line matching the seed in `tooling/claude/seeds/.claude/GOV.md`
+- [ ] Outcome: the toolkit's own `.claude/GOV.md` carries the preamble after a regen
+- [ ] Outcome: the preamble in the seed matches what the generator emits, so target projects see the same header
+
+> Test strategy: manual, regenerate `.claude/GOV.md` via `aitk claude gov` and confirm the preamble is the first line; regenerate in a fresh sandbox target and confirm parity
+
+### Chore: clarify content ownership between CLAUDE.md, ARCHITECTURE.md, and docs
+
+- [ ] Outcome: `CLAUDE.md` names which file owns design principles, implementation patterns, narrative, and CLI surface, with no overlap in coverage
+- [ ] Outcome: the cross-domain file category vocabulary (configs, seeds, references, generated files) has a single canonical home, with pointers from the other surfaces
+- [ ] Outcome: no concept is described in two places with two different framings, including the "Generated files" section duplicated between `.claude/ARCHITECTURE.md` and `docs/tooling.md`
+
+> Test strategy: manual, open each affected doc in turn and confirm each concept lives in exactly one surface with pointers elsewhere
