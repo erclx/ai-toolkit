@@ -84,7 +84,9 @@ scripts/
 
 ## manage-sync.sh
 
-`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, prompts for confirmation, then stages everything, commits with `chore(sync): update <domains> from toolkit`, creates `chore/toolkit-sync`, pushes, and opens a PR via `gh`. The PR body lists up to three changed filenames per domain, then a count for the rest.
+`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, prompts for confirmation, then stages everything, commits with `chore(sync): update <domains> from toolkit`, creates `chore/toolkit-sync`, pushes, and opens a PR via `gh`. The PR body lists up to three changed filenames per domain, then a count for the rest.
+
+Claude role sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. Role drift lands under a `claude/` domain line when any of `PLANNER.md`, `IMPLEMENTER.md`, or `REVIEWER.md` changed. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
 If `.claude/GOV.md` exists in the target after governance sync, it is regenerated automatically by calling `manage-claude.sh gov` with `AITK_NON_INTERACTIVE=1`.
 

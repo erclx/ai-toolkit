@@ -348,24 +348,28 @@ cmd_sync() {
     return
   fi
 
-  select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} roles)?" "Review diffs" "Apply all" "Cancel"
+  if [ "${AITK_NON_INTERACTIVE:-}" = "1" ]; then
+    log_info "Applying ${#drifted[@]} update(s) (non-interactive)"
+  else
+    select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} roles)?" "Review diffs" "Apply all" "Cancel"
 
-  case "$SELECTED_OPTION" in
-  "Review diffs")
-    for file in "${drifted[@]}"; do
-      code --diff "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
-    done
-    select_option "Apply ${#drifted[@]} update(s)?" "Apply all" "Cancel"
-    [ "$SELECTED_OPTION" = "Cancel" ] && {
+    case "$SELECTED_OPTION" in
+    "Review diffs")
+      for file in "${drifted[@]}"; do
+        code --diff "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
+      done
+      select_option "Apply ${#drifted[@]} update(s)?" "Apply all" "Cancel"
+      [ "$SELECTED_OPTION" = "Cancel" ] && {
+        log_warn "Cancelled"
+        exit 1
+      }
+      ;;
+    "Cancel")
       log_warn "Cancelled"
       exit 1
-    }
-    ;;
-  "Cancel")
-    log_warn "Cancelled"
-    exit 1
-    ;;
-  esac
+      ;;
+    esac
+  fi
 
   log_step "Applying changes"
   for file in "${drifted[@]}"; do

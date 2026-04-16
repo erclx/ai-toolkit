@@ -80,6 +80,13 @@ detect_domains() {
     log_warn "antigravity (not installed, skipping)"
   fi
 
+  if [ -d "$target/.claude" ]; then
+    log_info "claude"
+    found=$((found + 1))
+  else
+    log_warn "claude (not installed, skipping)"
+  fi
+
   echo "$found"
 }
 
@@ -107,6 +114,10 @@ run_syncs() {
 
   if [ -d "$target/.agent/workflows" ]; then
     bash "$PROJECT_ROOT/scripts/manage-antigravity.sh" sync "$target"
+  fi
+
+  if [ -d "$target/.claude" ]; then
+    AITK_NON_INTERACTIVE=1 bash "$PROJECT_ROOT/scripts/manage-claude.sh" sync "$target"
   fi
 }
 
@@ -241,6 +252,14 @@ run_git_workflow() {
     domain_verbs["antigravity"]=$(get_domain_verb "$target" ".agent/workflows/")
   fi
 
+  local -a cl_names
+  mapfile -t cl_names < <(get_changed_names "$target" ".claude/PLANNER.md" ".claude/IMPLEMENTER.md" ".claude/REVIEWER.md")
+  if [ "${#cl_names[@]}" -gt 0 ] && [ -n "${cl_names[0]}" ]; then
+    changed_domains+=("claude")
+    changed_files["claude"]="${cl_names[*]}"
+    domain_verbs["claude"]=$(get_domain_verb "$target" ".claude/PLANNER.md" ".claude/IMPLEMENTER.md" ".claude/REVIEWER.md")
+  fi
+
   if [ "${#changed_domains[@]}" -eq 0 ]; then
     return
   fi
@@ -340,6 +359,10 @@ main() {
 
   run_syncs "$target"
   run_git_workflow "$target"
+
+  if [ -d "$target/.claude" ]; then
+    echo -e "${GREY}Tip: run \`/claude-seed-sync\` to audit seed drift.${NC}" >&2
+  fi
 }
 
 main "$@"
