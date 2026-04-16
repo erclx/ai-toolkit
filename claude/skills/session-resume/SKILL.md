@@ -29,4 +29,4 @@ Output three sections:
 
 End with one line: `Start with: <first Up next item>` and note whether it has a linked plan.
 
-Do not offer to remove entries. Task completion moves blocks to `TASKS-ARCHIVE.md` when work ships. Plan files are deleted per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume.
+Do not offer to remove entries. Completed blocks are removed from `TASKS.md` when work ships. The git log is the authoritative record of shipped work. Plan files are deleted per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume.
