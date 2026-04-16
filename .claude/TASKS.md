@@ -55,13 +55,3 @@ Task block format:
 - [ ] Outcome: autoship sandbox completes end-to-end including PR creation
 
 > Test strategy: manual, run `/claude-autoship` in `claude:autoship` sandbox and confirm PR opens on `erclx/toolkit-sandbox`.
-
-### Reconcile overlap across agent documentation surfaces
-
-Each rule or knowledge item should live in exactly one of three surfaces: project instructions, domain-scoped skills, narrative references. Today the same guidance appears in more than one place, creating drift risk as the repo grows. See `.claude/plans/agent-docs-audit.md` for ownership rules and execution steps.
-
-- [ ] Outcome: every agent-facing rule has a single canonical owner and non-canonical mentions become pointers
-- [ ] Outcome: ownership rules are documented in one agent-readable location so future edits know where to place new content
-- [ ] Outcome: the drift-check mechanism is either verified as sufficient or a gap is recorded
-
-> Test strategy: manual, spot-check three previously-duplicated rules and confirm they now appear in one surface with pointers from the others.
