@@ -15,35 +15,30 @@ docs/
 └── snippets.md        ← this file
 ```
 
-Base snippets live at the root. Category snippets live in a named subfolder. The folder structure is preserved on install. A snippet at `claude/edit.md` installs as `snippets/claude/edit.md` and is invoked as `@snippets/claude/edit`.
+Base snippets live at the root. Category snippets live in a named subfolder. The folder structure is preserved on install. A snippet at `claude/figma.md` installs as `snippets/claude/figma.md` and is invoked as `@snippets/claude/figma`.
 
 ## Categories
 
-| Category | Paths                                                                                                                                                        |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `base`   | chat-mode, compact-summary, senior-mode, session-notes, code-search, create-snippet, web-research                                                            |
-| `claude` | claude/edit, claude/figma, claude/prose-audit, claude/research-prompt, claude/seed-audit, claude/steps, claude/tasks-add, claude/tasks-done, claude/ux-audit |
+| Category | Paths                                                                                                       |
+| -------- | ----------------------------------------------------------------------------------------------------------- |
+| `base`   | compact-summary, senior-mode, session-notes, create-snippet, web-research                                   |
+| `claude` | claude/figma, claude/prose-audit, claude/research-prompt, claude/steps, claude/tasks-add, claude/tasks-done |
 
 ## Snippets
 
 | Path                     | Purpose                                                                   |
 | ------------------------ | ------------------------------------------------------------------------- |
-| `chat-mode`              | Session opener for tool behavior                                          |
 | `senior-mode`            | Senior-level judgment, discuss only                                       |
 | `session-notes`          | Capture session decisions                                                 |
-| `code-search`            | Generate a git grep bash script                                           |
 | `create-snippet`         | Draft a new snippet (chat/Chrome extension)                               |
 | `web-research`           | Search the web and synthesize findings into a decision-ready block        |
 | `compact-summary`        | Summarize research or findings into a compact-summary scannable block     |
-| `claude/edit`            | Generate Claude Code edit prompt                                          |
 | `claude/figma`           | Generate Figma instructions from a design spec                            |
 | `claude/prose-audit`     | Audit a file's prose against `standards/prose.md`                         |
 | `claude/research-prompt` | Generate a research prompt to paste into another AI chat                  |
-| `claude/seed-audit`      | Audit seed files against toolkit source of truth                          |
 | `claude/steps`           | Request step-by-step instructions for any process                         |
 | `claude/tasks-add`       | Add a new task block to the "Up next" queue                               |
 | `claude/tasks-done`      | Move completed task blocks to `TASKS-ARCHIVE.md` and sync the placeholder |
-| `claude/ux-audit`        | UX/UI audit of existing features                                          |
 
 ## CLI
 
