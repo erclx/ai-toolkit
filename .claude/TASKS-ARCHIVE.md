@@ -179,3 +179,19 @@ Two sandbox runs showed the cold review subagent is unreliable. The first run ov
 - [x] Outcome: seed audits remain a manual skill invocation
 
 > Test strategy: manual, run `aitk sync` against a target with claude roles installed and verify role drift lands in the combined PR
+
+### Chore: document the plan-line convention in the tasks preamble
+
+- [x] Outcome: the task block format example in the preamble shows an optional plan line under the title
+- [x] Outcome: the preamble states the ship lifecycle: delete the plan file and remove the plan line from the block
+- [x] Outcome: the seed preamble installed into target projects matches the toolkit's own preamble
+
+> Test strategy: manual, open both tasks boards, confirm the format example shows the plan line and the lifecycle prose matches
+
+### Chore: clean up plans when archiving completed tasks
+
+- [x] Outcome: archiving a completed block with a `Plan:` line deletes the referenced file in `.claude/plans/` if it exists
+- [x] Outcome: archived blocks in `TASKS-ARCHIVE.md` have the `Plan:` line stripped so no dangling pointer remains
+- [x] Outcome: archiving a completed block without a `Plan:` line works as before, with no errors
+
+> Test strategy: manual, create a completed block with a `Plan:` line pointing to an existing plan file, run the archive flow, confirm the plan file is deleted, the archived block has no `Plan:` line, and the Up next queue updates as expected
