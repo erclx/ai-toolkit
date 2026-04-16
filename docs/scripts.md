@@ -2,9 +2,9 @@
 
 ## Overview
 
-`src/` is the TypeScript CLI entry point. It uses commander to register subcommands and execa to dispatch each one to the corresponding `manage-*.sh` script in `scripts/`. All domain logic remains in bash.
+`src/` is the TypeScript CLI entry point. It uses commander to register subcommands and execa to dispatch each one to the corresponding `manage-*.sh` script in `scripts/`. All domain logic remains in bash. Use `@/` absolute imports (mapped to `src/` in `tsconfig.json`).
 
-`scripts/` contains core maintenance scripts, sandbox provisioning, domain entry points, and shared library functions. Lib functions are sourced, never executed directly.
+`scripts/` contains core maintenance scripts, sandbox provisioning, domain entry points, and shared library functions. Lib functions are sourced, never executed directly. Each `manage-*.sh` dispatches to subcommands only: no domain logic lives in entry points directly.
 
 ## Structure
 

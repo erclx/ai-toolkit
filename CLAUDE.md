@@ -18,16 +18,28 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 - Plan before editing: propose what files will change and why before touching anything
 - Confirm with the user before making any edits
 - Flag concerns or alternatives when a proposed change has tradeoffs worth discussing
-- After any edit that changes how a domain works, update the corresponding skill body in `.claude/skills/`
-- When updating skills, load `aitk-claude` and follow `standards/skill.md` conventions
-- After any edit that changes how a domain works, update affected files in `docs/`
-- When updating docs, load `aitk-standards` and follow `standards/prose.md`
-- After editing scripts in a domain that has a sandbox scenario, run `aitk sandbox infra:{domain} install` and `aitk sandbox infra:{domain} sync` to verify. Skip `create` scenarios. They require interactive input and will loop on empty input.
-- When a domain has a `create` command (`aitk tooling create`, `aitk snippets create`), invoke it rather than hand-creating the folder structure. Pass inputs as args and prefix with `AITK_NON_INTERACTIVE=1` when no prompting is needed.
-- For any git operation (commits, PRs, branch naming), always use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
-- Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`. Not required for other domains.
+
+## After editing
+
+- Update the corresponding skill body in `.claude/skills/`. Load `aitk-claude` and follow `standards/skill.md` conventions.
+- Update affected files in `docs/`. Load `aitk-standards` and follow `standards/prose.md`.
+
+## Conventions
+
+- For any git operation (commits, PRs, branch naming), use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For any navigable markdown folder, add an `index.md` listing each file with a one-line description. Exception: scratch folders like `.claude/plans/` and `.claude/review/` where contents change frequently or are gitignored.
+- For folders where an agent browses to pick a document (`docs/`, `standards/`, `wiki/`), add an `index.md` listing each file with a one-line description. Code folders and scratch folders (`.claude/plans/`, `.claude/review/`) do not need one.
+
+## Content ownership
+
+Each rule or knowledge item lives in exactly one surface. Other surfaces point, never duplicate.
+
+- Cross-domain behavior or design principle: `CLAUDE.md`
+- Behavior triggered only when editing domain X: `.claude/skills/aitk-<X>/SKILL.md`
+- Narrative or conceptual knowledge about domain X: `docs/<X>.md`
+- CLI command surface or invocation contract: `docs/agents.md`
+
+When adding new content, place it in the canonical owner. If another surface needs awareness, add a one-line pointer.
 
 ## System overview
 

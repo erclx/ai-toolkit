@@ -5,24 +5,16 @@ description: CLI entry point, bash scripts, sandbox scenarios, and lib functions
 
 # Scripts
 
-## TypeScript dispatch layer
+Read `docs/scripts.md` for structure, file inventory, and lib responsibilities before editing.
 
-- `src/cli.ts` is the `aitk` entry point. It registers subcommands via commander and dispatches each to the corresponding `manage-*.sh` script via execa.
-- `src/exec.ts` resolves `PROJECT_ROOT` from `import.meta.dir` and exports `execScript`, the shared spawn helper.
-- `src/ui.ts` provides terminal UI primitives (`intro`, `outro`, `select`, `confirm`) matching the `❯` arrow style from `lib/ui.sh`
-- `src/commands/*.ts` each export a `register` function. One file per domain. Most are pass-through dispatchers. `sandbox.ts` uses the shared `select` for the interactive picker, then execs bash with the resolved command.
-- Use `@/` absolute imports (mapped to `src/` in `tsconfig.json`).
+## Before editing
 
-## Bash entry points
+- Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`.
 
-- `manage-*.sh` files dispatch to subcommands only. No logic lives in entry points directly.
-- Each `manage-*.sh` maps to one domain. Do not cross domains in a single entry point.
+## Lib rules
 
-## Lib functions
-
-- `lib/` contains shared functions sourced by scripts. Never duplicate logic that already exists there.
 - Each lib file owns one concern. Read `docs/scripts.md` for responsibilities before adding or modifying.
-- When adding a function to `lib/`, check if any existing script duplicates the logic and consolidate.
+- Never duplicate logic that already exists in `lib/`. When adding a function, check if any existing script duplicates the logic and consolidate.
 
 ## Sandbox pattern
 
@@ -38,8 +30,13 @@ When adding a command to any `manage-*.sh`:
 - Update the corresponding scenario list in `scripts/sandbox/infra/*.sh`
 - Update the CLI table in `README.md`
 
-## Full reference
+After editing scripts in a domain that has a sandbox scenario:
 
-- `docs/scripts.md`: scripts structure, core scripts, lib responsibilities
-- `docs/sandbox.md`: sandbox system, hook pattern, provisioning flow
+- Run `aitk sandbox infra:{domain} install` and `aitk sandbox infra:{domain} sync` to verify
+- Skip `create` scenarios. They require interactive input and will loop on empty input.
+
+## Reference
+
+- `docs/scripts.md`: structure, file inventory, core scripts, lib responsibilities
+- `docs/sandbox.md`: sandbox system, hook pattern, provisioning flow, scenario catalog
 - `prompts/bash-script.md`: bash style rules

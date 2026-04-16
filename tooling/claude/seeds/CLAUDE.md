@@ -14,7 +14,7 @@
 ## Rules
 
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For any navigable markdown folder, add an `index.md` listing each file with a one-line description. Exception: scratch folders like `.claude/plans/` and `.claude/review/` where contents change frequently or are gitignored.
+- For folders where an agent browses to pick a document, add an `index.md` listing each file with a one-line description. Code folders and scratch folders do not need one.
 - When editing any markdown file, follow `standards/prose.md`.
 - When editing any markdown file, read surrounding content first and match its depth, length, and tone
 

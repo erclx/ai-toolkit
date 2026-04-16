@@ -99,3 +99,13 @@ Depends on the audit above. Scaffold the sandboxes flagged as high value. Start 
 - [x] Outcome: running `aitk sandbox claude:autoship` provisions a `.sandbox/` where `/claude-autoship` can be invoked end-to-end from Claude Code
 
 > Test strategy: manual, run each new sandbox scenario, open Claude Code in `.sandbox/`, invoke the skill, confirm the scenario stages the correct happy-path starting state.
+
+### Reconcile overlap across agent documentation surfaces
+
+Each rule or knowledge item should live in exactly one of three surfaces: project instructions, domain-scoped skills, narrative references. Today the same guidance appears in more than one place, creating drift risk as the repo grows. See `.claude/plans/agent-docs-audit.md` for ownership rules and execution steps.
+
+- [x] Outcome: every agent-facing rule has a single canonical owner and non-canonical mentions become pointers
+- [x] Outcome: ownership rules are documented in one agent-readable location so future edits know where to place new content
+- [x] Outcome: the drift-check mechanism is either verified as sufficient or a gap is recorded
+
+> Test strategy: manual, spot-check three previously-duplicated rules and confirm they now appear in one surface with pointers from the others.
