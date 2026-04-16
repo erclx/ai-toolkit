@@ -92,6 +92,14 @@ If `.claude/GOV.md` exists in the target after governance sync, it is regenerate
 
 The git workflow step is skipped if the target is not a git root (no `.git/`), `gh` is not installed, or `chore/toolkit-sync` already exists locally or on the remote.
 
+## UI framing across exec boundaries
+
+`manage-*.sh` dispatchers that hand off via `exec` lose any trap set in the parent, so a parent-opened `┌` block never closes. Each subcommand script under `scripts/<domain>/` owns its own frame: open `┌` and print a title line at the top of `main()`, before any `select_option` or `ask` call. Only open the parent frame in the dispatcher when the picker is needed to resolve the subcommand name, then close it with `└` before `exec`.
+
+- `scripts/manage-tooling.sh` is the reference for conditional parent framing
+- `scripts/tooling/{list,ref,sync,create}.sh` each open `┌` and print `│ aitk tooling <subcommand>` at the top of `main()`
+- Prompts and `log_*` calls assume a frame is open. Opening the frame early prevents dangling `│` output on error paths.
+
 ## lib
 
 **`ui.sh`**: source this in any script that needs terminal output. Provides the color palette, all `log_*` functions, `select_option` and `ask` for user prompts, `select_or_route_scenario` for sandbox scenario routing, `guard_root` (rejects toolkit root as a target), and `require_project_root`. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`.
@@ -99,3 +107,5 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 **`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
 **`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names. When provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
+
+**`tooling.sh`**: defines `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.

@@ -24,7 +24,14 @@ tooling/
 └── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see docs/claude.md
 ```
 
-`tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. It is excluded from `aitk tooling list`, `sync`, `ref`, and `create` via `scripts/lib/tooling.sh`. Treat it as storage, not a stack.
+`tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
+
+## Stack exclusions
+
+`scripts/lib/tooling.sh` centralizes the exclusion list via `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. The four tooling subcommands (`list`, `ref`, `sync`, `create`) consume the helper for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1.
+
+- `claude` is the current exclusion. Route claude work through `aitk claude` instead.
+- Any future folder under `tooling/` that is not a real stack routes through the same helper.
 
 ## Configs, seeds, and references
 
