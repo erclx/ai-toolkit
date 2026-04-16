@@ -64,7 +64,7 @@ Plan: `.claude/plans/feature-frontmatter-descriptions.md`
 - [ ] Outcome: the toolkit's own `.claude/GOV.md` carries the preamble after a regen
 - [ ] Outcome: the preamble in the seed matches what the generator emits, so target projects see the same header
 
-> Test strategy: manual, regenerate `.claude/GOV.md` via `aitk claude gov` and confirm the preamble is the first line; regenerate in a fresh sandbox target and confirm parity
+> Test strategy: manual, regenerate `.claude/GOV.md` via `aitk claude gov` and confirm the preamble is the first line, then regenerate in a fresh sandbox target and confirm parity
 
 ### Chore: clarify content ownership between CLAUDE.md, ARCHITECTURE.md, and docs
 
