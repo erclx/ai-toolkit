@@ -24,7 +24,7 @@ Run `aitk claude init` to seed the `.claude/` directory and a root `CLAUDE.md` f
 
 ### New feature
 
-One session works for most features. Prefer splitting across two sessions only when the feature is large enough that you want a cold, independent reviewer on the diff. Session 1 covers planning and implementation; session 2 covers review and ship.
+One session works for most features. Prefer splitting across two sessions only when the feature is large enough that you want a cold, independent reviewer on the diff. Plan and implement in session 1, then review and ship in session 2.
 
 #### Session 1
 
@@ -57,7 +57,7 @@ Caveats: `.claude/TASKS.md` is a single file. If multiple sessions edit it concu
 
 ### Autonomous ship
 
-For features on a mature stack, chain the post-plan pipeline in one session. Approve the plan, invoke `toolkit:claude-autoship`, and the skill runs implement → verify → cold review → ship sequentially. The reviewer runs as a subagent with diff-only context, so independence is preserved without a second session.
+For features on a mature stack, chain the post-plan pipeline in one session. Approve the plan, invoke `toolkit:claude-autoship`, and the skill runs implement → verify → review → ship sequentially.
 
 - Use when the plan is tight and the stack has real verify commands and test coverage
 - Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, any review finding above minor, or hook failure
@@ -83,11 +83,11 @@ Invoke `toolkit:claude-review` at the start of session 2. It reads all changed f
 | Skill                          | When to use                                                                      |
 | ------------------------------ | -------------------------------------------------------------------------------- |
 | `toolkit:claude-feature`       | Before implementation, scan for conflicts and ambiguities                        |
-| `toolkit:claude-review`        | In a fresh session or as a subagent, review all changes since main               |
+| `toolkit:claude-review`        | In a fresh session, review all changes since main                                |
 | `toolkit:claude-docs`          | When decisions diverged from plan, update `.claude/` docs                        |
 | `toolkit:claude-ui-test`       | After UI changes, generate and run e2e tests + visual checklist                  |
 | `toolkit:claude-ux-audit`      | Audit existing UI surfaces for missing states, edge cases, inconsistencies       |
-| `toolkit:claude-autoship`      | After plan approval, chain implement → verify → cold review → draft PR           |
+| `toolkit:claude-autoship`      | After plan approval, chain implement → verify → review → draft PR                |
 | `toolkit:systematic-debugging` | When a test fails or bug surfaces, enforce root-cause investigation before fixes |
 | `toolkit:git-ship`             | Post-feature: sync docs, commit, rename branch, open PR                          |
 

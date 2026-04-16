@@ -1,6 +1,6 @@
 ---
 name: claude-autoship
-description: Chains implement → verify → cold review → ship after a feature plan is approved. Reads the plan for the current branch, runs the full pipeline in one session, and stops on any failure or non-minor review finding. Use when asked to "autoship", "ship this feature end to end", or "run the chain". Do NOT auto-trigger. Requires an approved plan file.
+description: Chains implement → verify → review → ship after a feature plan is approved. Reads the plan for the current branch, runs the full pipeline in one session, and stops on any failure or non-minor review finding. Use when asked to "autoship", "ship this feature end to end", or "run the chain". Do NOT auto-trigger. Requires an approved plan file.
 disable-model-invocation: true
 ---
 
@@ -40,11 +40,9 @@ If `claude-ui-test` produces a manual checklist, stop: `❌ UI requires visual v
 
 If all UI changes are covered by e2e tests, continue.
 
-## Step 5: cold review
+## Step 5: review
 
-Spawn a subagent using the Agent tool. The subagent must not inherit implementation context from this session. Prompt it to invoke `toolkit:claude-review` and return when `claude-review` has written `.claude/review/review-<slug>.md`.
-
-The subagent provides reviewer independence that a same-session invocation cannot.
+Invoke `toolkit:claude-review`.
 
 ## Step 6: evaluate findings
 
@@ -57,9 +55,16 @@ Do not auto-fix findings. The stop here is deliberate.
 
 ## Step 7: ship
 
-Invoke `toolkit:git-ship` to run the ship sequence (docs sync, commit by concern, branch rename, PR open).
+Invoke each sub-skill in order via the Skill tool. After each returns, invoke the next immediately. Do not output text between steps.
 
-After `git-ship` completes, mark the PR as draft:
+1. `toolkit:claude-docs`: sync `.claude/` planning docs against session decisions
+2. `toolkit:docs-sync`: sync public docs against changes since main
+3. Run `git add -A` to stage files the sync skills wrote
+4. `toolkit:git-stage`: group staged changes and commit by concern
+5. `toolkit:git-branch`: rename the branch to conventional format
+6. `toolkit:git-pr`: push and open the pull request
+
+After the PR is created, mark it as draft:
 
 ```bash
 gh pr ready --undo

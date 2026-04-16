@@ -12,7 +12,7 @@ claude/
 │   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
 │   ├── claude-ui-test/      ← generate and run Playwright e2e tests for UI changes
 │   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
-│   ├── claude-autoship/     ← chain implement → verify → cold review → ship after a plan is approved
+│   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
 │   ├── create-skill/        ← create a new skill file in .claude/skills/
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
@@ -65,7 +65,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `claude-seed-sync`     | Audit installed seed docs against current toolkit seeds and propose per-section edits |
 | `claude-ui-test`       | Generate and run Playwright e2e tests, with manual checklist for visual-only items    |
 | `claude-ux-audit`      | Audit existing UI surfaces for missing states, edge cases, and inconsistencies        |
-| `claude-autoship`      | Chain implement → verify → cold review → ship after a plan is approved                |
+| `claude-autoship`      | Chain implement → verify → review → ship after a plan is approved                     |
 | `create-skill`         | Create a new skill file in .claude/skills/                                            |
 | `create-snippet`       | Create a new snippet file in snippets/                                                |
 | `docs-sync`            | Rewrite stale README.md and docs/\*.md sections since main                            |
@@ -81,7 +81,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `session-resume`       | Resume from tracked work and relevant context at session start                        |
 | `systematic-debugging` | Enforce root-cause investigation before fixes when a test fails or a bug surfaces     |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-review`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
 ## Internal skills
 
@@ -125,7 +125,7 @@ Installs role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) into `.cla
 
 ### seeds
 
-`aitk claude seeds list [--json|--names]` enumerates the seed docs that `aitk claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content; reconciliation is the skill's job (see `claude-seed-sync`).
+`aitk claude seeds list [--json|--names]` enumerates the seed docs that `aitk claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content. Reconciliation is the skill's job (see `claude-seed-sync`).
 
 ### sync
 

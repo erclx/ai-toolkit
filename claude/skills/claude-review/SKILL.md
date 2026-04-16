@@ -1,7 +1,6 @@
 ---
 name: claude-review
-description: Reviews all changes since main for bugs, edge cases, and logic flaws. Reads CLAUDE.md, REQUIREMENTS.md, ARCHITECTURE.md, and GOV.md for context, then applies a structured review to the full diff and outputs a findings report. Use when asked to review changes, run a code review, or check the current branch. Invoke explicitly with /claude-review. Do NOT auto-trigger.
-disable-model-invocation: true
+description: Reviews all changes since main for bugs, edge cases, and logic flaws. Reads CLAUDE.md, REQUIREMENTS.md, ARCHITECTURE.md, and GOV.md for context, then applies a structured review to the full diff and outputs a findings report. Use when asked to review changes, run a code review, or check the current branch. Do NOT auto-trigger on vague signals like "looks good" or "can you check this". Require an explicit review request or an autoship invocation.
 ---
 
 # Claude review
@@ -45,7 +44,7 @@ If `git diff --staged` is non-empty, use it as the diff scope and use the `--sta
 
 Read each file from the changed file list. Skip deleted files. Run reads in parallel.
 
-## Step 4: review
+## Step 4: review and persist
 
 Review the full diff and changed file contents for:
 
@@ -63,7 +62,7 @@ Use `CLAUDE.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, and `GOV.md` as project c
 - **should-fix**: fix in same session while context is fresh. Not a blocker.
 - **minor**: not worth fixing now. Include for visibility.
 
-### Output format
+### Report format
 
 Start with a summary line. Group findings by file. Within each file, list findings sorted by severity (critical first, then should-fix, then minor). Omit files with no findings.
 
@@ -82,14 +81,25 @@ File: path/to/other.ext
 - **minor**: finding
 ```
 
-If nothing is wrong, say so: `✅ No findings.`
+If nothing is wrong, use: `✅ No findings.`
 
-## Step 5: persist the report
+### Persist
 
 Derive a slug from the current git branch: run `git branch --show-current` and replace any `/` with `-`. If the result is empty (detached HEAD), use `latest`.
 
-Write the full findings report, including the summary line and per-file blocks, to `.claude/review/review-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/review-<slug>.md` after the chat report.
+Write the full report directly to `.claude/review/review-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite.
 
 If there are no findings, write `✅ No findings.` to the file with a timestamp.
 
 The `.claude/review/` directory is gitignored. Do not stage or commit the file.
+
+### Chat output
+
+Output only the summary line and the file path. Do not repeat the full report in chat.
+
+```
+X critical, Y should-fix, Z minor across N files.
+📝 Wrote .claude/review/review-<slug>.md
+```
+
+If no findings: `✅ No findings. Wrote .claude/review/review-<slug>.md`

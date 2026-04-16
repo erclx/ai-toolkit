@@ -41,7 +41,7 @@ test('description of user flow', async ({ page }) => {
 
 ## Manual checklist
 
-For visual-only items that cannot be asserted programmatically, output a checklist. Group by feature area. Use `- [ ]` checkbox syntax.
+For visual-only items that cannot be asserted programmatically, produce a checklist. Group by feature area. Use `- [ ]` checkbox syntax.
 
 ```
 **What to verify visually:**
@@ -55,11 +55,11 @@ If all changes are automatable, skip the manual checklist:
 
 `✅ All changes covered by e2e tests. No manual verification needed.`
 
-## Persist the checklist
+### Persist the checklist
 
 Derive a slug from the current git branch: run `git branch --show-current` and replace any `/` with `-`. If the result is empty (detached HEAD), use `latest`.
 
-When a manual checklist is produced, write it to `.claude/review/ui-checklist-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/ui-checklist-<slug>.md` after the chat checklist.
+When a manual checklist is produced, write it directly to `.claude/review/ui-checklist-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite.
 
 Skip the file write when all changes are covered by e2e tests and no checklist was produced.
 
@@ -68,5 +68,8 @@ The `.claude/review/` directory is gitignored. Do not stage or commit the file.
 ## Output order
 
 1. Write and run e2e tests (report pass/fail)
-2. Output manual checklist for visual-only items (if any)
-3. Persist checklist to file (if one was produced)
+2. If a manual checklist was produced, write it to file, then output only the file path in chat:
+   `📝 Wrote .claude/review/ui-checklist-<slug>.md`
+3. If no checklist was needed: `✅ All changes covered by e2e tests. No manual verification needed.`
+
+Do not repeat the full checklist in chat.
