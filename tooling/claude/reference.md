@@ -45,3 +45,4 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 - Planner governance is injected inline by `aitk claude prompt` using the `planner` stack from the toolkit. No separate build step needed.
 - `CLAUDE.md` ships as a seed with placeholder project name, description, and key paths. Fill these in after init.
 - Seed docs ship with a guidelines preamble above the first H2. These are instructions Claude internalizes before filling in the sections below. They are not sections to populate.
+- `settings.json` seeds `attribution.commit` and `attribution.pr` as empty strings to suppress co-author tags. The deprecated `includeCoAuthoredBy` key is not used.
