@@ -55,7 +55,7 @@ Move `claude-feature`, `claude-review`, and `claude-ui-test` outputs into readab
 
 ### Subagent pattern wiki page
 
-The toolkit now uses subagents in `claude-autoship` to run `claude-review` with cold-reviewer independence. The pattern is not documented as its own page — mentions are scattered across `wiki/claude-hooks.md`, `wiki/claude-skills.md`, and `wiki/community-skills.md`. Skill authors have no single reference for when and how to reach for a subagent.
+The toolkit now uses subagents in `claude-autoship` to run `claude-review` with cold-reviewer independence. The pattern is not documented as its own page. Mentions are scattered across `wiki/claude-hooks.md`, `wiki/claude-skills.md`, and `wiki/community-skills.md`. Skill authors have no single reference for when and how to reach for a subagent.
 
 Goal: add `wiki/claude-subagents.md` covering how subagents scope context, the three cases to reach for them in a skill (independence, context isolation, parallel lenses), parallel vs sequential invocation, and pitfalls. Use the `claude-code-guide` agent in a fresh session for current Anthropic docs.
 
@@ -109,3 +109,31 @@ Each rule or knowledge item should live in exactly one of three surfaces: projec
 - [x] Outcome: the drift-check mechanism is either verified as sufficient or a gap is recorded
 
 > Test strategy: manual, spot-check three previously-duplicated rules and confirm they now appear in one surface with pointers from the others.
+
+### Eliminate double-write in skills that persist output
+
+`claude-feature`, `claude-review`, `claude-ux-audit`, and `claude-ui-test` all generate output twice: once in chat, then the same content to a file. This wastes tokens and makes the user wait through duplicate generation. Each skill should write the file directly and output only the path.
+
+- [x] Outcome: all four skills write output to file only, then print the path
+- [x] Outcome: `claude-autoship` still reads `.claude/review/review-<slug>.md` without changes (file contract unchanged)
+
+> Test strategy: manual, invoke each skill in its sandbox and confirm output appears only in the file with the path shown in chat.
+
+### Autoship should inline git-ship steps instead of invoking it
+
+`claude-autoship` step 7 calls `toolkit:git-ship`, but git-ship has `disable-model-invocation: true` which blocks the Skill tool. Claude works around it by reimplementing the steps ad-hoc, which is fragile and incomplete. Observed failures include no PR opened and the plan file deleted prematurely. Autoship should own the ship sequence directly, covering docs-sync, commit by concern, branch rename, push, and PR open, instead of delegating to a restricted skill.
+
+- [x] Outcome: autoship step 7 lists the ship sub-steps inline in SKILL.md
+- [x] Outcome: git-ship remains `disable-model-invocation: true` (no change)
+- [x] Outcome: autoship sandbox completes end-to-end including PR creation
+
+> Test strategy: manual, run `/claude-autoship` in `claude:autoship` sandbox and confirm PR opens on `erclx/toolkit-sandbox`.
+
+### Drop the autoship cold review subagent
+
+Two sandbox runs showed the cold review subagent is unreliable. The first run over-explored with 25 tool calls and 17.5k tokens for a 4-line diff. The second run inherited the wrong working directory, produced a broken review, and ignored its "do not explore" constraint on retry. Invoke the skill directly from the main session instead.
+
+- [x] Outcome: autoship step 5 invokes `claude-review` directly without a subagent
+- [x] Outcome: sandbox autoship completes end-to-end with the direct-invocation review
+
+> Test strategy: manual, run `/claude-autoship` in `claude:autoship` sandbox and confirm the review step produces a valid findings file and the pipeline opens a PR.

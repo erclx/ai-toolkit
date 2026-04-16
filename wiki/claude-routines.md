@@ -17,7 +17,7 @@ A routine starts when one of its triggers matches. A single routine can mix all 
 Three surfaces, all writing to the same cloud account:
 
 - Web: `claude.ai/code/routines`. Only surface that can configure API and GitHub triggers
-- CLI: `/schedule [description]` walks through the same form conversationally. Creates schedule-only triggers; edit on the web to add API or GitHub
+- CLI: `/schedule [description]` walks through the same form conversationally. Creates schedule-only triggers. API and GitHub triggers require the web surface.
 - Desktop: `New task` then `New remote task`. `New local task` instead creates a [Desktop scheduled task](https://code.claude.com/docs/en/desktop-scheduled-tasks), which runs on your machine and is not a routine
 
 CLI also supports `/schedule list`, `/schedule update`, and `/schedule run` for managing existing routines.

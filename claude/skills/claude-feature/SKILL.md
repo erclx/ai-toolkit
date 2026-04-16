@@ -26,17 +26,17 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 Based on the feature description, identify and read source files that are directly relevant. Do not read entire directories speculatively.
 
-## Step 3: output the plan
+## Step 3: build the plan
 
-**Files to touch:** list each file with a one-line reason
+Construct the plan with three sections:
 
-**Risks:** list conflicts, coupling, or tricky spots. If none, write `None identified.`
+- **Files to touch:** each file with a one-line reason
+- **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
+- **Questions:** numbered list of things to resolve before starting. If none, use `None identified.`
 
-**Questions:** numbered list of things to resolve before starting. If none, write `None identified.`
+## Step 4: persist
 
-## Step 4: persist the plan
-
-Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan block (Files to touch, Risks, Questions) to `.claude/plans/feature-<slug>.md` from the project root. Create the directory if it does not exist.
+Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan directly to `.claude/plans/feature-<slug>.md` from the project root. Create the directory if it does not exist.
 
 File format:
 
@@ -58,8 +58,21 @@ File format:
 1. <question>
 ```
 
-Output `📝 Wrote .claude/plans/feature-<slug>.md` after the chat plan.
-
 The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
 
-Stop here. Do not proceed to implementation until the user explicitly says to continue.
+## Step 5: chat output
+
+Output only the file path and the Questions section (so the user can resolve them inline before approving). Do not repeat Files to touch or Risks in chat. They live in the file.
+
+```
+📝 Wrote .claude/plans/feature-<slug>.md
+
+**Questions:**
+
+1. <question>
+2. <question>
+```
+
+If there are no questions, output only the path line and stop.
+
+Do not proceed to implementation until the user explicitly says to continue.
