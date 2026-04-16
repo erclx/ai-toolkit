@@ -4,6 +4,6 @@
     "pr": ""
   },
   "permissions": {
-    "deny": ["Read(.env.local)", "Read(.env.*)"]
+    "deny": ["Read(./.env.local)", "Read(./.env.*)"]
   }
 }
