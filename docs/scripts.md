@@ -107,6 +107,8 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 **`ui.sh`**: source this in any script that needs terminal output. Provides the color palette, all `log_*` functions, `select_option` and `ask` for user prompts, `select_or_route_scenario` for sandbox scenario routing, `guard_root` (rejects toolkit root as a target), and `require_project_root`. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`.
 
+`log_*` functions write to stderr so structured output on stdout pipes clean through wrappers. Use `printf` or `echo` without redirection for data meant to be consumed. When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
+
 **`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
 **`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names. When provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
