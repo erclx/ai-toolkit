@@ -35,6 +35,8 @@ Task block format:
 > Test strategy: <unit | component | e2e | visual | manual>, what is being verified
 ```
 
+## Up next
+
 ### Chore: remove the project snapshot script from claude tooling
 
 - [x] Outcome: `aitk claude init` no longer installs a snapshot script into target projects
@@ -84,3 +86,22 @@ Plan: `.claude/plans/research-curated-mcp-list.md`
 - [x] Outcome: the page links to upstream registries or curated lists for cross-reference
 
 > Test strategy: manual, open the wiki page and confirm it distinguishes must-have from niche across development and productivity categories
+
+### Feature: generated domain indexes on install and sync
+
+Plan: `.claude/plans/feature-generated-indexes.md`
+
+- [ ] Outcome: `aitk prompts install` writes a `prompts/index.md` in the target that contains only entries for installed files
+- [ ] Outcome: `aitk prompts sync` regenerates the target's `prompts/index.md` based on what is present
+- [ ] Outcome: `aitk standards install` and `aitk standards sync` apply the same pattern to `standards/index.md`
+- [ ] Outcome: docs describe the new generated file category alongside configs, seeds, and references
+
+> Test strategy: manual, install a subset of prompts in a fresh target and confirm the generated index lists only installed entries, then add and remove files to verify the index tracks each change
+
+### Chore: document the plan-line convention in the tasks preamble
+
+- [ ] Outcome: the task block format example in the preamble shows an optional plan line under the title
+- [ ] Outcome: the preamble states the ship lifecycle: delete the plan file and remove the plan line from the block
+- [ ] Outcome: the seed preamble installed into target projects matches the toolkit's own preamble
+
+> Test strategy: manual, open both tasks boards, confirm the format example shows the plan line and the lifecycle prose matches
