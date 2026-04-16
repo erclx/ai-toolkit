@@ -4,7 +4,7 @@ import { execScript } from '@/exec'
 export function register(program: Command): void {
   program
     .command('standards')
-    .description('Standards commands (install, sync)')
+    .description('Standards commands (install, sync, list)')
     .allowUnknownOption()
     .allowExcessArguments(true)
     .passThroughOptions()
