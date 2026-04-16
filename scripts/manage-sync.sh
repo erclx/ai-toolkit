@@ -287,9 +287,9 @@ run_git_workflow() {
 
   echo -e "${GREY}┌${NC}" >&2
   echo -e "${GREY}│${NC} ${WHITE}aitk sync → git${NC}" >&2
-  echo -e "${GREY}├${NC} ${WHITE}Preview${NC}" >&2
   trap close_timeline EXIT
 
+  log_step "Preview"
   log_info "Domains: $domain_list"
   log_info "Branch:  $branch"
   log_info "Commit:  $commit_msg"
@@ -337,9 +337,9 @@ main() {
 
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}│${NC} ${WHITE}aitk sync${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Checking working tree${NC}"
   trap close_timeline EXIT
 
+  log_step "Checking working tree"
   check_clean_tree "$target"
 
   log_step "Detecting domains"
