@@ -30,6 +30,11 @@ scripts/sandbox/
 │   ├── stage.sh       ← staged changes scenario for testing /git:stage
 │   ├── split.sh       ← scenarios for /git:split (independent, stacked)
 │   └── ship.sh        ← scenarios for /git:ship (without-changelog, with-changelog)
+├── claude/
+│   ├── autoship.sh    ← approved plan on feature branch for testing /claude-autoship
+│   ├── review.sh      ← branch with known bugs for testing /claude-review
+│   ├── feature.sh     ← project with docs for testing /claude-feature
+│   └── seed-sync.sh   ← drifted seeds for testing /claude-seed-sync
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment
@@ -68,7 +73,7 @@ Each sandbox is a `.sh` file with two optional hook functions and a required `st
 
 ### stage_setup
 
-`stage_setup` sets up scenario-specific state. It runs inside `.sandbox/` after provisioning and asset injection are complete.
+`stage_setup` sets up scenario-specific state. It runs inside `.sandbox/` after provisioning and asset injection are complete. Commit messages inside `stage_setup` must follow `standards/commit.md` conventions.
 
 ```bash
 stage_setup() {

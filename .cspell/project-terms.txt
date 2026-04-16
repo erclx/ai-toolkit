@@ -3,6 +3,7 @@ agentic
 aitk
 anthropics
 arch
+autoincrement
 automatable
 autoship
 autoshipped
