@@ -38,7 +38,7 @@ user-invocable: false # only Claude can invoke
 allowed-tools: Read Grep Glob # pre-approve tools while skill is active
 model: claude-opus-4-6 # override session model
 effort: high # override session effort level
-context: fork # run as a forked subagent
+context: fork # run as a forked subagent, see claude-subagents.md
 agent: Explore # subagent type when context: fork
 hooks: ... # skill-scoped hooks
 paths: 'src/api/**/*.ts' # auto-load only when matching files are in scope

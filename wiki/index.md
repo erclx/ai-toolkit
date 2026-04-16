@@ -7,6 +7,7 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Claude Code hooks](claude-hooks.md): event hooks, configuration, and behavior control
 - [Claude Code memory](claude-memory.md): CLAUDE.md hierarchy, auto-memory, and rules files
 - [Claude Code skills](claude-skills.md): skills, plugins, invocation, and installation
+- [Claude Code subagents](claude-subagents.md): when and how a skill should spawn a subagent, parallel vs sequential, and pitfalls
 - [Community skills and plugins](community-skills.md): notable third-party skills, official Anthropic plugins, and curated lists
 - [Claude Code plan mode](claude-plan-mode.md): read-only exploration and plan approval flow
 - [Claude Code MCP](claude-mcp.md): server configuration, scopes, authentication, and tool naming

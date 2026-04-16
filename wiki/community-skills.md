@@ -18,7 +18,7 @@ A separate repo, [anthropics/claude-code-security-review](https://github.com/ant
 
 ### obra/superpowers
 
-[Jesse Vincent's](https://github.com/obra/superpowers) methodology-first skill library, accepted into the official Claude plugins marketplace. Standouts are `systematic-debugging` (four-phase hypothesis, evidence, test, repeat), `root-cause-tracing` (forces investigation over patch-and-move-on), and `subagent-driven-development` (parallel subagents with two-stage review). Opinionated and token-heavy. Adapt the patterns, not the prose.
+[Jesse Vincent's](https://github.com/obra/superpowers) methodology-first skill library, accepted into the official Claude plugins marketplace. Standouts are `systematic-debugging` (four-phase hypothesis, evidence, test, repeat), `root-cause-tracing` (forces investigation over patch-and-move-on), and `subagent-driven-development` (parallel subagents with two-stage review, see [Claude Code subagents](claude-subagents.md)). Opinionated and token-heavy. Adapt the patterns, not the prose.
 
 ### wshobson/agents
 
