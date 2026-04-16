@@ -30,6 +30,11 @@ scripts/sandbox/
 │   ├── stage.sh       ← staged changes scenario for testing /git:stage
 │   ├── split.sh       ← scenarios for /git:split (independent, stacked)
 │   └── ship.sh        ← scenarios for /git:ship (without-changelog, with-changelog)
+├── claude/
+│   ├── autoship.sh    ← approved plan on feature branch for testing /claude-autoship
+│   ├── review.sh      ← branch with known bugs for testing /claude-review
+│   ├── feature.sh     ← project with docs for testing /claude-feature
+│   └── seed-sync.sh   ← drifted seeds for testing /claude-seed-sync
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment

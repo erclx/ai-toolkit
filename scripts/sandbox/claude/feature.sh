@@ -1,0 +1,113 @@
+#!/bin/bash
+set -e
+set -o pipefail
+
+use_config() {
+  export SANDBOX_SKIP_AUTO_COMMIT="true"
+}
+
+stage_setup() {
+  cat <<'EOF' >package.json
+{
+  "name": "sandbox-feature",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module"
+}
+EOF
+
+  cat <<'EOF' >CLAUDE.md
+# My App
+
+Task management API with SQLite storage.
+
+## Commands
+
+- `bun run check`: lint and typecheck
+- `bun run test`: run tests
+
+## Behavior
+
+- All database access goes through `src/db.ts`
+- Route handlers live in `src/routes/`
+- Use Zod for input validation
+EOF
+
+  mkdir -p .claude
+  cat <<'EOF' >.claude/ARCHITECTURE.md
+# Architecture
+
+## Storage
+
+SQLite via better-sqlite3. Single `src/db.ts` module owns the connection and exports typed query functions.
+
+## API layer
+
+Express routes in `src/routes/`. Each route file exports a router. `src/app.ts` mounts them.
+
+## Validation
+
+Zod schemas co-located with route files. Parse request bodies at the handler boundary.
+EOF
+
+  mkdir -p src src/routes
+  cat <<'EOF' >src/db.ts
+import Database from "better-sqlite3";
+
+const db = new Database("tasks.db");
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    done INTEGER DEFAULT 0
+  )
+`);
+
+export function getTasks() {
+  return db.prepare("SELECT * FROM tasks").all();
+}
+
+export function createTask(title: string) {
+  return db.prepare("INSERT INTO tasks (title) VALUES (?)").run(title);
+}
+EOF
+
+  cat <<'EOF' >src/routes/tasks.ts
+import { Router } from "express";
+import { getTasks, createTask } from "../db";
+
+const router = Router();
+
+router.get("/", (_req, res) => {
+  res.json(getTasks());
+});
+
+router.post("/", (req, res) => {
+  const { title } = req.body;
+  const result = createTask(title);
+  res.status(201).json({ id: result.lastInsertRowid });
+});
+
+export default router;
+EOF
+
+  cat <<'EOF' >.claude/TASKS.md
+# Tasks
+
+### Add due dates and priority to tasks
+
+Add a `due` (ISO date string, nullable) and `priority` (enum: low, medium, high, default medium) column to the tasks table. Expose both fields in the create and list endpoints. Validate with Zod.
+
+- [ ] Outcome: tasks table has `due` and `priority` columns
+- [ ] Outcome: POST /tasks accepts and persists both fields
+- [ ] Outcome: GET /tasks returns both fields
+EOF
+
+  git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
+
+  log_step "Scenario ready: feature planning"
+  log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and TASKS.md present"
+  log_info "Action:  /claude-feature (reference the task in TASKS.md)"
+  log_info "Expect:  plan listing files to touch (db.ts, routes/tasks.ts), risks, and questions"
+}
