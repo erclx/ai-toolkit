@@ -41,11 +41,20 @@ Plan: .claude/plans/feature-<slug>.md
 
 ### Feature: generated domain indexes on install and sync
 
-Plan: `.claude/plans/feature-generated-indexes.md`
-
-- [ ] Outcome: `aitk prompts install` writes a `prompts/index.md` in the target that contains only entries for installed files
-- [ ] Outcome: `aitk prompts sync` regenerates the target's `prompts/index.md` based on what is present
-- [ ] Outcome: `aitk standards install` and `aitk standards sync` apply the same pattern to `standards/index.md`
-- [ ] Outcome: docs describe the new generated file category alongside configs, seeds, and references
+- [x] Outcome: `aitk prompts install` writes a `prompts/index.md` in the target that contains only entries for installed files
+- [x] Outcome: `aitk prompts sync` regenerates the target's `prompts/index.md` based on what is present
+- [x] Outcome: `aitk standards install` and `aitk standards sync` apply the same pattern to `standards/index.md`
+- [x] Outcome: docs describe the new generated file category alongside configs, seeds, and references
 
 > Test strategy: manual, install a subset of prompts in a fresh target and confirm the generated index lists only installed entries, then add and remove files to verify the index tracks each change
+
+### Feature: curated descriptions for prompts and standards catalogs
+
+Plan: `.claude/plans/feature-frontmatter-descriptions.md`
+
+- [ ] Outcome: every prompt and standard file carries a frontmatter `description` field with a one-line summary
+- [ ] Outcome: generated `prompts/index.md` and `standards/index.md` show the curated description instead of the file's H1 title
+- [ ] Outcome: `aitk standards list` (and the future `aitk prompts list`) read the same description field, so catalog output matches the index
+- [ ] Outcome: authoring docs and skills describe the new frontmatter convention so new prompts and standards include it by default
+
+> Test strategy: manual, regenerate indexes in the toolkit and confirm each entry uses the curated description, then install a subset into a fresh target and confirm the target index uses the same curated descriptions
