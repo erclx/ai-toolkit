@@ -34,7 +34,7 @@ list_text() {
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
-    title=$(read_h1_title "$file")
+    title=$(read_frontmatter_field "$file" "description")
     log_info "$name — $title"
   done < <(find "$STANDARDS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 }
@@ -46,7 +46,7 @@ list_json() {
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
-    title=$(read_h1_title "$file")
+    title=$(read_frontmatter_field "$file" "description")
     if [ "$first" -eq 0 ]; then
       printf ','
     fi
