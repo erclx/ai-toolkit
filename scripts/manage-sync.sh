@@ -297,18 +297,28 @@ run_git_workflow() {
   log_step "PR body"
   printf "%b\n" "$pr_body" | pipe_output
 
-  select_option "Review changes, then commit and open a PR?" "Yes" "No"
-  if [ "$SELECTED_OPTION" = "No" ]; then
+  select_option "Review changes, then?" "Commit and open PR" "Commit only" "Cancel"
+  case "$SELECTED_OPTION" in
+  "Cancel")
     log_warn "Skipped"
     trap - EXIT
     echo -e "${GREY}└${NC}" >&2
     return
-  fi
+    ;;
+  esac
 
   log_step "Committing"
   git -C "$target" add -A
   git -C "$target" commit -m "$commit_msg"
   git -C "$target" checkout -b "$branch"
+
+  if [ "$SELECTED_OPTION" = "Commit only" ]; then
+    trap - EXIT
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ Committed to $branch. Push and open a PR when ready.${NC}" >&2
+    return
+  fi
+
   git -C "$target" push -u origin "$branch"
 
   log_step "Opening PR"
