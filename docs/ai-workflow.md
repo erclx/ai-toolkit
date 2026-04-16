@@ -103,7 +103,7 @@ review finds  → Session 2 (fix alongside review, before ship)
 
 Claude-specific snippets require the `.claude/` workflow to be set up. For the full list, see `docs/snippets.md`.
 
-| Slug                | When to use                                      |
-| ------------------- | ------------------------------------------------ |
-| `claude-tasks-add`  | Add a new task block to the "Up next" queue      |
-| `claude-tasks-done` | Move completed task blocks to `TASKS-ARCHIVE.md` |
+| Slug                | When to use                                                    |
+| ------------------- | -------------------------------------------------------------- |
+| `claude-tasks-add`  | Add a new task block to the "Up next" queue                    |
+| `claude-tasks-done` | Archive completed task blocks and delete referenced plan files |

@@ -26,19 +26,19 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 
 ## Snippets
 
-| Path                     | Purpose                                                                   |
-| ------------------------ | ------------------------------------------------------------------------- |
-| `senior-mode`            | Senior-level judgment, discuss only                                       |
-| `session-notes`          | Capture session decisions                                                 |
-| `create-snippet`         | Draft a new snippet (chat/Chrome extension)                               |
-| `web-research`           | Search the web and synthesize findings into a decision-ready block        |
-| `compact-summary`        | Summarize research or findings into a compact-summary scannable block     |
-| `claude/figma`           | Generate Figma instructions from a design spec                            |
-| `claude/prose-audit`     | Audit a file's prose against `standards/prose.md`                         |
-| `claude/research-prompt` | Generate a research prompt to paste into another AI chat                  |
-| `claude/steps`           | Request step-by-step instructions for any process                         |
-| `claude/tasks-add`       | Add a new task block to the "Up next" queue                               |
-| `claude/tasks-done`      | Move completed task blocks to `TASKS-ARCHIVE.md` and sync the placeholder |
+| Path                     | Purpose                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| `senior-mode`            | Senior-level judgment, discuss only                                                   |
+| `session-notes`          | Capture session decisions                                                             |
+| `create-snippet`         | Draft a new snippet (chat/Chrome extension)                                           |
+| `web-research`           | Search the web and synthesize findings into a decision-ready block                    |
+| `compact-summary`        | Summarize research or findings into a compact-summary scannable block                 |
+| `claude/figma`           | Generate Figma instructions from a design spec                                        |
+| `claude/prose-audit`     | Audit a file's prose against `standards/prose.md`                                     |
+| `claude/research-prompt` | Generate a research prompt to paste into another AI chat                              |
+| `claude/steps`           | Request step-by-step instructions for any process                                     |
+| `claude/tasks-add`       | Add a new task block to the "Up next" queue                                           |
+| `claude/tasks-done`      | Archive completed task blocks, delete referenced plan files, and sync the placeholder |
 
 ## CLI
 
