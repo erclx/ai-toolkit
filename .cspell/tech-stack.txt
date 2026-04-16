@@ -5,12 +5,16 @@ commander
 crxjs
 cspell
 elif
+excalidraw
 execa
 fastapi
+firecrawl
 gitattributes
+glama
 gsub
 heredoc
 labelledby
+modelcontextprotocol
 modelfile
 mypy
 nextjs
@@ -29,8 +33,11 @@ pytest
 rlength
 semgrep
 statusline
+streamable
 tabindex
 tanstack
+tavily
+tldraw
 tolower
 toupper
 tsconfig
@@ -38,3 +45,6 @@ uv
 uvicorn
 vite
 vitest
+xoxb
+xoxc
+xoxd

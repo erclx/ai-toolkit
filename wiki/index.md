@@ -14,4 +14,6 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Claude Code permissions](claude-permissions.md): modes, allow/ask/deny rules, and rule syntax
 - [Claude Code routines](claude-routines.md): cloud-run agents triggered by schedule, API, or GitHub events
 - [Ollama](ollama.md): run Claude Code on local models, model tiers, context window config, statusline, and web search
+- [Visual wireframes](visual-wireframes.md): tooling research for a visual companion to the ASCII wireframe seed
+- [Community MCP servers](community-mcp-servers.md): curated list of MCP servers for development and productivity, with rankings and install notes
 - [Prose influences](prose-influences.md): industry style guides behind prose.md and AI-specific additions
