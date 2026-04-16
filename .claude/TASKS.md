@@ -37,4 +37,23 @@ Task block format:
 
 ## Up next
 
-### Nothing queued
+### Chore: research visual tooling to augment claude wireframes
+
+Plan: `.claude/plans/research-visual-wireframe-tooling.md`
+
+- [x] Outcome: a wiki page compares candidate tools across Claude Code integration, format readability, license, and install footprint
+- [x] Outcome: the wiki page names a recommended tool and a sketch of how it sits alongside the ASCII wireframe doc
+- [x] Outcome: the page records a decision to proceed to integration, defer, or drop
+
+> Test strategy: manual, open the wiki page and confirm it covers candidate tools, trade-offs, and a final decision
+
+### Chore: research a curated MCP server list for the wiki
+
+Plan: `.claude/plans/research-curated-mcp-list.md`
+
+- [x] Outcome: a wiki page lists MCP servers with transport, license, cost, and maintenance status
+- [x] Outcome: the page separates development and productivity categories
+- [x] Outcome: the page names must-have servers distinct from niche picks
+- [x] Outcome: the page links to upstream registries or curated lists for cross-reference
+
+> Test strategy: manual, open the wiki page and confirm it distinguishes must-have from niche across development and productivity categories
