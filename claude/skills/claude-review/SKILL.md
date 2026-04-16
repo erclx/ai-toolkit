@@ -86,7 +86,9 @@ If nothing is wrong, say so: `✅ No findings.`
 
 ## Step 5: persist the report
 
-Write the full findings report, including the summary line and per-file blocks, to `.claude/review/latest.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/latest.md` after the chat report.
+Derive a slug from the current git branch: run `git branch --show-current` and replace any `/` with `-`. If the result is empty (detached HEAD), use `latest`.
+
+Write the full findings report, including the summary line and per-file blocks, to `.claude/review/review-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite. Output `📝 Wrote .claude/review/review-<slug>.md` after the chat report.
 
 If there are no findings, write `✅ No findings.` to the file with a timestamp.
 

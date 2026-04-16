@@ -1,8 +1,12 @@
+affordances
 agentic
-automatable
 aitk
 anthropics
 arch
+automatable
+autoship
+autoshipped
+autoshipping
 bradlc
 bunx
 changelog
