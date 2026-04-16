@@ -80,6 +80,13 @@ detect_domains() {
     log_warn "antigravity (not installed, skipping)"
   fi
 
+  if [ -d "$target/.claude" ]; then
+    log_info "claude"
+    found=$((found + 1))
+  else
+    log_warn "claude (not installed, skipping)"
+  fi
+
   echo "$found"
 }
 
@@ -107,6 +114,10 @@ run_syncs() {
 
   if [ -d "$target/.agent/workflows" ]; then
     bash "$PROJECT_ROOT/scripts/manage-antigravity.sh" sync "$target"
+  fi
+
+  if [ -d "$target/.claude" ]; then
+    AITK_NON_INTERACTIVE=1 bash "$PROJECT_ROOT/scripts/manage-claude.sh" sync "$target"
   fi
 }
 
@@ -241,6 +252,14 @@ run_git_workflow() {
     domain_verbs["antigravity"]=$(get_domain_verb "$target" ".agent/workflows/")
   fi
 
+  local -a cl_names
+  mapfile -t cl_names < <(get_changed_names "$target" ".claude/PLANNER.md" ".claude/IMPLEMENTER.md" ".claude/REVIEWER.md")
+  if [ "${#cl_names[@]}" -gt 0 ] && [ -n "${cl_names[0]}" ]; then
+    changed_domains+=("claude")
+    changed_files["claude"]="${cl_names[*]}"
+    domain_verbs["claude"]=$(get_domain_verb "$target" ".claude/PLANNER.md" ".claude/IMPLEMENTER.md" ".claude/REVIEWER.md")
+  fi
+
   if [ "${#changed_domains[@]}" -eq 0 ]; then
     return
   fi
@@ -268,9 +287,9 @@ run_git_workflow() {
 
   echo -e "${GREY}┌${NC}" >&2
   echo -e "${GREY}│${NC} ${WHITE}aitk sync → git${NC}" >&2
-  echo -e "${GREY}├${NC} ${WHITE}Preview${NC}" >&2
   trap close_timeline EXIT
 
+  log_step "Preview"
   log_info "Domains: $domain_list"
   log_info "Branch:  $branch"
   log_info "Commit:  $commit_msg"
@@ -278,18 +297,28 @@ run_git_workflow() {
   log_step "PR body"
   printf "%b\n" "$pr_body" | pipe_output
 
-  select_option "Review changes, then commit and open a PR?" "Yes" "No"
-  if [ "$SELECTED_OPTION" = "No" ]; then
+  select_option "Review changes, then?" "Commit and open PR" "Commit only" "Cancel"
+  case "$SELECTED_OPTION" in
+  "Cancel")
     log_warn "Skipped"
     trap - EXIT
     echo -e "${GREY}└${NC}" >&2
     return
-  fi
+    ;;
+  esac
 
   log_step "Committing"
   git -C "$target" add -A
   git -C "$target" commit -m "$commit_msg"
   git -C "$target" checkout -b "$branch"
+
+  if [ "$SELECTED_OPTION" = "Commit only" ]; then
+    trap - EXIT
+    echo -e "${GREY}└${NC}\n" >&2
+    echo -e "${GREEN}✓ Committed to $branch. Push and open a PR when ready.${NC}" >&2
+    return
+  fi
+
   git -C "$target" push -u origin "$branch"
 
   log_step "Opening PR"
@@ -318,9 +347,9 @@ main() {
 
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}│${NC} ${WHITE}aitk sync${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Checking working tree${NC}"
   trap close_timeline EXIT
 
+  log_step "Checking working tree"
   check_clean_tree "$target"
 
   log_step "Detecting domains"
@@ -340,6 +369,10 @@ main() {
 
   run_syncs "$target"
   run_git_workflow "$target"
+
+  if [ -d "$target/.claude" ]; then
+    echo -e "${GREY}Tip: run \`/claude-seed-sync\` to audit seed drift.${NC}" >&2
+  fi
 }
 
 main "$@"

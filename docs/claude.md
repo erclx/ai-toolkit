@@ -131,6 +131,8 @@ Installs role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) into `.cla
 
 Checks seeded project docs and, if roles are installed, diffs them against the toolkit source and applies updates. Never touches seeded project docs. Offers a diff review before applying. Only syncs roles when at least one role file is present in the target.
 
+`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so role drift lands in the combined toolkit-sync PR alongside other domains. Seed audits are not automated. Run the `claude-seed-sync` skill for per-section reconciliation. `aitk sync` prints a tip reminder at the tail.
+
 ### prompt
 
 Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and writes output to `.claude/.tmp/`. Also copies `REVIEWER.md` to `.claude/.tmp/`. Requires roles to be installed.

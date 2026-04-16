@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/tooling.sh"
 
 TOOLING_DIR="$PROJECT_ROOT/tooling"
 
@@ -64,8 +65,10 @@ count_section_keys() {
 
 list_stacks_text() {
   log_step "Stacks"
-  local manifest name extends dev_deps scripts_count gitignore_count
-  for manifest in "$TOOLING_DIR"/*/manifest.toml; do
+  local stack manifest name extends dev_deps scripts_count gitignore_count
+  while IFS= read -r stack; do
+    manifest="$TOOLING_DIR/$stack/manifest.toml"
+    [ ! -f "$manifest" ] && continue
     name=$(read_stack_field "$manifest" "name")
     extends=$(read_stack_field "$manifest" "extends")
     dev_deps=$(count_array_block "$manifest" "dependencies.dev" "packages")
@@ -76,14 +79,16 @@ list_stacks_text() {
     else
       log_info "$name (${dev_deps} dev deps, ${scripts_count} scripts, ${gitignore_count} gitignore groups)"
     fi
-  done
+  done < <(list_tooling_stacks)
 }
 
 list_stacks_json() {
   local first=1
-  local manifest name extends dev_deps scripts_count gitignore_count extends_json
+  local stack manifest name extends dev_deps scripts_count gitignore_count extends_json
   printf '['
-  for manifest in "$TOOLING_DIR"/*/manifest.toml; do
+  while IFS= read -r stack; do
+    manifest="$TOOLING_DIR/$stack/manifest.toml"
+    [ ! -f "$manifest" ] && continue
     name=$(read_stack_field "$manifest" "name")
     extends=$(read_stack_field "$manifest" "extends")
     dev_deps=$(count_array_block "$manifest" "dependencies.dev" "packages")
@@ -100,7 +105,7 @@ list_stacks_json() {
     printf '{"name":"%s","extends":%s,"devDeps":%s,"scripts":%s,"gitignoreGroups":%s}' \
       "$name" "$extends_json" "$dev_deps" "$scripts_count" "$gitignore_count"
     first=0
-  done
+  done < <(list_tooling_stacks)
   printf ']'
 }
 
@@ -126,6 +131,7 @@ main() {
   fi
 
   echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}aitk tooling list${NC}"
   trap close_timeline EXIT
   list_stacks_text
 }

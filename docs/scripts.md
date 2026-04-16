@@ -84,11 +84,21 @@ scripts/
 
 ## manage-sync.sh
 
-`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, prompts for confirmation, then stages everything, commits with `chore(sync): update <domains> from toolkit`, creates `chore/toolkit-sync`, pushes, and opens a PR via `gh`. The PR body lists up to three changed filenames per domain, then a count for the rest.
+`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (the default, stages, commits, creates `chore/toolkit-sync`, pushes, opens a PR via `gh`), "Commit only" (stages, commits, creates the branch, stops before push), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
+
+Claude role sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. Role drift lands under a `claude/` domain line when any of `PLANNER.md`, `IMPLEMENTER.md`, or `REVIEWER.md` changed. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
 If `.claude/GOV.md` exists in the target after governance sync, it is regenerated automatically by calling `manage-claude.sh gov` with `AITK_NON_INTERACTIVE=1`.
 
 The git workflow step is skipped if the target is not a git root (no `.git/`), `gh` is not installed, or `chore/toolkit-sync` already exists locally or on the remote.
+
+## UI framing across exec boundaries
+
+`manage-*.sh` dispatchers that hand off via `exec` lose any trap set in the parent, so a parent-opened `┌` block never closes. Each subcommand script under `scripts/<domain>/` owns its own frame: open `┌` and print a title line at the top of `main()`, before any `select_option` or `ask` call. Only open the parent frame in the dispatcher when the picker is needed to resolve the subcommand name, then close it with `└` before `exec`.
+
+- `scripts/manage-tooling.sh` is the reference for conditional parent framing
+- `scripts/tooling/{list,ref,sync,create}.sh` each open `┌` and print `│ aitk tooling <subcommand>` at the top of `main()`
+- Prompts and `log_*` calls assume a frame is open. Opening the frame early prevents dangling `│` output on error paths.
 
 ## lib
 
@@ -97,3 +107,5 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 **`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
 **`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names. When provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
+
+**`tooling.sh`**: defines `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.

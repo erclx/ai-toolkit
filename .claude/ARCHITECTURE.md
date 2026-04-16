@@ -58,7 +58,7 @@ Rules, stacks, snippets, prompts, and standards are authored in this repo. Targe
 
 ## Where patterns live
 
-- Shared bash: `scripts/lib/` (`ui.sh`, `gov.sh`, `inject.sh`)
+- Shared bash: `scripts/lib/` (`ui.sh`, `gov.sh`, `inject.sh`, `tooling.sh`)
 - Per-domain logic: `scripts/<domain>/*.sh`
 - CLI dispatch: `src/cli.ts` via commander to `scripts/manage-*.sh`
 - Skills (plugin, for target projects): `claude/skills/`

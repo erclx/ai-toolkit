@@ -17,16 +17,21 @@ tooling/
 │   ├── seeds/         ← user-owned dictionary seeds
 │   ├── manifest.toml  ← extends = "base", deps, scripts, gitignore
 │   └── reference.md   ← unified guide for all TS web projects (React, Chrome, Astro, Next)
-├── claude/
-│   ├── configs/       ← Role prompts (e.g. PLANNER.md). Seeded on `init`, overwritten on `sync`.
-│   ├── seeds/         ← User-owned docs (e.g. REQUIREMENTS.md) and CLAUDE.md. Seeded on `init`.
-│   ├── manifest.toml  ← gitignore only, no configs or deps
+├── gemini/
+│   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
+│   ├── manifest.toml  ← gitignore only, no deps or scripts
 │   └── reference.md
-└── gemini/
-    ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
-    ├── manifest.toml  ← gitignore only, no deps or scripts
-    └── reference.md
+└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see docs/claude.md
 ```
+
+`tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
+
+## Stack exclusions
+
+`scripts/lib/tooling.sh` centralizes the exclusion list via `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. The four tooling subcommands (`list`, `ref`, `sync`, `create`) consume the helper for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1.
+
+- `claude` is the current exclusion. Route claude work through `aitk claude` instead.
+- Any future folder under `tooling/` that is not a real stack routes through the same helper.
 
 ## Configs, seeds, and references
 

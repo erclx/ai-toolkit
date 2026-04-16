@@ -24,9 +24,6 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── review/            ← scratch for claude-review and claude-ui-test output, gitignored
 ├── .tmp/              ← ephemeral scratch space, gitignored
 └── memory/            ← session memory files, gitignored
-
-scripts/
-└── snapshot.sh    ← writes project file tree to .claude/.tmp/SNAPSHOT.md
 ```
 
 ## Gitignore
@@ -42,7 +39,6 @@ scripts/
 | `aitk claude prompt` | Injects context into `PLANNER.md` and `IMPLEMENTER.md`, copies `REVIEWER.md` to `.tmp/`, writes all to `.tmp/` |
 | `aitk claude gov`    | Builds governance rules from `.cursor/rules/` and writes to `.claude/GOV.md`                                   |
 | `aitk claude setup`  | Copies `statusline-command.sh` to `~/.claude/` and patches `~/.claude/settings.json`. Run once per machine.    |
-| `npm run snapshot`   | Writes project file tree to `.claude/.tmp/SNAPSHOT.md`                                                         |
 
 ## Notes
 

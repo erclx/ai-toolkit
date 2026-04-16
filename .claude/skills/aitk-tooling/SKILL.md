@@ -10,6 +10,7 @@ Read `docs/tooling.md` for system overview, configs vs seeds vs references, exte
 ## Manifest rules
 
 - In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped.
+- `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
 
 ## Adding a new stack
 
