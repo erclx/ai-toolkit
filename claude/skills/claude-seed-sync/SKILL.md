@@ -24,7 +24,7 @@ The JSON is an array of `{name, source, target, content}`. `target` is the path 
 
 ## Step 2: read installed copies
 
-For each seed in the JSON, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for "Add" treatment. Skip non-text seeds (`.json`) for section diffing — flag a one-line note that the user can manually compare instead.
+For each seed in the JSON, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for "Add" treatment. Skip non-text seeds (`.json`) for section diffing. Flag a one-line note that the user can manually compare instead.
 
 ## Step 3: diff per section
 
@@ -37,7 +37,7 @@ For each seed file present in both sides, parse by `##` headers and compare sect
   - If the target version looks customized (extra bullets, project-specific paths, filled-in placeholders), call it out as **Customized**. Default action: **skip**, ask the user before overwriting.
   - If the target version looks like the original toolkit version with the toolkit having moved on, call it out as **Stale**. Default action: **propose update**.
 
-Do not attempt three-way merge. The user judges intent; the skill makes the judgment legible.
+The user judges intent. The skill makes the judgment legible.
 
 ## Step 4: report
 
@@ -45,9 +45,9 @@ Group findings by file. For each file:
 
 ```
 <target-path>
-  + Add:        <section name>     — <one-line reason>
-  ~ Update:     <section name>     — <one-line reason>
-  ! Customized: <section name>     — skipped by default
+  + Add:        <section name>     : <one-line reason>
+  ~ Update:     <section name>     : <one-line reason>
+  ! Customized: <section name>     : skipped by default
   = Unchanged:  <count> sections
 ```
 

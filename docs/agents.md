@@ -29,16 +29,16 @@ Full help: `aitk <command> --help`.
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain        | Subcommands                                   |
-| ------------- | --------------------------------------------- |
-| `tooling`     | `list`, `sync`, `ref`, `create`               |
-| `snippets`    | `list`, `install`, `sync`, `create`           |
-| `standards`   | `list`, `install`, `sync`                     |
-| `prompts`     | `install`, `sync`                             |
-| `gov`         | `list`, `install`, `sync`, `build`            |
-| `claude`      | `init`, `sync`, `prompt`, `gov` (passthrough) |
-| `antigravity` | `install`, `sync`                             |
-| `wiki`        | `init`                                        |
+| Domain        | Subcommands                                                 |
+| ------------- | ----------------------------------------------------------- |
+| `tooling`     | `list`, `sync`, `ref`, `create`                             |
+| `snippets`    | `list`, `install`, `sync`, `create`                         |
+| `standards`   | `list`, `install`, `sync`                                   |
+| `prompts`     | `install`, `sync`                                           |
+| `gov`         | `list`, `install`, `sync`, `build`                          |
+| `claude`      | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
+| `antigravity` | `install`, `sync`                                           |
+| `wiki`        | `init`                                                      |
 
 Common patterns:
 
@@ -61,12 +61,14 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 
 Use these to discover what's available instead of hardcoding names.
 
-| Command                      | Returns                                      |
-| ---------------------------- | -------------------------------------------- |
-| `aitk tooling list --json`   | Stacks, extends chain, dep and script counts |
-| `aitk snippets list --json`  | Snippet slugs and folders                    |
-| `aitk standards list --json` | Standards docs                               |
-| `aitk gov list --json`       | Governance stacks and rule sets              |
+| Command                         | Returns                                      |
+| ------------------------------- | -------------------------------------------- |
+| `aitk tooling list --json`      | Stacks, extends chain, dep and script counts |
+| `aitk snippets list --json`     | Snippet slugs and folders                    |
+| `aitk standards list --json`    | Standards docs                               |
+| `aitk gov list --json`          | Governance stacks and rule sets              |
+| `aitk claude seeds list --json` | Seed doc sources with content                |
+| `aitk claude roles list --json` | Role prompt sources with content             |
 
 ## Non-interactive examples
 
