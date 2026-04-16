@@ -20,13 +20,11 @@ Project docs live in `.claude/` at the project root.
 
 Run `aitk claude init` to seed the `.claude/` directory and a root `CLAUDE.md` file. Run `aitk gov install` to install rules into `.cursor/rules/`, then run `aitk claude gov` to build `GOV.md`. Regenerate only when rules change.
 
-Role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) are available via `aitk claude roles` for chat-based AI workflows but are not part of the default install. See [docs/claude.md](claude.md) for details.
-
 ## Scenarios
 
 ### New feature
 
-Split each feature across two sessions. Session 1 covers planning and implementation. Session 2 covers review and ship. Starting session 2 fresh keeps the reviewer independent and prevents context from accumulating across the full workflow.
+One session works for most features. Prefer splitting across two sessions only when the feature is large enough that you want a cold, independent reviewer on the diff. Session 1 covers planning and implementation; session 2 covers review and ship.
 
 #### Session 1
 
@@ -44,6 +42,17 @@ Start a fresh Claude Code session. The diff is sufficient context for both revie
 - Invoke `toolkit:claude-review` to review all changes since main and output a findings report
 - Fix any valid findings
 - Invoke `toolkit:git-ship` to sync docs, commit by concern, rename branch, and open PR
+
+### Parallel features
+
+When features are independent, run them in parallel instead of sequentially. Use one git worktree per feature so each session has its own working tree and branch.
+
+- Create a worktree per feature, then start a Claude Code session in each
+- Invoke `toolkit:claude-feature` in each session. Plans persist to `.claude/plans/feature-<slug>.md`, one per feature, no collisions
+- Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files (`review-<branch>.md`, `ui-checklist-<branch>.md`), so parallel sessions do not overwrite each other
+- Ship each worktree separately with `toolkit:git-ship`
+
+Caveats: `.claude/TASKS.md` is a single file. If multiple sessions edit it concurrently, resolve the merge at ship time. Treat memory updates as single-writer in practice.
 
 ### UI polish
 
@@ -82,18 +91,7 @@ review finds  → Session 2 (fix alongside review, before ship)
 
 Claude-specific snippets require the `.claude/` workflow to be set up. For the full list, see `docs/snippets.md`.
 
-| Slug                | When to use                                          |
-| ------------------- | ---------------------------------------------------- |
-| `claude-ux-audit`   | Standalone session, UX/UI audit of existing features |
-| `claude-tasks-add`  | Add a new task block to the "Up next" queue          |
-| `claude-tasks-done` | Move completed task blocks to `TASKS-ARCHIVE.md`     |
-
-## Prompt generation (roles only)
-
-`aitk claude prompt` reads `PLANNER.md` and `IMPLEMENTER.md`, injects governance rules from `.cursor/rules/`, context docs, and `standards/prose.md`, and writes `.tmp/PLANNER.md`, `.tmp/IMPLEMENTER.md`, `.tmp/REVIEWER.md`. This requires roles to be installed via `aitk claude roles`.
-
-Run `aitk gov sync` first when switching stacks. Run `aitk claude gov` to build `.claude/GOV.md` from installed rules. Claude Code loads this automatically each session. Run `aitk gov build` to generate a standalone rules file at `.cursor/.tmp/rules.md` for pasting directly into any AI chat.
-
-## Gemini CLI commands
-
-See [docs/gemini.md](gemini.md) for the full command reference.
+| Slug                | When to use                                      |
+| ------------------- | ------------------------------------------------ |
+| `claude-tasks-add`  | Add a new task block to the "Up next" queue      |
+| `claude-tasks-done` | Move completed task blocks to `TASKS-ARCHIVE.md` |
