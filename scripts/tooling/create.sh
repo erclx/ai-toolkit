@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/tooling.sh"
 trap close_timeline EXIT
 
 show_help() {
@@ -31,12 +32,19 @@ main() {
 
   local stack="$1"
 
+  echo -e "${GREY}┌${NC}"
+  echo -e "${GREY}│${NC} ${WHITE}aitk tooling create${NC}"
+
   if [ -z "$stack" ]; then
     ask "Stack name?" "stack"
   fi
 
   if [ -z "$stack" ]; then
     log_error "Stack name is required"
+  fi
+
+  if is_tooling_stack_excluded "$stack"; then
+    log_error "Reserved name: $stack. Managed by \`aitk claude\`, not \`aitk tooling\`."
   fi
 
   local dest="$PROJECT_ROOT/tooling/$stack"

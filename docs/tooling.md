@@ -17,16 +17,14 @@ tooling/
 │   ├── seeds/         ← user-owned dictionary seeds
 │   ├── manifest.toml  ← extends = "base", deps, scripts, gitignore
 │   └── reference.md   ← unified guide for all TS web projects (React, Chrome, Astro, Next)
-├── claude/
-│   ├── configs/       ← Role prompts (e.g. PLANNER.md). Seeded on `init`, overwritten on `sync`.
-│   ├── seeds/         ← User-owned docs (e.g. REQUIREMENTS.md) and CLAUDE.md. Seeded on `init`.
-│   ├── manifest.toml  ← gitignore only, no configs or deps
+├── gemini/
+│   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
+│   ├── manifest.toml  ← gitignore only, no deps or scripts
 │   └── reference.md
-└── gemini/
-    ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
-    ├── manifest.toml  ← gitignore only, no deps or scripts
-    └── reference.md
+└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see docs/claude.md
 ```
+
+`tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. It is excluded from `aitk tooling list`, `sync`, `ref`, and `create` via `scripts/lib/tooling.sh`. Treat it as storage, not a stack.
 
 ## Configs, seeds, and references
 

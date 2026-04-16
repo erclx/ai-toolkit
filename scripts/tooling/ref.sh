@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/tooling.sh"
 trap close_timeline EXIT
 
 show_help() {
@@ -27,9 +28,7 @@ show_help() {
 
 select_stack() {
   local stacks=()
-  if ls -d "$PROJECT_ROOT/tooling"/*/ >/dev/null 2>&1; then
-    mapfile -t stacks < <(find "$PROJECT_ROOT/tooling" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
-  fi
+  mapfile -t stacks < <(list_tooling_stacks)
 
   if [ ${#stacks[@]} -eq 0 ]; then
     log_error "No tooling stacks found in $PROJECT_ROOT/tooling"
@@ -90,8 +89,15 @@ main() {
   local stack="$1"
   local target="${2:-.}"
 
+  echo -e "${GREY}┌${NC}" >&2
+  echo -e "${GREY}│${NC} ${WHITE}aitk tooling ref${NC}" >&2
+
   if [ -z "$stack" ]; then
     stack=$(select_stack)
+  fi
+
+  if is_tooling_stack_excluded "$stack"; then
+    log_error "Claude is managed by \`aitk claude\`, not \`aitk tooling\`."
   fi
 
   if [ ! -d "$PROJECT_ROOT/tooling/$stack" ]; then
@@ -102,7 +108,6 @@ main() {
 
   local pending=()
 
-  echo -e "${GREY}┌${NC}" >&2
   echo -e "${GREY}├${NC} ${WHITE}Scanning references: $stack${NC}" >&2
   collect_references "$stack" "$target" pending
 

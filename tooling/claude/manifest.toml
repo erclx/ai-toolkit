@@ -1,14 +1,11 @@
+# Consumed only by `aitk claude init`. Claude is not a discoverable tooling stack
+# and is excluded from `aitk tooling` discovery via scripts/lib/tooling.sh.
+
 [stack]
 name = "claude"
 extends = ""
 runtime = ""
 scaffold = ""
-
-[sync]
-source = "configs"
-
-[scripts]
-"snapshot" = "./scripts/snapshot.sh"
 
 [gitignore]
 "# Claude" = [".claude/.tmp/", ".claude/memory/", ".claude/plans/", ".claude/review/"]

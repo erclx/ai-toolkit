@@ -37,15 +37,14 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk tooling${NC}"
-  trap close_timeline EXIT
-
   local command="$1"
 
   if [ -z "$command" ]; then
+    echo -e "${GREY}┌${NC}"
+    echo -e "${GREY}│${NC} ${WHITE}aitk tooling${NC}"
     select_option "Tooling command?" "sync" "ref" "create" "list"
     command="$SELECTED_OPTION"
+    echo -e "${GREY}└${NC}\n"
   else
     shift
   fi
