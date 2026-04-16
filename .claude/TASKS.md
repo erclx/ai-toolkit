@@ -52,24 +52,24 @@ Plan: `.claude/plans/feature-frontmatter-descriptions.md`
 
 ### Chore: align toolkit's `.claude/` docs with seed preamble style
 
-- [ ] Outcome: `.claude/ARCHITECTURE.md` opens with the "What belongs / What does not belong" block matching the seed in `tooling/claude/seeds/.claude/ARCHITECTURE.md`
-- [ ] Outcome: any other toolkit `.claude/` doc missing its seed preamble (DESIGN, REQUIREMENTS, WIREFRAMES) gains one
-- [ ] Outcome: existing content is preserved below the preamble, no substantive edits to the sections that follow
+- [x] Outcome: `.claude/ARCHITECTURE.md` opens with the "What belongs / What does not belong" block matching the seed in `tooling/claude/seeds/.claude/ARCHITECTURE.md`
+- [x] Outcome: toolkit has no DESIGN, REQUIREMENTS, or WIREFRAMES files, so no additional preambles needed (CLI-only repo, no UI)
+- [x] Outcome: existing content is preserved below the preamble, no substantive edits to the sections that follow
 
 > Test strategy: manual, diff each toolkit `.claude/*.md` against the matching seed preamble and confirm the preamble sections align
 
 ### Chore: emit preamble header from claude gov generator
 
-- [ ] Outcome: `aitk claude gov` output begins with a regenerate pointer line matching the seed in `tooling/claude/seeds/.claude/GOV.md`
-- [ ] Outcome: the toolkit's own `.claude/GOV.md` carries the preamble after a regen
-- [ ] Outcome: the preamble in the seed matches what the generator emits, so target projects see the same header
+- [x] Outcome: `aitk claude gov` output begins with a regenerate pointer line matching the seed in `tooling/claude/seeds/.claude/GOV.md`
+- [x] Outcome: the toolkit's own `.claude/GOV.md` carries the preamble after a regen
+- [x] Outcome: the preamble in the seed matches what the generator emits, so target projects see the same header
 
 > Test strategy: manual, regenerate `.claude/GOV.md` via `aitk claude gov` and confirm the preamble is the first line, then regenerate in a fresh sandbox target and confirm parity
 
 ### Chore: clarify content ownership between CLAUDE.md, ARCHITECTURE.md, and docs
 
-- [ ] Outcome: `CLAUDE.md` names which file owns design principles, implementation patterns, narrative, and CLI surface, with no overlap in coverage
-- [ ] Outcome: the cross-domain file category vocabulary (configs, seeds, references, generated files) has a single canonical home, with pointers from the other surfaces
-- [ ] Outcome: no concept is described in two places with two different framings, including the "Generated files" section duplicated between `.claude/ARCHITECTURE.md` and `docs/tooling.md`
+- [x] Outcome: toolkit's `.claude/ARCHITECTURE.md` deleted (redundant with `docs/` in a solo-dev repo with a full docs system); unique contributor patterns redistributed to `docs/<domain>.md` files, design principles stay inline in `CLAUDE.md`
+- [x] Outcome: `docs/tooling.md` is the single canonical home for the configs, seeds, references, and generated-files vocabulary
+- [x] Outcome: no concept described in two places with two different framings; "Generated files" duplicate resolved by removing the toolkit's ARCHITECTURE.md copy
 
 > Test strategy: manual, open each affected doc in turn and confirm each concept lives in exactly one surface with pointers elsewhere
