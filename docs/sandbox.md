@@ -73,7 +73,7 @@ Each sandbox is a `.sh` file with two optional hook functions and a required `st
 
 ### stage_setup
 
-`stage_setup` sets up scenario-specific state. It runs inside `.sandbox/` after provisioning and asset injection are complete.
+`stage_setup` sets up scenario-specific state. It runs inside `.sandbox/` after provisioning and asset injection are complete. Commit messages inside `stage_setup` must follow `standards/commit.md` conventions.
 
 ```bash
 stage_setup() {
