@@ -18,7 +18,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it
 ├── WIREFRAMES.md      ← seeded. ASCII wireframes for layout, UI copy, interaction rules, and meaningful states
 ├── GOV.md             ← generated. Governance rules built from installed .cursor/rules via aitk claude gov
-├── settings.json      ← seeded. Baseline Claude Code permissions, user-owned after init
+├── settings.json      ← seeded. Baseline Claude Code config, user-owned after init
 ├── plans/             ← execution detail for multi-step tasks, gitignored. `feature-*.md` entries swept by claude-docs.
 ├── review/            ← scratch for claude-review and claude-ui-test output, gitignored
 ├── .tmp/              ← ephemeral scratch space, gitignored
@@ -45,3 +45,4 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 - Planner governance is injected inline by `aitk claude prompt` using the `planner` stack from the toolkit. No separate build step needed.
 - `CLAUDE.md` ships as a seed with placeholder project name, description, and key paths. Fill these in after init.
 - Seed docs ship with a guidelines preamble above the first H2. These are instructions Claude internalizes before filling in the sections below. They are not sections to populate.
+- `settings.json` seeds `attribution.commit` and `attribution.pr` as empty strings to suppress co-author tags. The deprecated `includeCoAuthoredBy` key is not used.
