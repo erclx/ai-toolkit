@@ -5,6 +5,8 @@ description: System prompt templates for AI authoring. Use for adding prompts, e
 
 # Prompts
 
+Read `docs/prompts.md` for system overview and categories before editing.
+
 ## Structure
 
 - All-caps H1 title (`# BASH SCRIPT ARCHITECT`), all-caps H2 sections (`## ROLE`, `## CRITICAL CONSTRAINTS`), title case H3 subsections (`### Must Do`).
@@ -20,8 +22,6 @@ description: System prompt templates for AI authoring. Use for adding prompts, e
 
 ## Exportable prompts
 
-- Prompts in `prompts.toml` are installable into target projects via `aitk prompts install`.
-- Only prompts registered in `prompts.toml` are exportable. All others are toolkit-internal.
 - When adding an exportable prompt, register it under the appropriate category in `prompts.toml` using the file stem as the name.
 
 ## Sync checklist
@@ -32,7 +32,7 @@ When adding an exportable prompt:
 - Add the name to the correct category in `prompts.toml`
 - Update the prompts table and categories table in `docs/prompts.md`
 
-## Full reference
+## Reference
 
 - `docs/prompts.md`: system overview, categories, CLI, heading conventions, required sections
 - `prompts/meta-prompt.md`: system prompt generator template, output format, constraint patterns

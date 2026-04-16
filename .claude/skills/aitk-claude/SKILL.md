@@ -5,17 +5,11 @@ description: Claude Code plugin and tooling. Use for adding or modifying plugin 
 
 # Claude
 
-## Internal skills
+Read `docs/claude.md` for plugin setup, skills inventory, and aitk claude CLI before editing.
 
-- Internal skills live in `.claude/skills/` and are toolkit-only, not installed into target projects.
-- Each skill is a folder named in kebab-case containing `SKILL.md`.
-- Internal skill names must use the `aitk-` prefix (e.g., `aitk-claude`, `aitk-session-resume`).
+## Editing rules
+
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
-
-## Plugin skills
-
-- Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough.
-- Each skill is a folder named in kebab-case containing `SKILL.md`.
 - Read `docs/claude.md` before adding a skill. It lists all existing skills.
 - Follow `standards/skill.md` for skill structure and frontmatter conventions.
 
@@ -38,7 +32,7 @@ When modifying a skill:
 - Check if a corresponding antigravity workflow exists in `antigravity/workflows/` and update it to match
 - Check if a corresponding gemini command exists in `gemini/commands/` and update it to match
 
-## Full reference
+## Reference
 
 - `docs/claude.md`: plugin setup, skills inventory, aitk claude CLI
 - `standards/skill.md`: skill structure, frontmatter, and authoring rules

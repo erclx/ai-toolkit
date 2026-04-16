@@ -5,20 +5,17 @@ description: Cursor governance rules and stack definitions. Use for adding rules
 
 # Governance
 
+Read `docs/governance.md` for system overview, numbering scheme, and stack structure before editing.
+
 ## Rules
 
-- Rules live in `governance/rules/` organized by domain subdirectory, but flatten into `.cursor/rules/` on sync. Cursor reads flat.
-- Rules follow a numbering scheme by domain. Read `docs/governance.md` for the ranges before picking a number.
+- Read `docs/governance.md` for the numbering ranges before picking a number for a new rule.
 - Follow `prompts/cursor-rules.md` for frontmatter, heading style, and bullet conventions when writing a new `.mdc` file.
-- New `.mdc` file anywhere under `governance/rules/` is auto-discovered. No other changes needed to register it.
 - `strip_frontmatter` and `build_rules_payload` live in `scripts/lib/gov.sh`, sourced by both `gov/build.sh` and `claude/prompt.sh`. Do not duplicate.
 
 ## Stacks
 
-- Stack `.toml` files live in `governance/stacks/`. `extends` resolves recursively and the full deduplicated rule set is installed.
 - New stack: create a `.toml` in `governance/stacks/`, set `extends`, list rule names without `.mdc`.
-- `aitk gov install <stack> --add rule1,rule2 [path]` layers extras on top of a stack without authoring a new stack.
-- `aitk gov list [--json]` emits the catalog. Use `--json` from skills and scripts. Never hardcode stack or rule names in skill bodies.
 
 ## Sync checklist
 
@@ -30,7 +27,7 @@ When adding a stack:
 
 - Create `.toml` in `governance/stacks/`, set `extends`, list rules
 
-## Full reference
+## Reference
 
 - `docs/governance.md`: system overview, numbering scheme, install vs sync vs build, stacks
 - `prompts/cursor-rules.md`: conventions for writing .mdc rule files

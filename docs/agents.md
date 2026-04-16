@@ -6,10 +6,7 @@ This doc is an index of what an agent can run and how to run it cleanly from a s
 
 ## Invocation rules
 
-- **Non-interactive**: prefix any command that would otherwise prompt with `AITK_NON_INTERACTIVE=1`. All prompts fall through to their default (first option for selects, default value for asks). Pass inputs as positional args or flags where available.
-- **Create commands**: never hand-create domain folders. Use the `create` subcommand (`aitk tooling create`, `aitk snippets create`) so the stub structure stays canonical.
-- **Output streams**: data goes to stdout, UI and logs go to stderr. JSON from `list --json` pipes clean through any wrapper.
-- **Skills call the CLI**: skills never reimplement CLI logic. If a skill needs a catalog, it reads `aitk <domain> list --json` at runtime.
+See `CLAUDE.md` design principles. They apply to every command below.
 
 ## Command catalog
 

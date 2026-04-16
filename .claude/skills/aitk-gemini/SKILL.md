@@ -5,12 +5,7 @@ description: Gemini CLI command definitions in TOML. Use for adding or modifying
 
 # Gemini
 
-## Commands
-
-- Commands are deterministic scripts with zero AI tokens. No variability, no inference.
-- Each command is a `.toml` file. Structure and required fields are defined in `prompts/gemini-cli.md`.
-- Commands are organized by category. Read `docs/gemini.md` for existing categories and commands before adding.
-- Commands are invoked as `/category:command` in Gemini CLI.
+Read `docs/gemini.md` for existing categories and commands before adding.
 
 ## Sync checklist
 
@@ -31,7 +26,7 @@ When adding a new category:
 - Create the category folder in both `gemini/commands/` and `scripts/sandbox/`
 - Add the category and command to `docs/gemini.md`
 
-## Full reference
+## Reference
 
 - `docs/gemini.md`: commands inventory, setup, adding commands
 - `prompts/gemini-cli.md`: full conventions for command structure and TOML format
