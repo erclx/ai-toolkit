@@ -57,28 +57,29 @@ alias claude='claude --plugin-dir /path/to/toolkit/claude'
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-| Skill                  | Description                                                                        |
-| ---------------------- | ---------------------------------------------------------------------------------- |
-| `claude-docs`          | Update .claude/ planning docs to reflect mid-cycle decisions                       |
-| `claude-feature`       | Plan a feature by reading Claude setup and scanning source files                   |
-| `claude-review`        | Review all changes since main for bugs, edge cases, and logic flaws                |
-| `claude-ui-test`       | Generate and run Playwright e2e tests, with manual checklist for visual-only items |
-| `claude-ux-audit`      | Audit existing UI surfaces for missing states, edge cases, and inconsistencies     |
-| `claude-autoship`      | Chain implement → verify → cold review → ship after a plan is approved             |
-| `create-skill`         | Create a new skill file in .claude/skills/                                         |
-| `create-snippet`       | Create a new snippet file in snippets/                                             |
-| `docs-sync`            | Rewrite stale README.md and docs/\*.md sections since main                         |
-| `git-branch`           | Rename current branch to match conventional format                                 |
-| `git-commit`           | Generate a conventional commit message from staged changes                         |
-| `git-pr`               | Generate a PR description and open a pull request                                  |
-| `git-split`            | Split a mixed-commit branch into focused branches and open PRs                     |
-| `git-stage`            | Batch-commit staged files grouped by concern                                       |
-| `gov-install`          | Detect project stack from files and install matching governance rules              |
-| `init-project`         | Detect project type and run one-shot `aitk init` with resolved flags               |
-| `release-changelog`    | Generate a changelog entry from commits and staged changes since main              |
-| `git-ship`             | Run the full post-feature workflow in one sequence                                 |
-| `session-resume`       | Resume from tracked work and relevant context at session start                     |
-| `systematic-debugging` | Enforce root-cause investigation before fixes when a test fails or a bug surfaces  |
+| Skill                  | Description                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------- |
+| `claude-docs`          | Update .claude/ planning docs to reflect mid-cycle decisions                          |
+| `claude-feature`       | Plan a feature by reading Claude setup and scanning source files                      |
+| `claude-review`        | Review all changes since main for bugs, edge cases, and logic flaws                   |
+| `claude-seed-sync`     | Audit installed seed docs against current toolkit seeds and propose per-section edits |
+| `claude-ui-test`       | Generate and run Playwright e2e tests, with manual checklist for visual-only items    |
+| `claude-ux-audit`      | Audit existing UI surfaces for missing states, edge cases, and inconsistencies        |
+| `claude-autoship`      | Chain implement → verify → cold review → ship after a plan is approved                |
+| `create-skill`         | Create a new skill file in .claude/skills/                                            |
+| `create-snippet`       | Create a new snippet file in snippets/                                                |
+| `docs-sync`            | Rewrite stale README.md and docs/\*.md sections since main                            |
+| `git-branch`           | Rename current branch to match conventional format                                    |
+| `git-commit`           | Generate a conventional commit message from staged changes                            |
+| `git-pr`               | Generate a PR description and open a pull request                                     |
+| `git-split`            | Split a mixed-commit branch into focused branches and open PRs                        |
+| `git-stage`            | Batch-commit staged files grouped by concern                                          |
+| `gov-install`          | Detect project stack from files and install matching governance rules                 |
+| `init-project`         | Detect project type and run one-shot `aitk init` with resolved flags                  |
+| `release-changelog`    | Generate a changelog entry from commits and staged changes since main                 |
+| `git-ship`             | Run the full post-feature workflow in one sequence                                    |
+| `session-resume`       | Resume from tracked work and relevant context at session start                        |
+| `systematic-debugging` | Enforce root-cause investigation before fixes when a test fails or a bug surfaces     |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-review`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
@@ -99,14 +100,16 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 ## CLI
 
-| Command              | Description                                                  |
-| -------------------- | ------------------------------------------------------------ |
-| `aitk claude init`   | Seed `.claude/` workflow docs and `CLAUDE.md` into a project |
-| `aitk claude roles`  | Install role prompts (planner, implementer, reviewer)        |
-| `aitk claude sync`   | Diff managed files against source and apply updates          |
-| `aitk claude prompt` | Generate master prompts from installed governance rules      |
-| `aitk claude gov`    | Build governance rules into `.claude/GOV.md`                 |
-| `aitk claude setup`  | Install user-level Claude config to `~/.claude/`             |
+| Command                  | Description                                                  |
+| ------------------------ | ------------------------------------------------------------ |
+| `aitk claude init`       | Seed `.claude/` workflow docs and `CLAUDE.md` into a project |
+| `aitk claude roles`      | Install role prompts (planner, implementer, reviewer)        |
+| `aitk claude roles list` | List role prompt sources, plain text or `--json` for skills  |
+| `aitk claude seeds list` | List seed doc sources, plain text or `--json` for skills     |
+| `aitk claude sync`       | Diff managed files against source and apply updates          |
+| `aitk claude prompt`     | Generate master prompts from installed governance rules      |
+| `aitk claude gov`        | Build governance rules into `.claude/GOV.md`                 |
+| `aitk claude setup`      | Install user-level Claude config to `~/.claude/`             |
 
 ### init
 
@@ -117,6 +120,12 @@ Pass `--roles` to also install role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `RE
 ### roles
 
 Installs role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) into `.claude/`. Use this for chat-based AI workflows where you generate master prompts via `aitk claude prompt`. Not needed for Claude Code's default agentic workflow.
+
+`aitk claude roles list [--json|--names]` enumerates the role prompt sources without installing them. Skills consume `--json` to read each role's `name`, `source`, `target`, and `content` for in-context audits.
+
+### seeds
+
+`aitk claude seeds list [--json|--names]` enumerates the seed docs that `aitk claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content; reconciliation is the skill's job (see `claude-seed-sync`).
 
 ### sync
 
