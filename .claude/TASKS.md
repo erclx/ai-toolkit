@@ -22,7 +22,7 @@ Title form by task type:
 - Fix: problem statement describing what is wrong
 - Chore: imperative describing what is being done
 
-One section only: Up next. Completed task blocks move to `.claude/TASKS-ARCHIVE.md`. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
+One section only: Up next. Completed blocks stay in Up next until archived manually. Do not move them automatically. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
 
 Task block format:
 
@@ -36,6 +36,40 @@ Task block format:
 ```
 
 ## Up next
+
+### Audit Claude skills for sandbox coverage
+
+Today `scripts/sandbox/` covers CLI commands (`infra/`), gemini commands (`dev/`, `docs/`, etc.), and tooling configs (`tooling/`). It does not cover skills under `claude/skills/`. With several skills now in the toolkit (`claude-feature`, `claude-review`, `claude-ui-test`, `claude-ux-audit`, `claude-autoship`, and more), there is no staged scenario for test-driving any of them.
+
+Goal: audit each skill in `claude/skills/` and produce a shortlist of which warrant a sandbox scenario, the scenario's starting state, and the Action / Expect pair.
+
+- [ ] Outcome: audit output lists each skill with a yes/no/maybe call, a one-line justification, and a proposed scenario shape
+- [ ] Outcome: output is a build list the follow-up task can consume directly
+
+> Test strategy: none, planning audit. Validation happens in the follow-up build task.
+
+### Build sandbox scenarios for Claude skills
+
+Depends on the audit above. Scaffold the sandboxes flagged as high value. Start with `claude-autoship` happy path since there is no existing feature in a target project to test it against. Extend with any additional skills the audit recommends.
+
+- [ ] Outcome: new `scripts/sandbox/claude/` category exists with at least `autoship.sh` (happy path)
+- [ ] Outcome: each scenario scaffolds a realistic starting state and logs clear Action / Expect lines matching existing patterns in `scripts/sandbox/dev/`
+- [ ] Outcome: `docs/sandbox.md` lists the new category and scenarios
+- [ ] Outcome: running `aitk sandbox claude:autoship` provisions a `.sandbox/` where `/claude-autoship` can be invoked end-to-end from Claude Code
+
+> Test strategy: manual, run each new sandbox scenario, open Claude Code in `.sandbox/`, invoke the skill, confirm the scenario stages the correct happy-path starting state.
+
+### Subagent pattern wiki page
+
+The toolkit now uses subagents in `claude-autoship` to run `claude-review` with cold-reviewer independence. The pattern is not documented as its own page — mentions are scattered across `wiki/claude-hooks.md`, `wiki/claude-skills.md`, and `wiki/community-skills.md`. Skill authors have no single reference for when and how to reach for a subagent.
+
+Goal: add `wiki/claude-subagents.md` covering how subagents scope context, the three cases to reach for them in a skill (independence, context isolation, parallel lenses), parallel vs sequential invocation, and pitfalls. Use the `claude-code-guide` agent in a fresh session for current Anthropic docs.
+
+- [ ] Outcome: `wiki/claude-subagents.md` exists with a decision guide for skill authors
+- [ ] Outcome: `wiki/index.md` links to the new page
+- [ ] Outcome: scattered mentions in other wiki pages link to the new page where relevant
+
+> Test strategy: manual, cross-read with `wiki/claude-skills.md` and `claude/skills/claude-autoship/SKILL.md` to confirm claims about subagent scoping align.
 
 ### Sync seed preamble updates into existing target projects
 

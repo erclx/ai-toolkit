@@ -22,7 +22,7 @@ Title form by task type:
 - Fix: problem statement describing what is wrong
 - Chore: imperative describing what is being done
 
-One section only: Up next. Completed task blocks move to `.claude/TASKS-ARCHIVE.md`. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
+One section only: Up next. Completed blocks stay in Up next until archived manually. Do not move them automatically. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
 
 Task block format:
 

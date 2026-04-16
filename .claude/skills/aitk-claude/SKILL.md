@@ -22,6 +22,7 @@ description: Claude Code plugin and tooling. Use for adding or modifying plugin 
 ## Authoring conventions
 
 - Task skills with preview+execute patterns must execute commands immediately after the preview. Do not add a "confirm before running" step or pause for user input. Claude Code's tool permission dialog is the confirmation gate. The user hits Enter to approve or Escape to interrupt and revise.
+- When a skill persists output to `.claude/` (plans, review, audits), derive a slug from the current git branch: run `git branch --show-current` and replace `/` with `-`. Fall back to `latest` on empty output (detached HEAD). Include the slug in the filename (`feature-<slug>.md`, `review-<slug>.md`, `ui-checklist-<slug>.md`, `ux-audit-<slug>.md`). This prevents collisions across parallel worktrees.
 
 ## Sync checklist
 
