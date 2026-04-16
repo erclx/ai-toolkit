@@ -2,6 +2,8 @@
 
 Describe the system shape and the decisions behind it. Not a tutorial, setup guide, or implementation walkthrough. Update this doc when a new decision is made or a risk is resolved, not after the fact.
 
+Pair this doc with `CLAUDE.md`. Principles live there, patterns and decisions live here.
+
 What belongs:
 
 - A high-level overview of how the system is structured and why
