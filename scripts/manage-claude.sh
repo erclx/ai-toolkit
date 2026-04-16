@@ -17,11 +17,12 @@ show_help() {
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk claude [command] [options] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
-  echo -e "${GREY}│${NC}    init      ${GREY}# Seed .claude/ workflow docs into a project${NC}"
-  echo -e "${GREY}│${NC}    roles     ${GREY}# Install role prompts (planner, implementer, reviewer)${NC}"
-  echo -e "${GREY}│${NC}    sync      ${GREY}# Diff managed files against source and apply updates${NC}"
-  echo -e "${GREY}│${NC}    prompt    ${GREY}# Generate master prompt from installed cursor rules (requires roles)${NC}"
-  echo -e "${GREY}│${NC}    gov       ${GREY}# Build governance rules and write to .claude/GOV.md${NC}"
+  echo -e "${GREY}│${NC}    init           ${GREY}# Seed .claude/ workflow docs into a project${NC}"
+  echo -e "${GREY}│${NC}    roles [list]   ${GREY}# Install role prompts, or list sources with --json${NC}"
+  echo -e "${GREY}│${NC}    seeds list     ${GREY}# List seed doc sources with --json${NC}"
+  echo -e "${GREY}│${NC}    sync           ${GREY}# Diff managed files against source and apply updates${NC}"
+  echo -e "${GREY}│${NC}    prompt         ${GREY}# Generate master prompt from installed cursor rules (requires roles)${NC}"
+  echo -e "${GREY}│${NC}    gov            ${GREY}# Build governance rules and write to .claude/GOV.md${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
@@ -30,6 +31,8 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk claude init"
   echo -e "${GREY}│${NC}    aitk claude init --roles"
   echo -e "${GREY}│${NC}    aitk claude roles ../my-app"
+  echo -e "${GREY}│${NC}    aitk claude roles list --json"
+  echo -e "${GREY}│${NC}    aitk claude seeds list --json"
   echo -e "${GREY}│${NC}    aitk claude sync ../my-app"
   echo -e "${GREY}│${NC}    aitk claude prompt"
   echo -e "${GREY}│${NC}    aitk claude gov"
@@ -240,6 +243,11 @@ cmd_init() {
 }
 
 cmd_roles() {
+  if [ "${1:-}" = "list" ]; then
+    shift
+    exec "$PROJECT_ROOT/scripts/claude/roles-list.sh" "$@"
+  fi
+
   local target="${1:-.}"
 
   validate_target "$target"
@@ -269,6 +277,21 @@ cmd_roles() {
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
   echo -e "${GREEN}✓ Roles installed${NC}"
+}
+
+cmd_seeds() {
+  case "${1:-}" in
+  list)
+    shift
+    exec "$PROJECT_ROOT/scripts/claude/seeds-list.sh" "$@"
+    ;;
+  "")
+    log_error "Missing subcommand. Use 'list'."
+    ;;
+  *)
+    log_error "Unknown subcommand: $1. Use 'list'."
+    ;;
+  esac
 }
 
 cmd_sync() {
@@ -460,14 +483,14 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk claude${NC}"
+  echo -e "${GREY}┌${NC}" >&2
+  echo -e "${GREY}│${NC} ${WHITE}aitk claude${NC}" >&2
   trap close_timeline EXIT
 
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "sync" "prompt" "gov"
+    select_option "Claude command?" "init" "sync" "prompt" "gov" "seeds" "roles"
     command="$SELECTED_OPTION"
   else
     shift
@@ -479,6 +502,9 @@ main() {
     ;;
   roles)
     cmd_roles "$@"
+    ;;
+  seeds)
+    cmd_seeds "$@"
     ;;
   sync)
     cmd_sync "$@"
@@ -493,7 +519,7 @@ main() {
     cmd_setup "$@"
     ;;
   *)
-    log_error "Unknown command: $command. Use 'init', 'sync', 'prompt', or 'gov'."
+    log_error "Unknown command: $command. Use 'init', 'roles', 'seeds', 'sync', 'prompt', 'gov', or 'setup'."
     ;;
   esac
 }
