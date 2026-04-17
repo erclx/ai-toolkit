@@ -18,6 +18,7 @@ Deferred. The recommendation below stands. The operational cost only pays off on
 - **Figma**: ruled out on cost. The relevant capabilities sit behind paid tiers and an auth wall. No local-first story.
 - **tldraw**: open source with first-party AI integration targeting a hosted product. No maintained MCP server for local file tooling. Heavier schema than Excalidraw. Eliminated for this use case.
 - **Excalidraw**: MIT-licensed, hand-drawn aesthetic, plaintext JSON file format. A maintained community MCP server gives an agent a full canvas toolkit with the ability to inspect what it drew. Selected.
+- **Stitch**: free, from Google Labs, AI-native design canvas with direct `DESIGN.md` export and a Stitch MCP server. Eliminated as a wireframe companion because output is design system documentation, not spatial layout geometry. Relevant to the `.claude/DESIGN.md` seed instead. See [Google Stitch and DESIGN.md](community-skills.md#google-stitch-and-designmd) in community skills.
 
 ## Recommendation
 
