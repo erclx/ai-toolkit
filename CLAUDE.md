@@ -39,6 +39,7 @@ Each rule or knowledge item lives in exactly one surface. Other surfaces point, 
 - Behavior triggered only when editing domain X: `.claude/skills/aitk-<X>/SKILL.md`
 - Narrative or conceptual knowledge about domain X: `docs/<X>.md`
 - CLI command surface or invocation contract: `docs/agents.md`
+- Skill authoring strategy and redundancy notes: `wiki/skills-strategy.md`
 
 When adding new content, place it in the canonical owner. If another surface needs awareness, add a one-line pointer.
 
