@@ -29,7 +29,8 @@ src/
     ├── tooling.ts       ← pass-through to manage-tooling.sh
     ├── claude.ts        ← pass-through to manage-claude.sh
     ├── wiki.ts          ← pass-through to manage-wiki.sh
-    └── antigravity.ts   ← pass-through to manage-antigravity.sh
+    ├── antigravity.ts   ← pass-through to manage-antigravity.sh
+    └── indexes.ts       ← pass-through to manage-indexes.sh
 
 scripts/
 ├── manage-sync.sh       ← aitk sync entry point
@@ -42,6 +43,7 @@ scripts/
 ├── manage-prompts.sh        ← aitk prompts entry point
 ├── manage-antigravity.sh    ← aitk antigravity entry point
 ├── manage-wiki.sh           ← aitk wiki entry point
+├── manage-indexes.sh        ← aitk indexes entry point
 ├── config.sh            ← shared project config (GITHUB_ORG, DEFAULT_GEMINI_MODEL)
 ├── core/
 │   ├── verify.sh        ← runs all checks: format, spell, shell, index drift
@@ -74,6 +76,8 @@ scripts/
 │   └── prompt.sh        ← generates master prompts from installed rules + context docs
 ├── wiki/
 │   └── init.sh          ← scaffolds wiki/ folder with stub index.md
+├── indexes/
+│   └── regen.sh         ← regenerates index.md files, supports --dry-run, --json, and positional paths
 ├── sandbox/             ← scenario scripts, see docs/sandbox.md
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option
@@ -122,4 +126,4 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 **`tooling.sh`**: defines `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.
 
-**`index.sh`**: sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, and `scripts/core/verify.sh`. Exposes `read_frontmatter_field` (reads a YAML field from a markdown file's frontmatter, strips wrapping quotes), `extract_frontmatter` (emits the frontmatter block verbatim), `write_index` (reads the target folder's own `index.md` frontmatter for `title`/`subtitle`/`auto`, preserves the frontmatter, and regenerates the body as a bullet list of siblings), `list_indexes` (finds every `index.md` under a root, prunes `.git` and `node_modules` directly, and defers to `git check-ignore --stdin` for the rest), and `walk_and_write_indexes` (runs `write_index` across every folder `list_indexes` returns). An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
+**`index.sh`**: sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. Exposes `read_frontmatter_field` (reads a YAML field from a markdown file's frontmatter, strips wrapping quotes), `extract_frontmatter` (emits the frontmatter block verbatim), `compute_index_to` (computes the intended `index.md` content into a target file; fails on missing sibling frontmatter), `write_index` (wraps `compute_index_to` with `auto:false` opt-out and skips the write when content is unchanged), `list_indexes` (finds every `index.md` under a root, prunes `.git` and `node_modules` directly, and defers to `git check-ignore --stdin` for the rest), `walk_and_write_indexes` (runs `write_index` across every folder `list_indexes` returns), `find_indexed_ancestor` (walks up from a path until an `index.md` is found, bounded by a root), and `regen_one` (CLI-facing: dry-run aware, emits JSON records, reports `written`/`would-write`/`unchanged`/`skipped`/`error`). An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.

@@ -103,6 +103,14 @@ Flags: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,
 | ---------------- | ---------------------------------------- |
 | `aitk wiki init` | Scaffold wiki/ folder with stub index.md |
 
+### Indexes
+
+| Command                        | Description                                             |
+| ------------------------------ | ------------------------------------------------------- |
+| `aitk indexes regen [path...]` | Regenerate `index.md` files from sibling frontmatter    |
+| `aitk indexes regen --dry-run` | Report drift without writing (exits 2 when drift found) |
+| `aitk indexes regen --json`    | Emit machine-readable records on stdout                 |
+
 ### Sandbox
 
 | Command                             | Description                                                 |
