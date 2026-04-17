@@ -31,12 +31,38 @@ Task block format. Include the `Plan:` line only when a `.claude/plans/` file ex
 
 Plan: .claude/plans/feature-<slug>.md
 
-- [ ] Outcome: what done looks like
-- [ ] Outcome: what done looks like
+- [x] Outcome: what done looks like
+- [x] Outcome: what done looks like
 
 > Test strategy: <unit | component | e2e | visual | manual>, what is being verified
 ```
 
 ## Up next
 
-### Nothing queued
+### Reshape the snippets catalog
+
+Plan: .claude/plans/feature-reshape-snippets-catalog.md
+
+- [x] Remove `senior-mode.md` (unused in practice)
+- [x] Add `decision-help.md`: surfaces the questions the user needs to answer before a sensible decision, no recommendation until answered
+- [x] Move `claude/steps.md`, `claude/research-prompt.md`, `claude/prose-audit.md` up to base (no `.claude/` dependency)
+- [x] Keep `claude/` strictly for snippets that reference `.claude/` paths (`figma.md`, `tasks-done.md`)
+
+> Test strategy: manual, run `aitk snippets list` (or equivalent) and verify the catalog reflects the moves and the new snippet reads cleanly when invoked with `@decision-help`.
+
+### Tune the claude-feature skill
+
+- [ ] Gate code-only context reads (`GOV.md`, `DESIGN.md`, `WIREFRAMES.md`) on change type, or instruct the skill to skip them when the feature is prose/catalog/docs-only. CLAUDE.md, REQUIREMENTS.md, ARCHITECTURE.md, TASKS.md stay universal.
+- [ ] Strengthen the `None identified.` escape hatch for Risks and Questions. Add a line instructing the skill to prefer empty sections over low-signal fillers for small features.
+
+> Test strategy: manual, invoke claude-feature on a small prose-only change and confirm irrelevant files are skipped and Risks/Questions stay empty when nothing real surfaces.
+
+### Bootstrap the index.md system in target projects
+
+Plan: .claude/plans/feature-indexes-install-skill.md
+
+- [ ] A plugin skill scans a target project, drafts frontmatter for markdown-heavy folders, and scaffolds `index.md` after user confirmation
+- [ ] A concept doc explains when indexes help, when to skip, and how to opt out per folder
+- [ ] The seeded `CLAUDE.md` carries the full index convention so newly-installed projects pick up all three rules
+
+> Test strategy: manual, run the skill against a sandbox project and verify scaffolded folders pass `aitk indexes regen --dry-run`.
