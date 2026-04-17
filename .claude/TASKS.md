@@ -39,10 +39,4 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Chore: tighten docs/scripts.md lib section layout
-
-- [ ] Outcome: each lib file in the `## lib` section has its own subheading, short prose for the concept, and a compact function table instead of one paragraph per file
-- [ ] Outcome: reading time for a single lib entry drops to a scannable glance, without losing any of the existing callers and behavior notes
-- [ ] Outcome: no content is removed. The pass is layout only.
-
-> Test strategy: manual, read the updated section end to end and confirm no regression against the current paragraphs.
+### Nothing queued
