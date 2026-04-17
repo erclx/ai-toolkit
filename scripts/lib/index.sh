@@ -59,20 +59,10 @@ list_indexes() {
   printf '%s\n' "$candidates" | grep -Fxv -f <(printf '%s\n' "$ignored")
 }
 
-write_index() {
+compute_index_to() {
   local dir="$1"
+  local out="$2"
   local index_file="$dir/index.md"
-
-  if [ ! -f "$index_file" ]; then
-    printf 'ERROR: %s has no index.md to regenerate\n' "$dir" >&2
-    return 1
-  fi
-
-  local auto
-  auto=$(read_frontmatter_field "$index_file" "auto")
-  if [ "$auto" = "false" ]; then
-    return 0
-  fi
 
   local title subtitle
   title=$(read_frontmatter_field "$index_file" "title")
@@ -169,7 +159,37 @@ write_index() {
         printf -- '- [%s](%s): %s\n' "$fm_t" "$name" "$fm_d"
       done
     fi
-  } >"$index_file"
+  } >"$out"
+}
+
+write_index() {
+  local dir="$1"
+  local index_file="$dir/index.md"
+
+  if [ ! -f "$index_file" ]; then
+    printf 'ERROR: %s has no index.md to regenerate\n' "$dir" >&2
+    return 1
+  fi
+
+  local auto
+  auto=$(read_frontmatter_field "$index_file" "auto")
+  if [ "$auto" = "false" ]; then
+    return 0
+  fi
+
+  local tmp
+  tmp=$(mktemp)
+  if ! compute_index_to "$dir" "$tmp"; then
+    rm -f "$tmp"
+    return 1
+  fi
+
+  if cmp -s "$tmp" "$index_file"; then
+    rm -f "$tmp"
+    return 0
+  fi
+
+  mv "$tmp" "$index_file"
 }
 
 walk_and_write_indexes() {
@@ -183,4 +203,104 @@ walk_and_write_indexes() {
     write_index "$dir" || status=1
   done < <(list_indexes "$root")
   return "$status"
+}
+
+# Walk up from `path` until an index.md is found, bounded by `root`.
+# Prints the matched dir path, returns 1 if not found.
+find_indexed_ancestor() {
+  local path="$1"
+  local root="$2"
+  local dir root_abs
+
+  if [ -d "$path" ]; then
+    dir=$(cd "$path" 2>/dev/null && pwd)
+  elif [ -f "$path" ]; then
+    dir=$(cd "$(dirname "$path")" 2>/dev/null && pwd)
+  else
+    return 1
+  fi
+  [ -z "$dir" ] && return 1
+
+  root_abs=$(cd "$root" 2>/dev/null && pwd)
+  [ -z "$root_abs" ] && return 1
+
+  while [[ "$dir" == "$root_abs"* ]]; do
+    if [ -f "$dir/index.md" ]; then
+      printf '%s\n' "$dir"
+      return 0
+    fi
+    [ "$dir" = "$root_abs" ] && break
+    dir=$(dirname "$dir")
+  done
+  return 1
+}
+
+json_escape_path() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  printf '%s' "$s"
+}
+
+# Regenerate one folder's index.md with mode and reporting.
+# Args: dir, dry_run (0|1), emit_json (0|1), first_ref (nameref to a 0|1 flag)
+# Globals set: REGEN_LAST_ACTION ("written"|"would-write"|"unchanged"|"skipped"|"error")
+# Exit: 0 ok, 1 error, 2 drift (would-write in dry-run)
+regen_one() {
+  local dir="$1"
+  local dry_run="$2"
+  local emit_json="$3"
+  local -n _first="$4"
+
+  local index_file="$dir/index.md"
+  local action="" reason=""
+
+  if [ ! -f "$index_file" ]; then
+    action="error"
+    reason="no index.md"
+    printf 'ERROR: %s has no index.md\n' "$dir" >&2
+  else
+    local auto
+    auto=$(read_frontmatter_field "$index_file" "auto")
+    if [ "$auto" = "false" ]; then
+      action="skipped"
+      reason="auto:false"
+    else
+      local tmp
+      tmp=$(mktemp)
+      if ! compute_index_to "$dir" "$tmp"; then
+        rm -f "$tmp"
+        action="error"
+        reason="frontmatter"
+      elif cmp -s "$tmp" "$index_file"; then
+        rm -f "$tmp"
+        action="unchanged"
+      elif [ "$dry_run" = "1" ]; then
+        rm -f "$tmp"
+        action="would-write"
+      else
+        mv "$tmp" "$index_file"
+        action="written"
+      fi
+    fi
+  fi
+
+  # shellcheck disable=SC2034
+  REGEN_LAST_ACTION="$action"
+
+  if [ "$emit_json" = "1" ]; then
+    if [ "$_first" -eq 0 ]; then printf ','; fi
+    _first=0
+    printf '{"path":"%s","action":"%s"' "$(json_escape_path "$index_file")" "$action"
+    if [ -n "$reason" ]; then
+      printf ',"reason":"%s"' "$(json_escape_path "$reason")"
+    fi
+    printf '}'
+  fi
+
+  case "$action" in
+  error) return 1 ;;
+  would-write) return 2 ;;
+  *) return 0 ;;
+  esac
 }
