@@ -59,10 +59,9 @@ Plan: .claude/plans/feature-reshape-snippets-catalog.md
 
 ### Bootstrap the index.md system in target projects
 
-Plan: .claude/plans/feature-indexes-install-skill.md
-
-- [ ] A plugin skill scans a target project, drafts frontmatter for markdown-heavy folders, and scaffolds `index.md` after user confirmation
-- [ ] A concept doc explains when indexes help, when to skip, and how to opt out per folder
-- [ ] The seeded `CLAUDE.md` carries the full index convention so newly-installed projects pick up all three rules
+- [x] A plugin skill scans a target project, drafts frontmatter for markdown-heavy folders, and scaffolds `index.md` after user confirmation
+- [x] A concept doc explains when indexes help, when to skip, and how to opt out per folder
+- [x] The seeded `CLAUDE.md` carries the full index convention so newly-installed projects pick up all three rules
+- [x] A `bootstrap` sandbox scenario seeds raw markdown plus a stub `CLAUDE.md` so the skill can be exercised end to end
 
 > Test strategy: manual, run the skill against a sandbox project and verify scaffolded folders pass `aitk indexes regen --dry-run`.

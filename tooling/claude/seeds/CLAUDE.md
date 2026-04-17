@@ -15,6 +15,7 @@
 
 - When a folder has an `index.md`, check it before reading individual files in that folder.
 - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
+- Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
 - When editing any markdown file, follow `standards/prose.md`.
 - When editing any markdown file, read surrounding content first and match its depth, length, and tone
 
