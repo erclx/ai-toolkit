@@ -84,7 +84,7 @@ Wiring auto-regen in a target project (optional, opt-in):
 }
 ```
 
-lint-staged appends changed paths as trailing args, so only affected folders regenerate on commit. Projects that prefer a pre-commit hook, git hook, or a post-edit trigger can wire the same command elsewhere. The toolkit does not ship this as a default — target projects opt in where the convention fits.
+lint-staged appends changed paths as trailing args, so only affected folders regenerate on commit. Projects that prefer a pre-commit hook, git hook, or a post-edit trigger can wire the same command elsewhere. The toolkit leaves this to each project rather than shipping a default, so teams opt in where the convention fits.
 
 Skills can parse drift without branching on exit code:
 
