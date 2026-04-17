@@ -89,6 +89,7 @@ ultraplan
 uipro
 unmatch
 unrequested
+upstreaming
 vitejs
 wireframes
 worktree
