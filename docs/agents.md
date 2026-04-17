@@ -63,7 +63,7 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 
 ## Indexes
 
-`aitk indexes regen` walks a target project and rewrites every `index.md` from the folder's own frontmatter (`title`, `subtitle`) plus its siblings' `title` and `description` fields. A folder opts out with `auto: false` in its index's frontmatter. The walker prunes `.git`, `node_modules`, and anything `.gitignore` covers (via `git check-ignore`).
+`aitk indexes regen` rewrites `index.md` files from sibling frontmatter. With no positional paths, it walks the current directory. With paths, each resolves by walking up to the nearest indexed ancestor, bounded by `--root`. Duplicates dedupe. The walker prunes `.git`, `node_modules`, and anything `.gitignore` covers via `git check-ignore`.
 
 | Option          | Behavior                                                         |
 | --------------- | ---------------------------------------------------------------- |
@@ -73,24 +73,13 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 
 Exit codes: `0` clean, `1` frontmatter error or missing index, `2` drift found in `--dry-run`.
 
-Positional paths resolve by walking up until an `index.md` ancestor is found, bounded by `--root`. Duplicates dedupe. This matches lint-staged's contract directly.
-
-Wiring auto-regen in a target project (optional, opt-in):
-
-```json
-// .lintstagedrc.json
-{
-  "**/*.md": "aitk indexes regen"
-}
-```
-
-lint-staged appends changed paths as trailing args, so only affected folders regenerate on commit. Projects that prefer a pre-commit hook, git hook, or a post-edit trigger can wire the same command elsewhere. The toolkit leaves this to each project rather than shipping a default, so teams opt in where the convention fits.
-
 Skills can parse drift without branching on exit code:
 
 ```bash
 aitk indexes regen --dry-run --json | jq '.results[] | select(.action == "would-write")'
 ```
+
+For the system rationale, frontmatter contract, when to adopt, and bootstrap path, see `docs/indexes.md`.
 
 ## Runtime catalogs
 
