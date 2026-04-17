@@ -20,13 +20,14 @@ Full help: `aitk <command> --help`.
 
 ### Project-level
 
-| Command                  | Purpose                                           |
-| ------------------------ | ------------------------------------------------- |
-| `aitk init [path]`       | Bootstrap a project with selected toolkit domains |
-| `aitk sync [path]`       | Sync all installed domains in a target project    |
-| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)     |
-| `aitk sandbox reset`     | Reset sandbox to baseline                         |
-| `aitk sandbox clean`     | Wipe the sandbox                                  |
+| Command                  | Purpose                                              |
+| ------------------------ | ---------------------------------------------------- |
+| `aitk init [path]`       | Bootstrap a project with selected toolkit domains    |
+| `aitk sync [path]`       | Sync all installed domains in a target project       |
+| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)        |
+| `aitk sandbox reset`     | Reset sandbox to baseline                            |
+| `aitk sandbox clean`     | Wipe the sandbox                                     |
+| `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter |
 
 ### Domain commands
 
@@ -59,6 +60,37 @@ SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
 ```
 
 Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` scenarios require interactive input and loop on empty input, so skip them in automated runs.
+
+## Indexes
+
+`aitk indexes regen` walks a target project and rewrites every `index.md` from the folder's own frontmatter (`title`, `subtitle`) plus its siblings' `title` and `description` fields. A folder opts out with `auto: false` in its index's frontmatter. The walker prunes `.git`, `node_modules`, and anything `.gitignore` covers (via `git check-ignore`).
+
+| Option          | Behavior                                                         |
+| --------------- | ---------------------------------------------------------------- |
+| `--dry-run`     | Report which indexes would change without writing                |
+| `--json`        | Emit a machine-readable record per index on stdout               |
+| `--root <path>` | Walk-up boundary when positional paths are passed (default: CWD) |
+
+Exit codes: `0` clean, `1` frontmatter error or missing index, `2` drift found in `--dry-run`.
+
+Positional paths resolve by walking up until an `index.md` ancestor is found, bounded by `--root`. Duplicates dedupe. This matches lint-staged's contract directly.
+
+Wiring auto-regen in a target project (optional, opt-in):
+
+```json
+// .lintstagedrc.json
+{
+  "**/*.md": "aitk indexes regen"
+}
+```
+
+lint-staged appends changed paths as trailing args, so only affected folders regenerate on commit. Projects that prefer a pre-commit hook, git hook, or a post-edit trigger can wire the same command elsewhere. The toolkit does not ship this as a default — target projects opt in where the convention fits.
+
+Skills can parse drift without branching on exit code:
+
+```bash
+aitk indexes regen --dry-run --json | jq '.results[] | select(.action == "would-write")'
+```
 
 ## Runtime catalogs
 

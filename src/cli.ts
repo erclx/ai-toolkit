@@ -12,6 +12,7 @@ import { register as tooling } from '@/commands/tooling'
 import { register as claude } from '@/commands/claude'
 import { register as wiki } from '@/commands/wiki'
 import { register as antigravity } from '@/commands/antigravity'
+import { register as indexes } from '@/commands/indexes'
 
 const GREY = '\x1b[0;90m'
 const WHITE = '\x1b[1;37m'
@@ -34,6 +35,7 @@ function showHelp(): void {
     `${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}`,
     `${GREY}│${NC}    wiki [cmd]         ${GREY}# Wiki commands (init)${NC}`,
     `${GREY}│${NC}    antigravity [cmd]  ${GREY}# Antigravity workflows (install, sync)${NC}`,
+    `${GREY}│${NC}    indexes [cmd]      ${GREY}# Regenerate index.md files (regen)${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
     `${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}`,
@@ -57,6 +59,8 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk claude prompt`,
     `${GREY}│${NC}    aitk antigravity install git ../my-app`,
     `${GREY}│${NC}    aitk antigravity sync ../my-app`,
+    `${GREY}│${NC}    aitk indexes regen`,
+    `${GREY}│${NC}    aitk indexes regen --dry-run --json`,
     `${GREY}└${NC}`,
   ]
   console.log(lines.join('\n'))
@@ -86,5 +90,6 @@ tooling(program)
 claude(program)
 wiki(program)
 antigravity(program)
+indexes(program)
 
 program.parse()

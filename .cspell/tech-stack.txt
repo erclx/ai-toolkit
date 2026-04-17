@@ -4,6 +4,7 @@ clack
 commander
 crxjs
 cspell
+dedupe
 elif
 excalidraw
 execa
@@ -17,6 +18,7 @@ labelledby
 modelcontextprotocol
 modelfile
 mypy
+nameref
 nextjs
 noopener
 noreferrer
