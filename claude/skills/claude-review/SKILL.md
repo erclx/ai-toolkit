@@ -56,6 +56,17 @@ Review the full diff and changed file contents for:
 
 Use `CLAUDE.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, and `GOV.md` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
 
+### High-signal filter
+
+Flag only issues that will definitely cause incorrect behavior or break a documented rule. Skip:
+
+- Code style or quality concerns
+- Subjective suggestions
+- Linter territory
+- Issues that depend on unverified state
+
+If uncertain, do not flag. False positives erode trust.
+
 ### Severity
 
 - **critical**: blocks the feature. Broken in production if shipped.

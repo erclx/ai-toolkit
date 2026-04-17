@@ -35,13 +35,12 @@ The right location is a function of who benefits. A commit style specific to one
 
 ## Redundancy audit
 
-Three toolkit skills have community counterparts worth comparing before the next iteration:
+Four toolkit skills were compared against community counterparts. All four are kept. One was lightly enhanced.
 
-- `toolkit:systematic-debugging` against `obra/superpowers/systematic-debugging`. Same name, same framing.
-- `toolkit:claude-review` against Anthropic's `code-review` plugin. Different model routing and parallel agent strategy.
-- `toolkit:claude-ux-audit` against `impeccable`'s `/audit` and `/critique` commands. Surfaces overlap but lenses differ. `claude-ux-audit` catches UX gaps while `impeccable` catches visual slop.
-
-Keep, drop, or narrow each after reviewing.
+- `toolkit:systematic-debugging` vs `obra/superpowers/systematic-debugging`. Same methodology. Ours is 71 lines to their 296. Our version captures the four phases, circuit breaker, and red flags in a prose-tight form that matches toolkit conventions. No borrow.
+- `toolkit:claude-review` vs Anthropic's `code-review` plugin. Different scopes. Ours runs on a local branch diff and reads four project docs. Theirs runs on a PR URL with multi-agent fan-out and posts inline comments via GitHub MCP. Added a high-signal filter section borrowed from Anthropic's framing to sharpen severity judgment.
+- `toolkit:claude-ux-audit` vs `impeccable`'s `/audit` and `/critique`. Different lenses. Ours enumerates UI surfaces to find missing states, edge cases, and inconsistencies. `/audit` scores technical quality across five dimensions. `/critique` scores design with Nielsen heuristics. They compose: run `claude-ux-audit` first to find gaps, then `impeccable` commands to polish what exists. No skill body change because third-party skill references belong in this catalog, not in SKILL.md bodies.
+- `toolkit:claude-feature` vs `obra/superpowers` planning skills: `brainstorming`, `writing-plans`, and `executing-plans`. Different slots. Ours reads the full `.claude/` doc set and produces a structured plan at a coarser grain than superpowers' task-atomized `writing-plans`. Plan mode and Ultraplan are positioned separately in `docs/claude.md`. No borrow: the approval gate between plan and implement already covers the clarification case that `brainstorming` handles upfront.
 
 ## References
 
