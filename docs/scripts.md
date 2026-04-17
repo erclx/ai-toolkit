@@ -79,18 +79,18 @@ scripts/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
     ├── gov.sh           ← strip_frontmatter, build_rules_payload
-    └── index.sh         ← read_frontmatter_field, write_index, domain title and subtitle constants
+    └── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
 ```
 
 ## Core scripts
 
-| Script             | `bun run`  | What it does                                                                                          |
-| ------------------ | ---------- | ----------------------------------------------------------------------------------------------------- |
-| `verify.sh`        | `check`    | Runs format, format check, spell check, shell check, and index drift check in sequence                |
-| `update.sh`        | `update`   | Interactive dep update via `bun update --interactive`, then verify                                    |
-| `clean.sh`         | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                     |
-| `snapshot.sh`      | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context        |
-| `regen-indexes.sh` |            | Rewrites `prompts/`, `standards/`, `docs/`, and `wiki/` index.md files from each folder's frontmatter |
+| Script             | `bun run`  | What it does                                                                                                     |
+| ------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| `verify.sh`        | `check`    | Runs format, format check, spell check, shell check, and index drift check in sequence                           |
+| `update.sh`        | `update`   | Interactive dep update via `bun update --interactive`, then verify                                               |
+| `clean.sh`         | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                |
+| `snapshot.sh`      | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                   |
+| `regen-indexes.sh` |            | Walks the repo and rewrites every `index.md` from each folder's frontmatter, skipping vendored and scratch paths |
 
 ## manage-sync.sh
 
@@ -122,4 +122,4 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 **`tooling.sh`**: defines `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.
 
-**`index.sh`**: sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, and `scripts/core/regen-indexes.sh`. Exposes `read_h1_title` (reads the first H1 from a markdown file) and `write_index` (scans a directory for `*.md` files and writes an `index.md` listing each one with its H1 as the description). Per-domain title and subtitle strings (`PROMPTS_INDEX_TITLE`, `PROMPTS_INDEX_SUBTITLE`, `STANDARDS_INDEX_TITLE`, `STANDARDS_INDEX_SUBTITLE`) live here too so install, sync, and the toolkit's own regen step all emit the same header.
+**`index.sh`**: sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, and `scripts/core/verify.sh`. Exposes `read_frontmatter_field` (reads a YAML field from a markdown file's frontmatter, strips wrapping quotes), `extract_frontmatter` (emits the frontmatter block verbatim), `write_index` (reads the target folder's own `index.md` frontmatter for `title`/`subtitle`/`auto`, preserves the frontmatter, and regenerates the body as a bullet list of siblings), `list_indexes` (finds every `index.md` under a root, prunes `.git` and `node_modules` directly, and defers to `git check-ignore --stdin` for the rest), and `walk_and_write_indexes` (runs `write_index` across every folder `list_indexes` returns). An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.

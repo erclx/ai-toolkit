@@ -98,7 +98,8 @@ cmd_install() {
     log_add "standards/$filename"
   done
 
-  write_index "$dest_dir" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
+  cp "$STANDARDS_SOURCE/index.md" "$dest_dir/index.md"
+  write_index "$dest_dir"
   log_add "standards/index.md"
 
   trap - EXIT
@@ -155,7 +156,8 @@ cmd_sync() {
   count=$(collect_sync_changes "$target")
 
   if [ "$count" -eq 0 ]; then
-    write_index "$target/standards" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
+    cp "$STANDARDS_SOURCE/index.md" "$target/standards/index.md"
+    write_index "$target/standards"
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
@@ -187,7 +189,8 @@ cmd_sync() {
   esac
 
   apply_changes "$target"
-  write_index "$target/standards" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
+  cp "$STANDARDS_SOURCE/index.md" "$target/standards/index.md"
+  write_index "$target/standards"
   log_add "standards/index.md"
 
   trap - EXIT

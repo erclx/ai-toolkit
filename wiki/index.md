@@ -1,3 +1,8 @@
+---
+title: Wiki
+subtitle: 'Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `standards/prose.md` when writing or editing any wiki page.'
+---
+
 # Wiki
 
 Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `standards/prose.md` when writing or editing any wiki page.
