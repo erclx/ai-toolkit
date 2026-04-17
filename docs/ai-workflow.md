@@ -84,6 +84,10 @@ Verify the change manually in the browser. Invoke `toolkit:claude-ui-test` if yo
 
 Invoke `toolkit:claude-review` at the start of session 2. It reads all changed files and outputs a findings report. Fix valid findings before invoking `toolkit:git-ship`. If nothing is valid, skip directly to ship.
 
+### UI-heavy project
+
+Before the first feature session on a UI-heavy project, pick a design tier. The tier determines seed shape, installed MCP servers, and installed plugin skills. See [visual design workflow](../wiki/visual-design-workflow.md) for the framework and decision guide.
+
 ## Skills
 
 | Skill                          | When to use                                                                      |
