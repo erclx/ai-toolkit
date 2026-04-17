@@ -1,3 +1,8 @@
+---
+title: Docs
+subtitle: One-line reference for each doc in this folder.
+---
+
 # Docs
 
 One-line reference for each doc in this folder.

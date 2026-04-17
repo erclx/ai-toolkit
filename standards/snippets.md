@@ -49,8 +49,8 @@ Scan relevant files and list conflicts. Do not implement. # run-as-is, no contex
 ### Incorrect
 
 ```markdown
-I want to implement: <feature or task name> # user fill-in placeholder — redundant, add context after invocation
+I want to implement: <feature or task name> # redundant fill-in, add context after invocation instead
 See ARCHITECTURE.md before starting. # external dependency, not self-contained
 
-## Overview\n## Steps # headers present — belongs in a system prompt
+## Overview\n## Steps # headers belong in a system prompt, not a snippet
 ```

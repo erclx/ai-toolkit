@@ -1,17 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2034  # constants are consumed by sourcing scripts
-
-PROMPTS_INDEX_TITLE="Prompts"
-PROMPTS_INDEX_SUBTITLE="System prompt templates for AI-assisted authoring. Each file generates a role-specific system prompt for a specific artifact type."
-
-STANDARDS_INDEX_TITLE="Standards"
-STANDARDS_INDEX_SUBTITLE="Reference docs for consistent authoring across the toolkit and target projects."
-
-DOCS_INDEX_TITLE="Docs"
-DOCS_INDEX_SUBTITLE="One-line reference for each doc in this folder."
-
-WIKI_INDEX_TITLE="Wiki"
-WIKI_INDEX_SUBTITLE="Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow \`standards/prose.md\` when writing or editing any wiki page."
 
 read_frontmatter_field() {
   local file="$1"
@@ -22,18 +9,87 @@ read_frontmatter_field() {
     in_fm {
       prefix = key ": "
       if (index($0, prefix) == 1) {
-        print substr($0, length(prefix) + 1)
+        val = substr($0, length(prefix) + 1)
+        if (length(val) >= 2) {
+          first = substr(val, 1, 1)
+          last = substr(val, length(val), 1)
+          if ((first == "\"" && last == "\"") || (first == "'\''" && last == "'\''")) {
+            val = substr(val, 2, length(val) - 2)
+          }
+        }
+        print val
         exit
       }
     }
   ' "$file"
 }
 
+extract_frontmatter() {
+  local file="$1"
+  awk '
+    NR == 1 && /^---$/ { print; in_fm = 1; next }
+    in_fm { print; if ($0 == "---") exit }
+  ' "$file"
+}
+
+list_indexes() {
+  local root="$1"
+  local candidates
+  candidates=$(find "$root" \
+    \( -path '*/node_modules' -o -name '.git' \) -prune \
+    -o -type f -name "index.md" -print 2>/dev/null | sort)
+
+  if [ -z "$candidates" ]; then
+    return 0
+  fi
+
+  if ! git -C "$root" rev-parse --git-dir >/dev/null 2>&1; then
+    printf '%s\n' "$candidates"
+    return 0
+  fi
+
+  local ignored
+  ignored=$(printf '%s\n' "$candidates" | git -C "$root" check-ignore --stdin 2>/dev/null) || true
+
+  if [ -z "$ignored" ]; then
+    printf '%s\n' "$candidates"
+    return 0
+  fi
+
+  printf '%s\n' "$candidates" | grep -Fxv -f <(printf '%s\n' "$ignored")
+}
+
 write_index() {
   local dir="$1"
-  local title="$2"
-  local subtitle="$3"
   local index_file="$dir/index.md"
+
+  if [ ! -f "$index_file" ]; then
+    printf 'ERROR: %s has no index.md to regenerate\n' "$dir" >&2
+    return 1
+  fi
+
+  local auto
+  auto=$(read_frontmatter_field "$index_file" "auto")
+  if [ "$auto" = "false" ]; then
+    return 0
+  fi
+
+  local title subtitle
+  title=$(read_frontmatter_field "$index_file" "title")
+  subtitle=$(read_frontmatter_field "$index_file" "subtitle")
+
+  local fm_errs=0
+  if [ -z "$title" ]; then
+    printf 'ERROR: missing frontmatter field "title" in %s\n' "$index_file" >&2
+    fm_errs=$((fm_errs + 1))
+  fi
+  if [ -z "$subtitle" ]; then
+    printf 'ERROR: missing frontmatter field "subtitle" in %s\n' "$index_file" >&2
+    fm_errs=$((fm_errs + 1))
+  fi
+  if [ "$fm_errs" -gt 0 ]; then
+    return 1
+  fi
 
   local files=()
   while IFS= read -r f; do
@@ -73,7 +129,11 @@ write_index() {
     fi
   done
 
+  local frontmatter
+  frontmatter=$(extract_frontmatter "$index_file")
+
   {
+    printf '%s\n\n' "$frontmatter"
     printf '# %s\n\n' "$title"
     printf '%s\n\n' "$subtitle"
 
@@ -110,4 +170,17 @@ write_index() {
       done
     fi
   } >"$index_file"
+}
+
+walk_and_write_indexes() {
+  local root="$1"
+  local status=0
+  local index_file
+  while IFS= read -r index_file; do
+    [ -z "$index_file" ] && continue
+    local dir
+    dir=$(dirname "$index_file")
+    write_index "$dir" || status=1
+  done < <(list_indexes "$root")
+  return "$status"
 }

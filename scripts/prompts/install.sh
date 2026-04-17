@@ -165,7 +165,8 @@ cmd_install() {
     log_add "prompts/$slug.md"
   done
 
-  write_index "$dest_dir" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
+  cp "$PROMPTS_SOURCE/index.md" "$dest_dir/index.md"
+  write_index "$dest_dir"
   log_add "prompts/index.md"
 }
 

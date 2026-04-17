@@ -1,3 +1,8 @@
+---
+title: Prompts
+subtitle: System prompt templates for AI-assisted authoring. Each file generates a role-specific system prompt for a specific artifact type.
+---
+
 # Prompts
 
 System prompt templates for AI-assisted authoring. Each file generates a role-specific system prompt for a specific artifact type.

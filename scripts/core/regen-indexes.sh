@@ -7,7 +7,4 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/index.sh"
 
-write_index "$PROJECT_ROOT/prompts" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
-write_index "$PROJECT_ROOT/standards" "$STANDARDS_INDEX_TITLE" "$STANDARDS_INDEX_SUBTITLE"
-write_index "$PROJECT_ROOT/docs" "$DOCS_INDEX_TITLE" "$DOCS_INDEX_SUBTITLE"
-write_index "$PROJECT_ROOT/wiki" "$WIKI_INDEX_TITLE" "$WIKI_INDEX_SUBTITLE"
+walk_and_write_indexes "$PROJECT_ROOT"

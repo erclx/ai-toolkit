@@ -21,6 +21,7 @@ crystaldba
 cspell
 dbaeumer
 deprioritized
+dogfooded
 dontAsk
 e2e
 erclx
@@ -51,6 +52,7 @@ obra
 oneline
 parallelizable
 pentesting
+pipeable
 pipefail
 powerup
 promptname

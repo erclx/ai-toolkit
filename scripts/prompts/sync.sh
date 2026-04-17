@@ -134,7 +134,8 @@ main() {
   count=$(collect_changes "$TARGET_PATH")
 
   if [ "$count" -eq 0 ]; then
-    write_index "$TARGET_PATH/prompts" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
+    cp "$PROMPTS_SOURCE/index.md" "$TARGET_PATH/prompts/index.md"
+    write_index "$TARGET_PATH/prompts"
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
@@ -166,7 +167,8 @@ main() {
   esac
 
   apply_changes "$TARGET_PATH"
-  write_index "$TARGET_PATH/prompts" "$PROMPTS_INDEX_TITLE" "$PROMPTS_INDEX_SUBTITLE"
+  cp "$PROMPTS_SOURCE/index.md" "$TARGET_PATH/prompts/index.md"
+  write_index "$TARGET_PATH/prompts"
   log_add "prompts/index.md"
 
   trap - EXIT
