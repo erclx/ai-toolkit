@@ -83,6 +83,7 @@ scripts/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
     ├── gov.sh           ← strip_frontmatter, build_rules_payload
+    ├── tooling.sh       ← list_tooling_stacks, is_tooling_stack_excluded
     └── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
 ```
 
@@ -116,14 +117,61 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 ## lib
 
-**`ui.sh`**: source this in any script that needs terminal output. Provides the color palette, all `log_*` functions, `select_option` and `ask` for user prompts, `select_or_route_scenario` for sandbox scenario routing, `guard_root` (rejects toolkit root as a target), and `require_project_root`. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`.
+### `ui.sh`
 
-`log_*` functions write to stderr so structured output on stdout pipes clean through wrappers. Use `printf` or `echo` without redirection for data meant to be consumed. When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
+Source this in any script that needs terminal output. `log_*` functions write to stderr so structured output on stdout pipes clean through wrappers. Use `printf` or `echo` without redirection for data meant to be consumed. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`. Also provides the color palette. When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
 
-**`inject.sh`**: tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
+| Function                                                              | What it does                                                               |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `log_info`, `log_warn`, `log_error`, `log_step`, `log_add`, `log_rem` | Framed log lines on stderr. `log_error` exits 1.                           |
+| `select_option`                                                       | Interactive picker. Sets `SELECTED_OPTION`.                                |
+| `ask`                                                                 | Prompt for a value with a default. Exports the result to a named variable. |
+| `select_or_route_scenario`                                            | Sandbox-aware picker. Skips when `SANDBOX_SCENARIO` is set.                |
+| `guard_root`                                                          | Rejects the toolkit root as a target.                                      |
+| `require_project_root`                                                | Errors when run outside the repo or inside a sandbox.                      |
 
-**`gov.sh`**: sourced by both `gov/build.sh` and `claude/prompt.sh`. Contains `build_rules_payload`, which strips frontmatter and concatenates `.mdc` files into a temp file. Accepts an optional space-separated filter of rule names. When provided, only those rules are included. Both consumers call the same function. Don't duplicate this logic if adding a third.
+### `inject.sh`
 
-**`tooling.sh`**: defines `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.
+Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
-**`index.sh`**: sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. Exposes `read_frontmatter_field` (reads a YAML field from a markdown file's frontmatter, strips wrapping quotes), `extract_frontmatter` (emits the frontmatter block verbatim), `compute_index_to` (computes the intended `index.md` content into a target file; fails on missing sibling frontmatter), `write_index` (wraps `compute_index_to` with `auto:false` opt-out and skips the write when content is unchanged), `list_indexes` (finds every `index.md` under a root, prunes `.git` and `node_modules` directly, and defers to `git check-ignore --stdin` for the rest), `walk_and_write_indexes` (runs `write_index` across every folder `list_indexes` returns), `find_indexed_ancestor` (walks up from a path until an `index.md` is found, bounded by a root), and `regen_one` (CLI-facing: dry-run aware, emits JSON records, reports `written`/`would-write`/`unchanged`/`skipped`/`error`). An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
+| Function                   | What it does                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack. |
+| `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                          |
+| `inject_tooling_seeds`     | Apply stack seeds to target. Merges into existing files, never overwrites.                 |
+| `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                       |
+| `inject_governance`        | Copy governance rules into `.cursor/rules/` and standards into `standards/`.               |
+| `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                             |
+
+### `gov.sh`
+
+Sourced by both `gov/build.sh` and `claude/prompt.sh`. Both consumers call the same function. Don't duplicate this logic if adding a third.
+
+| Function              | What it does                                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `build_rules_payload` | Concatenate `.mdc` files into a temp file with frontmatter stripped. Optional space-separated filter narrows to named rules. Returns path. |
+| `strip_frontmatter`   | Strip the YAML frontmatter block from a markdown file. Emit the rest to stdout.                                                            |
+
+### `tooling.sh`
+
+Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. `TOOLING_STACK_EXCLUDE` is the constant of names to skip (currently `claude`). Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.
+
+| Function                    | What it does                                                     |
+| --------------------------- | ---------------------------------------------------------------- |
+| `list_tooling_stacks`       | Emit names of every directory under `tooling/`, minus excluded.  |
+| `is_tooling_stack_excluded` | Return 0 if the name is in `TOOLING_STACK_EXCLUDE`, 1 otherwise. |
+
+### `index.sh`
+
+Sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
+
+| Function                 | What it does                                                                                                                      |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `read_frontmatter_field` | Read a YAML field from a markdown file's frontmatter. Strips wrapping quotes.                                                     |
+| `extract_frontmatter`    | Emit the frontmatter block verbatim.                                                                                              |
+| `list_indexes`           | Find every `index.md` under a root. Prunes `.git` and `node_modules` directly, defers to `git check-ignore --stdin` for the rest. |
+| `compute_index_to`       | Compute the intended `index.md` content into a target file. Fails on missing sibling frontmatter.                                 |
+| `write_index`            | Wraps `compute_index_to` with `auto:false` opt-out. Skips the write when content is unchanged.                                    |
+| `walk_and_write_indexes` | Run `write_index` across every folder `list_indexes` returns.                                                                     |
+| `find_indexed_ancestor`  | Walk up from a path until an `index.md` is found, bounded by a root.                                                              |
+| `regen_one`              | CLI-facing. Dry-run aware, emits JSON records. Reports `written`, `would-write`, `unchanged`, `skipped`, `error`.                 |
