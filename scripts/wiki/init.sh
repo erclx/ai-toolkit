@@ -51,11 +51,14 @@ cmd_init() {
 
   if [[ " ${pending[*]} " == *" index "* ]]; then
     cat >"$index_file" <<'EOF'
+---
+title: Wiki
+subtitle: Reference pages for tools, workflows, and concepts
+---
+
 # Wiki
 
-Reference pages for tools, workflows, and concepts. Written and maintained by hand.
-
-- [Example](example.md): brief description of page content
+Reference pages for tools, workflows, and concepts.
 EOF
     log_add "wiki/index.md"
   fi
