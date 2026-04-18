@@ -98,15 +98,15 @@ To add the convention later, run `aitk tooling sync` or `aitk init`,
 then re-invoke this skill.
 ```
 
-If `CLAUDE.md` exists, check it for an existing reference to `index.md`:
+If `CLAUDE.md` exists, check it for an existing `## Indexes` section:
 
 ```bash
-grep -l 'index.md' CLAUDE.md 2>/dev/null
+grep -l '^## Indexes' CLAUDE.md 2>/dev/null
 ```
 
-If the convention is already documented, skip the seed silently.
+If the section is present, skip the seed silently.
 
-If `CLAUDE.md` exists but has no `index.md` reference, offer to install the canonical convention block. The text below is the source of truth and is mirrored in `tooling/claude/seeds/CLAUDE.md`. Paste it verbatim. Do not rewrite, paraphrase, condense, or add punctuation.
+If `CLAUDE.md` exists but has no `## Indexes` section, offer to install the canonical convention block. The text below is the source of truth and is mirrored in `tooling/claude/seeds/CLAUDE.md`. Paste it verbatim. Do not rewrite, paraphrase, condense, or add punctuation.
 
 ```markdown
 - When a folder has an `index.md`, check it before reading individual files in that folder.
@@ -114,12 +114,7 @@ If `CLAUDE.md` exists but has no `index.md` reference, offer to install the cano
 - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
 ```
 
-Append placement:
-
-- If the file has a `## Rules` section, append the three lines as the last bullets of that section.
-- If the file has no `## Rules` section, append a new `## Rules` section at the end of the file containing only the three lines.
-
-Do not duplicate any line that already appears in the file.
+Append a new `## Indexes` section at the end of the file containing the three lines. Do not touch any other section.
 
 ## Closeout
 

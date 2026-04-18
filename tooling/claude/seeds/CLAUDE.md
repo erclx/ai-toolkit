@@ -2,22 +2,19 @@
 
 [One-line description]
 
-## Before making changes
+## Context
 
-- Check `.claude/TASKS.md` for current scope and status
-- Check `.claude/ARCHITECTURE.md` for decisions already made
-- Check `.claude/WIREFRAMES.md` for intended UI layout and behavior
-- Check `.claude/DESIGN.md` for tokens, typography, spacing, and component rules
-- Check `.claude/REQUIREMENTS.md` for feature scope and non-goals
-- Check `.claude/GOV.md` for coding standards before writing or editing any code
+- Check `.claude/` state docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`, `GOV.md`) for context before making changes, when present. The `claude-feature` skill reads them in parallel when planning a feature.
 
-## Rules
+## Indexes
 
 - When a folder has an `index.md`, check it before reading individual files in that folder.
 - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
+
+## Markdown
+
 - When editing any markdown file, follow `standards/prose.md`.
-- When editing any markdown file, read surrounding content first and match its depth, length, and tone
 
 ## Key paths
 
@@ -27,12 +24,12 @@
 
 ## Spelling
 
-- Add unknown words to the appropriate dictionary defined in `cspell.json`
-- Keep dictionary files sorted alphabetically
+- When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
+- Keep dictionary files sorted alphabetically.
 
 ## Snippets
 
-- When a snippet is referenced with `@`, execute its instructions immediately using available session context
+- When a snippet is referenced with `@`, execute its instructions immediately using available session context.
 
 ## Tasks
 
@@ -42,5 +39,11 @@
 
 ## Memory
 
-- Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
-- Follow `standards/prose.md` when writing memory file content
+- Write all memory files to `.claude/memory/`, not `~/.claude/projects/`.
+- Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
+- Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.
+- Before creating a new memory file, check for an existing one on the same topic. Update rather than duplicate.
+
+## Scratch
+
+- Write temporary files to `.claude/.tmp/` in the project root, not `/tmp`.

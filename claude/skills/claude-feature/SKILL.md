@@ -17,8 +17,11 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
-- `.claude/DESIGN.md`: tokens, typography, spacing, and component rules
 - `.claude/TASKS.md`: current scope and status
+
+Also read these when the feature touches code or UI. Skip them for prose, docs, catalog, or config-only changes:
+
+- `.claude/DESIGN.md`: tokens, typography, spacing, and component rules
 - `.claude/WIREFRAMES.md`: intended UI layout and behavior
 - `.claude/GOV.md`: coding standards
 
@@ -34,9 +37,30 @@ Construct the plan with three sections:
 - **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
 - **Questions:** numbered list of things to resolve before starting. If none, use `None identified.`
 
-## Step 4: persist
+Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one.
 
-Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan directly to `.claude/plans/feature-<slug>.md` from the project root. Create the directory if it does not exist.
+## Step 4: output
+
+Decide the mode based on what Step 3 produced:
+
+- **Small** when the plan touches 2 files or fewer, has no architectural or cross-cutting choices, and both Risks and Questions come out `None identified.`
+- **Full** otherwise
+
+### Small mode
+
+Output the plan to chat. Do not write a plan file.
+
+```markdown
+**Files to touch:**
+
+- `path/to/file`: reason
+```
+
+If real questions exist, include a numbered `**Questions:**` section below. Omit empty sections. Do not print `None identified.` in chat.
+
+### Full mode
+
+Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.claude/plans/feature-<slug>.md` from the project root. Create the directory if it does not exist.
 
 File format:
 
@@ -58,11 +82,7 @@ File format:
 1. <question>
 ```
 
-The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
-
-## Step 5: chat output
-
-Output only the file path and the Questions section (so the user can resolve them inline before approving). Do not repeat Files to touch or Risks in chat. They live in the file.
+Then output in chat:
 
 ```
 📝 Wrote .claude/plans/feature-<slug>.md
@@ -70,9 +90,8 @@ Output only the file path and the Questions section (so the user can resolve the
 **Questions:**
 
 1. <question>
-2. <question>
 ```
 
-If there are no questions, output only the path line and stop.
+Show only the path line when there are no questions. The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
 
 Do not proceed to implementation until the user explicitly says to continue.
