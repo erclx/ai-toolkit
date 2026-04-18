@@ -85,6 +85,12 @@ Tune the classifier in settings under `autoMode`:
 
 Run `claude auto-mode defaults` to dump the built-in rule set, and `claude auto-mode config` to see your effective config. The mode auto-pauses after 3 consecutive blocks or 20 total in a session.
 
+## Auto mode vs allowlist
+
+Auto mode and the allowlist are complementary, not substitutes. Auto mode approves non-trivial actions through a classifier that can still block or require manual override. Allowlist entries in `settings.json` pre-approve specific commands unconditionally, skipping both the prompt and the classifier.
+
+Common read-only shell commands never need an allowlist entry. Claude Code auto-allows `ls`, `cat`, `head`, `tail`, `grep`, `rg`, `find`, `jq`, all git read-only subcommands (`status`, `diff`, `log`, `show`, `branch`, `remote`, `rev-parse`, etc.), all `gh` read-only subcommands (`pr view/list/diff`, `issue view/list`, `run view/list`), and Docker read-only subcommands (`ps`, `images`, `logs`, `inspect`). Allowlist entries are for project-specific scripts that Claude Code cannot otherwise recognize as read-only, such as `Bash(bun run check:spell)`.
+
 ## Hook-based extensions
 
 [`PreToolUse` and `PermissionRequest` hooks](claude-hooks.md) can grant, deny, or rewrite permission decisions programmatically. Use them when rule patterns alone are not expressive enough.
