@@ -29,8 +29,7 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}" >&2
-  echo -e "${GREY}│${NC} ${WHITE}aitk gov${NC}" >&2
+  open_timeline "aitk gov"
   trap close_timeline EXIT
 
   local command="$1"

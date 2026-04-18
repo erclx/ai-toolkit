@@ -149,6 +149,9 @@ main() {
 
   target="${target:-.}"
 
+  open_timeline "aitk init"
+  trap close_timeline EXIT
+
   if [ ! -d "$target" ]; then
     log_error "Target directory not found: $target"
   fi
@@ -159,10 +162,6 @@ main() {
   local -A skip_set=()
   parse_csv_into "$with_csv" with_set "standards,prompts,antigravity" "--with"
   parse_csv_into "$skip_csv" skip_set "wiki" "--skip"
-
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk init${NC}"
-  trap close_timeline EXIT
 
   log_step "Core domains"
   log_info "base tooling (configs, seeds, deps, scripts)"

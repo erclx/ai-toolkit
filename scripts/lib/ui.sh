@@ -19,6 +19,13 @@ log_rem() { echo -e "${GREY}│${NC} ${RED}-${NC} $1" >&2; }
 
 pipe_output() { while IFS= read -r line; do echo -e "${GREY}│${NC}  $line" >&2; done; }
 
+open_timeline() {
+  echo -e "${GREY}┌${NC}" >&2
+  if [ -n "${1:-}" ]; then
+    echo -e "${GREY}│${NC} ${WHITE}$1${NC}" >&2
+  fi
+}
+
 close_timeline() {
   echo -e "${GREY}└${NC}" >&2
 }
@@ -112,6 +119,10 @@ select_option() {
     echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${options[0]}${NC}" >&2
     export SELECTED_OPTION="${options[0]}"
     return
+  fi
+
+  if [ ! -t 0 ]; then
+    log_error "${prompt_text} requires a TTY. Pass an argument or set AITK_NON_INTERACTIVE=1."
   fi
 
   echo -e "${GREY}│${NC}" >&2

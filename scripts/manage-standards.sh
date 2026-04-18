@@ -203,8 +203,7 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk standards${NC}"
+  open_timeline "aitk standards"
   trap close_timeline EXIT
 
   local command="$1"

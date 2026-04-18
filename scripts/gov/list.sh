@@ -186,6 +186,8 @@ main() {
     esac
   done
 
+  trap close_timeline EXIT
+
   if [ "$json" -eq 1 ]; then
     printf '{'
     if [ "$show_stacks" -eq 1 ]; then
@@ -201,8 +203,6 @@ main() {
     exit 0
   fi
 
-  echo -e "${GREY}┌${NC}"
-  trap close_timeline EXIT
   [ "$show_stacks" -eq 1 ] && list_stacks_text
   [ "$show_rules" -eq 1 ] && list_rules_text
 }

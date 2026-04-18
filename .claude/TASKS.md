@@ -39,4 +39,12 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Nothing queued
+### Audit sandbox scenario output UI for canonical consistency
+
+Plan: .claude/plans/feature-sandbox-output-audit.md
+
+- [ ] Outcome: every sandbox scenario renders one frame with banner, section headers, and closing `└` on stderr
+- [ ] Outcome: stdout stays clean of UI characters across all scenarios
+- [ ] Outcome: findings report filed before any fix work begins
+
+> Test strategy: manual, run each non-interactive scenario via `SANDBOX_SCENARIO=… aitk sandbox <cat>:<cmd>` and diff captured stdout/stderr against the canonical in `docs/agents.md`.

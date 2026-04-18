@@ -14,6 +14,47 @@ This doc is an index of what an agent can run and how to run it cleanly from a s
 
 See `CLAUDE.md` design principles. They apply to every command below.
 
+## Output shape
+
+Every CLI command renders into one of two framed shapes. Data goes to stdout. UI and logs go to stderr. Help output is the exception — it prints to stdout so it can be piped and grepped.
+
+### Data shape (lists, runs, errors)
+
+```
+┌
+│ aitk <domain>
+│
+├ Section
+│ ✓ item
+│ ✓ item
+└
+```
+
+Rules:
+
+- `┌` opens the frame on stderr
+- `│ aitk <domain>` is the command banner, one per invocation
+- `├ Section` headers introduce groups of items; `log_step` produces the blank `│` spacer before each
+- `└` closes the frame on stderr, wired via `trap close_timeline EXIT`
+- Errors render as `│ ✗ message` inside the same frame; never emit a lone error line without a frame
+
+### Help shape
+
+```
+┌
+├ Usage: aitk <domain> [command]
+│
+│  Commands:
+│    ...
+└
+```
+
+Help skips the banner. The `Usage:` line sits directly on `├`. Help writes to stdout because `--help` is documentation, not runtime UI.
+
+### JSON and `--names` modes
+
+`--json` and `--names` keep stdout clean and machine-readable. The frame still renders on stderr (open, banner, close) so the stream discipline is consistent across modes. Consumers that only read stdout see pure data.
+
 ## Command catalog
 
 Full help: `aitk <command> --help`.

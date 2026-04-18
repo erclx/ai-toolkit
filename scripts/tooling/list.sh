@@ -123,6 +123,8 @@ main() {
     esac
   done
 
+  trap close_timeline EXIT
+
   if [ "$json" -eq 1 ]; then
     printf '{"stacks":'
     list_stacks_json
@@ -130,9 +132,6 @@ main() {
     exit 0
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk tooling list${NC}"
-  trap close_timeline EXIT
   list_stacks_text
 }
 
