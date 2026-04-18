@@ -41,7 +41,7 @@ stage_setup() {
 
   log_step "Provisioning upstream: $selected"
   log_info "Command: $resolved_cmd"
-  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}" >&2
 
   eval "$resolved_cmd"
 
