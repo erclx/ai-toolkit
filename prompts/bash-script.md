@@ -21,13 +21,15 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 ### Visual Timeline
 
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
-- Open the timeline once at the very start of `main()` with `┌` alone, followed immediately by `│ Title`, before any logic, prompts, or checks.
-- Close the timeline via `trap close_timeline EXIT`, registered immediately after the `┌` open.
+- All frame output (`┌`, `│`, `├`, `└`, log lines, prompts) writes to **stderr** via `>&2`. Data (JSON, lists, piped values) writes to stdout. `--help` is the exception — help prints to stdout.
+- Open the timeline once at the very start of `main()` via `open_timeline "Title"`, before any logic, prompts, or checks.
+- Close the timeline via `trap close_timeline EXIT`, registered immediately after `open_timeline`.
 - On success: disable with `trap - EXIT`, then print `└\n` and the success message manually.
 - On cancellation and error: never print `└` manually. The trap owns those exits.
 - Use state transitions for interactive prompts: `◆` (active) → `◇` (inactive).
 - Do not add diamonds (`◆`/`◇`) to non-interactive log functions.
 - On cancellation: show `◇ ... Cancelled`, exit 1, no `log_error` call. Both `ask()` and `select_option()` must handle escape cancellation identically.
+- Interactive prompts must guard against non-TTY stdin with `[ -t 0 ]` and render a framed `log_error` when a TTY is required but absent. Never let `read` block silently on piped input.
 
 ### Code Style
 
@@ -107,50 +109,66 @@ NC='\033[0m'            # Reset
 
 ### Timeline Lifecycle
 
-Define `close_timeline` and register it as a trap immediately after opening `┌`. This guarantees `└` prints on every exit path: normal completion, `exit 1` from cancellation, or unexpected errors. Do not print `└` manually anywhere else.
+Define `open_timeline` and `close_timeline`. Call `open_timeline "Title"` at the start of `main()`, then register `close_timeline` as the EXIT trap. The trap guarantees `└` prints on every exit path: normal completion, `exit 1` from cancellation, or unexpected errors. Do not print `└` manually anywhere else.
 
 ```bash
+open_timeline() {
+  echo -e "${GREY}┌${NC}" >&2
+  [ -n "${1:-}" ] && echo -e "${GREY}│${NC} ${WHITE}$1${NC}" >&2
+}
+
 close_timeline() {
-  echo -e "${GREY}└${NC}"
+  echo -e "${GREY}└${NC}" >&2
 }
 ```
 
-Register the trap inside `main()` right after the opening title block:
+Register the trap inside `main()` right after opening:
 
 ```bash
-echo -e "${GREY}┌${NC}"
-echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
-echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
+open_timeline "Script title"
 trap close_timeline EXIT
 ```
 
-### Logging (All must include `│` prefix)
+### Logging (All must include `│` prefix, write to stderr)
 
 ```bash
-log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1"; }
-log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
-log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
-log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
-log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1"; }
+log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1" >&2; }
+log_warn()  { echo -e "${GREY}│${NC} ${YELLOW}!${NC} $1" >&2; }
+log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2; exit 1; }
+log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
+log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
+log_rem()   { echo -e "${GREY}│${NC} ${RED}-${NC} $1" >&2; }
 ```
 
 ### Section Headers
 
-`log_step` includes a leading blank `│` line to visually separate sections. Always use a raw `echo` for the **first** section header after the title block, regardless of total section count, to avoid an unwanted blank line. Use `log_step` for all subsequent sections where breathing room between sections is intentional:
+Use `log_step` for every section header, including the first. It emits a leading blank `│` line to separate the banner from the first section and to give breathing room between subsequent sections:
 
 ```bash
-# opening title block: ┌ alone, then │ Title, then first section with raw echo
-echo -e "${GREY}┌${NC}"
-echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
-echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
+open_timeline "Script title"
+trap close_timeline EXIT
 
-# subsequent sections: use log_step (blank │ line is intentional)
 log_step "Deploy"
 log_step "Verify"
 ```
 
+Renders as:
+
+```
+┌
+│ Script title
+│
+├ Deploy
+...
+│
+├ Verify
+...
+└
+```
+
 ### Interactive Prompts (Must transition `◆` → `◇`)
+
+Both prompts guard against non-TTY stdin with `[ -t 0 ]` and write UI to stderr.
 
 ```bash
 ask() {
@@ -163,29 +181,32 @@ ask() {
   if [ -n "$default_val" ]; then
     display_default=" (${default_val})"
   fi
-  echo -e "${GREY}│${NC}"
-  echo -ne "${GREEN}◆${NC} ${prompt_text}${display_default} "
+  if [ ! -t 0 ]; then
+    log_error "${prompt_text} requires a TTY"
+  fi
+  echo -e "${GREY}│${NC}" >&2
+  echo -ne "${GREEN}◆${NC} ${prompt_text}${display_default} " >&2
   while IFS= read -r -s -n1 char; do
     if [[ $char == $'\x1b' ]]; then
       read -rsn2 -t 0.001 _ || true
-      echo -ne "\r\033[K"
-      echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+      echo -ne "\r\033[K" >&2
+      echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
       exit 1
     elif [[ $char == $'\x7f' || $char == $'\x08' ]]; then
       if [ -n "$input" ]; then
         input="${input%?}"
-        echo -ne "\b \b"
+        echo -ne "\b \b" >&2
       fi
     elif [[ -z "$char" ]]; then
       break
     else
       input+="$char"
-      echo -n "$char"
+      echo -n "$char" >&2
     fi
   done
   [ -z "$input" ] && input="$default_val"
-  echo -ne "\r\033[K"
-  echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${input}${NC}"
+  echo -ne "\r\033[K" >&2
+  echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${input}${NC}" >&2
   export "$var_name"="$input"
 }
 ```
@@ -198,14 +219,18 @@ select_option() {
   local cur=0
   local count=${#options[@]}
 
-  echo -ne "${GREY}│${NC}\n${GREEN}◆${NC} ${prompt_text}\n"
+  if [ ! -t 0 ]; then
+    log_error "${prompt_text} requires a TTY"
+  fi
+
+  echo -ne "${GREY}│${NC}\n${GREEN}◆${NC} ${prompt_text}\n" >&2
 
   while true; do
     for i in "${!options[@]}"; do
       if [ $i -eq $cur ]; then
-        echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}"
+        echo -e "${GREY}│${NC}  ${GREEN}❯ ${options[$i]}${NC}" >&2
       else
-        echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}"
+        echo -e "${GREY}│${NC}    ${GREY}${options[$i]}${NC}" >&2
       fi
     done
 
@@ -216,26 +241,26 @@ select_option() {
           if [[ "$key_seq" == "[A" ]]; then cur=$(( (cur - 1 + count) % count )); fi
           if [[ "$key_seq" == "[B" ]]; then cur=$(( (cur + 1) % count )); fi
         else
-          echo -en "\033[$((count + 1))A\033[J"
-          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+          echo -en "\033[$((count + 1))A\033[J" >&2
+          echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
           exit 1
         fi
         ;;
       "k") cur=$(( (cur - 1 + count) % count ));;
       "j") cur=$(( (cur + 1) % count ));;
       "q")
-        echo -en "\033[$((count + 1))A\033[J"
-        echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+        echo -en "\033[$((count + 1))A\033[J" >&2
+        echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
         exit 1
         ;;
       "") break ;;
     esac
 
-    echo -en "\033[${count}A"
+    echo -en "\033[${count}A" >&2
   done
 
-  echo -en "\033[$((count + 1))A\033[J"
-  echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}"
+  echo -en "\033[$((count + 1))A\033[J" >&2
+  echo -e "\033[1A${GREY}│${NC}\n${GREY}◇${NC} ${prompt_text} ${WHITE}${options[$cur]}${NC}" >&2
   SELECTED_OPTION="${options[$cur]}"
 }
 ```
@@ -280,8 +305,13 @@ set -o pipefail
 
 [Function definitions - only needed functions]
 
+open_timeline() {
+  echo -e "${GREY}┌${NC}" >&2
+  [ -n "${1:-}" ] && echo -e "${GREY}│${NC} ${WHITE}$1${NC}" >&2
+}
+
 close_timeline() {
-  echo -e "${GREY}└${NC}"
+  echo -e "${GREY}└${NC}" >&2
 }
 
 check_dependencies() {
@@ -291,15 +321,14 @@ check_dependencies() {
 main() {
   check_dependencies
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}Script title${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}First section${NC}"
+  open_timeline "Script title"
   trap close_timeline EXIT
 
+  log_step "First section"
   [Script logic with timeline maintained]
 
   trap - EXIT
-  echo -e "${GREY}└${NC}\n"
+  echo -e "${GREY}└${NC}\n" >&2
   echo -e "${GREEN}✓ Final success message${NC}"
 }
 
@@ -320,13 +349,18 @@ WHITE='\033[1;37m'
 GREY='\033[0;90m'
 NC='\033[0m'
 
-log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1"; exit 1; }
-log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}"; }
-log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1"; }
+log_info()  { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1" >&2; }
+log_error() { echo -e "${GREY}│${NC} ${RED}✗${NC} $1" >&2; exit 1; }
+log_step()  { echo -e "${GREY}│${NC}\n${GREY}├${NC} ${WHITE}$1${NC}" >&2; }
+log_add()   { echo -e "${GREY}│${NC} ${GREEN}+${NC} $1" >&2; }
+
+open_timeline() {
+  echo -e "${GREY}┌${NC}" >&2
+  [ -n "${1:-}" ] && echo -e "${GREY}│${NC} ${WHITE}$1${NC}" >&2
+}
 
 close_timeline() {
-  echo -e "${GREY}└${NC}"
+  echo -e "${GREY}└${NC}" >&2
 }
 
 ask() {
@@ -339,29 +373,32 @@ ask() {
   if [ -n "$default_val" ]; then
     display_default=" (${default_val})"
   fi
-  echo -e "${GREY}│${NC}"
-  echo -ne "${GREEN}◆${NC} ${prompt_text}${display_default} "
+  if [ ! -t 0 ]; then
+    log_error "${prompt_text} requires a TTY"
+  fi
+  echo -e "${GREY}│${NC}" >&2
+  echo -ne "${GREEN}◆${NC} ${prompt_text}${display_default} " >&2
   while IFS= read -r -s -n1 char; do
     if [[ $char == $'\x1b' ]]; then
       read -rsn2 -t 0.001 _ || true
-      echo -ne "\r\033[K"
-      echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}"
+      echo -ne "\r\033[K" >&2
+      echo -e "${GREY}◇${NC} ${prompt_text} ${RED}Cancelled${NC}" >&2
       exit 1
     elif [[ $char == $'\x7f' || $char == $'\x08' ]]; then
       if [ -n "$input" ]; then
         input="${input%?}"
-        echo -ne "\b \b"
+        echo -ne "\b \b" >&2
       fi
     elif [[ -z "$char" ]]; then
       break
     else
       input+="$char"
-      echo -n "$char"
+      echo -n "$char" >&2
     fi
   done
   [ -z "$input" ] && input="$default_val"
-  echo -ne "\r\033[K"
-  echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${input}${NC}"
+  echo -ne "\r\033[K" >&2
+  echo -e "${GREY}◇${NC} ${prompt_text} ${WHITE}${input}${NC}" >&2
   export "$var_name"="$input"
 }
 
@@ -372,9 +409,7 @@ check_dependencies() {
 main() {
   check_dependencies
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}Project Setup${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Installing dependencies${NC}"
+  open_timeline "Project Setup"
   trap close_timeline EXIT
 
   ask "Project name?" "PROJECT_NAME" "my-app"
@@ -395,9 +430,11 @@ main "$@"
 Before responding, verify:
 
 - File starts with shebang, `set -e`, `set -o pipefail` and uses exactly 2 spaces for indentation.
-- Timeline opens with `┌` alone, followed by `│ Title` on the next line.
-- Timeline closes via `trap close_timeline EXIT` registered immediately after the title block. Success paths use `trap - EXIT` then manual `└\n` then success message. Cancellation and error paths never print `└` manually. The trap owns those.
-- `close_timeline` is defined and prints `└`.
+- Timeline opens via `open_timeline "Title"`, which writes `┌` and `│ Title` to stderr.
+- Timeline closes via `trap close_timeline EXIT` registered immediately after `open_timeline`. Success paths use `trap - EXIT` then manual `└\n` (to stderr) then success message. Cancellation and error paths never print `└` manually. The trap owns those.
+- `open_timeline` and `close_timeline` are defined and write to stderr via `>&2`.
+- All frame output (`│`, `├`, `└`, log lines, interactive prompts) writes to stderr via `>&2`. Stdout carries data only. `--help` is the exception — help writes to stdout.
+- Interactive prompts (`ask`, `select_option`) guard with `[ -t 0 ]` and call `log_error` if stdin is not a TTY.
 - Timeline (`│`) appears in all log functions and interactive prompts use `◆` → `◇` transitions.
 - `ask()` uses `\r\033[K` to rewrite the `◆` line in place. No `\033[1A` cursor-up sequences.
 - `ask()` drains trailing escape bytes with `read -rsn2 -t 0.001 _ || true` before cancelling.
@@ -409,5 +446,5 @@ Before responding, verify:
 - Logging is concise: no "Starting.../Finished..." bloat, no intermediate variable logging.
 - `log_add` is used for all file, entry, and key writes.
 - `log_info` is used for status confirmations only, not writes.
-- First section after title block always uses raw `echo`, never `log_step`.
+- Every section header uses `log_step`, including the first one after the title block.
 - File ends with exactly one empty line.

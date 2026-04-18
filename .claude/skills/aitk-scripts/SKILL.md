@@ -40,5 +40,6 @@ After editing scripts in a domain that has a sandbox scenario:
 ## Reference
 
 - `docs/scripts.md`: structure, file inventory, core scripts, lib responsibilities
+- `docs/agents.md`: output shape and stream contract for every CLI command
 - `docs/sandbox.md`: sandbox system, hook pattern, provisioning flow, scenario catalog
 - `prompts/bash-script.md`: bash style rules

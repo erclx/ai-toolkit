@@ -109,11 +109,13 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 ## UI framing across exec boundaries
 
-`manage-*.sh` dispatchers that hand off via `exec` lose any trap set in the parent, so a parent-opened `┌` block never closes. Each subcommand script under `scripts/<domain>/` owns its own frame: open `┌` and print a title line at the top of `main()`, before any `select_option` or `ask` call. Only open the parent frame in the dispatcher when the picker is needed to resolve the subcommand name, then close it with `└` before `exec`.
+Every `manage-*.sh` dispatcher calls `open_timeline "aitk <domain>"` and `trap close_timeline EXIT` at the top of `main()`, before any `exec`. Because `exec` replaces the process and drops the parent trap, each subcommand script under `scripts/<domain>/` re-arms `trap close_timeline EXIT` itself, before any early `exit` (including `--json` paths). Subcommand scripts do **not** open their own `┌` — the manager already did. This keeps exactly one frame per invocation on stderr.
 
-- `scripts/manage-tooling.sh` is the reference for conditional parent framing
-- `scripts/tooling/{list,ref,sync,create}.sh` each open `┌` and print `│ aitk tooling <subcommand>` at the top of `main()`
-- Prompts and `log_*` calls assume a frame is open. Opening the frame early prevents dangling `│` output on error paths.
+- `scripts/manage-tooling.sh` is the reference manager. It opens the frame unconditionally in `main()`.
+- `scripts/tooling/{list,ref,sync,create}.sh` set their own EXIT trap and emit section headers via `log_step`, but never emit `┌`.
+- Prompts and `log_*` calls assume a frame is open. Opening the frame at the top of the manager prevents dangling `│` output on error paths.
+
+See `docs/agents.md` for the canonical output shape that this framing produces, and `prompts/bash-script.md` for the authoring contract when generating new domain scripts.
 
 ## lib
 
@@ -121,14 +123,15 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 Source this in any script that needs terminal output. `log_*` functions write to stderr so structured output on stdout pipes clean through wrappers. Use `printf` or `echo` without redirection for data meant to be consumed. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`. Also provides the color palette. When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
 
-| Function                                                              | What it does                                                               |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `log_info`, `log_warn`, `log_error`, `log_step`, `log_add`, `log_rem` | Framed log lines on stderr. `log_error` exits 1.                           |
-| `select_option`                                                       | Interactive picker. Sets `SELECTED_OPTION`.                                |
-| `ask`                                                                 | Prompt for a value with a default. Exports the result to a named variable. |
-| `select_or_route_scenario`                                            | Sandbox-aware picker. Skips when `SANDBOX_SCENARIO` is set.                |
-| `guard_root`                                                          | Rejects the toolkit root as a target.                                      |
-| `require_project_root`                                                | Errors when run outside the repo or inside a sandbox.                      |
+| Function                                                              | What it does                                                                               |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `open_timeline`, `close_timeline`                                     | Open `┌` (with optional banner) and close `└` on stderr. Pair with `trap … EXIT`.          |
+| `log_info`, `log_warn`, `log_error`, `log_step`, `log_add`, `log_rem` | Framed log lines on stderr. `log_error` exits 1.                                           |
+| `select_option`                                                       | Interactive picker. Sets `SELECTED_OPTION`. Errors with a framed message on non-TTY stdin. |
+| `ask`                                                                 | Prompt for a value with a default. Exports the result to a named variable.                 |
+| `select_or_route_scenario`                                            | Sandbox-aware picker. Skips when `SANDBOX_SCENARIO` is set.                                |
+| `guard_root`                                                          | Rejects the toolkit root as a target.                                                      |
+| `require_project_root`                                                | Errors when run outside the repo or inside a sandbox.                                      |
 
 ### `inject.sh`
 
