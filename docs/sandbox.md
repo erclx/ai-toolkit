@@ -38,12 +38,13 @@ scripts/sandbox/
 │   ├── split.sh       ← scenarios for /git:split (independent, stacked)
 │   └── ship.sh        ← scenarios for /git:ship (without-changelog, with-changelog)
 ├── claude/
-│   ├── autoship.sh    ← approved plan on feature branch for testing /claude-autoship
-│   ├── review.sh      ← branch with known bugs for testing /claude-review
-│   ├── feature.sh     ← scenarios for /claude-feature (full, small)
-│   ├── ux-audit.sh    ← UI project with seeded design drift for testing /claude-ux-audit
-│   ├── docs.sh        ← stale planning docs after a session pivot for testing /claude-docs
-│   └── seed-sync.sh   ← drifted seeds for testing /claude-seed-sync
+│   ├── autoship.sh     ← approved plan on feature branch for testing /claude-autoship
+│   ├── review.sh       ← branch with known bugs for testing /claude-review
+│   ├── feature.sh      ← scenarios for /claude-feature (full, small)
+│   ├── ux-audit.sh     ← UI project with seeded design drift for testing /claude-ux-audit
+│   ├── docs.sh         ← stale planning docs after a session pivot for testing /claude-docs
+│   ├── seed-sync.sh    ← drifted seeds for testing /claude-seed-sync
+│   └── init-project.sh ← scenarios for /toolkit:init-project (fresh, vite-react, astro)
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment

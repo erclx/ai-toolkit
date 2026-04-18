@@ -9,7 +9,7 @@ Orchestrates the onboarding chain. Detects project type, resolves per-domain arg
 
 ## Read catalogs
 
-Run in parallel. Never hardcode stack, rule, snippet, or standards names.
+Run in parallel. Never hardcode stack, rule, snippet, or standards names. Run from the target project's current directory. Do not cd into the toolkit source tree. The `aitk` CLI is global.
 
 ```bash
 aitk gov list --json 2>/dev/null
@@ -62,7 +62,7 @@ Before executing, output:
 
 ## Execute
 
-Run immediately after the preview. Claude Code's tool permission dialog is the confirmation gate.
+Run immediately after the preview. Claude Code's tool permission dialog is the confirmation gate. Run from the target project's current directory. The `<target>` argument is explicit, so no cd is needed.
 
 ```bash
 AITK_NON_INTERACTIVE=1 aitk init \
