@@ -38,6 +38,8 @@ headerless
 heredocs
 hesreallyhim
 hookify
+hotspot
+hotspots
 invokable
 jsdom
 korotovsky

@@ -18,6 +18,7 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Claude Code routines](claude-routines.md): Cloud-run agents triggered by schedule, API, or GitHub events
 - [Claude Code skills](claude-skills.md): Skills, plugins, invocation, and installation
 - [Claude Code subagents](claude-subagents.md): When and how a skill should spawn a subagent, parallel vs sequential, and pitfalls
+- [Claude Code and git worktrees](claude-worktrees.md): Running parallel sessions on independent branches
 - [Community MCP servers](community-mcp-servers.md): Curated list of MCP servers with rankings and install notes
 - [Community skills and plugins](community-skills.md): Notable third-party skills, official Anthropic plugins, and curated lists
 - [Ollama](ollama.md): Local models via Ollama with tiers, context config, statusline, and web search

@@ -61,3 +61,5 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ## settings.json
 
 - Seeds `attribution.commit` and `attribution.pr` as empty strings to suppress co-author tags. The deprecated `includeCoAuthoredBy` key is not used.
+- Seeds `permissions.allow` with `bun run check:spell`, `check:format`, and `check:shell` so projects using the base tooling run these without prompting. Projects that do not install base carry three harmless dead entries.
+- Seeds `permissions.deny` with `.env.local` and `.env.*` reads to block accidental secret exposure.

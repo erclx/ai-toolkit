@@ -28,6 +28,15 @@ Run `aitk claude init` to seed the `.claude/` directory and a root `CLAUDE.md` f
 
 ## Scenarios
 
+### Bootstrap a new project
+
+Two steps, in order:
+
+1. Run the framework's own scaffold (`bun init`, `npm create vite`, `npm create astro`). The toolkit does not run this step, so stack choice stays with you.
+2. Invoke `toolkit:init-project` in Claude Code. It detects the stack from files, resolves flags, previews the chain, then runs `aitk init` to layer base tooling, Claude seeds, governance, snippets, and wiki.
+
+Optional domains (`standards`, `prompts`, `antigravity`) pass through `--with`. Add only if the project needs them.
+
 ### New feature
 
 One session works for most features. Prefer splitting across two sessions only when the feature is large enough that you want a cold, independent reviewer on the diff. Plan and implement in session 1, then review and ship in session 2.
@@ -59,7 +68,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `toolkit:git-ship`
 - For full autonomy per worktree, invoke `toolkit:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-Caveats: `.claude/TASKS.md` is a single file. If multiple sessions edit it concurrently, resolve the merge at ship time. Treat memory updates as single-writer in practice.
+Caveats: `.claude/TASKS.md` is a single file. If multiple sessions edit it concurrently, resolve the merge at ship time. Treat memory updates as single-writer in practice. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full domain-level fan-out rules in this toolkit repo.
 
 ### Autonomous ship
 
