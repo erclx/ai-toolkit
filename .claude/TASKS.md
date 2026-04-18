@@ -39,9 +39,4 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Promote captured memory into the right surface
-
-- [x] A `claude-memory-review` skill reads `.claude/memory/` and proposes which entries to consolidate, promote to `CLAUDE.md` or a skill body, hand off to governance, or delete as stale
-- [x] Output is a grouped list the user approves block-by-block, not auto-apply
-
-> Test strategy: manual, run against a memory folder with overlapping and stale entries and confirm the proposed actions match judgment.
+### Nothing queued

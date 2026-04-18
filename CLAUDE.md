@@ -12,6 +12,7 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 - Extend existing commands with flags over creating bespoke variants. Prefer `--add` and similar composition over stack explosion.
 - The toolkit is the source of truth. Authoring happens here, target projects consume via install and sync.
 - Skills detect and call the CLI. They do not reimplement CLI logic.
+- This repo is behavior-heavy. Planning and review are the work here, so a higher supervision ratio than a typical app repo is expected.
 
 ## Behavior
 
@@ -86,7 +87,8 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 ## Commands
 
-- `bun run check`: lint, format, spell check
+- `bun run check`: full verification, applies formatting and regenerates indexes before running the read-only checks
+- `bun run check:spell`, `check:format`, `check:shell`: individual read-only checks
 - `bun run format`: auto-fix formatting
 
 ## Spelling
@@ -115,6 +117,10 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 ## Scratch
 
 - Write temporary files to `.claude/.tmp/` in the project root, not `/tmp`.
+
+## Parallel sessions
+
+- Independent feature tracks can run concurrently in git worktrees. See `wiki/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
 
 ## Wiki
 
