@@ -26,7 +26,7 @@ stage_setup() {
   log_info "  Action: gemini git:branch"
   log_info "  Expect: Suggest rename to 'feat/wip-messy-work'"
 
-  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}" >&2
 
   log_info "Test B (toggle): 'git checkout feat/clean-feature'"
   log_info "  Action: gemini git:branch"

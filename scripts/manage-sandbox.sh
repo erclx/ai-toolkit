@@ -290,13 +290,14 @@ handle_post_execution_prompt() {
         log_info "Sandbox path: $SANDBOX"
       fi
     else
-      echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}"
+      echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}" >&2
     fi
   fi
 
   trap - EXIT
-  echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Sandbox Ready${NC}"
+  close_timeline
+  echo "" >&2
+  echo -e "${GREEN}✓ Sandbox Ready${NC}" >&2
 }
 
 cmd_clean() {
@@ -304,8 +305,9 @@ cmd_clean() {
   rm -rf "$SANDBOX"
   log_rem ".sandbox/"
   trap - EXIT
-  echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Sandbox clean${NC}"
+  close_timeline
+  echo "" >&2
+  echo -e "${GREEN}✓ Sandbox clean${NC}" >&2
 }
 
 reset_sandbox() {
@@ -313,8 +315,7 @@ reset_sandbox() {
     log_error "No sandbox found. Run \`aitk sandbox\` first."
   fi
 
-  echo -e "${GREY}│${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Sandbox state${NC}"
+  log_step "Sandbox state"
 
   local has_baseline=0
   (cd "$SANDBOX" && git rev-parse refs/sandbox/baseline >/dev/null 2>&1) && has_baseline=1
@@ -346,8 +347,9 @@ reset_sandbox() {
   if [ "$is_dirty" -eq 0 ]; then
     log_info "At baseline"
     trap - EXIT
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Sandbox at baseline${NC}"
+    close_timeline
+    echo "" >&2
+    echo -e "${GREEN}✓ Sandbox at baseline${NC}" >&2
     exit 0
   fi
 
@@ -374,8 +376,9 @@ reset_sandbox() {
   log_info "Sandbox reset to baseline"
 
   trap - EXIT
-  echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Sandbox reset complete${NC}"
+  close_timeline
+  echo "" >&2
+  echo -e "${GREEN}✓ Sandbox reset complete${NC}" >&2
 }
 
 main() {
@@ -390,8 +393,7 @@ main() {
   fi
 
   if [[ "$no_header" -eq 0 ]]; then
-    echo -e "${GREY}┌${NC}"
-    echo -e "${GREY}│${NC} ${WHITE}aitk sandbox${NC}"
+    open_timeline "aitk sandbox"
   fi
   trap close_timeline EXIT
 

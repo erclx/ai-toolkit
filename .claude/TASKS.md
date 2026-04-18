@@ -43,8 +43,16 @@ Plan: .claude/plans/feature-<slug>.md
 
 Plan: .claude/plans/feature-sandbox-output-audit.md
 
-- [ ] Outcome: every sandbox scenario renders one frame with banner, section headers, and closing `└` on stderr
-- [ ] Outcome: stdout stays clean of UI characters across all scenarios
-- [ ] Outcome: findings report filed before any fix work begins
+- [x] Outcome: every sandbox scenario renders one frame with banner, section headers, and closing `└` on stderr
+- [x] Outcome: stdout stays clean of UI characters across all scenarios
+- [x] Outcome: findings report filed before any fix work begins
 
 > Test strategy: manual, run each non-interactive scenario via `SANDBOX_SCENARIO=… aitk sandbox <cat>:<cmd>` and diff captured stdout/stderr against the canonical in `docs/agents.md`.
+
+### Align sandbox scenario prose with prose.md
+
+- [ ] Outcome: no em dashes in any `scripts/sandbox/**/*.sh` log line
+- [ ] Outcome: option/menu lists use `:` as the name-to-description separator
+- [ ] Outcome: inline em dashes in prose rewritten as commas or split sentences
+
+> Test strategy: manual, grep for `—` under `scripts/sandbox/` returns zero matches, spot-run three representative scenarios and confirm output still reads cleanly.
