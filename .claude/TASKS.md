@@ -39,29 +39,9 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Reshape the snippets catalog
+### Promote captured memory into the right surface
 
-Plan: .claude/plans/feature-reshape-snippets-catalog.md
+- [ ] A `memory-review` snippet or skill reads `.claude/memory/` and proposes which entries to consolidate, promote to `CLAUDE.md` or `GOV.md`, or delete as stale
+- [ ] Output is a grouped list the user approves block-by-block, not auto-apply
 
-- [x] Remove `senior-mode.md` (unused in practice)
-- [x] Add `decision-help.md`: surfaces the questions the user needs to answer before a sensible decision, no recommendation until answered
-- [x] Move `claude/steps.md`, `claude/research-prompt.md`, `claude/prose-audit.md` up to base (no `.claude/` dependency)
-- [x] Keep `claude/` strictly for snippets that reference `.claude/` paths (`figma.md`, `tasks-done.md`)
-
-> Test strategy: manual, run `aitk snippets list` (or equivalent) and verify the catalog reflects the moves and the new snippet reads cleanly when invoked with `@decision-help`.
-
-### Tune the claude-feature skill
-
-- [ ] Gate code-only context reads (`GOV.md`, `DESIGN.md`, `WIREFRAMES.md`) on change type, or instruct the skill to skip them when the feature is prose/catalog/docs-only. CLAUDE.md, REQUIREMENTS.md, ARCHITECTURE.md, TASKS.md stay universal.
-- [ ] Strengthen the `None identified.` escape hatch for Risks and Questions. Add a line instructing the skill to prefer empty sections over low-signal fillers for small features.
-
-> Test strategy: manual, invoke claude-feature on a small prose-only change and confirm irrelevant files are skipped and Risks/Questions stay empty when nothing real surfaces.
-
-### Bootstrap the index.md system in target projects
-
-- [x] A plugin skill scans a target project, drafts frontmatter for markdown-heavy folders, and scaffolds `index.md` after user confirmation
-- [x] A concept doc explains when indexes help, when to skip, and how to opt out per folder
-- [x] The seeded `CLAUDE.md` carries the full index convention so newly-installed projects pick up all three rules
-- [x] A `bootstrap` sandbox scenario seeds raw markdown plus a stub `CLAUDE.md` so the skill can be exercised end to end
-
-> Test strategy: manual, run the skill against a sandbox project and verify scaffolded folders pass `aitk indexes regen --dry-run`.
+> Test strategy: manual, run against a memory folder with overlapping and stale entries and confirm the proposed actions match judgment.
