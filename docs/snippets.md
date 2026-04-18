@@ -43,7 +43,7 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `step-by-step`           | Request step-by-step instructions for any process                                    |
 | `web-research`           | Search the web and synthesize findings into a decision-ready block                   |
 | `claude/figma-steps`     | Generate Figma instructions from a design spec                                       |
-| `claude/session-lessons` | Capture session corrections, user reminders, and confirmed choices as memory blocks  |
+| `claude/session-lessons` | Manually capture session feedback as memory blocks (complements auto-memory)         |
 | `claude/tasks-done`      | Remove completed task blocks, delete referenced plan files, and sync the placeholder |
 
 ## CLI
