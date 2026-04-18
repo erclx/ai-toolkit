@@ -43,6 +43,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - When referencing project files, include "from the project root" in the read instruction
 - Contain only behavioral rules (what to do, what not to do) and pointers to reference docs. Narrative descriptions of what files are or how the system works belong in `docs/`, not in the skill body.
 - State rules, not inventories. Reference docs for lists that change. Enumerating items in a skill body creates drift when items are added or removed.
+- Cut any rule that resists crisp one-line phrasing. Vague guidance is worse than none.
 
 ## Scripts
 

@@ -18,6 +18,8 @@ The toolkit is agent-first. Every surface is designed so a Claude Code skill or 
 - Plan before editing: propose what files will change and why before touching anything
 - Confirm with the user before making any edits
 - Flag concerns or alternatives when a proposed change has tradeoffs worth discussing
+- When directing the user to invoke a skill, give the exact command with args, or state explicitly that it runs bare
+- When facing a judgment call with 2-3 reasonable options mid-flow, pick one and state the tradeoff in one sentence. Enumerate options only when the user's preference is the deciding factor.
 
 ## After editing
 
