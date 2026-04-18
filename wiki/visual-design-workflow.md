@@ -7,7 +7,9 @@ description: Tiered guide for design and wireframe authoring with Claude Code
 
 Three tiers cover the range from prose-only design docs to a fully graphical design source of truth. Pick one per project based on how UI-heavy the work is, whether stakeholders review visuals, and whether a designer is involved. Tiers stack, so moving up does not invalidate work done at a lower tier.
 
-The tier framework sits alongside [visual wireframes](visual-wireframes.md), [community skills and plugins](community-skills.md), and [community MCP servers](community-mcp-servers.md). Those pages catalog the tooling. This page decides when to reach for what.
+The tier framework sits alongside [Claude Design](claude-design.md), [visual wireframes](visual-wireframes.md), [community skills and plugins](community-skills.md), and [community MCP servers](community-mcp-servers.md). Those pages catalog the tooling. This page decides when to reach for what.
+
+Claude Design, released 2026-04-17, reshapes tiers 1 and 2. It is the default first-party path for Claude subscribers and is included in Pro, Max, Team, and Enterprise plans. See the [Claude Design page](claude-design.md) for capabilities and limits. Stitch is demoted across this document, Claude Design covers the same slot with first-party Claude Code handoff.
 
 ## Tier 0: prose only
 
@@ -37,18 +39,19 @@ The toolkit seed in `tooling/claude/seeds/.claude/` ships this tier by default. 
 
 ## Tier 1: visual companion
 
-ASCII and prose stay as source of truth. Add a visual render as a feedback surface for the agent and for human review. Excalidraw handles wireframes. Stitch handles design system generation. Both remain derived artifacts, so human edits on them are review annotations rather than source changes.
+ASCII and prose stay as source of truth. Add a visual render as a feedback surface for the agent and for human review. Claude Design handles prototypes and design system generation for Claude subscribers. Excalidraw handles agent-driven wireframes when the round-trip canvas loop matters. All derived artifacts, so human edits on them are review annotations rather than source changes.
 
 ### Seed shape
 
-Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw rendering via a top-of-file marker like `<!-- excalidraw: WIREFRAMES.excalidraw -->`. `DESIGN.md` can source its initial content from a Stitch export and then stay human-maintained from there.
+Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw rendering via a top-of-file marker like `<!-- excalidraw: WIREFRAMES.excalidraw -->`. `DESIGN.md` sources its initial content from a Claude Design handoff bundle, then stays human-maintained from there. Stitch remains as a fallback source for users without a Claude subscription.
 
 ### Tools
 
-- Excalidraw canvas server on localhost plus the `yctimlin/mcp_excalidraw` MCP shim. See [visual wireframes](visual-wireframes.md) for setup and footguns.
+- Claude Design for prototype generation, design system extraction from the codebase, and handoff to Claude Code. Default pick for Claude subscribers. See [Claude Design](claude-design.md).
+- Excalidraw canvas server on localhost plus the `yctimlin/mcp_excalidraw` MCP shim, for projects that need an agent to draw, read back, and revise a canvas. See [visual wireframes](visual-wireframes.md) for setup and footguns.
 - Playwright MCP for browser-side verification. See [Playwright](community-mcp-servers.md#playwright-microsoft).
 - Chrome DevTools MCP for live frontend debugging. See [Chrome DevTools](community-mcp-servers.md#chrome-devtools-google).
-- Stitch web app for design generation and `DESIGN.md` export. Free tier covers 350 generations per month.
+- Stitch web app as a free alternative when Claude Design is not available. 350 generations per month on the free tier.
 
 ### Skills
 
@@ -62,25 +65,27 @@ Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw renderin
 - Design decisions benefit from visual inspection
 - A single contributor owns both design and implementation
 
+### Claude Design vs Excalidraw in tier 1
+
+Claude Design and Excalidraw solve different halves of the visual companion problem. Claude Design generates polished prototypes with the team's design system applied, the output is human-facing and stays in Anthropic's web UI. Excalidraw gives the agent a canvas it can read back over MCP, the output is agent-facing and persists as a JSON file in the repo. A project that only needs human review picks Claude Design. A project that needs Claude Code to iterate on wireframes autonomously picks Excalidraw. Few projects need both.
+
 ## Tier 2: visual as source of truth
 
-Design happens in a graphical tool. `.claude/DESIGN.md` either regenerates from the graphical source or takes a secondary role as agent-facing summary. The agent reads designs through an MCP and implements against them. Fits teams with a dedicated designer or projects where design iteration outpaces code changes.
+Design happens in a graphical tool. `.claude/DESIGN.md` either regenerates from the graphical source or takes a secondary role as agent-facing summary. Implementation follows the graphical source, either through an MCP round-trip or a one-way handoff bundle. Fits teams with a dedicated designer or projects where design iteration outpaces code changes.
 
 ### Seed shape
 
-`.claude/DESIGN.md` becomes a generated artifact. A top-of-file note identifies the upstream source, either a Stitch project ID or a Figma file URL. Manual edits in the seed carry a warning tag because they will not survive regeneration.
+`.claude/DESIGN.md` becomes a generated artifact. A top-of-file note identifies the upstream source, either a Claude Design project ID or a Figma file URL. Manual edits in the seed carry a warning tag because they will not survive regeneration.
 
 ### Tools
 
-- Figma desktop app with the [Figma Dev Mode MCP](community-skills.md#figma-mcp-and-code-to-canvas) for Figma-sourced projects
-- Stitch plus the `google-labs-code/stitch-skills` MCP for Stitch-sourced projects. See [Google Stitch and DESIGN.md](community-skills.md#google-stitch-and-designmd).
+- Claude Design with its Claude Code handoff bundle. Default pick for teams without an existing Figma investment and for solo founders or PMs driving design themselves. One-way handoff, no bidirectional sync. See [Claude Design](claude-design.md).
+- Figma desktop app with the [Figma Dev Mode MCP](community-skills.md#figma-mcp-and-code-to-canvas) for teams with a dedicated designer already on Figma. Bidirectional sync and Code to Canvas capture.
 - Playwright and Chrome DevTools MCPs as in tier 1
 
 ### Skills
 
 - Everything from tier 1
-- `stitch-design` and `design-md` from `google-labs-code/stitch-skills` when using Stitch
-- `taste-skill` with its `stitch-skill` sub-skill for `DESIGN.md` ingestion on Stitch-sourced projects
 
 ### When to pick
 
@@ -88,6 +93,10 @@ Design happens in a graphical tool. `.claude/DESIGN.md` either regenerates from 
 - A dedicated designer is on the project or will join
 - Design review happens in the graphical tool rather than in code
 - Design changes more often than implementation
+
+### Claude Design vs Figma in tier 2
+
+Claude Design wins when nobody on the team has a Figma workflow yet. It extracts a design system from the codebase, generates artifacts, and hands off to Claude Code in one instruction, all from an existing Claude subscription. Figma wins when a dedicated designer already owns a Figma file, external collaborators expect Figma for review, or the workflow needs the agent to capture a running Claude Code UI and push it back as editable frames via Code to Canvas. Claude Design's handoff is one-way. Figma's MCP is bidirectional.
 
 ## Decision guide
 
@@ -102,6 +111,7 @@ Zero or one yes: tier 0. Two or three: tier 1. Four: tier 2. Resist over-tiering
 
 ## References
 
+- [Claude Design](claude-design.md): first-party hosted design product and handoff bundle
 - [Skills strategy](skills-strategy.md): how to decide between workflow and domain-knowledge skills
 - [Visual wireframes](visual-wireframes.md): Excalidraw research and setup for the tier 1 wireframe companion
 - [Community skills and plugins](community-skills.md): catalog of frontend design skills and integrations

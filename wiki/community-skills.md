@@ -61,9 +61,13 @@ Three community skills extend or replace the Anthropic `frontend-design` plugin.
 
 [Figma's official MCP server](https://www.figma.com/blog/introducing-claude-code-to-figma/) supports bidirectional sync. Figma and Anthropic announced Code to Canvas on 2026-02-17. The feature captures running Claude Code UIs and converts them to editable Figma frames, components, and auto-layout groups. Claude Code-only and Remote MCP-only at launch. Desktop Figma app required for capture.
 
+### Claude Design
+
+Anthropic's first-party design product at [claude.ai/design](https://claude.ai/design) covers the same slot as Stitch for Claude subscribers and adds a direct Claude Code handoff bundle. Included in Pro, Max, Team, and Enterprise plans. See [Claude Design](claude-design.md) for capabilities, limits, and when to pick it over Figma or Excalidraw.
+
 ### Google Stitch and DESIGN.md
 
-[Stitch](https://stitch.withgoogle.com) is Google Labs' free AI design tool. The relevant export for this toolkit is `DESIGN.md`, a markdown design system document listing tokens, typography, components, spacing, and guardrails in a format coding agents read natively. Stitch 2.0 landed March 2026 with an infinite canvas, voice input, multi-screen generation, and 350 free generations per month.
+[Stitch](https://stitch.withgoogle.com) is Google Labs' free AI design tool. The relevant export for this toolkit is `DESIGN.md`, a markdown design system document listing tokens, typography, components, spacing, and guardrails in a format coding agents read natively. Stitch 2.0 landed March 2026 with an infinite canvas, voice input, multi-screen generation, and 350 free generations per month. Claude Design covers the same role for Claude subscribers with a first-party Claude Code handoff. Stitch remains the free alternative for users without a Claude subscription.
 
 [`google-labs-code/stitch-skills`](https://github.com/google-labs-code/stitch-skills) is the companion skills repo. Apache-2.0, 4.5k stars, not an officially supported Google product. Skills include `stitch-design`, `stitch-loop`, `design-md`, `enhance-prompt`, `react-components`, `remotion`, and `shadcn-ui`. A Stitch MCP server imports designs directly into Claude Code without manual file transfer. Stitch-exported `DESIGN.md` fills the same slot as the toolkit's `.claude/DESIGN.md` seed and is a viable drop-in source.
 

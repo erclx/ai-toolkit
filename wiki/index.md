@@ -9,6 +9,7 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 
 - [Claude Code](claude-code.md): CLI flags, CLAUDE.md, hooks, memory, and MCP
 - [Claude Code commands](claude-commands.md): Full built-in slash command reference
+- [Claude Design](claude-design.md): Anthropic's hosted design product, its capabilities, and how it hands off to Claude Code
 - [Claude Code hooks](claude-hooks.md): Event hooks, configuration, and behavior control
 - [Claude Code MCP](claude-mcp.md): Server configuration, scopes, authentication, and tool naming
 - [Claude Code memory](claude-memory.md): CLAUDE.md hierarchy, auto-memory, and rules files

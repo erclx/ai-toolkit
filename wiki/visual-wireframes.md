@@ -9,7 +9,7 @@ The toolkit's `WIREFRAMES.md` seed is ASCII only. That works for structure but b
 
 ## Status
 
-Deferred. The recommendation below stands. The operational cost only pays off on UI projects complex enough to justify a per-project canvas server and MCP shim, so integration waits for a real candidate project. Anyone who wants it sooner can follow the setup sketch below.
+Deferred. The recommendation below stands for projects that need an agent to draw, inspect, and revise a wireframe autonomously. [Claude Design](claude-design.md), released 2026-04-17, is the lower-friction path for human-facing wireframes and covers most tier 1 projects on its own. Reach for Excalidraw only when the agent-driven canvas loop is the point. Anyone who wants it sooner can follow the setup sketch below.
 
 ## Candidates
 
@@ -18,6 +18,7 @@ Deferred. The recommendation below stands. The operational cost only pays off on
 - **Figma**: ruled out on cost. The relevant capabilities sit behind paid tiers and an auth wall. No local-first story.
 - **tldraw**: open source with first-party AI integration targeting a hosted product. No maintained MCP server for local file tooling. Heavier schema than Excalidraw. Eliminated for this use case.
 - **Excalidraw**: MIT-licensed, hand-drawn aesthetic, plaintext JSON file format. A maintained community MCP server gives an agent a full canvas toolkit with the ability to inspect what it drew. Selected.
+- **Claude Design**: hosted, first-party, included in Claude Pro, Max, Team, and Enterprise. Generates prototypes and wireframes with the team's design system applied, then hands off to Claude Code as a bundle. Not selected as an Excalidraw replacement because it has no MCP or API, so the agent cannot read back what it produced. Sits next to Excalidraw rather than above it. Use Claude Design when a human reviews the wireframe, use Excalidraw when the agent iterates on it autonomously. See [Claude Design](claude-design.md).
 - **Stitch**: free, from Google Labs, AI-native design canvas with direct `DESIGN.md` export and a Stitch MCP server. Eliminated as a wireframe companion because output is design system documentation, not spatial layout geometry. Relevant to the `.claude/DESIGN.md` seed instead. See [Google Stitch and DESIGN.md](community-skills.md#google-stitch-and-designmd) in community skills.
 
 ## Recommendation
