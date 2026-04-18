@@ -30,7 +30,7 @@ stage_setup() {
   git add src/auth/login.js src/auth/logout.js src/api/users.js docs/auth.md package.json
 
   log_step "Scenario ready: 6 staged changes across mixed concerns"
-  log_info "Context: 2 auth files, 1 api file, 1 doc, 1 config change, 1 deletion — all staged"
+  log_info "Context: 2 auth files, 1 api file, 1 doc, 1 config change, 1 deletion, all staged"
   log_info "Action:  gemini git:stage"
-  log_info "Expect:  groups auth + api separately, docs solo, config solo; uses git rm for deletion"
+  log_info "Expect:  groups auth + api separately, docs solo, config solo. Uses git rm for deletion"
 }

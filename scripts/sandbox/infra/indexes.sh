@@ -92,12 +92,12 @@ EOF
 
 stage_setup() {
   log_step "Indexes sandbox"
-  log_info "regen       — walks CWD and rewrites every index.md"
-  log_info "dry-run     — reports drift without writing (exits 2 on drift)"
-  log_info "json        — emits machine-readable records on stdout"
-  log_info "opt-out     — adds auto: false to index.md and confirms skip"
-  log_info "path        — passes a positional file and confirms walk-up"
-  log_info "bootstrap   — seeds raw markdown for the indexes-install skill"
+  log_info "regen       : walks CWD and rewrites every index.md"
+  log_info "dry-run     : reports drift without writing (exits 2 on drift)"
+  log_info "json        : emits machine-readable records on stdout"
+  log_info "opt-out     : adds auto: false to index.md and confirms skip"
+  log_info "path        : passes a positional file and confirms walk-up"
+  log_info "bootstrap   : seeds raw markdown for the indexes-install skill"
 
   select_or_route_scenario "Which scenario?" "regen" "dry-run" "json" "opt-out" "path" "bootstrap"
 

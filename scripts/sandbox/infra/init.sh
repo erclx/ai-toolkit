@@ -30,8 +30,8 @@ SCRIPT
   git commit -m "chore(sandbox): scaffold init infra test directory" --no-verify -q
 
   log_step "Init sandbox"
-  log_info "default     — interactive full init (prompts for optional domains)"
-  log_info "with-flags  — non-interactive init with --stack, --with, --skip"
+  log_info "default     : interactive full init (prompts for optional domains)"
+  log_info "with-flags  : non-interactive init with --stack, --with, --skip"
 
   select_or_route_scenario "Which scenario?" "default" "with-flags"
 

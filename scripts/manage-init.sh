@@ -43,7 +43,7 @@ run_domain() {
   if "$@"; then
     log_info "Done"
   else
-    log_warn "Failed — run manually"
+    log_warn "Failed, run manually"
   fi
 }
 

@@ -247,7 +247,7 @@ EOF
   log_info "  TaskList.tsx renders nothing while loading (no skeleton state from WIREFRAMES.md)"
   log_info "  TaskList.tsx has no empty state (WIREFRAMES.md describes one)"
   log_info "  TaskList.tsx has no error state"
-  log_info "  AddTaskModal.tsx has two primary buttons; cancel should be secondary"
+  log_info "  AddTaskModal.tsx has two primary buttons. Cancel should be secondary"
   log_info "Action:  /claude-ux-audit"
   log_info "Expect:  observations grouped by surface, written to .claude/review/ux-audit-<slug>.md"
 }

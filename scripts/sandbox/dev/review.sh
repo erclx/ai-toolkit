@@ -85,7 +85,7 @@ EOF
     log_step "Scenario ready: dev:review branch diff mode"
     log_info "Context: on feat/orders, one commit ahead of main with three reviewable bugs"
     log_info "Action:  gemini dev:review"
-    log_info "Expect:  findings report against branch diff — no args needed"
+    log_info "Expect:  findings report against branch diff, no args needed"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

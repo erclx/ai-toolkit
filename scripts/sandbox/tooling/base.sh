@@ -31,7 +31,7 @@ EOF
   if bash scripts/verify.sh; then
     log_info "All checks passed"
   else
-    log_warn "Verification failed — check configs"
+    log_warn "Verification failed, check configs"
   fi
 
   log_step "Scenario ready: base tooling test"

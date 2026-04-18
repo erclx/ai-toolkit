@@ -35,7 +35,7 @@ list_text() {
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
     description=$(read_frontmatter_field "$file" "description")
-    log_info "$name — $description"
+    log_info "$name : $description"
   done < <(find "$PROMPTS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 }
 
