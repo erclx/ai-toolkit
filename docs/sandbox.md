@@ -95,7 +95,7 @@ stage_setup() {
 }
 ```
 
-Multi-scenario files list options before calling `select_or_route_scenario`. Use `: ` as the separator between option name and description, per `standards/prose.md`. No em dashes.
+Multi-scenario files list options before calling `select_or_route_scenario`. Use `: ` as the separator between option name and description, per `standards/prose.md`. No em dashes. Pad option names so the `:` separators align vertically across the list.
 
 ```bash
 log_info "install/ : clean target, no rules present"
