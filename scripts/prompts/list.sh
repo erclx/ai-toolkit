@@ -70,6 +70,8 @@ main() {
     esac
   done
 
+  trap close_timeline EXIT
+
   if [ "$json" -eq 1 ]; then
     printf '{"prompts":'
     list_json
@@ -77,8 +79,6 @@ main() {
     exit 0
   fi
 
-  echo -e "${GREY}┌${NC}"
-  trap close_timeline EXIT
   list_text
 }
 

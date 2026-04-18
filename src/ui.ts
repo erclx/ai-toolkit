@@ -38,10 +38,12 @@ export async function select<Value>(opts: {
     process.stderr.write(`\x1b[${count + 2}A\x1b[J`)
   }
 
-  return new Promise<Value>((resolve, reject) => {
+  return new Promise<Value>((resolve) => {
     if (!process.stdin.isTTY) {
-      reject(new Error('select requires a TTY'))
-      return
+      process.stderr.write(
+        `${GREY}│${NC} ${RED}✗${NC} ${message} requires a TTY. Pass an argument or set AITK_NON_INTERACTIVE=1.\n${GREY}└${NC}\n`,
+      )
+      process.exit(1)
     }
 
     const wasRaw = process.stdin.isRaw

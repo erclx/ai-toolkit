@@ -112,6 +112,8 @@ main() {
     esac
   done
 
+  trap close_timeline EXIT
+
   if [ "$json" -eq 1 ]; then
     printf '{"categories":'
     list_json
@@ -119,8 +121,6 @@ main() {
     exit 0
   fi
 
-  echo -e "${GREY}┌${NC}"
-  trap close_timeline EXIT
   [ "$show_categories" -eq 1 ] && list_categories_text
   [ "$show_entries" -eq 1 ] && list_entries_text
 }

@@ -37,12 +37,14 @@ main() {
   fi
   shift
 
+  open_timeline "aitk indexes"
+  trap close_timeline EXIT
+
   case "$command" in
   regen)
     exec "$PROJECT_ROOT/scripts/indexes/regen.sh" "$@"
     ;;
   *)
-    echo -e "${GREY}┌${NC}"
     log_error "Unknown command: $command. Use 'regen'."
     ;;
   esac

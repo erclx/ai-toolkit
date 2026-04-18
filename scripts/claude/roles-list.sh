@@ -95,6 +95,8 @@ main() {
     esac
   done
 
+  trap close_timeline EXIT
+
   case "$mode" in
   json)
     list_json
@@ -104,8 +106,6 @@ main() {
     list_names
     ;;
   text)
-    echo -e "${GREY}┌${NC}"
-    trap close_timeline EXIT
     list_text
     ;;
   esac

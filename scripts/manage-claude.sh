@@ -489,8 +489,7 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}" >&2
-  echo -e "${GREY}│${NC} ${WHITE}aitk claude${NC}" >&2
+  open_timeline "aitk claude"
   trap close_timeline EXIT
 
   local command="$1"

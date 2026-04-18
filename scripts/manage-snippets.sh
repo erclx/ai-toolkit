@@ -29,8 +29,7 @@ main() {
     show_help
   fi
 
-  echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}│${NC} ${WHITE}aitk snippets${NC}"
+  open_timeline "aitk snippets"
   trap close_timeline EXIT
 
   local command="$1"

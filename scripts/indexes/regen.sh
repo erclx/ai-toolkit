@@ -122,16 +122,16 @@ main() {
 
   local any_error=0 any_drift=0 first=1
 
+  trap close_timeline EXIT
+
   if [ "$emit_json" -eq 1 ]; then
     printf '{"root":"%s","dryRun":%s,"results":[' \
       "$(json_escape_path "$root")" \
       "$([ "$dry_run" -eq 1 ] && echo true || echo false)"
   else
-    echo -e "${GREY}┌${NC}"
-    trap close_timeline EXIT
-    local label="aitk indexes regen"
-    [ "$dry_run" -eq 1 ] && label="$label (dry-run)"
-    echo -e "${GREY}│${NC} ${WHITE}${label}${NC}"
+    local label="Indexes"
+    [ "$dry_run" -eq 1 ] && label="Indexes (dry-run)"
+    log_step "$label"
   fi
 
   local dir rc
