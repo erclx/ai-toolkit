@@ -74,14 +74,14 @@ For independent mode, base every branch on `main`:
 git branch -m <current_branch> <new_name>
 
 # Create, cherry-pick, push, and open PR for each secondary branch
-mkdir -p .claude/.tmp
+mkdir -p .claude/.tmp/pr-split
 git checkout main && git checkout -b <branch> && git cherry-pick <sha> <sha> \
   && git push -u origin <branch> \
-  && (cat <<'BODY' > .claude/.tmp/pr-body-<branch>.md
+  && (cat <<'BODY' > .claude/.tmp/pr-split/<branch>.md
 <body following pr.md template>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-body-<branch>.md \
-  && rm .claude/.tmp/pr-body-<branch>.md
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch>.md \
+  && rm .claude/.tmp/pr-split/<branch>.md
 
 # Return to primary branch
 git checkout <new_name>
@@ -93,25 +93,25 @@ For stacked mode, base each branch on the previous and cherry-pick only that gro
 # Rename current branch to reflect primary concern
 git branch -m <current_branch> <new_name>
 
-mkdir -p .claude/.tmp
+mkdir -p .claude/.tmp/pr-split
 
 # Group 1: based on main
 git checkout main && git checkout -b <branch-1> && git cherry-pick <g1-sha> <g1-sha> \
   && git push -u origin <branch-1> \
-  && (cat <<'BODY' > .claude/.tmp/pr-body-<branch-1>.md
+  && (cat <<'BODY' > .claude/.tmp/pr-split/<branch-1>.md
 <body following pr.md template>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-body-<branch-1>.md \
-  && rm .claude/.tmp/pr-body-<branch-1>.md
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch-1>.md \
+  && rm .claude/.tmp/pr-split/<branch-1>.md
 
 # Group 2: based on <branch-1>, this group's commits only
 git checkout -b <branch-2> && git cherry-pick <g2-sha> <g2-sha> \
   && git push -u origin <branch-2> \
-  && (cat <<'BODY' > .claude/.tmp/pr-body-<branch-2>.md
+  && (cat <<'BODY' > .claude/.tmp/pr-split/<branch-2>.md
 <body following pr.md template>
 BODY
-) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-body-<branch-2>.md \
-  && rm .claude/.tmp/pr-body-<branch-2>.md
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch-2>.md \
+  && rm .claude/.tmp/pr-split/<branch-2>.md
 
 # Return to primary branch
 git checkout <new_name>

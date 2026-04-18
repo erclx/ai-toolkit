@@ -31,7 +31,7 @@ EOF
   log_info "Test sequence:"
   log_info "  1. aitk claude init        — seed .claude/ and verify DESIGN.md prompt"
   log_info "  2. aitk claude sync         — verify PLANNER.md diff and sync"
-  log_info "  3. aitk claude prompt      — verify .claude/.tmp/IMPLEMENTER.md generated"
+  log_info "  3. aitk claude prompt      — verify .claude/.tmp/roles/IMPLEMENTER.md generated"
   log_info ""
   log_info "Verify after init:"
   log_info "  .claude/PLANNER.md, TASKS.md, REQUIREMENTS.md, ARCHITECTURE.md, WIREFRAMES.md exist"
@@ -39,5 +39,5 @@ EOF
   log_info "  .gitignore contains .claude/.tmp/"
   log_info ""
   log_info "Verify after prompt:"
-  log_info "  .claude/.tmp/IMPLEMENTER.md contains injected rules and TASKS, REQUIREMENTS, ARCHITECTURE content"
+  log_info "  .claude/.tmp/roles/IMPLEMENTER.md contains injected rules and TASKS, REQUIREMENTS, ARCHITECTURE content"
 }

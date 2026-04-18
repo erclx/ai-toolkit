@@ -54,7 +54,7 @@ scripts/
 ├── gov/
 │   ├── install.sh       ← bootstraps rules for a stack into a target project, supports --add for extras
 │   ├── sync.sh          ← diffs and updates rules already present in target
-│   ├── build.sh         ← concatenates installed rules into .cursor/.tmp/rules.md
+│   ├── build.sh         ← concatenates installed rules into .cursor/.tmp/gov/rules.md
 │   └── list.sh          ← emits catalog of stacks and rules, supports --json for skills
 ├── tooling/
 │   ├── sync.sh          ← full tooling sync: configs, seeds, deps, scripts, gitignore

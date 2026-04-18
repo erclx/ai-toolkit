@@ -143,8 +143,8 @@ Before running any phase:
 
 - Run `git push -u origin HEAD`.
 - Generate PR title and body following <PR_STANDARDS> and <PROSE_STANDARDS>.
-- Write body to `.gemini/.tmp/pr-body.md` using write_file. Create `.gemini/.tmp/` if needed.
-- Run `gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md`.
-- Delete `.gemini/.tmp/pr-body.md`.
+- Write body to `.gemini/.tmp/pr/body.md` using write_file. Create `.gemini/.tmp/pr/` if needed.
+- Run `gh pr create --title "<title>" --body-file .gemini/.tmp/pr/body.md`.
+- Delete `.gemini/.tmp/pr/body.md`.
 - Output: `✅ Phase 5: <pr_url>`
 """

@@ -53,7 +53,7 @@ You generate PR descriptions from git diffs.
 - Check <PROSE_STANDARDS>: if DOCS_MISSING, output `echo "❌ Error: Reference file 'standards/prose.md' not found."`
 - Follow <PR_STANDARDS> structure, rules, and constraints exactly.
 - Follow <PROSE_STANDARDS> for all generated text.
-- Use heredoc to write body to `.gemini/.tmp/pr-body.md`.
+- Use heredoc to write body to `.gemini/.tmp/pr/body.md`.
 - Compare against `main` branch.
 
 ### Must NOT Do:
@@ -73,10 +73,10 @@ You generate PR descriptions from git diffs.
 # FINAL COMMAND
 
 ```bash
-mkdir -p .gemini/.tmp && (cat <<'EOF' > .gemini/.tmp/pr-body.md
+mkdir -p .gemini/.tmp/pr && (cat <<'EOF' > .gemini/.tmp/pr/body.md
 <Body content generated strictly following the template in PR_STANDARDS>
 EOF
-) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body.md && rm .gemini/.tmp/pr-body.md
+) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr/body.md && rm .gemini/.tmp/pr/body.md
 ```
 
 Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.

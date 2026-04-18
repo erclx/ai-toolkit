@@ -46,4 +46,4 @@
 
 ## Scratch
 
-- Write temporary files to `.claude/.tmp/` in the project root, not `/tmp`.
+- Write temporary files under `.claude/.tmp/<slug>/` in the project root, not `/tmp`. Use a kebab-slug tied to the topic.

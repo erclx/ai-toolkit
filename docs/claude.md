@@ -147,7 +147,7 @@ Checks seeded project docs and, if roles are installed, diffs them against the t
 
 ### prompt
 
-Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and writes output to `.claude/.tmp/`. Also copies `REVIEWER.md` to `.claude/.tmp/`. Requires roles to be installed.
+Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and writes output to `.claude/.tmp/roles/`. Also copies `REVIEWER.md` to `.claude/.tmp/roles/`. Requires roles to be installed.
 
 For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from the `planner` stack, and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `WIREFRAMES.md`).
 
