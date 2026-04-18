@@ -26,8 +26,8 @@ stage_setup() {
   git commit -m "chore(sandbox): scaffold prompts test directories" --no-verify -q
 
   log_step "Prompts sandbox"
-  log_info "install/ — clean target, no prompts present"
-  log_info "sync/    — stale prompts/ present"
+  log_info "install/ : clean target, no prompts present"
+  log_info "sync/    : stale prompts/ present"
 
   select_or_route_scenario "Which scenario?" "install" "sync"
 

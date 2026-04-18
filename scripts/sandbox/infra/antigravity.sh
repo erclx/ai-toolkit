@@ -26,8 +26,8 @@ stage_setup() {
   git commit -m "chore(sandbox): scaffold antigravity test directories" --no-verify -q
 
   log_step "Antigravity sandbox"
-  log_info "install/ — clean target, no workflows present"
-  log_info "sync/    — stale workflows/ present"
+  log_info "install/ : clean target, no workflows present"
+  log_info "sync/    : stale workflows/ present"
 
   select_or_route_scenario "Which scenario?" "install" "sync"
 

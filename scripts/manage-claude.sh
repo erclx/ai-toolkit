@@ -337,7 +337,7 @@ cmd_sync() {
     if [ -f "$dest" ]; then
       log_info "$name"
     else
-      log_warn "$name missing — run \`aitk claude init\`"
+      log_warn "$name missing. Run \`aitk claude init\`"
     fi
   done
 

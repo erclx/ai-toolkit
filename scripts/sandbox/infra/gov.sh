@@ -33,10 +33,10 @@ stage_setup() {
   git commit -m "chore(sandbox): scaffold gov test directories" --no-verify -q
 
   log_step "Governance sandbox"
-  log_info "install/ — clean target, no rules present"
-  log_info "sync/    — stale .cursor/rules/ present"
-  log_info "build/   — full .cursor/rules/ present, generates .cursor/.tmp/gov/rules.md"
-  log_info "list     — read-only catalog dump, no target needed"
+  log_info "install/ : clean target, no rules present"
+  log_info "sync/    : stale .cursor/rules/ present"
+  log_info "build/   : full .cursor/rules/ present, generates .cursor/.tmp/gov/rules.md"
+  log_info "list     : read-only catalog dump, no target needed"
 
   select_or_route_scenario "Which scenario?" "install" "sync" "build" "list"
 

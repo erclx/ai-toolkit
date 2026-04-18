@@ -16,7 +16,7 @@ show_help() {
   echo -e "${GREY}│${NC}    With no paths, walks the current directory and"
   echo -e "${GREY}│${NC}    regenerates every folder that has an index.md."
   echo -e "${GREY}│${NC}    With paths, each path is resolved by walking up"
-  echo -e "${GREY}│${NC}    until an index.md is found; duplicates are deduped."
+  echo -e "${GREY}│${NC}    until an index.md is found. Duplicates are deduped."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --dry-run      ${GREY}# Report changes without writing${NC}"

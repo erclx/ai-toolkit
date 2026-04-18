@@ -47,6 +47,6 @@ stage_setup() {
 
   log_step "Scenario ready: $selected upstream template"
   log_info "Location: .sandbox/sandbox-upstream/"
-  log_info "Raw upstream template — no golden configs applied"
+  log_info "Raw upstream template, no golden configs applied"
   log_info "Run 'aitk sandbox clean' to wipe when done"
 }

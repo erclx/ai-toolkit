@@ -95,6 +95,14 @@ stage_setup() {
 }
 ```
 
+Multi-scenario files list options before calling `select_or_route_scenario`. Use `: ` as the separator between option name and description, per `standards/prose.md`. No em dashes.
+
+```bash
+log_info "install/ : clean target, no rules present"
+log_info "sync/    : stale .cursor/rules/ present"
+log_info "list     : read-only catalog dump, no target needed"
+```
+
 ### use_config
 
 `use_config` runs before provisioning. Declare it to set sandbox behavior flags.

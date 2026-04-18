@@ -26,9 +26,9 @@ stage_setup() {
   git commit -m "chore(sandbox): scaffold standards test directories" --no-verify -q
 
   log_step "Standards sandbox"
-  log_info "install/ — clean target, no standards present"
-  log_info "sync/    — stale standards/ present"
-  log_info "list     — read-only catalog dump, no target needed"
+  log_info "install/ : clean target, no standards present"
+  log_info "sync/    : stale standards/ present"
+  log_info "list     : read-only catalog dump, no target needed"
 
   select_or_route_scenario "Which scenario?" "install" "sync" "list"
 

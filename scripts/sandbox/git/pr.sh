@@ -52,7 +52,7 @@ EOF
     log_step "Scenario ready: draft/init guard"
     log_info "Context: user forgot to run /git:branch before /git:pr"
     log_info "Action:  gemini git:pr"
-    log_info "Expect:  guard warning — branch looks unset, run /git:branch first"
+    log_info "Expect:  guard warning. Branch looks unset, run /git:branch first"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
