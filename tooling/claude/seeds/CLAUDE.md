@@ -43,3 +43,7 @@
 - Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
 - Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.
 - Before creating a new memory file, check for an existing one on the same topic. Update rather than duplicate.
+
+## Scratch
+
+- Write temporary files to `.claude/.tmp/` in the project root, not `/tmp`.

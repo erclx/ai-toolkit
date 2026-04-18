@@ -110,6 +110,10 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.
 - Before creating a new memory file, check for an existing one on the same topic. Update rather than duplicate.
 
+## Scratch
+
+- Write temporary files to `.claude/.tmp/` in the project root, not `/tmp`.
+
 ## Wiki
 
 - Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
