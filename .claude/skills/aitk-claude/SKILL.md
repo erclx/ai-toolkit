@@ -22,6 +22,8 @@ Read `docs/claude.md` for plugin setup, skills inventory, and aitk claude CLI be
 
 Before shipping any change to the seed, a plugin skill, a snippet, or a `.claude/` state doc, grep for the identifier you are changing. Check plugin skills for quoted seed section headings, workflows for snippet paths, and `docs/claude.md` for skill descriptions.
 
+When editing any file under `.claude/` in this repo, also check `tooling/claude/seeds/` for a mirror path and `tooling/claude/reference.md` for a description that needs updating.
+
 ## Sync checklist
 
 When adding a new skill:

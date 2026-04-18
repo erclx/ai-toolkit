@@ -70,16 +70,19 @@ After the PR is created, mark it as draft:
 gh pr ready --undo
 ```
 
+7. `toolkit:claude-memory-capture`: extract durable patterns from the session into `.claude/memory/`
+
 ## Output
 
-Respond with exactly two lines:
+Respond with up to three lines:
 
 ```plaintext
 ✅ Autoshipped (draft): <PR url>
 <N minor findings attached to PR body>
+<N memories captured in .claude/memory/>
 ```
 
-Omit the second line if there were no minor findings.
+Omit the second line if there were no minor findings. Omit the third line if `claude-memory-capture` wrote nothing.
 
 ## Failure recovery
 
