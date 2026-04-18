@@ -77,7 +77,7 @@ sudo systemctl edit ollama.service
 
 Add:
 
-```text
+```plaintext
 [Service]
 Environment="OLLAMA_CONTEXT_LENGTH=<desired_size>"
 ```

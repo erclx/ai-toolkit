@@ -84,7 +84,7 @@ File format:
 
 Then output in chat:
 
-```
+```markdown
 📝 Wrote .claude/plans/feature-<slug>.md
 
 **Questions:**

@@ -74,7 +74,7 @@ gh pr ready --undo
 
 Respond with exactly two lines:
 
-```
+```plaintext
 ✅ Autoshipped (draft): <PR url>
 <N minor findings attached to PR body>
 ```

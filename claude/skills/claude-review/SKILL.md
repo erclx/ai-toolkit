@@ -108,7 +108,7 @@ The `.claude/review/` directory is gitignored. Do not stage or commit the file.
 
 Output only the summary line and the file path. Do not repeat the full report in chat.
 
-```
+```plaintext
 X critical, Y should-fix, Z minor across N files.
 📝 Wrote .claude/review/review-<slug>.md
 ```

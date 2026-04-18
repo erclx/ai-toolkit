@@ -40,7 +40,7 @@ Run these commands in parallel to gather git context:
 
 If EXISTS on remote, warn and stop:
 
-```
+```plaintext
 ⚠️ Branch exists on remote. Rename manually via GitHub UI or gh CLI to avoid breaking open PRs.
 ```
 

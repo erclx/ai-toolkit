@@ -68,7 +68,7 @@ The `.claude/review/` directory is gitignored. Do not stage or commit the file.
 
 Output only the summary line and the file path. Do not repeat the full report in chat.
 
-```
+```plaintext
 X observations across N surfaces.
 📝 Wrote .claude/review/ux-audit-<slug>.md
 ```
