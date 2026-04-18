@@ -12,7 +12,7 @@ trap close_timeline EXIT
 RULES_DIR="$PWD/.cursor/rules"
 IMPLEMENTER_TEMPLATE="$PWD/.claude/IMPLEMENTER.md"
 PLANNER_TEMPLATE="$PWD/.claude/PLANNER.md"
-OUTPUT_DIR="$PWD/.claude/.tmp"
+OUTPUT_DIR="$PWD/.claude/.tmp/roles"
 CLAUDE_DIR="$PWD/.claude"
 
 show_help() {
@@ -21,8 +21,8 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Generates master prompts from installed cursor rules."
   echo -e "${GREY}│${NC}  Reads templates from .claude/PLANNER.md and .claude/IMPLEMENTER.md."
-  echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/."
-  echo -e "${GREY}│${NC}  Copies REVIEWER.md to .claude/.tmp/REVIEWER.md."
+  echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/roles/."
+  echo -e "${GREY}│${NC}  Copies REVIEWER.md to .claude/.tmp/roles/REVIEWER.md."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Prerequisites:${NC}"
   echo -e "${GREY}│${NC}    Run 'aitk claude init' to seed PLANNER.md and IMPLEMENTER.md"
@@ -173,9 +173,9 @@ main() {
   fi
 
   log_step "Output"
-  log_info ".claude/.tmp/PLANNER.md"
-  log_info ".claude/.tmp/IMPLEMENTER.md"
-  log_info ".claude/.tmp/REVIEWER.md"
+  log_info ".claude/.tmp/roles/PLANNER.md"
+  log_info ".claude/.tmp/roles/IMPLEMENTER.md"
+  log_info ".claude/.tmp/roles/REVIEWER.md"
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"

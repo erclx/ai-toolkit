@@ -52,11 +52,11 @@ These bans come from `standards/prose.md` and apply to PR text on top of `standa
 ### Final command
 
 ```bash
-mkdir -p .claude/.tmp && (cat <<'BODY' > .claude/.tmp/pr-body.md
+mkdir -p .claude/.tmp/pr && (cat <<'BODY' > .claude/.tmp/pr/body.md
 <body content following pr.md template exactly>
 BODY
-) && git push -u origin HEAD && gh pr create --title "<title>" --body-file .claude/.tmp/pr-body.md \
-  && rm .claude/.tmp/pr-body.md
+) && git push -u origin HEAD && gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md \
+  && rm .claude/.tmp/pr/body.md
 ```
 
 ## After execution

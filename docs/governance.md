@@ -19,7 +19,7 @@ scripts/
 ├── gov/
 │   ├── install.sh      ← bootstraps rules for a stack into a target project
 │   ├── sync.sh         ← syncs existing rules to external projects
-│   └── build.sh        ← concatenates installed rules into .cursor/.tmp/rules.md
+│   └── build.sh        ← concatenates installed rules into .cursor/.tmp/gov/rules.md
 ├── lib/
 │   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload (sourced by gov/build.sh and claude/prompt.sh)
 └── manage-gov.sh       ← entry point (aitk gov)
@@ -39,7 +39,7 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | `300–399` | lib (testing libs, Zod, TanStack, security, etc.)            |
 | `400–499` | ui (UI copy, accessibility, forms, UX completeness)          |
 
-**Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.cursor/.tmp/rules.md`, stripping frontmatter. This is useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the rules payload.
+**Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.cursor/.tmp/gov/rules.md`, stripping frontmatter. This is useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the rules payload.
 
 Stacks live in `governance/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed.
 
@@ -55,12 +55,12 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## CLI
 
-| Command                                         | What it does                                            |
-| ----------------------------------------------- | ------------------------------------------------------- |
-| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a target project       |
-| `aitk gov sync [path]`                          | Update rules already present in target (never adds new) |
-| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/rules.md  |
-| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                        |
+| Command                                         | What it does                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- |
+| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a target project          |
+| `aitk gov sync [path]`                          | Update rules already present in target (never adds new)    |
+| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/gov/rules.md |
+| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                           |
 
 `aitk gov` with no args shows an interactive picker for `install`, `sync`, `build`, or `list`. Commands that write files require confirmation before running.
 
@@ -92,7 +92,7 @@ To generate a concatenated rules file:
 ```bash
 aitk gov build
 # strips frontmatter, concatenates all .mdc files
-# writes .cursor/.tmp/rules.md, paste into any AI chat
+# writes .cursor/.tmp/gov/rules.md, paste into any AI chat
 ```
 
 To inspect available stacks and rules:

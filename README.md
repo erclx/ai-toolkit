@@ -30,12 +30,12 @@ Run `aitk` from the repo root.
 
 ### Governance
 
-| Command                                         | Description                                            |
-| ----------------------------------------------- | ------------------------------------------------------ |
-| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a project             |
-| `aitk gov sync [path]`                          | Update existing rules in a project                     |
-| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/rules.md |
-| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                       |
+| Command                                         | Description                                                |
+| ----------------------------------------------- | ---------------------------------------------------------- |
+| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a project                 |
+| `aitk gov sync [path]`                          | Update existing rules in a project                         |
+| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/gov/rules.md |
+| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                           |
 
 ### Standards
 

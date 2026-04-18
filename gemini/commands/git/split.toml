@@ -82,21 +82,21 @@ You are a Senior Engineer helping split a mixed-commit branch into focused, revi
 git branch -m <current_branch> <new_name>
 
 # Create, cherry-pick, push, and open PR for each secondary branch
-mkdir -p .gemini/.tmp
+mkdir -p .gemini/.tmp/pr-split
 git checkout main && git checkout -b <branch> && git cherry-pick <sha> <sha> \
   && git push -u origin <branch> \
-  && (cat <<'BODY' > .gemini/.tmp/pr-body-<branch>.md
+  && (cat <<'BODY' > .gemini/.tmp/pr-split/<branch>.md
 <body following PR_STANDARDS template, written from the cherry-picked commits>
 BODY
-) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body-<branch>.md \
-  && rm .gemini/.tmp/pr-body-<branch>.md
+) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-split/<branch>.md \
+  && rm .gemini/.tmp/pr-split/<branch>.md
 git checkout main && git checkout -b <branch> && git cherry-pick <sha> \
   && git push -u origin <branch> \
-  && (cat <<'BODY' > .gemini/.tmp/pr-body-<branch>.md
+  && (cat <<'BODY' > .gemini/.tmp/pr-split/<branch>.md
 <body following PR_STANDARDS template, written from the cherry-picked commits>
 BODY
-) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-body-<branch>.md \
-  && rm .gemini/.tmp/pr-body-<branch>.md
+) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr-split/<branch>.md \
+  && rm .gemini/.tmp/pr-split/<branch>.md
 
 # Return to primary branch
 git checkout <new_name>
