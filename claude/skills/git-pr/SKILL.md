@@ -37,6 +37,10 @@ Then run these commands in parallel to gather git context:
 
 After outputting the preview, execute the final command immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
+### Testing checkboxes
+
+In the generated `## Testing` section, mark items Claude executed this session as `- [x]`. Leave items that need human verification (visual UX, reviewer sanity checks) as `- [ ]`. Never pre-check based on intent or past sessions.
+
 ### Pre-publish scan
 
 Before running the final command, scan the PR title and body for banned characters and rewrite each occurrence:

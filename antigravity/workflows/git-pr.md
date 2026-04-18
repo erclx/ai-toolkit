@@ -40,6 +40,10 @@ Then run these commands in parallel to gather git context:
 
 Show PREVIEW first, then propose FINAL COMMAND block. Do not run until user confirms.
 
+### Testing checkboxes
+
+In the generated `## Testing` section, mark items Claude executed this session as `- [x]`. Leave items that need human verification (visual UX, reviewer sanity checks) as `- [ ]`. Never pre-check based on intent or past sessions.
+
 ### Pre-publish scan
 
 Before running the final command, scan the PR title and body for banned characters and rewrite each occurrence:
