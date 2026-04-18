@@ -35,6 +35,11 @@ When modifying a skill:
 - Update the skills table in `docs/claude.md` if the description changed
 - Check if a corresponding antigravity workflow exists in `antigravity/workflows/` and update it to match
 - Check if a corresponding gemini command exists in `gemini/commands/` and update it to match
+- Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
+
+When modifying the CLAUDE.md seed:
+
+- Check the root `CLAUDE.md` for drift. Rules that govern both target projects and the toolkit itself should stay mirrored.
 
 ## Reference
 

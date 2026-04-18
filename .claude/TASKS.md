@@ -39,6 +39,13 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
+### Exercise claude-feature small mode in the sandbox
+
+- [ ] A second scenario in `scripts/sandbox/claude/feature.sh` (or a new file) seeds a single-file prose change so invoking `toolkit:claude-feature` exercises the small-mode branch
+- [ ] Scenario confirms no plan file is written and `DESIGN.md`/`WIREFRAMES.md`/`GOV.md` are skipped
+
+> Test strategy: manual, run the sandbox, invoke the skill, observe chat-only output.
+
 ### Promote captured memory into the right surface
 
 - [ ] A `memory-review` snippet or skill reads `.claude/memory/` and proposes which entries to consolidate, promote to `CLAUDE.md` or `GOV.md`, or delete as stale
