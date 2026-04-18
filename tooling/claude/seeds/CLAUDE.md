@@ -46,4 +46,4 @@
 
 ## Scratch
 
-- Write scratch under `.claude/.tmp/<slug>/` in the project root, not `/tmp`. Use a kebab-slug tied to the topic.
+- Write temporary files under `.claude/.tmp/<slug>/` in the project root, not `/tmp`. Use a kebab-slug tied to the topic.
