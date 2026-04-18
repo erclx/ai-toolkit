@@ -16,6 +16,7 @@ glama
 gsub
 heredoc
 labelledby
+lucide
 modelcontextprotocol
 modelfile
 mypy
