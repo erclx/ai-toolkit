@@ -1,5 +1,6 @@
 applestyleguide
 axios
+canva
 clack
 commander
 crxjs
