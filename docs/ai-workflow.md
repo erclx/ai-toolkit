@@ -78,6 +78,7 @@ For features on a mature stack, chain the post-plan pipeline in one session. App
 - Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, any review finding above minor, or hook failure
 - Every stop leaves recoverable state. Fix and resume with `/git-ship`
 - Skip autoship for auth, migrations, security-sensitive changes, or work where the plan itself is uncertain
+- After the draft PR is open, autoship invokes `claude-memory-capture` to write session patterns into `.claude/memory/`. Prune later with `claude-memory-review`.
 
 ### UI polish
 
@@ -122,6 +123,7 @@ review finds  → Session 2 (fix alongside review, before ship)
 
 Claude-specific snippets require the `.claude/` workflow to be set up. For the full list, see `docs/snippets.md`.
 
-| Slug                | When to use                                                   |
-| ------------------- | ------------------------------------------------------------- |
-| `claude-tasks-done` | Remove completed task blocks and delete referenced plan files |
+| Slug                    | When to use                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `claude-memory-capture` | Capture session patterns as memory blocks. Fires automatically in autoship. |
+| `claude-tasks-done`     | Remove completed task blocks and delete referenced plan files               |
