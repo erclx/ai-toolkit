@@ -39,12 +39,15 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Exercise claude-feature small mode in the sandbox
+### Broaden sandbox coverage for claude skills
 
-- [ ] A second scenario in `scripts/sandbox/claude/feature.sh` (or a new file) seeds a single-file prose change so invoking `toolkit:claude-feature` exercises the small-mode branch
-- [ ] Scenario confirms no plan file is written and `DESIGN.md`/`WIREFRAMES.md`/`GOV.md` are skipped
+Plan: .claude/plans/feature-sandbox-coverage.md
 
-> Test strategy: manual, run the sandbox, invoke the skill, observe chat-only output.
+- [ ] `scripts/sandbox/claude/feature.sh` adds a "small" scenario via `select_option` that seeds a single-file prose change, confirming chat-only output and that `DESIGN.md`/`WIREFRAMES.md`/`GOV.md` are skipped
+- [ ] `scripts/sandbox/claude/ux-audit.sh` seeds a small UI project with `DESIGN.md` and `WIREFRAMES.md` plus components that intentionally drift, so invoking `toolkit:claude-ux-audit` surfaces the seeded inconsistencies
+- [ ] `scripts/sandbox/claude/docs.sh` seeds planning docs that have drifted from a recent commit, so invoking `toolkit:claude-docs` (after narrating the pivot in chat) updates only the affected sections
+
+> Test strategy: manual, run each sandbox scenario, invoke the matching skill, observe expected output.
 
 ### Promote captured memory into the right surface
 
