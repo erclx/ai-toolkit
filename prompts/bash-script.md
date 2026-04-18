@@ -21,7 +21,7 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 ### Visual Timeline
 
 - Maintain vertical timeline (`│`) from `┌` to `└` throughout all output.
-- All frame output (`┌`, `│`, `├`, `└`, log lines, prompts) writes to **stderr** via `>&2`. Data (JSON, lists, piped values) writes to stdout. `--help` is the exception — help prints to stdout.
+- All frame output (`┌`, `│`, `├`, `└`, log lines, prompts) writes to **stderr** via `>&2`. Data (JSON, lists, piped values) writes to stdout. `--help` is the exception. Help prints to stdout.
 - Open the timeline once at the very start of `main()` via `open_timeline "Title"`, before any logic, prompts, or checks.
 - Close the timeline via `trap close_timeline EXIT`, registered immediately after `open_timeline`.
 - On success: disable with `trap - EXIT`, then print `└\n` and the success message manually.
@@ -154,7 +154,7 @@ log_step "Verify"
 
 Renders as:
 
-```
+```plaintext
 ┌
 │ Script title
 │
@@ -433,7 +433,7 @@ Before responding, verify:
 - Timeline opens via `open_timeline "Title"`, which writes `┌` and `│ Title` to stderr.
 - Timeline closes via `trap close_timeline EXIT` registered immediately after `open_timeline`. Success paths use `trap - EXIT` then manual `└\n` (to stderr) then success message. Cancellation and error paths never print `└` manually. The trap owns those.
 - `open_timeline` and `close_timeline` are defined and write to stderr via `>&2`.
-- All frame output (`│`, `├`, `└`, log lines, interactive prompts) writes to stderr via `>&2`. Stdout carries data only. `--help` is the exception — help writes to stdout.
+- All frame output (`│`, `├`, `└`, log lines, interactive prompts) writes to stderr via `>&2`. Stdout carries data only. `--help` is the exception. Help writes to stdout.
 - Interactive prompts (`ask`, `select_option`) guard with `[ -t 0 ]` and call `log_error` if stdin is not a TTY.
 - Timeline (`│`) appears in all log functions and interactive prompts use `◆` → `◇` transitions.
 - `ask()` uses `\r\033[K` to rewrite the `◆` line in place. No `\033[1A` cursor-up sequences.

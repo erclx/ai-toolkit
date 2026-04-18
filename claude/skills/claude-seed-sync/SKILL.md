@@ -43,7 +43,7 @@ The user judges intent. The skill makes the judgment legible.
 
 Group findings by file. For each file:
 
-```
+```plaintext
 <target-path>
   + Add:        <section name>     : <one-line reason>
   ~ Update:     <section name>     : <one-line reason>

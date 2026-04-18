@@ -43,7 +43,7 @@ test('description of user flow', async ({ page }) => {
 
 For visual-only items that cannot be asserted programmatically, produce a checklist. Group by feature area. Use `- [ ]` checkbox syntax.
 
-```
+```markdown
 **What to verify visually:**
 
 **<Feature area>**

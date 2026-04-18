@@ -58,7 +58,7 @@ After outputting the preview, write all stale updates immediately.
 
 ### Summary
 
-```
+```plaintext
 ✅ Updated: <files written>
 ⏭️  Skipped: <files with no overlap>
 ```
