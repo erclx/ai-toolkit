@@ -40,6 +40,15 @@ Then run these commands in parallel to gather git context:
 
 Show PREVIEW first, then propose FINAL COMMAND block. Do not run until user confirms.
 
+### Pre-publish scan
+
+Before running the final command, scan the PR title and body for banned characters and rewrite each occurrence:
+
+- `—` (em dash): split into two sentences or use a comma
+- `;` (semicolon): split into two sentences
+
+These bans come from `standards/prose.md` and apply to PR text on top of `standards/pr.md`. Reading `prose.md` is not enough. The scan is an explicit step.
+
 ### Final command
 
 ```bash
