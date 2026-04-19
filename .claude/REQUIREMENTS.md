@@ -42,7 +42,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 
 - Replace human code review on risky changes. Agents augment the review loop. Humans still own the final call.
 - Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, prompts, and rules.
-- Lock in a single AI tool. Claude Code is primary. Gemini CLI and Antigravity are first-class alternatives.
+- Lock in a single AI tool. Claude Code is primary. Gemini CLI is a first-class alternative. Antigravity is in maintenance mode: existing workflows install and sync, no new behavior is added.
 - Wrap framework scaffolding. Users run `bun init`, `npm create vite`, and similar themselves. The toolkit layers on top.
 - Provide a hosted service. Everything runs locally against local CLIs.
 
