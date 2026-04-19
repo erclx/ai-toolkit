@@ -24,5 +24,6 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Ollama](ollama.md): Local models via Ollama with tiers, context config, statusline, and web search
 - [Prose influences](prose-influences.md): Industry style guides behind prose.md and AI-specific additions
 - [Skills strategy](skills-strategy.md): Rules for categorizing, storing, and choosing Claude Code skills
+- [Stitch](stitch.md): Google's Gemini-powered design product, its MCP server, and how it fits the toolkit's tier 1 slot
 - [Visual design workflow](visual-design-workflow.md): Tiered guide for design and wireframe authoring with Claude Code
 - [Visual wireframes](visual-wireframes.md): Tooling research for a visual companion to the ASCII wireframe seed

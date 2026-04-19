@@ -49,6 +49,7 @@ uv
 uvicorn
 vite
 vitest
+withgoogle
 xoxb
 xoxc
 xoxd
