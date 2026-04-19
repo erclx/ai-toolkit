@@ -58,7 +58,9 @@ After outputting the preview, write all stale updates immediately.
 
 ### Summary
 
+One line per file, using the same relative path format as the preview table (e.g. `README.md`, `docs/api.md`):
+
 ```plaintext
-✅ Updated: <files written>
-⏭️  Skipped: <files with no overlap>
+✅ Updated: <relative-path>
+⏭️  Skipped: <relative-path>
 ```
