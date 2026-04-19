@@ -30,12 +30,7 @@ Run `aitk claude init` to seed the `.claude/` directory and a root `CLAUDE.md` f
 
 ### Bootstrap a new project
 
-Two steps, in order:
-
-1. Run the framework's own scaffold (`bun init`, `npm create vite`, `npm create astro`). The toolkit does not run this step, so stack choice stays with you.
-2. Invoke `toolkit:init-project` in Claude Code. It detects the stack from files, resolves flags, previews the chain, then runs `aitk init` to layer base tooling, Claude seeds, governance, snippets, and wiki.
-
-Optional domains (`standards`, `prompts`, `antigravity`) pass through `--with`. Add only if the project needs them.
+See [target projects](target-projects.md) for the scaffold decision, optional domains, and the full lifecycle across scaffold, add-a-domain-later, and upstream sync.
 
 ### New feature
 
