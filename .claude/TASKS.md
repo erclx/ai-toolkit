@@ -64,13 +64,11 @@ Plan: .claude/plans/feature-<slug>.md
 
 ### Sandbox seed injection
 
-Plan: .claude/plans/feature-sandbox-seed-injection.md
+- [x] Outcome: new `SANDBOX_INJECT_SEEDS` flag copies `tooling/claude/seeds/` contents into the sandbox before `stage_setup` runs
+- [x] Outcome: existing sandboxes refactored to opt into the flag where applicable, scenario scripts only append scenario-specific files
+- [x] Outcome: documented in `docs/sandbox.md` alongside the other inject flags
 
-- [ ] Outcome: new `SANDBOX_INJECT_SEEDS` flag copies `tooling/claude/seeds/` contents into the sandbox before `stage_setup` runs
-- [ ] Outcome: existing sandboxes refactored to opt into the flag where applicable, scenario scripts only append scenario-specific files
-- [ ] Outcome: documented in `docs/sandbox.md` alongside the other inject flags
-
-> Test strategy: manual, refactor one existing sandbox (e.g. `claude/ux-audit.sh`) to use the flag and confirm output matches the previous hand-rolled state
+> Test strategy: manual, refactor `claude/seed-sync.sh` to use the flag and confirm the baseline state matches the previous `aitk claude init` output before drift
 
 ### Stitch MCP integration
 
