@@ -48,13 +48,29 @@ Plan: .claude/plans/feature-<slug>.md
 
 ### Design system overhaul
 
-Plan: .claude/plans/feature-design-system-overhaul.md
-
-- [ ] Outcome: revised `.claude/DESIGN.md` seed with token tables for color, typography, spacing, borders, motion, iconography
-- [ ] Outcome: `toolkit:aitk-design-extract` skill drafts DESIGN.md from a project's existing prose and shell UI surfaces
-- [ ] Outcome: `aitk design render` writes a one-page HTML plus CSS companion that visualizes the current DESIGN.md tokens
+- [x] Outcome: revised `.claude/DESIGN.md` seed with token tables for color, typography, spacing, borders, motion, iconography
+- [x] Outcome: `toolkit:claude-design-extract` skill drafts DESIGN.md from a project's existing prose and shell UI surfaces
+- [x] Outcome: `aitk design render` writes a one-page HTML plus CSS companion that visualizes the current DESIGN.md tokens
 
 > Test strategy: manual, extract skill runs against the toolkit repo and produces a DESIGN.md that matches the experiment-captured system, render command opens in a browser and shows every token from the seed
+
+### Greenfield design proposal skill
+
+- [ ] Outcome: `claude-design-propose` skill drafts `.claude/DESIGN.md` from `REQUIREMENTS.md`, `ARCHITECTURE.md`, and a personality prompt, with token values proposed by the agent
+- [ ] Outcome: skill runs on day one of a project before any UI code exists and replaces the Claude Design quota cost for greenfield design work
+- [ ] Outcome: sandbox scenario at `scripts/sandbox/claude/design-propose.sh` provisions a fresh project with only `REQUIREMENTS.md` and a personality paragraph, no code
+
+> Test strategy: manual, run the sandbox, invoke the skill, eyeball whether the proposed DESIGN.md fits the seeded personality and renders cleanly via `aitk design render`
+
+### Sandbox seed injection
+
+Plan: .claude/plans/feature-sandbox-seed-injection.md
+
+- [ ] Outcome: new `SANDBOX_INJECT_SEEDS` flag copies `tooling/claude/seeds/` contents into the sandbox before `stage_setup` runs
+- [ ] Outcome: existing sandboxes refactored to opt into the flag where applicable, scenario scripts only append scenario-specific files
+- [ ] Outcome: documented in `docs/sandbox.md` alongside the other inject flags
+
+> Test strategy: manual, refactor one existing sandbox (e.g. `claude/ux-audit.sh`) to use the flag and confirm output matches the previous hand-rolled state
 
 ### Stitch MCP integration
 
