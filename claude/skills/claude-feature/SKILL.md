@@ -31,13 +31,14 @@ Based on the feature description, identify and read source files that are direct
 
 ## Step 3: build the plan
 
-Construct the plan with three sections:
+Construct the plan with four sections:
 
+- **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
 - **Files to touch:** each file with a one-line reason
 - **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
 - **Questions:** numbered list of things to resolve before starting. If none, use `None identified.`
 
-Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one.
+Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
 
 ## Step 4: output
 
@@ -68,6 +69,12 @@ File format:
 # Feature: <short title>
 
 <feature description>
+
+## Summary
+
+- <one-line bullet covering the goal>
+- <one-line bullet covering the main deliverables>
+- <one-line bullet covering the key decision or trade-off>
 
 **Files to touch:**
 

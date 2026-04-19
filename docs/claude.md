@@ -191,7 +191,7 @@ Use both: run `claude-review` locally before pushing, then let Code Review catch
 | ---------- | ------------------------------------------------ | ------------------------------------------------------- | --------------------------------------------------------------------------- |
 | What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                   |
 | Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                           |
-| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: files to touch, risks, questions                         |
+| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: summary, files to touch, risks, questions                |
 | Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, WIREFRAMES, GOV |
 
 Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.

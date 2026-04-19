@@ -11,9 +11,20 @@ This page covers what Claude Design does, how to use it, and how it fits alongsi
 
 ## Status
 
-Research preview. Rolled out gradually to Claude Pro, Max, Team, and Enterprise subscribers starting 2026-04-17. On Enterprise plans, an admin enables it in Organization settings. No separate charge. Usage draws from existing subscription limits with optional extra allowance.
+Research preview. Rolled out gradually to Claude Pro, Max, Team, and Enterprise subscribers starting 2026-04-17. On Enterprise plans, an admin enables it in Organization settings. No separate charge.
 
-Hosted web app only. No API, no MCP server, no desktop app, no local surface. This shapes how it slots into agent-driven workflows, see [limitations](#limitations) below.
+Metering is independent from Claude chat and Claude Code. Claude Design has its own weekly quota that sits alongside existing plan limits. Design activity does not draw from the `All models` or `Current session` buckets, and chat or code activity does not draw from the Claude Design bucket. The Usage page shows a dedicated `Claude Design` row.
+
+Typical per-action cost on a Max 5x plan, measured in April 2026:
+
+- Design system onboarding against a small repo: around 27 percent of the weekly Claude Design quota
+- Three wireframe variations on a single prompt: around 13 percent
+- One high-fidelity refinement pass: around 10 percent
+- PDF plus PPTX export of one artifact: around 5 percent
+
+A full design system plus one artifact through to handoff and export lands near 55 percent of the weekly quota. Budget the cycle accordingly, and prefer chat refinements over re-running onboarding, which is the most expensive single action.
+
+Hosted web app only. No API, no MCP server, no desktop app, no local surface. This shapes how it slots into agent-driven workflows. See [limitations](#limitations) below.
 
 ## Capabilities
 
@@ -37,15 +48,22 @@ Hosted web app only. No API, no MCP server, no desktop app, no local surface. Th
 
 ### Artifact types
 
-- Interactive prototypes with navigation between frames
-- Static wireframes and mockups
-- Pitch decks and presentation slides
-- One-pagers and marketing collateral
-- Code-powered interactive experiences rendered in the browser
+The project creation surface exposes four top-level tabs:
+
+- `Prototype`, which branches into `Wireframe` for rough grey-box exploration and `High fidelity` for polished mockups with the design system applied
+- `Slide deck` for pitch decks and presentations
+- `From template` for starting from a saved project
+- `Other` for one-pagers, marketing collateral, and free-form artifacts
+
+Inside any prototype, Claude Design can render code-powered interactive experiences that run in the browser.
 
 ### Design system extraction
 
-During onboarding, Claude Design reads a connected codebase and any uploaded design files to build a team-wide design system. It captures colors, typography, and component patterns. Every subsequent project applies the extracted system by default, so output stays consistent without manual token entry. Re-running onboarding updates the stored system.
+Setting up a design system is a separate step from creating an artifact. The entry point is a `Set up design system` button in the left rail, not part of the project creation form. The form accepts a company blurb, a GitHub repo URL, a local folder upload, an optional Figma file, and freeform notes.
+
+Extraction reads prose surfaces alongside code. Style guides, CLAUDE.md files, shell UI libraries, and TypeScript UI modules all contribute. A repo with no frontend can still yield a usable design system if it carries explicit brand material in prose or shell scripts. A repo with neither falls back to generic defaults plus whatever the blurb implies.
+
+Every subsequent project applies the extracted system by default, so output stays consistent without manual token entry. Re-running onboarding updates the stored system and costs another full onboarding pass against the quota.
 
 ### Refinement modes
 
@@ -66,11 +84,32 @@ Connect a codebase and any existing design files during onboarding. Claude Desig
 
 ### Daily loop
 
-Describe the artifact in one or two sentences. Claude Design produces a first pass. Refine with conversational edits for structural changes, inline comments for targeted fixes, and direct manipulation for spatial nudges. Export only after the artifact is review-ready, not during exploration.
+Describe the artifact in one or two sentences. Claude Design typically inserts a clarification pass before generating, surfacing a `Questions` tab with a generated multiple-choice form covering variation count, vibe, layout, fidelity, color usage, and CTA copy. Answer the form, then Claude Design produces a first pass. Refine with conversational edits for structural changes, inline comments for targeted fixes, and direct manipulation for spatial nudges. Export only after the artifact is review-ready, not during exploration.
+
+First-pass fidelity is usable when the design system is rich and the prompt lines up with it. On an on-brand prompt against a fully onboarded design system, one high-fidelity pass can be shippable without iteration.
 
 ### Claude Code handoff
 
-When a design is implementation-ready, Claude Design packages a handoff bundle and surfaces a single instruction to paste into Claude Code. The bundle carries the design system, the artifact specification, and asset references. Claude Code ingests the bundle and implements against it without re-deriving tokens or layout.
+Handoff is a menu item under `Export`, alongside `Download project as .zip`, `Export as PDF`, `Export as PPTX`, `Send to Canva`, and `Export as standalone HTML`. Selecting it produces a short paste instruction of the form:
+
+```plaintext
+Fetch this design file, read its readme, and implement the relevant aspects of the design. https://api.anthropic.com/v1/design/h/<id>?open_file=<artifact>.html
+Implement: <artifact>.html
+```
+
+The URL returns a gzipped tarball, roughly 60KB for a single-artifact project, no authentication required. That public-fetch model has a privacy implication: anyone with the URL can retrieve the bundle. Treat handoff links as shareable.
+
+The tarball expands into a project folder with this shape:
+
+- `README.md`, a meta-prompt written for coding agents that tells them to read the chat transcripts first, read the primary HTML top to bottom, follow imports, and ask before implementing if anything is ambiguous
+- `chats/`, conversation transcripts preserving the Q&A iteration so the implementer knows intent, not just output
+- `project/<artifact>.html`, the primary design file
+- `project/design_system/`, tokens and type scale bundled inline
+- `project/wireframes/`, `project/screenshots/`, `project/wireframe.css`, supporting files
+
+Claude Code fetches the URL, extracts the archive, reads the meta-prompt, scopes the work, and implements. On an on-brand artifact, first-turn output is usable. The meta-prompt tells agents not to render the HTML in a browser or screenshot it unless the user asks, because everything needed is spelled out in the source.
+
+The design system travels inside the bundle, so an implementer does not need access to the Claude Design project or organization.
 
 This is a one-way handoff. Code changes do not flow back to Claude Design, and designer edits after handoff do not propagate to an in-progress Claude Code session. Treat the handoff as a snapshot, not a sync.
 
@@ -99,6 +138,22 @@ Skip Claude Design when:
 - **Research preview**: feature surface and quotas change without notice. Pin critical flows to stable export formats like PDF or PPTX.
 - **Design system re-extraction**: updating the stored design system means re-running onboarding. There is no incremental token update surface.
 - **Enterprise gating**: admins must enable the feature per organization. New users see nothing until that switch flips.
+
+## Cost tradeoffs versus alternatives
+
+Claude Design's per-action cost makes it a ceiling tool. On a Max 5x plan, one full design system plus one artifact through to handoff and exports lands near 55 percent of the weekly Claude Design quota. That caps usable cycles at roughly two per week. Daily iteration needs a cheaper companion to handle the bulk of prompt-to-prototype work.
+
+Direct comparison against [Stitch](stitch.md) on the same landing-page prompt with no uploads:
+
+|                           | Claude Design                                       | Stitch                                        |
+| ------------------------- | --------------------------------------------------- | --------------------------------------------- |
+| First-pass brand fidelity | On-brand after codebase onboarding                  | Generic, invents a design system              |
+| Cost per generation       | 10 to 20 percent of the weekly quota                | 5 of 400 daily credits                        |
+| Codebase extraction       | Deep, reads prose and shell scripts                 | None, context must be prose in the prompt     |
+| Agent addressable         | No MCP, no API                                      | MCP at `stitch.googleapis.com/mcp`            |
+| Handoff to Claude Code    | URL pointing to a gzipped tarball with chat history | Export to coding agents, details vary by mode |
+
+Reach for Claude Design when codebase extraction or the richly annotated handoff tarball is the whole point. Use Stitch when visual iteration is agent-driven or frequent. For projects that only need prose design docs, the toolkit's tier 0 is still enough, see [visual design workflow](visual-design-workflow.md).
 
 ## References
 

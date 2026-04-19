@@ -39,4 +39,36 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Nothing queued
+### Design system overhaul
+
+Plan: .claude/plans/feature-design-system-overhaul.md
+
+- [ ] Outcome: revised `.claude/DESIGN.md` seed with token tables for color, typography, spacing, borders, motion, iconography
+- [ ] Outcome: `toolkit:aitk-design-extract` skill drafts DESIGN.md from a project's existing prose and shell UI surfaces
+- [ ] Outcome: `aitk design render` writes a one-page HTML plus CSS companion that visualizes the current DESIGN.md tokens
+
+> Test strategy: manual, extract skill runs against the toolkit repo and produces a DESIGN.md that matches the experiment-captured system, render command opens in a browser and shows every token from the seed
+
+### Stitch MCP integration
+
+Plan: .claude/plans/feature-stitch-mcp-integration.md
+
+- [ ] Outcome: `aitk design sync` provisions DESIGN.md tokens into a Stitch project via MCP
+- [ ] Outcome: `aitk design generate`, `edit`, `variants`, `list` wrap the remaining Stitch MCP tools
+- [ ] Outcome: documented auth path, credit budget, and training-opt-out guardrail
+
+> Test strategy: manual, full cycle against a live Stitch account with a disposable API key, sandbox scenario optional
+
+### Experiment template pattern
+
+- [ ] Outcome: snippet or skill that formalizes the step-by-step experiment form used during the Claude Design and Stitch runs
+- [ ] Outcome: explicit rule baked in that model-prior guesses are marked `?` and verified via screenshot or direct observation before being committed as facts
+
+> Test strategy: manual, next new-tool experiment uses the template and the notes capture screenshots as the source of truth
+
+### Chrome delegation for web research
+
+- [ ] Outcome: decision on whether Claude Code in Chrome can drive web-based experiments (navigate, screenshot, report) with a prompt template
+- [ ] Outcome: if viable, a snippet or skill that kicks off a web-research run with a predetermined prompt shape
+
+> Test strategy: manual, one experiment routed through the Chrome path and compared against the manual-copy-paste baseline

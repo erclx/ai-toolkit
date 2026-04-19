@@ -9,7 +9,7 @@ Three tiers cover the range from prose-only design docs to a fully graphical des
 
 The tier framework sits alongside [Claude Design](claude-design.md), [visual wireframes](visual-wireframes.md), [community skills and plugins](community-skills.md), and [community MCP servers](community-mcp-servers.md). Those pages catalog the tooling. This page decides when to reach for what.
 
-Claude Design, released 2026-04-17, reshapes tiers 1 and 2. It is the default first-party path for Claude subscribers and is included in Pro, Max, Team, and Enterprise plans. See the [Claude Design page](claude-design.md) for capabilities and limits. Stitch is demoted across this document, Claude Design covers the same slot with first-party Claude Code handoff.
+Two tools anchor tier 1 and tier 2. [Stitch](stitch.md) is the agent-addressable default through its MCP server at `stitch.googleapis.com/mcp`, with a free tier of 400 daily credits that covers daily iteration. [Claude Design](claude-design.md), released 2026-04-17 and priced inside Claude subscriptions, is the ceiling tool reserved for codebase extraction and the richly annotated handoff bundle. Each covers a different job, they are not swappable.
 
 ## Tier 0: prose only
 
@@ -39,19 +39,19 @@ The toolkit seed in `tooling/claude/seeds/.claude/` ships this tier by default. 
 
 ## Tier 1: visual companion
 
-ASCII and prose stay as source of truth. Add a visual render as a feedback surface for the agent and for human review. Claude Design handles prototypes and design system generation for Claude subscribers. Excalidraw handles agent-driven wireframes when the round-trip canvas loop matters. All derived artifacts, so human edits on them are review annotations rather than source changes.
+ASCII and prose stay as source of truth. Add a visual render as a feedback surface for the agent and for human review. Stitch via MCP handles agent-driven generation of prototypes and design systems. Excalidraw handles agent-driven wireframes when the round-trip canvas loop matters. Claude Design joins only when codebase extraction or the annotated handoff bundle is worth the ceiling cost. All three produce derived artifacts, so human edits are review annotations rather than source changes.
 
 ### Seed shape
 
-Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw rendering via a top-of-file marker like `<!-- excalidraw: WIREFRAMES.excalidraw -->`. `DESIGN.md` sources its initial content from a Claude Design handoff bundle, then stays human-maintained from there. Stitch remains as a fallback source for users without a Claude subscription.
+Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw rendering via a top-of-file marker like `<!-- excalidraw: WIREFRAMES.excalidraw -->`. `DESIGN.md` stays human-maintained, and its content is what the toolkit provisions into Stitch via `create_design_system` when visual generation is needed.
 
 ### Tools
 
-- Claude Design for prototype generation, design system extraction from the codebase, and handoff to Claude Code. Default pick for Claude subscribers. See [Claude Design](claude-design.md).
+- Stitch via MCP at `stitch.googleapis.com/mcp`. Default pick for agent-driven visual generation. Free tier of 400 daily credits. See [Stitch](stitch.md).
 - Excalidraw canvas server on localhost plus the `yctimlin/mcp_excalidraw` MCP shim, for projects that need an agent to draw, read back, and revise a canvas. See [visual wireframes](visual-wireframes.md) for setup and footguns.
 - Playwright MCP for browser-side verification. See [Playwright](community-mcp-servers.md#playwright-microsoft).
 - Chrome DevTools MCP for live frontend debugging. See [Chrome DevTools](community-mcp-servers.md#chrome-devtools-google).
-- Stitch web app as a free alternative when Claude Design is not available. 350 generations per month on the free tier.
+- Claude Design as the ceiling option for codebase extraction or polished handoff bundles. See [Claude Design](claude-design.md).
 
 ### Skills
 
@@ -65,9 +65,17 @@ Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw renderin
 - Design decisions benefit from visual inspection
 - A single contributor owns both design and implementation
 
-### Claude Design vs Excalidraw in tier 1
+### Stitch vs Excalidraw vs Claude Design in tier 1
 
-Claude Design and Excalidraw solve different halves of the visual companion problem. Claude Design generates polished prototypes with the team's design system applied, the output is human-facing and stays in Anthropic's web UI. Excalidraw gives the agent a canvas it can read back over MCP, the output is agent-facing and persists as a JSON file in the repo. A project that only needs human review picks Claude Design. A project that needs Claude Code to iterate on wireframes autonomously picks Excalidraw. Few projects need both.
+The three tools solve non-overlapping halves of the visual companion problem.
+
+Stitch via MCP generates polished prototypes from text and a provisioned design system, scripted from a Claude Code session. Output is human-facing and lives in Stitch. Free daily quota makes it the right pick for frequent iteration.
+
+Excalidraw gives the agent a canvas it can read back over MCP. Output is agent-facing and persists as a JSON file in the repo. Pick it when Claude Code needs to iterate on wireframes autonomously, not when a human needs polished review artifacts.
+
+Claude Design reads the raw codebase without prose curation and produces a polished handoff bundle with chat history. Weekly quota makes it expensive, so reserve it for the extraction pass or the final handoff moment, not daily iteration.
+
+Most tier 1 projects pick one. Projects with a messy codebase and no curated `DESIGN.md` may want Claude Design once for the initial extraction, then move to Stitch for ongoing work.
 
 ## Tier 2: visual as source of truth
 
@@ -79,8 +87,9 @@ Design happens in a graphical tool. `.claude/DESIGN.md` either regenerates from 
 
 ### Tools
 
-- Claude Design with its Claude Code handoff bundle. Default pick for teams without an existing Figma investment and for solo founders or PMs driving design themselves. One-way handoff, no bidirectional sync. See [Claude Design](claude-design.md).
 - Figma desktop app with the [Figma Dev Mode MCP](community-skills.md#figma-mcp-and-code-to-canvas) for teams with a dedicated designer already on Figma. Bidirectional sync and Code to Canvas capture.
+- Claude Design with its Claude Code handoff bundle for teams without an existing Figma investment and for solo founders or PMs driving design themselves. One-way handoff, no bidirectional sync. See [Claude Design](claude-design.md).
+- Stitch via MCP as a low-cost complement to either, used for bulk screen generation driven by Claude Code. See [Stitch](stitch.md).
 - Playwright and Chrome DevTools MCPs as in tier 1
 
 ### Skills
@@ -94,9 +103,13 @@ Design happens in a graphical tool. `.claude/DESIGN.md` either regenerates from 
 - Design review happens in the graphical tool rather than in code
 - Design changes more often than implementation
 
-### Claude Design vs Figma in tier 2
+### Figma vs Claude Design in tier 2
 
-Claude Design wins when nobody on the team has a Figma workflow yet. It extracts a design system from the codebase, generates artifacts, and hands off to Claude Code in one instruction, all from an existing Claude subscription. Figma wins when a dedicated designer already owns a Figma file, external collaborators expect Figma for review, or the workflow needs the agent to capture a running Claude Code UI and push it back as editable frames via Code to Canvas. Claude Design's handoff is one-way. Figma's MCP is bidirectional.
+Figma wins when a dedicated designer already owns a Figma file, external collaborators expect Figma for review, or the workflow needs the agent to capture a running Claude Code UI and push it back as editable frames via Code to Canvas. Figma's MCP is bidirectional.
+
+Claude Design wins when nobody on the team has a Figma workflow yet and the handoff bundle with chat history is the intended implementation path. Claude Design's handoff is one-way, and its quota limits daily iteration, so it is most useful for the initial extraction pass and the final handoff moment rather than day-to-day design work.
+
+Either of the above pairs cleanly with Stitch via MCP for agent-driven screen generation between the two anchor moments.
 
 ## Decision guide
 
@@ -111,6 +124,7 @@ Zero or one yes: tier 0. Two or three: tier 1. Four: tier 2. Resist over-tiering
 
 ## References
 
+- [Stitch](stitch.md): Gemini-powered design product with the MCP server that anchors tier 1
 - [Claude Design](claude-design.md): first-party hosted design product and handoff bundle
 - [Skills strategy](skills-strategy.md): how to decide between workflow and domain-knowledge skills
 - [Visual wireframes](visual-wireframes.md): Excalidraw research and setup for the tier 1 wireframe companion
