@@ -10,13 +10,14 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 
 ## Guards
 
+- All `.claude/plans/` and `.claude/review/` reads resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 - Run `git branch --show-current` and replace `/` with `-` to derive `<slug>`. If empty, stop: `❌ Detached HEAD. Checkout the feature branch first.`
-- If `.claude/plans/feature-<slug>.md` does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
+- If `.claude/plans/feature-<slug>.md` does not exist at the main worktree root, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
 - If the working tree has uncommitted changes unrelated to the plan, stop: `❌ Uncommitted changes outside the plan. Commit or stash before autoshipping.`
 
 ## Step 1: read the plan
 
-Read `.claude/plans/feature-<slug>.md` from the project root. This file is the scope for this run.
+Read `.claude/plans/feature-<slug>.md` at the main worktree root. This file is the scope for this run.
 
 ## Step 2: implement
 
@@ -46,7 +47,7 @@ Invoke `toolkit:claude-review`.
 
 ## Step 6: evaluate findings
 
-Read `.claude/review/review-<slug>.md` from the project root. Parse the summary line (`X critical, Y should-fix, Z minor`):
+Read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
 
 - Any critical or should-fix count greater than zero, stop: `❌ Review found non-minor issues. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
 - Zero critical and zero should-fix, continue. Keep the minor findings to attach to the PR body.

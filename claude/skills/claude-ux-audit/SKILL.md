@@ -58,7 +58,7 @@ If nothing is wrong, use: `✅ No observations.`
 
 Derive a slug from the current git branch: run `git branch --show-current` and replace any `/` with `-`. If the result is empty (detached HEAD), use `latest`.
 
-Write the full report directly to `.claude/review/ux-audit-<slug>.md` from the project root. Create the directory if it does not exist. Always overwrite.
+Write the full report directly to `.claude/review/ux-audit-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 
 If there are no observations, write `✅ No observations.` to the file with a timestamp.
 

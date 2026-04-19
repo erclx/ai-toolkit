@@ -49,7 +49,7 @@ Write each updated file immediately. Claude Code's tool permission dialog is the
 
 ## Step 4: sweep consumed scratch
 
-Delete every file matching these patterns from the project root:
+Delete every file matching these patterns at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`:
 
 - `.claude/plans/feature-*.md`: plans consumed by implement
 - `.claude/review/review-*.md`: findings consumed by ship gate

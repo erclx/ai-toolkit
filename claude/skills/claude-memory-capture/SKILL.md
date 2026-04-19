@@ -9,7 +9,8 @@ Scan the current session for patterns worth persisting, write them as memory fil
 
 ## Guards
 
-- If `.claude/memory/` does not exist, create it.
+- All `.claude/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- If `.claude/memory/` does not exist at the main worktree root, create it.
 - If the session produced no user corrections, confirmations, or context disclosures worth persisting, stop: `✅ Nothing worth capturing.`
 
 ## Step 1: read context

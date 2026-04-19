@@ -61,7 +61,7 @@ If real questions exist, include a numbered `**Questions:**` section below. Omit
 
 ### Full mode
 
-Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.claude/plans/feature-<slug>.md` from the project root. Create the directory if it does not exist.
+Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.claude/plans/feature-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist.
 
 File format:
 

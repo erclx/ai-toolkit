@@ -123,6 +123,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 ## Parallel sessions
 
 - Independent feature tracks can run concurrently in git worktrees. See `wiki/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
+- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'`. Fall back to `pwd` if not a git repo.
 
 ## Wiki
 

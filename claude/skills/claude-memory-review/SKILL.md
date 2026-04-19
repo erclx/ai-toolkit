@@ -7,7 +7,8 @@ description: Reviews `.claude/memory/` and proposes per-entry actions (promote t
 
 ## Guards
 
-- If no `.claude/memory/` directory exists, stop: `❌ No .claude/memory/ directory found.`
+- All `.claude/memory/` reads, edits, and deletes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- If no `.claude/memory/` directory exists at the main worktree root, stop: `❌ No .claude/memory/ directory found.`
 - If `.claude/memory/` contains no `*.md` entries other than `MEMORY.md`, stop: `✅ No memory entries to review.`
 
 ## Step 1: read the memory folder
