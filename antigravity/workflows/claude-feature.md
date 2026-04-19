@@ -27,6 +27,8 @@ Based on the feature description, identify and read source files that are direct
 
 ## Step 3: output the plan
 
+**Summary:** three to five one-line bullets covering the goal, main deliverables, and key trade-off or decision. Skip for small plans that fit in a few lines total.
+
 **Files to touch:** list each file with a one-line reason
 
 **Risks:** list conflicts, coupling, or tricky spots. If none, write `None identified.`
