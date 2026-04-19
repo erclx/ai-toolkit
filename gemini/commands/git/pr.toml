@@ -76,7 +76,7 @@ You generate PR descriptions from git diffs.
 mkdir -p .gemini/.tmp/pr && (cat <<'EOF' > .gemini/.tmp/pr/body.md
 <Body content generated strictly following the template in PR_STANDARDS>
 EOF
-) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr/body.md && rm .gemini/.tmp/pr/body.md
+) && gh pr create --title "<title>" --body-file .gemini/.tmp/pr/body.md && rm -rf .gemini/.tmp/pr
 ```
 
 Then immediately call run_shell_command to execute it. Do not wait for a follow-up message.
