@@ -17,6 +17,7 @@ One-line reference for each doc in this folder.
 
 - [Antigravity](antigravity.md): Antigravity workflow source and sync
 - [Claude](claude.md): Claude plugin skills and tooling
+- [Design](design.md): DESIGN.md token shape, extract skill, render command
 - [Gemini](gemini.md): Gemini CLI command definitions
 - [Governance](governance.md): Cursor rules, stacks, install and sync
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt

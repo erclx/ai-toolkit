@@ -121,6 +121,12 @@ Flags: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,
 | `aitk sandbox reset`                | Restore sandbox to baseline                                 |
 | `aitk sandbox clean`                | Wipe sandbox                                                |
 
+### Design
+
+| Command              | Description                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| `aitk design render` | Render `.claude/DESIGN.md` tokens to an HTML and CSS preview |
+
 See [`docs/`](docs/) for full documentation.
 
 ## Support
