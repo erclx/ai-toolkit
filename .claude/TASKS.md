@@ -41,9 +41,9 @@ Plan: .claude/plans/feature-<slug>.md
 
 ### Greenfield design proposal skill
 
-- [ ] Outcome: `claude-design-propose` skill drafts `.claude/DESIGN.md` from `REQUIREMENTS.md`, `ARCHITECTURE.md`, and a personality prompt, with token values proposed by the agent
-- [ ] Outcome: skill runs on day one of a project before any UI code exists and replaces the Claude Design quota cost for greenfield design work
-- [ ] Outcome: sandbox scenario at `scripts/sandbox/claude/design-propose.sh` provisions a fresh project with only `REQUIREMENTS.md` and a personality paragraph, no code
+- [x] Outcome: `claude-design-propose` skill drafts `.claude/DESIGN.md` from `REQUIREMENTS.md`, `ARCHITECTURE.md`, and a personality prompt, with token values proposed by the agent
+- [x] Outcome: skill runs on day one of a project before any UI code exists and replaces the Claude Design quota cost for greenfield design work
+- [x] Outcome: sandbox scenario at `scripts/sandbox/claude/design-propose.sh` provisions a fresh project with only `REQUIREMENTS.md` and a personality paragraph, no code
 
 > Test strategy: manual, run the sandbox, invoke the skill, eyeball whether the proposed DESIGN.md fits the seeded personality and renders cleanly via `aitk design render`
 

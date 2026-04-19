@@ -70,6 +70,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | Skill                   | Description                                                                             |
 | ----------------------- | --------------------------------------------------------------------------------------- |
 | `claude-design-extract` | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                     |
+| `claude-design-propose` | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph   |
 | `claude-docs`           | Update .claude/ planning docs to reflect mid-cycle decisions                            |
 | `claude-feature`        | Plan a feature by reading Claude setup and scanning source files                        |
 | `claude-memory-capture` | Extract durable patterns from the session into `.claude/memory/`                        |
