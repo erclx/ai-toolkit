@@ -58,12 +58,14 @@ Start a fresh Claude Code session. The diff is sufficient context for both revie
 When features are independent, run them in parallel instead of sequentially. Use one git worktree per feature so each session has its own working tree and branch.
 
 - Create a worktree per feature, then start a Claude Code session in each
-- Invoke `toolkit:claude-feature` in each session. When the skill writes a plan file, it lands at `.claude/plans/feature-<slug>.md`, one per feature, no collisions. Small features stay in chat and skip the file.
-- Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files (`review-<branch>.md`, `ui-checklist-<branch>.md`), so parallel sessions do not overwrite each other
+- Invoke `toolkit:claude-feature` in each session. Plans land at the main worktree root as `.claude/plans/feature-<slug>.md`, one per feature, no collisions. Small features stay in chat and skip the file.
+- Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files at the main worktree root (`review-<branch>.md`, `ui-checklist-<branch>.md`), so parallel sessions do not overwrite each other
 - Ship each worktree separately with `toolkit:git-ship`
 - For full autonomy per worktree, invoke `toolkit:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-Caveats: `.claude/TASKS.md` is a single file. If multiple sessions edit it concurrently, resolve the merge at ship time. Treat memory updates as single-writer in practice. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full domain-level fan-out rules in this toolkit repo.
+`.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
+
+Caveats: `.claude/TASKS.md` is a single file and lives per worktree. If multiple sessions edit it concurrently, resolve the merge at ship time.
 
 ### Autonomous ship
 

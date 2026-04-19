@@ -47,3 +47,7 @@
 ## Scratch
 
 - Write temporary files under `.claude/.tmp/<slug>/` in the project root, not `/tmp`. Use a kebab-slug tied to the topic.
+
+## Worktrees
+
+- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'`. Fall back to `pwd` if not a git repo.

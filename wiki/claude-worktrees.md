@@ -44,6 +44,16 @@ Settings resolve hierarchically through four scopes: managed, user, project, and
 
 Skills from `.claude/skills/` resolve from the worktree's directory as well. Skills added to the main branch are not visible inside a sibling worktree until that branch is checked out.
 
+## Shared session scratch
+
+`.claude/plans/`, `.claude/review/`, and `.claude/memory/` are gitignored and live at the main worktree root, not inside a linked worktree. Agents running inside a worktree resolve these paths against the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'`, falling back to `pwd` when not in a git repo. The canonical rule is the Worktrees bullet in `CLAUDE.md`.
+
+Ephemeral per-command scratch like `.claude/.tmp/pr/body.md` stays in the current worktree. It is deleted the same turn it is created, so centralizing buys nothing.
+
+## Tooling caveats
+
+Tools that honor `.gitignore` by walking parent directories will treat every file in a linked worktree as ignored once `.claude/worktrees/` is in the main repo's `.gitignore`. `cspell` is the concrete case in this repo. Bound its search with `gitignoreRoot: ["."]` in `cspell.json` so it stops at the config's own directory.
+
 ## Concurrent safety
 
 Do not resume the same session in two terminals at once. Both terminals write to the same session file and messages interleave. Each terminal sees only its own view during the run, but the merged transcript becomes unreadable on the next resume. Use `--fork-session` to branch a session cleanly when two lines of work must share a starting context.
