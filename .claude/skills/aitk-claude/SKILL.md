@@ -35,9 +35,9 @@ When adding a new skill:
 When modifying a skill:
 
 - Update the skills table in `docs/claude.md` if the description changed
-- Check if a corresponding antigravity workflow exists in `antigravity/workflows/` and update it to match
 - Check if a corresponding gemini command exists in `gemini/commands/` and update it to match
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
+- Antigravity workflows are frozen, so do not propagate changes there
 
 When modifying the CLAUDE.md seed:
 
