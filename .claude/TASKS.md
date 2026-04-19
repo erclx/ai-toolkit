@@ -39,6 +39,13 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
+### Target-project lifecycle reference
+
+- [x] Outcome: `docs/target-projects.md` covers the scaffold decision, adding a domain later, and upstream sync sequencing
+- [x] Outcome: `docs/ai-workflow.md` bootstrap section trimmed to a pointer into the new doc
+
+> Test strategy: manual, walk a fresh project bootstrap and a seed-drift scenario using only the new doc as the entry point
+
 ### Design system overhaul
 
 Plan: .claude/plans/feature-design-system-overhaul.md
