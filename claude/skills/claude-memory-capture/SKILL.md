@@ -63,8 +63,8 @@ Then append a row to the matching table in `.claude/memory/MEMORY.md`:
 
 Respond with one line per memory written or updated:
 
-- `✅ Wrote: <file> (<type>)`
-- `✏️ Updated: <file> (<type>)`
+- `✅ Wrote: .claude/memory/<file> (<type>)`
+- `✏️ Updated: .claude/memory/<file> (<type>)`
 
 If nothing was captured, output:
 

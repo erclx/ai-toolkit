@@ -86,9 +86,9 @@ Apply edits one at a time via `Edit`. Claude Code's tool permission dialog is th
 
 Output one line per action taken:
 
-- `✅ Promoted: <memory-file> → <target>`
-- `✅ Handed off: <memory-file> → governance`
-- `🗑  Deleted: <memory-file>`
+- `✅ Promoted: .claude/memory/<memory-file> → <target>`
+- `✅ Handed off: .claude/memory/<memory-file> → governance`
+- `🗑  Deleted: .claude/memory/<memory-file>`
 
 If the user accepted nothing, output:
 

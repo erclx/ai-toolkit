@@ -66,7 +66,7 @@ If no matching files exist, skip this step silently.
 
 Output one line per file updated:
 
-`✅ Updated: <filename>`
+`✅ Updated: .claude/<filename>`
 
 If no files were updated and nothing was swept, output:
 
