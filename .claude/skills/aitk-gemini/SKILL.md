@@ -19,7 +19,7 @@ When modifying a command:
 
 - Verify the corresponding sandbox test still reflects the change
 - Update the commands table in `docs/gemini.md` if the description changed
-- Check if a corresponding plugin skill exists in `claude/skills/` or antigravity workflow in `antigravity/workflows/` and update it to match
+- Check if a corresponding plugin skill exists in `claude/skills/` and update it to match
 
 When adding a new category:
 

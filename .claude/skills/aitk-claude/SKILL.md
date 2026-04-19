@@ -30,14 +30,14 @@ When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
 - Add the skill to the skills table in `docs/claude.md`
-- Do not create a matching Gemini command or Antigravity workflow unless explicitly requested. Parity only applies when an existing counterpart changes.
+- Do not create a matching Gemini command unless explicitly requested. Parity only applies when an existing counterpart changes. Never create a new Antigravity workflow, the surface is frozen.
 
 When modifying a skill:
 
 - Update the skills table in `docs/claude.md` if the description changed
-- Check if a corresponding antigravity workflow exists in `antigravity/workflows/` and update it to match
 - Check if a corresponding gemini command exists in `gemini/commands/` and update it to match
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
+- Antigravity workflows are frozen, so do not propagate changes there
 
 When modifying the CLAUDE.md seed:
 

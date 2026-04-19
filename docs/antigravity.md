@@ -6,6 +6,8 @@ category: Domain references
 
 # Antigravity system
 
+> Maintenance mode. Antigravity workflows are no longer kept in parity with Claude skills or Gemini commands. Existing workflows still install and sync, but new skill behavior does not propagate here.
+
 ## Overview
 
 Antigravity workflows give the AI agent domain-specific instructions for a project. They live in `.agent/workflows/` at the target project root and are invoked by slash commands or intent matching. The toolkit maintains a gold-standard set of these workflows that can be synced to any project.
