@@ -204,6 +204,13 @@ inject_gov_rules() {
   fi
 }
 
+inject_seeds() {
+  local seeds_source="$PROJECT_ROOT/tooling/claude/seeds"
+  if [ -d "$seeds_source" ]; then
+    cp -r "$seeds_source/." "$SANDBOX/"
+  fi
+}
+
 configure_agent_settings() {
   mkdir -p "$SANDBOX/.gemini"
   cat <<EOF >"$SANDBOX/.gemini/settings.json"
@@ -226,6 +233,7 @@ commit_environment_setup() {
 }
 
 setup_sandbox_assets() {
+  [ -n "$SANDBOX_INJECT_SEEDS" ] && inject_seeds
   [ -n "$SANDBOX_INJECT_STANDARDS" ] && inject_documentation
   [ -n "$SANDBOX_INJECT_CONTEXT" ] && inject_context
   [ -n "$SANDBOX_INJECT_GOV" ] && inject_gov_rules

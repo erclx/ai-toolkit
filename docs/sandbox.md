@@ -111,6 +111,7 @@ log_info "list     : read-only catalog dump, no target needed"
 ```bash
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"  # skip auto-commit after stage_setup
+  export SANDBOX_INJECT_SEEDS="true"      # inject tooling/claude/seeds/ into sandbox root
   export SANDBOX_INJECT_STANDARDS="true"  # inject standards/ into sandbox
   export SANDBOX_INJECT_GOV="true"        # inject .cursor/rules/ into sandbox
   export SANDBOX_INJECT_CONTEXT="true"    # inject GEMINI.md into sandbox root
@@ -118,7 +119,9 @@ use_config() {
 }
 ```
 
-By default, sandboxes are minimal: no standards, no gov rules, no Gemini settings, and auto-commit is on. Declare only the flags you need.
+By default, sandboxes are minimal: no seeds, no standards, no gov rules, no Gemini settings, and auto-commit is on. Declare only the flags you need.
+
+`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs, so scenarios that write a scenario-specific `CLAUDE.md` will overlay the seed. Use the flag when the scenario models a project that has installed seeds. Use hand-rolled files when the scenario models a target project with its own `CLAUDE.md`.
 
 ### use_anchor
 

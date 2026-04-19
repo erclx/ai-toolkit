@@ -4,6 +4,7 @@ set -o pipefail
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
+  export SANDBOX_INJECT_SEEDS="true"
 }
 
 stage_setup() {
@@ -18,13 +19,6 @@ EOF
 
   git add . && git commit -m "chore(project): init" --no-verify -q
 
-  # Install seeds via aitk claude init
-  log_step "Installing seeds via aitk claude init"
-  "$PROJECT_ROOT/scripts/manage-claude.sh" init .
-
-  git add . && git commit -m "chore(claude): install seeds" --no-verify -q
-
-  # Drift: truncate CLAUDE.md to simulate stale install
   if [ -f "CLAUDE.md" ]; then
     head -n 10 CLAUDE.md >CLAUDE.md.tmp && mv CLAUDE.md.tmp CLAUDE.md
   fi
