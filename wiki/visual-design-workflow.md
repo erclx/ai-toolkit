@@ -13,11 +13,11 @@ Two tools anchor tier 1 and tier 2. [Stitch](stitch.md) is the agent-addressable
 
 ## Tier 0: prose only
 
-The default. `.claude/DESIGN.md` holds visual intent as prose tokens. `.claude/WIREFRAMES.md` holds ASCII layouts. Claude Code reads both and writes the implementation. Works for CLI tools, internal dashboards, admin panels, and backend-focused projects.
+The default. `.claude/DESIGN.md` holds visual intent as prose plus token tables for color, typography, spacing, borders, motion, and iconography. `.claude/WIREFRAMES.md` holds ASCII layouts. Claude Code reads both and writes the implementation. Works for CLI tools, internal dashboards, admin panels, and backend-focused projects.
 
 ### Seed shape
 
-The toolkit seed in `tooling/claude/seeds/.claude/` ships this tier by default. No changes needed.
+The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template. The `toolkit:claude-design-extract` skill drafts the file from a project's existing prose and CLI UI surfaces. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `docs/design.md`.
 
 ### Tools
 
@@ -26,6 +26,7 @@ The toolkit seed in `tooling/claude/seeds/.claude/` ships this tier by default. 
 
 ### Skills
 
+- `toolkit:claude-design-extract` to draft `.claude/DESIGN.md` from existing project signals
 - `toolkit:claude-ui-test` for e2e test generation after UI changes
 - `toolkit:claude-ux-audit` for UX gap detection on existing surfaces
 - Anthropic's `frontend-design` plugin optional for light visual steering

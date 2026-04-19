@@ -69,6 +69,7 @@ Full help: `aitk <command> --help`.
 | `aitk sandbox reset`     | Reset sandbox to baseline                            |
 | `aitk sandbox clean`     | Wipe the sandbox                                     |
 | `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter |
+| `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS    |
 
 ### Domain commands
 
@@ -84,6 +85,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `claude`      | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
 | `antigravity` | `install`, `sync`                                           |
 | `wiki`        | `init`                                                      |
+| `design`      | `render`                                                    |
 
 Common patterns:
 
