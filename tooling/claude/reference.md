@@ -27,7 +27,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 
 ## Gitignore
 
-- `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`
+- `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`
 
 ## CLI
 
