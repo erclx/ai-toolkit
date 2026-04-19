@@ -30,6 +30,7 @@ claude/
 │   ├── git-ship/            ← run the full post-feature workflow in one sequence
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
+│   ├── git-stash/           ← stash a focused subset of changes, list stashes, or pop by message
 │   ├── gov-install/         ← detect project stack and install matching governance rules
 │   ├── indexes-install/     ← bootstrap the index.md system in a target project
 │   ├── init-project/        ← detect project type and run one-shot `aitk init` with resolved flags
@@ -86,6 +87,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-pr`                | Generate a PR description and open a pull request                                       |
 | `git-split`             | Split a mixed-commit branch into focused branches and open PRs                          |
 | `git-stage`             | Batch-commit staged files grouped by concern                                            |
+| `git-stash`             | Stash a focused subset of changes, list stashes, or pop by message                      |
 | `gov-install`           | Detect project stack from files and install matching governance rules                   |
 | `indexes-install`       | Bootstrap the index.md system in a target project, drafting frontmatter per folder      |
 | `init-project`          | Detect project type and run one-shot `aitk init` with resolved flags                    |

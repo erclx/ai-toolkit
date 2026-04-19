@@ -27,6 +27,7 @@ noreferrer
 nullglob
 nvmrc
 ollama
+pathspec
 pip
 pnpm
 pycache
