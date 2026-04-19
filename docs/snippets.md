@@ -25,10 +25,10 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 
 ## Categories
 
-| Category | Paths                                                                                                                   |
-| -------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `base`   | compact-summary, create-snippet, decision-help, prose-audit, research-prompt, session-notes, step-by-step, web-research |
-| `claude` | claude/figma-steps, claude/memory-capture, claude/tasks-done                                                            |
+| Category | Paths                                                                                                                                  |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`   | compact-summary, create-snippet, decision-help, feature-recap, prose-audit, research-prompt, session-notes, step-by-step, web-research |
+| `claude` | claude/figma-steps, claude/memory-capture, claude/tasks-done                                                                           |
 
 ## Snippets
 
@@ -37,6 +37,7 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `compact-summary`       | Summarize research or findings into a scannable block                                |
 | `create-snippet`        | Draft a new snippet (chat/Chrome extension)                                          |
 | `decision-help`         | Pick the best option from the discussion so far, one-line pick plus short reason     |
+| `feature-recap`         | Verify a finished implementation by listing deliverables, files touched, and tests   |
 | `prose-audit`           | Audit a file's prose against `standards/prose.md`                                    |
 | `research-prompt`       | Generate a research prompt to paste into another AI chat                             |
 | `session-notes`         | Capture session decisions                                                            |
