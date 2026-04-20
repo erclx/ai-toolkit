@@ -48,19 +48,26 @@ Before proposing promote, grep the target surface for the rule's keywords. If th
 
 Rules that resist crisp one-line phrasing default to **Delete** over promote. Never promote a memory unchanged. Rewrite to match the destination surface's tone. Use terser phrasing for `CLAUDE.md` and imperative phrasing for skill bodies.
 
-## Step 4: output the proposal
+## Step 4: write the proposal to the review file
+
+Derive a slug from the current git branch: run `git branch --show-current` and replace `/` with `-`. Fall back to `latest` on empty output.
+
+Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline.
 
 Group by action. Number every item across groups so the user can approve by number.
 
 ```plaintext
 Promote to CLAUDE.md
   1. <memory-file>     → <target section>    : <one-line reason>
+     Why: <one-line pulled from the memory's Why>
 
 Promote to skill body
   2. <memory-file>     → <skill>/SKILL.md    : <one-line reason>
+     Why: <one-line pulled from the memory's Why>
 
 Promote to standards
   3. <memory-file>     → standards/<file>.md : <one-line reason>
+     Why: <one-line pulled from the memory's Why>
 
 Hand off to governance
   4. <memory-file>     → author .mdc rule    : <one-line reason>
@@ -69,11 +76,17 @@ Delete
   5. <memory-file>                           : <one-line reason>
 ```
 
-After the groups, show each proposed edit's rewritten text inline so the user can judge tone before approving. For deletes, show only the reason. For governance handoffs, show only the pointer. Do not draft the rule.
+After the groups, show each promote item's rewritten rule text inline so the user can judge tone before approving. For deletes, show only the reason. For governance handoffs, show only the pointer. Do not draft the rule.
+
+Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md` and ask for `all`, `none`, or a comma-separated list of numbers.
+
+Rewrite the review file in place whenever the proposal changes mid-review. The file stays the source of truth for the current decisions.
 
 ## Step 5: apply approved items
 
 Wait for the user to reply with `all`, `none`, or a comma-separated list of numbers. Apply only what they picked.
+
+Before applying a promote to root `CLAUDE.md`, load `aitk-claude` so its seed-mirror rule fires on the edit.
 
 For each approved item:
 
@@ -82,6 +95,8 @@ For each approved item:
 - **Delete**: remove the memory file and its row from `.claude/memory/MEMORY.md`.
 
 Apply edits one at a time via `Edit`. Claude Code's tool permission dialog is the confirmation gate per edit. Never rewrite a whole file.
+
+After all approved items are applied, delete the review file at `.claude/review/memory-review-<slug>.md`.
 
 ## After completion
 
