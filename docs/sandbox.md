@@ -46,7 +46,8 @@ scripts/sandbox/
 │   ├── seed-sync.sh    ← drifted seeds for testing /claude-seed-sync
 │   ├── init-project.sh ← scenarios for /toolkit:init-project (fresh, vite-react, astro)
 │   ├── design-extract.sh ← tokenized notes app for testing /toolkit:claude-design-extract and aitk design render
-│   └── design-propose.sh ← greenfield project with personality paragraph for testing /toolkit:claude-design-propose
+│   ├── design-propose.sh ← greenfield project with personality paragraph for testing /toolkit:claude-design-propose
+│   └── experiment.sh     ← scenarios for /toolkit:experiment (fresh, collision)
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment

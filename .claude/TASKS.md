@@ -70,16 +70,6 @@ Plan: .claude/plans/feature-stitch-mcp-integration.md
 
 > Test strategy: manual, full cycle against a live Stitch account with a disposable API key, sandbox scenario optional
 
-### Tool experiment scaffold skill
-
-Plan: .claude/plans/feature-experiment-template.md
-
-- [ ] Outcome: `/experiment <tool>` skill scaffolds `.claude/.tmp/<tool>/notes.md` with the fixed phase structure used in the Claude Design and Stitch runs
-- [ ] Outcome: scaffold includes an in-file reminder of the `?`-until-verified rule and a wiki-shaped synthesis block at the end
-- [ ] Outcome: next new-tool investigation uses the skill and produces a wiki draft without rebuilding the phase structure by hand
-
-> Test strategy: manual, run `/experiment <fake-tool>` against a real or mocked tool, confirm the scaffold appears at the expected path with phases intact, then drive one short investigation through it
-
 ### Chrome delegation for web research
 
 Plan: .claude/plans/feature-chrome-delegation.md
