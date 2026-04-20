@@ -107,6 +107,16 @@ Plan: .claude/plans/feature-chrome-delegation.md
 
 > Test strategy: manual, walk the section end-to-end against a fresh fan-out scenario and confirm a reader can execute without asking
 
+### Memory review sandbox scenario
+
+Plan: .claude/plans/chore-memory-review-sandbox.md
+
+- [ ] Outcome: `scripts/sandbox/claude/memory.sh` seeds `.claude/memory/` with a representative mix of promote-worthy, absorbed, and stale entries plus a `MEMORY.md` index
+- [ ] Outcome: scenario exercises the classification, review-file write, apply, and review-file cleanup paths end to end
+- [ ] Outcome: closes the sandbox gap flagged when the new "draft a sandbox alongside SKILL.md" rule landed in `aitk-claude`
+
+> Test strategy: manual, run `aitk sandbox claude:memory`, invoke `/toolkit:claude-memory-review` against the seeded state, confirm the review file appears at `.claude/review/memory-review-<slug>.md` and the approved items apply cleanly
+
 ### Git worktree lifecycle skill
 
 - [ ] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
