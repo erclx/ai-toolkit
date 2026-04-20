@@ -63,6 +63,8 @@ Add to your shell config to load automatically:
 alias claude='claude --plugin-dir /path/to/toolkit/claude'
 ```
 
+For additional shortcuts covering resume, continue, and worktree flows, see [Zshrc aliases for Claude Code](../wiki/zshrc-aliases.md).
+
 ## Plugin skills
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
