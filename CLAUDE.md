@@ -15,6 +15,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - The toolkit is the source of truth. Authoring happens here, target projects consume via install and sync.
 - Skills detect and call the CLI. They do not reimplement CLI logic.
 - This repo is behavior-heavy. Planning and review are the work here, so a higher supervision ratio than a typical app repo is expected.
+- Toolkit surfaces stay general-purpose. Map to external-tool schemas in a thin sync adapter rather than adopting them as the canonical shape.
 
 ## Behavior
 
@@ -23,6 +24,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Flag concerns or alternatives when a proposed change has tradeoffs worth discussing
 - When directing the user to invoke a skill, give the exact command with args, or state explicitly that it runs bare
 - When facing a judgment call with 2-3 reasonable options mid-flow, pick one and state the tradeoff in one sentence. Enumerate options only when the user's preference is the deciding factor.
+- Match edit scope to the request. Ship minimal v1 and queue extensions as follow-ups, edit only what the user named on simplification requests, and do not add CLI flags or aliases they did not ask for. When a fix has a natural mirror in a template or seed, flag it as a follow-up rather than silently extending the PR.
 
 ## After editing
 
@@ -120,13 +122,16 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 ## Scratch
 
 - Write temporary files under `.claude/.tmp/<slug>/` in the project root, not `/tmp`. Use a kebab-slug tied to the topic.
+- Create the `<slug>/` folder up front and put files inside, even for a single note. Flat `<slug>-<file>.md` is not allowed.
 
 ## Parallel sessions
 
 - Independent feature tracks can run concurrently in git worktrees. See `wiki/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
 - Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'`. Fall back to `pwd` if not a git repo.
+- From a linked worktree, verify the absolute path of every `Edit` or `Write` starts with the worktree root (`pwd`), not the main checkout. Absolute paths to the main root land changes in the wrong tree.
 
 ## Wiki
 
 - Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
 - When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge
+- Wiki pages stay tool-general reference prose. Rewrite experiment narrative ("Against the X repo, tool Y read Z") into general statements ("Tool Y reads prose surfaces") before committing.
