@@ -24,6 +24,7 @@ Read `docs/scripts.md` for structure, file inventory, and lib responsibilities b
 - For multi-scenario scripts, call `select_or_route_scenario "Which scenario?" "a" "b"` instead of `select_option`. It reads `SANDBOX_SCENARIO` to skip the picker when set by `aitk sandbox <cat>:<cmd> <scenario>`. End every scenario `case` with a `*) log_error "Unknown scenario: $SELECTED_OPTION" ;;` arm. Use slug-style scenario names (no spaces) so agents can pass them without quoting.
 - One sandbox file per skill. Before adding a new scenario, check if `scripts/sandbox/<cat>/<skill>.sh` exists. If so, extend it with a `select_or_route_scenario` call and a new `case` arm. Do not create sibling files.
 - When testing a skill that has a sandbox scenario, run `aitk sandbox <cat>:<cmd>` yourself before handing off. Tell the user the exact skill invocation and what to expect.
+- After refactoring a sandbox scenario, do not claim verified from a green run alone. Diff `.sandbox/` contents, file list, and `git log` against the pre-refactor behavior or spec, and report the comparison in the done message.
 
 ## Sync checklist
 

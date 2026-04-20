@@ -107,6 +107,26 @@ Plan: .claude/plans/feature-chrome-delegation.md
 
 > Test strategy: manual, walk the section end-to-end against a fresh fan-out scenario and confirm a reader can execute without asking
 
+### PR follow-up skill
+
+Plan: .claude/plans/feature-git-pr-followup-skill.md
+
+- [ ] Outcome: new `git-pr-followup` plugin skill that commits a fix, pushes, and reconciles the PR body against the new state when drift is detected
+- [ ] Outcome: sandbox scenario exercises the commit + push path with a `gh` stub, with live PR edit testing documented as manual
+- [ ] Outcome: documented in `docs/claude.md` skills table alongside the other `git-*` skills
+
+> Test strategy: manual, open a PR via `git-ship`, introduce a fix that changes a file named in Key Changes and a fix that adds a new file, confirm the skill flags the second as body drift and leaves the first alone
+
+### Memory review sandbox scenario
+
+Plan: .claude/plans/chore-memory-review-sandbox.md
+
+- [ ] Outcome: `scripts/sandbox/claude/memory.sh` seeds `.claude/memory/` with a representative mix of promote-worthy, absorbed, and stale entries plus a `MEMORY.md` index
+- [ ] Outcome: scenario exercises the classification, review-file write, apply, and review-file cleanup paths end to end
+- [ ] Outcome: closes the sandbox gap flagged when the new "draft a sandbox alongside SKILL.md" rule landed in `aitk-claude`
+
+> Test strategy: manual, run `aitk sandbox claude:memory`, invoke `/toolkit:claude-memory-review` against the seeded state, confirm the review file appears at `.claude/review/memory-review-<slug>.md` and the approved items apply cleanly
+
 ### Git worktree lifecycle skill
 
 - [ ] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
