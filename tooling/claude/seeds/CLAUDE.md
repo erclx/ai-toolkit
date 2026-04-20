@@ -47,8 +47,7 @@
 
 ## Scratch
 
-- Write temporary files under `.claude/.tmp/<slug>/` in the project root, not `/tmp`. Use a kebab-slug tied to the topic.
-- Create the `<slug>/` folder up front and put files inside, even for a single note. Flat `<slug>-<file>.md` is not allowed.
+- Write temporary files to `.claude/.tmp/<slug>/<file>.md` in the project root. Use a kebab-slug tied to the topic. Never use `/tmp` or a flat `<slug>-<file>.md`.
 
 ## Worktrees
 
