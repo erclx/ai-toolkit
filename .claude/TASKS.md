@@ -107,6 +107,16 @@ Plan: .claude/plans/feature-chrome-delegation.md
 
 > Test strategy: manual, walk the section end-to-end against a fresh fan-out scenario and confirm a reader can execute without asking
 
+### PR follow-up skill
+
+Plan: .claude/plans/feature-git-pr-followup-skill.md
+
+- [ ] Outcome: new `git-pr-followup` plugin skill that commits a fix, pushes, and reconciles the PR body against the new state when drift is detected
+- [ ] Outcome: sandbox scenario exercises the commit + push path with a `gh` stub, with live PR edit testing documented as manual
+- [ ] Outcome: documented in `docs/claude.md` skills table alongside the other `git-*` skills
+
+> Test strategy: manual, open a PR via `git-ship`, introduce a fix that changes a file named in Key Changes and a fix that adds a new file, confirm the skill flags the second as body drift and leaves the first alone
+
 ### Memory review sandbox scenario
 
 Plan: .claude/plans/chore-memory-review-sandbox.md
