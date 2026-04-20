@@ -54,12 +54,12 @@ Plan: .claude/plans/feature-claude-worktree-skill.md
 
 Plan: .claude/plans/chore-publicize-repository.md
 
-- [ ] Outcome: top-level `README.md` rewritten as a user-facing pitch with positioning, prereqs, and quickstart
+- [ ] Outcome: top-level `README.md` rewritten as a user-facing pitch with positioning, prerequisites, and quickstart
 - [ ] Outcome: personal references audited and generalized so an outside clone works without edits
-- [ ] Outcome: an outside developer can clone the repo, install prereqs, and run `aitk init` in a fresh project without reading the source
+- [ ] Outcome: an outside developer can clone the repo, install prerequisites, and run `aitk init` in a fresh project without reading the source
 - [ ] Outcome: link to the toolkit from public profile surfaces (GitHub pinned, resume, portfolio)
 
-> Test strategy: manual, clone the repo into a fresh path on a machine with only prereqs installed, follow the README as written, confirm `aitk init` produces a working target project without undocumented steps
+> Test strategy: manual, clone the repo into a fresh path on a machine with only prerequisites installed, follow the README as written, confirm `aitk init` produces a working target project without undocumented steps
 
 ### Claude sandbox seed injection rollout
 
