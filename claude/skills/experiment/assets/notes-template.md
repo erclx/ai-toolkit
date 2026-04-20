@@ -18,7 +18,7 @@
 
 ## Wiki draft
 
-~~~markdown
+```markdown
 ---
 title: <tool>
 description: ?
@@ -45,4 +45,4 @@ description: ?
 ## References
 
 - ?
-~~~
+```
