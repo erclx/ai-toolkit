@@ -16,14 +16,11 @@
 
 -
 
-## Wiki draft
+## Write-up
+
+Synthesize verified items into the final form. The destination depends on outcome: wiki page, decision memo, integration spec, or scratch-and-discard. Drop sections that do not apply.
 
 ```markdown
----
-title: <tool>
-description: ?
----
-
 # <tool>
 
 ## Status
