@@ -19,6 +19,11 @@ Read `docs/tooling.md` for system overview, configs vs seeds vs references, exte
 
 ## Sync checklist
 
+When modifying files in `tooling/base/configs/`:
+
+- Apply the same change to the matching file at the repo root if it exists. The toolkit dogfoods base tooling.
+- Preserve local overrides in the root copy. Port the delta, not the whole file.
+
 When modifying files in `configs/`:
 
 - Update `reference.md` for the affected stack to reflect the change
