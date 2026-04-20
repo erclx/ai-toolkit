@@ -36,6 +36,7 @@
 - Only create a task for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
 - When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. Delete the plan when the task ships.
+- Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
 
 ## Memory
 
