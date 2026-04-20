@@ -23,7 +23,10 @@ When modifying files in `tooling/base/configs/`:
 
 - Apply the same change to the matching file at the repo root if it exists. The toolkit dogfoods base tooling as its own config source.
 - Preserve local overrides in the root copy. Port the delta, not the whole file.
-- Update `tooling/base/reference.md` if the rationale or intent changed, not for every value tweak.
+
+When modifying `tooling/<stack>/configs/` or `tooling/<stack>/seeds/`:
+
+- Update `tooling/<stack>/reference.md` if the intent or rationale changed. Typo fixes and dictionary term additions do not count.
 
 When adding deps or scripts to `manifest.toml`:
 
