@@ -23,6 +23,7 @@ cspell
 dbaeumer
 deprioritized
 dogfooded
+dogfoods
 dontAsk
 e2e
 erclx
