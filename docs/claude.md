@@ -20,6 +20,7 @@ claude/
 │   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
 │   ├── claude-ui-test/      ← generate and run Playwright e2e tests for UI changes
 │   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
+│   ├── claude-worktree/     ← enter a worktree at .claude/worktrees/<name>/ with name derived from plan or branch
 │   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
 │   ├── create-skill/        ← create a new skill file in .claude/skills/
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
@@ -81,6 +82,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `claude-seed-sync`      | Audit installed seed docs against current toolkit seeds and propose per-section edits   |
 | `claude-ui-test`        | Generate and run Playwright e2e tests, with manual checklist for visual-only items      |
 | `claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, and inconsistencies          |
+| `claude-worktree`       | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch   |
 | `claude-autoship`       | Chain implement → verify → review → ship after a plan is approved                       |
 | `create-skill`          | Create a new skill file in .claude/skills/                                              |
 | `create-snippet`        | Create a new snippet file in snippets/                                                  |
