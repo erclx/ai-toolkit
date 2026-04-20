@@ -39,36 +39,13 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Target-project lifecycle reference
-
-- [x] Outcome: `docs/target-projects.md` covers the scaffold decision, adding a domain later, and upstream sync sequencing
-- [x] Outcome: `docs/ai-workflow.md` bootstrap section trimmed to a pointer into the new doc
-
-> Test strategy: manual, walk a fresh project bootstrap and a seed-drift scenario using only the new doc as the entry point
-
-### Design system overhaul
-
-- [x] Outcome: revised `.claude/DESIGN.md` seed with token tables for color, typography, spacing, borders, motion, iconography
-- [x] Outcome: `toolkit:claude-design-extract` skill drafts DESIGN.md from a project's existing prose and shell UI surfaces
-- [x] Outcome: `aitk design render` writes a one-page HTML plus CSS companion that visualizes the current DESIGN.md tokens
-
-> Test strategy: manual, extract skill runs against the toolkit repo and produces a DESIGN.md that matches the experiment-captured system, render command opens in a browser and shows every token from the seed
-
 ### Greenfield design proposal skill
 
-- [ ] Outcome: `claude-design-propose` skill drafts `.claude/DESIGN.md` from `REQUIREMENTS.md`, `ARCHITECTURE.md`, and a personality prompt, with token values proposed by the agent
-- [ ] Outcome: skill runs on day one of a project before any UI code exists and replaces the Claude Design quota cost for greenfield design work
-- [ ] Outcome: sandbox scenario at `scripts/sandbox/claude/design-propose.sh` provisions a fresh project with only `REQUIREMENTS.md` and a personality paragraph, no code
+- [x] Outcome: `claude-design-propose` skill drafts `.claude/DESIGN.md` from `REQUIREMENTS.md`, `ARCHITECTURE.md`, and a personality prompt, with token values proposed by the agent
+- [x] Outcome: skill runs on day one of a project before any UI code exists and replaces the Claude Design quota cost for greenfield design work
+- [x] Outcome: sandbox scenario at `scripts/sandbox/claude/design-propose.sh` provisions a fresh project with only `REQUIREMENTS.md` and a personality paragraph, no code
 
 > Test strategy: manual, run the sandbox, invoke the skill, eyeball whether the proposed DESIGN.md fits the seeded personality and renders cleanly via `aitk design render`
-
-### Sandbox seed injection
-
-- [x] Outcome: new `SANDBOX_INJECT_SEEDS` flag copies `tooling/claude/seeds/` contents into the sandbox before `stage_setup` runs
-- [x] Outcome: existing sandboxes refactored to opt into the flag where applicable, scenario scripts only append scenario-specific files
-- [x] Outcome: documented in `docs/sandbox.md` alongside the other inject flags
-
-> Test strategy: manual, refactor `claude/seed-sync.sh` to use the flag and confirm the baseline state matches the previous `aitk claude init` output before drift
 
 ### Stitch MCP integration
 
@@ -93,3 +70,18 @@ Plan: .claude/plans/feature-stitch-mcp-integration.md
 - [ ] Outcome: if viable, a snippet or skill that kicks off a web-research run with a predetermined prompt shape
 
 > Test strategy: manual, one experiment routed through the Chrome path and compared against the manual-copy-paste baseline
+
+### Shipping-from-worktrees wiki section
+
+- [ ] Outcome: `wiki/claude-worktrees.md` gains a "Shipping from worktrees" section covering rotate-after-merge, rebase-before-PR, and merge-order advice for multiple concurrent worktrees
+- [ ] Outcome: section points at the future `git-worktree` skill for the mechanical parts once it exists
+
+> Test strategy: manual, walk the section end-to-end against a fresh fan-out scenario and confirm a reader can execute without asking
+
+### Git worktree lifecycle skill
+
+- [ ] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
+- [ ] Outcome: skill invoked at session start or after shipping a PR to reclaim worktree slots without manual `git worktree remove` dance
+- [ ] Outcome: documented in `docs/claude.md` skill table and referenced from the shipping-from-worktrees wiki section
+
+> Test strategy: manual, spin up two worktrees, ship one, run the skill, confirm it proposes removing the merged one and rotating the other if asked
