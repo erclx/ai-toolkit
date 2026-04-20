@@ -26,6 +26,11 @@ When adding a new category:
 - Create the category folder in both `gemini/commands/` and `scripts/sandbox/`
 - Add the category and command to `docs/gemini.md`
 
+When editing `tooling/gemini/seeds/`:
+
+- Check the root `.gemini/` and `GEMINI.md` for drift. The toolkit dogfoods its own gemini seeds.
+- Port the delta, preserving local overrides in the root copy.
+
 ## Reference
 
 - `docs/gemini.md`: commands inventory, setup, adding commands
