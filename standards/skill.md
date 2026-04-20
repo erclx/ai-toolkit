@@ -44,6 +44,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Contain only behavioral rules (what to do, what not to do) and pointers to reference docs. Narrative descriptions of what files are or how the system works belong in `docs/`, not in the skill body.
 - State rules, not inventories. Reference docs for lists that change. Enumerating items in a skill body creates drift when items are added or removed.
 - Cut any rule that resists crisp one-line phrasing. Vague guidance is worse than none.
+- Skill success lines emit the full relative path from the project root (`<dir>/<file>`) for any file written, updated, or deleted. Bare filenames are not clickable in the terminal.
 
 ## Scripts
 

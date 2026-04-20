@@ -17,6 +17,7 @@ Read `docs/claude.md` for plugin setup, skills inventory, and aitk claude CLI be
 
 - Task skills with preview+execute patterns must execute commands immediately after the preview. Do not add a "confirm before running" step or pause for user input. Claude Code's tool permission dialog is the confirmation gate. The user hits Enter to approve or Escape to interrupt and revise.
 - When a skill persists output to `.claude/` (plans, review, audits), derive a slug from the current git branch: run `git branch --show-current` and replace `/` with `-`. Fall back to `latest` on empty output (detached HEAD). Include the slug in the filename (`feature-<slug>.md`, `review-<slug>.md`, `ui-checklist-<slug>.md`, `ux-audit-<slug>.md`). This prevents collisions across parallel worktrees.
+- Plugin skills under `claude/skills/` use `claude-*`, `git-*`, `gov-*`, `indexes-*`, or bare names. The `aitk-*` prefix is reserved for internal skills under `.claude/skills/`. If a plan suggests `aitk-*` for a plugin skill, flag the mismatch before creating the folder.
 
 ## Couplings
 
@@ -30,6 +31,7 @@ When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
 - Add the skill to the skills table in `docs/claude.md`
+- Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point.
 - Do not create a matching Gemini command unless explicitly requested. Parity only applies when an existing counterpart changes. Never create a new Antigravity workflow, the surface is frozen.
 
 When modifying a skill:
@@ -42,6 +44,10 @@ When modifying a skill:
 When modifying the CLAUDE.md seed:
 
 - Check the root `CLAUDE.md` for drift. Rules that govern both target projects and the toolkit itself should stay mirrored.
+
+When modifying the root CLAUDE.md:
+
+- Check `tooling/claude/seeds/CLAUDE.md` for a mirror. Project-agnostic rules like behavior, scope discipline, worktree gotchas, and scratch structure belong in both. Toolkit-specific rules like the domain skill table, wiki policy, and tool-agnosticism stay at root only.
 
 ## Reference
 
