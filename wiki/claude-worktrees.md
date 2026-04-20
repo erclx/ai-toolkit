@@ -9,7 +9,9 @@ Each Claude Code conversation is a session tied to the current working directory
 
 See [how Claude Code works](https://code.claude.com/docs/en/how-claude-code-works) and the [parallel sessions workflow](https://code.claude.com/docs/en/common-workflows) for the canonical behavior.
 
-## Two ways to create a worktree
+## Ways to create a worktree
+
+Three paths, picked by when the decision happens and where the tree should live.
 
 **Native `--worktree` flag.** Claude Code creates and manages the tree for you:
 
@@ -28,7 +30,17 @@ cd ../toolkit-feat-gemini
 claude
 ```
 
-Either approach produces the same session isolation. The native flag is convenient for short-lived branches. Plain `git worktree` is better for long-lived parallel work where the path matters.
+All three paths produce the same session isolation. The native flag is convenient for short-lived branches decided up front. Plain `git worktree` is better for long-lived parallel work where the path matters. The in-session tools fit when the worktree decision happens mid-session.
+
+## In-session entry and exit
+
+`EnterWorktree` and `ExitWorktree` are in-session tools that wrap the same `.claude/worktrees/` mechanism as the `--worktree` flag, except mid-session. Use them when the worktree decision happens after the session has already started, like at the plan-to-execute boundary.
+
+`EnterWorktree(name)` creates `.claude/worktrees/<name>/` on a new branch off current HEAD and switches the session into it. Names accept letters, digits, dots, underscores, dashes, and `/` separators, up to 64 chars. `EnterWorktree(path)` enters an already-registered worktree without creating one. The two parameters are mutually exclusive.
+
+`ExitWorktree(action)` returns the session to the original directory. `action: "keep"` leaves the worktree on disk for later resume. `action: "remove"` deletes the worktree directory and its branch. The tool refuses `remove` when the worktree has uncommitted files or unmerged commits unless `discard_changes: true` is passed. On session exit while still inside the worktree, the user is prompted to keep or remove.
+
+The tool descriptions explicitly require an instruction trail before invocation: a user request, a `CLAUDE.md` rule, or a memory entry. Wrapping invocation in a skill is the canonical pattern, since the skill body is the instruction trail. The `claude-worktree` plugin skill is the toolkit's reference wrapper.
 
 ## Session scoping and `/resume`
 

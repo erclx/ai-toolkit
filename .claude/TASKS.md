@@ -39,17 +39,6 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Claude worktree skill
-
-Plan: .claude/plans/feature-claude-worktree-skill.md
-
-- [ ] Outcome: new `claude-worktree` workflow skill that enters a worktree with a name derived from active plan, branch, or feature context rather than prompting for one
-- [ ] Outcome: integrates with `claude-feature` so the plan-to-execute handoff lands in a fresh worktree in one step
-- [ ] Outcome: `wiki/claude-worktrees.md` gains a section on the in-session `EnterWorktree` and `ExitWorktree` tools, since the skill assumes the reader knows they exist
-- [ ] Outcome: documented in `docs/claude.md` skill table alongside the other `claude-*` workflow skills
-
-> Test strategy: manual, run `claude-feature` on a real feature, invoke the skill at the plan-to-execute boundary, confirm the worktree lands on a meaningfully named branch without manual naming
-
 ### Publicize the toolkit repository
 
 Plan: .claude/plans/chore-publicize-repository.md
@@ -102,6 +91,8 @@ Plan: .claude/plans/feature-chrome-delegation.md
 
 ### Shipping-from-worktrees wiki section
 
+Plan: .claude/plans/feature-worktree-lifecycle.md
+
 - [ ] Outcome: `wiki/claude-worktrees.md` gains a "Shipping from worktrees" section covering rotate-after-merge, rebase-before-PR, and merge-order advice for multiple concurrent worktrees
 - [ ] Outcome: section points at the future `git-worktree` skill for the mechanical parts once it exists
 
@@ -129,8 +120,20 @@ Plan: .claude/plans/chore-memory-review-sandbox.md
 
 ### Git worktree lifecycle skill
 
+Plan: .claude/plans/feature-worktree-lifecycle.md
+
 - [ ] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
 - [ ] Outcome: skill invoked at session start or after shipping a PR to reclaim worktree slots without manual `git worktree remove` dance
 - [ ] Outcome: documented in `docs/claude.md` skill table and referenced from the shipping-from-worktrees wiki section
 
 > Test strategy: manual, spin up two worktrees, ship one, run the skill, confirm it proposes removing the merged one and rotating the other if asked
+
+### Claude worktree sandbox scenario
+
+Plan: .claude/plans/chore-claude-worktree-sandbox.md
+
+- [ ] Outcome: `scripts/sandbox/claude/worktree.sh` provisions fixtures exercising the multi-plan tier, the plan-matches-branch tier, and the no-plan branch tier
+- [ ] Outcome: scenario cleanup handles `.claude/worktrees/<name>/` removal via `git worktree remove` and prunes the post-rename branch
+- [ ] Outcome: closes the sandbox gap left when `claude-worktree` shipped without one, restoring parity with the other claude-\* skills
+
+> Test strategy: manual, run `aitk sandbox claude:worktree`, invoke `/toolkit:claude-worktree` against each scenario branch, confirm the skill lands in `.claude/worktrees/<slug>/` on branch `<slug>` (post-rename) without prompting for a name on the matched-plan tier
