@@ -39,13 +39,27 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Greenfield design proposal skill
+### Claude worktree skill
 
-- [x] Outcome: `claude-design-propose` skill drafts `.claude/DESIGN.md` from `REQUIREMENTS.md`, `ARCHITECTURE.md`, and a personality prompt, with token values proposed by the agent
-- [x] Outcome: skill runs on day one of a project before any UI code exists and replaces the Claude Design quota cost for greenfield design work
-- [x] Outcome: sandbox scenario at `scripts/sandbox/claude/design-propose.sh` provisions a fresh project with only `REQUIREMENTS.md` and a personality paragraph, no code
+Plan: .claude/plans/feature-claude-worktree-skill.md
 
-> Test strategy: manual, run the sandbox, invoke the skill, eyeball whether the proposed DESIGN.md fits the seeded personality and renders cleanly via `aitk design render`
+- [ ] Outcome: new `claude-worktree` workflow skill that enters a worktree with a name derived from active plan, branch, or feature context rather than prompting for one
+- [ ] Outcome: integrates with `claude-feature` so the plan-to-execute handoff lands in a fresh worktree in one step
+- [ ] Outcome: `wiki/claude-worktrees.md` gains a section on the in-session `EnterWorktree` and `ExitWorktree` tools, since the skill assumes the reader knows they exist
+- [ ] Outcome: documented in `docs/claude.md` skill table alongside the other `claude-*` workflow skills
+
+> Test strategy: manual, run `claude-feature` on a real feature, invoke the skill at the plan-to-execute boundary, confirm the worktree lands on a meaningfully named branch without manual naming
+
+### Publicize the toolkit repository
+
+Plan: .claude/plans/chore-publicize-repository.md
+
+- [ ] Outcome: top-level `README.md` rewritten as a user-facing pitch with positioning, prerequisites, and quickstart
+- [ ] Outcome: personal references audited and generalized so an outside clone works without edits
+- [ ] Outcome: an outside developer can clone the repo, install prerequisites, and run `aitk init` in a fresh project without reading the source
+- [ ] Outcome: link to the toolkit from public profile surfaces (GitHub pinned, resume, portfolio)
+
+> Test strategy: manual, clone the repo into a fresh path on a machine with only prerequisites installed, follow the README as written, confirm `aitk init` produces a working target project without undocumented steps
 
 ### Claude sandbox seed injection rollout
 

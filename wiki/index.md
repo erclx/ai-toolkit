@@ -27,3 +27,4 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Stitch](stitch.md): Google's Gemini-powered design product, its MCP server, and how it fits the toolkit's tier 1 slot
 - [Visual design workflow](visual-design-workflow.md): Tiered guide for design and wireframe authoring with Claude Code
 - [Visual wireframes](visual-wireframes.md): Tooling research for a visual companion to the ASCII wireframe seed
+- [Zshrc aliases for Claude Code](zshrc-aliases.md): Shell aliases that shorten common Claude Code invocations

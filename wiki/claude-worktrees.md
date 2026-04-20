@@ -87,3 +87,4 @@ The seven toolkit domains have different collision profiles. A worktree-based fa
 
 - [Claude Code permissions](claude-permissions.md) for settings resolution details
 - [Claude Code subagents](claude-subagents.md) for in-session parallelism without worktrees
+- [Zshrc aliases for Claude Code](zshrc-aliases.md) for `clw` and friends to shorten worktree spawn

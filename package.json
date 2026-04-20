@@ -8,7 +8,7 @@
     "aitk": "./src/cli.ts"
   },
   "scripts": {
-    "check:spell": "cspell '**' --no-progress --color --show-context",
+    "check:spell": "cspell '**' '.*/**' '.*' --no-progress --color --show-context",
     "format": "prettier --write --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --write --indent 2 scripts/ tooling/",
     "check:format": "prettier --check --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --diff --indent 2 scripts/ tooling/",
     "check:shell": "find scripts tooling -name '*.sh' -exec shellcheck --severity=warning {} +",
