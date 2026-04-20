@@ -27,7 +27,8 @@
 - Set `useGitignore: true` to skip ignored paths.
 - Dictionary files in `.cspell/`: `project-terms.txt`, `tech-stack.txt`.
 - Set `addWords: true` on each dictionary definition.
-- Add `ignorePaths: [".cspell/**"]` to avoid self-checking dictionaries.
+- Add `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files.
+- Include dotfolders in the spell glob: `cspell '**' '.*/**' '.*' ...`. The default `**` skips dot-prefixed folders, so `.claude/`, `.github/`, and `.husky/` go unchecked without explicit globs.
 - Keep dictionary entries sorted alphabetically, one word per line.
 
 ## Shell Tooling
