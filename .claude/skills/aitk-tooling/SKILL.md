@@ -19,22 +19,11 @@ Read `docs/tooling.md` for system overview, configs vs seeds vs references, exte
 
 ## Sync checklist
 
-When modifying files in `tooling/base/configs/`:
+When modifying files in `tooling/*/configs/`:
 
-- Apply the same change to the matching file at the repo root if it exists. The toolkit dogfoods base tooling.
+- Apply the same change to the matching file at the repo root if it exists. The toolkit dogfoods its own tooling.
 - Preserve local overrides in the root copy. Port the delta, not the whole file.
-
-When modifying files in `configs/`:
-
-- Update `reference.md` for the affected stack to reflect the change
-
-When modifying a reference-only stack:
-
-- Update `reference.md` directly (no configs to keep in sync)
-
-When adding a new stack:
-
-- For golden config stacks, create `scripts/sandbox/tooling/<n>.sh`
+- Update the stack's `reference.md` if the rationale or intent changed, not for every value tweak.
 
 When adding deps or scripts to `manifest.toml`:
 
