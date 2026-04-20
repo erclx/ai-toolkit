@@ -2,7 +2,7 @@
 
 Track what is being built and why, at the level of features and outcomes. No code-level steps or technical decisions. Those live in `ARCHITECTURE.md`. Update this doc whenever a task is started, completed, or scope changes.
 
-When a task needs execution detail beyond this board, create a plan in `.claude/plans/` and add a `Plan:` line under the title pointing to it. On ship, delete the plan file and remove the `Plan:` line from the block.
+When a task needs execution detail beyond this board, create a plan in `.claude/plans/` and add a `Plan:` line under the title pointing to it. On ship, delete the plan file.
 
 What belongs:
 
@@ -47,6 +47,16 @@ Plan: .claude/plans/feature-<slug>.md
 
 > Test strategy: manual, run the sandbox, invoke the skill, eyeball whether the proposed DESIGN.md fits the seeded personality and renders cleanly via `aitk design render`
 
+### Claude sandbox seed injection rollout
+
+Plan: .claude/plans/feature-sandbox-seed-rollout.md
+
+- [ ] Outcome: 7 claude sandboxes refactored to use `SANDBOX_INJECT_SEEDS=true` with scenario-specific overlays: autoship, design-extract, design-propose, docs, feature, review, ux-audit
+- [ ] Outcome: `init-project.sh` stays hand-rolled as the documented exception since it tests `aitk init` itself
+- [ ] Outcome: `docs/sandbox.md` updated with the rule that claude/ scenarios default to inject unless they test the install flow
+
+> Test strategy: manual, run each refactored scenario and invoke the skill it tests, confirm the skill finds the seed files it expects without behavior drift
+
 ### Stitch MCP integration
 
 Plan: .claude/plans/feature-stitch-mcp-integration.md
@@ -57,14 +67,19 @@ Plan: .claude/plans/feature-stitch-mcp-integration.md
 
 > Test strategy: manual, full cycle against a live Stitch account with a disposable API key, sandbox scenario optional
 
-### Experiment template pattern
+### Tool experiment scaffold skill
 
-- [ ] Outcome: snippet or skill that formalizes the step-by-step experiment form used during the Claude Design and Stitch runs
-- [ ] Outcome: explicit rule baked in that model-prior guesses are marked `?` and verified via screenshot or direct observation before being committed as facts
+Plan: .claude/plans/feature-experiment-template.md
 
-> Test strategy: manual, next new-tool experiment uses the template and the notes capture screenshots as the source of truth
+- [ ] Outcome: `/experiment <tool>` skill scaffolds `.claude/.tmp/<tool>/notes.md` with the fixed phase structure used in the Claude Design and Stitch runs
+- [ ] Outcome: scaffold includes an in-file reminder of the `?`-until-verified rule and a wiki-shaped synthesis block at the end
+- [ ] Outcome: next new-tool investigation uses the skill and produces a wiki draft without rebuilding the phase structure by hand
+
+> Test strategy: manual, run `/experiment <fake-tool>` against a real or mocked tool, confirm the scaffold appears at the expected path with phases intact, then drive one short investigation through it
 
 ### Chrome delegation for web research
+
+Plan: .claude/plans/feature-chrome-delegation.md
 
 - [ ] Outcome: decision on whether Claude Code in Chrome can drive web-based experiments (navigate, screenshot, report) with a prompt template
 - [ ] Outcome: if viable, a snippet or skill that kicks off a web-research run with a predetermined prompt shape
