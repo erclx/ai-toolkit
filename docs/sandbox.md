@@ -127,6 +127,11 @@ By default, sandboxes are minimal: no seeds, no standards, no gov rules, no Gemi
 
 `SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs, so scenarios that write a scenario-specific `CLAUDE.md` will overlay the seed. Use the flag when the scenario models a project that has installed seeds. Use hand-rolled files when the scenario models a target project with its own `CLAUDE.md`.
 
+Rule for `claude/` scenarios: default to `SANDBOX_INJECT_SEEDS="true"` so each scenario models a real post-`aitk init` project state. Two documented exceptions:
+
+- `init-project.sh`: tests `aitk init` itself, so pre-injecting seeds would invalidate the test.
+- `autoship.sh`: the anchor wipe in `stage_setup` runs after asset injection and would delete the seeded files.
+
 ### use_anchor
 
 `use_anchor` clones a remote repo as the sandbox base instead of starting empty.
