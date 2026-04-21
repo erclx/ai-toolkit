@@ -83,8 +83,8 @@ Plan: .claude/plans/feature-chrome-delegation.md
 
 Plan: .claude/plans/feature-worktree-lifecycle.md
 
-- [ ] Outcome: `wiki/claude-worktrees.md` gains a "Shipping from worktrees" section covering rotate-after-merge, rebase-before-PR, and merge-order advice for multiple concurrent worktrees
-- [ ] Outcome: section points at the future `git-worktree` skill for the mechanical parts once it exists
+- [x] Outcome: `wiki/claude-worktrees.md` gains a "Shipping from worktrees" section covering rotate-after-merge, rebase-before-PR, and merge-order advice for multiple concurrent worktrees
+- [x] Outcome: section points at the future `git-worktree` skill for the mechanical parts once it exists
 
 > Test strategy: manual, walk the section end-to-end against a fresh fan-out scenario and confirm a reader can execute without asking
 
@@ -112,9 +112,9 @@ Plan: .claude/plans/chore-memory-review-sandbox.md
 
 Plan: .claude/plans/feature-worktree-lifecycle.md
 
-- [ ] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
-- [ ] Outcome: skill invoked at session start or after shipping a PR to reclaim worktree slots without manual `git worktree remove` dance
-- [ ] Outcome: documented in `docs/claude.md` skill table and referenced from the shipping-from-worktrees wiki section
+- [x] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
+- [x] Outcome: skill invoked at session start or after shipping a PR to reclaim worktree slots without manual `git worktree remove` dance
+- [x] Outcome: documented in `docs/claude.md` skill table and referenced from the shipping-from-worktrees wiki section
 
 > Test strategy: manual, spin up two worktrees, ship one, run the skill, confirm it proposes removing the merged one and rotating the other if asked
 
@@ -127,3 +127,15 @@ Plan: .claude/plans/chore-claude-worktree-sandbox.md
 - [ ] Outcome: closes the sandbox gap left when `claude-worktree` shipped without one, restoring parity with the other claude-\* skills
 
 > Test strategy: manual, run `aitk sandbox claude:worktree`, invoke `/toolkit:claude-worktree` against each scenario branch, confirm the skill lands in `.claude/worktrees/<slug>/` on branch `<slug>` (post-rename) without prompting for a name on the matched-plan tier
+
+### Sequential PR merge loop skill
+
+Plan: .claude/plans/feature-git-merge-loop.md
+
+- [ ] Outcome: new `git-merge-loop` plugin skill that walks multiple open sibling PRs through sequential squash-merge with a rebase between each, regardless of how the branches were created
+- [ ] Outcome: handles both independent siblings off `main` (worktree fan-out shape) via `git rebase origin/main` and stacked siblings via `git rebase --onto origin/main HEAD~<own-commit-count>`, picking the mode by detection or an explicit mode arg
+- [ ] Outcome: merge order picked by shared-hotspot overlap per the "Shipping from worktrees" wiki rules, smallest hotspot delta first
+- [ ] Outcome: `git-split`'s existing Stacked merge loop migrates into this skill, leaving `git-split` focused on splitting
+- [ ] Outcome: documented in `docs/claude.md` skill table alongside the other `git-*` skills
+
+> Test strategy: manual, open three sibling PRs off main that share `docs/claude.md`, run the skill, confirm the rebase-merge-rebase sequence lands all three without manual intervention, then run against a stacked split from `git-split` and confirm the stacked path still works
