@@ -143,3 +143,16 @@ use_anchor() {
 ```
 
 `manage-sandbox.sh` handles provisioning, asset injection, git setup, and baseline tagging. The hook functions configure behavior before that pipeline runs.
+
+### Disposable GitHub remote (`toolkit-sandbox`)
+
+Set `ANCHOR_REPO="toolkit-sandbox"` when a scenario needs a real GitHub remote for `gh` calls (open PRs, push branches, merge, edit PR bodies). The repo at `${GITHUB_ORG}/toolkit-sandbox` exists for this purpose and is treated as fully disposable. Any scenario for a `gh`-dependent skill should default to this pattern.
+
+The reset contract is the scenario's responsibility, not the framework's. Each scenario:
+
+1. Closes any open PRs it will recreate (`gh pr close <branch> 2>/dev/null || true`)
+2. Deletes any remote branches it will recreate (`git push origin --delete <branch> -q 2>/dev/null || true`)
+3. Force-pushes a fresh main (`git push --force origin HEAD:main`)
+4. Recreates branches and opens PRs
+
+Wrap each cleanup call with `2>/dev/null || true` so a missing branch or PR from the prior run does not abort the scenario. The remote starts empty for every run.
