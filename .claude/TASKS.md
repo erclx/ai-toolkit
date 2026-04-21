@@ -64,12 +64,12 @@ Plan: .claude/plans/chore-publicize-repository.md
 
 > Test strategy: manual, open a PR, make a small edit, run the snippet, confirm one clean commit lands on the remote branch
 
-### Chained shipping for `git-split`
+### Skill sandbox alignment check
 
-Plan: .claude/plans/feature-git-split-ship-each.md
+Plan: .claude/plans/feature-skill-sandbox-check.md
 
-- [ ] Outcome: `git-split` gains a `--ship-each` flag that, per branch, runs `claude-docs → docs-sync → claude-review → gh pr create` with a confirm between branches
-- [ ] Outcome: ship steps run before PR open, so each branch's PR body reflects its own per-branch doc state
-- [ ] Outcome: default behavior of `git-split` stays unchanged, opt-in only via the flag
+- [ ] Outcome: manual invocation reports whether each changed plugin skill has a matching sandbox scenario update in the branch, flagging unchanged or missing scenarios
+- [ ] Outcome: report prints copy-paste commands for re-provisioning the sandbox via the worktree CLI and launching a Claude Code session with the worktree's plugin dir
+- [ ] Outcome: skill is internal, manual-only, and does not execute any sandbox or Claude commands
 
-> Test strategy: manual, take a mixed-commit branch with two unrelated concerns, run `git-split --ship-each`, confirm each split branch runs through docs-sync and claude-review before its PR opens, with a confirm between branches
+> Test strategy: manual, edit a plugin skill in a worktree, invoke the skill, confirm the report flags the scenario mismatch and prints commands that actually run against the worktree's `src/cli.ts` and `claude/` dir
