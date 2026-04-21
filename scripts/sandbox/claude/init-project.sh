@@ -2,10 +2,6 @@
 set -e
 set -o pipefail
 
-# Documented exception: does not set SANDBOX_INJECT_SEEDS. This scenario tests
-# `aitk init` itself, which installs the seeds. Pre-injecting would invalidate
-# the test.
-
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
 }

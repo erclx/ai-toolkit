@@ -2,9 +2,6 @@
 set -e
 set -o pipefail
 
-# Documented exception: does not set SANDBOX_INJECT_SEEDS. The anchor wipe in
-# stage_setup runs after seed injection and would delete the seeded files.
-
 use_anchor() {
   export ANCHOR_REPO="toolkit-sandbox"
 }

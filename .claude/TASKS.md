@@ -53,7 +53,7 @@ Plan: .claude/plans/chore-publicize-repository.md
 ### Claude sandbox seed injection rollout
 
 - [x] Outcome: 6 claude sandboxes refactored to use `SANDBOX_INJECT_SEEDS=true` with scenario-specific overlays: design-extract, design-propose, docs, feature, review, ux-audit
-- [x] Outcome: `init-project.sh` and `autoship.sh` documented as exceptions with in-file comments explaining why each opts out
+- [x] Outcome: `init-project.sh` and `autoship.sh` documented as exceptions in `docs/sandbox.md` with the reason each opts out
 - [x] Outcome: `docs/sandbox.md` updated with the rule that claude/ scenarios default to inject unless they test the install flow
 
 > Test strategy: manual, run each refactored scenario and invoke the skill it tests, confirm the skill finds the seed files it expects without behavior drift
