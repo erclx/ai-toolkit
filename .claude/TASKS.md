@@ -73,3 +73,17 @@ Plan: .claude/plans/feature-skill-sandbox-check.md
 - [ ] Outcome: skill is internal, manual-only, and does not execute any sandbox or Claude commands
 
 > Test strategy: manual, edit a plugin skill in a worktree, invoke the skill, confirm the report flags the scenario mismatch and prints commands that actually run against the worktree's `src/cli.ts` and `claude/` dir
+
+### Preserve renames in git-stage
+
+- [ ] Outcome: `git-stage` keeps rename markers so `git mv`'d files commit as renames, not duplicate add-plus-stale-delete
+- [ ] Outcome: skill text handles `R` status alongside the existing `D` and `A/M` rules
+
+> Test strategy: manual, stage a rename with `git mv`, invoke `git-stage`, confirm the resulting commit shows the file as renamed, not as add + delete
+
+### Scope tracked-file reads to worktree in claude-docs
+
+- [ ] Outcome: `claude-docs` Step 1 explicitly scopes tracked-file reads and edits to the current worktree, not the main root
+- [ ] Outcome: only Step 4's scratch sweep resolves to the main root
+
+> Test strategy: manual, run `claude-docs` inside a linked worktree with changes to commit, confirm the TASKS.md edit lands in the worktree's tree and not in main's uncommitted state
