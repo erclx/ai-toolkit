@@ -50,61 +50,28 @@ Plan: .claude/plans/chore-publicize-repository.md
 
 > Test strategy: manual, clone the repo into a fresh path on a machine with only prerequisites installed, follow the README as written, confirm `aitk init` produces a working target project without undocumented steps
 
-### Claude sandbox seed injection rollout
+### Chrome delegation feasibility spike
 
-- [x] Outcome: 6 claude sandboxes refactored to use `SANDBOX_INJECT_SEEDS=true` with scenario-specific overlays: design-extract, design-propose, docs, feature, review, ux-audit
-- [x] Outcome: `init-project.sh` and `autoship.sh` documented as exceptions in `docs/sandbox.md` with the reason each opts out
-- [x] Outcome: `docs/sandbox.md` updated with the rule that claude/ scenarios default to inject unless they test the install flow
+- [ ] Outcome: test whether Claude Code in Chrome can programmatically navigate + screenshot a URL
+- [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk; if not, close this task
 
-> Test strategy: manual, run each refactored scenario and invoke the skill it tests, confirm the skill finds the seed files it expects without behavior drift
+> Test strategy: manual, invoke CC-in-Chrome against one URL, observe whether navigation and screenshot capture work, decide
 
-### Stitch MCP integration
+### PR follow-up snippet
 
-Plan: .claude/plans/feature-stitch-mcp-integration.md
+Plan: .claude/plans/feature-git-pr-followup-snippet.md
 
-- [ ] Outcome: `aitk design sync` provisions DESIGN.md tokens into a Stitch project via MCP
-- [ ] Outcome: `aitk design generate`, `edit`, `variants`, `list` wrap the remaining Stitch MCP tools
-- [ ] Outcome: documented auth path, credit budget, and training-opt-out guardrail
+- [ ] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
+- [ ] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
 
-> Test strategy: manual, full cycle against a live Stitch account with a disposable API key, sandbox scenario optional
-
-### Chrome delegation for web research
-
-Plan: .claude/plans/feature-chrome-delegation.md
-
-- [ ] Outcome: decision on whether Claude Code in Chrome can drive web-based experiments (navigate, screenshot, report) with a prompt template
-- [ ] Outcome: if viable, a snippet or skill that kicks off a web-research run with a predetermined prompt shape
-
-> Test strategy: manual, one experiment routed through the Chrome path and compared against the manual-copy-paste baseline
-
-### PR follow-up skill
-
-Plan: .claude/plans/feature-git-pr-followup-skill.md
-
-- [ ] Outcome: new `git-pr-followup` plugin skill that commits a fix, pushes, and reconciles the PR body against the new state when drift is detected
-- [ ] Outcome: sandbox scenario exercises the commit + push path with a `gh` stub, with live PR edit testing documented as manual
-- [ ] Outcome: documented in `docs/claude.md` skills table alongside the other `git-*` skills
-
-> Test strategy: manual, open a PR via `git-ship`, introduce a fix that changes a file named in Key Changes and a fix that adds a new file, confirm the skill flags the second as body drift and leaves the first alone
+> Test strategy: manual, open a PR, make a small edit, run the snippet, confirm one clean commit lands on the remote branch
 
 ### Chained shipping for `git-split`
 
 Plan: .claude/plans/feature-git-split-ship-each.md
 
-- [ ] Outcome: `git-split` gains a `--ship-each` flag that, after splitting, iterates the resulting branches and invokes `git-ship` on each with confirmation between branches
+- [ ] Outcome: `git-split` gains a `--ship-each` flag that, per branch, runs `claude-docs → docs-sync → claude-review → gh pr create` with a confirm between branches
+- [ ] Outcome: ship steps run before PR open, so each branch's PR body reflects its own per-branch doc state
 - [ ] Outcome: default behavior of `git-split` stays unchanged, opt-in only via the flag
-- [ ] Outcome: documented in `docs/claude.md` alongside the other `git-*` skill notes
 
-> Test strategy: manual, take a mixed-commit branch with three unrelated concerns, run `git-split --ship-each`, confirm each resulting branch runs through the full ship iteration (`claude-docs`, `docs-sync`, `claude-review`, PR open) with a confirm step between branches
-
-### Sequential PR merge loop skill
-
-Plan: .claude/plans/feature-git-merge-loop.md
-
-- [ ] Outcome: new `git-merge-loop` plugin skill that walks multiple open sibling PRs through sequential squash-merge with a rebase between each, regardless of how the branches were created
-- [ ] Outcome: handles both independent siblings off `main` (worktree fan-out shape) via `git rebase origin/main` and stacked siblings via `git rebase --onto origin/main HEAD~<own-commit-count>`, picking the mode by detection or an explicit mode arg
-- [ ] Outcome: merge order picked by shared-hotspot overlap per the "Shipping from worktrees" wiki rules, smallest hotspot delta first
-- [ ] Outcome: `git-split`'s existing Stacked merge loop migrates into this skill, leaving `git-split` focused on splitting
-- [ ] Outcome: documented in `docs/claude.md` skill table alongside the other `git-*` skills
-
-> Test strategy: manual, open three sibling PRs off main that share `docs/claude.md`, run the skill, confirm the rebase-merge-rebase sequence lands all three without manual intervention, then run against a stacked split from `git-split` and confirm the stacked path still works
+> Test strategy: manual, take a mixed-commit branch with two unrelated concerns, run `git-split --ship-each`, confirm each split branch runs through docs-sync and claude-review before its PR opens, with a confirm between branches
