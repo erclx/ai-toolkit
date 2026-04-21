@@ -21,6 +21,7 @@ Read `docs/scripts.md` for structure, file inventory, and lib responsibilities b
 - Each sandbox defines three hooks: `use_config` (flags before provisioning), `use_anchor` (remote repo as base), `stage_setup` (scenario state after provisioning).
 - Only `stage_setup` is required. End it with `log_step` describing what to run and what to expect.
 - Default behavior: no standards, no gov rules, no Gemini settings, auto-commit on. Declare only the flags you need in `use_config`.
+- For `claude/` scenarios, default to `SANDBOX_INJECT_SEEDS="true"`. See the rule and its two exceptions in `docs/sandbox.md`.
 - For multi-scenario scripts, call `select_or_route_scenario "Which scenario?" "a" "b"` instead of `select_option`. It reads `SANDBOX_SCENARIO` to skip the picker when set by `aitk sandbox <cat>:<cmd> <scenario>`. End every scenario `case` with a `*) log_error "Unknown scenario: $SELECTED_OPTION" ;;` arm. Use slug-style scenario names (no spaces) so agents can pass them without quoting.
 - One sandbox file per skill. Before adding a new scenario, check if `scripts/sandbox/<cat>/<skill>.sh` exists. If so, extend it with a `select_or_route_scenario` call and a new `case` arm. Do not create sibling files.
 - When testing a skill that has a sandbox scenario, run `aitk sandbox <cat>:<cmd>` yourself before handing off. Tell the user the exact skill invocation and what to expect.

@@ -52,11 +52,9 @@ Plan: .claude/plans/chore-publicize-repository.md
 
 ### Claude sandbox seed injection rollout
 
-Plan: .claude/plans/feature-sandbox-seed-rollout.md
-
-- [ ] Outcome: 7 claude sandboxes refactored to use `SANDBOX_INJECT_SEEDS=true` with scenario-specific overlays: autoship, design-extract, design-propose, docs, feature, review, ux-audit
-- [ ] Outcome: `init-project.sh` stays hand-rolled as the documented exception since it tests `aitk init` itself
-- [ ] Outcome: `docs/sandbox.md` updated with the rule that claude/ scenarios default to inject unless they test the install flow
+- [x] Outcome: 6 claude sandboxes refactored to use `SANDBOX_INJECT_SEEDS=true` with scenario-specific overlays: design-extract, design-propose, docs, feature, review, ux-audit
+- [x] Outcome: `init-project.sh` and `autoship.sh` documented as exceptions with in-file comments explaining why each opts out
+- [x] Outcome: `docs/sandbox.md` updated with the rule that claude/ scenarios default to inject unless they test the install flow
 
 > Test strategy: manual, run each refactored scenario and invoke the skill it tests, confirm the skill finds the seed files it expects without behavior drift
 
