@@ -58,7 +58,7 @@ Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main 
 
 Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can approve by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, and the rewritten rule inline in a fenced `markdown` block. Status starts as 📝 pending for every item at proposal time.
 
-```markdown
+````markdown
 # Memory review: <slug>
 
 **Pending:** <all numbers>
@@ -71,7 +71,7 @@ Legend: ✅ applied · ⏭ skipped · 🗑 deleted · 🤝 handed off · 📝 pe
 
 Why: <one-line pulled from the memory's Why>
 
-​```markdown
+``​`markdown
 <rewritten rule text>
 ​```
 
@@ -80,7 +80,7 @@ Why: <one-line pulled from the memory's Why>
 `<memory-file>`
 
 Reason: <one-line reason>
-```
+````
 
 For Hand off items, the body is a pointer to `aitk-governance` and `prompts/cursor-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block.
 
