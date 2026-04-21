@@ -72,6 +72,23 @@ Do not resume the same session in two terminals at once. Both terminals write to
 
 Separate sessions in separate worktrees are safe to run concurrently. There is no documented shared-cache or rate-limit contention between sessions, and no worktree-level locking. If two sessions auto-start the same stdio MCP server, each session spawns its own server process. Coordinate ports explicitly if a server binds one.
 
+## Shipping from worktrees
+
+A fan-out of N worktrees produces N PRs. The order they merge in matters only when two branches touch the same file. The rules below keep post-merge state clean without manual `git worktree remove` dances.
+
+**Merge order.** Merge the branch with the smallest shared-hotspot footprint first. If any branch touches `CLAUDE.md`, `docs/claude.md`, `.claude/TASKS.md`, or a regenerated `index.md`, that branch merges last. Its siblings rebase on the new `main` once it lands. See [Fan-out rules](#fan-out-rules-for-this-toolkit) for the hotspot list.
+
+**Rebase before merging the next PR.** After PR 1 squash-merges, sibling branches are behind `main` and may have stale rebases of shared files. In each sibling worktree, run `git fetch origin && git rebase origin/main` before merging. If the rebase is clean, merge. If it conflicts, resolve in the worktree, push, then merge. Never force-merge a stale branch.
+
+**Rotate after merge.** Once a PR merges, the worktree and its local branch are stale. Two options:
+
+- Clean up: `/git-worktree cleanup` removes worktrees whose branches are merged on GitHub (detected via `gh pr view`) and prunes the local branches.
+- Rotate in place: from inside the stale worktree, `/git-worktree rotate <new-name>` exits the current worktree (keeping it on disk), creates a fresh worktree off `main` at `.claude/worktrees/<new-name>/`, and enters it. Use this when you want the next feature's session to pick up without returning to the main root first.
+
+**Session transcripts survive.** Removing a worktree does not delete its `~/.claude/projects/<sanitized-path>/` transcript directory. `/resume` still finds the session if the worktree is later recreated at the same path, but a new slug means a new transcript scope.
+
+**When fan-out was the wrong call.** If every sibling needs a rebase and every rebase conflicts on the same file, the branches should have serialized. Land one, wait, then start the next. The skill does not recover from this state. It only cleans up after a flow that already worked.
+
 ## Fan-out rules for this toolkit
 
 The seven toolkit domains have different collision profiles. A worktree-based fan-out is safe when the branches touch disjoint trees and do not both write to the shared hotspots listed below.
