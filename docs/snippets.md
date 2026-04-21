@@ -28,7 +28,7 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | Category | Paths                                                                                                                                              |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `base`   | compact-summary, create-snippet, decision-help, feature-recap, merge-loop, prose-audit, research-prompt, session-notes, step-by-step, web-research |
-| `claude` | claude/figma-steps, claude/memory-capture, claude/tasks-done                                                                                       |
+| `claude` | claude/figma-steps, claude/memory-capture, claude/memory-cleanup, claude/tasks-done                                                                |
 
 ## Snippets
 
@@ -46,6 +46,7 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `web-research`          | Search the web and synthesize findings into a decision-ready block                   |
 | `claude/figma-steps`    | Generate Figma instructions from a design spec                                       |
 | `claude/memory-capture` | Review the session and emit memory blocks across feedback, project, user, reference  |
+| `claude/memory-cleanup` | Sweep skipped entries from the last memory review and delete the review receipt     |
 | `claude/tasks-done`     | Remove completed task blocks, delete referenced plan files, and sync the placeholder |
 
 ## CLI
