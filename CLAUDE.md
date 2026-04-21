@@ -25,6 +25,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - When directing the user to invoke a skill, give the exact command with args, or state explicitly that it runs bare
 - When facing a judgment call with 2-3 reasonable options mid-flow, pick one and state the tradeoff in one sentence. Enumerate options only when the user's preference is the deciding factor.
 - Match edit scope to the request. Ship minimal v1 and queue extensions as follow-ups, edit only what the user named on simplification requests, and do not add CLI flags or aliases they did not ask for. When a fix has a natural mirror in a template or seed, flag it as a follow-up rather than silently extending the PR.
+- When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 
 ## After editing
 
@@ -131,6 +132,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 ## Wiki
 
+- Before answering a how-to question about toolkit tooling, workflows, or shell environment, scan `wiki/index.md` for a relevant page.
 - Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
 - When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge
 - Wiki pages stay tool-general reference prose. Rewrite experiment narrative ("Against the X repo, tool Y read Z") into general statements ("Tool Y reads prose surfaces") before committing.

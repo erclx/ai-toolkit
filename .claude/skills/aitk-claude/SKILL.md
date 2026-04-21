@@ -12,6 +12,7 @@ Read `docs/claude.md` for plugin setup, skills inventory, and aitk claude CLI be
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
 - Read `docs/claude.md` before adding a skill. It lists all existing skills.
 - Follow `standards/skill.md` for skill structure and frontmatter conventions.
+- Audit skill bodies against both `standards/skill.md` and `standards/prose.md`. The first covers structure and frontmatter. The second covers the body.
 
 ## Authoring conventions
 
@@ -32,6 +33,7 @@ When adding a new skill:
 - Create the skill folder and `SKILL.md` in `claude/skills/`
 - Add the skill to the skills table in `docs/claude.md`
 - Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point.
+- Claude sandboxes provision fixture state only. The user runs `claude` from the scenario directory and invokes the skill manually. "Sandbox cannot drive Claude" is not a reason to skip one, because driving is not its job.
 - Do not create a matching Gemini command unless explicitly requested. Parity only applies when an existing counterpart changes. Never create a new Antigravity workflow, the surface is frozen.
 
 When modifying a skill:

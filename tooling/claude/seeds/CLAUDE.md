@@ -6,6 +6,10 @@
 
 - Check `.claude/` state docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`, `GOV.md`) for context before making changes, when present. The `claude-feature` skill reads them in parallel when planning a feature.
 
+## Behavior
+
+- When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
+
 ## Indexes
 
 - When a folder has an `index.md`, check it before reading individual files in that folder.
