@@ -102,9 +102,9 @@ Plan: .claude/plans/feature-git-pr-followup-skill.md
 
 Plan: .claude/plans/chore-memory-review-sandbox.md
 
-- [ ] Outcome: `scripts/sandbox/claude/memory.sh` seeds `.claude/memory/` with a representative mix of promote-worthy, absorbed, and stale entries plus a `MEMORY.md` index
-- [ ] Outcome: scenario exercises the classification, review-file write, apply, and review-file cleanup paths end to end
-- [ ] Outcome: closes the sandbox gap flagged when the new "draft a sandbox alongside SKILL.md" rule landed in `aitk-claude`
+- [x] Outcome: `scripts/sandbox/claude/memory.sh` seeds `.claude/memory/` with a representative mix of promote-worthy, absorbed, and stale entries plus a `MEMORY.md` index
+- [x] Outcome: scenario exercises the classification, review-file write, apply, and review-file cleanup paths end to end
+- [x] Outcome: closes the sandbox gap flagged when the new "draft a sandbox alongside SKILL.md" rule landed in `aitk-claude`
 
 > Test strategy: manual, run `aitk sandbox claude:memory`, invoke `/toolkit:claude-memory-review` against the seeded state, confirm the review file appears at `.claude/review/memory-review-<slug>.md` and the approved items apply cleanly
 
@@ -122,8 +122,8 @@ Plan: .claude/plans/feature-worktree-lifecycle.md
 
 Plan: .claude/plans/chore-claude-worktree-sandbox.md
 
-- [ ] Outcome: `scripts/sandbox/claude/worktree.sh` provisions fixtures exercising the multi-plan tier, the plan-matches-branch tier, and the no-plan branch tier
-- [ ] Outcome: scenario cleanup handles `.claude/worktrees/<name>/` removal via `git worktree remove` and prunes the post-rename branch
-- [ ] Outcome: closes the sandbox gap left when `claude-worktree` shipped without one, restoring parity with the other claude-\* skills
+- [x] Outcome: `scripts/sandbox/claude/worktree.sh` provisions fixtures exercising the multi-plan tier, the plan-matches-branch tier, and the no-plan branch tier
+- [x] Outcome: scenario cleanup handles `.claude/worktrees/<name>/` removal via `git worktree remove` and prunes the post-rename branch
+- [x] Outcome: closes the sandbox gap left when `claude-worktree` shipped without one, restoring parity with the other claude-\* skills
 
 > Test strategy: manual, run `aitk sandbox claude:worktree`, invoke `/toolkit:claude-worktree` against each scenario branch, confirm the skill lands in `.claude/worktrees/<slug>/` on branch `<slug>` (post-rename) without prompting for a name on the matched-plan tier
