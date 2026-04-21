@@ -59,10 +59,8 @@ Plan: .claude/plans/chore-publicize-repository.md
 
 ### PR follow-up snippet
 
-Plan: .claude/plans/feature-git-pr-followup-snippet.md
-
-- [ ] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
-- [ ] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
+- [x] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
+- [x] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
 
 > Test strategy: manual, open a PR, make a small edit, run the snippet, confirm one clean commit lands on the remote branch
 
