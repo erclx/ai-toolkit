@@ -15,9 +15,10 @@ alias cl='claude --plugin-dir ~/repos/ai/toolkit/claude'
 alias clr='cl -r'
 alias clc='cl -c'
 alias clw='cl -w'
+alias cls='cl --model sonnet'
 ```
 
-Place the block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, and `clw` inherit `--plugin-dir` through `cl`.
+Place the block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit `--plugin-dir` through `cl`.
 
 ## What each one does
 
@@ -26,6 +27,7 @@ Place the block near the end of `~/.zshrc`, after any `PATH` mutations and the `
 - `clr`: opens the `/resume` picker scoped to the current directory. Trailing arguments filter the picker (`clr auth` searches for sessions with "auth" in the name).
 - `clc`: jumps straight into the most recent session for the current directory. No picker. Faster than `clr` when the terminal closed or crashed and you want back into the session you were just in.
 - `clw`: creates a new worktree under `.claude/worktrees/<name>/` on a fresh branch and starts a Claude Code session in it. Pass the worktree name as the trailing arg: `clw feat-auth`. Add `--tmux` manually if you want the session in a tmux or iTerm pane.
+- `cls`: starts a plain session pinned to Sonnet instead of the default Opus. Use it for routine work where Opus usage is not worth the cost. Combine with `/model` mid-session if you need to switch.
 
 ## When to use which
 
@@ -33,6 +35,7 @@ Place the block near the end of `~/.zshrc`, after any `PATH` mutations and the `
 - Use `clw <name>` for any feature that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](claude-worktrees.md) for the fan-out rules.
 - Use `clc` to hop back into the session you just left. Skips the picker entirely.
 - Use `clr` when you have several sessions in a directory and need to pick one by name or by recency.
+- Use `cls` when you want to save Opus usage for heavier work. Resume-with-Sonnet and other combos fall back to `claude --model sonnet -r` explicitly rather than growing the alias set.
 
 ## Why not a function
 
