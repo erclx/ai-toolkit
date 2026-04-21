@@ -79,15 +79,6 @@ Plan: .claude/plans/feature-chrome-delegation.md
 
 > Test strategy: manual, one experiment routed through the Chrome path and compared against the manual-copy-paste baseline
 
-### Shipping-from-worktrees wiki section
-
-Plan: .claude/plans/feature-worktree-lifecycle.md
-
-- [x] Outcome: `wiki/claude-worktrees.md` gains a "Shipping from worktrees" section covering rotate-after-merge, rebase-before-PR, and merge-order advice for multiple concurrent worktrees
-- [x] Outcome: section points at the future `git-worktree` skill for the mechanical parts once it exists
-
-> Test strategy: manual, walk the section end-to-end against a fresh fan-out scenario and confirm a reader can execute without asking
-
 ### PR follow-up skill
 
 Plan: .claude/plans/feature-git-pr-followup-skill.md
@@ -98,35 +89,15 @@ Plan: .claude/plans/feature-git-pr-followup-skill.md
 
 > Test strategy: manual, open a PR via `git-ship`, introduce a fix that changes a file named in Key Changes and a fix that adds a new file, confirm the skill flags the second as body drift and leaves the first alone
 
-### Memory review sandbox scenario
+### Chained shipping for `git-split`
 
-Plan: .claude/plans/chore-memory-review-sandbox.md
+Plan: .claude/plans/feature-git-split-ship-each.md
 
-- [x] Outcome: `scripts/sandbox/claude/memory.sh` seeds `.claude/memory/` with a representative mix of promote-worthy, absorbed, and stale entries plus a `MEMORY.md` index
-- [x] Outcome: scenario exercises the classification, review-file write, apply, and review-file cleanup paths end to end
-- [x] Outcome: closes the sandbox gap flagged when the new "draft a sandbox alongside SKILL.md" rule landed in `aitk-claude`
+- [ ] Outcome: `git-split` gains a `--ship-each` flag that, after splitting, iterates the resulting branches and invokes `git-ship` on each with confirmation between branches
+- [ ] Outcome: default behavior of `git-split` stays unchanged, opt-in only via the flag
+- [ ] Outcome: documented in `docs/claude.md` alongside the other `git-*` skill notes
 
-> Test strategy: manual, run `aitk sandbox claude:memory`, invoke `/toolkit:claude-memory-review` against the seeded state, confirm the review file appears at `.claude/review/memory-review-<slug>.md` and the approved items apply cleanly
-
-### Git worktree lifecycle skill
-
-Plan: .claude/plans/feature-worktree-lifecycle.md
-
-- [x] Outcome: new `git-worktree` plugin skill with `list` (worktrees plus branch merge status), `cleanup` (remove worktrees for merged branches, prune local branches), and `rotate` (switch the current worktree to a fresh branch off main)
-- [x] Outcome: skill invoked at session start or after shipping a PR to reclaim worktree slots without manual `git worktree remove` dance
-- [x] Outcome: documented in `docs/claude.md` skill table and referenced from the shipping-from-worktrees wiki section
-
-> Test strategy: manual, spin up two worktrees, ship one, run the skill, confirm it proposes removing the merged one and rotating the other if asked
-
-### Claude worktree sandbox scenario
-
-Plan: .claude/plans/chore-claude-worktree-sandbox.md
-
-- [x] Outcome: `scripts/sandbox/claude/worktree.sh` provisions fixtures exercising the multi-plan tier, the plan-matches-branch tier, and the no-plan branch tier
-- [x] Outcome: scenario cleanup handles `.claude/worktrees/<name>/` removal via `git worktree remove` and prunes the post-rename branch
-- [x] Outcome: closes the sandbox gap left when `claude-worktree` shipped without one, restoring parity with the other claude-\* skills
-
-> Test strategy: manual, run `aitk sandbox claude:worktree`, invoke `/toolkit:claude-worktree` against each scenario branch, confirm the skill lands in `.claude/worktrees/<slug>/` on branch `<slug>` (post-rename) without prompting for a name on the matched-plan tier
+> Test strategy: manual, take a mixed-commit branch with three unrelated concerns, run `git-split --ship-each`, confirm each resulting branch runs through the full ship iteration (`claude-docs`, `docs-sync`, `claude-review`, PR open) with a confirm step between branches
 
 ### Sequential PR merge loop skill
 
