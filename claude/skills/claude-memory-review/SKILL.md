@@ -44,6 +44,8 @@ When two or more memories collapse into one rule on the same target, propose the
 
 Before proposing promote, grep the target surface for the rule's keywords. If the rule is already stated there, the action is **Delete**, not promote. Do not rely on memory-file claims that a rule is documented elsewhere. Verify.
 
+The check covers implication, not only keyword match. If an adjacent bullet in the target section already implies the rule, merge into that bullet rather than append a second.
+
 ### Crispness check
 
 Rules that resist crisp one-line phrasing default to **Delete** over promote. Never promote a memory unchanged. Rewrite to match the destination surface's tone. Use terser phrasing for `CLAUDE.md` and imperative phrasing for skill bodies.
@@ -54,29 +56,33 @@ Derive a slug from the current git branch: run `git branch --show-current` and r
 
 Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline.
 
-Group by action. Number every item across groups so the user can approve by number.
+Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can approve by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, and the rewritten rule inline in a fenced `markdown` block. Status starts as 📝 pending for every item at proposal time.
 
-```plaintext
-Promote to CLAUDE.md
-  1. <memory-file>     → <target section>    : <one-line reason>
-     Why: <one-line pulled from the memory's Why>
+```markdown
+# Memory review: <slug>
 
-Promote to skill body
-  2. <memory-file>     → <skill>/SKILL.md    : <one-line reason>
-     Why: <one-line pulled from the memory's Why>
+**Pending:** <all numbers>
 
-Promote to standards
-  3. <memory-file>     → standards/<file>.md : <one-line reason>
-     Why: <one-line pulled from the memory's Why>
+Legend: ✅ applied · ⏭ skipped · 🗑 deleted · 🤝 handed off · 📝 pending
 
-Hand off to governance
-  4. <memory-file>     → author .mdc rule    : <one-line reason>
+## 1. 📝 Promote → `<target>`
 
-Delete
-  5. <memory-file>                           : <one-line reason>
+`<memory-file>`
+
+Why: <one-line pulled from the memory's Why>
+
+​```markdown
+<rewritten rule text>
+​```
+
+## 2. 📝 Delete
+
+`<memory-file>`
+
+Reason: <one-line reason>
 ```
 
-After the groups, show each promote item's rewritten rule text inline so the user can judge tone before approving. For deletes, show only the reason. For governance handoffs, show only the pointer. Do not draft the rule.
+For Hand off items, the body is a pointer to `aitk-governance` and `prompts/cursor-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block.
 
 Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md` and ask for `all`, `none`, or a comma-separated list of numbers.
 
@@ -96,7 +102,7 @@ For each approved item:
 
 Apply edits one at a time via `Edit`. Claude Code's tool permission dialog is the confirmation gate per edit. Never rewrite a whole file.
 
-After all approved items are applied, delete the review file at `.claude/review/memory-review-<slug>.md`.
+As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 🗑 for deleted, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the review file. It stays as a receipt until the next `claude-memory-review` run overwrites it or the user clears it.
 
 ## After completion
 
