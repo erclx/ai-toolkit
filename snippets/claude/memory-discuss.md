@@ -1,4 +1,4 @@
-Respond to question items in the latest memory review. Discussion phase only — no mutations.
+Respond to question items in the latest memory review. Discussion phase only. No mutations.
 
 1. Resolve the main worktree root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'` (fall back to `pwd`).
 2. Read the latest `.claude/review/memory-review-*.md` at that root.
