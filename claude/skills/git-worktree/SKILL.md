@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: Lists linked worktrees with PR state, cleans up merged ones, and rotates the current worktree onto a fresh branch off main. Use when asked to "list worktrees", "clean up worktrees", "rotate worktree", or after shipping a PR to reclaim slots. Do NOT use to enter a worktree from scratch (use `claude-worktree`).
+description: Lists linked worktrees with PR state and cleans up merged ones. Use when asked to "list worktrees", "clean up worktrees", or after shipping a PR to reclaim slots. Do NOT use to enter a worktree from scratch (use `claude-worktree`).
 ---
 
 # Git worktree
@@ -13,28 +13,21 @@ Pick exactly one mode from the user's request:
 
 - `list`: show every worktree with its branch, PR state, and dirtiness ("list worktrees", "what worktrees do I have")
 - `cleanup`: remove worktrees whose branches are merged, then prune local branches ("clean up worktrees", "reclaim worktree slots")
-- `rotate`: exit the current worktree and enter a fresh one off `main` ("rotate worktree", "start the next feature off main")
 
 ## Context
 
-Run in parallel for all modes:
+Run in parallel:
 
 - `git rev-parse --git-dir 2>/dev/null || echo "NO_REPO"`
 - `git rev-parse --git-common-dir 2>/dev/null || echo "NO_REPO"`
 - `git worktree list --porcelain 2>/dev/null || echo "NO_REPO"`
-
-Resolve `MAIN_ROOT` from the first `worktree` line of `git worktree list --porcelain`. Set `IN_LINKED` to true when `git-dir` and `git-common-dir` differ.
-
-For `cleanup` and `list`, also run:
-
 - `git fetch --prune origin 2>/dev/null || echo "NO_REMOTE"`
+
+Resolve `MAIN_ROOT` from the first `worktree` line of `git worktree list --porcelain`.
 
 ## Guards
 
 - If either `git-dir` command returned `NO_REPO`, stop: `❌ Not a git repository.`
-- If mode is `rotate` and `IN_LINKED` is false, stop: `❌ rotate requires being inside a linked worktree. From main, use claude-worktree to enter one.`
-- If mode is `rotate` and no `<new-name>` argument was given, stop: `❌ rotate needs a new name. Usage: /git-worktree rotate <new-name>`
-- If mode is `rotate` and `git rev-parse --verify main 2>/dev/null` fails, stop: `❌ No 'main' branch found at the main root. rotate needs main as the base.`
 
 ## Enumeration (list and cleanup)
 
@@ -111,37 +104,11 @@ git -C <MAIN_ROOT> worktree remove <path1> \
 
 Chain one `worktree remove` + `branch -D` pair per row in the remove set, then a single `worktree prune` at the end.
 
-## `rotate` mode
-
-The argument `<new-name>` is the slug for the new worktree. Validate: letters, digits, dots, underscores, dashes, and `/` separators only, max 64 chars. Reject anything else with `❌ Invalid name. Allowed: letters, digits, ., _, -, /. Max 64 chars.`
-
-Additional guards:
-
-- If `git -C <MAIN_ROOT> rev-parse --verify <new-name> 2>/dev/null` succeeds, stop: `❌ Branch <new-name> already exists.`
-- If `<MAIN_ROOT>/.claude/worktrees/<new-name>` exists on disk, stop: `❌ Worktree path already exists.`
-- If the current worktree is dirty, stop: `❌ Current worktree has uncommitted changes. Commit, stash, or ship before rotating.`
-
-### Preview
-
-```plaintext
-Current: <current-path> (branch: <current-branch>, state: <state>)
-New: .claude/worktrees/<new-name>/ off main
-```
-
-### Final commands
-
-Execute in sequence:
-
-1. `ExitWorktree(action: "keep")` returns the session to `MAIN_ROOT`. The old worktree stays on disk for a future `cleanup` pass.
-2. `git -C <MAIN_ROOT> worktree add .claude/worktrees/<new-name> -b <new-name> main` creates the new worktree and branch directly, bypassing `EnterWorktree`'s `worktree-` branch prefix.
-3. `EnterWorktree(path: "<MAIN_ROOT>/.claude/worktrees/<new-name>")` enters the freshly created worktree without creating a new branch.
-
 ## After execution
 
 Respond with exactly one line:
 
 - `list`: `✅ <n> worktrees listed`
 - `cleanup`: `✅ Removed: <count> worktrees, <count> branches pruned`
-- `rotate`: `✅ Rotated to .claude/worktrees/<new-name>/ on branch <new-name>`
 
 Do not add any other text.
