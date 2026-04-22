@@ -17,6 +17,8 @@ snippets/
 ├── *.md               ← base snippets
 ├── claude/
 │   └── *.md           ← claude snippets, installed as snippets/claude/{name}.md
+├── git/
+│   └── *.md           ← git snippets, installed as snippets/git/{name}.md
 docs/
 └── snippets.md        ← this file
 ```
@@ -25,10 +27,11 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 
 ## Categories
 
-| Category | Paths                                                                                                                                              |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base`   | compact-summary, create-snippet, decision-help, feature-recap, merge-loop, prose-audit, research-prompt, session-notes, step-by-step, web-research |
-| `claude` | claude/figma-steps, claude/memory-capture, claude/memory-cleanup, claude/tasks-done                                                                |
+| Category | Paths                                                                                                                         |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                    |
+| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-capture, claude/memory-cleanup, claude/prose-audit, claude/tasks-done |
+| `git`    | git/followup                                                                                                                  |
 
 ## Snippets
 
@@ -37,17 +40,17 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `compact-summary`       | Summarize research or findings into a scannable block                                |
 | `create-snippet`        | Draft a new snippet (chat/Chrome extension)                                          |
 | `decision-help`         | Pick the best option from the discussion so far, one-line pick plus short reason     |
-| `feature-recap`         | Verify a finished implementation by listing deliverables, files touched, and tests   |
-| `merge-loop`            | Identify the next PR to merge and the local cleanup commands to run after            |
-| `prose-audit`           | Audit a file's prose against `standards/prose.md`                                    |
 | `research-prompt`       | Generate a research prompt to paste into another AI chat                             |
 | `session-notes`         | Capture session decisions                                                            |
 | `step-by-step`          | Request step-by-step instructions for any process                                    |
 | `web-research`          | Search the web and synthesize findings into a decision-ready block                   |
+| `claude/feature-recap`  | Verify a finished implementation by listing deliverables, files touched, and tests   |
 | `claude/figma-steps`    | Generate Figma instructions from a design spec                                       |
 | `claude/memory-capture` | Review the session and emit memory blocks across feedback, project, user, reference  |
 | `claude/memory-cleanup` | Sweep skipped entries from the last memory review and delete the review receipt      |
+| `claude/prose-audit`    | Audit a file's prose against `standards/prose.md`                                    |
 | `claude/tasks-done`     | Remove completed task blocks, delete referenced plan files, and sync the placeholder |
+| `git/followup`          | Stage, commit, and push a small self-review edit on the current PR branch            |
 
 ## CLI
 

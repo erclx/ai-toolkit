@@ -59,19 +59,31 @@ Plan: .claude/plans/chore-publicize-repository.md
 
 ### PR follow-up snippet
 
-Plan: .claude/plans/feature-git-pr-followup-snippet.md
-
-- [ ] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
-- [ ] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
+- [x] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
+- [x] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
 
 > Test strategy: manual, open a PR, make a small edit, run the snippet, confirm one clean commit lands on the remote branch
 
-### Chained shipping for `git-split`
+### Skill sandbox alignment check
 
-Plan: .claude/plans/feature-git-split-ship-each.md
+Plan: .claude/plans/feature-skill-sandbox-check.md
 
-- [ ] Outcome: `git-split` gains a `--ship-each` flag that, per branch, runs `claude-docs → docs-sync → claude-review → gh pr create` with a confirm between branches
-- [ ] Outcome: ship steps run before PR open, so each branch's PR body reflects its own per-branch doc state
-- [ ] Outcome: default behavior of `git-split` stays unchanged, opt-in only via the flag
+- [ ] Outcome: manual invocation reports whether each changed plugin skill has a matching sandbox scenario update in the branch, flagging unchanged or missing scenarios
+- [ ] Outcome: report prints copy-paste commands for re-provisioning the sandbox via the worktree CLI and launching a Claude Code session with the worktree's plugin dir
+- [ ] Outcome: skill is internal, manual-only, and does not execute any sandbox or Claude commands
 
-> Test strategy: manual, take a mixed-commit branch with two unrelated concerns, run `git-split --ship-each`, confirm each split branch runs through docs-sync and claude-review before its PR opens, with a confirm between branches
+> Test strategy: manual, edit a plugin skill in a worktree, invoke the skill, confirm the report flags the scenario mismatch and prints commands that actually run against the worktree's `src/cli.ts` and `claude/` dir
+
+### Preserve renames in git-stage
+
+- [ ] Outcome: `git-stage` keeps rename markers so `git mv`'d files commit as renames, not duplicate add-plus-stale-delete
+- [ ] Outcome: skill text handles `R` status alongside the existing `D` and `A/M` rules
+
+> Test strategy: manual, stage a rename with `git mv`, invoke `git-stage`, confirm the resulting commit shows the file as renamed, not as add + delete
+
+### Scope tracked-file reads to worktree in claude-docs
+
+- [ ] Outcome: `claude-docs` Step 1 explicitly scopes tracked-file reads and edits to the current worktree, not the main root
+- [ ] Outcome: only Step 4's scratch sweep resolves to the main root
+
+> Test strategy: manual, run `claude-docs` inside a linked worktree with changes to commit, confirm the TASKS.md edit lands in the worktree's tree and not in main's uncommitted state
