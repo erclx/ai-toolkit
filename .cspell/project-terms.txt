@@ -68,6 +68,7 @@ Pushback
 rawfile
 recompiles
 regen
+rescope
 retargeted
 retargets
 ripgreprc
@@ -87,6 +88,7 @@ taylorwilsdon
 timonwong
 toolname
 toolsets
+toplevel
 trailofbits
 ultraplan
 uipro

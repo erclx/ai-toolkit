@@ -61,9 +61,9 @@ Plan: .claude/plans/chore-publicize-repository.md
 
 Plan: .claude/plans/feature-skill-sandbox-check.md
 
-- [ ] Outcome: manual invocation reports whether each changed plugin skill has a matching sandbox scenario update in the branch, flagging unchanged or missing scenarios
-- [ ] Outcome: report prints copy-paste commands for re-provisioning the sandbox via the worktree CLI and launching a Claude Code session with the worktree's plugin dir
-- [ ] Outcome: skill is internal, manual-only, and does not execute any sandbox or Claude commands
+- [x] Outcome: manual invocation reports whether each changed plugin skill has a matching sandbox scenario update in the branch, flagging unchanged or missing scenarios
+- [x] Outcome: report prints copy-paste commands for re-provisioning the sandbox via the worktree CLI and launching a Claude Code session with the worktree's plugin dir
+- [x] Outcome: skill is internal, manual-only, and does not execute any sandbox or Claude commands
 
 > Test strategy: manual, edit a plugin skill in a worktree, invoke the skill, confirm the report flags the scenario mismatch and prints commands that actually run against the worktree's `src/cli.ts` and `claude/` dir
 
