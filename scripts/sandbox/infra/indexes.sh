@@ -3,6 +3,7 @@ set -e
 set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 seed_folder() {
   mkdir -p docs
@@ -90,6 +91,15 @@ Body content for the glossary doc goes here.
 EOF
 }
 
+seed_git_repo() {
+  seed_folder
+  git init -q
+  configure_sandbox_git_identity
+  git add . && git commit -q -m "chore: seed indexed docs"
+  sed -i 's/description: First sample entry/description: Updated first entry/' docs/alpha.md
+  git add docs/alpha.md
+}
+
 stage_setup() {
   log_step "Indexes sandbox"
   log_info "regen       : walks CWD and rewrites every index.md"
@@ -97,9 +107,11 @@ stage_setup() {
   log_info "json        : emits machine-readable records on stdout"
   log_info "opt-out     : adds auto: false to index.md and confirms skip"
   log_info "path        : passes a positional file and confirms walk-up"
+  log_info "lint-staged : stages sibling, regen stages regenerated index"
+  log_info "no-stage    : same as lint-staged but --no-stage skips git add"
   log_info "bootstrap   : seeds raw markdown for the indexes-install skill"
 
-  select_or_route_scenario "Which scenario?" "regen" "dry-run" "json" "opt-out" "path" "bootstrap"
+  select_or_route_scenario "Which scenario?" "regen" "dry-run" "json" "opt-out" "path" "lint-staged" "no-stage" "bootstrap"
 
   case "$SELECTED_OPTION" in
   "regen")
@@ -128,6 +140,26 @@ stage_setup() {
     seed_folder
     log_step "Running: aitk indexes regen docs/alpha.md"
     exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen docs/alpha.md
+    ;;
+  "lint-staged")
+    seed_git_repo
+    log_step "Running: aitk indexes regen docs/alpha.md"
+    "$PROJECT_ROOT/scripts/manage-indexes.sh" regen docs/alpha.md
+    log_step "git diff --cached --name-only"
+    git diff --cached --name-only | pipe_output
+    log_step "git status --short"
+    git status --short | pipe_output
+    log_info "Expect: docs/index.md present in the cached diff (auto-staged)"
+    ;;
+  "no-stage")
+    seed_git_repo
+    log_step "Running: aitk indexes regen --no-stage docs/alpha.md"
+    "$PROJECT_ROOT/scripts/manage-indexes.sh" regen --no-stage docs/alpha.md
+    log_step "git diff --cached --name-only"
+    git diff --cached --name-only | pipe_output
+    log_step "git status --short"
+    git status --short | pipe_output
+    log_info "Expect: docs/index.md modified in working tree but NOT in cached diff"
     ;;
   "bootstrap")
     seed_bare_folder
