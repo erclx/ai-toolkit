@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Resolves and applies a git identity for sandbox scenarios.
-# Priority: SANDBOX_GIT_NAME/EMAIL env vars, then the user's global git config,
-# then an inert fallback so sandbox flows work on a fresh machine.
-
 resolve_sandbox_git_identity() {
   SANDBOX_GIT_NAME="${SANDBOX_GIT_NAME:-$(git config --global user.name 2>/dev/null || true)}"
   SANDBOX_GIT_EMAIL="${SANDBOX_GIT_EMAIL:-$(git config --global user.email 2>/dev/null || true)}"
