@@ -80,7 +80,7 @@ A fan-out of N worktrees produces N PRs. The order they merge in matters only wh
 
 **Rebase before merging the next PR.** After PR 1 squash-merges, sibling branches are behind `main` and may have stale rebases of shared files. In each sibling worktree, run `git fetch origin && git rebase origin/main` before merging. If the rebase is clean, merge. If it conflicts, resolve in the worktree, push, then merge. Never force-merge a stale branch.
 
-**Clean up after merge.** Once a PR merges, the worktree and its local branch are stale. Run `/git-worktree cleanup` to remove worktrees whose branches are merged on GitHub (detected via `gh pr view`) and prune the local branches. To start a fresh feature from inside a stale worktree, `ExitWorktree(action: "keep")` back to main, then `/claude-worktree <new-name>`.
+**Clean up after merge.** Once a PR merges, the worktree and its local branch are stale. Run `/git-worktree cleanup` to remove worktrees whose branches are merged on GitHub and prune the local branches. The skill detects merge state via `gh pr view`. To start a fresh feature from inside a stale worktree, `ExitWorktree(action: "keep")` back to main, then `/claude-worktree <new-name>`.
 
 **Session transcripts survive.** Removing a worktree does not delete its `~/.claude/projects/<sanitized-path>/` transcript directory. `/resume` still finds the session if the worktree is later recreated at the same path, but a new slug means a new transcript scope.
 
