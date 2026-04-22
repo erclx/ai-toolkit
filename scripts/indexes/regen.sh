@@ -22,7 +22,15 @@ show_help() {
   echo -e "${GREY}│${NC}    --dry-run      ${GREY}# Report changes without writing${NC}"
   echo -e "${GREY}│${NC}    --json         ${GREY}# Emit machine-readable JSON on stdout${NC}"
   echo -e "${GREY}│${NC}    --root <path>  ${GREY}# Walk-up boundary (default: CWD)${NC}"
+  echo -e "${GREY}│${NC}    --no-stage     ${GREY}# Do not git add modified index.md files${NC}"
   echo -e "${GREY}│${NC}    -h, --help     ${GREY}# Show this help message${NC}"
+  echo -e "${GREY}│${NC}"
+  echo -e "${GREY}│${NC}  ${WHITE}Staging:${NC}"
+  echo -e "${GREY}│${NC}    When positional paths are passed inside a git repo,"
+  echo -e "${GREY}│${NC}    modified index.md files are auto-staged so lint-staged"
+  echo -e "${GREY}│${NC}    and similar hooks commit the regenerated catalog."
+  echo -e "${GREY}│${NC}    Pass --no-stage to disable. Whole-repo walks (no paths)"
+  echo -e "${GREY}│${NC}    never auto-stage."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Exit codes:${NC}"
   echo -e "${GREY}│${NC}    0   no drift, nothing to do"
@@ -67,6 +75,7 @@ collect_from_walk() {
 main() {
   local dry_run=0
   local emit_json=0
+  local no_stage=0
   local root=""
   local paths=()
 
@@ -79,6 +88,10 @@ main() {
       ;;
     --json)
       emit_json=1
+      shift
+      ;;
+    --no-stage)
+      no_stage=1
       shift
       ;;
     --root)
@@ -114,10 +127,19 @@ main() {
   fi
 
   local dirs
+  local paths_passed=0
   if [ "${#paths[@]}" -gt 0 ]; then
+    paths_passed=1
     dirs=$(collect_from_paths "$root" "${paths[@]}" | dedupe_lines)
   else
     dirs=$(collect_from_walk "$root" | dedupe_lines)
+  fi
+
+  local should_stage=0
+  if [ "$paths_passed" -eq 1 ] && [ "$no_stage" -eq 0 ] && [ "$dry_run" -eq 0 ] && [ "$emit_json" -eq 0 ]; then
+    if git -C "$root" rev-parse --git-dir >/dev/null 2>&1; then
+      should_stage=1
+    fi
   fi
 
   local any_error=0 any_drift=0 first=1
@@ -148,7 +170,16 @@ main() {
       local rel="${dir#$root/}"
       [ "$rel" = "$dir" ] && rel="$dir"
       case "$REGEN_LAST_ACTION" in
-      written) log_add "$rel/index.md" ;;
+      written)
+        log_add "$rel/index.md"
+        if [ "$should_stage" -eq 1 ]; then
+          if git -C "$root" add -- "$dir/index.md" >/dev/null 2>&1; then
+            log_info "staged $rel/index.md"
+          else
+            log_warn "failed to stage $rel/index.md"
+          fi
+        fi
+        ;;
       would-write) log_warn "$rel/index.md would change" ;;
       unchanged) log_info "$rel/index.md unchanged" ;;
       skipped) log_info "$rel/index.md skipped (auto:false)" ;;

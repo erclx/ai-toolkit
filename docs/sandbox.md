@@ -29,7 +29,7 @@ scripts/sandbox/
 │   ├── tooling.sh        ← interactive tests for tooling commands
 │   ├── antigravity.sh    ← interactive tests for antigravity install and sync
 │   ├── wiki.sh           ← interactive tests for wiki commands
-│   └── indexes.sh        ← scenarios for aitk indexes regen plus a bootstrap seed for the indexes-install skill
+│   └── indexes.sh        ← scenarios for aitk indexes regen, including lint-staged auto-stage and --no-stage, plus a bootstrap seed for the indexes-install skill
 ├── git/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch

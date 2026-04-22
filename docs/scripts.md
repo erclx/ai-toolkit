@@ -78,7 +78,7 @@ scripts/
 ├── wiki/
 │   └── init.sh          ← scaffolds wiki/ folder with stub index.md
 ├── indexes/
-│   └── regen.sh         ← regenerates index.md files, supports --dry-run, --json, and positional paths
+│   └── regen.sh         ← regenerates index.md files, supports --dry-run, --json, positional paths, and auto-stage of rewritten indexes when run inside a git repo (--no-stage to opt out)
 ├── sandbox/             ← scenario scripts, see docs/sandbox.md
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option

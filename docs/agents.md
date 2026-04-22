@@ -113,8 +113,11 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 | `--dry-run`     | Report which indexes would change without writing                |
 | `--json`        | Emit a machine-readable record per index on stdout               |
 | `--root <path>` | Walk-up boundary when positional paths are passed (default: CWD) |
+| `--no-stage`    | Skip the auto `git add` on modified indexes                      |
 
 Exit codes: `0` clean, `1` frontmatter error or missing index, `2` drift found in `--dry-run`.
+
+When positional paths are passed inside a git repo, modified `index.md` files are staged so lint-staged and Claude `PostToolUse` hooks commit the regenerated catalog. Whole-repo walks never auto-stage.
 
 Skills can parse drift without branching on exit code:
 

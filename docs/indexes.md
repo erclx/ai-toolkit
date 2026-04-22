@@ -52,7 +52,9 @@ Two integration points keep `index.md` files current after edits.
 
 `lint-staged` appends changed paths as trailing arguments. The CLI walks up from each path to the nearest indexed ancestor and regenerates only affected folders.
 
-A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers projects that prefer agent-driven regeneration. The hook runs the same command. Either path is opt-in per project. The toolkit ships no default.
+When positional paths are passed inside a git repository, regen runs `git add` on each `index.md` it rewrote. This is what keeps the documented `lint-staged` config above correct by default. Without it, a commit that stages a sibling frontmatter change would land with a drifted `index.md` in the working tree, because `lint-staged` re-stages only files that were in the original staged set. Pass `--no-stage` to opt out, for example when partial-staging with `git add -p` and deliberately excluding an index change. Whole-repo walks (no positional paths) never auto-stage.
+
+A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers projects that prefer agent-driven regeneration. The hook runs the same command and benefits from the same auto-stage behavior. Either path is opt-in per project. The toolkit ships no default.
 
 ## Bootstrap
 
