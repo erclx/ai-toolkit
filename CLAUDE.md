@@ -16,6 +16,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Skills detect and call the CLI. They do not reimplement CLI logic.
 - This repo is behavior-heavy. Planning and review are the work here, so a higher supervision ratio than a typical app repo is expected.
 - Toolkit surfaces stay general-purpose. Map to external-tool schemas in a thin sync adapter rather than adopting them as the canonical shape.
+- When toolkit-internal content (runbooks, dev helpers) sits in an installable surface, add an `aitk` internal category and filter it out at every CLI entry point (install, sync, list, create). Prefer this over relocating to a different surface so content stays alongside siblings and the boundary is enforced in code.
 
 ## Behavior
 
@@ -26,6 +27,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - When facing a judgment call with 2-3 reasonable options mid-flow, pick one and state the tradeoff in one sentence. Enumerate options only when the user's preference is the deciding factor.
 - Match edit scope to the request. Ship minimal v1 and queue extensions as follow-ups, edit only what the user named on simplification requests, and do not add CLI flags or aliases they did not ask for. When a fix has a natural mirror in a template or seed, flag it as a follow-up rather than silently extending the PR.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
+- Before restructuring installable content (`snippets/`, `claude/skills/`, `tooling/`, `governance/rules/`), grep the corresponding install and list scripts for depth constraints (`-maxdepth`, fixed globs). Bundle script updates with the restructure or pick a depth the scripts already handle.
 
 ## After editing
 
