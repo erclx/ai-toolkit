@@ -1,6 +1,6 @@
 ---
 name: aitk-standards
-description: Standards system and docs. Use when editing files in standards/ or docs/, including authoring conventions, install, and sync. Do not load just to read prose.md. Read it directly.
+description: Standards system and docs. Use when editing files in `standards/` or `docs/`, including authoring conventions, install, and sync. Do not load just to read `prose.md`. Read it directly.
 ---
 
 # Standards

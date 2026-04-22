@@ -1,6 +1,6 @@
 ---
 name: docs-sync
-description: Rewrites stale README.md and docs/*.md sections based on changes since main. Use before staging, or when asked to "sync docs" or "update the docs". Do NOT use for changelog updates or CLAUDE.md/GEMINI.md updates.
+description: Rewrites stale `README.md` and `docs/*.md` sections based on changes since main. Use before staging, or when asked to "sync docs" or "update the docs". Do NOT use for changelog updates or `CLAUDE.md`/`GEMINI.md` updates.
 ---
 
 # Docs sync

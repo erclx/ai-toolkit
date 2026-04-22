@@ -1,6 +1,6 @@
 ---
 name: aitk-claude
-description: Claude Code plugin and tooling. Use for adding or modifying plugin skills, the CLAUDE.md seed, aitk claude commands, or docs/claude.md.
+description: Claude Code plugin and tooling. Use for adding or modifying plugin skills, the `CLAUDE.md` seed, `aitk claude` commands, or `docs/claude.md`.
 ---
 
 # Claude

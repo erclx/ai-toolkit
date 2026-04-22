@@ -1,6 +1,6 @@
 ---
 name: experiment
-description: Scaffolds a hands-on tool investigation at `.claude/.tmp/<tool>/notes.md` with a phased template and an evidence folder. User-invoked only. Use when starting a structured investigation of a new tool, API, or product.
+description: Scaffolds a hands-on tool investigation at `.claude/.tmp/<tool>/notes.md` with a phased template and an evidence folder. Use when asked to "start an experiment", "investigate a tool", or "scaffold an investigation" on a new tool, API, or product.
 disable-model-invocation: true
 ---
 
