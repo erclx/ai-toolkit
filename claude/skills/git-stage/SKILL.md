@@ -31,6 +31,7 @@ Run these commands in parallel to gather git context:
 - Order commits by dependency: commit dependencies before the files that import them.
 - Prefix the full command sequence with `git restore --staged .` to unstage everything, then stage and commit each group in order.
 - For `D` status files, use `git rm <file>`. For `A` or `M` files, use `git add <file>`.
+- For `R<score>` status rows, `--name-status` emits three tab-separated fields: `R<score>\t<old>\t<new>`. Treat the pair as one file, keep both paths in the same group, and restage them together with `git add <old> <new>` so git detects the rename at commit time. Splitting the pair across groups produces an add-plus-delete pair instead of a rename.
 
 ## Response format
 
@@ -58,6 +59,8 @@ git restore --staged .
 git add <file1> <file2> && git commit -m "<type>(<scope>): <subject>"
 # Commit 2: <subject>
 git rm <deleted1> && git add <file3> && git commit -m "<type>(<scope>): <subject>"
+# Commit 3 (rename): <subject>
+git add <old> <new> && git commit -m "<type>(<scope>): <subject>"
 ```
 
 ## After execution
