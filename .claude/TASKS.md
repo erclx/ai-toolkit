@@ -56,20 +56,3 @@ Plan: .claude/plans/chore-publicize-repository.md
 - [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk. Otherwise close the task.
 
 > Test strategy: manual, invoke CC-in-Chrome against one URL, observe whether navigation and screenshot capture work, decide
-
-### Skill sandbox alignment check
-
-Plan: .claude/plans/feature-skill-sandbox-check.md
-
-- [ ] Outcome: manual invocation reports whether each changed plugin skill has a matching sandbox scenario update in the branch, flagging unchanged or missing scenarios
-- [ ] Outcome: report prints copy-paste commands for re-provisioning the sandbox via the worktree CLI and launching a Claude Code session with the worktree's plugin dir
-- [ ] Outcome: skill is internal, manual-only, and does not execute any sandbox or Claude commands
-
-> Test strategy: manual, edit a plugin skill in a worktree, invoke the skill, confirm the report flags the scenario mismatch and prints commands that actually run against the worktree's `src/cli.ts` and `claude/` dir
-
-### Preserve renames in git-stage
-
-- [ ] Outcome: `git-stage` keeps rename markers so `git mv`'d files commit as renames, not duplicate add-plus-stale-delete
-- [ ] Outcome: skill text handles `R` status alongside the existing `D` and `A/M` rules
-
-> Test strategy: manual, stage a rename with `git mv`, invoke `git-stage`, confirm the resulting commit shows the file as renamed, not as add + delete
