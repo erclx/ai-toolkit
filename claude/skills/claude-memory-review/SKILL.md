@@ -30,6 +30,8 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 
 ## Step 3: classify each entry
 
+`.claude/memory/` is a holding pen. Default every entry to promote or delete on review. Skip is the rare exception, reserved for active task overlap or user-type memories with no in-repo target.
+
 For each memory entry, pick one action:
 
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
