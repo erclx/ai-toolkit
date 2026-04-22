@@ -56,4 +56,4 @@
 ## Worktrees
 
 - Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, verify the absolute path of every `Edit` or `Write` starts with the worktree root (`pwd`), not the main checkout. Absolute paths to the main root land changes in the wrong tree.
+- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs, `TASKS.md`) must use a path starting with `pwd`. Only untracked scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) resolves to the main worktree root.

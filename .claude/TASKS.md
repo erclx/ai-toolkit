@@ -53,16 +53,9 @@ Plan: .claude/plans/chore-publicize-repository.md
 ### Chrome delegation feasibility spike
 
 - [ ] Outcome: test whether Claude Code in Chrome can programmatically navigate + screenshot a URL
-- [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk; if not, close this task
+- [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk. Otherwise close the task.
 
 > Test strategy: manual, invoke CC-in-Chrome against one URL, observe whether navigation and screenshot capture work, decide
-
-### PR follow-up snippet
-
-- [x] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
-- [x] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
-
-> Test strategy: manual, open a PR, make a small edit, run the snippet, confirm one clean commit lands on the remote branch
 
 ### Skill sandbox alignment check
 
@@ -80,10 +73,3 @@ Plan: .claude/plans/feature-skill-sandbox-check.md
 - [ ] Outcome: skill text handles `R` status alongside the existing `D` and `A/M` rules
 
 > Test strategy: manual, stage a rename with `git mv`, invoke `git-stage`, confirm the resulting commit shows the file as renamed, not as add + delete
-
-### Scope tracked-file reads to worktree in claude-docs
-
-- [ ] Outcome: `claude-docs` Step 1 explicitly scopes tracked-file reads and edits to the current worktree, not the main root
-- [ ] Outcome: only Step 4's scratch sweep resolves to the main root
-
-> Test strategy: manual, run `claude-docs` inside a linked worktree with changes to commit, confirm the TASKS.md edit lands in the worktree's tree and not in main's uncommitted state

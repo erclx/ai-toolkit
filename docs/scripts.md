@@ -109,7 +109,7 @@ The git workflow step is skipped if the target is not a git root (no `.git/`), `
 
 ## UI framing across exec boundaries
 
-Every `manage-*.sh` dispatcher calls `open_timeline "aitk <domain>"` and `trap close_timeline EXIT` at the top of `main()`, before any `exec`. Because `exec` replaces the process and drops the parent trap, each subcommand script under `scripts/<domain>/` re-arms `trap close_timeline EXIT` itself, before any early `exit` (including `--json` paths). Subcommand scripts do **not** open their own `┌` — the manager already did. This keeps exactly one frame per invocation on stderr.
+Every `manage-*.sh` dispatcher calls `open_timeline "aitk <domain>"` and `trap close_timeline EXIT` at the top of `main()`, before any `exec`. Because `exec` replaces the process and drops the parent trap, each subcommand script under `scripts/<domain>/` re-arms `trap close_timeline EXIT` itself, before any early `exit` (including `--json` paths). Subcommand scripts do **not** open their own `┌`. The manager already did. This keeps exactly one frame per invocation on stderr.
 
 - `scripts/manage-tooling.sh` is the reference manager. It opens the frame unconditionally in `main()`.
 - `scripts/tooling/{list,ref,sync,create}.sh` set their own EXIT trap and emit section headers via `log_step`, but never emit `┌`.

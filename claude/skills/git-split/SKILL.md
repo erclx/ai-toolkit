@@ -83,6 +83,9 @@ BODY
 ) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch>.md \
   && rm .claude/.tmp/pr-split/<branch>.md
 
+# Clean up the body-file dir if all PRs succeeded (no-op when non-empty)
+rmdir .claude/.tmp/pr-split 2>/dev/null || true
+
 # Return to primary branch
 git checkout <new_name>
 ```
@@ -112,6 +115,9 @@ git checkout -b <branch-2> && git cherry-pick <g2-sha> <g2-sha> \
 BODY
 ) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch-2>.md \
   && rm .claude/.tmp/pr-split/<branch-2>.md
+
+# Clean up the body-file dir if all PRs succeeded (no-op when non-empty)
+rmdir .claude/.tmp/pr-split 2>/dev/null || true
 
 # Return to primary branch
 git checkout <new_name>
