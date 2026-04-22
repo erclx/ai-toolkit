@@ -56,7 +56,7 @@ Derive a slug from the current git branch: run `git branch --show-current` and r
 
 Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline.
 
-Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can approve by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, and the rewritten rule inline in a fenced `markdown` block. Status starts as 📝 pending for every item at proposal time.
+Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can reference them by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, the rewritten rule inline in a fenced `markdown` block, and a `Decision:` slot for the user. Do not include a `Take:` slot in the template — `memory-discuss` inserts one directly under `Decision:` only when responding to a question item. Status starts as 📝 pending for every item at proposal time.
 
 ````markdown
 # Memory review: <slug>
@@ -64,6 +64,8 @@ Structure: a summary block at the top, a legend, then one H2 per numbered item. 
 **Pending:** <all numbers>
 
 Legend: ✅ applied · ⏭ skipped · 🗑 deleted · 🤝 handed off · 📝 pending
+
+How to respond: fill in `Decision:` per item (`apply`, `skip`, `defer`, or a question with `?`), then ping. Run `@snippets/claude/memory-discuss` for question rounds, `@snippets/claude/memory-apply` to commit. Chat shortcut: `all`, `none`, or a list of numbers.
 
 ## 1. 📝 Promote → `<target>`
 
@@ -75,22 +77,35 @@ Why: <one-line pulled from the memory's Why>
 <rewritten rule text>
 ​```
 
+Decision:
+
 ## 2. 📝 Delete
 
 `<memory-file>`
 
 Reason: <one-line reason>
+
+Decision:
 ````
 
-For Hand off items, the body is a pointer to `aitk-governance` and `prompts/cursor-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block.
+For Hand off items, the body is a pointer to `aitk-governance` and `prompts/cursor-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
 
-Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md` and ask for `all`, `none`, or a comma-separated list of numbers.
+Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then run `@snippets/claude/memory-discuss` for question rounds or `@snippets/claude/memory-apply` to commit.
 
 Rewrite the review file in place whenever the proposal changes mid-review. The file stays the source of truth for the current decisions.
 
-## Step 5: apply approved items
+## Step 5: discuss and apply
 
-Wait for the user to reply with `all`, `none`, or a comma-separated list of numbers. Apply only what they picked.
+Two phases, two snippets, both re-read the review file as source of truth:
+
+- **Discussion (`@snippets/claude/memory-discuss`):** for items whose `Decision:` contains `?` or an unrecognized verb, write a one-paragraph response on the `Take:` line under each. Leave 📝 pending. No mutations. Multi-round.
+- **Apply (`@snippets/claude/memory-apply`):** for each item, parse `Decision:`:
+  - `apply` (or affirmative): run the proposed action, flip emoji to ✅.
+  - `skip`: leave memory in place, flip emoji to ⏭.
+  - `defer` or empty: leave 📝 pending, no action.
+  - Contains `?` or unrecognized verb: leave 📝 pending, no action. Apply does not discuss.
+  - Free-form text after `—` is a reason — capture in the receipt, do not let it change the action.
+- **Chat shortcut:** the user replies with `all`, `none`, or a comma-separated list of numbers. Apply only the numbered items.
 
 Before applying a promote to root `CLAUDE.md`, load `aitk-claude` so its seed-mirror rule fires on the edit.
 
@@ -111,6 +126,8 @@ Output one line per action taken:
 - `✅ Promoted: .claude/memory/<memory-file> → <target>`
 - `✅ Handed off: .claude/memory/<memory-file> → governance`
 - `🗑  Deleted: .claude/memory/<memory-file>`
+
+End with a one-line bucket summary: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Omit empty buckets. If anything is pending, remind the user they can fill in a `Decision:` and re-ping, or commit a skip with `skip <nums>` in chat.
 
 If the user accepted nothing, output:
 

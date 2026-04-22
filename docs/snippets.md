@@ -27,11 +27,11 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 
 ## Categories
 
-| Category | Paths                                                                                                                         |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                    |
-| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-capture, claude/memory-cleanup, claude/prose-audit, claude/tasks-done |
-| `git`    | git/followup                                                                                                                  |
+| Category | Paths                                                                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                                                                |
+| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-cleanup, claude/memory-discuss, claude/prose-audit, claude/tasks-done |
+| `git`    | git/followup                                                                                                                                                              |
 
 ## Snippets
 
@@ -46,8 +46,10 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `web-research`          | Search the web and synthesize findings into a decision-ready block                   |
 | `claude/feature-recap`  | Verify a finished implementation by listing deliverables, files touched, and tests   |
 | `claude/figma-steps`    | Generate Figma instructions from a design spec                                       |
+| `claude/memory-apply`   | Apply per-item `Decision:` slots from the latest memory review and update statuses   |
 | `claude/memory-capture` | Review the session and emit memory blocks across feedback, project, user, reference  |
 | `claude/memory-cleanup` | Sweep skipped entries from the last memory review and delete the review receipt      |
+| `claude/memory-discuss` | Respond to question items in the latest memory review by writing `Take:` lines       |
 | `claude/prose-audit`    | Audit a file's prose against `standards/prose.md`                                    |
 | `claude/tasks-done`     | Remove completed task blocks, delete referenced plan files, and sync the placeholder |
 | `git/followup`          | Stage, commit, and push a small self-review edit on the current PR branch            |
