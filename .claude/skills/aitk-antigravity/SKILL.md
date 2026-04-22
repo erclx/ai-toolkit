@@ -1,6 +1,6 @@
 ---
 name: aitk-antigravity
-description: Antigravity workflow source. Use for editing antigravity/workflows/, workflows.toml, or prompts/antigravity-workflow.md.
+description: Antigravity workflow source. Use for editing `antigravity/workflows/`, `workflows.toml`, or `prompts/antigravity-workflow.md`.
 ---
 
 # Antigravity workflows

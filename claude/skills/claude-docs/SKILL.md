@@ -1,6 +1,6 @@
 ---
 name: claude-docs
-description: Updates .claude/ planning docs to reflect decisions made during the session. Use when design or requirements changed mid-cycle, after discussing a pivot, or before shipping when the session diverged from the original plan. Do NOT use for task promotion or archiving (use claude-tasks for that).
+description: Updates `.claude/` planning docs to reflect decisions made during the session. Use when design or requirements changed mid-cycle, after discussing a pivot, or before shipping when the session diverged from the original plan. Do NOT use for task promotion or archiving. Edit `.claude/TASKS.md` directly for that.
 ---
 
 # Claude docs

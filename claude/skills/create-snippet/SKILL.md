@@ -1,6 +1,6 @@
 ---
 name: create-snippet
-description: Creates a new snippet file in snippets/. Use when asked to create a snippet, add a snippet, or make a new snippet.
+description: Creates a new snippet file in `snippets/`. Use when asked to create a snippet, add a snippet, or make a new snippet.
 ---
 
 # Create snippet

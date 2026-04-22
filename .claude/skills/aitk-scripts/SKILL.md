@@ -1,6 +1,6 @@
 ---
 name: aitk-scripts
-description: CLI entry point, bash scripts, sandbox scenarios, and lib functions. Use for src/, manage-*.sh, sandbox hooks, or shared lib/ functions.
+description: CLI entry point, bash scripts, sandbox scenarios, and lib functions. Use for `src/`, `manage-*.sh`, sandbox hooks, or shared `lib/` functions.
 ---
 
 # Scripts
