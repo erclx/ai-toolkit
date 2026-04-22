@@ -28,6 +28,7 @@ Shapes to avoid in a rule.
 - **Artifact-specific framing**: a public-facing intro that names repo-specific artifacts as if they were universal problems. Use as a caution when reviewing an overview paragraph or positioning sentence.
 - **Inventory**: listing instances of a pattern instead of the pattern itself. Use as an anti-pattern callout when reviewing a rule.
 - **Overfitting**: a rule so specific to one incident that it fails to fire on the next case. Use as a caution when a rule comes out of a single session's pain.
+- **Rule-letter fix**: an edit that satisfies a rule's surface phrasing without improving the underlying surface. Use as a caution when reviewing audit edits where the rewrite ticks the rule but the reader is no better off.
 - **Silent scope extension**: bundling unrelated changes into a focused edit without flagging them. Use as a caution when a fix has a tempting adjacent cleanup.
 
 ## Qualities
