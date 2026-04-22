@@ -30,7 +30,7 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | Category | Paths                                                                                                                                                                     |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                                                                |
-| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-cleanup, claude/memory-discuss, claude/prose-audit, claude/tasks-done |
+| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-cleanup, claude/memory-discuss, claude/prose-audit, claude/sandbox-worktree, claude/tasks-done |
 | `git`    | git/followup                                                                                                                                                              |
 
 ## Snippets
@@ -51,6 +51,7 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `claude/memory-cleanup` | Sweep skipped entries from the last memory review and delete the review receipt      |
 | `claude/memory-discuss` | Respond to question items in the latest memory review by writing `Take:` lines       |
 | `claude/prose-audit`    | Audit a file's prose against `standards/prose.md`                                    |
+| `claude/sandbox-worktree` | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
 | `claude/tasks-done`     | Remove completed task blocks, delete referenced plan files, and sync the placeholder |
 | `git/followup`          | Stage, commit, and push a small self-review edit on the current PR branch            |
 
