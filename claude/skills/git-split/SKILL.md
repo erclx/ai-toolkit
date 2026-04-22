@@ -87,11 +87,16 @@ BODY
 ) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch>.md \
   && rm .claude/.tmp/pr-split/<branch>.md
 
+# Return to primary branch, push, and open its PR
+git checkout <new_name> && git push -u origin <new_name> \
+  && (cat <<'BODY' > .claude/.tmp/pr-split/<new_name>.md
+<body following pr.md template, written from the primary's commits>
+BODY
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<new_name>.md \
+  && rm .claude/.tmp/pr-split/<new_name>.md
+
 # Clean up the body-file dir if all PRs succeeded (no-op when non-empty)
 rmdir .claude/.tmp/pr-split 2>/dev/null || true
-
-# Return to primary branch
-git checkout <new_name>
 ```
 
 For stacked mode, base each branch on the previous and cherry-pick only that group's commits:
@@ -120,18 +125,23 @@ BODY
 ) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<branch-2>.md \
   && rm .claude/.tmp/pr-split/<branch-2>.md
 
+# Return to primary branch, push, and open its PR
+git checkout <new_name> && git push -u origin <new_name> \
+  && (cat <<'BODY' > .claude/.tmp/pr-split/<new_name>.md
+<body following pr.md template, written from the primary's commits>
+BODY
+) && gh pr create --title "<title>" --body-file .claude/.tmp/pr-split/<new_name>.md \
+  && rm .claude/.tmp/pr-split/<new_name>.md
+
 # Clean up the body-file dir if all PRs succeeded (no-op when non-empty)
 rmdir .claude/.tmp/pr-split 2>/dev/null || true
-
-# Return to primary branch
-git checkout <new_name>
 ```
 
 ## After execution
 
 Respond with exactly one line:
 
-`✅ Renamed: <old> → <new> | PRs: <url1>, <url2>`
+`✅ Renamed: <old> → <new> | PRs: <primary-url>, <url1>, <url2>`
 
 Do not add any other text.
 
