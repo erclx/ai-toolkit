@@ -9,6 +9,15 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 trap close_timeline EXIT
 
 SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
+INTERNAL_CATEGORIES=("aitk")
+
+is_internal_category() {
+  local name="$1"
+  for internal in "${INTERNAL_CATEGORIES[@]}"; do
+    [ "$name" = "$internal" ] && return 0
+  done
+  return 1
+}
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -38,6 +47,8 @@ build_source_map() {
   while IFS= read -r f; do
     local rel
     rel="${f#"$SNIPPETS_SOURCE/"}"
+    local top="${rel%%/*}"
+    is_internal_category "$top" && continue
     SOURCE_MAP_KEYS+=("$rel")
     SOURCE_MAP_VALS+=("$f")
   done < <(find "$SNIPPETS_SOURCE" -type f -name "*.md" | sort)

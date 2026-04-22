@@ -19,19 +19,24 @@ snippets/
 │   └── *.md           ← claude snippets, installed as snippets/claude/{name}.md
 ├── git/
 │   └── *.md           ← git snippets, installed as snippets/git/{name}.md
+├── aitk/
+│   └── *.md           ← toolkit-internal runbooks, excluded from install
 docs/
 └── snippets.md        ← this file
 ```
 
 Base snippets live at the root. Category snippets live in a named subfolder. The folder structure is preserved on install. A snippet at `claude/figma-steps.md` installs as `snippets/claude/figma-steps.md` and is invoked as `@snippets/claude/figma-steps`.
 
+The `aitk` category is internal. It holds runbooks that only make sense inside the toolkit repo and is excluded from `install all`, the interactive picker, `aitk snippets list`, and explicit `aitk snippets install aitk`.
+
 ## Categories
 
-| Category | Paths                                                                                                                                                                                                                                                                     |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                                                                                                                                                                |
-| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-challenge, claude/memory-cleanup, claude/memory-discuss, claude/prose-audit, claude/sandbox-worktree, claude/standards-audit, claude/tasks-done, claude/vocab-capture |
-| `git`    | git/followup                                                                                                                                                                                                                                                              |
+| Category | Paths                                                                                                                                                                                                                                            |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                                                                                                                                       |
+| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-challenge, claude/memory-cleanup, claude/memory-discuss, claude/prose-audit, claude/standards-audit, claude/tasks-done, claude/vocab-capture |
+| `git`    | git/followup                                                                                                                                                                                                                                     |
+| `aitk`   | aitk/sandbox-worktree (internal, not installable)                                                                                                                                                                                                |
 
 ## Snippets
 
@@ -52,11 +57,11 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 | `claude/memory-cleanup`   | Sweep skipped entries from the last memory review and delete the review receipt                                |
 | `claude/memory-discuss`   | Respond to question items in the latest memory review by writing `Take:` lines                                 |
 | `claude/prose-audit`      | Audit a file's prose against `standards/prose.md`                                                              |
-| `claude/sandbox-worktree` | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
 | `claude/standards-audit`  | Audit changed files against applicable authoring standards (prose, skill, readme, branch, pr)                  |
 | `claude/tasks-done`       | Remove completed task blocks, delete referenced plan files, and sync the placeholder                           |
 | `claude/vocab-capture`    | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
 | `git/followup`            | Stage, commit, and push a small self-review edit on the current PR branch                                      |
+| `aitk/sandbox-worktree`   | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
 
 ## CLI
 
