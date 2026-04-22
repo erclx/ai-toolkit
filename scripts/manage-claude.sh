@@ -302,6 +302,7 @@ cmd_sync() {
   local roles=("PLANNER.md" "REVIEWER.md" "IMPLEMENTER.md")
   local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md" "DESIGN.md" "WIREFRAMES.md")
   local drifted=()
+  local gi_pending=()
   local has_roles=0
 
   for name in "${roles[@]}"; do
@@ -341,24 +342,40 @@ cmd_sync() {
     fi
   done
 
-  if [ "${#drifted[@]}" -eq 0 ]; then
+  log_step "Scanning .gitignore"
+  collect_gitignore_entries "$target" gi_pending
+
+  local total=$((${#drifted[@]} + ${#gi_pending[@]}))
+
+  if [ "$total" -eq 0 ]; then
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude workflow up to date${NC}"
     return
   fi
 
+  local summary=""
+  [ "${#drifted[@]}" -gt 0 ] && summary+="${#drifted[@]} roles"
+  [ "${#gi_pending[@]}" -gt 0 ] && {
+    [ -n "$summary" ] && summary+=", "
+    summary+="${#gi_pending[@]} .gitignore"
+  }
+
   if [ "${AITK_NON_INTERACTIVE:-}" = "1" ]; then
-    log_info "Applying ${#drifted[@]} update(s) (non-interactive)"
+    log_info "Applying $total update(s) (non-interactive)"
   else
-    select_option "Apply ${#drifted[@]} update(s) (${#drifted[@]} roles)?" "Review diffs" "Apply all" "Cancel"
+    if [ "${#drifted[@]}" -gt 0 ]; then
+      select_option "Apply $total update(s) ($summary)?" "Review diffs" "Apply all" "Cancel"
+    else
+      select_option "Apply $total update(s) ($summary)?" "Apply all" "Cancel"
+    fi
 
     case "$SELECTED_OPTION" in
     "Review diffs")
       for file in "${drifted[@]}"; do
         code --diff "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
       done
-      select_option "Apply ${#drifted[@]} update(s)?" "Apply all" "Cancel"
+      select_option "Apply $total update(s)?" "Apply all" "Cancel"
       [ "$SELECTED_OPTION" = "Cancel" ] && {
         log_warn "Cancelled"
         exit 1
@@ -376,6 +393,10 @@ cmd_sync() {
     cp "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
     log_add ".claude/$file"
   done
+
+  if [ "${#gi_pending[@]}" -gt 0 ]; then
+    merge_gitignore "claude" "$target"
+  fi
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
