@@ -94,6 +94,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 - `bun run check`: full verification, applies formatting and regenerates indexes before running the read-only checks
 - `bun run check:spell`, `check:format`, `check:shell`: individual read-only checks
+- `bun run check:install`: clones the repo to tmp, runs `aitk init` against a fresh project, and asserts the scaffold lands. Run after edits to `README.md` Quickstart, `package.json`, `src/cli.ts` init, or `.husky/` hooks.
 - `bun run format`: auto-fix formatting
 - The husky pre-push hook runs `bun run check` and may reformat files. After `git push`, run `git status`. If files are modified, commit the diff as `style(<scope>):` and push again. Do not skip the hook.
 
