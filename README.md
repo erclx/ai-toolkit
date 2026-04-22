@@ -1,137 +1,79 @@
-# Toolkit
+# aitk
 
-CLI toolkit for managing governance rules, tooling configs, and developer standards across projects.
+_Agent-first toolkit for AI-assisted development._
 
-Designed for agent consumption. Every command has a non-interactive mode and a catalog view, so Claude Code skills and other agents can orchestrate the toolkit as well as humans can.
+Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Across enough projects the copies drift, and agents stop getting consistent signals.
 
-## Installation
+`aitk` is one authoritative source for those assets and a CLI that installs and syncs them into any project. It ships a Claude Code plugin with skills for planning, review, docs sync, and the git ship chain, plus Gemini CLI commands, shared rules, snippet libraries, and seed docs.
+
+## Why
+
+Three design choices shape the toolkit.
+
+- Agent-first: every command has a non-interactive path and a JSON catalog. If a Claude Code skill or any other agent cannot drive the CLI without prompts, the design is wrong.
+- Text-native: conventions, rules, and prompts are authored as markdown that humans and agents read the same way. No hidden behavior, no compiled state.
+- One source, many consumers: this repo is the authoritative copy. Target projects install and sync on demand, never author in place.
+
+## Prerequisites
+
+- [Bun](https://bun.sh) for the CLI runtime and scripts
+- [Git](https://git-scm.com) with worktree support
+- [GitHub CLI](https://cli.github.com) (optional) for ship flows
+- Shell: `zsh` or `bash`
+
+## Quickstart
+
+Clone, install dependencies, and link the CLI globally.
 
 ```bash
-git clone git@github.com:erclx/toolkit.git
-cd toolkit
+git clone https://github.com/erclx/aitk.git
+cd aitk
 bun install
 bun link
 ```
 
-## Setup guides
+Confirm the install.
 
-- Claude Code plugin and skills: see [docs/claude.md](docs/claude.md)
-- Gemini CLI extension and commands: see [docs/gemini.md](docs/gemini.md)
+```bash
+aitk --help
+```
 
-## CLI
+Scaffold a fresh project.
 
-Run `aitk` from the repo root.
+```bash
+mkdir ~/my-project && cd ~/my-project
+git init
+aitk init
+```
 
-### Sync
+`aitk init` installs base tooling configs, Claude seeds, governance rules, snippets, and a wiki stub. Pass `--stack <name>` to target a framework stack, or run `aitk tooling list --json` to see the catalog.
 
-| Command            | Description                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| `aitk sync [path]` | Sync all installed domains, regenerate GOV.md if present, then commit and open a PR |
+For the full outsider journey (scaffold, add a domain later, sync upstream drift), see [target projects](docs/target-projects.md).
 
-### Governance
+## What is inside
 
-| Command                                         | Description                                                |
-| ----------------------------------------------- | ---------------------------------------------------------- |
-| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into a project                 |
-| `aitk gov sync [path]`                          | Update existing rules in a project                         |
-| `aitk gov build [path]`                         | Concatenate installed rules into .cursor/.tmp/gov/rules.md |
-| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                           |
+Each domain has a canonical source in this repo and a thin install or sync CLI on the target side.
 
-### Standards
+- [governance](docs/governance.md): Cursor rules, stacks, install and sync
+- [standards](docs/standards.md): authoring conventions synced to projects
+- [claude](docs/claude.md): Claude Code plugin and skills
+- [gemini](docs/gemini.md): Gemini CLI command definitions
+- [snippets](docs/snippets.md): reusable prompt snippets for Claude and Gemini
+- [prompts](docs/prompts.md): system prompt templates for AI authoring
+- [tooling](docs/tooling.md): golden configs, seeds, and references per stack
+- [design](docs/design.md): DESIGN.md token shape, extract skill, render command
+- [sandbox](docs/sandbox.md): scenario-based verification for advanced workflows
 
-| Command                         | Description                    |
-| ------------------------------- | ------------------------------ |
-| `aitk standards install [path]` | Install standards to a project |
-| `aitk standards sync [path]`    | Sync standards to a project    |
-| `aitk standards list [--json]`  | Emit catalog of standards      |
+## Documentation
 
-### Antigravity
+- [AI workflow](docs/ai-workflow.md): feature-development loop inside a toolkit-managed project
+- [Target projects](docs/target-projects.md): scaffold, add a domain later, sync upstream drift
+- [Agents](docs/agents.md): CLI flags, exit codes, and JSON output shapes
+- [Docs index](docs/index.md): every reference doc in this repo
 
-| Command                                   | Description                              |
-| ----------------------------------------- | ---------------------------------------- |
-| `aitk antigravity install [group] [path]` | Install Antigravity workflows to project |
-| `aitk antigravity sync [path]`            | Sync Antigravity workflows in project    |
+## Contributing
 
-### Snippets
-
-| Command                                                 | Description                              |
-| ------------------------------------------------------- | ---------------------------------------- |
-| `aitk snippets install [category] [path]`               | Install snippets for a category          |
-| `aitk snippets sync [path]`                             | Sync snippets already present in project |
-| `aitk snippets create`                                  | Create a new snippet and register it     |
-| `aitk snippets list [--categories\|--entries] [--json]` | Emit catalog of categories and entries   |
-
-### Prompts
-
-| Command                                  | Description                             |
-| ---------------------------------------- | --------------------------------------- |
-| `aitk prompts install [category] [path]` | Install prompts for a category          |
-| `aitk prompts sync [path]`               | Sync prompts already present in project |
-| `aitk prompts list [--json]`             | Emit catalog of prompts                 |
-
-### Init
-
-| Command                    | Description                                               |
-| -------------------------- | --------------------------------------------------------- |
-| `aitk init [path] [flags]` | Bootstrap a project with base tooling and toolkit domains |
-
-Flags: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,prompts,antigravity`, `--skip wiki`. Passing any flag skips the interactive optional-domain picker.
-
-### Tooling
-
-| Command                           | Description                                           |
-| --------------------------------- | ----------------------------------------------------- |
-| `aitk tooling [stack] [path]`     | Sync configs, seeds, deps, and .gitignore for a stack |
-| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents       |
-| `aitk tooling create`             | Create a new stack with stub manifest and reference   |
-| `aitk tooling list [--json]`      | Emit catalog of stacks with extends and dep summary   |
-
-### Claude
-
-| Command              | Description                                                 |
-| -------------------- | ----------------------------------------------------------- |
-| `aitk claude init`   | Seed .claude/ project docs and CLAUDE.md into a project     |
-| `aitk claude roles`  | Install role prompts (planner, implementer, reviewer)       |
-| `aitk claude sync`   | Diff managed files against source and apply updates         |
-| `aitk claude prompt` | Generate master prompts from installed rules (needs roles)  |
-| `aitk claude gov`    | Build governance rules into .claude/GOV.md                  |
-| `aitk claude setup`  | Install user-level Claude config (statusline) to ~/.claude/ |
-
-### Wiki
-
-| Command          | Description                              |
-| ---------------- | ---------------------------------------- |
-| `aitk wiki init` | Scaffold wiki/ folder with stub index.md |
-
-### Indexes
-
-| Command                        | Description                                             |
-| ------------------------------ | ------------------------------------------------------- |
-| `aitk indexes regen [path...]` | Regenerate `index.md` files from sibling frontmatter    |
-| `aitk indexes regen --dry-run` | Report drift without writing (exits 2 when drift found) |
-| `aitk indexes regen --json`    | Emit machine-readable records on stdout                 |
-
-### Sandbox
-
-| Command                             | Description                                                 |
-| ----------------------------------- | ----------------------------------------------------------- |
-| `aitk sandbox`                      | Interactive scenario picker                                 |
-| `aitk sandbox [cat:cmd]`            | Provision a sandbox scenario with interactive scenario pick |
-| `aitk sandbox [cat:cmd] <scenario>` | Provision a specific scenario without prompts               |
-| `aitk sandbox reset`                | Restore sandbox to baseline                                 |
-| `aitk sandbox clean`                | Wipe sandbox                                                |
-
-### Design
-
-| Command              | Description                                                  |
-| -------------------- | ------------------------------------------------------------ |
-| `aitk design render` | Render `.claude/DESIGN.md` tokens to an HTML and CSS preview |
-
-See [`docs/`](docs/) for full documentation.
-
-## Support
-
-Report issues on [GitHub](../../issues).
+Portfolio project. Issues are welcome. Pull requests are accepted by invitation only.
 
 ## License
 

@@ -41,11 +41,21 @@ Plan: .claude/plans/feature-<slug>.md
 
 ### Publicize the toolkit repository
 
-Plan: .claude/plans/chore-publicize-repository.md
-
-- [ ] Outcome: top-level `README.md` rewritten as a user-facing pitch with positioning, prerequisites, and quickstart
-- [ ] Outcome: personal references audited and generalized so an outside clone works without edits
-- [ ] Outcome: an outside developer can clone the repo, install prerequisites, and run `aitk init` in a fresh project without reading the source
+- [x] Outcome: top-level `README.md` rewritten as a user-facing pitch with positioning, prerequisites, and quickstart
+- [x] Outcome: personal references audited and generalized so an outside clone works without edits
+- [x] Outcome: an outside developer can clone the repo, install prerequisites, and run `aitk init` in a fresh project without reading the source
 - [ ] Outcome: link to the toolkit from public profile surfaces (GitHub pinned, resume, portfolio)
 
-> Test strategy: manual, clone the repo into a fresh path on a machine with only prerequisites installed, follow the README as written, confirm `aitk init` produces a working target project without undocumented steps
+> Test strategy: deterministic, `bun run check:install` clones the repo into tmp and asserts `aitk init` produces the expected scaffold. Manual fresh-clone walk on a second machine remains as the final human verification.
+
+### Record a toolkit README screencast
+
+- [ ] Outcome: a short asciinema or video recording of clone, `aitk init`, and one skill invocation embedded in the README as portfolio signal
+
+> Test strategy: manual, play back the recording end to end and confirm the narrative matches the current README Quickstart
+
+### Add install-path sandbox scenario
+
+- [ ] Outcome: a sandbox scenario that exercises `bun run check:install` against a clean baseline, so silent prerequisite drift is caught before a new user hits it
+
+> Test strategy: manual, run the scenario and confirm it reports any undocumented prerequisite the fresh clone needs
