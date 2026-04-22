@@ -56,6 +56,6 @@ Plan: .claude/plans/feature-<slug>.md
 
 ### Add install-path sandbox scenario
 
-- [ ] Outcome: a sandbox scenario that exercises `bun run check:install` against a clean baseline, so silent prereq drift is caught before a new user hits it
+- [ ] Outcome: a sandbox scenario that exercises `bun run check:install` against a clean baseline, so silent prerequisite drift is caught before a new user hits it
 
-> Test strategy: manual, run the scenario and confirm it reports any undocumented prereq the fresh clone needs
+> Test strategy: manual, run the scenario and confirm it reports any undocumented prerequisite the fresh clone needs
