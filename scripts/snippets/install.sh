@@ -9,6 +9,15 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 trap close_timeline EXIT
 
 SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
+INTERNAL_CATEGORIES=("aitk")
+
+is_internal_category() {
+  local name="$1"
+  for internal in "${INTERNAL_CATEGORIES[@]}"; do
+    [ "$name" = "$internal" ] && return 0
+  done
+  return 1
+}
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -31,7 +40,10 @@ show_help() {
 
 list_categories() {
   echo "base"
-  find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
+  while IFS= read -r name; do
+    is_internal_category "$name" && continue
+    echo "$name"
+  done < <(find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
 }
 
 select_category() {
@@ -71,6 +83,7 @@ collect_all_files() {
   collect_files_for_category "base" _all
 
   while IFS= read -r category; do
+    is_internal_category "$category" && continue
     collect_files_for_category "$category" _all
   done < <(find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
 }
@@ -95,6 +108,10 @@ cmd_install() {
 
   if [ -z "$category" ]; then
     category=$(select_category)
+  fi
+
+  if is_internal_category "$category"; then
+    log_error "Category '$category' is internal to the toolkit and not installable."
   fi
 
   guard_root "$target"

@@ -8,6 +8,15 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 SNIPPETS_DIR="$PROJECT_ROOT/snippets"
+INTERNAL_CATEGORIES=("aitk")
+
+is_internal_category() {
+  local name="$1"
+  for internal in "${INTERNAL_CATEGORIES[@]}"; do
+    [ "$name" = "$internal" ] && return 0
+  done
+  return 1
+}
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -24,7 +33,10 @@ show_help() {
 
 list_category_names() {
   echo "base"
-  find "$SNIPPETS_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
+  while IFS= read -r name; do
+    is_internal_category "$name" && continue
+    echo "$name"
+  done < <(find "$SNIPPETS_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
 }
 
 list_entries_for_category() {
