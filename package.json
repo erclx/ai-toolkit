@@ -12,6 +12,7 @@
     "format": "prettier --write --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --write --indent 2 scripts/ tooling/",
     "check:format": "prettier --check --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --diff --indent 2 scripts/ tooling/",
     "check:shell": "find scripts tooling -name '*.sh' -exec shellcheck --severity=warning {} +",
+    "check:install": "./scripts/core/install-check.sh",
     "prepare": "husky",
     "check": "./scripts/core/verify.sh",
     "update": "./scripts/core/update.sh",
