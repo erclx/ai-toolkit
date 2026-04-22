@@ -95,6 +95,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - `bun run check`: full verification, applies formatting and regenerates indexes before running the read-only checks
 - `bun run check:spell`, `check:format`, `check:shell`: individual read-only checks
 - `bun run format`: auto-fix formatting
+- The husky pre-push hook runs `bun run check` and may reformat files. After `git push`, run `git status`. If files are modified, commit the diff as `style(<scope>):` and push again. Do not skip the hook.
 
 ## Spelling
 
@@ -128,7 +129,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 
 - Independent feature tracks can run concurrently in git worktrees. See `wiki/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
 - Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, verify the absolute path of every `Edit` or `Write` starts with the worktree root (`pwd`), not the main checkout. Absolute paths to the main root land changes in the wrong tree.
+- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs, `TASKS.md`) must use a path starting with `pwd`. Only untracked scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`) resolves to the main worktree root.
 
 ## Wiki
 
