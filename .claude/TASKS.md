@@ -53,16 +53,9 @@ Plan: .claude/plans/chore-publicize-repository.md
 ### Chrome delegation feasibility spike
 
 - [ ] Outcome: test whether Claude Code in Chrome can programmatically navigate + screenshot a URL
-- [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk; if not, close this task
+- [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk. Otherwise close the task.
 
 > Test strategy: manual, invoke CC-in-Chrome against one URL, observe whether navigation and screenshot capture work, decide
-
-### PR follow-up snippet
-
-- [x] Outcome: new `snippets/git/followup.md` that commits current changes per `standards/commit.md` and pushes to the tracking branch
-- [x] Outcome: invoked via `@snippets/git/followup` after spotting self-review edits on an open PR
-
-> Test strategy: manual, open a PR, make a small edit, run the snippet, confirm one clean commit lands on the remote branch
 
 ### Skill sandbox alignment check
 
