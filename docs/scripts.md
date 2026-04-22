@@ -84,7 +84,8 @@ scripts/
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
     ├── gov.sh           ← strip_frontmatter, build_rules_payload
     ├── tooling.sh       ← list_tooling_stacks, is_tooling_stack_excluded
-    └── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
+    ├── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
+    └── sandbox-git.sh   ← resolve_sandbox_git_identity, configure_sandbox_git_identity
 ```
 
 ## Core scripts
