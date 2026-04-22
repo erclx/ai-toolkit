@@ -9,6 +9,8 @@ Claude Code spawns a new session per directory, so a heavy worktree workflow mea
 
 ## The aliases
 
+Replace the `--plugin-dir` path with wherever you cloned the toolkit.
+
 ```zsh
 alias claude='claude --plugin-dir ~/repos/ai/toolkit/claude'
 alias cl='claude --plugin-dir ~/repos/ai/toolkit/claude'

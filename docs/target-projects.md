@@ -74,9 +74,11 @@ Before running a sync against a real project, run the relevant sandbox scenario.
 
 ### Markdown-heavy project
 
+Replace `<toolkit>` with the path where you cloned the toolkit.
+
 ```bash
-cd ~/repos/my-notes
-claude --plugin-dir ~/repos/ai/toolkit/claude
+cd <your-project>
+claude --plugin-dir <toolkit>/claude
 ```
 
 In the session, invoke `toolkit:init-project`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
@@ -86,8 +88,8 @@ Ongoing: invoke `toolkit:claude-seed-sync` for seed drift, or run `aitk sync .` 
 ### Web application
 
 ```bash
-cd ~ && bun create vite my-app && cd my-app
-claude --plugin-dir ~/repos/ai/toolkit/claude
+bun create vite my-app && cd my-app
+claude --plugin-dir <toolkit>/claude
 ```
 
 Invoke `toolkit:init-project`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.

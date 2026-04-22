@@ -44,9 +44,10 @@ scripts/
 ├── manage-antigravity.sh    ← aitk antigravity entry point
 ├── manage-wiki.sh           ← aitk wiki entry point
 ├── manage-indexes.sh        ← aitk indexes entry point
-├── config.sh            ← shared project config (GITHUB_ORG, DEFAULT_GEMINI_MODEL)
+├── config.sh            ← shared project config (GITHUB_ORG with git remote fallback)
 ├── core/
 │   ├── verify.sh        ← runs all checks: format, spell, shell, index drift
+│   ├── install-check.sh ← clones repo into tmp, runs aitk init, asserts scaffold lands
 │   ├── update.sh        ← interactive dependency update + verify
 │   ├── clean.sh         ← wipes node_modules, clears cache, reinstalls
 │   ├── snapshot.sh      ← writes PROJECT-SNAPSHOT.md to .claude/.tmp/project/
