@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
+
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
@@ -10,8 +12,7 @@ use_config() {
 
 stage_setup() {
   git init -q
-  git config user.email "architect@example.com"
-  git config user.name "Senior Architect"
+  configure_sandbox_git_identity
 
   mkdir -p docs
   echo "# My App" >README.md

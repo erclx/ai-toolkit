@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
+
 use_anchor() {
   export ANCHOR_REPO="toolkit-sandbox"
 }
@@ -14,8 +16,7 @@ use_config() {
 stage_setup() {
   select_or_route_scenario "Which scenario?" "without-changelog" "with-changelog"
 
-  git config user.email "${GITHUB_ORG}@github.com"
-  git config user.name "Dev"
+  configure_sandbox_git_identity
 
   git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
