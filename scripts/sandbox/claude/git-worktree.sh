@@ -7,7 +7,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "cleanup" "rotate" "list"
+  select_or_route_scenario "Which scenario?" "cleanup" "list"
 
   cat <<'EOF' >package.json
 {
@@ -52,40 +52,6 @@ EOF
     log_info "Action:  /git-worktree list, then /git-worktree cleanup"
     log_info "Expect:  list shows alpha as 'merged (local)' and beta as 'unmerged'"
     log_info "         cleanup removes .claude/worktrees/alpha/ and deletes feat/alpha, leaves beta alone"
-    ;;
-  "rotate")
-    git checkout -b feat/current -q
-    echo 'export const current = 1;' >src/current.ts
-    git add . && git commit -m "feat(current): start current feature" --no-verify -q
-    git checkout main -q
-
-    mkdir -p .claude/worktrees .claude/plans
-    git worktree add .claude/worktrees/feat-current feat/current -q
-
-    cat <<'EOF' >.claude/plans/feature-next-feature.md
-# Feature: next feature
-
-Placeholder plan for the post-rotate feature.
-
-**Files to touch:**
-
-- `src/next.ts`: add next feature
-
-**Risks:**
-
-None identified.
-
-**Questions:**
-
-None identified.
-EOF
-
-    log_step "Scenario ready: rotate (clean current worktree, plan queued)"
-    log_info "Context: one linked worktree at .claude/worktrees/feat-current/, clean tree"
-    log_info "         plan file .claude/plans/feature-next-feature.md queued at main root"
-    log_info "Action:  cd .claude/worktrees/feat-current/, then /git-worktree rotate next-feature"
-    log_info "Expect:  old worktree kept on disk, new worktree at .claude/worktrees/next-feature/"
-    log_info "         on branch 'next-feature' off main, session enters the new worktree"
     ;;
   "list")
     git checkout -b feat/merged -q

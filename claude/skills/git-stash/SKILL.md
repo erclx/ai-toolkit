@@ -1,6 +1,6 @@
 ---
 name: git-stash
-description: Stashes a focused subset of working-tree changes under a conventional message, or lists and pops existing stashes. Use for short-lived context switches within a session ("stash these for later", "park this work"), or when picking work back up ("pop the pr fix", "list stashes"). Do NOT use for parallel feature tracks (use worktrees) or long-running parked work (commit on a branch).
+description: Stashes a focused subset of working-tree changes under a conventional message, or pops an existing stash by message match. Use for short-lived context switches within a session ("stash these for later", "park this work"), or when picking work back up ("pop the pr fix"). Do NOT use for parallel feature tracks (use worktrees) or long-running parked work (commit on a branch).
 ---
 
 # Git stash
@@ -15,12 +15,11 @@ Read these files from the project root in parallel:
 Pick exactly one mode from the user's request:
 
 - `push`: stash a subset of current changes ("stash these", "park this")
-- `list`: show existing stashes ("list stashes", "what did I stash")
 - `pop`: restore a stash by message match ("pop the pr fix", "bring back the X stash")
 
 ## Context
 
-For `push` and `list`, run in parallel:
+For both modes, run in parallel:
 
 - `git status --short 2>/dev/null || echo "NO_REPO"`
 - `git stash list 2>/dev/null || echo "NO_STASHES"`
@@ -34,10 +33,10 @@ For `push`, also run:
 
 - If `git status --short` is empty in `push` mode, stop:
   `❌ No changes to stash.`
-- If `git stash list` is empty in `list` or `pop` mode, stop:
+- If `git stash list` is empty in `pop` mode, stop:
   `❌ No stashes.`
 - In `pop` mode, if no stash message matches the user's request, stop:
-  `❌ No stash matches '<query>'. Run /git-stash list to see options.`
+  `❌ No stash matches '<query>'. Run git stash list to see options.`
 
 ## Selection rules (push mode)
 
@@ -63,13 +62,6 @@ For `push`, also run:
 
 Count characters in the stash message. Shorten any subject over 72 characters.
 
-### Preview (list)
-
-| #   | Branch   | Message   |
-| --- | -------- | --------- |
-| 0   | <branch> | <subject> |
-| 1   | <branch> | <subject> |
-
 ### Preview (pop)
 
 **Match:** `stash@{<n>}` <message>
@@ -85,12 +77,6 @@ git stash push -m "<type>(<scope>): <subject>" -- <file1> <file2>
 
 Add `-u` before `-m` when untracked files are included.
 
-### Final command (list)
-
-```bash
-git stash list
-```
-
 ### Final command (pop)
 
 ```bash
@@ -102,7 +88,6 @@ git stash pop stash@{<n>}
 Respond with exactly one line:
 
 - push: `✅ Stashed: <subject>`
-- list: `✅ <n> stashes`
 - pop: `✅ Popped: <subject>`
 
 Do not add any other text.
