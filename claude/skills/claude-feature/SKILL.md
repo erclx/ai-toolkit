@@ -102,3 +102,11 @@ Then output in chat:
 Show only the path line when there are no questions. The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
 
 Do not proceed to implementation until the user explicitly says to continue.
+
+## Discussion rounds
+
+After the plan is written, the user may re-ping with follow-up questions or pushback. Keep chat output to a decision-help shape.
+
+- State each pick as one-line pick plus one-line reason. Do not use section headers, context blocks, or multi-section breakdowns in chat. Those belong in the plan file.
+- Put numbered decisions to resolve at the bottom of the response, not interleaved with findings.
+- When a finding needs more than two lines to explain, update `.claude/plans/feature-<slug>.md` in place with the detail and point the user at the file instead.
