@@ -40,6 +40,8 @@ Construct the plan with four sections:
 
 Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
 
+When three or more questions remain, add an `- Answer:` slot under each in the plan file and keep chat output to the file pointer plus a short summary. Inline chat is fine when two or fewer remain.
+
 ## Step 4: output
 
 Decide the mode based on what Step 3 produced:

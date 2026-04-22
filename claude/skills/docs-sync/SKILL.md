@@ -38,6 +38,8 @@ For each discovered doc, classify as one of:
 - `stale`: the diff touches something the doc describes
 - `unrelated`: no overlap between diff and doc content
 
+Classify at the section level, not the file level. A doc edited earlier in the session can still be partially stale. For each diff surface, verify the corresponding section is synced.
+
 ## Action
 
 Rewrite only the stale sections. Do not touch sections unrelated to the diff. Write the updated file immediately after the preview. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
