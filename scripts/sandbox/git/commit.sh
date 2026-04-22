@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
+
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
@@ -8,8 +10,7 @@ use_config() {
 
 stage_setup() {
   git init -q
-  git config user.email "architect@erclx.com"
-  git config user.name "Senior Architect"
+  configure_sandbox_git_identity
 
   echo 'export const MAX_CONNECTIONS = "5";' >config.js
   git add . && git commit -m "feat(git): initial config" -q

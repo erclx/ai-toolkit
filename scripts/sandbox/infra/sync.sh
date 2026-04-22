@@ -3,6 +3,7 @@ set -e
 set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_anchor() {
   export ANCHOR_REPO="toolkit-sandbox"
@@ -18,8 +19,7 @@ stage_setup() {
   local src_standards="$PROJECT_ROOT/standards"
   local src_rules="$PROJECT_ROOT/governance/rules"
 
-  git config user.email "${GITHUB_ORG}@github.com"
-  git config user.name "Eric"
+  configure_sandbox_git_identity
 
   git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 

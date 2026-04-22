@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
+
 use_anchor() {
   export ANCHOR_REPO="toolkit-sandbox"
 }
@@ -19,8 +21,7 @@ stage_setup() {
   "feature-branch")
     log_step "Configuring PR environment ($ANCHOR_REPO)"
 
-    git config user.email "${GITHUB_ORG}@github.com"
-    git config user.name "Eric"
+    configure_sandbox_git_identity
 
     git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
     git push --force origin HEAD:main

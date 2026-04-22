@@ -58,7 +58,12 @@ setup_ssh() {
 
   if [ -z "$SSH_AUTH_SOCK" ]; then
     eval "$(ssh-agent -s)" >/dev/null
-    ssh-add ~/.ssh/id_rsa
+    local key
+    for key in "${SSH_KEY:-}" ~/.ssh/id_ed25519 ~/.ssh/id_rsa; do
+      if [ -n "$key" ] && [ -f "$key" ]; then
+        ssh-add "$key" && break
+      fi
+    done
     log_info "SSH Agent initialized"
   else
     log_info "SSH Agent active"
@@ -216,7 +221,7 @@ configure_agent_settings() {
   cat <<EOF >"$SANDBOX/.gemini/settings.json"
 {
   "model": {
-    "name": "$DEFAULT_GEMINI_MODEL"
+    "name": "gemini-2.5-flash"
   }
 }
 EOF
