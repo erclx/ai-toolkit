@@ -49,10 +49,3 @@ Plan: .claude/plans/chore-publicize-repository.md
 - [ ] Outcome: link to the toolkit from public profile surfaces (GitHub pinned, resume, portfolio)
 
 > Test strategy: manual, clone the repo into a fresh path on a machine with only prerequisites installed, follow the README as written, confirm `aitk init` produces a working target project without undocumented steps
-
-### Chrome delegation feasibility spike
-
-- [ ] Outcome: test whether Claude Code in Chrome can programmatically navigate + screenshot a URL
-- [ ] Outcome: if viable, land a snippet at `snippets/web-research.md` that drives a structured walk. Otherwise close the task.
-
-> Test strategy: manual, invoke CC-in-Chrome against one URL, observe whether navigation and screenshot capture work, decide
