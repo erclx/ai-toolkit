@@ -54,15 +54,15 @@ For the full outsider journey (scaffold, add a domain later, sync upstream drift
 
 Each domain has a canonical source in this repo and a thin install or sync CLI on the target side.
 
-- [governance](docs/governance.md): Cursor rules, stacks, install and sync
-- [standards](docs/standards.md): authoring conventions synced to projects
-- [claude](docs/claude.md): Claude Code plugin and skills
-- [gemini](docs/gemini.md): Gemini CLI command definitions
-- [snippets](docs/snippets.md): reusable prompt snippets for Claude and Gemini
-- [prompts](docs/prompts.md): system prompt templates for AI authoring
-- [tooling](docs/tooling.md): golden configs, seeds, and references per stack
-- [design](docs/design.md): DESIGN.md token shape, extract skill, render command
-- [sandbox](docs/sandbox.md): scenario-based verification for advanced workflows
+- [Claude Code plugin](docs/claude.md): skills for planning, review, docs sync, and the git ship chain
+- [Governance rules](docs/governance.md): Cursor rules and stacks, installable per project
+- [Standards](docs/standards.md): shared authoring conventions, synced to projects
+- [Gemini commands](docs/gemini.md): slash commands for the Gemini CLI
+- [Snippets](docs/snippets.md): reusable prompts for Claude and Gemini chat
+- [Prompts](docs/prompts.md): system prompt templates for AI authoring
+- [Tooling stacks](docs/tooling.md): golden configs, seeds, and references per framework
+- [Design system](docs/design.md): `DESIGN.md` token shape, extract skill, render command
+- [Sandbox](docs/sandbox.md): scenario-based scaffolds for verifying each domain flow
 
 ## Documentation
 
