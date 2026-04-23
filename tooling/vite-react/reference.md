@@ -14,8 +14,9 @@ The vite-react stack covers Vite + React + TypeScript projects: web apps and Chr
 4. Create: `eslint.config.js`, `vitest.config.ts`, `playwright.config.ts`
 5. Create: `src/test/setup.ts`, `e2e/screenshot.ts`, `tsconfig.e2e.json`
 6. Update: `tsconfig.app.json` (add paths, types), `tsconfig.json` (add e2e reference)
-7. Run `bun run lint:fix` to auto-fix scaffolded files
-8. Run `bun run check` to verify
+7. Update `docs/ci.md` and `docs/development.md` per the extend sections below
+8. Run `bun run lint:fix` to auto-fix scaffolded files
+9. Run `bun run check` to verify
 
 ## Prettier (extend)
 
@@ -138,6 +139,36 @@ The vite-react stack covers Vite + React + TypeScript projects: web apps and Chr
 - `build-verify`: `bun run build`.
 - Web apps: add `e2e-tests` job (depends on all above). Cache Playwright browsers, install chromium if cache miss, run `test:e2e --project=chromium`, upload report artifact on failure (7 day retention).
 - Chrome extensions: no E2E job in CI (extensions cannot run Playwright against a dev server).
+
+## CI docs (extend)
+
+Extend `docs/ci.md` so the `## Checks` table reflects the stack's CI jobs.
+
+- Append to the `## Checks` table:
+  | Typecheck | `bun run typecheck` | `tsc --noEmit` passes |
+  | Lint | `bun run lint` | ESLint passes with zero warnings |
+  | Tests | `bun run test:coverage` | Vitest passes with coverage thresholds |
+  | Build | `bun run build` | Production build succeeds |
+- Web apps only: add a row `| E2E | `bun run test:e2e` | Playwright passes against the built preview |`.
+- Under `## Running CI locally`, document that `bun run check:full` runs verify plus `test:e2e`.
+
+## Development docs (extend)
+
+Extend `docs/development.md` so the `## Scripts` table lists every stack script the user interacts with.
+
+- Append to the `## Scripts` table:
+  | `bun run dev` | Start the Vite dev server on port 5173. |
+  | `bun run build` | Typecheck then build the production bundle. |
+  | `bun run preview` | Serve the built bundle locally. |
+  | `bun run typecheck` | Run `tsc --noEmit`. |
+  | `bun run lint` | Run ESLint with zero warnings allowed. |
+  | `bun run lint:fix` | Auto-fix ESLint issues. |
+  | `bun run test` | Run Vitest in watch mode. |
+  | `bun run test:run` | Run Vitest once with verbose reporter. |
+  | `bun run test:coverage` | Run Vitest with coverage. |
+  | `bun run test:e2e` | Run Playwright E2E tests. |
+  | `bun run screenshot` | Build, preview, then capture screenshots. |
+- Chrome extensions: omit the `test:e2e` row's dev-server wording and note extensions load the built `dist/` directly.
 
 ## VS Code (extend)
 
