@@ -1,0 +1,54 @@
+[stack]
+name = "web"
+extends = "base"
+runtime = "bun"
+scaffold = ""
+
+[dependencies.dev]
+packages = [
+  "eslint@^9",
+  "eslint-config-prettier",
+  "eslint-plugin-check-file",
+  "eslint-plugin-react-hooks",
+  "eslint-plugin-react-refresh",
+  "eslint-plugin-simple-import-sort",
+  "eslint-plugin-vitest",
+  "globals",
+  "typescript-eslint",
+  "@eslint/js",
+  "typescript",
+  "react",
+  "react-dom",
+  "@types/react",
+  "@types/react-dom",
+  "@types/node",
+  "vitest",
+  "@vitest/coverage-v8",
+  "@vitest/ui",
+  "jsdom",
+  "@testing-library/react",
+  "@testing-library/jest-dom",
+  "@testing-library/user-event",
+  "@playwright/test",
+  "tailwindcss",
+  "@tailwindcss/vite",
+  "prettier-plugin-tailwindcss",
+]
+
+[scripts]
+"lint" = "eslint . --max-warnings 0"
+"lint:fix" = "eslint . --fix --max-warnings 0"
+"test" = "vitest"
+"test:run" = "vitest run --reporter=verbose"
+"test:ui" = "vitest --ui"
+"test:coverage" = "vitest run --coverage"
+"test:e2e" = "playwright test"
+"test:e2e:ui" = "playwright test --ui"
+"test:e2e:report" = "playwright show-report"
+"check:full" = "./scripts/verify.sh && bun run test:e2e"
+
+[gitignore]
+"# Build" = ["dist/"]
+"# Coverage" = ["coverage/"]
+"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/", "screenshots/"]
+"# VS Code" = [".vscode/*", "!.vscode/extensions.json", "!.vscode/settings.json"]

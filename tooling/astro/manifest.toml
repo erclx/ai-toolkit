@@ -1,6 +1,6 @@
 [stack]
 name = "astro"
-extends = "base"
+extends = "web"
 runtime = "bun"
 scaffold = ""
 
@@ -9,35 +9,9 @@ packages = [
   "astro",
   "@astrojs/react",
   "@astrojs/check",
-  "eslint",
-  "eslint-config-prettier",
   "eslint-plugin-astro",
   "astro-eslint-parser",
-  "eslint-plugin-check-file",
-  "eslint-plugin-react-hooks",
-  "eslint-plugin-simple-import-sort",
-  "eslint-plugin-vitest",
-  "globals",
-  "typescript-eslint",
-  "@eslint/js",
-  "typescript",
-  "react",
-  "react-dom",
-  "@types/react",
-  "@types/react-dom",
-  "@types/node",
-  "vitest",
-  "@vitest/coverage-v8",
-  "@vitest/ui",
-  "jsdom",
-  "@testing-library/react",
-  "@testing-library/jest-dom",
-  "@testing-library/user-event",
-  "@playwright/test",
-  "tailwindcss",
-  "@tailwindcss/vite",
   "prettier-plugin-astro",
-  "prettier-plugin-tailwindcss",
 ]
 
 [scripts]
@@ -45,23 +19,9 @@ packages = [
 "build" = "astro check && astro build"
 "preview" = "astro preview"
 "astro" = "astro"
-"lint" = "eslint . --max-warnings 0"
-"lint:fix" = "eslint . --fix --max-warnings 0"
 "typecheck" = "astro check"
-"test" = "vitest"
-"test:run" = "vitest run --reporter=verbose"
-"test:ui" = "vitest --ui"
-"test:coverage" = "vitest run --coverage"
-"test:e2e" = "playwright test"
-"test:e2e:ui" = "playwright test --ui"
-"test:e2e:report" = "playwright show-report"
-"check:full" = "./scripts/verify.sh && bun run test:e2e"
 "setup" = "./scripts/setup.sh"
 "screenshot" = "bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts"
 
 [gitignore]
-"# Build" = ["dist/"]
 "# Astro" = [".astro/"]
-"# Coverage" = ["coverage/"]
-"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/", "screenshots/"]
-"# VS Code" = [".vscode/*", "!.vscode/extensions.json", "!.vscode/settings.json"]
