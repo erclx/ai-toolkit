@@ -181,10 +181,6 @@ collect_stack_scripts() {
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
-  if [ -n "$extends" ]; then
-    collect_stack_scripts "$extends" "$target" "$3" "$4" "$5"
-  fi
-
   local pkg="$target/package.json"
   [ ! -f "$pkg" ] && return
 
@@ -225,6 +221,10 @@ collect_stack_scripts() {
       fi
     fi
   done <"$manifest"
+
+  if [ -n "$extends" ]; then
+    collect_stack_scripts "$extends" "$target" "$3" "$4" "$5"
+  fi
 }
 
 collect_stack_deps() {

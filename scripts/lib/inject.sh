@@ -309,9 +309,6 @@ apply_stack_scripts() {
 
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
-  if [ -n "$extends" ]; then
-    apply_stack_scripts "$extends" "$target_path"
-  fi
 
   [ ! -f "$target_path/package.json" ] && return
 
@@ -355,6 +352,10 @@ apply_stack_scripts() {
       });
       fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
     " "$scripts")
+  fi
+
+  if [ -n "$extends" ]; then
+    apply_stack_scripts "$extends" "$target_path"
   fi
 }
 
