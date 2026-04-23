@@ -123,7 +123,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | `aitk-snippets`       | Load before editing snippets                                                                            |
 | `aitk-standards`      | Load before editing standards or docs                                                                   |
 | `aitk-tooling`        | Load before editing tooling stacks or golden configs                                                    |
-| `skill-sandbox-check` | Audit changed plugin skills for missing sandbox scenario edits, user-invoked via `/skill-sandbox-check` |
+| `aitk-sandbox-check`  | Audit changed plugin skills for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check`  |
 
 ## CLI
 

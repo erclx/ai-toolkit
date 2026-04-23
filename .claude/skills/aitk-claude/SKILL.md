@@ -42,7 +42,7 @@ When modifying a skill:
 - Update the skills table in `docs/claude.md` if the description changed
 - Check if a corresponding gemini command exists in `gemini/commands/` and update it to match
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
-- Run `/skill-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
+- Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
 - Antigravity workflows are frozen, so do not propagate changes there
 
 When modifying the CLAUDE.md seed:

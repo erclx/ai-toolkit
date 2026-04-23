@@ -1,10 +1,10 @@
 ---
-name: skill-sandbox-check
+name: aitk-sandbox-check
 description: Audits the current branch for plugin-skill edits that lack a matching sandbox scenario update. Prints a per-skill report and copy-paste commands for re-provisioning the sandbox and launching Claude Code against the worktree's plugin dir. Manual-only. Does not execute sandbox or Claude commands.
 disable-model-invocation: true
 ---
 
-# Skill sandbox check
+# Sandbox check
 
 Manual guard after editing a plugin skill. Reports whether each changed skill has a paired scenario edit, and prints the exact commands to re-provision and re-test. Output-only. Never runs the sandbox or Claude.
 
@@ -58,7 +58,7 @@ Do not guess past the first fallback. Fuzzy matching across sandbox categories p
 Print one block to chat. Do not write a file.
 
 ```plaintext
-Skill sandbox check
+Sandbox check
 
 Re-provision:
   aitk sandbox reset
