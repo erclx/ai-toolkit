@@ -48,6 +48,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Avoid flags that dispatch between alternate flows. The model misreads them and runs the vanilla path. Dry-run-style toggles are fine. For alternate flows, prefer a separate skill or manual invocation of two skills in sequence.
 - Before collapsing a manual multi-step flow into a skill, ask what the manual pauses do. Pauses that carry external timing, error-surfacing, or judgment weight are the feature. Prefer a snippet over a skill, or require explicit per-step confirmation.
 - Skill success lines emit the full relative path from the project root (`<dir>/<file>`) for any file written, updated, or deleted. Bare filenames are not clickable in the terminal.
+- Separate correctness axes (routing, sourcing, escalation, decline) from shape axes (line count, formatting, variant sprawl) when tuning a skill. Tighten only on correctness regressions. Do not convert soft caps to hard caps for aesthetic drift when correctness passes.
 
 ## Scripts
 

@@ -28,6 +28,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Match edit scope to the request. Ship minimal v1 and queue extensions as follow-ups, edit only what the user named on simplification requests, and do not add CLI flags or aliases they did not ask for. When a fix has a natural mirror in a template or seed, flag it as a follow-up rather than silently extending the PR.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 - Before restructuring installable content (`snippets/`, `claude/skills/`, `tooling/`, `governance/rules/`), grep the corresponding install and list scripts for depth constraints (`-maxdepth`, fixed globs). Bundle script updates with the restructure or pick a depth the scripts already handle.
+- Before queuing or starting a new feature, confirm a concrete project or use case drives it. If precedent exists, lift patterns from that project rather than writing from scratch.
 
 ## After editing
 
@@ -62,7 +63,7 @@ When adding new content, place it in the canonical owner. If another surface nee
 
 ## System overview
 
-The toolkit has seven domains. Each maps to a skill. Load the skill before editing anything in that domain.
+The toolkit has the following domains. Each maps to a skill. Load the skill before editing anything in that domain.
 
 | Task type                                                              | Skill to load      |
 | ---------------------------------------------------------------------- | ------------------ |
@@ -115,6 +116,7 @@ The toolkit has seven domains. Each maps to a skill. Load the skill before editi
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
 - When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. Delete the plan when the task ships.
 - Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
+- Treat `.claude/TASKS.md` as transactional working state. Revert to `### Nothing queued` before shipping to main. Prefer stashing task-block changes over committing them.
 
 ## Memory
 
