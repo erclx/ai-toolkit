@@ -16,7 +16,7 @@ The tooling system ships golden configs layered across a `base` → `web` → fr
 tooling/
 ├── base/
 │   ├── configs/       ← authoritative, always overwrite on sync (prettier, cspell, commitlint, husky, shell)
-│   ├── seeds/         ← user-owned, merge only
+│   ├── seeds/         ← user-owned, preserved on sync
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 ├── web/
@@ -55,7 +55,7 @@ Stack-specific configs override the extends chain. `collect_stack_configs` in `s
 
 Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path.
 
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. The `base` stack also seeds `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
+Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The `base` stack also seeds `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
 
