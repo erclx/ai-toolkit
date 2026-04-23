@@ -2,7 +2,7 @@
 name = "vite-react"
 extends = "web"
 runtime = "bun"
-scaffold = ""
+scaffold = "bun create vite@latest {{name}} --template react-ts"
 
 [dependencies.dev]
 packages = [

@@ -2,7 +2,7 @@
 name = "astro"
 extends = "web"
 runtime = "bun"
-scaffold = ""
+scaffold = "bun create astro@latest {{name}} -- --template minimal --typescript strict --no-install --no-git --skip-houston --yes"
 
 [dependencies.dev]
 packages = [
