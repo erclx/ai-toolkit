@@ -43,7 +43,7 @@ tooling/
 
 Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. Only the `base` stack ships golden configs.
 
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
+Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. The `base` stack also seeds `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. The `vite-react` stack is reference-only: the agent reads the reference and generates configs adapted to the specific project. No golden configs are shipped for stack-specific tooling.
 

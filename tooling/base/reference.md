@@ -94,6 +94,12 @@
 - Extensions: `esbenp.prettier-vscode`, `streetsidesoftware.code-spell-checker`, `mkhl.shfmt`, `timonwong.shellcheck`, `mads-hartmann.bash-ide-vscode`.
 - Settings: `shellcheck.customArgs: ["--severity=warning"]`.
 
+## Docs
+
+- Seeded at `docs/development.md` and `docs/ci.md` on install. User-owned, never overwritten by sync.
+- Each carries `title` and `description` frontmatter so the files slot into `docs/index.md` if the project adopts the `indexes` system. Indexes stay opt-in.
+- Extend freely with project-specific commands, workflows, or deploy steps. Canonical rationale stays in this reference.
+
 ## Package Scripts
 
 - `check:spell`: runs cspell across all files, shows context on failures.
