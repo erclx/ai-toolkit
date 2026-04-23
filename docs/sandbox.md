@@ -49,6 +49,7 @@ scripts/sandbox/
 │   ├── design-propose.sh ← greenfield project with personality paragraph for testing /toolkit:claude-design-propose
 │   ├── experiment.sh     ← scenarios for /toolkit:experiment (fresh, collision)
 │   ├── memory.sh         ← seeded .claude/memory/ mix for testing /toolkit:claude-memory-review
+│   ├── verify-scaffold.sh ← scaffolded project scenarios for testing /toolkit:verify-scaffold (pass, fail)
 │   └── worktree.sh       ← scenarios for /toolkit:claude-worktree (matched-plan, multi-plan, branch-only)
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply

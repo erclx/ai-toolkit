@@ -24,7 +24,7 @@ Project docs live in `.claude/` at the project root.
 └── GOV.md           ← governance rules, generated via aitk claude gov
 ```
 
-Run `aitk claude init` to seed the `.claude/` directory and a root `CLAUDE.md` file. Run `aitk gov install` to install rules into `.cursor/rules/`, then run `aitk claude gov` to build `GOV.md`. Regenerate only when rules change.
+Run `aitk init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and `.claude/GOV.md` in one pass. `aitk init` chains claude init, governance install, and the GOV.md build. Regenerate `GOV.md` later only when rules change via `aitk claude gov`.
 
 ## Scenarios
 
