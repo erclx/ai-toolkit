@@ -237,6 +237,11 @@ main() {
   run_domain "Governance" \
     bash "$PROJECT_ROOT/scripts/manage-gov.sh" "${gov_args[@]}" </dev/null
 
+  if [ -f "$target/.claude/GOV.md" ]; then
+    AITK_NON_INTERACTIVE=1 run_domain "Claude GOV.md" \
+      bash "$PROJECT_ROOT/scripts/manage-claude.sh" "gov" "$target" </dev/null
+  fi
+
   run_domain "Snippets" \
     bash "$PROJECT_ROOT/scripts/manage-snippets.sh" "install" "$snippets_cat" "$target" </dev/null
 
