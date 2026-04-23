@@ -21,6 +21,7 @@ Stack-specific configs override extends-chain configs at the same relative path.
 
 - In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped.
 - Version pins in `[dependencies.dev]` (e.g. `"eslint@^9"`) are enforced by major version. Sync compares the installed dep's major against the pin's major and re-installs on mismatch. Deps without pins are left alone when present.
+- `[scripts]` entries add only when the key is missing in `package.json`. Scaffolds win for keys both sides define. Use `[scripts.override]` to force-replace a key, for anti-patterns the scaffold ships by default.
 - `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
 
 ## Adding a new stack

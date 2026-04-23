@@ -326,8 +326,7 @@ apply_stack_scripts() {
   [ ! -f "$target_path/package.json" ] && return
 
   local scripts
-  scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
-  [ -z "$scripts" ] && return
+  scripts=$(awk '/^\[scripts\][[:space:]]*$/{f=1; next} /^\[/{f=0} f' "$manifest")
 
   local to_apply_keys=()
   local to_apply_vals=()
@@ -369,6 +368,35 @@ apply_stack_scripts() {
 
   if [ -n "$extends" ]; then
     apply_stack_scripts "$extends" "$target_path"
+  fi
+
+  local overrides
+  overrides=$(awk '/^\[scripts\.override\]/{f=1; next} /^\[/{f=0} f' "$manifest")
+  if [ -n "$overrides" ]; then
+    local override_keys=()
+    while IFS= read -r line; do
+      if [[ "$line" =~ ^\"([^\"]+)\"[[:space:]]*=[[:space:]]*\"(.*)\"[[:space:]]*$ ]]; then
+        override_keys+=("${BASH_REMATCH[1]}")
+      fi
+    done <<<"$overrides"
+
+    if [ "${#override_keys[@]}" -gt 0 ]; then
+      log_step "Applying $stack_name script overrides"
+      for key in "${override_keys[@]}"; do
+        log_add "$key"
+      done
+
+      (cd "$target_path" && node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('package.json'));
+        pkg.scripts = pkg.scripts || {};
+        process.argv[1].split('\n').forEach(line => {
+          const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
+          if (m) pkg.scripts[m[1]] = m[2];
+        });
+        fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+      " "$overrides")
+    fi
   fi
 }
 

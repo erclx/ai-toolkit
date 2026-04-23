@@ -102,6 +102,8 @@ packages = []
 
 `[scripts]` injects into the `scripts` block of the target `package.json`. Only missing keys are added. Both key and value must use double quotes. Unquoted keys are not parsed.
 
+`[scripts.override]` force-replaces existing keys. Use it for scaffolds that ship an anti-pattern by default, such as `vite-react` shipping `build = tsc -b && vite build` that the web reference bans.
+
 `[gitignore]` appends to the target `.gitignore`. The quoted header becomes a comment, each path is appended as its own line. Additive only.
 
 ```toml
