@@ -29,7 +29,7 @@ All `.sh` files live under `scripts/`. Do not place shell scripts outside `scrip
 
 - `pre-commit` runs `lint-staged` (prettier, cspell, shfmt, shellcheck on staged files).
 - `commit-msg` runs `commitlint` against the conventional commit format.
-- `pre-push` runs `bun run check`. After pushing, run `git status`; if files changed, commit the diff as `style(<scope>):` and push again.
+- `pre-push` runs `bun run check`. After pushing, run `git status`. If files changed, commit the diff as `style(<scope>):` and push again.
 
 ## Reference
 
