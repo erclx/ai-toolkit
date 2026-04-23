@@ -20,7 +20,7 @@ Stack-specific configs override extends-chain configs at the same relative path.
 ## Manifest rules
 
 - In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped.
-- Version pins in `[dependencies.dev]` (e.g. `"eslint@^9"`) are preserved by `sync.sh` and `inject.sh` and passed to `bun add -D` intact. Pins only apply to new installs. Sync does not override a dep already present in `package.json`.
+- Version pins in `[dependencies.dev]` (e.g. `"eslint@^9"`) are enforced by major version. Sync compares the installed dep's major against the pin's major and re-installs on mismatch. Deps without pins are left alone when present.
 - `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
 
 ## Adding a new stack
@@ -39,12 +39,19 @@ When modifying files in `tooling/base/configs/`:
 When modifying `tooling/<stack>/configs/` or `tooling/<stack>/seeds/`:
 
 - Update `tooling/<stack>/reference.md` if the intent or rationale changed. Typo fixes and dictionary term additions do not count.
-- Validate headless by running the matching sandbox scenario end-to-end, not by eye. See `scripts/sandbox/claude/init-project.sh` for the fixture harness.
+- Validate headless via `aitk tooling verify <stack>`. Scaffolds into `.claude/.tmp/verify-<stack>/`, runs the full chain through `check`, `test:e2e`, and `screenshot`, and reports pass/fail per phase.
 
 When adding deps or scripts to `manifest.toml`:
 
 - Verify they don't conflict with the parent stack in the extends chain.
 - Scripts walk the extends chain too: child scripts override parent scripts on the same key name.
+
+## Verify command
+
+`aitk tooling verify <stack>` is the end-to-end validator. Scaffolds fresh, syncs, runs `lint:fix`, `check`, `test:e2e`, and `screenshot`, asserts screenshot artifacts, reports a results matrix. Use it after any change to `tooling/<stack>/`, `scripts/tooling/sync.sh`, or `scripts/lib/inject.sh`.
+
+- The `[verify] prepare` manifest field declares post-scaffold setup that runs before sync. Use for integrations that can not ship as golden configs (astro's `bunx astro add react`).
+- Tmp dir auto-removes on success. Keeps on failure. Use `--keep` to inspect after a green run.
 
 ## Cspell seeds
 

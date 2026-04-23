@@ -63,7 +63,7 @@ Generated files are derived from target state, not copied from a source. On inst
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched.
 
-Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Similar to seeds, only missing entries are added. Existing dependencies or scripts are not modified or overwritten.
+Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Missing entries are added. Existing scripts are never overwritten. Existing dependencies are preserved unless a manifest pin's major version does not match the installed major, in which case sync re-installs to enforce the pin.
 
 ## Extends chain
 
@@ -104,6 +104,13 @@ packages = []
 
 `[gitignore]` appends to the target `.gitignore`. The quoted header becomes a comment, each path is appended as its own line. Additive only.
 
+```toml
+[verify]
+prepare = "command to run after scaffold, before sync"
+```
+
+`[verify] prepare` declares a post-scaffold, pre-sync setup command for `aitk tooling verify`. Use it for integrations that can not ship as golden configs, like astro's `bunx astro add react --yes`. Optional.
+
 ## CLI
 
 | Command                           | What it does                                                                        |
@@ -113,6 +120,7 @@ packages = []
 | `aitk tooling ref [stack] [path]` | Sync reference docs only (no configs, seeds, or deps)                               |
 | `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation)  |
 | `aitk tooling list [--json]`      | Emit catalog of stacks with extends chain and dep summary                           |
+| `aitk tooling verify <stack>`     | Scaffold into `.claude/.tmp/`, sync, then run `check`, `test:e2e`, and `screenshot` |
 
 ## Common workflows
 
@@ -128,17 +136,18 @@ Scaffold a new stack: `aitk tooling create` generates the stub structure in `too
 
 ## Testing
 
-Each stack with golden configs has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `aitk` sandbox tooling. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms.
+`aitk tooling verify <stack>` is the end-to-end validator. It scaffolds fresh into `.claude/.tmp/verify-<stack>/`, runs the optional `[verify] prepare` hook, invokes `aitk tooling sync <stack> .`, then executes `bun run lint:fix`, `bun run check`, `bun run test:e2e`, and `bun run screenshot`, asserts screenshot artifacts, and reports a pass/fail matrix. The tmp dir auto-removes on success. Use `--keep` to inspect a green run, or rely on the auto-preserve on failure.
 
-Reference-only stacks like `vite-react` are validated by scaffolding a real project, letting the agent set up configs from the reference, and running `bun run check`.
+Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync logic in `scripts/tooling/sync.sh` and `scripts/lib/inject.sh`.
 
 ## Adding a new stack
 
 1. Run `aitk tooling create` to generate the stub structure
-2. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`
+2. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]` or `[verify]`
 3. Fill in `reference.md` with prose documentation
-4. For stacks with golden configs, add files to `configs/` and create `scripts/sandbox/tooling/<n>.sh`
-5. For reference-only stacks, add seed files to `seeds/` if needed
+4. Add golden configs to `configs/` for anything that ships as source of truth
+5. Add seed files to `seeds/` for user-owned files that accumulate over time
+6. Run `aitk tooling verify <name>` to validate end-to-end
 
 Sync auto-discovers the new stack.
 
