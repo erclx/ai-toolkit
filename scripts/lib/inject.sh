@@ -86,6 +86,8 @@ merge_seed_file() {
     return
   fi
 
+  [[ "$src" != *.txt ]] && return
+
   local added=0
   while IFS= read -r word; do
     [ -z "$word" ] && continue

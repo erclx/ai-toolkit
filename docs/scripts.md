@@ -137,13 +137,13 @@ Source this in any script that needs terminal output. `log_*` functions write to
 
 ### `inject.sh`
 
-Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds merge-only. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
+Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds preserve existing user edits. `.txt` seeds merge line-by-line and sort (cspell word lists). Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
 | Function                   | What it does                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------ |
 | `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack. |
 | `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                          |
-| `inject_tooling_seeds`     | Apply stack seeds to target. Merges into existing files, never overwrites.                 |
+| `inject_tooling_seeds`     | Apply stack seeds. `.txt` seeds merge and sort. Other seed types copy once, then skip.     |
 | `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                       |
 | `inject_governance`        | Copy governance rules into `.cursor/rules/` and standards into `standards/`.               |
 | `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                             |
