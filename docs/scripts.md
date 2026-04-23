@@ -137,7 +137,7 @@ Source this in any script that needs terminal output. `log_*` functions write to
 
 ### `inject.sh`
 
-Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds preserve existing user edits. `.txt` seeds merge line-by-line and sort (cspell word lists). Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
+Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds preserve user edits. `.txt` seeds are cspell word lists, so sync merges new lines and sorts the file. Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
 | Function                   | What it does                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------ |
