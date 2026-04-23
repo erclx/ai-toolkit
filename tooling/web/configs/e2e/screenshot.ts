@@ -12,7 +12,7 @@ import { chromium } from '@playwright/test'
 import { mkdir } from 'fs/promises'
 import path from 'path'
 
-const BASE_URL = 'http://localhost:4173'
+const BASE_URL = process.env.SCREENSHOT_BASE_URL ?? 'http://localhost:4173'
 const OUT_DIR = 'screenshots'
 
 const browser = await chromium.launch()

@@ -16,4 +16,3 @@ packages = [
 "preview" = "vite preview"
 "typecheck" = "tsc --noEmit"
 "setup" = "./scripts/setup.sh"
-"screenshot" = "bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts"

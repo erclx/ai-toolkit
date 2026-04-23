@@ -21,7 +21,7 @@ packages = [
 "astro" = "astro"
 "typecheck" = "astro check"
 "setup" = "./scripts/setup.sh"
-"screenshot" = "bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts"
+"screenshot" = "PREVIEW_PORT=4321 bash scripts/screenshot.sh"
 
 [gitignore]
 "# Astro" = [".astro/"]
