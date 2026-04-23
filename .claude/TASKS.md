@@ -39,18 +39,4 @@ Plan: .claude/plans/feature-<slug>.md
 
 ## Up next
 
-### Restructure tooling with a shared web layer and golden configs
-
-Plan: .claude/plans/feature-tooling-golden-configs.md
-
-Current per-stack references duplicate 80% of content and cannot be tested without invoking Claude against a sandbox. Introduce a `tooling/web/` layer carrying golden configs for web-universal tooling (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Per-stack folders shrink to framework adapters. Testability comes from a local verify script that scaffolds a fixture and asserts `bun run check` passes.
-
-- [x] Outcome: `tooling/web/` exists with golden configs and a thin anti-patterns reference.
-- [x] Outcome: `tooling/vite-react/` and `tooling/astro/` extend `web` and carry only framework-specific deltas.
-- [x] Outcome: `scripts/tooling/sync.sh` preserves version constraints in manifest package strings.
-- [x] Outcome: Sandbox vite-react and astro fixtures use `bun create vite@latest` and `bun create astro@latest` instead of hand-rolled files.
-- [x] Outcome: Headless sandbox validation of `vite-react` and `astro` scaffolds through `bun run check`. Both green after manual `bun add -d eslint@^9` (sync does not override create-vite's eslint v10) and an `App.tsx` → `app.tsx` rename (KEBAB_CASE rule).
-- [x] Outcome: `tooling/compat.md` removed, with its anti-patterns absorbed into the web reference.
-- [x] Outcome: `docs/tooling.md` updated to describe the `base` → `web` → framework layer chain.
-
-> Test strategy: manual, run the verify script against `vite-react` and `astro` and confirm both report green against current tool majors.
+### Nothing queued
