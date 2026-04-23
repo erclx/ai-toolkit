@@ -22,7 +22,7 @@ EOF
   git commit -m "chore(sandbox): scaffold tooling infra test directory" --no-verify -q
 
   log_step "Tooling sandbox"
-  log_info "sync   : syncs configs, seeds, deps, and gitignore for a stack"
+  log_info "sync   : syncs configs, seeds, deps, gitignore, and reference docs for a stack"
   log_info "ref    : drops reference docs only"
   log_info "create : creates a new stack stub"
   log_info "list   : read-only catalog dump, no target needed"

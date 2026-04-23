@@ -20,15 +20,17 @@ declare -A CONFIG_SOURCE_STACK
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Tooling sync usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling sync [stack] [target-path]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling sync [stack] [target-path] [--no-ref]"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  Syncs configs, seeds, deps, scripts, and gitignore entries."
+  echo -e "${GREY}│${NC}  Syncs configs, seeds, deps, scripts, gitignore entries, and reference docs."
+  echo -e "${GREY}│${NC}  Reference docs drop to target/tooling/<stack>.md across the extends chain."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack         Name of the tooling stack (e.g., base, vite-react)"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
+  echo -e "${GREY}│${NC}    --no-ref      ${GREY}# Skip dropping reference docs${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
   exit 0
@@ -287,6 +289,48 @@ collect_stack_deps() {
   done <"$manifest"
 }
 
+collect_stack_references() {
+  local stack="$1"
+  local target="$2"
+  local -n _ref_pending=$3
+  local -n _ref_matching=$4
+
+  local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
+  [ ! -f "$manifest" ] && return
+
+  local extends
+  extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    collect_stack_references "$extends" "$target" "$3" "$4"
+  fi
+
+  local reference_file="$PROJECT_ROOT/tooling/$stack/reference.md"
+  [ ! -f "$reference_file" ] && return
+
+  local dest="$target/tooling/$stack.md"
+
+  if [ -f "$dest" ] && diff -q "$reference_file" "$dest" >/dev/null 2>&1; then
+    _ref_matching+=("$stack")
+  else
+    _ref_pending+=("$stack")
+  fi
+}
+
+apply_stack_references() {
+  local target="$1"
+  shift
+  local stacks=("$@")
+
+  mkdir -p "$target/tooling"
+
+  for stack in "${stacks[@]}"; do
+    local src="$PROJECT_ROOT/tooling/$stack/reference.md"
+    cp "$src" "$target/tooling/$stack.md"
+    log_add "tooling/$stack.md"
+  done
+}
+
 scan_configs() {
   local stack="$1"
   local target="$2"
@@ -373,7 +417,22 @@ scan_configs() {
 
   GITIGNORE_CHANGES=${#GITIGNORE_MISSING_FILES[@]}
 
-  TOTAL_CHANGES=$((CONFIG_CHANGES + SEED_CHANGES + GITIGNORE_CHANGES + SCRIPT_CHANGES + DEP_CHANGES))
+  if [ "$INCLUDE_REFS" = "true" ]; then
+    log_step "Scanning references"
+
+    collect_stack_references "$stack" "$target" REF_PENDING REF_MATCHING
+
+    for s in "${REF_MATCHING[@]}"; do
+      log_info "tooling/$s.md"
+    done
+    for s in "${REF_PENDING[@]}"; do
+      log_add "tooling/$s.md"
+    done
+
+    REF_CHANGES=${#REF_PENDING[@]}
+  fi
+
+  TOTAL_CHANGES=$((CONFIG_CHANGES + SEED_CHANGES + GITIGNORE_CHANGES + SCRIPT_CHANGES + DEP_CHANGES + REF_CHANGES))
 }
 
 open_diffs() {
@@ -386,12 +445,33 @@ open_diffs() {
 }
 
 main() {
-  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    show_help
-  fi
+  local stack=""
+  local target=""
+  INCLUDE_REFS="true"
 
-  local stack="$1"
-  local target="${2:-.}"
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -h | --help)
+      show_help
+      ;;
+    --no-ref)
+      INCLUDE_REFS="false"
+      shift
+      ;;
+    *)
+      if [ -z "$stack" ]; then
+        stack="$1"
+      elif [ -z "$target" ]; then
+        target="$1"
+      else
+        log_error "Unexpected argument: $1"
+      fi
+      shift
+      ;;
+    esac
+  done
+
+  target="${target:-.}"
 
   echo -e "${GREY}┌${NC}" >&2
   echo -e "${GREY}│${NC} ${WHITE}aitk tooling sync${NC}" >&2
@@ -422,6 +502,8 @@ main() {
   MATCHING_SCRIPTS=()
   MISSING_DEPS=()
   PRESENT_DEPS=()
+  REF_PENDING=()
+  REF_MATCHING=()
   SEEN_CONFIGS=()
   SEEN_SEEDS=()
   SEEN_GITIGNORE=()
@@ -433,6 +515,7 @@ main() {
   GITIGNORE_CHANGES=0
   SCRIPT_CHANGES=0
   DEP_CHANGES=0
+  REF_CHANGES=0
   TOTAL_CHANGES=0
 
   scan_configs "$stack" "$target"
@@ -463,6 +546,10 @@ main() {
   if [ "${#GITIGNORE_MISSING_FILES[@]}" -gt 0 ]; then
     [ -n "$summary" ] && summary+=", "
     summary+="${#GITIGNORE_MISSING_FILES[@]} gitignore"
+  fi
+  if [ "$REF_CHANGES" -gt 0 ]; then
+    [ -n "$summary" ] && summary+=", "
+    summary+="${REF_CHANGES} refs"
   fi
 
   local has_diffs=false
@@ -501,6 +588,11 @@ main() {
   fi
 
   inject_tooling_manifest "$stack" "$target"
+
+  if [ "$REF_CHANGES" -gt 0 ]; then
+    log_step "Applying references"
+    apply_stack_references "$target" "${REF_PENDING[@]}"
+  fi
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
