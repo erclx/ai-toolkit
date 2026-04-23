@@ -264,10 +264,18 @@ collect_stack_deps() {
       continue
     fi
 
-    local pkg_name
-    pkg_name=$(echo "$line" | tr -d '"[],' | xargs)
-    if [[ "$pkg_name" != @* ]]; then
-      pkg_name="${pkg_name%%@*}"
+    local pkg_spec
+    pkg_spec=$(echo "$line" | tr -d '"[],' | xargs)
+    [ -z "$pkg_spec" ] && continue
+
+    local pkg_name="$pkg_spec"
+    if [[ "$pkg_spec" == @* ]]; then
+      local rest="${pkg_spec:1}"
+      if [[ "$rest" == *@* ]]; then
+        pkg_name="@${rest%%@*}"
+      fi
+    else
+      pkg_name="${pkg_spec%%@*}"
     fi
     [ -z "$pkg_name" ] && continue
 
@@ -282,7 +290,7 @@ collect_stack_deps() {
     " 2>/dev/null)
 
     if [ "$found" = "no" ]; then
-      _missing_deps+=("$pkg_name")
+      _missing_deps+=("$pkg_spec")
     else
       _present_deps+=("$pkg_name")
     fi
@@ -583,9 +591,7 @@ main() {
     inject_tooling_configs "$stack" "$target"
   fi
 
-  if [ "$SEED_CHANGES" -gt 0 ]; then
-    inject_tooling_seeds "$stack" "$target"
-  fi
+  inject_tooling_seeds "$stack" "$target"
 
   inject_tooling_manifest "$stack" "$target"
 
