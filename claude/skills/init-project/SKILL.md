@@ -7,6 +7,10 @@ description: Detects a new project's type and runs `aitk init` with resolved sta
 
 Orchestrates the onboarding chain. Detects project type, resolves per-domain arguments, previews the chain, then runs `aitk init` with flags. The CLI holds the install logic. This skill only resolves and previews.
 
+## Scope
+
+- This skill and `aitk init` run once on a fresh scaffold, never on an existing project. They do not guard against clobbering existing configs. When tempted to add guards, mode switches, or an existing-project branch, stop. Extend the per-domain `aitk <domain> install` or `aitk sync` paths instead.
+
 ## Read catalogs
 
 Run in parallel. Never hardcode stack, rule, snippet, or standards names. Run from the target project's current directory. Do not cd into the toolkit source tree. The `aitk` CLI is global.
