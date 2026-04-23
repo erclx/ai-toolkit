@@ -113,17 +113,17 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 
 Internal skills live in `.claude/skills/` and are toolkit-only. They are not installed into target projects.
 
-| Skill                 | Description                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `aitk-claude`         | Load before editing plugin skills, the CLAUDE.md seed, or `docs/claude.md`                              |
-| `aitk-gemini`         | Load before editing Gemini commands                                                                     |
-| `aitk-governance`     | Load before editing Cursor rules or stack definitions                                                   |
-| `aitk-prompts`        | Load before editing system prompt templates                                                             |
-| `aitk-scripts`        | Load before editing scripts or sandbox scenarios                                                        |
-| `aitk-snippets`       | Load before editing snippets                                                                            |
-| `aitk-standards`      | Load before editing standards or docs                                                                   |
-| `aitk-tooling`        | Load before editing tooling stacks or golden configs                                                    |
-| `aitk-sandbox-check`  | Audit changed plugin skills for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check`  |
+| Skill                | Description                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or `docs/claude.md`                             |
+| `aitk-gemini`        | Load before editing Gemini commands                                                                    |
+| `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                  |
+| `aitk-prompts`       | Load before editing system prompt templates                                                            |
+| `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                       |
+| `aitk-snippets`      | Load before editing snippets                                                                           |
+| `aitk-standards`     | Load before editing standards or docs                                                                  |
+| `aitk-tooling`       | Load before editing tooling stacks or golden configs                                                   |
+| `aitk-sandbox-check` | Audit changed plugin skills for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check` |
 
 ## CLI
 
