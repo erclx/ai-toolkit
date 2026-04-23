@@ -516,7 +516,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "sync" "prompt" "gov" "seeds" "roles"
+    select_option "Claude command?" "init" "sync" "prompt" "gov" "roles"
     command="$SELECTED_OPTION"
   else
     shift
