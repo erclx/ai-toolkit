@@ -282,15 +282,30 @@ collect_stack_deps() {
     [[ -v SEEN_DEPS["$pkg_name"] ]] && continue
     SEEN_DEPS["$pkg_name"]=1
 
-    local found
-    found=$(node -e "
+    local pin_constraint=""
+    if [ "$pkg_spec" != "$pkg_name" ]; then
+      pin_constraint="${pkg_spec#"$pkg_name"@}"
+    fi
+
+    local installed
+    installed=$(node -e "
       const p = JSON.parse(require('fs').readFileSync('$pkg'));
       const all = Object.assign({}, p.dependencies || {}, p.devDependencies || {});
-      process.stdout.write(all['$pkg_name'] !== undefined ? 'yes' : 'no');
+      const v = all['$pkg_name'];
+      process.stdout.write(v === undefined ? '__MISSING__' : v);
     " 2>/dev/null)
 
-    if [ "$found" = "no" ]; then
+    if [ "$installed" = "__MISSING__" ]; then
       _missing_deps+=("$pkg_spec")
+    elif [ -n "$pin_constraint" ]; then
+      local pin_major installed_major
+      pin_major=$(echo "$pin_constraint" | grep -oE '[0-9]+' | head -1)
+      installed_major=$(echo "$installed" | grep -oE '[0-9]+' | head -1)
+      if [ -n "$pin_major" ] && [ "$pin_major" != "$installed_major" ]; then
+        _missing_deps+=("$pkg_spec")
+      else
+        _present_deps+=("$pkg_name")
+      fi
     else
       _present_deps+=("$pkg_name")
     fi
