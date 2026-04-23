@@ -31,6 +31,8 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 
 Unit-test React island components (`.tsx`) only. Do not test `.astro` files. Page-level behavior is verified by Playwright against rendered output.
 
+Vitest is pinned to `^3` in the web manifest. Vitest `^4` bundles rolldown-vite (vite@8), which ignores the esbuild JSX config in `@vitejs/plugin-react` and breaks `.tsx` tests, plus emits deprecation warnings. Unpin once `@astrojs/react` ships a rolldown-aware plugin (or astro's bundled vite reaches 8).
+
 ## Setup script
 
 - File: `scripts/setup.sh`. Destructive: deletes `.git` and self-removes after running. Run once immediately after scaffolding.

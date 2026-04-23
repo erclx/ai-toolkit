@@ -21,6 +21,8 @@ packages = [
 "astro" = "astro"
 "typecheck" = "astro check"
 "setup" = "./scripts/setup.sh"
+
+[scripts.override]
 "screenshot" = "PREVIEW_PORT=4321 bash scripts/screenshot.sh"
 
 [gitignore]

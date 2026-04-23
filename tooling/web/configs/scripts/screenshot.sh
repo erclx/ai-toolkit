@@ -20,4 +20,4 @@ for _ in $(seq 1 40); do
   sleep 0.25
 done
 
-SCREENSHOT_BASE_URL="http://localhost:$PREVIEW_PORT" node --experimental-strip-types e2e/screenshot.ts
+SCREENSHOT_BASE_URL="http://localhost:$PREVIEW_PORT" bun e2e/screenshot.ts
