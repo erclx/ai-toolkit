@@ -20,7 +20,7 @@ Stack-specific configs override extends-chain configs at the same relative path.
 ## Manifest rules
 
 - In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped.
-- Version pins in `[dependencies.dev]` (e.g. `"eslint@^9"`) are preserved by `sync.sh` and `inject.sh` and passed to `bun add -D` intact. Pins only apply to NEW installs; sync does not override a dep already present in `package.json`.
+- Version pins in `[dependencies.dev]` (e.g. `"eslint@^9"`) are preserved by `sync.sh` and `inject.sh` and passed to `bun add -D` intact. Pins only apply to new installs. Sync does not override a dep already present in `package.json`.
 - `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
 
 ## Adding a new stack
@@ -48,7 +48,7 @@ When adding deps or scripts to `manifest.toml`:
 
 ## Cspell seeds
 
-Seed files merge across layers. Each stack contributes words to the target's `.cspell/tech-stack.txt` via `merge_seed_file` in `scripts/lib/inject.sh`. Do not duplicate terms across layers; place each word in the narrowest layer that needs it (toolkit-ecosystem → `base`, web-universal → `web`, framework-specific → the adapter).
+Seed files merge across layers. Each stack contributes words to the target's `.cspell/tech-stack.txt` via `merge_seed_file` in `scripts/lib/inject.sh`. Do not duplicate terms across layers. Place each word in the narrowest layer that needs it (toolkit-ecosystem → `base`, web-universal → `web`, framework-specific → the adapter).
 
 ## Reference
 

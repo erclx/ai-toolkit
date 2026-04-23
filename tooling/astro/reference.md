@@ -9,7 +9,7 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 ## Scaffold checklist
 
 1. Scaffold with `bunx create-astro@latest`. Choose `TypeScript: Strict`. Skip git init and install.
-2. Add React integration: `bunx astro add react`. Do not use `astro add tailwind`; that installs the v3 integration. Tailwind v4 arrives via the web manifest.
+2. Add React integration: `bunx astro add react`. Do not use `astro add tailwind`. That command installs the v3 integration. Tailwind v4 arrives via the web manifest.
 3. Install web tooling: `aitk tooling sync web .`
 4. Install astro adapter: `aitk tooling sync astro .`
 5. Extend `docs/ci.md` and `docs/development.md` per the web reference's extend sections plus the astro rows below.
@@ -17,11 +17,11 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 
 ## What ships as golden configs
 
-- `astro.config.mjs` — `@astrojs/react` integration, `@tailwindcss/vite` in `vite.plugins`, `@/` path alias via `vite.resolve.alias`, `ASTRO_SITE` env for the `site` field.
-- `vitest.config.ts` — uses `getViteConfig` from `astro/config` (not `mergeConfig`). jsdom, globals, setup file, `passWithNoTests: true`, v8 coverage, `**/*.astro` in coverage excludes.
-- `playwright.config.ts` — all browsers, `webServer` runs `bun run build && bun run preview` on port 4321. Astro's dev/prod gap is wide (MDX, island hydration, asset optimization), so E2E always tests the built `dist/`.
-- `tsconfig.json` — extends `astro/tsconfigs/strict`, adds `skipLibCheck`, `vitest/globals` and `@testing-library/jest-dom` in types, `@/` paths.
-- `eslint.config.js` — overrides the web layer. Adds `eslint-plugin-astro` (`.astro` parser via `astro-eslint-parser`). React-hooks scoped to `.jsx`/`.tsx` only (`.astro` is not React). `src/pages/**` exempt from filename and folder naming conventions because Astro's file-based routing ties names to URL segments.
+- `astro.config.mjs`: `@astrojs/react` integration, `@tailwindcss/vite` in `vite.plugins`, `@/` path alias via `vite.resolve.alias`, `ASTRO_SITE` env for the `site` field.
+- `vitest.config.ts`: uses `getViteConfig` from `astro/config` (not `mergeConfig`). jsdom, globals, setup file, `passWithNoTests: true`, v8 coverage, `**/*.astro` in coverage excludes.
+- `playwright.config.ts`: all browsers, `webServer` runs `bun run build && bun run preview` on port 4321. Astro's dev/prod gap is wide (MDX, island hydration, asset optimization), so E2E always tests the built `dist/`.
+- `tsconfig.json`: extends `astro/tsconfigs/strict`, adds `skipLibCheck`, `vitest/globals` and `@testing-library/jest-dom` in types, `@/` paths.
+- `eslint.config.js`: overrides the web layer. Adds `eslint-plugin-astro` (`.astro` parser via `astro-eslint-parser`). React-hooks scoped to `.jsx`/`.tsx` only (`.astro` is not React). `src/pages/**` exempt from filename and folder naming conventions because Astro's file-based routing ties names to URL segments.
 
 ## Typecheck
 

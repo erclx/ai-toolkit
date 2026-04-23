@@ -10,21 +10,21 @@ The web layer covers web-universal tooling shared across Vite + React, Astro, an
 
 Golden config files live in `tooling/web/configs/` and are copied into the target on `aitk tooling sync web .`. They are the source of truth. The reference narrates why they look the way they do, not what they contain.
 
-- `eslint.config.js` — flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
-- `src/test/setup.ts` — `@testing-library/jest-dom` import, `cleanup` after each test.
-- `e2e/screenshot.ts` — `CONFIG` and `ENGINE` split template. Per-project ROUTES or SURFACES edited in the CONFIG section only.
-- `.vscode/extensions.json` and `.vscode/settings.json` — editor wiring for ESLint, Tailwind, Playwright, Vitest.
-- `.github/workflows/verify.yml` — `static-checks`, `unit-tests`, `build-verify`, and `e2e-tests` jobs.
-- `scripts/verify.sh` — extends base verify with typecheck, lint, unit tests, and build in the full order.
+- `eslint.config.js`: flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
+- `src/test/setup.ts`: `@testing-library/jest-dom` import, `cleanup` after each test.
+- `e2e/screenshot.ts`: `CONFIG` and `ENGINE` split template. Per-project ROUTES or SURFACES edited in the CONFIG section only.
+- `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for ESLint, Tailwind, Playwright, Vitest.
+- `.github/workflows/verify.yml`: `static-checks`, `unit-tests`, `build-verify`, and `e2e-tests` jobs.
+- `scripts/verify.sh`: extends base verify with typecheck, lint, unit tests, and build in the full order.
 
 ## What stays in per-stack adapters
 
 Framework glue lives in `tooling/vite-react/configs/` or `tooling/astro/configs/` because the merge helpers and config shapes differ:
 
-- `vite.config.ts` or `astro.config.mjs` — the framework's config.
-- `vitest.config.ts` — uses `mergeConfig` in Vite stacks, `getViteConfig` from `astro/config` in Astro.
-- `playwright.config.ts` — `webServer` command differs per stack.
-- `tsconfig.json` — `extends` target differs (astro uses `astro/tsconfigs/strict`, Vite projects use scaffold defaults).
+- `vite.config.ts` or `astro.config.mjs`: the framework's config.
+- `vitest.config.ts`: uses `mergeConfig` in Vite stacks, `getViteConfig` from `astro/config` in Astro.
+- `playwright.config.ts`: `webServer` command differs per stack.
+- `tsconfig.json`: `extends` target differs. Astro uses `astro/tsconfigs/strict`. Vite projects use scaffold defaults.
 
 ## File layout
 
@@ -47,7 +47,7 @@ Sticky negative knowledge. Do not relearn.
 ## Tool pairing
 
 - Unit tests: Vitest with jsdom, globals on, setup file at `src/test/setup.ts`, `@testing-library/react`, `@testing-library/user-event`.
-- E2E: Playwright in `e2e/`. Chromium-only for Chrome extensions; all browsers for web apps.
+- E2E: Playwright in `e2e/`. Chromium-only for Chrome extensions, all browsers for web apps.
 - Tailwind: v4 via `@tailwindcss/vite`. Never the v3 integration.
 - Prettier: `prettier-plugin-tailwindcss` last in plugins array. Astro also adds `prettier-plugin-astro` first.
 
