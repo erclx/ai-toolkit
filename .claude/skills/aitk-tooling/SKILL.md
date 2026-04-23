@@ -17,6 +17,7 @@ Stack-specific configs override extends-chain configs at the same relative path.
 - Version pins in `[dependencies.dev]` (e.g. `"eslint@^9"`) are enforced by major version. Sync compares the installed dep's major against the pin's major and re-installs on mismatch. Deps without pins are left alone when present.
 - `[scripts]` entries add only when the key is missing in `package.json`. Scaffolds win for keys both sides define. Use `[scripts.override]` to force-replace a key, for anti-patterns the scaffold ships by default.
 - `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
+- When a golden config under `tooling/<stack>/configs/` extends or references a package, install that package as a devDependency at toolkit root. The deps are IDE-only, for TypeScript server resolution against the workspace `tsconfig.json`. Do not suppress via `.vscode/settings.json`.
 
 ## Adding a new stack
 
@@ -47,6 +48,10 @@ When adding deps or scripts to `manifest.toml`:
 
 - The `[verify] prepare` manifest field declares post-scaffold setup that runs before sync. Use for integrations that can not ship as golden configs (astro's `bunx astro add react`).
 - Tmp dir auto-removes on success. Keeps on failure. Use `--keep` to inspect after a green run.
+
+## Seed naming
+
+- Human-facing prose seeds under `tooling/*/seeds/` use lowercase filenames (`development.md`, `ci.md`). Reserve CAPS (`CLAUDE.md`, `TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`) for state and planning files that agents read as known paths.
 
 ## Cspell seeds
 
