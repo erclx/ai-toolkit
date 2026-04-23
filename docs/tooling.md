@@ -8,27 +8,39 @@ category: Domain references
 
 ## Overview
 
-The tooling system manages project setup through two mechanisms: golden configs for universal base tooling, and reference docs for stack-specific guidance. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
+The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
 
 ## Structure
 
 ```plaintext
 tooling/
 ├── base/
-│   ├── configs/       ← authoritative, always overwrite on sync
-│   ├── seeds/         ← user-owned, merge only (never overwrite)
+│   ├── configs/       ← authoritative, always overwrite on sync (prettier, cspell, commitlint, husky, shell)
+│   ├── seeds/         ← user-owned, merge only
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
-│   └── reference.md   ← prose intent and rationale (for humans and AI)
+│   └── reference.md
+├── web/
+│   ├── configs/       ← web-universal golden configs (eslint.config.js, src/test/setup.ts, e2e/screenshot.ts, .vscode, CI, verify.sh)
+│   ├── seeds/         ← cspell terms for web tooling
+│   ├── manifest.toml  ← extends = "base", shared web deps and scripts
+│   └── reference.md   ← anti-patterns and opinions only
 ├── vite-react/
+│   ├── configs/       ← framework glue (vite.config.ts, vitest.config.ts, playwright.config.ts, tsconfig.json)
 │   ├── seeds/         ← user-owned dictionary seeds
-│   ├── manifest.toml  ← extends = "base", deps, scripts, gitignore
-│   └── reference.md   ← unified guide for all TS web projects (React, Chrome, Astro, Next)
+│   ├── manifest.toml  ← extends = "web", vite deps and scripts
+│   └── reference.md   ← adapter delta: Chrome extension variant, setup script
+├── astro/
+│   ├── configs/       ← astro.config.mjs, getViteConfig vitest, astro tsconfig, astro-aware eslint
+│   ├── manifest.toml  ← extends = "web", astro deps and scripts
+│   └── reference.md   ← adapter delta: astro check, island scope, prettier-plugin-astro
 ├── gemini/
 │   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
 │   ├── manifest.toml  ← gitignore only, no deps or scripts
 │   └── reference.md
 └── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see docs/claude.md
 ```
+
+Stack-specific configs override the extends chain. `collect_stack_configs` in `scripts/tooling/sync.sh` walks the current stack first. Files seen there block the same relative path from being copied from parent layers.
 
 `tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
 
@@ -41,17 +53,17 @@ tooling/
 
 ## Configs, seeds, references, and generated files
 
-Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. Only the `base` stack ships golden configs.
+Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path.
 
 Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. The `base` stack also seeds `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
 
-References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. The `vite-react` stack is reference-only: the agent reads the reference and generates configs adapted to the specific project. No golden configs are shipped for stack-specific tooling.
+References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
 
 Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched.
 
-Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Similar to seeds, only missing entries are added. Existing dependencies or scripts are not modified or overwritten.
+Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Missing entries are added. Existing scripts are never overwritten. Existing dependencies are preserved unless a manifest pin's major version does not match the installed major, in which case sync re-installs to enforce the pin.
 
 ## Extends chain
 
@@ -90,7 +102,16 @@ packages = []
 
 `[scripts]` injects into the `scripts` block of the target `package.json`. Only missing keys are added. Both key and value must use double quotes. Unquoted keys are not parsed.
 
+`[scripts.override]` force-replaces existing keys. Use it for scaffolds that ship an anti-pattern by default, such as `vite-react` shipping `build = tsc -b && vite build` that the web reference bans.
+
 `[gitignore]` appends to the target `.gitignore`. The quoted header becomes a comment, each path is appended as its own line. Additive only.
+
+```toml
+[verify]
+prepare = "command to run after scaffold, before sync"
+```
+
+`[verify] prepare` declares a post-scaffold, pre-sync setup command for `aitk tooling verify`. Use it for integrations that can not ship as golden configs, like astro's `bunx astro add react --yes`. Optional.
 
 ## CLI
 
@@ -101,6 +122,7 @@ packages = []
 | `aitk tooling ref [stack] [path]` | Sync reference docs only (no configs, seeds, or deps)                               |
 | `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation)  |
 | `aitk tooling list [--json]`      | Emit catalog of stacks with extends chain and dep summary                           |
+| `aitk tooling verify <stack>`     | Scaffold into `.claude/.tmp/`, sync, then run `check`, `test:e2e`, and `screenshot` |
 
 ## Common workflows
 
@@ -116,17 +138,18 @@ Scaffold a new stack: `aitk tooling create` generates the stub structure in `too
 
 ## Testing
 
-Each stack with golden configs has a sandbox at `scripts/sandbox/tooling/<stack>.sh`. Run via `aitk` sandbox tooling. The sandbox provisions a project, injects configs and seeds, installs deps, and runs the full `verify.sh` pipeline. It catches config typos, version incompatibilities, and missing dictionary terms.
+`aitk tooling verify <stack>` is the end-to-end validator. It scaffolds fresh into `.claude/.tmp/verify-<stack>/`, runs the optional `[verify] prepare` hook, invokes `aitk tooling sync <stack> .`, then executes `bun run lint:fix`, `bun run check`, `bun run test:e2e`, and `bun run screenshot`, asserts screenshot artifacts, and reports a pass/fail matrix. The tmp dir auto-removes on success. Use `--keep` to inspect a green run, or rely on the auto-preserve on failure.
 
-Reference-only stacks like `vite-react` are validated by scaffolding a real project, letting the agent set up configs from the reference, and running `bun run check`.
+Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync logic in `scripts/tooling/sync.sh` and `scripts/lib/inject.sh`.
 
 ## Adding a new stack
 
 1. Run `aitk tooling create` to generate the stub structure
-2. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]`
+2. Fill in `manifest.toml` with `extends`, deps, scripts, and optionally `[gitignore]` or `[verify]`
 3. Fill in `reference.md` with prose documentation
-4. For stacks with golden configs, add files to `configs/` and create `scripts/sandbox/tooling/<n>.sh`
-5. For reference-only stacks, add seed files to `seeds/` if needed
+4. Add golden configs to `configs/` for anything that ships as source of truth
+5. Add seed files to `seeds/` for user-owned files that accumulate over time
+6. Run `aitk tooling verify <name>` to validate end-to-end
 
 Sync auto-discovers the new stack.
 

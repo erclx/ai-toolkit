@@ -124,7 +124,6 @@ inject_tooling_seeds() {
   while IFS= read -r file; do
     local rel="${file#"$seeds_dir"/}"
     local dest="$target_path/$rel"
-    [ -f "$dest" ] && continue
     merge_seed_file "$file" "$dest"
     log_add "$rel"
   done < <(find "$seeds_dir" -type f | sort)
@@ -273,24 +272,132 @@ resolve_missing_deps() {
     [ -z "$line" ] && continue
     [[ "$line" =~ ^packages ]] && continue
 
-    local pkg_name
-    pkg_name=$(echo "$line" | tr -d '"[],' | xargs)
-    if [[ "$pkg_name" != @* ]]; then
-      pkg_name="${pkg_name%%@*}"
+    local pkg_spec
+    pkg_spec=$(echo "$line" | tr -d '"[],' | xargs)
+    [ -z "$pkg_spec" ] && continue
+
+    local pkg_name="$pkg_spec"
+    if [[ "$pkg_spec" == @* ]]; then
+      local rest="${pkg_spec:1}"
+      if [[ "$rest" == *@* ]]; then
+        pkg_name="@${rest%%@*}"
+      fi
+    else
+      pkg_name="${pkg_spec%%@*}"
     fi
     [ -z "$pkg_name" ] && continue
 
-    local found
-    found=$(node -e "
+    local pin_constraint=""
+    if [ "$pkg_spec" != "$pkg_name" ]; then
+      pin_constraint="${pkg_spec#"$pkg_name"@}"
+    fi
+
+    local installed
+    installed=$(node -e "
       const p = JSON.parse(require('fs').readFileSync('$pkg'));
       const all = Object.assign({}, p.dependencies, p.devDependencies);
-      process.stdout.write(all['$pkg_name'] !== undefined ? 'yes' : 'no');
+      const v = all['$pkg_name'];
+      process.stdout.write(v === undefined ? '__MISSING__' : v);
     " 2>/dev/null)
 
-    if [ "$found" = "no" ]; then
-      _missing+=("$pkg_name")
+    if [ "$installed" = "__MISSING__" ]; then
+      _missing+=("$pkg_spec")
+    elif [ -n "$pin_constraint" ]; then
+      local pin_major installed_major
+      pin_major=$(echo "$pin_constraint" | grep -oE '[0-9]+' | head -1)
+      installed_major=$(echo "$installed" | grep -oE '[0-9]+' | head -1)
+      if [ -n "$pin_major" ] && [ "$pin_major" != "$installed_major" ]; then
+        _missing+=("$pkg_spec")
+      fi
     fi
   done <"$manifest"
+}
+
+apply_stack_scripts() {
+  local stack_name="$1"
+  local target_path="$2"
+  local manifest="$PROJECT_ROOT/tooling/$stack_name/manifest.toml"
+
+  [ ! -f "$manifest" ] && return
+
+  local extends
+  extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
+
+  [ ! -f "$target_path/package.json" ] && return
+
+  local scripts
+  scripts=$(awk '/^\[scripts\][[:space:]]*$/{f=1; next} /^\[/{f=0} f' "$manifest")
+
+  local to_apply_keys=()
+  local to_apply_vals=()
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\"([^\"]+)\"[[:space:]]*=[[:space:]]*\"(.*)\"[[:space:]]*$ ]]; then
+      local key="${BASH_REMATCH[1]}"
+      local val="${BASH_REMATCH[2]}"
+      local pkg_val
+      pkg_val=$(node -e "
+        const p = JSON.parse(require('fs').readFileSync('$target_path/package.json'));
+        process.stdout.write(p.scripts && p.scripts['$key'] !== undefined ? p.scripts['$key'] : '__MISSING__');
+      " 2>/dev/null)
+
+      if [ "$pkg_val" = "__MISSING__" ]; then
+        to_apply_keys+=("$key")
+        to_apply_vals+=("$val")
+      fi
+    fi
+  done <<<"$scripts"
+
+  if [ "${#to_apply_keys[@]}" -gt 0 ]; then
+    log_step "Applying $stack_name scripts"
+    for key in "${to_apply_keys[@]}"; do
+      log_add "$key"
+    done
+
+    (cd "$target_path" && node -e "
+      const fs = require('fs');
+      const pkg = JSON.parse(fs.readFileSync('package.json'));
+      pkg.scripts = pkg.scripts || {};
+      process.argv[1].split('\n').forEach(line => {
+        const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
+        if (m && pkg.scripts[m[1]] === undefined) pkg.scripts[m[1]] = m[2];
+      });
+      fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+    " "$scripts")
+  fi
+
+  if [ -n "$extends" ]; then
+    apply_stack_scripts "$extends" "$target_path"
+  fi
+
+  local overrides
+  overrides=$(awk '/^\[scripts\.override\]/{f=1; next} /^\[/{f=0} f' "$manifest")
+  if [ -n "$overrides" ]; then
+    local override_keys=()
+    while IFS= read -r line; do
+      if [[ "$line" =~ ^\"([^\"]+)\"[[:space:]]*=[[:space:]]*\"(.*)\"[[:space:]]*$ ]]; then
+        override_keys+=("${BASH_REMATCH[1]}")
+      fi
+    done <<<"$overrides"
+
+    if [ "${#override_keys[@]}" -gt 0 ]; then
+      log_step "Applying $stack_name script overrides"
+      for key in "${override_keys[@]}"; do
+        log_add "$key"
+      done
+
+      (cd "$target_path" && node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('package.json'));
+        pkg.scripts = pkg.scripts || {};
+        process.argv[1].split('\n').forEach(line => {
+          const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
+          if (m) pkg.scripts[m[1]] = m[2];
+        });
+        fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+      " "$overrides")
+    fi
+  fi
 }
 
 inject_tooling_manifest() {
@@ -311,50 +418,7 @@ inject_tooling_manifest() {
     done
   fi
 
-  if [ -f "$target_path/package.json" ]; then
-    local scripts
-    scripts=$(awk '/^\[scripts\]/{f=1; next} /^\[/{f=0} f' "$manifest")
-
-    if [ -n "$scripts" ]; then
-      local to_apply_keys=()
-      local to_apply_vals=()
-
-      while IFS= read -r line; do
-        if [[ "$line" =~ ^\"([^\"]+)\"[[:space:]]*=[[:space:]]*\"(.*)\"[[:space:]]*$ ]]; then
-          local key="${BASH_REMATCH[1]}"
-          local val="${BASH_REMATCH[2]}"
-          local pkg_val
-          pkg_val=$(node -e "
-            const p = JSON.parse(require('fs').readFileSync('$target_path/package.json'));
-            process.stdout.write(p.scripts && p.scripts['$key'] !== undefined ? p.scripts['$key'] : '__MISSING__');
-          " 2>/dev/null)
-
-          if [ "$pkg_val" = "__MISSING__" ]; then
-            to_apply_keys+=("$key")
-            to_apply_vals+=("$val")
-          fi
-        fi
-      done <<<"$scripts"
-
-      if [ "${#to_apply_keys[@]}" -gt 0 ]; then
-        log_step "Applying $stack_name scripts"
-        for key in "${to_apply_keys[@]}"; do
-          log_add "$key"
-        done
-
-        (cd "$target_path" && node -e "
-          const fs = require('fs');
-          const pkg = JSON.parse(fs.readFileSync('package.json'));
-          pkg.scripts = pkg.scripts || {};
-          process.argv[1].split('\n').forEach(line => {
-            const m = line.match(/^\s*\"([^\"]+)\"\s*=\s*\"(.*)\"\s*$/);
-            if (m) pkg.scripts[m[1]] = m[2];
-          });
-          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-        " "$scripts")
-      fi
-    fi
-  fi
+  apply_stack_scripts "$stack_name" "$target_path"
 
   merge_gitignore "$stack_name" "$target_path"
 }

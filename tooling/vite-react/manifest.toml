@@ -1,60 +1,21 @@
 [stack]
 name = "vite-react"
-extends = "base"
+extends = "web"
 runtime = "bun"
-scaffold = ""
+scaffold = "bun create vite@latest {{name}} --template react-ts"
 
 [dependencies.dev]
 packages = [
-  "eslint",
-  "eslint-config-prettier",
-  "eslint-plugin-check-file",
-  "eslint-plugin-react-hooks",
-  "eslint-plugin-react-refresh",
-  "eslint-plugin-simple-import-sort",
-  "eslint-plugin-vitest",
-  "globals",
-  "typescript-eslint",
-  "@eslint/js",
-  "typescript",
-  "@types/react",
-  "@types/react-dom",
-  "@types/node",
-  "vitest",
-  "@vitest/coverage-v8",
-  "@vitest/ui",
-  "jsdom",
-  "@testing-library/react",
-  "@testing-library/jest-dom",
-  "@testing-library/user-event",
-  "@playwright/test",
   "vite",
   "@vitejs/plugin-react",
-  "tailwindcss",
-  "@tailwindcss/vite",
-  "prettier-plugin-tailwindcss",
 ]
 
 [scripts]
 "dev" = "vite"
-"build" = "tsc -b && vite build"
+"build" = "tsc --noEmit && vite build"
 "preview" = "vite preview"
-"lint" = "eslint . --max-warnings 0"
-"lint:fix" = "eslint . --fix --max-warnings 0"
 "typecheck" = "tsc --noEmit"
-"test" = "vitest"
-"test:run" = "vitest run --reporter=verbose"
-"test:ui" = "vitest --ui"
-"test:coverage" = "vitest run --coverage"
-"test:e2e" = "playwright test"
-"test:e2e:ui" = "playwright test --ui"
-"test:e2e:report" = "playwright show-report"
-"check:full" = "./scripts/verify.sh && bun run test:e2e"
 "setup" = "./scripts/setup.sh"
-"screenshot" = "bun run build && bun run preview & sleep 2 && node --experimental-strip-types e2e/screenshot.ts"
 
-[gitignore]
-"# Build" = ["dist/"]
-"# Coverage" = ["coverage/"]
-"# Playwright" = ["test-results/", "playwright-report/", "blob-report/", "playwright/.cache/", "screenshots/"]
-"# VS Code" = [".vscode/*", "!.vscode/extensions.json", "!.vscode/settings.json"]
+[scripts.override]
+"build" = "tsc --noEmit && vite build"

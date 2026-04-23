@@ -181,10 +181,6 @@ collect_stack_scripts() {
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
 
-  if [ -n "$extends" ]; then
-    collect_stack_scripts "$extends" "$target" "$3" "$4" "$5"
-  fi
-
   local pkg="$target/package.json"
   [ ! -f "$pkg" ] && return
 
@@ -225,6 +221,10 @@ collect_stack_scripts() {
       fi
     fi
   done <"$manifest"
+
+  if [ -n "$extends" ]; then
+    collect_stack_scripts "$extends" "$target" "$3" "$4" "$5"
+  fi
 }
 
 collect_stack_deps() {
@@ -264,25 +264,48 @@ collect_stack_deps() {
       continue
     fi
 
-    local pkg_name
-    pkg_name=$(echo "$line" | tr -d '"[],' | xargs)
-    if [[ "$pkg_name" != @* ]]; then
-      pkg_name="${pkg_name%%@*}"
+    local pkg_spec
+    pkg_spec=$(echo "$line" | tr -d '"[],' | xargs)
+    [ -z "$pkg_spec" ] && continue
+
+    local pkg_name="$pkg_spec"
+    if [[ "$pkg_spec" == @* ]]; then
+      local rest="${pkg_spec:1}"
+      if [[ "$rest" == *@* ]]; then
+        pkg_name="@${rest%%@*}"
+      fi
+    else
+      pkg_name="${pkg_spec%%@*}"
     fi
     [ -z "$pkg_name" ] && continue
 
     [[ -v SEEN_DEPS["$pkg_name"] ]] && continue
     SEEN_DEPS["$pkg_name"]=1
 
-    local found
-    found=$(node -e "
+    local pin_constraint=""
+    if [ "$pkg_spec" != "$pkg_name" ]; then
+      pin_constraint="${pkg_spec#"$pkg_name"@}"
+    fi
+
+    local installed
+    installed=$(node -e "
       const p = JSON.parse(require('fs').readFileSync('$pkg'));
       const all = Object.assign({}, p.dependencies || {}, p.devDependencies || {});
-      process.stdout.write(all['$pkg_name'] !== undefined ? 'yes' : 'no');
+      const v = all['$pkg_name'];
+      process.stdout.write(v === undefined ? '__MISSING__' : v);
     " 2>/dev/null)
 
-    if [ "$found" = "no" ]; then
-      _missing_deps+=("$pkg_name")
+    if [ "$installed" = "__MISSING__" ]; then
+      _missing_deps+=("$pkg_spec")
+    elif [ -n "$pin_constraint" ]; then
+      local pin_major installed_major
+      pin_major=$(echo "$pin_constraint" | grep -oE '[0-9]+' | head -1)
+      installed_major=$(echo "$installed" | grep -oE '[0-9]+' | head -1)
+      if [ -n "$pin_major" ] && [ "$pin_major" != "$installed_major" ]; then
+        _missing_deps+=("$pkg_spec")
+      else
+        _present_deps+=("$pkg_name")
+      fi
     else
       _present_deps+=("$pkg_name")
     fi
@@ -583,9 +606,7 @@ main() {
     inject_tooling_configs "$stack" "$target"
   fi
 
-  if [ "$SEED_CHANGES" -gt 0 ]; then
-    inject_tooling_seeds "$stack" "$target"
-  fi
+  inject_tooling_seeds "$stack" "$target"
 
   inject_tooling_manifest "$stack" "$target"
 

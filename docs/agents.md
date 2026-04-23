@@ -150,6 +150,9 @@ AITK_NON_INTERACTIVE=1 aitk tooling create astro
 # Sync a stack into a target project
 AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project
 
+# Verify a stack end-to-end in a throwaway scaffold
+aitk tooling verify vite-react
+
 # Install a snippet
 AITK_NON_INTERACTIVE=1 aitk snippets install base /path/to/project
 
