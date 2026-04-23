@@ -25,3 +25,6 @@ packages = [
 
 [gitignore]
 "# Astro" = [".astro/"]
+
+[verify]
+prepare = "bunx astro add react --yes"
