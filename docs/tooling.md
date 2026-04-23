@@ -8,27 +8,39 @@ category: Domain references
 
 ## Overview
 
-The tooling system manages project setup through two mechanisms: golden configs for universal base tooling, and reference docs for stack-specific guidance. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
+The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
 
 ## Structure
 
 ```plaintext
 tooling/
 ├── base/
-│   ├── configs/       ← authoritative, always overwrite on sync
-│   ├── seeds/         ← user-owned, merge only (never overwrite)
+│   ├── configs/       ← authoritative, always overwrite on sync (prettier, cspell, commitlint, husky, shell)
+│   ├── seeds/         ← user-owned, merge only
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
-│   └── reference.md   ← prose intent and rationale (for humans and AI)
+│   └── reference.md
+├── web/
+│   ├── configs/       ← web-universal golden configs (eslint.config.js, src/test/setup.ts, e2e/screenshot.ts, .vscode, CI, verify.sh)
+│   ├── seeds/         ← cspell terms for web tooling
+│   ├── manifest.toml  ← extends = "base", shared web deps and scripts
+│   └── reference.md   ← anti-patterns and opinions only
 ├── vite-react/
+│   ├── configs/       ← framework glue (vite.config.ts, vitest.config.ts, playwright.config.ts, tsconfig.json)
 │   ├── seeds/         ← user-owned dictionary seeds
-│   ├── manifest.toml  ← extends = "base", deps, scripts, gitignore
-│   └── reference.md   ← unified guide for all TS web projects (React, Chrome, Astro, Next)
+│   ├── manifest.toml  ← extends = "web", vite deps and scripts
+│   └── reference.md   ← adapter delta: Chrome extension variant, setup script
+├── astro/
+│   ├── configs/       ← astro.config.mjs, getViteConfig vitest, astro tsconfig, astro-aware eslint
+│   ├── manifest.toml  ← extends = "web", astro deps and scripts
+│   └── reference.md   ← adapter delta: astro check, island scope, prettier-plugin-astro
 ├── gemini/
 │   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
 │   ├── manifest.toml  ← gitignore only, no deps or scripts
 │   └── reference.md
 └── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see docs/claude.md
 ```
+
+Stack-specific configs override the extends chain. `collect_stack_configs` in `scripts/tooling/sync.sh` walks the current stack first; files seen there block the same relative path from being copied from parent layers.
 
 `tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
 
@@ -41,11 +53,11 @@ tooling/
 
 ## Configs, seeds, references, and generated files
 
-Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. Only the `base` stack ships golden configs.
+Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path.
 
 Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/`) accumulate project-specific terms over time. The `base` stack also seeds `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Sync appends only what is missing and never overwrites.
 
-References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. The `vite-react` stack is reference-only: the agent reads the reference and generates configs adapted to the specific project. No golden configs are shipped for stack-specific tooling.
+References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They explain the "why" the configs cannot, not the "what" they already do.
 
 Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 

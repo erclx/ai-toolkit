@@ -79,13 +79,19 @@ AITK_NON_INTERACTIVE=1 aitk init \
 
 Omit any flag whose resolved value is empty.
 
-Step 2: `aitk tooling sync <tooling-stack>` installs stack deps, scripts, gitignore entries, seeds, and drops the reference doc. Skip if the tooling stack is `base` (already synced by `aitk init`).
+Step 2: `aitk tooling sync <tooling-stack>` installs stack deps, scripts, gitignore entries, seeds, golden configs, and drops the reference doc. The extends chain is walked, so syncing `vite-react` also pulls `web` and `base` configs. Skip if the tooling stack is `base` (already synced by `aitk init`).
 
 ```bash
 AITK_NON_INTERACTIVE=1 aitk tooling sync <tooling-stack> <target>
 ```
 
-Step 3: follow the reference. Read `<target>/tooling/<tooling-stack>.md` and generate the configs, setup scripts, and tsconfig updates it describes. Update `<target>/docs/ci.md` and `<target>/docs/development.md` per the reference's extend sections.
+Step 3: post-sync fixups. Golden configs arrive from sync, so no config generation is required. But a few items may need a one-time touch:
+
+- **ESLint version pin.** If `bun create vite` installed `eslint@^10` and the manifest pins `eslint@^9`, sync does not override a present dep. Run `bun add -d eslint@^9` if `bun run lint:fix` fails with `Class extends value undefined`.
+- **File naming.** `bun create vite`'s `App.tsx` violates the `KEBAB_CASE` rule. Rename to `app.tsx` and update the import in `main.tsx`.
+- **Docs.** Open `<target>/tooling/<tooling-stack>.md` and `<target>/tooling/web.md` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
+
+Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files. Generating from prose duplicates what sync already installed.
 
 Step 4: invoke `verify-scaffold`. Runs the `package.json` scripts and reports pass/fail.
 
@@ -94,8 +100,8 @@ Step 4: invoke `verify-scaffold`. Runs the `package.json` scripts and reports pa
 After the chain, report:
 
 - Domains installed with a check per domain
-- Tooling stack synced (or skipped)
-- Reference-driven config files created
+- Tooling stack synced (or skipped). Name the layers pulled via the extends chain.
+- Any post-sync fixups applied (ESLint pin, filename renames)
 - `verify-scaffold` outcome
 - Any domains or scripts that failed
 - Any detection gaps surfaced during resolve
