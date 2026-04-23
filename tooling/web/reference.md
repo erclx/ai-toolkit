@@ -8,7 +8,7 @@ The web layer covers web-universal tooling shared across Vite + React, Astro, an
 
 ## What ships as golden configs
 
-Golden config files live in `tooling/web/configs/` and are copied into the target on `aitk tooling sync web .`. They are the source of truth. The reference narrates why they look the way they do, not what they contain.
+Golden config files live in `tooling/web/configs/` and are copied into the target on `aitk tooling sync web .`. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
 
 - `eslint.config.js`: flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
 - `src/test/setup.ts`: `@testing-library/jest-dom` import, `cleanup` after each test.
@@ -56,7 +56,7 @@ Sticky negative knowledge. Do not relearn.
 - Base ships `.prettierrc` with `semi: false`, `singleQuote: true`. Web layer adds `jsxSingleQuote: true` and `prettier-plugin-tailwindcss` via the manifest.
 - Per-stack overrides go in the stack's configs (Astro adds `prettier-plugin-astro` and the `.astro` parser override).
 
-## Lint-Staged (extend)
+## lint-staged (extend)
 
 - Add `**/*.{js,jsx,ts,tsx}` glob running `eslint --fix --max-warnings 0`, `prettier --write`, `cspell --no-must-find-files`.
 - Extend the prettier glob to include `css`: `**/*.{json,css,md,mdc}`.

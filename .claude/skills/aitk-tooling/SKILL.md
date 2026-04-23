@@ -9,13 +9,7 @@ Read `docs/tooling.md` for system overview, configs vs seeds vs references, exte
 
 ## Layer model
 
-Three layers, each with its own folder under `tooling/`:
-
-- `base`: universal (prettier, cspell, commitlint, husky, shell tooling).
-- `web`: web-universal (ESLint flat config, Vitest, Playwright, Tailwind v4, screenshots, CI workflow, VS Code). Extends `base`.
-- Framework adapters (`vite-react`, `astro`): ship only the framework-specific deltas (framework config, vitest merge helper, tsconfig adapter). Extend `web`.
-
-Stack-specific configs override extends-chain configs at the same relative path. `collect_stack_configs` in `scripts/tooling/sync.sh` walks current-first.
+Stack-specific configs override extends-chain configs at the same relative path. `collect_stack_configs` in `scripts/tooling/sync.sh` walks current-first. Refer to `docs/tooling.md` for the layer inventory and what each one owns.
 
 ## Manifest rules
 

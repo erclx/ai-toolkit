@@ -1,4 +1,4 @@
-# Tooling astro reference
+# Tooling Astro reference
 
 > Extends: `web`. Apply web stack first.
 
