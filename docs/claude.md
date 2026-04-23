@@ -39,7 +39,8 @@ claude/
 │   ├── init-project/        ← detect project type and run one-shot `aitk init` with resolved flags
 │   ├── release-changelog/   ← generate changelog entry from commits and staged changes since main
 │   ├── session-resume/      ← resume from tracked work and relevant context at session start
-│   └── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
+│   ├── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
+│   └── verify-scaffold/     ← run package.json scripts after scaffold to catch config and wiring mistakes
 └── .claude-plugin/
     └── plugin.json      ← plugin manifest
 
@@ -104,6 +105,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-ship`              | Run the full post-feature workflow in one sequence                                      |
 | `session-resume`        | Resume from tracked work and relevant context at session start                          |
 | `systematic-debugging`  | Enforce root-cause investigation before fixes when a test fails or a bug surfaces       |
+| `verify-scaffold`       | Run `package.json` scripts after scaffold to catch config and wiring mistakes           |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `experiment`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 

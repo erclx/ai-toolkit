@@ -14,8 +14,9 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 4. Install astro deps: `aitk tooling sync astro .`
 5. Create: `eslint.config.js`, `vitest.config.ts`, `playwright.config.ts`
 6. Create: `src/test/setup.ts`, `e2e/screenshot.ts`, `tsconfig.e2e.json`
-7. Run `bun run lint:fix` to auto-fix scaffolded files
-8. Run `bun run check` to verify
+7. Update `docs/ci.md` and `docs/development.md` per the extend sections below
+8. Run `bun run lint:fix` to auto-fix scaffolded files
+9. Run `bun run check` to verify
 
 ## Prettier (extend)
 
@@ -132,6 +133,36 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 - `unit-tests`: `bun run test:coverage`.
 - `build-verify`: `bun run build`.
 - `e2e-tests` (depends on all above): cache Playwright browsers, install browsers if cache miss, run `test:e2e`, upload report artifact on failure (7 day retention).
+
+## CI docs (extend)
+
+Extend `docs/ci.md` so the `## Checks` table reflects the stack's CI jobs.
+
+- Append to the `## Checks` table:
+  | Astro check | `bun run typecheck` | `astro check` passes |
+  | Lint | `bun run lint` | ESLint passes with zero warnings |
+  | Tests | `bun run test:coverage` | Vitest passes with coverage thresholds |
+  | Build | `bun run build` | `astro build` succeeds |
+  | E2E | `bun run test:e2e` | Playwright passes against `dist/` |
+- Under `## Running CI locally`, document that `bun run check:full` runs verify plus `test:e2e`.
+
+## Development docs (extend)
+
+Extend `docs/development.md` so the `## Scripts` table lists every stack script the user interacts with.
+
+- Append to the `## Scripts` table:
+  | `bun run dev` | Start the Astro dev server on port 4321. |
+  | `bun run build` | Run `astro check` then build the static output. |
+  | `bun run preview` | Serve the built site locally. |
+  | `bun run astro` | Expose the Astro CLI (`astro add`, `astro sync`). |
+  | `bun run typecheck` | Run `astro check`. |
+  | `bun run lint` | Run ESLint with zero warnings allowed. |
+  | `bun run lint:fix` | Auto-fix ESLint issues. |
+  | `bun run test` | Run Vitest in watch mode against React islands. |
+  | `bun run test:run` | Run Vitest once with verbose reporter. |
+  | `bun run test:coverage` | Run Vitest with coverage. |
+  | `bun run test:e2e` | Run Playwright E2E tests against `dist/`. |
+  | `bun run screenshot` | Build, preview, then capture screenshots. |
 
 ## VS Code (extend)
 

@@ -94,21 +94,23 @@ packages = []
 
 ## CLI
 
-| Command                           | What it does                                                                       |
-| --------------------------------- | ---------------------------------------------------------------------------------- |
-| `aitk init [path] [flags]`        | Bootstrap a project with base tooling and toolkit domains                          |
-| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore                                         |
-| `aitk tooling ref [stack] [path]` | Sync reference docs for a stack and its parents                                    |
-| `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation) |
-| `aitk tooling list [--json]`      | Emit catalog of stacks with extends chain and dep summary                          |
+| Command                           | What it does                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------- |
+| `aitk init [path] [flags]`        | Bootstrap a project with base tooling and toolkit domains                           |
+| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore, and reference docs (`--no-ref` to skip) |
+| `aitk tooling ref [stack] [path]` | Sync reference docs only (no configs, seeds, or deps)                               |
+| `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation)  |
+| `aitk tooling list [--json]`      | Emit catalog of stacks with extends chain and dep summary                           |
 
 ## Common workflows
 
 Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, snippets, and wiki in one command. Optional domains (standards, prompts, antigravity) are offered interactively. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,prompts,antigravity`, `--skip wiki`. The `init-project` skill resolves these from project detection and runs the chain in one shot.
 
-Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, and seeds (no configs to copy).
+Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop.
 
-Drop reference docs: `aitk tooling ref vite-react ../my-app` copies `tooling/vite-react.md` to the target project for the agent to use.
+Drop reference docs only: `aitk tooling ref vite-react ../my-app` copies `tooling/vite-react.md` without touching configs, seeds, or deps. Useful when the stack is already synced and only the reference needs refreshing.
+
+Update CI and development docs: the base tooling seeds `docs/ci.md` and `docs/development.md` with the base-level checks and scripts. Stack `reference.md` files contain `## CI docs (extend)` and `## Development docs (extend)` sections that tell the agent which rows to append. Per-stack `ci.md` / `development.md` seeds are not shipped because seeds are user-owned and never overwritten.
 
 Scaffold a new stack: `aitk tooling create` generates the stub structure in `tooling/<name>/`.
 
