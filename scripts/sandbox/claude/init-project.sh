@@ -25,7 +25,7 @@ EOF
     log_step "Scenario ready: init-project skill on an empty repo"
     log_info "Context: package.json only, no framework evidence"
     log_info "Action:  /toolkit:init-project"
-    log_info "Expect:  stack resolves to 'base' (fallback), preview shows base + snippets + wiki + claude"
+    log_info "Expect:  stack resolves to 'base' (fallback), aitk init runs and auto-builds .claude/GOV.md, tooling sync is skipped (tooling stack also 'base' = already synced), verify-scaffold finds no stack scripts and reports base scripts only"
     ;;
   "vite-react")
     cat <<'EOF' >package.json
@@ -83,7 +83,7 @@ EOF
     log_step "Scenario ready: init-project skill on a Vite + React project"
     log_info "Context: vite.config.ts, tsconfig.json, React deps in package.json"
     log_info "Action:  /toolkit:init-project"
-    log_info "Expect:  governance stack resolves to 'react', base + claude + snippets + wiki installed, gaps surfaced for unmatched rules"
+    log_info "Expect:  governance stack 'react', tooling stack 'vite-react', aitk init builds .claude/GOV.md, tooling sync drops tooling/base.md + tooling/vite-react.md, agent generates eslint/vitest/playwright configs from the reference, verify-scaffold runs lint/typecheck/check/test/build"
     ;;
   "astro")
     cat <<'EOF' >package.json
@@ -121,7 +121,7 @@ EOF
     log_step "Scenario ready: init-project skill on an Astro project"
     log_info "Context: astro.config.mjs, astro dep in package.json, src/pages/"
     log_info "Action:  /toolkit:init-project"
-    log_info "Expect:  stack resolves to 'astro', preview reflects astro reference and deps"
+    log_info "Expect:  governance stack 'astro', tooling stack 'astro', aitk init builds .claude/GOV.md, tooling sync drops tooling/base.md + tooling/astro.md, agent generates astro configs from the reference, verify-scaffold runs lint/typecheck/check/test/build"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

@@ -30,6 +30,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 ## Resolve arguments
 
 - **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base`.
+- **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match.
 - **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `globs` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
 - **Snippets:** default to `all`. Narrow only if the user asked for a specific category.
 - **Optional domains (`--with`):**
@@ -52,17 +53,20 @@ Rules, snippets, and stacks are authored in the toolkit repo, never in the targe
 Before executing, output:
 
 - **Detected:** each technology with its evidence file
-- **Stack:** picked stack + resolved rule count
+- **Stack:** picked governance stack + resolved rule count
+- **Tooling stack:** picked tooling stack
 - **Extras:** each `--add` rule with a one-line reason
 - **Snippets:** resolved category
 - **Optional:** each `--with` entry with a one-line reason
 - **Skip:** any `--skip` entries with reason
 - **Target:** resolved target path
-- **Command:** the exact shell command to run
+- **Commands:** the full chain that will run
 
 ## Execute
 
-Run immediately after the preview. Claude Code's tool permission dialog is the confirmation gate. Run from the target project's current directory. The `<target>` argument is explicit, so no cd is needed.
+Run the chain in order. Each step's permission dialog is the confirmation gate. Run from the target project's current directory.
+
+Step 1: `aitk init` installs base tooling, claude seeds, governance, GOV.md, snippets, and wiki.
 
 ```bash
 AITK_NON_INTERACTIVE=1 aitk init \
@@ -75,11 +79,23 @@ AITK_NON_INTERACTIVE=1 aitk init \
 
 Omit any flag whose resolved value is empty.
 
+Step 2: `aitk tooling sync <tooling-stack>` installs stack deps, scripts, gitignore entries, seeds, and drops the reference doc. Skip if the tooling stack is `base` (already synced by `aitk init`).
+
+```bash
+AITK_NON_INTERACTIVE=1 aitk tooling sync <tooling-stack> <target>
+```
+
+Step 3: follow the reference. Read `<target>/tooling/<tooling-stack>.md` and generate the configs, setup scripts, and tsconfig updates it describes. Update `<target>/docs/ci.md` and `<target>/docs/development.md` per the reference's extend sections.
+
+Step 4: invoke `verify-scaffold`. Runs the `package.json` scripts and reports pass/fail.
+
 ## Report
 
-After execution, report:
+After the chain, report:
 
 - Domains installed with a check per domain
-- Target path
-- Any domains that failed (the CLI warns and continues to the next)
+- Tooling stack synced (or skipped)
+- Reference-driven config files created
+- `verify-scaffold` outcome
+- Any domains or scripts that failed
 - Any detection gaps surfaced during resolve
