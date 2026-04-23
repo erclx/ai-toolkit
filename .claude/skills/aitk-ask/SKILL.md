@@ -63,12 +63,12 @@ Do not guess. Do not read source files. Do not grep the whole repo.
 ## Tone
 
 - Direct. Developer-level technical knowledge assumed.
-- No marketing words, no hedging clusters, no filler lead-ins.
-- Follow `standards/prose.md` for any multi-line answer.
+- No marketing words, no hedging clusters, no filler lead-ins
+- Follow `standards/prose.md` for any multi-line answer
 - Prose by default. Use bullets only when the answer is a discrete list already present in the source file.
 
 ## Do not
 
-- Do not implement, edit, or run commands the answer describes.
+- Do not implement, edit, or run commands the answer describes
 - Do not paraphrase large sections. Quote one short phrase if useful and cite the file.
 - Do not chain multiple follow-up file reads past Step 2 + Step 4. One hop per escalation level.

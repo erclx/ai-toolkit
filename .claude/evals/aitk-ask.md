@@ -46,8 +46,8 @@ Run each prompt in a fresh session. Invoke with `/aitk-ask <question>`. Judge by
 
 ## Failure modes to watch
 
-- Reading more than two files in Step 2.
+- Reading more than two files in Step 2
 - Opening `src/` or `scripts/` files. The skill is prose-only.
-- Answer longer than four lines.
-- Missing or fabricated `Source:` path.
-- Marketing or filler language (`simply`, `easily`, `serves as`).
+- Answer longer than four lines
+- Missing or fabricated `Source:` path
+- Marketing or filler language (`simply`, `easily`, `serves as`)
