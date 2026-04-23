@@ -159,9 +159,9 @@ main() {
     local name="${r%:*}"
     local status="${r##*:}"
     if [ "$status" = "pass" ]; then
-      log_info "✓ $name"
+      log_info "$name"
     else
-      log_warn "✗ $name"
+      log_warn "$name"
     fi
   done
 
