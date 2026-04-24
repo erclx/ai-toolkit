@@ -30,7 +30,7 @@ When scaffolding a Chrome extension, override the installed golden configs:
 - `playwright.config.ts`: chromium-only (Firefox and WebKit cannot run extensions). Bundled `chromium` channel. No `baseURL` or `webServer`. Tests load the built extension directly from `dist/`.
 - `e2e/fixtures.ts`: extend Playwright base `test` with `context` (persistent context loading the extension from `dist/`) and `extensionId` (extracted from service worker URL). Rename `use` to `apply` to avoid the React hooks ESLint rule. `waitForEvent('serviceworker')` blocks until the MV3 service worker registers.
 - `manifest.config.ts`: use `defineManifest` from `@crxjs/vite-plugin`. Read `name` and `version` from `package.json`. Entry points `src/popup/index.html`, `src/sidepanel/index.html`, `src/background/index.ts`, `src/content/main.tsx`. Permissions `sidePanel`, `contentSettings`, `storage`. Icon `public/logo.png` at size 48.
-- `screenshot` script: `bun run build && node --experimental-strip-types e2e/screenshot.ts` (no preview server).
+- `screenshot` script: `bun run build && bun e2e/screenshot.ts` (no preview server).
 - Additional gitignore entries: `*.crx`, `*.pem`, `release/`.
 
 ## Setup script

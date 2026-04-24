@@ -22,9 +22,9 @@ packages = [
   "@types/react",
   "@types/react-dom",
   "@types/node",
-  "vitest",
-  "@vitest/coverage-v8",
-  "@vitest/ui",
+  "vitest@^3",
+  "@vitest/coverage-v8@^3",
+  "@vitest/ui@^3",
   "jsdom",
   "@testing-library/react",
   "@testing-library/jest-dom",
@@ -46,6 +46,8 @@ packages = [
 "test:e2e:ui" = "playwright test --ui"
 "test:e2e:report" = "playwright show-report"
 "check:full" = "./scripts/verify.sh && bun run test:e2e"
+
+[scripts.override]
 "screenshot" = "bash scripts/screenshot.sh"
 
 [gitignore]
