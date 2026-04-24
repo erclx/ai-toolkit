@@ -145,7 +145,7 @@ use_anchor() {
 
 `manage-sandbox.sh` handles provisioning, asset injection, skill injection, git setup, and baseline tagging. The hook functions configure behavior before that pipeline runs.
 
-After `stage_setup` completes, `manage-sandbox.sh` diffs `claude/skills/**/SKILL.md` against `main` and copies each changed skill into `.sandbox/.claude/skills/<name>/SKILL.md`. Project-scoped skills take priority over the installed plugin, so invoking `/<skill-name>` in the sandbox session exercises the dev version without `--plugin-dir` or `--bare`.
+After `stage_setup` completes, `manage-sandbox.sh` unions the `claude/skills/**/SKILL.md` diff against `main` with any untracked new skill folders and copies each into `.sandbox/.claude/skills/<name>/SKILL.md`. This covers dev skills authored in the current branch whether or not they are committed yet. Project-scoped skills take priority over the installed plugin, so invoking `/<skill-name>` in the sandbox session exercises the dev version without `--plugin-dir` or `--bare`.
 
 ### Disposable GitHub remote (`toolkit-sandbox`)
 
