@@ -50,7 +50,8 @@ scripts/sandbox/
 │   ├── experiment.sh     ← scenarios for /toolkit:experiment (fresh, collision)
 │   ├── memory.sh         ← seeded .claude/memory/ mix for testing /toolkit:claude-memory-review
 │   ├── verify-scaffold.sh ← scaffolded project scenarios for testing /toolkit:verify-scaffold (pass, fail)
-│   └── worktree.sh       ← scenarios for /toolkit:claude-worktree (matched-plan, multi-plan, branch-only)
+│   ├── worktree.sh       ← scenarios for /toolkit:claude-worktree (matched-plan, multi-plan, branch-only)
+│   └── toolkit-feedback.sh ← fixture target project for testing /toolkit:toolkit-feedback
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment
