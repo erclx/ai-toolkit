@@ -279,11 +279,28 @@ tag_sandbox_baseline() {
   )
 }
 
+inject_changed_skills() {
+  local changed
+  changed=$(git -C "$PROJECT_ROOT" diff main --name-only -- 'claude/skills/**/SKILL.md' 2>/dev/null)
+
+  [ -z "$changed" ] && return
+
+  while IFS= read -r skill_path; do
+    local skill_name
+    skill_name=$(basename "$(dirname "$skill_path")")
+    local target_dir="$SANDBOX/.claude/skills/$skill_name"
+    mkdir -p "$target_dir"
+    cp "$PROJECT_ROOT/$skill_path" "$target_dir/SKILL.md"
+    log_info "Injected dev skill: $skill_name"
+  done <<<"$changed"
+}
+
 execute_sandbox_and_commit() {
   pushd "$SANDBOX" >/dev/null
   stage_setup
   popd >/dev/null
 
+  inject_changed_skills
   commit_sandbox_changes
   tag_sandbox_baseline
 }
