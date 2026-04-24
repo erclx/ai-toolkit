@@ -44,6 +44,7 @@ scripts/sandbox/
 │   ├── ux-audit.sh     ← UI project with seeded design drift for testing /claude-ux-audit
 │   ├── docs.sh         ← stale planning docs after a session pivot for testing /claude-docs
 │   ├── seed-sync.sh    ← drifted seeds for testing /claude-seed-sync
+│   ├── standards-audit.sh ← markdown branch with seeded prose and skill violations for testing /claude-standards-audit
 │   ├── init-project.sh ← scenarios for /toolkit:init-project (fresh, vite-react, astro)
 │   ├── design-extract.sh ← tokenized notes app for testing /toolkit:claude-design-extract and aitk design render
 │   ├── design-propose.sh ← greenfield project with personality paragraph for testing /toolkit:claude-design-propose
