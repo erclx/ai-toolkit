@@ -55,7 +55,7 @@ path/to/file.md
 
 If clean, respond with `✅ No violations.`
 
-Reporting only. Do not rewrite any file, swap any punctuation, or propose fixes inline. Fixes are a separate user-initiated step; lazy swaps (semicolon to period, em dash to comma) violate the prose rule against shallow substitution.
+Reporting only. Do not rewrite any file, swap any punctuation, or propose fixes inline. Fixes are a separate user-initiated step because lazy swaps (semicolon to period, em dash to comma) violate the prose rule against shallow substitution.
 
 ## Output
 
