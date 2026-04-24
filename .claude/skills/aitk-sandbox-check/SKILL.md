@@ -1,12 +1,12 @@
 ---
 name: aitk-sandbox-check
-description: Audits the current branch for plugin-skill edits that lack a matching sandbox scenario update. Prints a per-skill report and commands for re-provisioning and launching Claude Code in the sandbox. Manual-only. Does not execute sandbox or Claude commands.
+description: Audits the current branch for plugin-skill edits that lack a matching sandbox scenario update. Reports per-skill pairings, re-provisions changed scenarios, and prints the re-test command. Does not launch Claude in the sandbox.
 disable-model-invocation: true
 ---
 
 # Sandbox check
 
-Manual guard after editing a plugin skill. Reports whether each changed skill has a paired scenario edit, and prints the exact commands to re-provision and re-test. Output-only. Never runs the sandbox or Claude.
+Manual guard after editing a plugin skill. Reports whether each changed skill has a paired scenario edit, re-provisions changed scenarios, and prints the re-test command for the user to launch.
 
 ## Guards
 
@@ -26,10 +26,10 @@ git diff "$(git merge-base main HEAD)" --name-only -- 'scripts/sandbox/**/*.sh'
 ```
 
 ```bash
-git worktree list --porcelain | awk '/^worktree /{print $2; exit}'
+pwd
 ```
 
-The first list is the changed plugin skills. The second list is the changed scenarios. The third is the main worktree root, where `.sandbox/` lives.
+The first list is the changed plugin skills. The second list is the changed scenarios. The third is the current root, whether that is main or a linked worktree. `.sandbox/` lives under whichever root ran `manage-sandbox.sh`, because the script resolves `PROJECT_ROOT` from its own path.
 
 ## Step 2: map each changed skill to a scenario
 
@@ -51,21 +51,20 @@ Do not guess past the first fallback. Fuzzy matching across sandbox categories p
 
 ## Step 4: print the report
 
-Print one block to chat. Do not write a file.
+Print one block to chat:
 
 ```plaintext
 Sandbox check
 
 Re-provision:
-  aitk sandbox reset
-  aitk sandbox <category>:<scenario>   # for each distinct scenario below
+  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>   # one line per distinct scenario below
 
 Re-test:
-  cd <main-root>/.sandbox
+  cd <current-root>/.sandbox
   claude --model sonnet
 
 Findings:
-  <status>  <skill-name>  →  <scenario-path or "—">     # /<skill-name>
+  <status>  <skill-name>  →  <scenario-path or "none">     # /<skill-name>
 
 Scenarios changed but not paired:
   <path>                                                 # unchanged skills in the same scenario may still apply
@@ -76,15 +75,21 @@ Rules for the block:
 - List every changed skill on its own line under `Findings:`. Sort `stale` and `unmapped` first, then `aligned`, then `none`.
 - Use these status labels exactly: `STALE`, `ALIGNED`, `NONE`, `UNMAPPED`.
 - Include a trailing `# /<skill-name>` invocation hint on every line so the user can copy a specific skill's trigger straight into the Claude session.
-- The `Re-provision:` block lists each distinct scenario once, in the form `aitk sandbox <category>:<scenario>` where `<scenario>` is the `.sh` filename without the extension.
+- The `Re-provision:` block lists each distinct scenario once. Always invoke the local script, never `aitk sandbox`. `aitk` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
+- Omit the `Re-provision:` block when every pairing is `NONE` or `UNMAPPED`, since there is nothing to provision.
 - Print `cd` and `claude` on separate lines. Do not chain them with `&&`.
 - After the `Re-test:` block, print one line: `Note: invoke skills as /<skill-name>, not /toolkit:<skill-name>. The project-scoped copy takes priority.`
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no skill in Step 2 mapped to. Omit the section when empty.
 
-If every pairing is `ALIGNED` or `NONE`, prefix the block with `✅ All changed skills have paired scenario edits.`. Still print the full block so the re-test commands are available.
+If every pairing is `ALIGNED` or `NONE`, prefix the block with `✅ All changed skills have paired scenario edits.`. Still print the full block so the re-test command is available.
+
+## Step 5: execute re-provision
+
+Immediately after printing the report, run each `Re-provision:` command listed in the block. Claude Code's tool permission dialog is the confirmation gate. Do not pause for additional user input.
+
+Skip this step when every pairing is `NONE` or `UNMAPPED`.
 
 ## Do not
 
-- Do not run `aitk sandbox`, `claude`, or any other command the report names. The report is output-only.
-- Do not write any file. No report persists to disk.
+- Do not run `claude` or `cd` into the sandbox. The user launches the re-test session.
 - Do not propose scenario edits. The skill flags the gap. The user decides whether to edit, rescope, or accept as intentional.
