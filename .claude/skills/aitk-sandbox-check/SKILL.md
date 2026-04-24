@@ -82,6 +82,7 @@ Rules for the block:
 - Include a trailing `# /<skill-name>` invocation hint on every line so the user can copy a specific skill's trigger straight into the Claude session.
 - The `Re-provision:` block lists each distinct scenario once, in the form `aitk sandbox <category>:<scenario>` where `<scenario>` is the `.sh` filename without the extension.
 - Replace `<worktree-root>` in the `Re-test` line with the output of `git rev-parse --show-toplevel`. Do not hardcode a path.
+- Print `cd` and `claude` on separate lines. Do not chain them with `&&`.
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no skill in Step 2 mapped to. Omit the section when empty.
 
 If every pairing is `ALIGNED` or `NONE`, prefix the block with `✅ All changed skills have paired scenario edits.`. Still print the full block so the re-test commands are available.
