@@ -31,12 +31,12 @@ The `aitk` category is internal. It holds runbooks that only make sense inside t
 
 ## Categories
 
-| Category | Paths                                                                                                                                                                                                                                            |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                                                                                                                                       |
-| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-challenge, claude/memory-cleanup, claude/memory-discuss, claude/prose-audit, claude/standards-audit, claude/tasks-done, claude/vocab-capture |
-| `git`    | git/followup                                                                                                                                                                                                                                     |
-| `aitk`   | aitk/sandbox-worktree, aitk/toolkit-feedback (internal, not installable)                                                                                                                                                                         |
+| Category | Paths                                                                                                                                                                                                |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                                                                                           |
+| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-capture, claude/memory-challenge, claude/memory-cleanup, claude/memory-discuss, claude/tasks-done, claude/vocab-capture |
+| `git`    | git/followup                                                                                                                                                                                         |
+| `aitk`   | aitk/sandbox-worktree, aitk/toolkit-feedback (internal, not installable)                                                                                                                             |
 
 ## Snippets
 
@@ -56,8 +56,6 @@ The `aitk` category is internal. It holds runbooks that only make sense inside t
 | `claude/memory-challenge` | Challenge every promote item in the latest memory review with absorbed, delta, and generality tests            |
 | `claude/memory-cleanup`   | Sweep skipped entries from the last memory review and delete the review receipt                                |
 | `claude/memory-discuss`   | Respond to question items in the latest memory review by writing `Take:` lines                                 |
-| `claude/prose-audit`      | Audit a file's prose against `standards/prose.md`                                                              |
-| `claude/standards-audit`  | Audit changed files against applicable authoring standards (prose, skill, readme, branch, pr)                  |
 | `claude/tasks-done`       | Remove completed task blocks, delete referenced plan files, and sync the placeholder                           |
 | `claude/vocab-capture`    | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
 | `git/followup`            | Stage, commit, and push a small self-review edit on the current PR branch                                      |

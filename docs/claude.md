@@ -18,6 +18,7 @@ claude/
 │   ├── claude-memory-capture/ ← extract durable patterns from the session into `.claude/memory/`
 │   ├── claude-memory-review/ ← review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete
 │   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
+│   ├── claude-standards-audit/ ← audit changed markdown files against applicable authoring standards
 │   ├── claude-ui-test/      ← generate and run Playwright e2e tests for UI changes
 │   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
 │   ├── claude-worktree/     ← enter a worktree at .claude/worktrees/<name>/ with name derived from plan or branch
@@ -73,39 +74,40 @@ For additional shortcuts covering resume, continue, and worktree flows, see [Zsh
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-| Skill                   | Description                                                                             |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| `claude-design-extract` | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                     |
-| `claude-design-propose` | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph   |
-| `claude-docs`           | Update .claude/ planning docs to reflect mid-cycle decisions                            |
-| `claude-feature`        | Plan a feature by reading Claude setup and scanning source files                        |
-| `claude-memory-capture` | Extract durable patterns from the session into `.claude/memory/`                        |
-| `claude-memory-review`  | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete |
-| `claude-review`         | Review all changes since main for bugs, edge cases, and logic flaws                     |
-| `claude-seed-sync`      | Audit installed seed docs against current toolkit seeds and write per-section proposals |
-| `claude-ui-test`        | Generate and run Playwright e2e tests, with manual checklist for visual-only items      |
-| `claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, and inconsistencies          |
-| `claude-worktree`       | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch   |
-| `claude-autoship`       | Chain implement → verify → review → ship after a plan is approved                       |
-| `create-skill`          | Create a new skill file in .claude/skills/                                              |
-| `create-snippet`        | Create a new snippet file in snippets/                                                  |
-| `docs-sync`             | Rewrite stale README.md and docs/\*.md sections since main                              |
-| `experiment`            | Scaffold `.claude/.tmp/<tool>/notes.md` for a phased new-tool investigation             |
-| `git-branch`            | Rename current branch to match conventional format                                      |
-| `git-commit`            | Generate a conventional commit message from staged changes                              |
-| `git-pr`                | Generate a PR description and open a pull request                                       |
-| `git-split`             | Split a mixed-commit branch into focused branches and open PRs                          |
-| `git-stage`             | Batch-commit staged files grouped by concern                                            |
-| `git-stash`             | Stash a focused subset of changes or pop by message match                               |
-| `git-worktree`          | List and clean up linked worktrees after shipping                                       |
-| `gov-install`           | Detect project stack from files and install matching governance rules                   |
-| `indexes-install`       | Bootstrap the index.md system in a target project, drafting frontmatter per folder      |
-| `init-project`          | Detect project type and run one-shot `aitk init` with resolved flags                    |
-| `release-changelog`     | Generate a changelog entry from commits and staged changes since main                   |
-| `git-ship`              | Run the full post-feature workflow in one sequence                                      |
-| `session-resume`        | Resume from tracked work and relevant context at session start                          |
-| `systematic-debugging`  | Enforce root-cause investigation before fixes when a test fails or a bug surfaces       |
-| `verify-scaffold`       | Run `package.json` scripts after scaffold to catch config and wiring mistakes           |
+| Skill                    | Description                                                                             |
+| ------------------------ | --------------------------------------------------------------------------------------- |
+| `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                     |
+| `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph   |
+| `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                            |
+| `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                        |
+| `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                        |
+| `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete |
+| `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                     |
+| `claude-seed-sync`       | Audit installed seed docs against current toolkit seeds and write per-section proposals |
+| `claude-standards-audit` | Audit changed markdown files against applicable authoring standards, reporting only     |
+| `claude-ui-test`         | Generate and run Playwright e2e tests, with manual checklist for visual-only items      |
+| `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies          |
+| `claude-worktree`        | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch   |
+| `claude-autoship`        | Chain implement → verify → review → ship after a plan is approved                       |
+| `create-skill`           | Create a new skill file in .claude/skills/                                              |
+| `create-snippet`         | Create a new snippet file in snippets/                                                  |
+| `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                              |
+| `experiment`             | Scaffold `.claude/.tmp/<tool>/notes.md` for a phased new-tool investigation             |
+| `git-branch`             | Rename current branch to match conventional format                                      |
+| `git-commit`             | Generate a conventional commit message from staged changes                              |
+| `git-pr`                 | Generate a PR description and open a pull request                                       |
+| `git-split`              | Split a mixed-commit branch into focused branches and open PRs                          |
+| `git-stage`              | Batch-commit staged files grouped by concern                                            |
+| `git-stash`              | Stash a focused subset of changes or pop by message match                               |
+| `git-worktree`           | List and clean up linked worktrees after shipping                                       |
+| `gov-install`            | Detect project stack from files and install matching governance rules                   |
+| `indexes-install`        | Bootstrap the index.md system in a target project, drafting frontmatter per folder      |
+| `init-project`           | Detect project type and run one-shot `aitk init` with resolved flags                    |
+| `release-changelog`      | Generate a changelog entry from commits and staged changes since main                   |
+| `git-ship`               | Run the full post-feature workflow in one sequence                                      |
+| `session-resume`         | Resume from tracked work and relevant context at session start                          |
+| `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces       |
+| `verify-scaffold`        | Run `package.json` scripts after scaffold to catch config and wiring mistakes           |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `experiment`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
