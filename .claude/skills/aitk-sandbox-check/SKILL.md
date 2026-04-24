@@ -64,7 +64,7 @@ Re-test:
   claude --model sonnet
 
 Findings:
-  <status>  <skill-name>  →  <scenario-path or "—">     # /<skill-name>
+  <status>  <skill-name>  →  <scenario-path or "none">     # /<skill-name>
 
 Scenarios changed but not paired:
   <path>                                                 # unchanged skills in the same scenario may still apply
