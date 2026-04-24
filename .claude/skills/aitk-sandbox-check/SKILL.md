@@ -1,6 +1,6 @@
 ---
 name: aitk-sandbox-check
-description: Audits the current branch for plugin-skill edits that lack a matching sandbox scenario update. Prints a per-skill report and copy-paste commands for re-provisioning the sandbox and launching Claude Code against the worktree's plugin dir. Manual-only. Does not execute sandbox or Claude commands.
+description: Audits the current branch for plugin-skill edits that lack a matching sandbox scenario update. Prints a per-skill report and commands for re-provisioning and launching Claude Code in the sandbox. Manual-only. Does not execute sandbox or Claude commands.
 disable-model-invocation: true
 ---
 
@@ -26,14 +26,10 @@ git diff "$(git merge-base main HEAD)" --name-only -- 'scripts/sandbox/**/*.sh'
 ```
 
 ```bash
-git rev-parse --show-toplevel
-```
-
-```bash
 git worktree list --porcelain | awk '/^worktree /{print $2; exit}'
 ```
 
-The first list is the changed plugin skills. The second list is the changed scenarios. The third is the worktree root used in the `--plugin-dir` path. The fourth is the main worktree root, where `.sandbox/` lives.
+The first list is the changed plugin skills. The second list is the changed scenarios. The third is the main worktree root, where `.sandbox/` lives.
 
 ## Step 2: map each changed skill to a scenario
 
@@ -66,7 +62,7 @@ Re-provision:
 
 Re-test:
   cd <main-root>/.sandbox
-  claude --plugin-dir <worktree-root>/claude --model sonnet
+  claude --model sonnet
 
 Findings:
   <status>  <skill-name>  →  <scenario-path or "—">     # /<skill-name>
@@ -81,7 +77,6 @@ Rules for the block:
 - Use these status labels exactly: `STALE`, `ALIGNED`, `NONE`, `UNMAPPED`.
 - Include a trailing `# /<skill-name>` invocation hint on every line so the user can copy a specific skill's trigger straight into the Claude session.
 - The `Re-provision:` block lists each distinct scenario once, in the form `aitk sandbox <category>:<scenario>` where `<scenario>` is the `.sh` filename without the extension.
-- Replace `<worktree-root>` in the `Re-test` line with the output of `git rev-parse --show-toplevel`. Do not hardcode a path.
 - Print `cd` and `claude` on separate lines. Do not chain them with `&&`.
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no skill in Step 2 mapped to. Omit the section when empty.
 
