@@ -37,6 +37,7 @@ pydantic
 pyproject
 sidepanel
 pytest
+readlink
 rlength
 semgrep
 statusline
