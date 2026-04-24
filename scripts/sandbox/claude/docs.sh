@@ -59,6 +59,8 @@ EOF
 
 ### Migrate storage to Postgres
 
+Plan: .claude/plans/feature-postgres-migration.md
+
 - [ ] Outcome: tasks persist in Postgres instead of SQLite
 - [ ] Outcome: connection config reads from environment
 
@@ -138,10 +140,16 @@ EOF
   git add . && git commit -m "feat(api): migrate storage to Postgres and scope tasks to users" --no-verify -q
 
   mkdir -p .claude/plans
-  cat <<'EOF' >.claude/plans/feature-some-old-plan.md
-# Feature: stale plan
+  cat <<'EOF' >.claude/plans/feature-postgres-migration.md
+# Feature: Postgres migration
 
-This plan is decoy scratch. The claude-docs skill should sweep this file in step 4.
+Plan linked from the "Migrate storage to Postgres" task block. The claude-docs skill should sweep this file after marking the task [x].
+EOF
+
+  cat <<'EOF' >.claude/plans/feature-some-old-plan.md
+# Feature: unlinked plan
+
+Decoy scratch with no task backlink. The claude-docs skill should NOT sweep this file.
 EOF
 
   log_step "Scenario ready: docs drift after a session pivot"
@@ -149,7 +157,8 @@ EOF
   log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
   log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
   log_info "  TASKS.md has 'Migrate storage to Postgres' open, but it shipped in HEAD"
-  log_info "  Decoy .claude/plans/feature-some-old-plan.md should be swept in step 4"
+  log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be swept"
+  log_info "  .claude/plans/feature-some-old-plan.md has no task backlink and should survive"
   log_info ""
   log_info "Before invoking the skill, narrate the pivot to Claude in chat:"
   log_info "  'We pivoted this session: switched storage from SQLite to Postgres,'"
@@ -159,5 +168,6 @@ EOF
   log_info "Expect:  ARCHITECTURE.md storage section updated to Postgres"
   log_info "         REQUIREMENTS.md non-goals updated, multi-user moved in-scope"
   log_info "         TASKS.md 'Migrate storage to Postgres' marked [x]"
-  log_info "         .claude/plans/feature-some-old-plan.md swept"
+  log_info "         .claude/plans/feature-postgres-migration.md swept (linked from [x] task)"
+  log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
 }

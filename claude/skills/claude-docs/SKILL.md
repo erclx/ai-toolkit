@@ -49,10 +49,11 @@ Write each updated file immediately. Claude Code's tool permission dialog is the
 
 ## Step 4: sweep consumed scratch
 
-Delete every file matching these patterns at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`:
+Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
-- `.claude/plans/feature-*.md`: plans consumed by implement
-- `.claude/review/review-*.md`: findings consumed by ship gate
+**Plans.** For each task block marked `[x]` in Step 3, check for a `Plan:` line directly under the title. Parse the path. If it points inside `.claude/plans/` and the file exists, delete it. If the path is outside `.claude/plans/`, warn and skip. Mirrors the `snippets/claude/tasks-done.md` pattern.
+
+**Reviews.** Derive `<slug>` from the current branch name (replace `/` with `-`). If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 
 Do not sweep `ui-checklist-*.md` (pending human verification) or `ux-audit-*.md` (standalone deliverable).
 
@@ -60,7 +61,7 @@ Output one line per file removed:
 
 `🧹 Deleted: <path>`
 
-If no matching files exist, skip this step silently.
+If nothing qualifies, skip this step silently.
 
 ## After completion
 
