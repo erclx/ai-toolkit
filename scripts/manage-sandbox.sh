@@ -280,10 +280,14 @@ tag_sandbox_baseline() {
 }
 
 inject_changed_skills() {
-  local changed
+  local changed untracked
   changed=$(git -C "$PROJECT_ROOT" diff main --name-only -- 'claude/skills/**/SKILL.md' 2>/dev/null)
+  untracked=$(git -C "$PROJECT_ROOT" ls-files --others --exclude-standard -- 'claude/skills/**/SKILL.md' 2>/dev/null)
 
-  [ -z "$changed" ] && return
+  local combined
+  combined=$(printf '%s\n%s\n' "$changed" "$untracked" | awk 'NF && !seen[$0]++')
+
+  [ -z "$combined" ] && return
 
   while IFS= read -r skill_path; do
     local skill_name
@@ -292,7 +296,7 @@ inject_changed_skills() {
     mkdir -p "$target_dir"
     cp "$PROJECT_ROOT/$skill_path" "$target_dir/SKILL.md"
     log_info "Injected dev skill: $skill_name"
-  done <<<"$changed"
+  done <<<"$combined"
 }
 
 execute_sandbox_and_commit() {
