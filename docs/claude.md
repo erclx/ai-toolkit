@@ -82,7 +82,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `claude-memory-capture` | Extract durable patterns from the session into `.claude/memory/`                        |
 | `claude-memory-review`  | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete |
 | `claude-review`         | Review all changes since main for bugs, edge cases, and logic flaws                     |
-| `claude-seed-sync`      | Audit installed seed docs against current toolkit seeds and propose per-section edits   |
+| `claude-seed-sync`      | Audit installed seed docs against current toolkit seeds and write per-section proposals |
 | `claude-ui-test`        | Generate and run Playwright e2e tests, with manual checklist for visual-only items      |
 | `claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, and inconsistencies          |
 | `claude-worktree`       | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch   |
