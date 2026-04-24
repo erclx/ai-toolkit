@@ -49,26 +49,15 @@ Do not guess past the first fallback. Fuzzy matching across sandbox categories p
 - **none**: user answered `none` in Step 2.
 - **unmapped**: no scenario file was identified and the user did not answer `none`.
 
-## Step 4: re-provision changed scenarios
-
-For each distinct scenario recorded in Step 2 with an `ALIGNED` or `STALE` pairing, preview the command on one line and run it. Skip scenarios classified as `NONE` or `UNMAPPED`, since they have nothing to provision.
-
-Preview and run for each scenario:
-
-```bash
-AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
-```
-
-Claude Code's tool permission dialog is the confirmation gate. Do not pause for additional user input after the preview.
-
-Always invoke the local script, never `aitk sandbox`. `aitk` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
-
-## Step 5: print the report
+## Step 4: print the report
 
 Print one block to chat:
 
 ```plaintext
 Sandbox check
+
+Re-provision:
+  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>   # one line per distinct scenario below
 
 Re-test:
   cd <current-root>/.sandbox
@@ -86,11 +75,19 @@ Rules for the block:
 - List every changed skill on its own line under `Findings:`. Sort `stale` and `unmapped` first, then `aligned`, then `none`.
 - Use these status labels exactly: `STALE`, `ALIGNED`, `NONE`, `UNMAPPED`.
 - Include a trailing `# /<skill-name>` invocation hint on every line so the user can copy a specific skill's trigger straight into the Claude session.
+- The `Re-provision:` block lists each distinct scenario once. Always invoke the local script, never `aitk sandbox`. `aitk` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
+- Omit the `Re-provision:` block when every pairing is `NONE` or `UNMAPPED`, since there is nothing to provision.
 - Print `cd` and `claude` on separate lines. Do not chain them with `&&`.
 - After the `Re-test:` block, print one line: `Note: invoke skills as /<skill-name>, not /toolkit:<skill-name>. The project-scoped copy takes priority.`
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no skill in Step 2 mapped to. Omit the section when empty.
 
 If every pairing is `ALIGNED` or `NONE`, prefix the block with `✅ All changed skills have paired scenario edits.`. Still print the full block so the re-test command is available.
+
+## Step 5: execute re-provision
+
+Immediately after printing the report, run each `Re-provision:` command listed in the block. Claude Code's tool permission dialog is the confirmation gate. Do not pause for additional user input.
+
+Skip this step when every pairing is `NONE` or `UNMAPPED`.
 
 ## Do not
 
