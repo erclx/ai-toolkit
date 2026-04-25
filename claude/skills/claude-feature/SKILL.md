@@ -99,9 +99,11 @@ Then output in chat:
 **Questions:**
 
 1. <question>
+
+Next: /claude-worktree
 ```
 
-Show only the path line when there are no questions. The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
+Show only the path line and the `Next:` line when there are no questions. The `.claude/plans/` directory is gitignored. Do not stage or commit the file.
 
 Do not proceed to implementation until the user explicitly says to continue.
 

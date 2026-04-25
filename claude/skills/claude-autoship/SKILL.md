@@ -15,6 +15,14 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 - If `.claude/plans/feature-<slug>.md` does not exist at the main worktree root, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
 - If the working tree has uncommitted changes unrelated to the plan, stop: `❌ Uncommitted changes outside the plan. Commit or stash before autoshipping.`
 
+## Step 0: enter a worktree
+
+If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `toolkit:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment; do not call `EnterWorktree` directly.
+
+If neither command resolves, stop: `❌ Not a git repository. Autoship needs git or a WorktreeCreate hook.`
+
+If the two commands differ, the session is already in a linked worktree. Continue.
+
 ## Step 1: read the plan
 
 Read `.claude/plans/feature-<slug>.md` at the main worktree root. This file is the scope for this run.
@@ -92,6 +100,7 @@ Every stop point leaves recoverable state. The user resumes manually from the ap
 | Stop point      | Recovery                                 |
 | --------------- | ---------------------------------------- |
 | No plan         | Run `/claude-feature` to create one      |
+| Branch collision on worktree entry | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
 | Verify fails    | Read logs, fix manually, run `/git-ship` |
 | UI checklist    | Verify visually, run `/git-ship`         |
 | Review findings | Fix findings, run `/git-ship`            |
