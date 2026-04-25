@@ -33,6 +33,7 @@ erclx
 esac
 esbenp
 executeautomation
+footgun
 footguns
 frontmatter
 gdev
