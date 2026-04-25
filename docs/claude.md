@@ -57,17 +57,25 @@ claude/
 
 ## Setup
 
-```bash
-claude --plugin-dir /path/to/toolkit/claude
-```
+Inside the toolkit repository, Claude Code auto-discovers the plugin from `claude/.claude-plugin/plugin.json`. No flag needed.
 
-Add to your shell config to load automatically:
+In other repositories, pass `--plugin-dir` explicitly:
 
 ```bash
-alias claude='claude --plugin-dir /path/to/toolkit/claude'
+claude --plugin-dir $TOOLKIT/claude
 ```
 
-For additional shortcuts covering resume, continue, and worktree flows, see [Zshrc aliases for Claude Code](../wiki/zshrc-aliases.md).
+Add shell aliases to avoid typing the flag each time. Set `TOOLKIT` once in `~/.zshrc` and reference it in the `clp` alias:
+
+```zsh
+TOOLKIT=~/path/to/toolkit
+
+alias cl='claude'
+alias clp='claude --plugin-dir $TOOLKIT/claude'
+alias clps='clp --model sonnet'
+```
+
+For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../wiki/zshrc-aliases.md).
 
 ## Plugin skills
 
