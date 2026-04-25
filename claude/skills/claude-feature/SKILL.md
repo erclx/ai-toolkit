@@ -24,7 +24,8 @@ Also read these when the feature touches code or UI. Skip them for prose, docs, 
 
 - `.claude/DESIGN.md`: tokens, typography, spacing, and component rules
 - `.claude/WIREFRAMES.md`: intended UI layout and behavior
-- `.claude/GOV.md`: coding standards
+
+Coding standards live in `.claude/rules/`. Claude Code loads them automatically. Path-scoped rules apply to the files they match.
 
 ## Step 2: scan relevant source files
 

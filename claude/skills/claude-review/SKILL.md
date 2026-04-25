@@ -1,6 +1,6 @@
 ---
 name: claude-review
-description: Reviews all changes since main for bugs, edge cases, and logic flaws. Reads CLAUDE.md, REQUIREMENTS.md, ARCHITECTURE.md, and GOV.md for context, then applies a structured review to the full diff and outputs a findings report. Use when asked to review changes, run a code review, or check the current branch. Do NOT auto-trigger on vague signals like "looks good" or "can you check this". Require an explicit review request or an autoship invocation.
+description: Reviews all changes since main for bugs, edge cases, and logic flaws. Reads CLAUDE.md, REQUIREMENTS.md, and ARCHITECTURE.md for context, then applies a structured review to the full diff and outputs a findings report. Coding standards from `.claude/rules/` are auto-loaded by Claude Code. Use when asked to review changes, run a code review, or check the current branch. Do NOT auto-trigger on vague signals like "looks good" or "can you check this". Require an explicit review request or an autoship invocation.
 ---
 
 # Claude review
@@ -16,7 +16,8 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: project type, conventions, and commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: technical design decisions
-- `.claude/GOV.md`: governance rules to check changes against
+
+Coding standards from `.claude/rules/` are auto-loaded by Claude Code. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
 ## Step 2: get the diff and changed files
 
@@ -52,9 +53,9 @@ Review the full diff and changed file contents for:
 2. Error handling gaps
 3. Logic flaws that will cause problems when the code is extended
 4. Security issues relevant to the project context
-5. Violations of rules defined in `GOV.md`
+5. Violations of rules from `.claude/rules/` that apply to the changed files
 
-Use `CLAUDE.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, and `GOV.md` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
+Use `CLAUDE.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, and the auto-loaded `.claude/rules/` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
 
 ### High-signal filter
 
