@@ -150,7 +150,9 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 ### init
 
-Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `WIREFRAMES.md`, `GOV.md`, `settings.json`). Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project.
+Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `WIREFRAMES.md`, `GOV.md`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project.
+
+The seed `settings.json` pre-wires a PostToolUse hook on `Edit`, `Write`, and `MultiEdit` matchers that runs `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
 Pass `--roles` to also install role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`). Roles are optional and designed for AI chat workflows where you paste prompts with injected governance rules. Claude Code's agentic mode does not need them.
 
