@@ -26,7 +26,6 @@ claude/
 │   ├── create-skill/        ← create a new skill file in .claude/skills/
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
-│   ├── experiment/          ← scaffold a phased notes file for investigating a new tool
 │   ├── git-branch/          ← rename current branch to conventional format
 │   ├── git-commit/          ← generate conventional commit message from staged changes
 │   ├── git-pr/              ← generate PR description and open pull request
@@ -92,7 +91,6 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `create-skill`           | Create a new skill file in .claude/skills/                                              |
 | `create-snippet`         | Create a new snippet file in snippets/                                                  |
 | `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                              |
-| `experiment`             | Scaffold `.claude/.tmp/<tool>/notes.md` for a phased new-tool investigation             |
 | `git-branch`             | Rename current branch to match conventional format                                      |
 | `git-commit`             | Generate a conventional commit message from staged changes                              |
 | `git-pr`                 | Generate a PR description and open a pull request                                       |
@@ -109,7 +107,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces       |
 | `verify-scaffold`        | Run `package.json` scripts after scaffold to catch config and wiring mistakes           |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `experiment`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `gov-install` is the reference.
 
