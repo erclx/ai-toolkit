@@ -79,7 +79,7 @@ git branch -m <current_branch> <new_name>
 
 # Create, cherry-pick, push, and open PR for each secondary branch
 mkdir -p .claude/.tmp/pr-split
-git checkout main && git checkout -b <branch> && git cherry-pick <sha> <sha> \
+git switch -c <branch> main && git cherry-pick <sha> <sha> \
   && git push -u origin <branch> \
   && (cat <<'BODY' > .claude/.tmp/pr-split/<branch>.md
 <body following pr.md template, written from the cherry-picked commits>
@@ -108,7 +108,7 @@ git branch -m <current_branch> <new_name>
 mkdir -p .claude/.tmp/pr-split
 
 # Group 1: based on main
-git checkout main && git checkout -b <branch-1> && git cherry-pick <g1-sha> <g1-sha> \
+git switch -c <branch-1> main && git cherry-pick <g1-sha> <g1-sha> \
   && git push -u origin <branch-1> \
   && (cat <<'BODY' > .claude/.tmp/pr-split/<branch-1>.md
 <body following pr.md template, written from the cherry-picked commits>
