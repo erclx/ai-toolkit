@@ -106,7 +106,7 @@ Multi-scenario files list options before calling `select_or_route_scenario`. Use
 
 ```bash
 log_info "install/ : clean target, no rules present"
-log_info "sync/    : stale .cursor/rules/ present"
+log_info "sync/    : stale .claude/rules/ present"
 log_info "list     : read-only catalog dump, no target needed"
 ```
 
@@ -119,7 +119,7 @@ use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"  # skip auto-commit after stage_setup
   export SANDBOX_INJECT_SEEDS="true"      # inject tooling/claude/seeds/ into sandbox root
   export SANDBOX_INJECT_STANDARDS="true"  # inject standards/ into sandbox
-  export SANDBOX_INJECT_GOV="true"        # inject .cursor/rules/ into sandbox
+  export SANDBOX_INJECT_GOV="true"        # inject .claude/rules/ into sandbox
   export SANDBOX_INJECT_CONTEXT="true"    # inject GEMINI.md into sandbox root
   export SANDBOX_INJECT_GEMINI="true"     # inject .gemini/settings.json into sandbox
 }

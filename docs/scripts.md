@@ -55,7 +55,7 @@ scripts/
 ├── gov/
 │   ├── install.sh       ← bootstraps rules for a stack into a target project, supports --add for extras
 │   ├── sync.sh          ← diffs and updates rules already present in target
-│   ├── build.sh         ← concatenates installed rules into .cursor/.tmp/gov/rules.md
+│   ├── build.sh         ← concatenates installed rules into .claude/.tmp/gov/rules.md
 │   └── list.sh          ← emits catalog of stacks and rules, supports --json for skills
 ├── tooling/
 │   ├── sync.sh          ← full tooling sync: configs, seeds, deps, scripts, gitignore
@@ -83,7 +83,7 @@ scripts/
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
-    ├── gov.sh           ← strip_frontmatter, build_rules_payload
+    ├── gov.sh           ← strip_frontmatter, build_rules_payload, transform_to_claude_rule, rule_subdir
     ├── tooling.sh       ← list_tooling_stacks, is_tooling_stack_excluded
     ├── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
     └── sandbox-git.sh   ← resolve_sandbox_git_identity, configure_sandbox_git_identity
@@ -105,7 +105,7 @@ scripts/
 
 Claude role sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. Role drift lands under a `claude/` domain line when any of `PLANNER.md`, `IMPLEMENTER.md`, or `REVIEWER.md` changed. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
-If `.claude/GOV.md` exists in the target after governance sync, it is regenerated automatically by calling `manage-claude.sh gov` with `AITK_NON_INTERACTIVE=1`.
+Governance sync also removes any stale `.claude/GOV.md` left from earlier installs. The retired surface is no longer rebuilt.
 
 The git workflow step is skipped if the target is not a git root (no `.git/`). When `gh` is not installed the PR option is hidden but Commit only still works. The timestamped branch name normally avoids collisions. If the chosen name already exists locally or on the remote the workflow stops with a warning.
 
@@ -139,14 +139,14 @@ Source this in any script that needs terminal output. `log_*` functions write to
 
 Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds preserve user edits. `.txt` seeds are cspell word lists, so sync merges new lines and sorts the file. Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
-| Function                   | What it does                                                                               |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack. |
-| `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                          |
-| `inject_tooling_seeds`     | Apply stack seeds. `.txt` seeds merge and sort. Other seed types copy once, then skip.     |
-| `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                       |
-| `inject_governance`        | Copy governance rules into `.cursor/rules/` and standards into `standards/`.               |
-| `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                             |
+| Function                   | What it does                                                                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack.                                            |
+| `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                                                                     |
+| `inject_tooling_seeds`     | Apply stack seeds. `.txt` seeds merge and sort. Other seed types copy once, then skip.                                                |
+| `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                                                                  |
+| `inject_governance`        | Copy governance rules into `.claude/rules/` (and `.cursor/rules/` when the Cursor target is enabled) and standards into `standards/`. |
+| `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                                                                        |
 
 ### `gov.sh`
 

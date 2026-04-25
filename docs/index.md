@@ -19,7 +19,7 @@ One-line reference for each doc in this folder.
 - [Claude](claude.md): Claude plugin skills and tooling
 - [Design](design.md): DESIGN.md token shape, extract skill, render command
 - [Gemini](gemini.md): Gemini CLI command definitions
-- [Governance](governance.md): Cursor rules, stacks, install and sync
+- [Governance](governance.md): Path-scoped Claude rules, optional Cursor adapter, stacks, install and sync
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
 - [Prompts](prompts.md): System prompt templates for AI authoring
 - [Scripts](scripts.md): Bash scripts, lib functions, sandbox hooks

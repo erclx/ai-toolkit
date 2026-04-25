@@ -145,12 +145,11 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | `aitk claude seeds list` | List seed doc sources, plain text or `--json` for skills     |
 | `aitk claude sync`       | Diff managed files against source and apply updates          |
 | `aitk claude prompt`     | Generate master prompts from installed governance rules      |
-| `aitk claude gov`        | Build governance rules into `.claude/GOV.md`                 |
 | `aitk claude setup`      | Install user-level Claude config to `~/.claude/`             |
 
 ### init
 
-Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `WIREFRAMES.md`, `GOV.md`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project.
+Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `WIREFRAMES.md`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
 
 The seed `settings.json` pre-wires a PostToolUse hook on `Edit`, `Write`, and `MultiEdit` matchers that runs `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
@@ -180,13 +179,7 @@ For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from th
 
 For `IMPLEMENTER.md`: injects all governance rules from `.cursor/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`).
 
-Prerequisites: run `aitk claude init --roles` first, then `aitk gov install` to install rules for your stack.
-
-### gov
-
-Reads `.mdc` files from `.cursor/rules/`, strips frontmatter, concatenates them, and writes `.claude/GOV.md`. Claude Code loads this file automatically each session to provide governance context inline. `aitk sync` regenerates it automatically if `.claude/GOV.md` already exists in the target.
-
-Prerequisites: run `aitk gov install` first to populate `.cursor/rules/`.
+Prerequisites: run `aitk claude init --roles` first, then `aitk gov install --target cursor` to install rules into `.cursor/rules/` for the prompt builder.
 
 ### setup
 
@@ -200,29 +193,29 @@ Claude Code includes built-in features that overlap with some toolkit skills. Th
 
 ### Code review
 
-| Aspect   | Claude Code Review (built-in)                   | `claude-review` skill                                      |
-| -------- | ----------------------------------------------- | ---------------------------------------------------------- |
-| What     | Managed service that reviews PRs on GitHub      | Local skill that reviews diffs in terminal                 |
-| Trigger  | Auto on PR push, or `@claude review` on a PR    | `/claude-review` in a Claude Code session                  |
-| Context  | Reads the full repo on Anthropic infrastructure | Reads project docs (REQUIREMENTS, ARCHITECTURE, GOV)       |
-| Output   | Inline PR comments with severity tags           | Terminal findings grouped by file                          |
-| Best for | Post-push review on GitHub                      | Pre-push local review aware of project docs and governance |
+| Aspect   | Claude Code Review (built-in)                   | `claude-review` skill                                                             |
+| -------- | ----------------------------------------------- | --------------------------------------------------------------------------------- |
+| What     | Managed service that reviews PRs on GitHub      | Local skill that reviews diffs in terminal                                        |
+| Trigger  | Auto on PR push, or `@claude review` on a PR    | `/claude-review` in a Claude Code session                                         |
+| Context  | Reads the full repo on Anthropic infrastructure | Reads project docs (REQUIREMENTS, ARCHITECTURE) plus auto-loaded `.claude/rules/` |
+| Output   | Inline PR comments with severity tags           | Terminal findings grouped by file                                                 |
+| Best for | Post-push review on GitHub                      | Pre-push local review aware of project docs and governance                        |
 
 Use both: run `claude-review` locally before pushing, then let Code Review catch anything on the PR.
 
 ### Planning
 
-| Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                      |
-| ---------- | ------------------------------------------------ | ------------------------------------------------------- | --------------------------------------------------------------------------- |
-| What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                   |
-| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                           |
-| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: summary, files to touch, risks, questions                |
-| Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, WIREFRAMES, GOV |
+| Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                                                             |
+| ---------- | ------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                                                          |
+| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                                                                  |
+| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: summary, files to touch, risks, questions                                                       |
+| Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, WIREFRAMES. Coding rules in `.claude/rules/` auto-load |
 
 Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.
 
 ### Roles vs agentic mode
 
-The toolkit originally shipped role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) for chat-based AI workflows where you paste generated master prompts with injected governance rules. Claude Code's agentic mode makes this unnecessary. It reads `CLAUDE.md` and `.claude/GOV.md` directly, skills handle orchestration, and plan mode handles the "think before you act" workflow natively.
+The toolkit originally shipped role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) for chat-based AI workflows where you paste generated master prompts with injected governance rules. Claude Code's agentic mode makes this unnecessary. It reads `CLAUDE.md` and the `.claude/rules/` tree directly, skills handle orchestration, and plan mode handles the "think before you act" workflow natively.
 
 Roles are still available via `aitk claude roles` for teams that prefer chat-based workflows or use other AI tools that benefit from structured role prompts.
