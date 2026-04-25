@@ -9,6 +9,7 @@ description: Plans a feature by reading the project's Claude setup and scanning 
 
 - If no feature description is provided, stop: `❌ No feature description. Describe what you want to add.`
 - Do not implement anything. Output the plan and stop.
+- When the feature description spans two or more independent concerns, write one plan file per concern. Do not bundle them under a single slug.
 
 ## Step 1: read the Claude setup
 
