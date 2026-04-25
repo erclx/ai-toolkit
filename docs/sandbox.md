@@ -18,6 +18,7 @@ scripts/sandbox/
 │   ├── base.sh        ← tests base golden configs
 │   ├── claude.sh      ← tests claude tooling stack configs against anchor repo
 │   ├── gemini.sh      ← tests gemini settings.json config injection
+│   ├── python.sh      ← scaffolds with uv, layers base + python configs, runs full check
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
 ├── infra/
 │   ├── init.sh           ← scenarios for aitk init (default, with-flags)

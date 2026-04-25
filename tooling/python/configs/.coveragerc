@@ -1,0 +1,14 @@
+[run]
+source = src
+branch = True
+omit =
+    tests/*
+    */__init__.py
+data_file = .coverage_cache/.coverage
+
+[report]
+show_missing = True
+skip_empty = True
+
+[html]
+directory = .coverage_cache/html

@@ -1,0 +1,16 @@
+[stack]
+name = "python"
+extends = "base"
+runtime = "uv"
+scaffold = "uv init --app {{name}}"
+
+[scripts]
+"lint" = "uv run ruff check . && uv run ruff format --check ."
+"lint:fix" = "uv run ruff check --fix . && uv run ruff format ."
+"typecheck" = "uv run mypy ."
+"test" = "uv run pytest"
+"test:run" = "uv run pytest -v"
+"test:cov" = "uv run pytest --cov --cov-report=term-missing --cov-report=html"
+
+[gitignore]
+"# Python tooling" = [".pytest_cache/", ".mypy_cache/", ".ruff_cache/", ".coverage_cache/"]

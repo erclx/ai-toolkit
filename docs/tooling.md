@@ -8,7 +8,7 @@ category: Domain references
 
 ## Overview
 
-The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
+The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). The `python` stack extends `base` directly without going through `web`, runs on `uv` instead of `bun`, and layers ruff/mypy/pytest/coverage sidecars on top. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
 
 ## Structure
 
@@ -33,6 +33,11 @@ tooling/
 │   ├── configs/       ← astro.config.mjs, getViteConfig vitest, astro tsconfig, astro-aware eslint
 │   ├── manifest.toml  ← extends = "web", astro deps and scripts
 │   └── reference.md   ← adapter delta: astro check, island scope, prettier-plugin-astro
+├── python/
+│   ├── configs/       ← ruff.toml, mypy.ini, pytest.ini, .coveragerc, .python-version, scripts/verify.sh
+│   ├── seeds/         ← cspell terms for Python tooling
+│   ├── manifest.toml  ← extends = "base", uv runtime, lint/typecheck/test scripts wrapping `uv run`
+│   └── reference.md   ← anti-patterns, sidecar config rationale, hybrid project shape
 ├── gemini/
 │   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
 │   ├── manifest.toml  ← gitignore only, no deps or scripts
