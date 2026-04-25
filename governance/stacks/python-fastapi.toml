@@ -1,0 +1,2 @@
+extends = "python"
+rules = ["220-fastapi"]
