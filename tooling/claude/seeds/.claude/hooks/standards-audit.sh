@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-#
-# PostToolUse hook. Greps markdown files for em-dashes and semicolons,
-# both banned in standards/prose.md. Emits additionalContext on hits so
-# the agent self-corrects on the next turn. Fenced code blocks are
-# excluded to avoid false positives on `;` in code samples.
 
 input=$(cat)
 file=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_response.filePath // empty')
