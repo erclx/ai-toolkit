@@ -101,13 +101,13 @@ scripts/
 
 ## manage-sync.sh
 
-`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (the default, stages, commits, creates `chore/toolkit-sync`, pushes, opens a PR via `gh`), "Commit only" (stages, commits, creates the branch, stops before push), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
+`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
 
 Claude role sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. Role drift lands under a `claude/` domain line when any of `PLANNER.md`, `IMPLEMENTER.md`, or `REVIEWER.md` changed. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
 If `.claude/GOV.md` exists in the target after governance sync, it is regenerated automatically by calling `manage-claude.sh gov` with `AITK_NON_INTERACTIVE=1`.
 
-The git workflow step is skipped if the target is not a git root (no `.git/`), `gh` is not installed, or `chore/toolkit-sync` already exists locally or on the remote.
+The git workflow step is skipped if the target is not a git root (no `.git/`). When `gh` is not installed the PR option is hidden but Commit only still works. The timestamped branch name normally avoids collisions. If the chosen name already exists locally or on the remote the workflow stops with a warning.
 
 ## UI framing across exec boundaries
 

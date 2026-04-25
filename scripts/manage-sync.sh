@@ -189,23 +189,17 @@ run_git_workflow() {
     return
   fi
 
-  if ! command -v gh >/dev/null 2>&1; then
-    log_warn "gh CLI not found (skipping PR). Install from https://cli.github.com"
-    return
+  local current_branch
+  current_branch=$(git -C "$target" symbolic-ref --short HEAD 2>/dev/null || echo "")
+
+  local on_protected=0
+  if [ -z "$current_branch" ] || [ "$current_branch" = "main" ] || [ "$current_branch" = "master" ]; then
+    on_protected=1
   fi
 
-  local remote_check
-  remote_check=$(git -C "$target" ls-remote --heads origin chore/toolkit-sync 2>/dev/null || true)
-  if [ -n "$remote_check" ]; then
-    log_warn "chore/toolkit-sync already exists on remote (skipping). Merge or delete it first."
-    return
-  fi
-
-  local local_check
-  local_check=$(git -C "$target" branch --list "chore/toolkit-sync" 2>/dev/null || true)
-  if [ -n "$local_check" ]; then
-    log_warn "chore/toolkit-sync already exists locally (skipping). Delete it first."
-    return
+  local has_gh=0
+  if command -v gh >/dev/null 2>&1; then
+    has_gh=1
   fi
 
   local -a changed_domains=()
@@ -269,7 +263,16 @@ run_git_workflow() {
   domain_list="${domain_list%, }"
 
   local commit_msg="chore(sync): update $domain_list from toolkit"
-  local branch="chore/toolkit-sync"
+  local branch
+  branch="chore/toolkit-sync-$(date +%Y%m%d-%H%M)"
+
+  local local_check remote_check
+  local_check=$(git -C "$target" branch --list "$branch" 2>/dev/null || true)
+  remote_check=$(git -C "$target" ls-remote --heads origin "$branch" 2>/dev/null || true)
+  if [ -n "$local_check" ] || [ -n "$remote_check" ]; then
+    log_warn "$branch already exists. Wait a minute or delete it, then re-run."
+    return
+  fi
 
   local pr_body="## Summary\n\nSync $domain_list from toolkit.\n\n## Key Changes\n"
 
@@ -291,13 +294,25 @@ run_git_workflow() {
 
   log_step "Preview"
   log_info "Domains: $domain_list"
-  log_info "Branch:  $branch"
+  if [ "$on_protected" -eq 1 ]; then
+    log_info "Branch:  $branch (source: ${current_branch:-detached})"
+  else
+    log_info "Branch:  $current_branch (commit only) or $branch (PR)"
+  fi
   log_info "Commit:  $commit_msg"
 
   log_step "PR body"
   printf "%b\n" "$pr_body" | pipe_output
 
-  select_option "Review changes, then?" "Commit and open PR" "Commit only" "Cancel"
+  local -a options=()
+  if [ "$has_gh" -eq 1 ]; then
+    options+=("Commit and open PR")
+  else
+    log_warn "gh CLI not found — PR option unavailable. Install from https://cli.github.com"
+  fi
+  options+=("Commit only" "Cancel")
+
+  select_option "Review changes, then?" "${options[@]}"
   case "$SELECTED_OPTION" in
   "Cancel")
     log_warn "Skipped"
@@ -308,17 +323,28 @@ run_git_workflow() {
   esac
 
   log_step "Committing"
-  git -C "$target" add -A
-  git -C "$target" commit -m "$commit_msg"
-  git -C "$target" checkout -b "$branch"
 
   if [ "$SELECTED_OPTION" = "Commit only" ]; then
-    trap - EXIT
-    echo -e "${GREY}└${NC}\n" >&2
-    echo -e "${GREEN}✓ Committed to $branch. Push and open a PR when ready.${NC}" >&2
+    if [ "$on_protected" -eq 1 ]; then
+      git -C "$target" checkout -b "$branch"
+      git -C "$target" add -A
+      git -C "$target" commit -m "$commit_msg"
+      trap - EXIT
+      echo -e "${GREY}└${NC}\n" >&2
+      echo -e "${GREEN}✓ Committed to $branch. Push and open a PR when ready.${NC}" >&2
+    else
+      git -C "$target" add -A
+      git -C "$target" commit -m "$commit_msg"
+      trap - EXIT
+      echo -e "${GREY}└${NC}\n" >&2
+      echo -e "${GREEN}✓ Committed to $current_branch.${NC}" >&2
+    fi
     return
   fi
 
+  git -C "$target" checkout -b "$branch"
+  git -C "$target" add -A
+  git -C "$target" commit -m "$commit_msg"
   git -C "$target" push -u origin "$branch"
 
   log_step "Opening PR"
