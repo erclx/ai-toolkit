@@ -8,7 +8,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "full" "small"
+  select_or_route_scenario "Which scenario?" "full" "small" "multi-concern"
 
   case "$SELECTED_OPTION" in
   "full")
@@ -167,6 +167,48 @@ EOF
     log_info "Context: prose-only repo, single README task, decoy DESIGN/WIREFRAMES/GOV with sentinel text"
     log_info "Action:  /claude-feature (reference the task in TASKS.md)"
     log_info "Expect:  chat-only output, NO .claude/plans/ file written, decoys NOT surfaced"
+    ;;
+  "multi-concern")
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Mixed repo: API endpoints plus a small docs site.
+EOF
+
+    mkdir -p src/routes docs
+    cat <<'EOF' >src/routes/users.ts
+import { Router } from "express";
+const router = Router();
+router.get("/", (_req, res) => res.json([]));
+export default router;
+EOF
+
+    cat <<'EOF' >docs/intro.md
+# Intro
+
+Welcome to the project. This intro paragraph reads dry and dense, with one long run-on thought that does not break for the reader and keeps stacking clauses without giving the eye a place to rest.
+EOF
+
+    mkdir -p .claude
+    cat <<'EOF' >.claude/TASKS.md
+# Tasks
+
+### Add pagination to GET /users
+
+- [ ] Outcome: GET /users supports limit and offset query params
+- [ ] Outcome: defaults applied when params omitted
+
+### Tighten the docs intro paragraph
+
+- [ ] Outcome: intro reads as two short paragraphs instead of one run-on
+EOF
+
+    git add . && git commit -m "chore(sandbox): initial state" --no-verify -q
+
+    log_step "Scenario ready: feature planning (multi-concern)"
+    log_info "Context: two unrelated tasks in TASKS.md, one API change and one prose edit"
+    log_info "Action:  /claude-feature 'add pagination to /users and tighten the docs intro'"
+    log_info "Expect:  two plan files in .claude/plans/, one per concern, not a single bundled slug"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

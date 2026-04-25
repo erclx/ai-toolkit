@@ -40,7 +40,7 @@ scripts/sandbox/
 ├── claude/
 │   ├── autoship.sh     ← approved plan on feature branch for testing /claude-autoship
 │   ├── review.sh       ← branch with known bugs for testing /claude-review
-│   ├── feature.sh      ← scenarios for /claude-feature (full, small)
+│   ├── feature.sh      ← scenarios for /claude-feature (full, small, multi-concern)
 │   ├── ux-audit.sh     ← UI project with seeded design drift for testing /claude-ux-audit
 │   ├── docs.sh         ← stale planning docs after a session pivot for testing /claude-docs
 │   ├── seed-sync.sh    ← drifted seeds for testing /claude-seed-sync
