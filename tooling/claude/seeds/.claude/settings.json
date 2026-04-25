@@ -10,5 +10,18 @@
       "Bash(bun run check:shell)"
     ],
     "deny": ["Read(./.env.local)", "Read(./.env.*)"]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/standards-audit.sh"
+          }
+        ]
+      }
+    ]
   }
 }

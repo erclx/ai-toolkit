@@ -34,6 +34,11 @@ list_seed_files() {
     name=$(basename "$file")
     echo "$name|$file|.claude/$name"
   done < <(find "$SEEDS_DIR/.claude" -maxdepth 1 -type f | sort)
+
+  while IFS= read -r file; do
+    name=$(basename "$file")
+    echo "hooks/$name|$file|.claude/hooks/$name"
+  done < <(find "$SEEDS_DIR/.claude/hooks" -maxdepth 1 -type f 2>/dev/null | sort)
 }
 
 list_text() {
