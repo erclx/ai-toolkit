@@ -51,13 +51,19 @@ Do not guess past the first fallback. Fuzzy matching across sandbox categories p
 
 ## Step 4: print the report
 
+Build the distinct scenario list from Step 2 results. Keep their original input order so re-runs are deterministic. The first entry is the `Provisioning:` target. Any remainder is the `Queued:` list.
+
 Print one block to chat:
 
 ```plaintext
 Sandbox check
 
-Re-provision:
-  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>   # one line per distinct scenario below
+Provisioning:
+  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
+
+Queued (run manually after testing the current scenario):
+  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
+  AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
 
 Re-test:
   cd <current-root>/.sandbox
@@ -75,8 +81,10 @@ Rules for the block:
 - List every changed skill on its own line under `Findings:`. Sort `stale` and `unmapped` first, then `aligned`, then `none`.
 - Use these status labels exactly: `STALE`, `ALIGNED`, `NONE`, `UNMAPPED`.
 - Include a trailing `# /<skill-name>` invocation hint on every line so the user can copy a specific skill's trigger straight into the Claude session.
-- The `Re-provision:` block lists each distinct scenario once. Always invoke the local script, never `aitk sandbox`. `aitk` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
-- Omit the `Re-provision:` block when every pairing is `NONE` or `UNMAPPED`, since there is nothing to provision.
+- `Provisioning:` shows exactly one scenario, the next to provision. Always invoke the local script, never `aitk sandbox`. `aitk` is globally installed and resolves to the main repo's scripts, so from a worktree it would run stale scenarios and provision the sandbox outside the worktree.
+- `.sandbox/` is a single directory per repo root. Provisioning a second scenario overwrites the first, so the skill provisions one at a time and queues the rest.
+- `Queued:` lists every remaining distinct scenario as a full `manage-sandbox.sh` command, one per line, so the user can copy directly. Omit the section when there is only one scenario.
+- Omit `Provisioning:` and `Queued:` when every pairing is `NONE` or `UNMAPPED`, since there is nothing to provision.
 - Print `cd` and `claude` on separate lines. Do not chain them with `&&`.
 - After the `Re-test:` block, print one line: `Note: invoke skills as /<skill-name>, not /toolkit:<skill-name>. The project-scoped copy takes priority.`
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no skill in Step 2 mapped to. Omit the section when empty.
@@ -85,7 +93,9 @@ If every pairing is `ALIGNED` or `NONE`, prefix the block with `✅ All changed 
 
 ## Step 5: execute re-provision
 
-Immediately after printing the report, run each `Re-provision:` command listed in the block. Claude Code's tool permission dialog is the confirmation gate. Do not pause for additional user input.
+Immediately after printing the report, run only the `Provisioning:` command. Claude Code's tool permission dialog is the confirmation gate. Do not pause for additional user input.
+
+Do not run any `Queued:` scenarios. The user copies the next command after testing the current one.
 
 Skip this step when every pairing is `NONE` or `UNMAPPED`.
 
