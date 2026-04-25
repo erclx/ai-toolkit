@@ -21,10 +21,11 @@ alias clw='cl -w'
 alias cls='cl --model sonnet'
 
 alias clp='claude --plugin-dir $TOOLKIT/claude'
+alias clpc='clp -c'
 alias clps='clp --model sonnet'
 ```
 
-Place this block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clps` inherits `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions.
+Place this block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clpc` and `clps` inherit `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions.
 
 ## What each one does
 
@@ -36,9 +37,10 @@ Place this block near the end of `~/.zshrc`, after any `PATH` mutations and the 
 - `clw`: creates a worktree under `.claude/worktrees/<name>/` on a fresh branch and starts a Claude Code session in it. Pass the worktree name as the trailing arg: `clw feat-auth`.
 - `cls`: pins the session to Sonnet instead of the default Opus. Use for routine work where Opus cost is not justified.
 
-`clp` and `clps` bake in `--plugin-dir`. Use them outside the toolkit repository, where auto-discovery does not fire.
+`clp`, `clpc`, and `clps` bake in `--plugin-dir`. Use them outside the toolkit repository, where auto-discovery does not fire.
 
 - `clp`: session with the toolkit plugin loaded explicitly
+- `clpc`: jumps straight into the most recent session for the current directory with the plugin loaded. The `clp` mirror of `clc`.
 - `clps`: `clp` pinned to Sonnet
 
 ## When to use which
@@ -51,7 +53,7 @@ Use `cls` or `clps` to save Opus usage on routine sessions. Switch mid-session w
 
 Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](claude-worktrees.md) for fan-out rules.
 
-Use `clc` to resume the last session without a picker. Use `clr` when you have several sessions and need to pick by name or recency.
+Use `clc` to resume the last session without a picker. Use `clr` when you have several sessions and need to pick by name or recency. Outside the toolkit repo, `clpc` is the same shortcut as `clc` with the plugin loaded.
 
 ## Why not a function
 

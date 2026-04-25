@@ -13,6 +13,7 @@ awwwards
 backlink
 bradlc
 bunx
+clpc
 clps
 changelog
 changelogithub
