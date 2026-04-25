@@ -63,14 +63,16 @@ Inside the toolkit repository, Claude Code auto-discovers the plugin from `claud
 In other repositories, pass `--plugin-dir` explicitly:
 
 ```bash
-claude --plugin-dir /path/to/toolkit/claude
+claude --plugin-dir $TOOLKIT/claude
 ```
 
-Add shell aliases to avoid typing the flag each time. The recommended split keeps bare `cl` for the toolkit repo and `clp` for everywhere else:
+Add shell aliases to avoid typing the flag each time. Set `TOOLKIT` once in `~/.zshrc` and reference it in the `clp` alias:
 
 ```zsh
+TOOLKIT=~/path/to/toolkit
+
 alias cl='claude'
-alias clp='claude --plugin-dir /path/to/toolkit/claude'
+alias clp='claude --plugin-dir $TOOLKIT/claude'
 alias clps='clp --model sonnet'
 ```
 

@@ -9,20 +9,22 @@ Claude Code auto-discovers the toolkit plugin from `claude/.claude-plugin/plugin
 
 ## The aliases
 
-Replace the `--plugin-dir` path with wherever you cloned the toolkit.
+Set `TOOLKIT` to wherever you cloned the repository, then place the alias block below it in `~/.zshrc`.
 
 ```zsh
+TOOLKIT=~/path/to/toolkit
+
 alias cl='claude'
 alias clr='cl -r'
 alias clc='cl -c'
 alias clw='cl -w'
 alias cls='cl --model sonnet'
 
-alias clp='claude --plugin-dir ~/repos/ai/toolkit/claude'
+alias clp='claude --plugin-dir $TOOLKIT/claude'
 alias clps='clp --model sonnet'
 ```
 
-Place the block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clps` inherits `--plugin-dir` through `clp`.
+Place this block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clps` inherits `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions.
 
 ## What each one does
 
