@@ -17,7 +17,7 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 
 ## Step 0: enter a worktree
 
-If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `toolkit:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment; do not call `EnterWorktree` directly.
+If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `toolkit:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
 
 If neither command resolves, stop: `❌ Not a git repository. Autoship needs git or a WorktreeCreate hook.`
 
