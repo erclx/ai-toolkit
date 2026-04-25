@@ -9,8 +9,8 @@ stage_setup() {
     log_error "uv is not installed. Install from https://docs.astral.sh/uv/"
   fi
 
-  log_step "Scaffolding python (uv init --app --python 3.13)"
-  uv init --app --python 3.13 --name sandbox-python --no-readme . >/dev/null
+  log_step "Scaffolding python (uv init --app)"
+  uv init --app --name sandbox-python --no-readme . >/dev/null
   log_info "uv init complete"
 
   log_step "Seeding package.json (bun init -y)"

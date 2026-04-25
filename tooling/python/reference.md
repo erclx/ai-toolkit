@@ -10,7 +10,7 @@ Configs ship as sidecar files (`ruff.toml`, `mypy.ini`, `pytest.ini`, `.coverage
 
 ## Scaffold checklist
 
-1. Scaffold with `uv init --app --python 3.13 <name>`. This creates `pyproject.toml`, `.python-version` pinned to 3.13, `src/<name>/`, and a starter `main.py`. The `--python 3.13` flag aligns `requires-python` in `pyproject.toml` with the `.python-version` pin shipped by this stack. Without that flag, `uv init` defaults `requires-python` to `>=3.14` and `uv sync` rejects the synced `.python-version`.
+1. Scaffold with `uv init --app <name>`. This creates `pyproject.toml`, `.python-version` pinned to 3.14, `src/<name>/`, and a starter `main.py`. `uv init` defaults `requires-python` to `>=3.14`, which matches the `.python-version` pin this stack ships.
 2. Seed `package.json` so the base layer's bun-side tools (husky, prettier, cspell, commitlint) have a target to install into: `bun init -y`. Without this `aitk tooling sync` drops base configs but skips the dep install, since `resolve_missing_deps` short-circuits when `package.json` is absent.
 3. Install base tooling: `aitk tooling sync base .`
 4. Install python tooling: `aitk tooling sync python .`
