@@ -8,7 +8,7 @@ category: Domain references
 
 ## Overview
 
-The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). The `python` stack extends `base` directly (skipping `web`) and runs on `uv` instead of `bun`, layering ruff/mypy/pytest/coverage sidecars on top. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
+The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). The `python` stack extends `base` directly without going through `web`, runs on `uv` instead of `bun`, and layers ruff/mypy/pytest/coverage sidecars on top. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
 
 ## Structure
 

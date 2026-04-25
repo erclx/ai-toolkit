@@ -4,13 +4,13 @@
 
 ## Overview
 
-The python stack covers Python 3.13+ projects managed with `uv`. It ships golden sidecar configs for `ruff` (lint and format), `mypy` (strict typing), `pytest`, and `coverage`, plus a `.python-version` pin and a python-aware `verify.sh`. Framework adapters (FastAPI, etc.) layer on top with their own deps and configs.
+The python stack covers Python 3.13+ projects managed with `uv`. It ships golden sidecar configs for `ruff`, `mypy`, `pytest`, and `coverage`, plus a `.python-version` pin and a python-aware `verify.sh`. Framework adapters layer on top with their own deps and configs.
 
 Configs ship as sidecar files (`ruff.toml`, `mypy.ini`, `pytest.ini`, `.coveragerc`) rather than `[tool.*]` sections in `pyproject.toml`. Sync overwrites configs on every run, so keeping them sidecar avoids stomping the user-owned `[project]` block in `pyproject.toml`.
 
 ## Scaffold checklist
 
-1. Scaffold with `uv init --app --python 3.13 <name>`. This creates `pyproject.toml`, `.python-version` pinned to 3.13, `src/<name>/`, and a starter `main.py`. The `--python 3.13` flag aligns `requires-python` in `pyproject.toml` with the `.python-version` pin shipped by this stack — without it, `uv init` defaults `requires-python` to `>=3.14` and `uv sync` will reject the synced `.python-version`.
+1. Scaffold with `uv init --app --python 3.13 <name>`. This creates `pyproject.toml`, `.python-version` pinned to 3.13, `src/<name>/`, and a starter `main.py`. The `--python 3.13` flag aligns `requires-python` in `pyproject.toml` with the `.python-version` pin shipped by this stack. Without that flag, `uv init` defaults `requires-python` to `>=3.14` and `uv sync` rejects the synced `.python-version`.
 2. Seed `package.json` so the base layer's bun-side tools (husky, prettier, cspell, commitlint) have a target to install into: `bun init -y`. Without this `aitk tooling sync` drops base configs but skips the dep install, since `resolve_missing_deps` short-circuits when `package.json` is absent.
 3. Install base tooling: `aitk tooling sync base .`
 4. Install python tooling: `aitk tooling sync python .`
@@ -19,7 +19,7 @@ Configs ship as sidecar files (`ruff.toml`, `mypy.ini`, `pytest.ini`, `.coverage
 7. Annotate `main()` in the scaffold-generated `main.py` with `-> None`. `uv init --app` ships an unannotated `main()` that fails strict mypy on the first run.
 8. Run `bun run lint:fix` then `bun run check`.
 
-The python stack also ships `tests/test_smoke.py` as a copy-once seed so that `pytest` collects at least one test on first run and `bun run test:run` exits 0 instead of 5 (no tests collected). Delete or replace it with real tests.
+The python stack also ships `tests/test_smoke.py` as a copy-once seed. `pytest` collects at least one test on first run, so `bun run test:run` exits 0 instead of the empty-collection exit code 5. Delete or replace the smoke test with real tests.
 
 ## What ships as golden configs
 
@@ -32,15 +32,15 @@ The python stack also ships `tests/test_smoke.py` as a copy-once seed so that `p
 
 ## Hybrid project shape
 
-A python project synced with this stack ends up with both `package.json` (from base, for prettier/cspell/commitlint/husky on `.md`/`.yml`/`.toml`) and `pyproject.toml` (from `uv init`). Both `node_modules/` and `.venv/` coexist at the project root. This is intentional — it gives Python projects access to the toolkit's cross-cutting tools without forking the base stack.
+A python project synced with this stack ends up with both `package.json` from base and `pyproject.toml` from `uv init`. The base layer brings prettier, cspell, commitlint, and husky for non-Python files. Both `node_modules/` and `.venv/` coexist at the project root. The hybrid shape gives Python projects access to the toolkit's cross-cutting tools without forking the base stack.
 
 ## Dependencies
 
-The manifest declares no `[dependencies.dev]`. The `inject_tooling_manifest` function in `scripts/lib/inject.sh` currently calls `bun add -D` for any declared deps, which would fail for Python packages. v1 sidesteps this by leaving the section empty. Framework adapters that need Python deps (e.g. a future `python-fastapi` stack) require the injector to branch on `runtime` or detect `pyproject.toml` and call `uv add --dev` instead.
+The manifest declares no `[dependencies.dev]`. The `inject_tooling_manifest` function in `scripts/lib/inject.sh` currently calls `bun add -D` for any declared deps, which would fail for Python packages. v1 sidesteps this by leaving the section empty. Framework adapters that need Python deps require the injector to branch on `runtime` or detect `pyproject.toml` and call `uv add --dev` instead.
 
 ## Verify command
 
-`aitk tooling verify <stack>` currently runs `bun run lint:fix` and `bun run check` against any stack with a `package.json`. Since base ships a `package.json`, those run for python too — and since python's verify.sh wraps the package.json `lint`/`typecheck`/`test:run` scripts that delegate to `uv run`, the verify path works end-to-end as long as `uv` is installed in the verify environment. The end-to-end test (`test:e2e`) and `screenshot` phases are gated on `package.json` script keys that python does not declare, so they cleanly skip.
+`aitk tooling verify <stack>` currently runs `bun run lint:fix` and `bun run check` against any stack with a `package.json`. Since base ships a `package.json`, those run for python too. Python's verify.sh wraps the package.json `lint`/`typecheck`/`test:run` scripts that delegate to `uv run`, so the verify path works end-to-end as long as `uv` is installed in the verify environment. The end-to-end test and screenshot phases are gated on `package.json` script keys that python does not declare, so they cleanly skip.
 
 ## Anti-patterns
 
