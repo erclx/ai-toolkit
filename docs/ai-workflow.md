@@ -118,9 +118,4 @@ review finds  → Session 2 (fix alongside review, before ship)
 
 ## Snippets
 
-Claude-specific snippets require the `.claude/` workflow to be set up. For the full list, see `docs/snippets.md`.
-
-| Slug                    | When to use                                                                                             |
-| ----------------------- | ------------------------------------------------------------------------------------------------------- |
-| `claude-memory-capture` | Capture session patterns as memory blocks. Fires automatically at the end of `autoship` and `git-ship`. |
-| `claude-tasks-done`     | Remove completed task blocks and delete referenced plan files                                           |
+For the full list of snippets that complement this workflow, see `docs/snippets.md`.

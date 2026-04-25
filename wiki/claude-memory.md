@@ -40,7 +40,7 @@ Project-scoped memory complements Claude Code's auto-memory. Files live at `.cla
 
 The loop:
 
-1. **Capture** with `@snippets/claude/memory-capture`. Extracts durable patterns from the session and writes `feedback`, `project`, `user`, or `reference` entries.
+1. **Capture** with `/claude-memory-capture`. Extracts durable patterns from the session and writes `feedback`, `project`, `user`, or `reference` entries.
 2. **Review** with `/claude-memory-review`. Proposes per-entry actions (promote, hand off to governance, delete) and writes `.claude/review/memory-review-<branch>.md` with a `Decision:` slot per item.
 3. **Discuss** with `@snippets/claude/memory-discuss`. Answers question Decisions inline as `Take:` lines. Multi-round, no mutations.
 4. **Apply** with `@snippets/claude/memory-apply`. Commits `apply`, `skip`, or `defer` decisions, flips emoji statuses, surfaces pending items in the bucket summary.
