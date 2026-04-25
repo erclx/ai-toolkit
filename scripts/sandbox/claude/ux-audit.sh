@@ -17,7 +17,8 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >CLAUDE.md
+  cat <<'EOF' >>CLAUDE.md
+
 # My App
 
 Vite + React task list. Uses CSS modules and a small token system.

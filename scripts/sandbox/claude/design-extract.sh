@@ -17,7 +17,8 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >CLAUDE.md
+  cat <<'EOF' >>CLAUDE.md
+
 # Notes app
 
 Small Vite + React notes app. Voice is calm and direct. Dense screens, sparing accent color, no animation.

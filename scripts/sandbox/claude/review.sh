@@ -17,7 +17,8 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >CLAUDE.md
+  cat <<'EOF' >>CLAUDE.md
+
 # My App
 
 REST API for user management.
