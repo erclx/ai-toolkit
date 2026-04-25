@@ -97,11 +97,11 @@ Omit the second line if there were no minor findings. Omit the third line if `cl
 
 Every stop point leaves recoverable state. The user resumes manually from the appropriate step.
 
-| Stop point      | Recovery                                 |
-| --------------- | ---------------------------------------- |
-| No plan         | Run `/claude-feature` to create one      |
+| Stop point                         | Recovery                                                                                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| No plan                            | Run `/claude-feature` to create one                                                                                                            |
 | Branch collision on worktree entry | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
-| Verify fails    | Read logs, fix manually, run `/git-ship` |
-| UI checklist    | Verify visually, run `/git-ship`         |
-| Review findings | Fix findings, run `/git-ship`            |
-| git-ship fails  | Inspect hook or remote error, run again  |
+| Verify fails                       | Read logs, fix manually, run `/git-ship`                                                                                                       |
+| UI checklist                       | Verify visually, run `/git-ship`                                                                                                               |
+| Review findings                    | Fix findings, run `/git-ship`                                                                                                                  |
+| git-ship fails                     | Inspect hook or remote error, run again                                                                                                        |
