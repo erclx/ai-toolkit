@@ -17,7 +17,8 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >CLAUDE.md
+  cat <<'EOF' >>CLAUDE.md
+
 # Notes app
 
 Small Vite + React notes app. Voice is calm and direct. Dense screens, sparing accent color, no animation.
@@ -29,7 +30,8 @@ Small Vite + React notes app. Voice is calm and direct. Dense screens, sparing a
 EOF
 
   mkdir -p .claude
-  cat <<'EOF' >.claude/REQUIREMENTS.md
+  cat <<'EOF' >>.claude/REQUIREMENTS.md
+
 # Requirements
 
 - Users can write, edit, and tag notes

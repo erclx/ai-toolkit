@@ -8,7 +8,8 @@ use_config() {
 }
 
 stage_setup() {
-  cat <<'EOF' >CLAUDE.md
+  cat <<'EOF' >>CLAUDE.md
+
 # Sample Project
 
 Task API used as the fixture for /toolkit:claude-memory-review.

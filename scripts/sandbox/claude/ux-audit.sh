@@ -17,7 +17,8 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >CLAUDE.md
+  cat <<'EOF' >>CLAUDE.md
+
 # My App
 
 Vite + React task list. Uses CSS modules and a small token system.
@@ -29,7 +30,8 @@ Vite + React task list. Uses CSS modules and a small token system.
 EOF
 
   mkdir -p .claude
-  cat <<'EOF' >.claude/DESIGN.md
+  cat <<'EOF' >>.claude/DESIGN.md
+
 # Design
 
 ## Spacing scale
@@ -59,7 +61,8 @@ Two variants only: `primary` (accent background, white text) and `secondary` (tr
 Use Lucide icons exclusively. Icon size matches text size of the surrounding label.
 EOF
 
-  cat <<'EOF' >.claude/WIREFRAMES.md
+  cat <<'EOF' >>.claude/WIREFRAMES.md
+
 # Wireframes
 
 ## Task list surface
@@ -78,7 +81,8 @@ States:
 Modal dialog with a single text input and a primary "Add" button plus a secondary "Cancel" button.
 EOF
 
-  cat <<'EOF' >.claude/REQUIREMENTS.md
+  cat <<'EOF' >>.claude/REQUIREMENTS.md
+
 # Requirements
 
 - Users can view, add, and complete tasks
@@ -228,7 +232,8 @@ export function AddTaskModal({ onClose }: { onClose: () => void }) {
 }
 EOF
 
-  cat <<'EOF' >.claude/TASKS.md
+  cat <<'EOF' >>.claude/TASKS.md
+
 # Tasks
 
 ### Polish task list before review

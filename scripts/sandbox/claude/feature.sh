@@ -21,7 +21,8 @@ stage_setup() {
 }
 EOF
 
-    cat <<'EOF' >CLAUDE.md
+    cat <<'EOF' >>CLAUDE.md
+
 # My App
 
 Task management API with SQLite storage.
@@ -39,7 +40,8 @@ Task management API with SQLite storage.
 EOF
 
     mkdir -p .claude
-    cat <<'EOF' >.claude/ARCHITECTURE.md
+    cat <<'EOF' >>.claude/ARCHITECTURE.md
+
 # Architecture
 
 ## Storage
@@ -97,7 +99,8 @@ router.post("/", (req, res) => {
 export default router;
 EOF
 
-    cat <<'EOF' >.claude/TASKS.md
+    cat <<'EOF' >>.claude/TASKS.md
+
 # Tasks
 
 ### Add due dates and priority to tasks

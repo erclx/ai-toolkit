@@ -126,7 +126,7 @@ use_config() {
 
 By default, sandboxes are minimal: no seeds, no standards, no gov rules, no Gemini settings, and auto-commit is on. Declare only the flags you need.
 
-`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs, so scenarios that write a scenario-specific `CLAUDE.md` will overlay the seed. Use the flag when the scenario models a project that has installed seeds. Use hand-rolled files when the scenario models a target project with its own `CLAUDE.md`.
+`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs. Scenarios that add project narrative to any seeded file (`CLAUDE.md`, `.claude/TASKS.md`, `.claude/ARCHITECTURE.md`, etc.) should append (`>>file`) so the seed rules flow through and the project context layers on top. Overwriting (`>file`) clobbers the seed and breaks any test that depends on seed-driven behavior. Reserve `>file` for scenarios that intentionally model a clean state (test sentinels, "no toolkit installed" fixtures).
 
 Rule for `claude/` scenarios: default to `SANDBOX_INJECT_SEEDS="true"` so each scenario models a real post-`aitk init` project state. Two documented exceptions:
 
