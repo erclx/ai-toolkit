@@ -2,7 +2,7 @@
 name = "python"
 extends = "base"
 runtime = "uv"
-scaffold = "uv init --app {{name}}"
+scaffold = "uv init --app --python 3.13 {{name}}"
 
 [scripts]
 "lint" = "uv run ruff check . && uv run ruff format --check ."
@@ -13,16 +13,4 @@ scaffold = "uv init --app {{name}}"
 "test:cov" = "uv run pytest --cov --cov-report=term-missing --cov-report=html"
 
 [gitignore]
-"# Python" = [
-    "__pycache__/",
-    ".venv/",
-    "*.egg-info/",
-    ".pytest_cache/",
-    ".mypy_cache/",
-    ".ruff_cache/",
-    ".coverage",
-    ".coverage_cache/",
-    "htmlcov/",
-    "dist/",
-    "build/",
-]
+"# Python tooling" = [".pytest_cache/", ".mypy_cache/", ".ruff_cache/", ".coverage_cache/"]
