@@ -27,6 +27,12 @@ When adding a stack:
 
 - Create `.toml` in `governance/stacks/`, set `extends`, list rules
 
+## Rule audit
+
+After writing or revising a `.mdc` rule, audit each bullet against the checklist. Trigger phrases: "audit this rule", "review the governance rule", "is this rule worth keeping".
+
+- Read `.claude/skills/aitk-governance/references/rule-audit.md` for the criteria and output shape.
+
 ## Reference
 
 - `docs/governance.md`: system overview, numbering scheme, install vs sync vs build, stacks
