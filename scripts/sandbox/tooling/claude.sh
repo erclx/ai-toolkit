@@ -23,7 +23,7 @@ EOF
 
   log_step "Injecting governance rules"
   "$PROJECT_ROOT/scripts/manage-gov.sh" install base "."
-  log_info "Base rules injected into .cursor/rules/"
+  log_info "Base rules injected into .claude/rules/"
 
   log_step "Scenario ready: Claude workflow"
   log_info "Context: Empty project with base gov rules injected"
