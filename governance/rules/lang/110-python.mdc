@@ -19,7 +19,7 @@ priority: 110
 - Annotate all public functions, methods, and class attributes.
 - Use `X | None` over `Optional[X]` and `X | Y` over `Union[X, Y]`.
 - Use built-in generics (`list[str]`, `dict[str, int]`) over `typing.List` and `typing.Dict`.
-- Use `from __future__ import annotations` only when targeting Python below 3.10.
+- Avoid `from __future__ import annotations` in modules that pydantic, FastAPI, or other libraries introspect at runtime.
 - Use `typing.Protocol` for structural typing over abstract base classes for interfaces.
 - Do not use `Any`. Reach for `object` or `typing.cast` at boundaries instead.
 
@@ -38,6 +38,6 @@ priority: 110
 
 ## Imports and modules
 
-- Use absolute imports rooted at the package. Do not use relative imports beyond `.`.
-- Import names directly. Do not alias via `import x as y` except to disambiguate collisions.
+- Use absolute imports rooted at the package. Do not use parent-relative (`from ..pkg`) imports.
+- Do not alias imports to shorten internal names. Ecosystem conventions (`numpy as np`, `pandas as pd`) are exceptions.
 - Do not place executable code at module scope. Guard with `if __name__ == "__main__":`.

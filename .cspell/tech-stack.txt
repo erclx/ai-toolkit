@@ -35,8 +35,10 @@ nextjs
 noopener
 noreferrer
 nullglob
+numpy
 nvmrc
 ollama
+parametrize
 pathlib
 pathspec
 pip
@@ -45,6 +47,7 @@ pycache
 pydantic
 pyproject
 pytest
+pytestmark
 repr
 rlength
 semgrep
