@@ -29,7 +29,8 @@ Task management API.
 EOF
 
   mkdir -p .claude
-  cat <<'EOF' >.claude/ARCHITECTURE.md
+  cat <<'EOF' >>.claude/ARCHITECTURE.md
+
 # Architecture
 
 ## Storage
@@ -41,7 +42,8 @@ SQLite via better-sqlite3. Single `src/db.ts` module owns the connection and exp
 Express routes in `src/routes/`. Each route file exports a router. `src/app.ts` mounts them.
 EOF
 
-  cat <<'EOF' >.claude/REQUIREMENTS.md
+  cat <<'EOF' >>.claude/REQUIREMENTS.md
+
 # Requirements
 
 - Users can create, list, and complete tasks
@@ -53,7 +55,8 @@ EOF
 - No task sharing between accounts
 EOF
 
-  cat <<'EOF' >.claude/TASKS.md
+  cat <<'EOF' >>.claude/TASKS.md
+
 # Tasks
 
 ## Up next

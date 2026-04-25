@@ -18,7 +18,8 @@ stage_setup() {
 EOF
 
   mkdir -p .claude
-  cat <<'EOF' >.claude/REQUIREMENTS.md
+  cat <<'EOF' >>.claude/REQUIREMENTS.md
+
 # Requirements
 
 A focus timer for writers. Single-screen app. Start a session, see elapsed time, end and log the run.
@@ -34,7 +35,8 @@ Quiet and disciplined. The app should feel like a clean desk at dawn: uncluttere
 - No motion or transitions
 EOF
 
-  cat <<'EOF' >.claude/ARCHITECTURE.md
+  cat <<'EOF' >>.claude/ARCHITECTURE.md
+
 # Architecture
 
 - Vite plus React single-page app
