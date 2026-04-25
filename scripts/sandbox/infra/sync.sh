@@ -39,7 +39,9 @@ stage_setup() {
   git commit -m "chore(sandbox): make standards and governance stale" --no-verify -q
 
   git push --force origin HEAD:main -q
-  git push origin --delete chore/toolkit-sync -q 2>/dev/null || true
+  git ls-remote --heads origin 'chore/toolkit-sync*' 2>/dev/null |
+    awk '{print $2}' | sed 's|refs/heads/||' |
+    while read -r b; do git push origin --delete "$b" -q 2>/dev/null || true; done
 
   log_step "Sync sandbox"
   log_info "Anchor: $ANCHOR_REPO"
