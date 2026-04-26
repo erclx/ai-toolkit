@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/gov.sh"
 trap close_timeline EXIT
 
 STACKS_DIR="$PROJECT_ROOT/governance/stacks"
@@ -13,7 +14,7 @@ RULES_SOURCE_DIR="$PROJECT_ROOT/governance/rules"
 
 show_help() {
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov install [stack] [--add rules] [target-path]"
+  echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov install [stack] [--add rules] [--target claude|cursor|both] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack         Name of the stack to install (e.g., base, node, react)"
@@ -21,12 +22,14 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --add rules   ${GREY}# Comma-separated rule names to layer on top of the stack${NC}"
+  echo -e "${GREY}│${NC}    --target T    ${GREY}# claude (default), cursor, or both${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    aitk gov install react"
   echo -e "${GREY}│${NC}    aitk gov install node ../my-app"
   echo -e "${GREY}│${NC}    aitk gov install astro --add 200-react,260-shadcn ../my-app"
+  echo -e "${GREY}│${NC}    aitk gov install react --target both ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -95,6 +98,7 @@ cmd_install() {
   local stack=""
   local target="."
   local add_rules=""
+  local target_kind="claude"
   local positional=()
 
   while [[ $# -gt 0 ]]; do
@@ -107,12 +111,25 @@ cmd_install() {
       add_rules="${1#--add=}"
       shift
       ;;
+    --target)
+      target_kind="$2"
+      shift 2
+      ;;
+    --target=*)
+      target_kind="${1#--target=}"
+      shift
+      ;;
     *)
       positional+=("$1")
       shift
       ;;
     esac
   done
+
+  case "$target_kind" in
+  claude | cursor | both) ;;
+  *) log_error "Invalid --target: $target_kind (expected claude, cursor, or both)" ;;
+  esac
 
   stack="${positional[0]:-}"
   target="${positional[1]:-.}"
@@ -180,12 +197,16 @@ cmd_install() {
   local display_target
   display_target="${target%/}"
   display_target="${display_target#./}"
-  local display_path
-  if [ "$display_target" = "." ] || [ -z "$display_target" ]; then
-    display_path=".cursor/rules"
-  else
-    display_path="$display_target/.cursor/rules"
+  local prefix=""
+  if [ -n "$display_target" ] && [ "$display_target" != "." ]; then
+    prefix="$display_target/"
   fi
+  local display_path
+  case "$target_kind" in
+  claude) display_path="${prefix}.claude/rules" ;;
+  cursor) display_path="${prefix}.cursor/rules" ;;
+  both) display_path="${prefix}.claude/rules and ${prefix}.cursor/rules" ;;
+  esac
 
   select_option "Install ${#found[@]} rules to $display_path?" "Yes" "No"
 
@@ -196,16 +217,38 @@ cmd_install() {
 
   log_step "Installing rules"
 
-  local dest_dir="$target/.cursor/rules"
-  mkdir -p "$dest_dir"
+  local claude_dir="$target/.claude/rules"
+  local cursor_dir="$target/.cursor/rules"
+
+  if [ "$target_kind" = "claude" ] || [ "$target_kind" = "both" ]; then
+    mkdir -p "$claude_dir"
+  fi
+  if [ "$target_kind" = "cursor" ] || [ "$target_kind" = "both" ]; then
+    mkdir -p "$cursor_dir"
+  fi
 
   for entry in "${found[@]}"; do
     local rule="${entry%%|*}"
     local src="${entry##*|}"
     local filename
     filename=$(basename "$src")
-    cp "$src" "$dest_dir/$filename"
-    log_add ".cursor/rules/$filename"
+
+    if [ "$target_kind" = "claude" ] || [ "$target_kind" = "both" ]; then
+      local subdir
+      subdir=$(rule_subdir "$src" "$RULES_SOURCE_DIR")
+      local dest_subdir="$claude_dir"
+      [ -n "$subdir" ] && dest_subdir="$claude_dir/$subdir"
+      mkdir -p "$dest_subdir"
+      local claude_file="$dest_subdir/${rule}.md"
+      transform_to_claude_rule "$src" >"$claude_file"
+      local rel="${claude_file#"$target/"}"
+      log_add "$rel"
+    fi
+
+    if [ "$target_kind" = "cursor" ] || [ "$target_kind" = "both" ]; then
+      cp "$src" "$cursor_dir/$filename"
+      log_add ".cursor/rules/$filename"
+    fi
   done
 }
 

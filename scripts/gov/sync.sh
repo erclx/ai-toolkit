@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/gov.sh"
 trap close_timeline EXIT
 
 show_help() {
@@ -13,6 +14,8 @@ show_help() {
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov sync [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs rules already installed in the target project."
+  echo -e "${GREY}│${NC}  Detects .claude/rules/ and .cursor/rules/ and syncs each."
+  echo -e "${GREY}│${NC}  Removes stale .claude/GOV.md (retired surface)."
   echo -e "${GREY}│${NC}  To add new rules, use 'aitk gov install' instead."
   echo -e "${GREY}│${NC}  To sync standards, use 'aitk standards sync' instead."
   echo -e "${GREY}│${NC}"
@@ -39,17 +42,47 @@ validate_target() {
   echo "$target"
 }
 
-collect_changes() {
+find_source_rule() {
+  local rule="$1"
+  find "$PROJECT_ROOT/governance/rules" -type f -name "${rule}.mdc" | head -n 1
+}
+
+collect_claude_changes() {
   local target_dir="$1"
-  local target_rules_dir="$target_dir/.cursor/rules"
+  local rules_dir="$target_dir/.claude/rules"
+  [ ! -d "$rules_dir" ] && return 0
 
-  if [ ! -d "$target_rules_dir" ]; then
-    log_warn "No .cursor/rules/ found in target. Run 'aitk gov install' first."
-    echo "0"
-    return
-  fi
+  while IFS= read -r dest_file; do
+    local rule
+    rule=$(basename "$dest_file" .md)
 
-  local count=0
+    local src_file
+    src_file=$(find_source_rule "$rule")
+    if [ -z "$src_file" ]; then
+      log_warn ".claude/rules/${dest_file#"$rules_dir/"} (not in toolkit source, skipping)"
+      continue
+    fi
+
+    local transformed
+    transformed=$(mktemp)
+    transform_to_claude_rule "$src_file" >"$transformed"
+
+    local rel=".claude/rules/${dest_file#"$rules_dir/"}"
+    if ! diff -q "$transformed" "$dest_file" >/dev/null 2>&1; then
+      log_warn "$rel"
+      echo "claude|$src_file|$dest_file" >>"$PENDING_FILE"
+      echo "$transformed|$dest_file|$rel" >>"$DRIFTED_FILE"
+    else
+      log_info "$rel"
+      rm -f "$transformed"
+    fi
+  done < <(find "$rules_dir" -type f -name "*.md" | sort)
+}
+
+collect_cursor_changes() {
+  local target_dir="$1"
+  local rules_dir="$target_dir/.cursor/rules"
+  [ ! -d "$rules_dir" ] && return 0
 
   while IFS= read -r dest_file; do
     local filename
@@ -57,29 +90,35 @@ collect_changes() {
 
     local src_file
     src_file=$(find "$PROJECT_ROOT/governance/rules" -type f -name "$filename" | head -n 1)
-
     if [ -z "$src_file" ]; then
-      log_warn "$filename (not in toolkit source, skipping)"
+      log_warn ".cursor/rules/$filename (not in toolkit source, skipping)"
       continue
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
       log_warn ".cursor/rules/$filename"
-      echo "$src_file|$dest_file" >>"$PENDING_FILE"
-      echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
-      ((count++))
+      echo "cursor|$src_file|$dest_file" >>"$PENDING_FILE"
+      echo "$src_file|$dest_file|.cursor/rules/$filename" >>"$DRIFTED_FILE"
     else
       log_info ".cursor/rules/$filename"
     fi
-  done < <(find "$target_rules_dir" -type f -name "*.mdc" | sort)
+  done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
+}
 
-  echo "$count"
+collect_stale_gov() {
+  local target_dir="$1"
+  local gov_file="$target_dir/.claude/GOV.md"
+  [ ! -f "$gov_file" ] && return 0
+
+  log_warn ".claude/GOV.md (retired surface, scheduled for removal)"
+  echo "delete|$gov_file|$gov_file" >>"$PENDING_FILE"
 }
 
 open_diffs() {
   while IFS= read -r entry; do
     local src="${entry%%|*}"
-    local dest="${entry##*|}"
+    local rest="${entry#*|}"
+    local dest="${rest%%|*}"
     code --diff "$src" "$dest"
   done <"$DRIFTED_FILE"
 }
@@ -87,11 +126,28 @@ open_diffs() {
 apply_changes() {
   log_step "Applying changes"
   while IFS= read -r entry; do
-    local src="${entry%%|*}"
-    local dest="${entry##*|}"
-    mkdir -p "$(dirname "$dest")"
-    cp "$src" "$dest"
-    log_add "${dest#"$TARGET_PATH/"}"
+    local kind="${entry%%|*}"
+    local rest="${entry#*|}"
+    local src="${rest%%|*}"
+    local dest="${rest#*|}"
+
+    local rel="${dest#"$TARGET_PATH/"}"
+    case "$kind" in
+    claude)
+      mkdir -p "$(dirname "$dest")"
+      transform_to_claude_rule "$src" >"$dest"
+      log_add "$rel"
+      ;;
+    cursor)
+      mkdir -p "$(dirname "$dest")"
+      cp "$src" "$dest"
+      log_add "$rel"
+      ;;
+    delete)
+      rm -f "$dest"
+      log_warn "removed $rel"
+      ;;
+    esac
   done <"$PENDING_FILE"
 }
 
@@ -127,9 +183,18 @@ main() {
   DRIFTED_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"; close_timeline' EXIT
 
+  if [ ! -d "$TARGET_PATH/.claude/rules" ] && [ ! -d "$TARGET_PATH/.cursor/rules" ] && [ ! -f "$TARGET_PATH/.claude/GOV.md" ]; then
+    log_warn "No governance surfaces found in target. Run 'aitk gov install' first."
+    exit 0
+  fi
+
   log_step "Scanning rules"
+  collect_claude_changes "$TARGET_PATH"
+  collect_cursor_changes "$TARGET_PATH"
+  collect_stale_gov "$TARGET_PATH"
+
   local count
-  count=$(collect_changes "$TARGET_PATH")
+  count=$(wc -l <"$PENDING_FILE" | tr -d ' ')
 
   if [ "$count" -eq 0 ]; then
     trap - EXIT
@@ -166,7 +231,7 @@ main() {
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n" >&2
-  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count rules)${NC}" >&2
+  echo -e "${GREEN}✓ Sync complete${NC} ${GREY}($count changes)${NC}" >&2
 }
 
 main "$@"

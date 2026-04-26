@@ -145,12 +145,6 @@ EOF
 SENTINEL: this file should NOT be read for prose-only changes. If the skill surfaces this content, the small-mode branch is broken.
 EOF
 
-    cat <<'EOF' >.claude/GOV.md
-# Governance
-
-SENTINEL: this file should NOT be read for prose-only changes. If the skill surfaces this content, the small-mode branch is broken.
-EOF
-
     cat <<'EOF' >.claude/TASKS.md
 # Tasks
 
@@ -164,7 +158,7 @@ EOF
     git add . && git commit -m "chore(notes): initial notes repo" --no-verify -q
 
     log_step "Scenario ready: feature planning (small mode)"
-    log_info "Context: prose-only repo, single README task, decoy DESIGN/WIREFRAMES/GOV with sentinel text"
+    log_info "Context: prose-only repo, single README task, decoy DESIGN/WIREFRAMES with sentinel text"
     log_info "Action:  /claude-feature (reference the task in TASKS.md)"
     log_info "Expect:  chat-only output, NO .claude/plans/ file written, decoys NOT surfaced"
     ;;

@@ -21,10 +21,10 @@ Project docs live in `.claude/` at the project root.
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
 ├── TASKS.md         ← persistent task tracker, source of truth
-└── GOV.md           ← governance rules, generated via aitk claude gov
+└── rules/           ← path-scoped governance rules, written by aitk gov install
 ```
 
-Run `aitk init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and `.claude/GOV.md` in one pass. `aitk init` chains claude init, governance install, and the GOV.md build. Regenerate `GOV.md` later only when rules change via `aitk claude gov`.
+Run `aitk init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and `.claude/rules/` in one pass. `aitk init` chains claude init and governance install. Claude Code auto-loads every file in `.claude/rules/` at session start, applying always-on rules unconditionally and path-scoped rules to files matching their `paths:` glob.
 
 ## Scenarios
 

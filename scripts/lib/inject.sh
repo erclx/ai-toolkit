@@ -4,18 +4,23 @@ inject_governance() {
   log_step "Injecting governance assets"
 
   local rules_source="$PROJECT_ROOT/governance/rules"
-  local rules_target=".cursor/rules"
+  local rules_target=".claude/rules"
   local standards_source="$PROJECT_ROOT/standards"
   local standards_target="standards"
 
   if [ -d "$rules_source" ]; then
-    mkdir -p "$rules_target"
-    find "$rules_source" -type f -name "*.mdc" -exec cp {} "$rules_target/" \;
-    shopt -s nullglob
-    for f in "$rules_target"/*.mdc; do
-      log_add ".cursor/rules/$(basename "$f")"
-    done
-    shopt -u nullglob
+    source "$PROJECT_ROOT/scripts/lib/gov.sh"
+    while IFS= read -r src; do
+      local subdir
+      subdir=$(rule_subdir "$src" "$rules_source")
+      local rule
+      rule=$(basename "$src" .mdc)
+      local dest_dir="$rules_target"
+      [ -n "$subdir" ] && dest_dir="$rules_target/$subdir"
+      mkdir -p "$dest_dir"
+      transform_to_claude_rule "$src" >"$dest_dir/${rule}.md"
+      log_add "${dest_dir#./}/${rule}.md"
+    done < <(find "$rules_source" -type f -name "*.mdc" | sort)
   else
     log_warn "Source rules not found at $rules_source. Skipping injection."
   fi

@@ -3,6 +3,7 @@ set -e
 set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
+source "$PROJECT_ROOT/scripts/lib/gov.sh"
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
@@ -11,22 +12,30 @@ use_config() {
 stage_setup() {
   mkdir -p install
   touch install/.gitkeep
-  mkdir -p sync/.cursor/rules
-  mkdir -p build/.cursor/rules
 
   local src_rules="$PROJECT_ROOT/governance/rules"
 
   while IFS= read -r file; do
-    local filename
-    filename=$(basename "$file")
-    cp "$file" "sync/.cursor/rules/$filename"
-    echo "# stale" >>"sync/.cursor/rules/$filename"
+    local subdir
+    subdir=$(rule_subdir "$file" "$src_rules")
+    local rule
+    rule=$(basename "$file" .mdc)
+    local dest_dir="sync/.claude/rules"
+    [ -n "$subdir" ] && dest_dir="sync/.claude/rules/$subdir"
+    mkdir -p "$dest_dir"
+    transform_to_claude_rule "$file" >"$dest_dir/${rule}.md"
+    echo "# stale" >>"$dest_dir/${rule}.md"
   done < <(find "$src_rules" -type f -name "*.mdc" | sort | head -n 2)
 
   while IFS= read -r file; do
-    local filename
-    filename=$(basename "$file")
-    cp "$file" "build/.cursor/rules/$filename"
+    local subdir
+    subdir=$(rule_subdir "$file" "$src_rules")
+    local rule
+    rule=$(basename "$file" .mdc)
+    local dest_dir="build/.claude/rules"
+    [ -n "$subdir" ] && dest_dir="build/.claude/rules/$subdir"
+    mkdir -p "$dest_dir"
+    transform_to_claude_rule "$file" >"$dest_dir/${rule}.md"
   done < <(find "$src_rules" -type f -name "*.mdc" | sort)
 
   git add .
@@ -34,8 +43,8 @@ stage_setup() {
 
   log_step "Governance sandbox"
   log_info "install/ : clean target, no rules present"
-  log_info "sync/    : stale .cursor/rules/ present"
-  log_info "build/   : full .cursor/rules/ present, generates .cursor/.tmp/gov/rules.md"
+  log_info "sync/    : stale .claude/rules/ present"
+  log_info "build/   : full .claude/rules/ present, generates .claude/.tmp/gov/rules.md"
   log_info "list     : read-only catalog dump, no target needed"
 
   select_or_route_scenario "Which scenario?" "install" "sync" "build" "list"

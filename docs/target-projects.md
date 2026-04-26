@@ -19,7 +19,7 @@ Two steps, in order:
 
 The chain is:
 
-- `aitk init` installs base tooling, Claude seeds, governance rules, and (when seeded) rebuilds `.claude/GOV.md` in the same pass
+- `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
 - `aitk tooling sync <stack>` adds stack-specific deps, scripts, gitignore entries, and drops `tooling/<stack>.md` (plus parents) as the agent's audit context
 - The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `docs/ci.md` and `docs/development.md` per the reference's extend sections
 - `verify-scaffold` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
@@ -61,7 +61,7 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 ### Catch-all
 
-`aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence. It never touches user-owned seed files. Role prompts, governance rules, tooling configs, reference docs, and generated files like `.claude/GOV.md` refresh in place.
+`aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence. It never touches user-owned seed files. Role prompts, governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
 ### Targeted
 

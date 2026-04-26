@@ -70,7 +70,7 @@ Before executing, output:
 
 Run the chain in order. Each step's permission dialog is the confirmation gate. Run from the target project's current directory.
 
-Step 1: `aitk init` installs base tooling, claude seeds, governance, GOV.md, snippets, and wiki.
+Step 1: `aitk init` installs base tooling, claude seeds, governance rules, snippets, and wiki.
 
 ```bash
 AITK_NON_INTERACTIVE=1 aitk init \

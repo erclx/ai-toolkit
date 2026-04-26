@@ -46,7 +46,7 @@ The loop:
 4. **Apply** with `@snippets/claude/memory-apply`. Commits `apply`, `skip`, or `defer` decisions, flips emoji statuses, surfaces pending items in the bucket summary.
 5. **Cleanup** with `@snippets/claude/memory-cleanup`. Sweeps skipped non-user entries and deletes the review receipt.
 
-`.claude/memory/` and `.claude/review/` always live at the main worktree root, never inside a linked worktree. Every snippet in the loop resolves the main root via `git worktree list --porcelain | awk '/^worktree /{print $2; exit}'` before reading or writing.
+`.claude/memory/` and `.claude/review/` always live at the main worktree root, never inside a linked worktree. Every snippet in the loop resolves the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-` before reading or writing.
 
 ## Rules files
 
@@ -62,6 +62,8 @@ paths:
 ```
 
 User-level rules at `~/.claude/rules/` apply to all projects.
+
+The toolkit installs governance into `.claude/rules/` by default. See `docs/governance.md` for the install, sync, and frontmatter contract.
 
 ## Imports
 
