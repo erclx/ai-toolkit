@@ -23,7 +23,7 @@
 ## CSpell
 
 - `cspell.json` is a user-owned seed at root. Sync drops it once on first install and never overwrites it. Projects extend it with extra `import` and `dictionaryDefinitions` entries.
-- The seeded baseline includes `version: "0.2"`, `language: "en"`, `useGitignore: true`, dictionary definitions for `project-terms` and `tech-stack` (both with `addWords: true`), and `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files.
+- The seeded baseline includes `version: "0.2"`, `language: "en"`, `useGitignore: true`, dictionary definitions for `project-terms` and `tech-stack`, and `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files. Both dictionary definitions set `addWords: true`.
 - Dictionary files in `.cspell/`: `project-terms.txt`, `tech-stack.txt`.
 - Include dotfolders in the spell glob: `cspell '**' '.*/**' '.*' ...`. The default `**` skips dot-prefixed folders, so `.claude/`, `.github/`, and `.husky/` go unchecked without explicit globs.
 - Keep dictionary entries sorted alphabetically, one word per line.
