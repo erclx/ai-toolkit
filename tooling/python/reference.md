@@ -23,11 +23,11 @@ The python stack also ships `tests/test_smoke.py` as a copy-once seed. `pytest` 
 
 ## What ships as golden configs
 
-- `ruff.toml`: line length 88, target `py313`, strict lint rules (`E`, `W`, `F`, `I`, `B`, `C4`, `UP`, `N`), single-quote format, banned relative imports.
-- `mypy.ini`: strict mode, `python_version = 3.13`, `mypy_path = src`, excludes `tests/` and `docs/`.
+- `ruff.toml`: line length 88, target `py314`, strict lint rules (`E`, `W`, `F`, `I`, `B`, `C4`, `UP`, `N`), single-quote format, banned relative imports.
+- `mypy.ini`: strict mode, `python_version = 3.14`, `mypy_path = src`, excludes `tests/` and `docs/`.
 - `pytest.ini`: tests live under `tests/`, source under `src/`.
 - `.coveragerc`: branch coverage on `src/`, html report under `.coverage_cache/html`.
-- `.python-version`: pinned to `3.13` for broad ecosystem compatibility. Bump when downstream packages catch up to 3.14.
+- `.python-version`: pinned to `3.14` to match `uv init --app` defaults.
 - `scripts/verify.sh`: overrides base verify to add Typecheck (`mypy`), Lint (`ruff check && ruff format --check`), and Tests (`pytest -v`) phases.
 
 ## Hybrid project shape

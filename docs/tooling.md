@@ -141,6 +141,8 @@ Update CI and development docs: the base tooling seeds `docs/ci.md` and `docs/de
 
 Scaffold a new stack: `aitk tooling create` generates the stub structure in `tooling/<name>/`.
 
+Set up a multi-language monorepo: each language lives in its own subfolder, and each subfolder is a separate project root. Sync once per root with the matching stack. For example, a repo with a React frontend and a Python backend runs `aitk tooling vite-react ./frontend` and `aitk tooling python ./backend`. Each root gets its own `package.json` or `pyproject.toml` and its own golden configs. Stacks do not compose horizontally, so single-root polyglot (two languages under one `package.json`) is not supported. Use the subfolder pattern instead.
+
 ## Testing
 
 `aitk tooling verify <stack>` is the end-to-end validator. It scaffolds fresh into `.claude/.tmp/verify-<stack>/`, runs the optional `[verify] prepare` hook, invokes `aitk tooling sync <stack> .`, then executes `bun run lint:fix`, `bun run check`, `bun run test:e2e`, and `bun run screenshot`, asserts screenshot artifacts, and reports a pass/fail matrix. The tmp dir auto-removes on success. Use `--keep` to inspect a green run, or rely on the auto-preserve on failure.
