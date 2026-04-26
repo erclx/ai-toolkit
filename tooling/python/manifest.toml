@@ -13,4 +13,4 @@ scaffold = "uv init --app {{name}}"
 "test:cov" = "uv run pytest --cov --cov-report=term-missing --cov-report=html"
 
 [gitignore]
-"# Python tooling" = [".pytest_cache/", ".mypy_cache/", ".ruff_cache/", ".coverage_cache/"]
+"# Python" = [".pytest_cache/", ".mypy_cache/", ".ruff_cache/", ".coverage_cache/"]

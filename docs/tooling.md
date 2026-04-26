@@ -15,8 +15,8 @@ The tooling system ships golden configs layered across a `base` → `web` → fr
 ```plaintext
 tooling/
 ├── base/
-│   ├── configs/       ← authoritative, always overwrite on sync (prettier, cspell, commitlint, husky, shell)
-│   ├── seeds/         ← user-owned, preserved on sync
+│   ├── configs/       ← authoritative, always overwrite on sync (prettier, commitlint, husky, shell)
+│   ├── seeds/         ← user-owned, preserved on sync (cspell, lint-staged, prettierignore, dictionary terms, dev/ci docs)
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 ├── web/
@@ -58,15 +58,15 @@ Stack-specific configs override the extends chain. `collect_stack_configs` in `s
 
 ## Configs, seeds, references, and generated files
 
-Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path.
+Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path. The boundary is structural vs user-extensible: linters and formatters with no project-specific surface (prettier, commitlint, ruff, mypy, eslint, vite) ship as configs. Files projects routinely extend with extra imports, dictionaries, or pipeline steps (`cspell.json`, `.lintstagedrc`) ship as seeds instead.
 
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The `base` stack also seeds `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
+Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The `base` stack also seeds `cspell.json` and `.lintstagedrc` as copy-once root configs that projects extend, plus `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
 
 Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 
-Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched.
+Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched. Group keys use single-word labels (`# VSCode`, `# Python`) so the comment headers stay terse and stable across renames.
 
 Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Missing entries are added. Existing scripts are never overwritten. Existing dependencies are preserved unless a manifest pin's major version does not match the installed major, in which case sync re-installs to enforce the pin.
 
