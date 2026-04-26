@@ -1,8 +1,9 @@
 ---
 description: Enforce pytest fixtures, parametrize, and async patterns for Python tests
-globs: 'tests/**/*.py,**/test_*.py,**/*_test.py'
-alwaysApply: false
-priority: 330
+paths:
+  - 'tests/**/*.py'
+  - '**/test_*.py'
+  - '**/*_test.py'
 ---
 
 # PYTHON TESTING TOOLING

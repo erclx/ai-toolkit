@@ -1,8 +1,8 @@
 ---
 description: Enforce opinionated React architecture and component patterns
-globs: '**/*.tsx,**/*.ts'
-alwaysApply: false
-priority: 200
+paths:
+  - '**/*.tsx'
+  - '**/*.ts'
 ---
 
 # REACT ARCHITECTURE STANDARDS

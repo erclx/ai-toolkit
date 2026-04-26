@@ -15,7 +15,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Commands:${NC}"
   echo -e "${GREY}│${NC}    install [stack] [path]   ${GREY}# Bootstrap rules for a stack into a project${NC}"
   echo -e "${GREY}│${NC}    sync [path]              ${GREY}# Update rules already present in target${NC}"
-  echo -e "${GREY}│${NC}    build [path]             ${GREY}# Concatenate rules into .cursor/.tmp/gov/rules.md${NC}"
+  echo -e "${GREY}│${NC}    build [path]             ${GREY}# Concatenate rules into .claude/.tmp/gov/rules.md${NC}"
   echo -e "${GREY}│${NC}    list [options]           ${GREY}# List available stacks and rules${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"

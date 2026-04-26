@@ -1,8 +1,8 @@
 ---
 description: Enforce tanstack query data fetching and cache patterns
-globs: '**/*.ts,**/*.tsx'
-alwaysApply: false
-priority: 320
+paths:
+  - '**/*.ts'
+  - '**/*.tsx'
 ---
 
 # TANSTACK QUERY STANDARDS

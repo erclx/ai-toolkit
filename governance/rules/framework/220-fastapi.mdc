@@ -1,8 +1,7 @@
 ---
 description: Enforce FastAPI router, dependency injection, and async handler patterns
-globs: '**/*.py'
-alwaysApply: false
-priority: 220
+paths:
+  - '**/*.py'
 ---
 
 # FASTAPI STANDARDS

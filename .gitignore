@@ -8,16 +8,6 @@
 # Dependencies
 node_modules/
 
-# Governance
-.cursor/rules/
-
-# Gemini
-.gemini/.tmp/
-.gemini/settings.json
-
-# Antigravity
-.agent/
-
 # Claude
 .claude/.tmp
 .claude/memory/

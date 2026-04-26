@@ -29,10 +29,9 @@ EOF
   log_info "seeds-list  : lists seed doc sources as JSON"
   log_info "sync        : diffs managed files against source and applies updates"
   log_info "prompt      : generates master prompts from installed rules (requires roles)"
-  log_info "gov         : builds .claude/GOV.md from installed rules"
   log_info "setup       : installs user-level config to ~/.claude/"
 
-  select_or_route_scenario "Which scenario?" "init" "roles" "roles-list" "seeds-list" "sync" "prompt" "gov" "setup"
+  select_or_route_scenario "Which scenario?" "init" "roles" "roles-list" "seeds-list" "sync" "prompt" "setup"
 
   case "$SELECTED_OPTION" in
   "init")
@@ -62,12 +61,6 @@ EOF
     "$PROJECT_ROOT/scripts/manage-claude.sh" init --roles .
     log_step "Running: aitk claude prompt"
     exec "$PROJECT_ROOT/scripts/claude/prompt.sh"
-    ;;
-  "gov")
-    log_step "Running: aitk claude init"
-    "$PROJECT_ROOT/scripts/manage-claude.sh" init .
-    log_step "Running: aitk claude gov"
-    exec "$PROJECT_ROOT/scripts/manage-claude.sh" gov .
     ;;
   "setup")
     log_step "Running: aitk claude setup"

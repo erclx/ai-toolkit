@@ -177,9 +177,9 @@ Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and wr
 
 For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from the `planner` stack, and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `WIREFRAMES.md`).
 
-For `IMPLEMENTER.md`: injects all governance rules from `.cursor/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`).
+For `IMPLEMENTER.md`: injects all governance rules from `.claude/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`).
 
-Prerequisites: run `aitk claude init --roles` first, then `aitk gov install --target cursor` to install rules into `.cursor/rules/` for the prompt builder.
+Prerequisites: run `aitk claude init --roles` first, then `aitk gov install` to install rules into `.claude/rules/` for the prompt builder.
 
 ### setup
 

@@ -1,8 +1,8 @@
 ---
 description: Keyboard interaction, focus management, and ARIA accessibility for React UI
-globs: '**/*.tsx,**/*.jsx'
-alwaysApply: false
-priority: 410
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
 ---
 
 # ACCESSIBILITY AND KEYBOARD STANDARDS

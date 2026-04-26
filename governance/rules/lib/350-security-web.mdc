@@ -1,8 +1,9 @@
 ---
 description: Enforce web frontend security and XSS prevention
-globs: '**/*.tsx,**/*.jsx,**/*.html'
-alwaysApply: false
-priority: 350
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
+  - '**/*.html'
 ---
 
 # WEB SECURITY STANDARDS

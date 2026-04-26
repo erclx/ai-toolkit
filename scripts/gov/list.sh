@@ -42,6 +42,27 @@ read_frontmatter_field() {
   ' "$file"
 }
 
+read_frontmatter_paths() {
+  local file="$1"
+  awk '
+    BEGIN { fm = 0; in_paths = 0 }
+    /^---$/ { fm++; if (fm > 1) exit; next }
+    fm == 1 {
+      if (in_paths) {
+        if (match($0, /^[[:space:]]*-[[:space:]]+/)) {
+          val = substr($0, RLENGTH + 1)
+          sub(/^[\x27"]/, "", val)
+          sub(/[\x27"]$/, "", val)
+          print val
+          next
+        }
+        in_paths = 0
+      }
+      if ($0 == "paths:") { in_paths = 1 }
+    }
+  ' "$file"
+}
+
 rule_domain() {
   local file="$1"
   local rel="${file#"$RULES_DIR"/}"
@@ -137,26 +158,29 @@ list_rules_json() {
     domain=$(rule_domain "$file")
     local desc
     desc=$(read_frontmatter_field "$file" "description")
-    local globs
-    globs=$(read_frontmatter_field "$file" "globs")
-    local always
-    always=$(read_frontmatter_field "$file" "alwaysApply")
-    local priority
-    priority=$(read_frontmatter_field "$file" "priority")
 
-    [ -z "$always" ] && always="false"
-    [ -z "$priority" ] && priority="null"
-
-    local globs_json="null"
-    if [ -n "$globs" ]; then
-      globs_json="\"$(json_escape "$globs")\""
+    local paths_json="null"
+    local paths_collected=()
+    while IFS= read -r p; do
+      [ -n "$p" ] && paths_collected+=("$p")
+    done < <(read_frontmatter_paths "$file")
+    if [ "${#paths_collected[@]}" -gt 0 ]; then
+      paths_json="["
+      local first_p=1
+      local p
+      for p in "${paths_collected[@]}"; do
+        [ "$first_p" -eq 0 ] && paths_json+=","
+        paths_json+="\"$(json_escape "$p")\""
+        first_p=0
+      done
+      paths_json+="]"
     fi
 
     if [ "$first" -eq 0 ]; then
       printf ','
     fi
-    printf '{"name":"%s","domain":"%s","description":"%s","globs":%s,"alwaysApply":%s,"priority":%s}' \
-      "$name" "$domain" "$(json_escape "$desc")" "$globs_json" "$always" "$priority"
+    printf '{"name":"%s","domain":"%s","description":"%s","paths":%s}' \
+      "$name" "$domain" "$(json_escape "$desc")" "$paths_json"
     first=0
   done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
   printf ']'

@@ -22,7 +22,6 @@ scripts/sandbox/
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
 ├── infra/
 │   ├── init.sh           ← scenarios for aitk init (default, with-flags)
-│   ├── cursor.sh         ← Cursor IDE playground with full governance injected
 │   ├── gov.sh            ← interactive tests for governance commands
 │   ├── standards.sh      ← interactive tests for standards commands
 │   ├── snippets.sh       ← interactive tests for snippets commands

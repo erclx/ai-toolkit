@@ -66,7 +66,7 @@ detect_domains() {
     log_warn "prompts (not installed, skipping)"
   fi
 
-  if [ -d "$target/.cursor" ]; then
+  if [ -d "$target/.claude/rules" ]; then
     log_info "governance"
     found=$((found + 1))
   else
@@ -105,7 +105,7 @@ run_syncs() {
     bash "$PROJECT_ROOT/scripts/manage-prompts.sh" sync "$target"
   fi
 
-  if [ -d "$target/.claude/rules" ] || [ -d "$target/.cursor/rules" ] || [ -f "$target/.claude/GOV.md" ]; then
+  if [ -d "$target/.claude/rules" ] || [ -f "$target/.claude/GOV.md" ]; then
     bash "$PROJECT_ROOT/scripts/manage-gov.sh" sync "$target"
   fi
 
@@ -228,11 +228,11 @@ run_git_workflow() {
   fi
 
   local -a gov_names
-  mapfile -t gov_names < <(get_changed_names "$target" ".claude/rules/" ".cursor/" ".claude/GOV.md")
+  mapfile -t gov_names < <(get_changed_names "$target" ".claude/rules/" ".claude/GOV.md")
   if [ "${#gov_names[@]}" -gt 0 ] && [ -n "${gov_names[0]}" ]; then
     changed_domains+=("governance")
     changed_files["governance"]="${gov_names[*]}"
-    domain_verbs["governance"]=$(get_domain_verb "$target" ".claude/rules/" ".cursor/" ".claude/GOV.md")
+    domain_verbs["governance"]=$(get_domain_verb "$target" ".claude/rules/" ".claude/GOV.md")
   fi
 
   local -a ag_names

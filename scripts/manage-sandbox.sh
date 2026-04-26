@@ -106,15 +106,10 @@ prompt_for_category_and_command() {
 parse_command_argument() {
   local input_arg="$1"
 
-  if [ "$input_arg" == "cursor" ]; then
-    _CATEGORY="infra"
-    _COMMAND="cursor"
-  else
-    if [[ "$input_arg" != *":"* ]]; then
-      log_error "Invalid format. Use <category>:<command>, 'reset', 'clean', or --help"
-    fi
-    IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
+  if [[ "$input_arg" != *":"* ]]; then
+    log_error "Invalid format. Use <category>:<command>, 'reset', 'clean', or --help"
   fi
+  IFS=':' read -r _CATEGORY _COMMAND <<<"$input_arg"
 }
 
 resolve_command_and_category() {
@@ -203,10 +198,19 @@ inject_context() {
 
 inject_gov_rules() {
   local rules_source="$PROJECT_ROOT/governance/rules"
-  if [ -d "$rules_source" ]; then
-    mkdir -p "$SANDBOX/.cursor/rules"
-    find "$rules_source" -type f -name "*.mdc" -exec cp {} "$SANDBOX/.cursor/rules/" \;
-  fi
+  [ ! -d "$rules_source" ] && return
+
+  source "$PROJECT_ROOT/scripts/lib/gov.sh"
+  while IFS= read -r src; do
+    local subdir
+    subdir=$(rule_subdir "$src" "$rules_source")
+    local rule
+    rule=$(basename "$src" .mdc)
+    local dest_dir="$SANDBOX/.claude/rules"
+    [ -n "$subdir" ] && dest_dir="$SANDBOX/.claude/rules/$subdir"
+    mkdir -p "$dest_dir"
+    cp "$src" "$dest_dir/${rule}.md"
+  done < <(find "$rules_source" -type f -name "*.mdc" | sort)
 }
 
 inject_seeds() {
@@ -309,25 +313,7 @@ execute_sandbox_and_commit() {
   tag_sandbox_baseline
 }
 
-handle_post_execution_prompt() {
-  local current_category="$1"
-  local current_command="$2"
-
-  if [ "$current_category" == "infra" ] && [ "$current_command" == "cursor" ]; then
-    select_option "Open sandbox in Cursor?" "Yes" "No"
-    if [ "$SELECTED_OPTION" == "Yes" ]; then
-      if command -v cursor &>/dev/null; then
-        log_info "Opening Cursor..."
-        cursor "$SANDBOX"
-      else
-        log_warn "Cursor CLI command 'cursor' not found."
-        log_info "Sandbox path: $SANDBOX"
-      fi
-    else
-      echo -e "${GREY}│${NC}  ${GREY}Skipping opening Cursor${NC}" >&2
-    fi
-  fi
-
+finalize_sandbox_run() {
   trap - EXIT
   close_timeline
   echo "" >&2
@@ -460,7 +446,7 @@ main() {
   initialize_sandbox_environment "$category" "$command"
   execute_sandbox_and_commit
 
-  handle_post_execution_prompt "$category" "$command"
+  finalize_sandbox_run
 }
 
 main "$@"

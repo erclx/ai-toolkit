@@ -1,8 +1,10 @@
 ---
 description: Enforce Tailwind CSS v4 utility patterns, theme tokens, dark mode, and custom styles
-globs: '**/*.tsx,**/*.jsx,**/*.html,**/*.css'
-alwaysApply: false
-priority: 250
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
+  - '**/*.html'
+  - '**/*.css'
 ---
 
 # TAILWIND CSS V4 STANDARDS

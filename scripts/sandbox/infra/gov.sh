@@ -23,7 +23,7 @@ stage_setup() {
     local dest_dir="sync/.claude/rules"
     [ -n "$subdir" ] && dest_dir="sync/.claude/rules/$subdir"
     mkdir -p "$dest_dir"
-    transform_to_claude_rule "$file" >"$dest_dir/${rule}.md"
+    cp "$file" "$dest_dir/${rule}.md"
     echo "# stale" >>"$dest_dir/${rule}.md"
   done < <(find "$src_rules" -type f -name "*.mdc" | sort | head -n 2)
 
@@ -35,7 +35,7 @@ stage_setup() {
     local dest_dir="build/.claude/rules"
     [ -n "$subdir" ] && dest_dir="build/.claude/rules/$subdir"
     mkdir -p "$dest_dir"
-    transform_to_claude_rule "$file" >"$dest_dir/${rule}.md"
+    cp "$file" "$dest_dir/${rule}.md"
   done < <(find "$src_rules" -type f -name "*.mdc" | sort)
 
   git add .

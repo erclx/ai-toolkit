@@ -37,7 +37,7 @@ For each memory entry, pick one action:
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in `standards/<domain>.md`.
-- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the `.mdc` file inline. Point the user at `aitk-governance` and `prompts/cursor-rules.md` and stop at handoff.
+- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the `.mdc` file inline. Point the user at `aitk-governance` and `prompts/governance-rules.md` and stop at handoff.
 - **Delete**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative.
 
 When two or more memories collapse into one rule on the same target, propose them as a single merged edit under the matching promote category. The consolidate case is a variant of promote, not a separate action.
@@ -90,7 +90,7 @@ Reason: <one-line reason>
 Decision:
 ````
 
-For Hand off items, the body is a pointer to `aitk-governance` and `prompts/cursor-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
+For Hand off items, the body is a pointer to `aitk-governance` and `prompts/governance-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
 
 Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then run `@snippets/claude/memory-discuss` for question rounds or `@snippets/claude/memory-apply` to commit.
 

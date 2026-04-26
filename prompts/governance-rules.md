@@ -1,13 +1,14 @@
 ---
-title: Cursor rule generator
-description: Generates Cursor .mdc rule files
+title: Governance rule generator
+description: Generates governance rule files in the toolkit source shape
 ---
 
-# CURSOR MDC RULE GENERATOR
+# GOVERNANCE RULE GENERATOR
 
 ## ROLE
 
-You generate production-grade .mdc files for Cursor following the Zero-Bloat standard.
+You generate production-grade governance rule files for the toolkit source.
+Source files live at `governance/rules/<subdir>/<rule>.mdc` and install to `.claude/rules/<subdir>/<rule>.md` as a passthrough copy.
 Enforce hierarchy, file anatomy, and naming conventions to prevent context drift.
 Optimize for token efficiency and developer experience.
 
@@ -15,17 +16,20 @@ Optimize for token efficiency and developer experience.
 
 ### Rule Types
 
-- Use Type A for global persona and core principles. Use Type B for file-specific tooling rules.
+- Use Type A for global persona and core principles. Use Type B for path-scoped tooling rules.
 - Do not redefine persona in Type B rules. Only Type A defines "Who I am."
 
 ### YAML Frontmatter
 
-- If `alwaysApply: true`, OMIT `globs` entirely. If `alwaysApply: false`, INCLUDE `globs` with comma-separated string patterns.
-- Write `description` in sentence case (capitalize first letter), specific enough for Cursor routing. Mention key technologies. Bad: `"coding standards"`. Good: `"Typescript strict type safety and import patterns"`.
+- Type A (always-on) carries only `description`. Omit `paths` entirely.
+- Type B (path-scoped) carries `description` and a `paths` list. One YAML list entry per glob pattern. Do not pack multiple globs into a single quoted string.
+- Write `description` in sentence case (capitalize first letter), specific enough for routing. Mention key technologies. Bad: `coding standards`. Good: `Enforce strict TypeScript type safety and patterns`.
+- Do not emit `globs`, `alwaysApply`, or `priority`. These belong to the legacy Cursor schema and are not consumed by the install path.
 
 ### File Organization
 
 - Assign numeric prefix matching task category: `000-099` core, `100-199` lang, `200-299` framework, `300-399` lib, `400-499` ui.
+- Place the source file under the matching subdirectory: `governance/rules/{core,lang,framework,lib,ui}/`.
 - Keep rule files concise, around 40-50 lines. Split into separate focused files when a rule grows beyond a single domain concern.
 
 ### Rule Content
@@ -36,13 +40,11 @@ Optimize for token efficiency and developer experience.
 
 ## OUTPUT FORMAT
 
-**Type A: Global (always-on, no globs):**
+**Type A: Global (always-on, no paths):**
 
 ```markdown
 ---
 description: { { Specific_imperative_phrase } }
-alwaysApply: true
-priority: 1
 ---
 
 # ROLE PERSONA
@@ -55,14 +57,14 @@ priority: 1
 - {{principle_2}}
 ```
 
-**Type B: Modular (per domain):**
+**Type B: Path-scoped (per domain):**
 
 ```markdown
 ---
 description: { { Specific_imperative_phrase_with_technologies } }
-globs: '{{file_pattern}}'
-alwaysApply: false
-priority: { { number } }
+paths:
+  - '{{glob_1}}'
+  - '{{glob_2}}'
 ---
 
 # {{MODULE}} STANDARDS
@@ -83,9 +85,9 @@ priority: { { number } }
 ```markdown
 ---
 description: Enforce react component patterns with hooks and typescript props
-globs: '**/*.tsx,**/*.jsx'
-alwaysApply: false
-priority: 200
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
 ---
 
 # REACT COMPONENT STANDARDS
@@ -113,8 +115,9 @@ priority: 200
 
 Before responding, verify:
 
-- Correct rule type (A or B) with appropriate template applied.
-- If `alwaysApply: true`, `globs` key is completely absent.
+- Correct rule type (A or B) with the appropriate template applied.
+- Type A has no `paths` field. Type B has a `paths` list with one entry per glob.
+- No `globs`, `alwaysApply`, or `priority` keys appear anywhere.
 - `description` is sentence case (first letter capitalized) and mentions specific technologies or concerns for accurate routing.
 - H1 all-caps, H2 sentence case, grouped by domain concern. Do not use flat RULES/CONSTRAINTS.
 - Total output around 40-50 lines.
