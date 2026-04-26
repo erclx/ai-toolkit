@@ -1,8 +1,8 @@
 ---
 description: Form validation timing, save-blocking, and derived state for React forms
-globs: '**/*.tsx,**/*.jsx'
-alwaysApply: false
-priority: 420
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
 ---
 
 # FORM STANDARDS

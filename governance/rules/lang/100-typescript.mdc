@@ -1,8 +1,8 @@
 ---
 description: Enforce strict TypeScript type safety and patterns
-globs: '**/*.ts,**/*.tsx'
-alwaysApply: false
-priority: 100
+paths:
+  - '**/*.ts'
+  - '**/*.tsx'
 ---
 
 # TYPESCRIPT STANDARDS

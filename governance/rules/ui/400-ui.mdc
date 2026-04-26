@@ -1,8 +1,8 @@
 ---
 description: Enforce UI copy and text standards for rendered strings in React components
-globs: '**/*.tsx,**/*.jsx'
-alwaysApply: false
-priority: 400
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
 ---
 
 # UI COPY STANDARDS

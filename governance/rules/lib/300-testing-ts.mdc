@@ -1,8 +1,10 @@
 ---
 description: Enforce Vitest, Playwright, and Testing Library patterns for TypeScript test files
-globs: '**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx'
-alwaysApply: false
-priority: 300
+paths:
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
 ---
 
 # TYPESCRIPT/JAVASCRIPT TESTING TOOLING

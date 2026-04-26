@@ -1,8 +1,8 @@
 ---
 description: UX completeness checklist for interactive React components and views
-globs: '**/*.tsx,**/*.jsx'
-alwaysApply: false
-priority: 430
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
 ---
 
 # UX COMPLETENESS STANDARDS

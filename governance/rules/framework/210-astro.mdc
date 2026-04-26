@@ -1,8 +1,10 @@
 ---
 description: Enforce astro static-first architecture with explicit island opt-in
-globs: '**/*.astro,src/pages/**,src/layouts/**,src/content/**'
-alwaysApply: false
-priority: 210
+paths:
+  - '**/*.astro'
+  - 'src/pages/**'
+  - 'src/layouts/**'
+  - 'src/content/**'
 ---
 
 # ASTRO STANDARDS

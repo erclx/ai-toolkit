@@ -1,7 +1,5 @@
 ---
 description: Enforce planning standards before implementation
-alwaysApply: true
-priority: 70
 ---
 
 # PLANNING STANDARDS

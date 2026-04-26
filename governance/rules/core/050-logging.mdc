@@ -1,7 +1,5 @@
 ---
 description: Enforce structured logging and observability
-alwaysApply: true
-priority: 50
 ---
 
 # LOGGING STANDARDS

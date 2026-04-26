@@ -1,8 +1,8 @@
 ---
 description: Enforce shadcn/ui v4 component patterns, semantic tokens, and composition rules
-globs: '**/*.tsx,**/*.jsx'
-alwaysApply: false
-priority: 260
+paths:
+  - '**/*.tsx'
+  - '**/*.jsx'
 ---
 
 # SHADCN/UI STANDARDS

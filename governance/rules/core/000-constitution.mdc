@@ -1,7 +1,5 @@
 ---
 description: Define senior architect persona and core philosophy
-alwaysApply: true
-priority: 1
 ---
 
 # ROLE PERSONA

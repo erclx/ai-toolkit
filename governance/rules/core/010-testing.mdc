@@ -1,7 +1,5 @@
 ---
 description: Enforce universal testing standards and best practices
-alwaysApply: true
-priority: 10
 ---
 
 # TESTING STANDARDS

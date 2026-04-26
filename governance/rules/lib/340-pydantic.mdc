@@ -1,8 +1,7 @@
 ---
 description: Enforce pydantic v2 patterns for validation and serialization
-globs: '**/*.py'
-alwaysApply: false
-priority: 340
+paths:
+  - '**/*.py'
 ---
 
 # PYDANTIC STANDARDS

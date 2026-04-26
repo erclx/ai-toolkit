@@ -1,7 +1,5 @@
 ---
 description: Enforce consistent error handling patterns
-alwaysApply: true
-priority: 30
 ---
 
 # ERROR HANDLING STANDARDS

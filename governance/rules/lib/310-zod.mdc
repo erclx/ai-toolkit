@@ -1,8 +1,8 @@
 ---
 description: Enforce zod schema validation and type inference
-globs: '**/*.ts,**/*.tsx'
-alwaysApply: false
-priority: 310
+paths:
+  - '**/*.ts'
+  - '**/*.tsx'
 ---
 
 # ZOD VALIDATION STANDARDS

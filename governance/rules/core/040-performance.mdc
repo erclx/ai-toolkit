@@ -1,7 +1,5 @@
 ---
 description: Enforce performance constraints and optimization patterns
-alwaysApply: true
-priority: 40
 ---
 
 # PERFORMANCE STANDARDS

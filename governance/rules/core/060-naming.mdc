@@ -1,7 +1,5 @@
 ---
 description: Enforce consistent naming semantics across all code
-alwaysApply: true
-priority: 60
 ---
 
 # NAMING STANDARDS

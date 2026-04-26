@@ -1,7 +1,5 @@
 ---
 description: Enforce safe concurrency and async operation patterns
-alwaysApply: true
-priority: 20
 ---
 
 # CONCURRENCY STANDARDS
