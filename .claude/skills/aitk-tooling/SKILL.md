@@ -19,6 +19,7 @@ Stack-specific configs override extends-chain configs at the same relative path.
 - `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
 - When a golden config under `tooling/<stack>/configs/` extends or references a package, install that package as a devDependency at toolkit root. The deps are IDE-only, for TypeScript server resolution against the workspace `tsconfig.json`. Do not suppress via `.vscode/settings.json`.
 - Manifest `[gitignore]` blocks must use single-line array syntax (`"# Group" = ["a/", "b/"]`). Multi-line arrays parse as empty in `scripts/lib/inject.sh:199`. List only paths the stack's tools generate beyond the scaffold's default `.gitignore`. Run the scaffold in `/tmp` first to confirm what it already writes.
+- `[gitignore]` group keys are single-word labels (`# VSCode`, `# Python`), not multi-word phrases. Keeps `.gitignore` comment headers terse and stable.
 - Manifests with `runtime != "bun"` must leave `[dependencies.dev]` empty until `inject_tooling_manifest` branches on `runtime`. Document a manual `<runtime> add` step in the stack's `reference.md` scaffold checklist.
 
 ## Adding a new stack
