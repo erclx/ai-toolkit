@@ -83,7 +83,7 @@ scripts/
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
-    ├── gov.sh           ← strip_frontmatter, build_rules_payload, transform_to_claude_rule, rule_subdir
+    ├── gov.sh           ← strip_frontmatter, build_rules_payload, rule_subdir
     ├── tooling.sh       ← list_tooling_stacks, is_tooling_stack_excluded
     ├── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
     └── sandbox-git.sh   ← resolve_sandbox_git_identity, configure_sandbox_git_identity
@@ -139,14 +139,14 @@ Source this in any script that needs terminal output. `log_*` functions write to
 
 Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds preserve user edits. `.txt` seeds are cspell word lists, so sync merges new lines and sorts the file. Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
 
-| Function                   | What it does                                                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack.                                            |
-| `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                                                                     |
-| `inject_tooling_seeds`     | Apply stack seeds. `.txt` seeds merge and sort. Other seed types copy once, then skip.                                                |
-| `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                                                                  |
-| `inject_governance`        | Copy governance rules into `.claude/rules/` (and `.cursor/rules/` when the Cursor target is enabled) and standards into `standards/`. |
-| `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                                                                        |
+| Function                   | What it does                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack. |
+| `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                          |
+| `inject_tooling_seeds`     | Apply stack seeds. `.txt` seeds merge and sort. Other seed types copy once, then skip.     |
+| `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                       |
+| `inject_governance`        | Copy governance rules into `.claude/rules/` and standards into `standards/`.               |
+| `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                             |
 
 ### `gov.sh`
 

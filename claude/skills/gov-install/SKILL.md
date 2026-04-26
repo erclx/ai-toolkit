@@ -38,7 +38,7 @@ If a detected technology has no matching rule, stop and surface the gap. Do not 
 
 Present three options:
 
-1. Author a new rule in the toolkit at `governance/rules/<domain>/<num>-<name>.mdc` following `prompts/cursor-rules.md`, commit, then re-run install.
+1. Author a new rule in the toolkit at `governance/rules/<domain>/<num>-<name>.mdc` following `prompts/governance-rules.md`, commit, then re-run install.
 2. Install the matching non-<tech> rules and skip the tech-specific layer.
 3. Abort.
 

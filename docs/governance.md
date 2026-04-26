@@ -1,6 +1,6 @@
 ---
 title: Governance
-description: Path-scoped Claude rules, optional Cursor adapter, stacks, install and sync
+description: Path-scoped Claude rules, stacks, install and sync
 category: Domain references
 ---
 
@@ -8,7 +8,7 @@ category: Domain references
 
 ## Overview
 
-Governance manages the rules that guide AI agents working in projects. Source rules live in the toolkit as `.mdc` files. On install they are written to one or both of two surfaces: `.claude/rules/` for Claude Code (default) and `.cursor/rules/` for Cursor (opt-in).
+Governance manages the rules that guide AI agents working in projects. Source rules live in the toolkit as `.mdc` files at `governance/rules/<subdir>/<rule>.mdc` and install to `.claude/rules/<subdir>/<rule>.md` for Claude Code.
 
 ## Structure
 
@@ -21,22 +21,17 @@ scripts/
 │   ├── sync.sh         ← syncs existing rules and removes stale .claude/GOV.md
 │   └── build.sh        ← concatenates installed rules into .claude/.tmp/gov/rules.md
 ├── lib/
-│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload, transform_to_claude_rule, rule_subdir
+│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload, rule_subdir
 └── manage-gov.sh       ← entry point (aitk gov)
 ```
 
-## Targets
+## Install path
 
-The toolkit installs to two surfaces. Default is Claude only.
-
-- **Claude (`.claude/rules/`)**: rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`). Frontmatter is transformed on install: source `globs:` becomes Claude's `paths:` list, `alwaysApply: true` emits with no `paths:` key (always-on), and the `.mdc` extension flips to `.md`. Claude Code reads these natively.
-- **Cursor (`.cursor/rules/`)**: rules flatten into a single directory, file extension stays `.mdc`, frontmatter passes through unchanged. Cursor reads rules flat.
-
-Pick the target with `--target claude|cursor|both`. Default is `claude`.
+Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`). Source files carry the Claude shape directly, so install is a passthrough copy with the `.mdc` extension flipped to `.md`. Claude Code reads these natively.
 
 ## Key decisions
 
-Source rules live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `ui/`) under `governance/rules/`. The Claude target preserves that layout. The Cursor target flattens.
+Source rules live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `ui/`) under `governance/rules/`. Install preserves that layout under `.claude/rules/`.
 
 Rules follow a numbering scheme by domain. When adding a rule, pick a number in the appropriate range:
 
@@ -66,12 +61,12 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## CLI
 
-| Command                                                      | What it does                                                                 |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| `aitk gov install [stack] [--add rules] [--target T] [path]` | Bootstrap rules for a stack. `--target` is claude (default), cursor, or both |
-| `aitk gov sync [path]`                                       | Update installed rules in target, clean up stale `.claude/GOV.md`            |
-| `aitk gov build [path]`                                      | Concatenate installed rules into `.claude/.tmp/gov/rules.md`                 |
-| `aitk gov list [--stacks\|--rules] [--json]`                 | Emit catalog of stacks and rules                                             |
+| Command                                         | What it does                                                      |
+| ----------------------------------------------- | ----------------------------------------------------------------- |
+| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into `.claude/rules/`                 |
+| `aitk gov sync [path]`                          | Update installed rules in target, clean up stale `.claude/GOV.md` |
+| `aitk gov build [path]`                         | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
+| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                                  |
 
 `aitk gov` with no args shows an interactive picker for `install`, `sync`, `build`, or `list`. Commands that write files require confirmation before running.
 
@@ -81,13 +76,7 @@ To set up a new project:
 
 ```bash
 aitk gov install react ../my-app
-# resolves react → node → base, transforms each rule, writes to .claude/rules/<subdir>/<rule>.md
-```
-
-To install both Claude and Cursor surfaces in one call:
-
-```bash
-aitk gov install react --target both ../my-app
+# resolves react → node → base, copies each rule to .claude/rules/<subdir>/<rule>.md
 ```
 
 To layer extra rules on top of a stack without creating a new stack definition:
@@ -124,18 +113,7 @@ aitk gov list --stacks              # stacks only
 
 ## Frontmatter contract
 
-Source `.mdc` rules carry Cursor-shaped frontmatter:
-
-```yaml
----
-description: Enforce strict Python type hints, casing, and import patterns
-globs: '**/*.py'
-alwaysApply: false
-priority: 110
----
-```
-
-`transform_to_claude_rule` rewrites it for the Claude target:
+Source `.mdc` rules carry the Claude shape directly. Path-scoped rules emit a `paths:` list, one entry per glob:
 
 ```yaml
 ---
@@ -145,7 +123,7 @@ paths:
 ---
 ```
 
-Rules with `alwaysApply: true` emit with no `paths:` key, which Claude Code treats as always-on. `priority` is dropped because Claude Code does not use it.
+Always-on rules (core persona, testing, error handling) emit with no `paths:` key. Claude Code treats those as always-on. The legacy Cursor schema (`globs`, `alwaysApply`, `priority`) is not consumed and must not appear in source.
 
 ## How Claude Code loads rules
 
@@ -169,4 +147,5 @@ rules = ["200-react", "250-tailwind"]
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional or addon complexity in stack definitions.
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
-- `strip_frontmatter`, `build_rules_payload`, `transform_to_claude_rule`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern (`*.mdc` or `*.md`).
+- `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern (`*.mdc` or `*.md`).
+- Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
