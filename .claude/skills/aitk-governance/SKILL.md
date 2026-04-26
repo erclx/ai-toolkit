@@ -21,7 +21,7 @@ Read `docs/governance.md` for system overview, numbering scheme, and stack struc
 
 ## Stacks
 
-- New stack: create a `.toml` in `governance/stacks/`, set `extends`, list rule names without `.mdc`.
+- New stack: create a `.toml` in `governance/stacks/`, set `extends`, list rule names without `.mdc`
 
 ## Sync checklist
 
