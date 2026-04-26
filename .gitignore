@@ -13,5 +13,4 @@ node_modules/
 .claude/memory/
 .claude/plans/
 .claude/review/
-.claude/rules/
 .claude/worktrees/
