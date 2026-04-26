@@ -66,7 +66,7 @@ References are `reference.md` files synced to `tooling/<stack>.md` in target pro
 
 Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 
-Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched. Group keys use single-word labels (`# Vscode`, `# Python`) so the comment headers stay terse and stable across renames.
+Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched. Group keys use single-word labels (`# VSCode`, `# Python`) so the comment headers stay terse and stable across renames.
 
 Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Missing entries are added. Existing scripts are never overwritten. Existing dependencies are preserved unless a manifest pin's major version does not match the installed major, in which case sync re-installs to enforce the pin.
 
