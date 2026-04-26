@@ -8,16 +8,10 @@
 # Dependencies
 node_modules/
 
-# Gemini
-.gemini/.tmp/
-.gemini/settings.json
-
-# Antigravity
-.agent/
-
 # Claude
 .claude/.tmp
 .claude/memory/
 .claude/plans/
 .claude/review/
+.claude/rules/
 .claude/worktrees/
