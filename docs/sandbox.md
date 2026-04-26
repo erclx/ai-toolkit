@@ -10,6 +10,8 @@ category: Infrastructure
 
 Sandboxes provision isolated project states for testing scripts, configs, and AI commands. Each sandbox defines a known starting state with clear instructions for what to run and what to expect.
 
+The `aitk-sandbox-check` skill maps changed plugin skills and changed `scripts/` files on a feature branch to their matching scenarios, so an e2e gap on a script edit surfaces the same way it does on a skill edit.
+
 ## Structure
 
 ```plaintext
