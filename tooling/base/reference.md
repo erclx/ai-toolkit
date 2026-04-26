@@ -22,12 +22,9 @@
 
 ## CSpell
 
-- Config: `cspell.json` at root.
-- Include `version: "0.2"` and `language: "en"`.
-- Set `useGitignore: true` to skip ignored paths.
+- `cspell.json` is a user-owned seed at root. Sync drops it once on first install and never overwrites it. Projects extend it with extra `import` and `dictionaryDefinitions` entries.
+- The seeded baseline includes `version: "0.2"`, `language: "en"`, `useGitignore: true`, dictionary definitions for `project-terms` and `tech-stack` (both with `addWords: true`), and `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files.
 - Dictionary files in `.cspell/`: `project-terms.txt`, `tech-stack.txt`.
-- Set `addWords: true` on each dictionary definition.
-- Add `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files.
 - Include dotfolders in the spell glob: `cspell '**' '.*/**' '.*' ...`. The default `**` skips dot-prefixed folders, so `.claude/`, `.github/`, and `.husky/` go unchecked without explicit globs.
 - Keep dictionary entries sorted alphabetically, one word per line.
 
@@ -48,14 +45,14 @@
 
 ## Husky + Lint-Staged
 
-- Config: `.lintstagedrc` (JSON) at root.
+- `.lintstagedrc` is a user-owned seed at root. Sync drops it once on first install and never overwrites it. Projects extend it with extra glob → command entries (e.g. `aitk indexes regen`).
+- Seeded baseline globs:
+  - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`
+  - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 - Hooks in `.husky/`:
   - `pre-commit` → `bunx lint-staged`
   - `commit-msg` → `bunx commitlint --edit "$1"`
   - `pre-push` → `bun run check`
-- Lint-staged globs:
-  - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`
-  - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 - Note: lint-staged handles its own glob expansion and passes matched files as arguments. `**/*.sh` is safe here, unlike in package.json scripts.
 
 ## GitHub
@@ -73,7 +70,6 @@
 - `# System`: `.DS_Store`
 - `# Dependencies`: `node_modules/`
 - `# Secrets`: `.env`, `.env.*`, `*.local`, `!.env.example`
-- `# Cursor`: `.cursor/.tmp/`
 
 ## Scripts
 
