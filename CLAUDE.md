@@ -29,7 +29,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 - Before restructuring installable content (`snippets/`, `claude/skills/`, `tooling/`, `governance/rules/`), grep the corresponding install and list scripts for depth constraints (`-maxdepth`, fixed globs). Bundle script updates with the restructure or pick a depth the scripts already handle.
 - Before queuing or starting a new feature, confirm a concrete project or use case drives it. If precedent exists, lift patterns from that project rather than writing from scratch.
-- For unconditional pre-push or per-edit automation (formatters, audits, scaffold checks), prefer a husky hook over a CLAUDE.md or skill bullet. CLAUDE.md only fires when Claude is acting. A hook fires for everyone.
 
 ## After editing
 
