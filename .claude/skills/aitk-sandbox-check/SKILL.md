@@ -10,14 +10,14 @@ Manual guard after editing a plugin skill or a domain script. Reports whether ea
 ## Guards
 
 - If the current branch is `main` or `master`, stop: `❌ On main. Checkout a feature branch first.`
-- If both `git diff "$(git merge-base main HEAD)" --name-only -- 'claude/skills/**/SKILL.md'` and `git diff "$(git merge-base main HEAD)" --name-only -- 'scripts/**' 'src/**'` are empty, stop: `✅ No skill or script changes since main.`
+- If both `git diff "$(git merge-base main HEAD)" --name-only -- 'claude/skills/**/SKILL.md' '.claude/skills/**/SKILL.md'` and `git diff "$(git merge-base main HEAD)" --name-only -- 'scripts/**' 'src/**'` are empty, stop: `✅ No skill or script changes since main.`
 
 ## Step 1: collect changed files
 
 Run in parallel from the worktree root:
 
 ```bash
-git diff "$(git merge-base main HEAD)" --name-only -- 'claude/skills/**/SKILL.md'
+git diff "$(git merge-base main HEAD)" --name-only -- 'claude/skills/**/SKILL.md' '.claude/skills/**/SKILL.md'
 ```
 
 ```bash
@@ -32,13 +32,13 @@ git diff "$(git merge-base main HEAD)" --name-only -- 'scripts/sandbox/**/*.sh'
 pwd
 ```
 
-The first list is the changed plugin skills. The second list is the changed scripts (`scripts/`, `src/`). The third is the changed sandbox scenarios. The fourth is the current root, whether that is main or a linked worktree. `.sandbox/` lives under whichever root ran `manage-sandbox.sh`, because the script resolves `PROJECT_ROOT` from its own path.
+The first list is the changed skills, both plugin (`claude/skills/`) and internal (`.claude/skills/`). The second list is the changed scripts (`scripts/`, `src/`). The third is the changed sandbox scenarios. The fourth is the current root, whether that is main or a linked worktree. `.sandbox/` lives under whichever root ran `manage-sandbox.sh`, because the script resolves `PROJECT_ROOT` from its own path.
 
 Drop any path in the script list that already appears in the scenario list. Scenario edits surface through the "Scenarios changed but not paired" tail and do not need a mapping pass.
 
-## Step 2a: map plugin skill changes
+## Step 2a: map skill changes
 
-For each changed skill path `claude/skills/<skill-name>/SKILL.md`:
+For each changed skill path under `claude/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`:
 
 1. Split `<skill-name>` on the first `-` into `<category>` and `<rest>`.
 2. Check whether `scripts/sandbox/<category>/<rest>.sh` exists in the worktree.
