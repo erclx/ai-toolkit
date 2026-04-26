@@ -29,5 +29,7 @@ One-line reference for each doc in this folder.
 
 ## Infrastructure
 
+- [CI](ci.md): GitHub Actions workflow triggers and checks
+- [Development](development.md): Local dev workflow, scripts, and husky hooks
 - [Extensions](extensions.md): External browser and editor extensions
 - [Sandbox](sandbox.md): Sandbox scenarios for verifying domain flows
