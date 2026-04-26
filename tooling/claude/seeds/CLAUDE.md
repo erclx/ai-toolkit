@@ -9,6 +9,9 @@
 
 ## Behavior
 
+- Flag concerns or alternatives when a proposed change has tradeoffs worth discussing.
+- When facing a judgment call with 2-3 reasonable options mid-flow, pick one and state the tradeoff in one sentence. Enumerate options only when the user's preference is the deciding factor.
+- Match edit scope to the request. Ship minimal v1 and queue extensions as follow-ups. Edit only what the user named on simplification requests. Do not add features they did not ask for.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 
 ## Indexes
@@ -20,6 +23,10 @@
 ## Markdown
 
 - When editing any markdown file, follow `standards/prose.md`.
+
+## Commands
+
+- Run `bun run check` before committing. Full script reference in `docs/development.md`.
 
 ## Key paths
 
@@ -42,6 +49,7 @@
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
 - When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. When that task ships, delete its plan file.
 - Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
+- Treat `.claude/TASKS.md` as transactional working state. Revert to `### Nothing queued` before shipping to main. Prefer stashing task-block changes over committing them.
 
 ## Memory
 
