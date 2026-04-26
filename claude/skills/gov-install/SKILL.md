@@ -29,7 +29,7 @@ Read these from the project root in parallel:
 Match the detected evidence to the catalog:
 
 - Pick the closest stack. Match detected runtime or framework against stack names in the catalog.
-- Identify additional technologies not already covered by the picked stack. For each, find a rule whose `description` or `globs` points at that technology, then add it via `--add`.
+- Identify additional technologies not already covered by the picked stack. For each, find a rule whose `description` or `paths` points at that technology, then add it via `--add`.
 - Dedupe extras against stack rules. Do not add a rule the stack already pulls in.
 
 ## Gap handling

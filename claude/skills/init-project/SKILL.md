@@ -35,7 +35,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 
 - **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base`.
 - **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match.
-- **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `globs` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
+- **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `paths` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
 - **Snippets:** default to `all`. Narrow only if the user asked for a specific category.
 - **Optional domains (`--with`):**
   - `standards`: include if `docs/`, `standards/`, or `.claude/` already exists in the project
