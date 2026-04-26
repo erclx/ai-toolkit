@@ -31,20 +31,12 @@ show_help() {
 
 cmd_build() {
   local target="${1:-.}"
-  local rules_dir=""
-  local pattern=""
-  local source_label=""
+  local rules_dir="$target/.claude/rules"
+  local pattern="*.md"
+  local source_label=".claude/rules"
 
-  if [ -d "$target/.claude/rules" ]; then
-    rules_dir="$target/.claude/rules"
-    pattern="*.md"
-    source_label=".claude/rules"
-  elif [ -d "$target/.cursor/rules" ]; then
-    rules_dir="$target/.cursor/rules"
-    pattern="*.mdc"
-    source_label=".cursor/rules"
-  else
-    log_error "No rules found at $target/.claude/rules or $target/.cursor/rules. Run \`aitk gov install\` first."
+  if [ ! -d "$rules_dir" ]; then
+    log_error "No rules found at $rules_dir. Run \`aitk gov install\` first."
   fi
 
   local output_dir="$target/.claude/.tmp/gov"

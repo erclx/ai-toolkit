@@ -13,8 +13,7 @@ show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk gov sync [target-path]"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  Syncs rules already installed in the target project."
-  echo -e "${GREY}│${NC}  Detects .claude/rules/ and .cursor/rules/ and syncs each."
+  echo -e "${GREY}│${NC}  Syncs rules already installed under .claude/rules/."
   echo -e "${GREY}│${NC}  Removes stale .claude/GOV.md (retired surface)."
   echo -e "${GREY}│${NC}  To add new rules, use 'aitk gov install' instead."
   echo -e "${GREY}│${NC}  To sync standards, use 'aitk standards sync' instead."
@@ -63,46 +62,15 @@ collect_claude_changes() {
       continue
     fi
 
-    local transformed
-    transformed=$(mktemp)
-    transform_to_claude_rule "$src_file" >"$transformed"
-
     local rel=".claude/rules/${dest_file#"$rules_dir/"}"
-    if ! diff -q "$transformed" "$dest_file" >/dev/null 2>&1; then
+    if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
       log_warn "$rel"
       echo "claude|$src_file|$dest_file" >>"$PENDING_FILE"
-      echo "$transformed|$dest_file|$rel" >>"$DRIFTED_FILE"
+      echo "$src_file|$dest_file|$rel" >>"$DRIFTED_FILE"
     else
       log_info "$rel"
-      rm -f "$transformed"
     fi
   done < <(find "$rules_dir" -type f -name "*.md" | sort)
-}
-
-collect_cursor_changes() {
-  local target_dir="$1"
-  local rules_dir="$target_dir/.cursor/rules"
-  [ ! -d "$rules_dir" ] && return 0
-
-  while IFS= read -r dest_file; do
-    local filename
-    filename=$(basename "$dest_file")
-
-    local src_file
-    src_file=$(find "$PROJECT_ROOT/governance/rules" -type f -name "$filename" | head -n 1)
-    if [ -z "$src_file" ]; then
-      log_warn ".cursor/rules/$filename (not in toolkit source, skipping)"
-      continue
-    fi
-
-    if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn ".cursor/rules/$filename"
-      echo "cursor|$src_file|$dest_file" >>"$PENDING_FILE"
-      echo "$src_file|$dest_file|.cursor/rules/$filename" >>"$DRIFTED_FILE"
-    else
-      log_info ".cursor/rules/$filename"
-    fi
-  done < <(find "$rules_dir" -type f -name "*.mdc" | sort)
 }
 
 collect_stale_gov() {
@@ -134,11 +102,6 @@ apply_changes() {
     local rel="${dest#"$TARGET_PATH/"}"
     case "$kind" in
     claude)
-      mkdir -p "$(dirname "$dest")"
-      transform_to_claude_rule "$src" >"$dest"
-      log_add "$rel"
-      ;;
-    cursor)
       mkdir -p "$(dirname "$dest")"
       cp "$src" "$dest"
       log_add "$rel"
@@ -183,14 +146,13 @@ main() {
   DRIFTED_FILE=$(mktemp)
   trap 'rm -f "$PENDING_FILE" "$DRIFTED_FILE"; close_timeline' EXIT
 
-  if [ ! -d "$TARGET_PATH/.claude/rules" ] && [ ! -d "$TARGET_PATH/.cursor/rules" ] && [ ! -f "$TARGET_PATH/.claude/GOV.md" ]; then
+  if [ ! -d "$TARGET_PATH/.claude/rules" ] && [ ! -f "$TARGET_PATH/.claude/GOV.md" ]; then
     log_warn "No governance surfaces found in target. Run 'aitk gov install' first."
     exit 0
   fi
 
   log_step "Scanning rules"
   collect_claude_changes "$TARGET_PATH"
-  collect_cursor_changes "$TARGET_PATH"
   collect_stale_gov "$TARGET_PATH"
 
   local count

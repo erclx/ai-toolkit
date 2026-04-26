@@ -9,7 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/gov.sh"
 trap close_timeline EXIT
 
-RULES_DIR="$PWD/.cursor/rules"
+RULES_DIR="$PWD/.claude/rules"
 IMPLEMENTER_TEMPLATE="$PWD/.claude/IMPLEMENTER.md"
 PLANNER_TEMPLATE="$PWD/.claude/PLANNER.md"
 OUTPUT_DIR="$PWD/.claude/.tmp/roles"
@@ -19,7 +19,7 @@ show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk claude prompt"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  Generates master prompts from installed cursor rules."
+  echo -e "${GREY}│${NC}  Generates master prompts from installed governance rules."
   echo -e "${GREY}│${NC}  Reads templates from .claude/PLANNER.md and .claude/IMPLEMENTER.md."
   echo -e "${GREY}│${NC}  Writes output to .claude/.tmp/roles/."
   echo -e "${GREY}│${NC}  Copies REVIEWER.md to .claude/.tmp/roles/REVIEWER.md."
@@ -35,8 +35,8 @@ show_help() {
 }
 
 check_dependencies() {
-  if [ ! -d "$RULES_DIR" ] || ! ls "$RULES_DIR"/*.mdc >/dev/null 2>&1; then
-    log_error "No rules found at .cursor/rules/. Run \`aitk gov install\` first."
+  if [ ! -d "$RULES_DIR" ] || ! find "$RULES_DIR" -type f -name "*.md" -print -quit | grep -q .; then
+    log_error "No rules found at .claude/rules/. Run \`aitk gov install\` first."
   fi
 
   if [ ! -f "$IMPLEMENTER_TEMPLATE" ]; then
@@ -91,7 +91,7 @@ inject_placeholder_file() {
 
 build_implementer() {
   local payload_file
-  payload_file=$(build_rules_payload "$RULES_DIR")
+  payload_file=$(build_rules_payload "$RULES_DIR" "" "*.md")
 
   local output_file="$OUTPUT_DIR/IMPLEMENTER.md"
   cp "$IMPLEMENTER_TEMPLATE" "$output_file"
@@ -147,14 +147,14 @@ main() {
   check_dependencies
 
   local count
-  count=$(find "$RULES_DIR" -type f -name "*.mdc" | wc -l | tr -d ' ')
+  count=$(find "$RULES_DIR" -type f -name "*.md" | wc -l | tr -d ' ')
 
   echo -e "${GREY}┌${NC}"
-  echo -e "${GREY}├${NC} ${WHITE}Reading .cursor/rules ($count found)${NC}"
+  echo -e "${GREY}├${NC} ${WHITE}Reading .claude/rules ($count found)${NC}"
 
   while IFS= read -r file; do
     log_info "$(basename "$file")"
-  done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
+  done < <(find "$RULES_DIR" -type f -name "*.md" | sort)
 
   select_option "Generate master prompts from $count rules?" "Yes" "No"
 

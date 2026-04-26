@@ -18,7 +18,7 @@ inject_governance() {
       local dest_dir="$rules_target"
       [ -n "$subdir" ] && dest_dir="$rules_target/$subdir"
       mkdir -p "$dest_dir"
-      transform_to_claude_rule "$src" >"$dest_dir/${rule}.md"
+      cp "$src" "$dest_dir/${rule}.md"
       log_add "${dest_dir#./}/${rule}.md"
     done < <(find "$rules_source" -type f -name "*.mdc" | sort)
   else

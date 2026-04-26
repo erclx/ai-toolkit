@@ -21,7 +21,7 @@ show_help() {
   echo -e "${GREY}│${NC}    roles [list]   ${GREY}# Install role prompts, or list sources with --json${NC}"
   echo -e "${GREY}│${NC}    seeds list     ${GREY}# List seed doc sources with --json${NC}"
   echo -e "${GREY}│${NC}    sync           ${GREY}# Diff managed files against source and apply updates${NC}"
-  echo -e "${GREY}│${NC}    prompt         ${GREY}# Generate master prompt from installed cursor rules (requires roles)${NC}"
+  echo -e "${GREY}│${NC}    prompt         ${GREY}# Generate master prompt from installed governance rules (requires roles)${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"

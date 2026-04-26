@@ -3,6 +3,7 @@ set -e
 set -o pipefail
 
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
+source "$PROJECT_ROOT/scripts/lib/gov.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_anchor() {
@@ -30,9 +31,13 @@ stage_setup() {
   done < <(find "$src_standards" -type f -name "*.md" | sort | head -n 2)
 
   while IFS= read -r file; do
-    local filename
-    filename=$(basename "$file")
-    echo "# stale" >>".cursor/rules/$filename"
+    local rule
+    rule=$(basename "$file" .mdc)
+    local subdir
+    subdir=$(rule_subdir "$file" "$src_rules")
+    local dest=".claude/rules/${rule}.md"
+    [ -n "$subdir" ] && dest=".claude/rules/$subdir/${rule}.md"
+    [ -f "$dest" ] && echo "# stale" >>"$dest"
   done < <(find "$src_rules" -type f -name "*.mdc" | sort | head -n 2)
 
   git add .
@@ -45,7 +50,7 @@ stage_setup() {
 
   log_step "Sync sandbox"
   log_info "Anchor: $ANCHOR_REPO"
-  log_info "Stale: standards/ (2 files), .cursor/rules/ (2 files)"
+  log_info "Stale: standards/ (2 files), .claude/rules/ (2 files)"
   log_info "Remote: git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
   log_step "Running: aitk sync"
