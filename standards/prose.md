@@ -43,6 +43,7 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - Do not use em dashes (`—`) or semicolons (`;`). Rewrite or restructure the sentence to avoid them.
 - Do not use parenthetical asides in prose (`the config (which is optional) controls...`). Split into its own sentence or drop it. Parentheses in rule definitions for grouping examples are fine.
 - Use descriptive anchor text for links. Avoid `click here` or `read more`.
+- In shell examples that reference an install location, use `$TOOLKIT` (with a variable definition) or `/path/to/toolkit` as a placeholder. Never hardcode a personal path like `~/repos/ai/toolkit`.
 
 ## Language
 
