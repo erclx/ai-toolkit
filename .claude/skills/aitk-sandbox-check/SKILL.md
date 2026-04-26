@@ -1,7 +1,6 @@
 ---
 name: aitk-sandbox-check
-description: Audits the current branch for skill or script edits that lack a matching sandbox scenario update. Reports per-item pairings, re-provisions changed scenarios, and prints the re-test command. Does not launch Claude in the sandbox.
-disable-model-invocation: true
+description: Audits the current branch for skill or script edits that lack a matching sandbox scenario update. Reports per-item pairings, re-provisions changed scenarios, and prints the re-test command. Auto-trigger at ship time after editing `claude/skills/**/SKILL.md`, `scripts/**`, or `src/**` when the user signals end-of-feature ("ready to ship", "open PR", "before push", "wrap up", "ship it"). Do NOT auto-trigger on individual file edits mid-feature or on docs-only changes.
 ---
 
 # Sandbox check
