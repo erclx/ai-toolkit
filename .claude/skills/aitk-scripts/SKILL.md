@@ -28,6 +28,7 @@ Read `docs/scripts.md` for structure, file inventory, and lib responsibilities b
 - When testing a skill that has a sandbox scenario, run `aitk sandbox <cat>:<cmd>` yourself before handing off. Tell the user the exact skill invocation and what to expect.
 - When testing uncommitted script edits from a linked worktree, invoke the script via its worktree-local path like `./scripts/manage-sandbox.sh <cat>:<cmd>`. Global `aitk` resolves to the main repo's scripts and cannot see worktree changes until they land on main.
 - After refactoring a sandbox scenario, do not claim verified from a green run alone. Diff `.sandbox/` contents, file list, and `git log` against the pre-refactor behavior or spec, and report the comparison in the done message.
+- A sandbox scenario validates a skill change only when its environment reproduces the bug's trigger. Standalone-repo scenarios cannot exercise host-conditional behavior like linked-worktree locks or remote-state failures. Mark the scenario extension as a follow-up rather than treating a green run as proof.
 
 ## Sync checklist
 
