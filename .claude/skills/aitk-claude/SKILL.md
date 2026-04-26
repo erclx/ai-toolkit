@@ -20,6 +20,7 @@ Read `docs/claude.md` for plugin setup, skills inventory, and aitk claude CLI be
 - When a skill persists output to `.claude/` (plans, review, audits), derive a slug from the current git branch: run `git branch --show-current` and replace `/` with `-`. Fall back to `latest` on empty output (detached HEAD). Include the slug in the filename (`feature-<slug>.md`, `review-<slug>.md`, `ui-checklist-<slug>.md`, `ux-audit-<slug>.md`). This prevents collisions across parallel worktrees.
 - Plugin skills under `claude/skills/` do not use the `aitk-*` prefix. That prefix is reserved for internal skills under `.claude/skills/`. If a plan suggests `aitk-*` for a plugin skill, flag the mismatch before creating the folder.
 - When handing off a plugin skill test from a linked worktree, print the two-line invocation block: `cd` to the sandbox path, then `claude --plugin-dir <worktree-root>/claude --model sonnet`. Without `--plugin-dir`, Claude loads main's stale copy. Default to `--model sonnet` for skill testing.
+- For unconditional pre-push or per-edit automation (formatters, audits, scaffold checks), propose a husky hook instead of a CLAUDE.md or skill bullet. CLAUDE.md only fires when Claude is acting. A hook fires for everyone.
 
 ## Couplings
 

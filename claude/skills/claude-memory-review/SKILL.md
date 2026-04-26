@@ -109,6 +109,14 @@ Two phases, two snippets, both re-read the review file as source of truth:
   - Free-form text after the verb is a reason. Capture in the receipt, do not let it change the action.
 - **Chat shortcut:** the user replies with `all`, `none`, or a comma-separated list of numbers. Apply only the numbered items.
 
+Before applying any item, check the worktree state. Apply mutates tracked files (target surfaces, memory files, `MEMORY.md`). Run:
+
+```bash
+[ "$(git rev-parse --git-dir 2>/dev/null)" = "$(git rev-parse --git-common-dir 2>/dev/null)" ] && echo "MAIN" || echo "LINKED"
+```
+
+If the result is `MAIN`, stop and tell the user: `❌ Apply phase mutates tracked files. Run /claude-worktree first.` Discuss and challenge phases only touch `.claude/review/` scratch and run from anywhere.
+
 Before applying a promote to root `CLAUDE.md`, load `aitk-claude` so its seed-mirror rule fires on the edit.
 
 For each approved item:
