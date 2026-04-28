@@ -14,3 +14,4 @@ node_modules/
 .claude/plans/
 .claude/review/
 .claude/worktrees/
+.claude/TASKS.md

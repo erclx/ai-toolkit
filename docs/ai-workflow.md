@@ -20,7 +20,7 @@ Project docs live in `.claude/` at the project root.
 ├── ARCHITECTURE.md  ← technical design decisions
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
-├── TASKS.md         ← persistent task tracker, source of truth
+├── TASKS.md         ← per-worktree task tracker, gitignored local scratch
 └── rules/           ← path-scoped governance rules, written by aitk gov install
 ```
 
@@ -65,7 +65,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 
 `.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
-Caveats: `.claude/TASKS.md` is a single file and lives per worktree. If multiple sessions edit it concurrently, resolve the merge at ship time.
+`.claude/TASKS.md` is gitignored and lives per worktree, so each session keeps its own task list with no cross-worktree merge.
 
 ### Autonomous ship
 

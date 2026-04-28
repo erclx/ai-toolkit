@@ -12,7 +12,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── REVIEWER.md        ← managed. System prompt for code review, invoked via code-review snippet in Claude Code
 ├── IMPLEMENTER.md     ← managed. System prompt for code generation, read by aitk claude prompt
 ├── CLAUDE.md          ← seeded. Project context and rules, auto-loaded by Claude Code each session
-├── TASKS.md           ← seeded. Persistent task tracker, source of truth for progress
+├── TASKS.md           ← seeded then gitignored. Per-worktree task tracker, local scratch only
 ├── REQUIREMENTS.md    ← seeded. Project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md    ← seeded. Technical design decisions and open questions
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it
@@ -27,7 +27,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 
 ## Gitignore
 
-- `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`
+- `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`, `.claude/TASKS.md`
 
 ## CLI
 
