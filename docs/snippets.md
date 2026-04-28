@@ -36,7 +36,7 @@ The `aitk` category is internal. It holds runbooks that only make sense inside t
 | `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                           |
 | `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-challenge, claude/memory-cleanup, claude/memory-discuss |
 | `git`    | git/followup                                                                                                                         |
-| `aitk`   | aitk/sandbox-worktree, aitk/toolkit-feedback, aitk/vocab-capture (internal, not installable)                                         |
+| `aitk`   | aitk/format-edits, aitk/sandbox-worktree, aitk/toolkit-feedback, aitk/vocab-capture (internal, not installable)                      |
 
 ## Snippets
 
@@ -56,6 +56,7 @@ The `aitk` category is internal. It holds runbooks that only make sense inside t
 | `claude/memory-cleanup`   | Sweep skipped entries from the last memory review and delete the review receipt                                |
 | `claude/memory-discuss`   | Respond to question items in the latest memory review by writing `Take:` lines                                 |
 | `git/followup`            | Stage, commit, and push a small self-review edit on the current PR branch                                      |
+| `aitk/format-edits`       | Format proposed edits as old → new pairs with file and section headers and `>` blockquotes                     |
 | `aitk/sandbox-worktree`   | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
 | `aitk/toolkit-feedback`   | Format a session-context paste-back report about an issue with the ai/toolkit                                  |
 | `aitk/vocab-capture`      | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |

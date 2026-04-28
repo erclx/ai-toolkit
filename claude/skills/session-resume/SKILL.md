@@ -7,7 +7,7 @@ description: Resumes a previous session by reading tracked work and relevant con
 
 ## Step 1: read tracked work
 
-Resolve `.claude/plans/` and `.claude/memory/` at the main worktree root per Worktrees in `CLAUDE.md`. Resolve `TASKS.md` at the current project root.
+Resolve `.claude/plans/`, `.claude/memory/`, and `.claude/TASKS.md` at the main worktree root per Worktrees in `CLAUDE.md`.
 
 Read these in parallel, skipping any that do not exist:
 

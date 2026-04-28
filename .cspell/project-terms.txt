@@ -11,6 +11,8 @@ autoshipped
 autoshipping
 awwwards
 backlink
+blockquote
+blockquotes
 bradlc
 bunx
 clpc
