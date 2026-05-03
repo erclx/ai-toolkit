@@ -13,7 +13,7 @@ Ship a small self-review edit on the current PR branch in one pass.
 - If `git branch --show-current` returns `main`, stop: `❌ On main. Switch to a PR branch first.`
 - If `git status --porcelain` is empty, stop: `❌ No changes to ship.`
 - If `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null` is empty, stop: `❌ No upstream. Push the branch first or use git-ship.`
-- If `gh pr view --json url 2>/dev/null` is empty, stop: `❌ No open PR for this branch. Use git-ship to open one.`
+- If `gh pr view --json state -q '.state' 2>/dev/null` is not `OPEN`, stop: `❌ No open PR for this branch. Use git-ship to open one.`
 
 ## Sequence
 
