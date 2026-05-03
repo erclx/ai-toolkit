@@ -17,10 +17,10 @@ Ship a small self-review edit on the current PR branch in one pass.
 
 ## Sequence
 
-1. Run `git status` to confirm the changes are intentional.
-2. Run `git add -A` to stage every change.
-3. Invoke `toolkit:git-commit` to generate one conventional commit from the staged diff.
-4. Run `git push` to the tracking branch.
+1. Run `git status` to confirm the changes are intentional
+2. Run `git add -A` to stage every change
+3. Invoke `toolkit:git-commit` to generate one conventional commit from the staged diff
+4. Run `git push` to the tracking branch
 5. Run `gh pr view --json url,title,body` and review whether the new commit changes scope. If it does, update the PR body with `gh pr edit --body` and update the title with `gh pr edit --title` if the scope shifted enough to make it inaccurate.
 
 ## After completion
