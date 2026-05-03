@@ -1,16 +1,4 @@
 {
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-  "permissions": {
-    "allow": [
-      "Bash(bun run check:spell)",
-      "Bash(bun run check:format)",
-      "Bash(bun run check:shell)"
-    ],
-    "deny": ["Read(./.env.local)", "Read(./.env.*)"]
-  },
   "hooks": {
     "PostToolUse": [
       {

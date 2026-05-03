@@ -1,0 +1,10 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": ["Bash(bun run *)"],
+    "deny": ["Read(**/.env)", "Read(**/.env.*)"]
+  }
+}
