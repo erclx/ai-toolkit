@@ -21,6 +21,7 @@ show_help() {
   echo -e "${GREY}│${NC}    roles [list]   ${GREY}# Install role prompts, or list sources with --json${NC}"
   echo -e "${GREY}│${NC}    seeds list     ${GREY}# List seed doc sources with --json${NC}"
   echo -e "${GREY}│${NC}    sync           ${GREY}# Diff managed files against source and apply updates${NC}"
+  echo -e "${GREY}│${NC}    setup          ${GREY}# One-shot user-level config (statusline, attribution, permissions)${NC}"
   echo -e "${GREY}│${NC}    prompt         ${GREY}# Generate master prompt from installed governance rules (requires roles)${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
@@ -420,12 +421,28 @@ cmd_sync() {
   echo -e "${GREEN}✓ Claude workflow synced${NC}"
 }
 
+merge_user_setting() {
+  local settings_dest="$1"
+  local jq_filter="$2"
+  shift 2
+
+  local tmp
+  tmp=$(mktemp)
+  if [ -f "$settings_dest" ]; then
+    jq "$@" "$jq_filter" "$settings_dest" >"$tmp"
+  else
+    jq -n "$@" "$jq_filter" >"$tmp"
+  fi
+  mv "$tmp" "$settings_dest"
+}
+
 cmd_setup() {
   local user_dir="$PROJECT_ROOT/tooling/claude/user"
   local dest_dir="$HOME/.claude"
   local script_src="$user_dir/statusline-command.sh"
   local script_dest="$dest_dir/statusline-command.sh"
   local settings_dest="$dest_dir/settings.json"
+  local settings_template="$user_dir/settings.template.json"
   local status_line_cmd="bash $script_dest"
 
   mkdir -p "$dest_dir"
@@ -446,15 +463,54 @@ cmd_setup() {
   if [ "$current_cmd" = "$status_line_cmd" ]; then
     log_info "statusLine"
   else
-    local tmp
-    tmp=$(mktemp)
-    if [ -f "$settings_dest" ]; then
-      jq --arg cmd "$status_line_cmd" '.statusLine = {"type": "command", "command": $cmd}' "$settings_dest" >"$tmp"
-    else
-      jq -n --arg cmd "$status_line_cmd" '.statusLine = {"type": "command", "command": $cmd}' >"$tmp"
-    fi
-    mv "$tmp" "$settings_dest"
-    log_add "statusLine → ~/.claude/settings.json"
+    merge_user_setting "$settings_dest" \
+      '.statusLine = {"type": "command", "command": $cmd}' \
+      --arg cmd "$status_line_cmd"
+    log_add "statusLine"
+  fi
+
+  local expected_attr current_attr
+  expected_attr=$(jq -c '.attribution' "$settings_template")
+  current_attr=""
+  [ -f "$settings_dest" ] && current_attr=$(jq -c '.attribution // empty' "$settings_dest" 2>/dev/null)
+
+  if [ "$current_attr" = "$expected_attr" ]; then
+    log_info "attribution"
+  else
+    merge_user_setting "$settings_dest" \
+      '.attribution = $attr' \
+      --argjson attr "$expected_attr"
+    log_add "attribution"
+  fi
+
+  local expected_allow current_allow merged_allow
+  expected_allow=$(jq -c '.permissions.allow' "$settings_template")
+  current_allow="[]"
+  [ -f "$settings_dest" ] && current_allow=$(jq -c '.permissions.allow // []' "$settings_dest" 2>/dev/null)
+  merged_allow=$(jq -cn --argjson cur "$current_allow" --argjson new "$expected_allow" '($cur + $new) | unique')
+
+  if [ "$current_allow" = "$merged_allow" ]; then
+    log_info "permissions.allow"
+  else
+    merge_user_setting "$settings_dest" \
+      '.permissions.allow = $allow' \
+      --argjson allow "$merged_allow"
+    log_add "permissions.allow"
+  fi
+
+  local expected_deny current_deny merged_deny
+  expected_deny=$(jq -c '.permissions.deny' "$settings_template")
+  current_deny="[]"
+  [ -f "$settings_dest" ] && current_deny=$(jq -c '.permissions.deny // []' "$settings_dest" 2>/dev/null)
+  merged_deny=$(jq -cn --argjson cur "$current_deny" --argjson new "$expected_deny" '($cur + $new) | unique')
+
+  if [ "$current_deny" = "$merged_deny" ]; then
+    log_info "permissions.deny"
+  else
+    merge_user_setting "$settings_dest" \
+      '.permissions.deny = $deny' \
+      --argjson deny "$merged_deny"
+    log_add "permissions.deny"
   fi
 
   trap - EXIT
@@ -473,7 +529,7 @@ main() {
   local command="$1"
 
   if [ -z "$command" ]; then
-    select_option "Claude command?" "init" "sync" "prompt" "roles"
+    select_option "Claude command?" "init" "sync" "setup" "prompt" "roles"
     command="$SELECTED_OPTION"
   else
     shift

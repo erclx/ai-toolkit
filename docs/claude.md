@@ -151,7 +151,9 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `WIREFRAMES.md`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
 
-The seed `settings.json` pre-wires a PostToolUse hook on `Edit`, `Write`, and `MultiEdit` matchers that runs `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
+The seed `settings.json` contains only the PostToolUse hook block that pairs with the project-local `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
+
+User-level pieces (attribution, permission allows, and `.env` denies) live at `~/.claude/settings.json` and install once per machine via `aitk claude setup`. Project settings layer on top of user settings, so per-project files only need to carry what is genuinely project-specific.
 
 Pass `--roles` to also install role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`). Roles are optional and designed for AI chat workflows where you paste prompts with injected governance rules. Claude Code's agentic mode does not need them.
 
@@ -183,7 +185,13 @@ Prerequisites: run `aitk claude init --roles` first, then `aitk gov install` to 
 
 ### setup
 
-Copies `statusline-command.sh` from `tooling/claude/user/` to `~/.claude/` and patches `~/.claude/settings.json` to register it as the statusline command. Idempotent. Skips files that already match. Run once per machine after cloning the toolkit.
+Installs user-level Claude Code config from `tooling/claude/user/` into `~/.claude/`. Run once per machine after cloning the toolkit. Idempotent. Re-runs skip blocks that already match.
+
+Three things land:
+
+- `statusline-command.sh` copied to `~/.claude/` and registered as `statusLine.command` in `~/.claude/settings.json`.
+- `attribution.commit` and `attribution.pr` set to empty strings to suppress Claude attribution in commits and PRs.
+- `permissions.allow` and `permissions.deny` merged from `tooling/claude/user/settings.template.json`. Defaults: `Bash(bun run *)` on allow, and `Read(**/.env)` plus `Read(**/.env.*)` on deny. Existing user entries are preserved through `unique`-merge.
 
 The statusline renders as: `Sonnet 4.6 | 40k / 200k | 20%`. Fields are model name, tokens used vs context window size, and remaining percentage. The percentage shows a `⚠` prefix when below 15%.
 

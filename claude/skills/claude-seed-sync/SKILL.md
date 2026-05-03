@@ -26,6 +26,8 @@ The JSON is an array of `{name, source, target, content}`. `target` is the path 
 
 For each seed in the JSON, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
 
+Note on `settings.json`: the seed now ships only the PostToolUse hook block. If a target project's `.claude/settings.json` carries `attribution` or `permissions` keys, those are stale: the user-level `~/.claude/settings.json` (installed via `aitk claude setup`) owns them now. Flag those keys in the scope table for removal rather than diffing them as content drift.
+
 ## Step 3: diff per section
 
 For each seed file present in both sides, parse by `##` headers and compare section by section.
