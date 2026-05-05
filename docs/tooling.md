@@ -131,7 +131,7 @@ prepare = "command to run after scaffold, before sync"
 
 ## Common workflows
 
-Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, snippets, and wiki in one command. Optional domains (standards, prompts, antigravity) are offered interactively. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,prompts,antigravity`, `--skip wiki`. The `init-project` skill resolves these from project detection and runs the chain in one shot.
+Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, snippets, and wiki in one command. Optional domains (standards, prompts) are offered interactively. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--with standards,prompts`, `--skip wiki`. Governance is skipped when `--stack` is absent. The `init-project` skill resolves these from project detection and runs the chain in one shot.
 
 Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop.
 

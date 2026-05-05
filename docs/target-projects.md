@@ -40,7 +40,6 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 - `standards`: auto-enabled when `docs/`, `standards/`, or `.claude/` already exist in the project
 - `prompts`: off by default, add only when the project uses AI chat role prompts
-- `antigravity`: off by default, add only when the project runs Antigravity workflows
 
 `wiki` is on by default. Pass `--skip wiki` to opt out.
 
