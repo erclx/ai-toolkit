@@ -11,10 +11,10 @@ export default mergeConfig(
       setupFiles: ['src/test/setup.ts'],
       passWithNoTests: true,
       exclude: [
-        'node_modules',
-        'dist',
-        'e2e/**/*',
-        '.{idea,git,cache,output,temp}',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/e2e/**',
+        '**/.{idea,git,cache,output,temp}/**',
       ],
       coverage: {
         provider: 'v8',
