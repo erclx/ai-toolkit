@@ -7,11 +7,11 @@ export default getViteConfig({
     setupFiles: ['src/test/setup.ts'],
     passWithNoTests: true,
     exclude: [
-      'node_modules',
-      'dist',
-      '.astro',
-      'e2e/**/*',
-      '.{idea,git,cache,output,temp}',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.astro/**',
+      '**/e2e/**',
+      '**/.{idea,git,cache,output,temp}/**',
     ],
     coverage: {
       provider: 'v8',
