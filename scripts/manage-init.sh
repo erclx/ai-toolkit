@@ -36,14 +36,17 @@ show_help() {
   exit 0
 }
 
+FAILED_DOMAINS=()
+
 run_domain() {
   local label="$1"
   shift
   log_step "$label"
-  if "$@"; then
+  if AITK_NON_INTERACTIVE=1 "$@"; then
     log_info "Done"
   else
     log_warn "Failed, run manually"
+    FAILED_DOMAINS+=("$label")
   fi
 }
 
@@ -173,7 +176,7 @@ main() {
       log_info "governance (stack: $stack)"
     fi
   else
-    log_info "governance (claude rules)"
+    log_warn "governance (skipped: no --stack)"
   fi
   log_info "snippets ($snippets_cat)"
   if [ -z "${skip_set[wiki]:-}" ]; then
@@ -208,7 +211,10 @@ main() {
 
   local core_count=5
   if [ -n "${skip_set[wiki]:-}" ]; then
-    core_count=4
+    core_count=$((core_count - 1))
+  fi
+  if [ -z "$stack" ]; then
+    core_count=$((core_count - 1))
   fi
   local total=$((core_count + ${#optional[@]}))
 
@@ -226,16 +232,18 @@ main() {
   run_domain "Claude workflow" \
     bash "$PROJECT_ROOT/scripts/manage-claude.sh" "init" "$target" </dev/null
 
-  local gov_args=("install")
   if [ -n "$stack" ]; then
-    gov_args+=("$stack")
+    local gov_args=("install" "$stack")
+    if [ -n "$add_rules" ]; then
+      gov_args+=("--add" "$add_rules")
+    fi
+    gov_args+=("$target")
+    run_domain "Governance" \
+      bash "$PROJECT_ROOT/scripts/manage-gov.sh" "${gov_args[@]}" </dev/null
+  else
+    log_step "Governance"
+    log_warn "Skipped: no --stack provided. Run 'aitk gov install <stack> $target' to install rules."
   fi
-  if [ -n "$add_rules" ]; then
-    gov_args+=("--add" "$add_rules")
-  fi
-  gov_args+=("$target")
-  run_domain "Governance" \
-    bash "$PROJECT_ROOT/scripts/manage-gov.sh" "${gov_args[@]}" </dev/null
 
   run_domain "Snippets" \
     bash "$PROJECT_ROOT/scripts/manage-snippets.sh" "install" "$snippets_cat" "$target" </dev/null
@@ -253,7 +261,7 @@ main() {
       ;;
     prompts)
       run_domain "Prompts" \
-        bash "$PROJECT_ROOT/scripts/manage-prompts.sh" "install" "$target" </dev/null
+        bash "$PROJECT_ROOT/scripts/manage-prompts.sh" "install" "all" "$target" </dev/null
       ;;
     antigravity)
       run_domain "Antigravity" \
@@ -264,7 +272,17 @@ main() {
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
-  echo -e "${GREEN}✓ Project initialized ($total domains)${NC}"
+  if [ "${#FAILED_DOMAINS[@]}" -eq 0 ]; then
+    echo -e "${GREEN}✓ Project initialized ($total domains)${NC}"
+  else
+    local failed_list
+    failed_list=$(
+      IFS=', '
+      echo "${FAILED_DOMAINS[*]}"
+    )
+    echo -e "${YELLOW}! Project initialized with ${#FAILED_DOMAINS[@]} failure(s): ${failed_list}${NC}"
+    exit 1
+  fi
 }
 
 main "$@"
