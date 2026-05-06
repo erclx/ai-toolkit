@@ -9,6 +9,7 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 trap close_timeline EXIT
 
 SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
+SNIPPETS_TOML="$SNIPPETS_SOURCE/snippets.toml"
 INTERNAL_CATEGORIES=("aitk")
 
 is_internal_category() {
@@ -19,26 +20,88 @@ is_internal_category() {
   return 1
 }
 
+list_presets() {
+  [ -f "$SNIPPETS_TOML" ] || return 0
+  grep '^\[' "$SNIPPETS_TOML" | tr -d '[]' | sort
+}
+
+is_preset() {
+  local name="$1"
+  [ -f "$SNIPPETS_TOML" ] || return 1
+  grep -q "^\[$name\]" "$SNIPPETS_TOML"
+}
+
+resolve_preset_slugs() {
+  local preset="$1"
+  local -n _slugs=$2
+
+  local in_section=0
+  local in_array=0
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\["$preset"\] ]]; then
+      in_section=1
+      continue
+    fi
+    if [[ "$in_section" -eq 1 && "$line" =~ ^\[.+\] ]]; then
+      break
+    fi
+    [ "$in_section" -eq 0 ] && continue
+
+    if [[ "$in_array" -eq 0 ]]; then
+      [[ "$line" =~ ^names ]] || continue
+      in_array=1
+    fi
+
+    while [[ "$line" =~ \"([^\"]+)\" ]]; do
+      local slug="${BASH_REMATCH[1]}"
+      _slugs+=("$slug")
+      line=$(echo "$line" | sed "s/\"${slug}\"//")
+    done
+
+    [[ "$line" =~ \] ]] && in_array=0
+  done <"$SNIPPETS_TOML"
+}
+
+collect_files_for_preset() {
+  local preset="$1"
+  local -n _dest=$2
+  local slugs=()
+  resolve_preset_slugs "$preset" slugs
+
+  for slug in "${slugs[@]}"; do
+    local src="$SNIPPETS_SOURCE/$slug.md"
+    if [ -f "$src" ]; then
+      _dest+=("$src")
+    else
+      log_warn "$slug (source not found, skipping)"
+    fi
+  done
+}
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk snippets install [category] [target-path]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
-  echo -e "${GREY}│${NC}    category      Category name, or 'all' (e.g., base, claude, all)"
+  echo -e "${GREY}│${NC}    category      Preset, folder, or 'all' (e.g., essentials, base, claude, all)"
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
+  echo -e "${GREY}│${NC}    aitk snippets install essentials"
   echo -e "${GREY}│${NC}    aitk snippets install all"
-  echo -e "${GREY}│${NC}    aitk snippets install base"
   echo -e "${GREY}│${NC}    aitk snippets install claude ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
 
 list_categories() {
+  while IFS= read -r preset; do
+    [ -z "$preset" ] && continue
+    echo "$preset"
+  done < <(list_presets)
   echo "base"
   while IFS= read -r name; do
     is_internal_category "$name" && continue
@@ -123,6 +186,9 @@ cmd_install() {
   if [ "$category" = "all" ]; then
     collect_all_files files
     log_step "Resolving all categories"
+  elif is_preset "$category"; then
+    collect_files_for_preset "$category" files
+    log_step "Resolving preset: $category"
   else
     collect_files_for_category "$category" files
     log_step "Resolving category: $category"

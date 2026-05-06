@@ -134,7 +134,7 @@ Use these to discover what's available instead of hardcoding names.
 | Command                         | Returns                                      |
 | ------------------------------- | -------------------------------------------- |
 | `aitk tooling list --json`      | Stacks, extends chain, dep and script counts |
-| `aitk snippets list --json`     | Snippet slugs and folders                    |
+| `aitk snippets list --json`     | Presets and categories with their slugs      |
 | `aitk standards list --json`    | Standards docs                               |
 | `aitk prompts list --json`      | Prompts with descriptions                    |
 | `aitk gov list --json`          | Governance stacks and rule sets              |
@@ -153,8 +153,8 @@ AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project
 # Verify a stack end-to-end in a throwaway scaffold
 aitk tooling verify vite-react
 
-# Install a snippet
-AITK_NON_INTERACTIVE=1 aitk snippets install base /path/to/project
+# Install a snippet preset
+AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project
 
 # Run a sandbox scenario non-interactively
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
