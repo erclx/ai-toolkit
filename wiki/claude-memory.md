@@ -41,12 +41,12 @@ Project-scoped memory complements Claude Code's auto-memory. Files live at `.cla
 The loop:
 
 1. **Capture** with `/claude-memory-capture`. Extracts durable patterns from the session and writes `feedback`, `project`, `user`, or `reference` entries.
-2. **Review** with `/claude-memory-review`. Proposes per-entry actions (promote, hand off to governance, delete) and writes `.claude/review/memory-review-<branch>.md` with a `Decision:` slot per item.
-3. **Discuss** with `@snippets/claude/memory-discuss`. Answers question Decisions inline as `Take:` lines. Multi-round, no mutations.
-4. **Apply** with `@snippets/claude/memory-apply`. Commits `apply`, `skip`, or `defer` decisions, flips emoji statuses, surfaces pending items in the bucket summary.
-5. **Cleanup** with `@snippets/claude/memory-cleanup`. Sweeps skipped non-user entries and deletes the review receipt.
+2. **Propose** with `/claude-memory-review`. Reads `.claude/memory/`, classifies each entry, and writes `.claude/review/memory-review-<branch>.md` with a `Decision:` slot per item.
+3. **Challenge, Discuss, Apply, Cleanup** by re-pinging `/claude-memory-review` with the matching phase phrase. Challenge applies absorbed, delta, and generality tests to promote items. Discuss writes `Take:` lines for question decisions. Apply commits decisions and flips emoji statuses. Cleanup sweeps stale entries and deletes the receipt.
 
-`.claude/memory/` and `.claude/review/` always live at the main worktree root, never inside a linked worktree. Every snippet in the loop resolves the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-` before reading or writing.
+The skill detects the phase from the user's phrasing and the review file state. See `claude/skills/claude-memory-review/SKILL.md` for the phase-by-phase contract.
+
+`.claude/memory/` and `.claude/review/` always live at the main worktree root, never inside a linked worktree. The skill resolves the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-` before reading or writing.
 
 ## Rules files
 
