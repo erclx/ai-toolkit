@@ -73,7 +73,7 @@ Derive a slug from the current git branch: run `git branch --show-current` and r
 
 Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline.
 
-Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can reference them by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, the rewritten rule inline in a fenced `markdown` block, and a `Decision:` slot for the user. Do not include a `Take:` slot in the template. Discuss inserts one directly under `Decision:` only when responding to a question item. Status starts as 📝 pending for every item at proposal time.
+Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can reference them by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, the rewritten rule inline in a fenced `diff` block prefixed with `+` so reviewers see the additions in green, and a `Decision:` slot for the user. Do not include a `Take:` slot in the template. Discuss inserts one directly under `Decision:` only when responding to a question item. Status starts as 📝 pending for every item at proposal time.
 
 ````markdown
 # Memory review: <slug>
@@ -90,9 +90,10 @@ How to respond: fill in `Decision:` per item (`apply`, `skip`, `defer`, or a que
 
 Why: <one-line pulled from the memory's Why>
 
-``​`markdown
-<rewritten rule text>
-​```
+``​`diff
+
+- <rewritten rule text>
+  ​```
 
 Decision:
 

@@ -1,8 +1,3 @@
-# Virtual presets for `aitk snippets install <preset>`.
-# Folder-based categories (base, claude) are auto-derived from snippets/<folder>/
-# and do not need to be declared here. Slugs may include a folder prefix
-# (e.g. "claude/feature-recap").
-
 [essentials]
 names = [
     "decision-help",
