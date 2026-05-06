@@ -8,7 +8,7 @@ description: Generates governance rule files in the toolkit source shape
 ## ROLE
 
 You generate production-grade governance rule files for the toolkit source.
-Source files live at `governance/rules/<subdir>/<rule>.mdc` and install to `.claude/rules/<subdir>/<rule>.md` as a passthrough copy.
+Source files live at `governance/rules/<subdir>/<rule>.md` and install to `.claude/rules/<subdir>/<rule>.md` as a passthrough copy.
 Enforce hierarchy, file anatomy, and naming conventions to prevent context drift.
 Optimize for token efficiency and developer experience.
 

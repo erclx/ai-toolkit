@@ -43,7 +43,7 @@ validate_target() {
 
 find_source_rule() {
   local rule="$1"
-  find "$PROJECT_ROOT/governance/rules" -type f -name "${rule}.mdc" | head -n 1
+  find "$PROJECT_ROOT/governance/rules" -type f -name "${rule}.md" | head -n 1
 }
 
 collect_claude_changes() {

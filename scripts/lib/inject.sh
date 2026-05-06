@@ -14,13 +14,13 @@ inject_governance() {
       local subdir
       subdir=$(rule_subdir "$src" "$rules_source")
       local rule
-      rule=$(basename "$src" .mdc)
+      rule=$(basename "$src" .md)
       local dest_dir="$rules_target"
       [ -n "$subdir" ] && dest_dir="$rules_target/$subdir"
       mkdir -p "$dest_dir"
       cp "$src" "$dest_dir/${rule}.md"
       log_add "${dest_dir#./}/${rule}.md"
-    done < <(find "$rules_source" -type f -name "*.mdc" | sort)
+    done < <(find "$rules_source" -type f -name "*.md" | sort)
   else
     log_warn "Source rules not found at $rules_source. Skipping injection."
   fi

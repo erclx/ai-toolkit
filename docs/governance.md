@@ -8,12 +8,12 @@ category: Domain references
 
 ## Overview
 
-Governance manages the rules that guide AI agents working in projects. Source rules live in the toolkit as `.mdc` files at `governance/rules/<subdir>/<rule>.mdc` and install to `.claude/rules/<subdir>/<rule>.md` for Claude Code.
+Governance manages the rules that guide AI agents working in projects. Source rules live in the toolkit as `.md` files at `governance/rules/<subdir>/<rule>.md` and install to `.claude/rules/<subdir>/<rule>.md` for Claude Code.
 
 ## Structure
 
 ```plaintext
-governance/rules/      ← source rules (.mdc), organized by domain
+governance/rules/      ← source rules (.md), organized by domain
 governance/stacks/     ← stack definitions (.toml), declare which rules belong to a stack
 scripts/
 ├── gov/
@@ -27,7 +27,7 @@ scripts/
 
 ## Install path
 
-Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`). Source files carry the Claude shape directly, so install is a passthrough copy with the `.mdc` extension flipped to `.md`. Claude Code reads these natively.
+Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`). Source files carry the Claude shape directly, so install is a true passthrough copy. Claude Code reads these natively.
 
 ## Key decisions
 
@@ -49,15 +49,15 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## Stacks
 
-| Stack            | Extends | Rules                                                                                                                |
-| ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
-| `base`           | -       | 000–070 core rules                                                                                                   |
-| `node`           | base    | 100-typescript                                                                                                       |
-| `react`          | node    | 200-react, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
-| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                   |
-| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                             |
-| `python-fastapi` | python  | 220-fastapi                                                                                                          |
-| `planner`        | -       | 400-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects            |
+| Stack            | Extends | Rules                                                                                                                            |
+| ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `base`           | -       | 000–070 core rules                                                                                                               |
+| `node`           | base    | 100-typescript                                                                                                                   |
+| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
+| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
+| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                         |
+| `python-fastapi` | python  | 220-fastapi                                                                                                                      |
+| `planner`        | -       | 400-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects                        |
 
 ## CLI
 
@@ -113,7 +113,7 @@ aitk gov list --stacks              # stacks only
 
 ## Frontmatter contract
 
-Source `.mdc` rules carry the Claude shape directly. Path-scoped rules emit a `paths:` list, one entry per glob:
+Source rules carry the Claude shape directly. Path-scoped rules emit a `paths:` list, one entry per glob:
 
 ```yaml
 ---
@@ -131,11 +131,11 @@ Always-on rules (core persona, testing, error handling) emit with no `paths:` ke
 
 ## Adding a new rule
 
-Create a `.mdc` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed. To include it in a stack, add it to the `rules` array in the relevant `governance/stacks/*.toml` file.
+Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed. To include it in a stack, add it to the `rules` array in the relevant `governance/stacks/*.toml` file.
 
 ## Adding a stack
 
-Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.mdc`) in the `rules` array. No build step needed.
+Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.md`) in the `rules` array. No build step needed.
 
 ```toml
 extends = "node"
@@ -147,5 +147,5 @@ rules = ["200-react", "250-tailwind"]
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional or addon complexity in stack definitions.
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
-- `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern (`*.mdc` or `*.md`).
+- `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern (defaults to `*.md`).
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.

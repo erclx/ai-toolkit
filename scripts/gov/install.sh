@@ -89,7 +89,7 @@ resolve_rules() {
 
 find_rule_file() {
   local rule="$1"
-  find "$RULES_SOURCE_DIR" -type f -name "${rule}.mdc" | head -n 1
+  find "$RULES_SOURCE_DIR" -type f -name "${rule}.md" | head -n 1
 }
 
 cmd_install() {

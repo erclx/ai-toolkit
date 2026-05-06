@@ -32,13 +32,13 @@ stage_setup() {
 
   while IFS= read -r file; do
     local rule
-    rule=$(basename "$file" .mdc)
+    rule=$(basename "$file" .md)
     local subdir
     subdir=$(rule_subdir "$file" "$src_rules")
     local dest=".claude/rules/${rule}.md"
     [ -n "$subdir" ] && dest=".claude/rules/$subdir/${rule}.md"
     [ -f "$dest" ] && echo "# stale" >>"$dest"
-  done < <(find "$src_rules" -type f -name "*.mdc" | sort | head -n 2)
+  done < <(find "$src_rules" -type f -name "*.md" | sort | head -n 2)
 
   git add .
   git commit -m "chore(sandbox): make standards and governance stale" --no-verify -q

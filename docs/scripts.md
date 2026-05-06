@@ -152,10 +152,10 @@ Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key
 
 Sourced by both `gov/build.sh` and `claude/prompt.sh`. Both consumers call the same function. Don't duplicate this logic if adding a third.
 
-| Function              | What it does                                                                                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `build_rules_payload` | Concatenate `.mdc` files into a temp file with frontmatter stripped. Optional space-separated filter narrows to named rules. Returns path. |
-| `strip_frontmatter`   | Strip the YAML frontmatter block from a markdown file. Emit the rest to stdout.                                                            |
+| Function              | What it does                                                                                                                                   |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `build_rules_payload` | Concatenate rule `.md` files into a temp file with frontmatter stripped. Optional space-separated filter narrows to named rules. Returns path. |
+| `strip_frontmatter`   | Strip the YAML frontmatter block from a markdown file. Emit the rest to stdout.                                                                |
 
 ### `tooling.sh`
 
