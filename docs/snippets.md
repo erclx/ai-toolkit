@@ -14,6 +14,7 @@ Snippets are small, reusable prompts stored as plain markdown files. Invoke them
 
 ```plaintext
 snippets/
+├── snippets.toml      ← preset definitions (curated slug lists)
 ├── *.md               ← base snippets
 ├── claude/
 │   └── *.md           ← claude snippets, installed as snippets/claude/{name}.md
@@ -27,58 +28,62 @@ Base snippets live at the root. Category snippets live in a named subfolder. The
 
 The `aitk` category is internal. It holds runbooks that only make sense inside the toolkit repo and is excluded from `install all`, the interactive picker, `aitk snippets list`, and explicit `aitk snippets install aitk`.
 
-## Categories
+## Presets and categories
 
-| Category | Paths                                                                                                                                |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `base`   | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research                           |
-| `claude` | claude/feature-recap, claude/figma-steps, claude/memory-apply, claude/memory-challenge, claude/memory-cleanup, claude/memory-discuss |
-| `aitk`   | aitk/format-edits, aitk/sandbox-worktree, aitk/toolkit-feedback, aitk/vocab-capture (internal, not installable)                      |
+Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Both are valid arguments to `aitk snippets install`.
+
+| Kind     | Name         | Slugs                                                                                                           |
+| -------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
+| Preset   | `essentials` | decision-help, compact-summary, step-by-step                                                                    |
+| Category | `base`       | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research      |
+| Category | `claude`     | claude/feature-recap, claude/figma-steps                                                                        |
+| Category | `aitk`       | aitk/format-edits, aitk/sandbox-worktree, aitk/toolkit-feedback, aitk/vocab-capture (internal, not installable) |
+
+`essentials` is the default for `aitk init` when `--snippets` is omitted.
 
 ## Snippets
 
-| Path                      | Purpose                                                                                                        |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `compact-summary`         | Summarize research or findings into a scannable block                                                          |
-| `create-snippet`          | Draft a new snippet (chat/Chrome extension)                                                                    |
-| `decision-help`           | Pick the best option from the discussion so far, one-line pick plus short reason                               |
-| `research-prompt`         | Generate a research prompt to paste into another AI chat                                                       |
-| `session-notes`           | Capture session decisions                                                                                      |
-| `step-by-step`            | Request step-by-step instructions for any process                                                              |
-| `web-research`            | Search the web and synthesize findings into a decision-ready block                                             |
-| `claude/feature-recap`    | Verify a finished implementation by listing deliverables, files touched, and tests                             |
-| `claude/figma-steps`      | Generate Figma instructions from a design spec                                                                 |
-| `claude/memory-apply`     | Apply per-item `Decision:` slots from the latest memory review and update statuses                             |
-| `claude/memory-challenge` | Challenge every promote item in the latest memory review with absorbed, delta, and generality tests            |
-| `claude/memory-cleanup`   | Sweep skipped entries from the last memory review and delete the review receipt                                |
-| `claude/memory-discuss`   | Respond to question items in the latest memory review by writing `Take:` lines                                 |
-| `aitk/format-edits`       | Format proposed edits as old → new pairs with file and section headers and `>` blockquotes                     |
-| `aitk/sandbox-worktree`   | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
-| `aitk/toolkit-feedback`   | Format a session-context paste-back report about an issue with the ai/toolkit                                  |
-| `aitk/vocab-capture`      | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
+| Path                    | Purpose                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `compact-summary`       | Summarize research or findings into a scannable block                                                          |
+| `create-snippet`        | Draft a new snippet (chat/Chrome extension)                                                                    |
+| `decision-help`         | Pick the best option from the discussion so far, one-line pick plus short reason                               |
+| `research-prompt`       | Generate a research prompt to paste into another AI chat                                                       |
+| `session-notes`         | Capture session decisions                                                                                      |
+| `step-by-step`          | Request step-by-step instructions for any process                                                              |
+| `web-research`          | Search the web and synthesize findings into a decision-ready block                                             |
+| `claude/feature-recap`  | Verify a finished implementation by listing deliverables, files touched, and tests                             |
+| `claude/figma-steps`    | Generate Figma instructions from a design spec                                                                 |
+| `aitk/format-edits`     | Format proposed edits as old → new pairs with file and section headers and `>` blockquotes                     |
+| `aitk/sandbox-worktree` | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
+| `aitk/toolkit-feedback` | Format a session-context paste-back report about an issue with the ai/toolkit                                  |
+| `aitk/vocab-capture`    | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
+
+The memory review phases (challenge, discuss, apply, cleanup) used to live as `claude/memory-*` snippets. They are now folded into the `claude-memory-review` skill body. Re-ping the skill with the matching phase phrase.
 
 ## CLI
 
-| Command                                                 | Description                                                        |
-| ------------------------------------------------------- | ------------------------------------------------------------------ |
-| `aitk snippets install [category] [path]`               | Copy slugs for a category into a project, use `all` for everything |
-| `aitk snippets sync [path]`                             | Update snippets already present (never adds new)                   |
-| `aitk snippets create`                                  | Create a new snippet file in the correct category folder           |
-| `aitk snippets list [--categories\|--entries] [--json]` | Emit catalog of categories and entries                             |
+| Command                                                 | Description                                                   |
+| ------------------------------------------------------- | ------------------------------------------------------------- |
+| `aitk snippets install [category] [path]`               | Copy slugs for a preset or category, use `all` for everything |
+| `aitk snippets sync [path]`                             | Update snippets already present (never adds new)              |
+| `aitk snippets create`                                  | Create a new snippet file in the correct category folder      |
+| `aitk snippets list [--categories\|--entries] [--json]` | Emit catalog of presets, categories, and entries              |
 
 `aitk snippets` with no args shows a picker: `install`, `sync`, `create`, or `list`.
 
 ## Workflow
 
-To install all snippets into a new project:
+To install the default essentials preset into a new project:
+
+```bash
+aitk snippets install essentials ../my-app
+```
+
+To install everything or a specific category:
 
 ```bash
 aitk snippets install all ../my-app
-```
-
-To install a specific category only:
-
-```bash
 aitk snippets install base ../my-app
 aitk snippets install claude ../my-app
 ```
@@ -107,3 +112,15 @@ Use `aitk snippets create`. It handles the file and folder creation. For manual 
 ## Adding a category
 
 Use `aitk snippets create` and select `new category` when prompted. To add manually: create a new subfolder under `snippets/` with a kebab-case name and add your snippet files inside it.
+
+## Adding a preset
+
+Edit `snippets/snippets.toml`. Append a section with a kebab-case name and a `names` array of slugs. Slugs may include a folder prefix (`claude/feature-recap`).
+
+```toml
+[my-preset]
+names = [
+    "decision-help",
+    "claude/feature-recap",
+]
+```

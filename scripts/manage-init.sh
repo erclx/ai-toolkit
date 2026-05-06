@@ -21,7 +21,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
   echo -e "${GREY}│${NC}    --stack <name>    ${GREY}# Governance stack (e.g., base, astro, react)${NC}"
   echo -e "${GREY}│${NC}    --add <rules>     ${GREY}# Comma-separated governance rules to layer on${NC}"
-  echo -e "${GREY}│${NC}    --snippets <cat>  ${GREY}# Snippets category or 'all' (default: all)${NC}"
+  echo -e "${GREY}│${NC}    --snippets <cat>  ${GREY}# Snippets preset, category, or 'all' (default: essentials)${NC}"
   echo -e "${GREY}│${NC}    --with <list>     ${GREY}# Opt-in optional domains: standards,prompts${NC}"
   echo -e "${GREY}│${NC}    --skip <list>     ${GREY}# Skip core domains (only 'wiki' supported)${NC}"
   echo -e "${GREY}│${NC}    -h, --help        ${GREY}# Show this help message${NC}"
@@ -79,7 +79,7 @@ main() {
   local target=""
   local stack=""
   local add_rules=""
-  local snippets_cat="all"
+  local snippets_cat="essentials"
   local with_csv=""
   local skip_csv=""
   local flags_provided=0

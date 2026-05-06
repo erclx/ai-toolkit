@@ -28,17 +28,23 @@ stage_setup() {
   git commit -m "chore(sandbox): scaffold snippets test directories" --no-verify -q
 
   log_step "Snippets sandbox"
-  log_info "install/ : clean target, no snippets present"
-  log_info "sync/    : stale snippets/ present"
-  log_info "create   : runs against toolkit source directly"
-  log_info "list     : read-only catalog dump, no target needed"
+  log_info "install/    : clean target, installs base category"
+  log_info "essentials/ : clean target, installs essentials preset"
+  log_info "sync/       : stale snippets/ present"
+  log_info "create      : runs against toolkit source directly"
+  log_info "list        : read-only catalog dump, no target needed"
 
-  select_or_route_scenario "Which scenario?" "install" "sync" "create" "list"
+  select_or_route_scenario "Which scenario?" "install" "essentials" "sync" "create" "list"
 
   case "$SELECTED_OPTION" in
   "install")
-    log_step "Running: aitk snippets install"
+    log_step "Running: aitk snippets install base"
     exec "$PROJECT_ROOT/scripts/snippets/install.sh" base install/
+    ;;
+  "essentials")
+    mkdir -p essentials
+    log_step "Running: aitk snippets install essentials"
+    exec "$PROJECT_ROOT/scripts/snippets/install.sh" essentials essentials/
     ;;
   "sync")
     log_step "Running: aitk snippets sync"

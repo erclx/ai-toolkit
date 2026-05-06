@@ -8,6 +8,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 SNIPPETS_DIR="$PROJECT_ROOT/snippets"
+SNIPPETS_TOML="$SNIPPETS_DIR/snippets.toml"
 INTERNAL_CATEGORIES=("aitk")
 
 is_internal_category() {
@@ -18,12 +19,48 @@ is_internal_category() {
   return 1
 }
 
+list_preset_names() {
+  [ -f "$SNIPPETS_TOML" ] || return 0
+  grep '^\[' "$SNIPPETS_TOML" | tr -d '[]' | sort
+}
+
+list_slugs_for_preset() {
+  local preset="$1"
+  [ -f "$SNIPPETS_TOML" ] || return 0
+
+  local in_section=0
+  local in_array=0
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\["$preset"\] ]]; then
+      in_section=1
+      continue
+    fi
+    if [[ "$in_section" -eq 1 && "$line" =~ ^\[.+\] ]]; then
+      break
+    fi
+    [ "$in_section" -eq 0 ] && continue
+
+    if [[ "$in_array" -eq 0 ]]; then
+      [[ "$line" =~ ^names ]] || continue
+      in_array=1
+    fi
+
+    while [[ "$line" =~ \"([^\"]+)\" ]]; do
+      local slug="${BASH_REMATCH[1]}"
+      echo "$slug"
+      line=$(echo "$line" | sed "s/\"${slug}\"//")
+    done
+
+    [[ "$line" =~ \] ]] && in_array=0
+  done <"$SNIPPETS_TOML"
+}
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk snippets list [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    --categories   ${GREY}# Only list category names${NC}"
+  echo -e "${GREY}│${NC}    --categories   ${GREY}# Only list presets and category names${NC}"
   echo -e "${GREY}│${NC}    --entries      ${GREY}# Only list entry slugs grouped by category${NC}"
   echo -e "${GREY}│${NC}    --json         ${GREY}# Emit machine-readable JSON${NC}"
   echo -e "${GREY}│${NC}    -h, --help     ${GREY}# Show this help message${NC}"
@@ -52,6 +89,20 @@ list_entries_for_category() {
   fi
 }
 
+list_presets_text() {
+  local presets
+  presets=$(list_preset_names)
+  [ -z "$presets" ] && return 0
+
+  log_step "Presets"
+  local preset slug_count
+  while IFS= read -r preset; do
+    [ -z "$preset" ] && continue
+    slug_count=$(list_slugs_for_preset "$preset" | wc -l | tr -d ' ')
+    log_info "$preset ($slug_count entries)"
+  done <<<"$presets"
+}
+
 list_categories_text() {
   log_step "Categories"
   local category entry_count
@@ -76,7 +127,7 @@ list_entries_text() {
   done < <(list_category_names)
 }
 
-list_json() {
+list_categories_json() {
   local first=1
   local category entry first_entry
   printf '['
@@ -97,6 +148,31 @@ list_json() {
     printf ']}'
     first=0
   done < <(list_category_names)
+  printf ']'
+}
+
+list_presets_json() {
+  local first=1
+  local preset slug first_slug
+  printf '['
+  while IFS= read -r preset; do
+    [ -z "$preset" ] && continue
+    if [ "$first" -eq 0 ]; then
+      printf ','
+    fi
+    printf '{"name":"%s","slugs":[' "$preset"
+    first_slug=1
+    while IFS= read -r slug; do
+      [ -z "$slug" ] && continue
+      if [ "$first_slug" -eq 0 ]; then
+        printf ','
+      fi
+      printf '"%s"' "$slug"
+      first_slug=0
+    done < <(list_slugs_for_preset "$preset")
+    printf ']}'
+    first=0
+  done < <(list_preset_names)
   printf ']'
 }
 
@@ -127,13 +203,18 @@ main() {
   trap close_timeline EXIT
 
   if [ "$json" -eq 1 ]; then
-    printf '{"categories":'
-    list_json
+    printf '{"presets":'
+    list_presets_json
+    printf ',"categories":'
+    list_categories_json
     printf '}\n'
     exit 0
   fi
 
-  [ "$show_categories" -eq 1 ] && list_categories_text
+  if [ "$show_categories" -eq 1 ]; then
+    list_presets_text
+    list_categories_text
+  fi
   [ "$show_entries" -eq 1 ] && list_entries_text
 }
 
