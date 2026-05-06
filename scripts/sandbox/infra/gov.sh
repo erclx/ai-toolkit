@@ -19,24 +19,24 @@ stage_setup() {
     local subdir
     subdir=$(rule_subdir "$file" "$src_rules")
     local rule
-    rule=$(basename "$file" .mdc)
+    rule=$(basename "$file" .md)
     local dest_dir="sync/.claude/rules"
     [ -n "$subdir" ] && dest_dir="sync/.claude/rules/$subdir"
     mkdir -p "$dest_dir"
     cp "$file" "$dest_dir/${rule}.md"
     echo "# stale" >>"$dest_dir/${rule}.md"
-  done < <(find "$src_rules" -type f -name "*.mdc" | sort | head -n 2)
+  done < <(find "$src_rules" -type f -name "*.md" | sort | head -n 2)
 
   while IFS= read -r file; do
     local subdir
     subdir=$(rule_subdir "$file" "$src_rules")
     local rule
-    rule=$(basename "$file" .mdc)
+    rule=$(basename "$file" .md)
     local dest_dir="build/.claude/rules"
     [ -n "$subdir" ] && dest_dir="build/.claude/rules/$subdir"
     mkdir -p "$dest_dir"
     cp "$file" "$dest_dir/${rule}.md"
-  done < <(find "$src_rules" -type f -name "*.mdc" | sort)
+  done < <(find "$src_rules" -type f -name "*.md" | sort)
 
   git add .
   git commit -m "chore(sandbox): scaffold gov test directories" --no-verify -q

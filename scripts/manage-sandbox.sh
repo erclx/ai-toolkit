@@ -205,12 +205,12 @@ inject_gov_rules() {
     local subdir
     subdir=$(rule_subdir "$src" "$rules_source")
     local rule
-    rule=$(basename "$src" .mdc)
+    rule=$(basename "$src" .md)
     local dest_dir="$SANDBOX/.claude/rules"
     [ -n "$subdir" ] && dest_dir="$SANDBOX/.claude/rules/$subdir"
     mkdir -p "$dest_dir"
     cp "$src" "$dest_dir/${rule}.md"
-  done < <(find "$rules_source" -type f -name "*.mdc" | sort)
+  done < <(find "$rules_source" -type f -name "*.md" | sort)
 }
 
 inject_seeds() {

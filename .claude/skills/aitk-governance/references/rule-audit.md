@@ -1,6 +1,6 @@
 ---
 title: Rule audit checklist
-description: Criteria for auditing newly written or revised .mdc rule bullets
+description: Criteria for auditing newly written or revised rule bullets
 ---
 
 # Rule audit checklist

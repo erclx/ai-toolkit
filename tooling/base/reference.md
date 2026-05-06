@@ -9,7 +9,7 @@
 
 - Config: `.prettierrc` (JSON) at root.
 - Rules: `semi: false`, `singleQuote: true`.
-- Add parser overrides for non-standard extensions (e.g., `.mdc` → `markdown`).
+- Add parser overrides for non-standard extensions (e.g., `.mdx` → `markdown`).
 - Ignore paths via `.gitignore` and `.prettierignore`. Pass both as `--ignore-path` on all prettier invocations.
 - `.prettierignore` is a user-owned seed. It is created empty on install. Projects add their own entries.
 - Use `--log-level warn` on all prettier invocations to suppress per-file `(unchanged)` output.

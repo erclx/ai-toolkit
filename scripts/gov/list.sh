@@ -104,13 +104,13 @@ list_rules_text() {
   local file
   while IFS= read -r file; do
     local name
-    name=$(basename "$file" .mdc)
+    name=$(basename "$file" .md)
     local domain
     domain=$(rule_domain "$file")
     local desc
     desc=$(read_frontmatter_field "$file" "description")
     log_info "$name [$domain] $desc"
-  done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
+  done < <(find "$RULES_DIR" -type f -name "*.md" | sort)
 }
 
 list_stacks_json() {
@@ -153,7 +153,7 @@ list_rules_json() {
   printf '['
   while IFS= read -r file; do
     local name
-    name=$(basename "$file" .mdc)
+    name=$(basename "$file" .md)
     local domain
     domain=$(rule_domain "$file")
     local desc
@@ -182,7 +182,7 @@ list_rules_json() {
     printf '{"name":"%s","domain":"%s","description":"%s","paths":%s}' \
       "$name" "$domain" "$(json_escape "$desc")" "$paths_json"
     first=0
-  done < <(find "$RULES_DIR" -type f -name "*.mdc" | sort)
+  done < <(find "$RULES_DIR" -type f -name "*.md" | sort)
   printf ']'
 }
 

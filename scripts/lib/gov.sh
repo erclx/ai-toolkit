@@ -40,7 +40,7 @@ rule_subdir() {
 build_rules_payload() {
   local rules_dir="$1"
   local filter="${2:-}"
-  local pattern="${3:-*.mdc}"
+  local pattern="${3:-*.md}"
   local payload_file
   payload_file=$(mktemp)
 
@@ -48,7 +48,7 @@ build_rules_payload() {
   if [ -n "$filter" ]; then
     for name in $filter; do
       local f
-      f=$(find "$rules_dir" -type f \( -name "${name}.mdc" -o -name "${name}.md" \) | head -n 1)
+      f=$(find "$rules_dir" -type f -name "${name}.md" | head -n 1)
       [ -n "$f" ] && files+=("$f")
     done
     mapfile -t files < <(printf '%s\n' "${files[@]}" | sort)
@@ -63,7 +63,6 @@ build_rules_payload() {
   for file in "${files[@]}"; do
     local filename
     filename=$(basename "$file")
-    filename="${filename%.mdc}"
     filename="${filename%.md}"
 
     echo "<rule name=\"$filename\">" >>"$payload_file"

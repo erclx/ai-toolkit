@@ -26,7 +26,7 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 - every `SKILL.md` under `.claude/skills/`: domain-scoped internal skill bodies
 - every `SKILL.md` under `claude/skills/`: plugin skill bodies
 - every `*.md` under `standards/`: authoring references
-- every `*.mdc` under `governance/rules/`: coding-standards rules
+- every `*.md` under `governance/rules/`: coding-standards rules
 
 ## Step 3: classify each entry
 
@@ -37,7 +37,7 @@ For each memory entry, pick one action:
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in `standards/<domain>.md`.
-- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the `.mdc` file inline. Point the user at `aitk-governance` and `prompts/governance-rules.md` and stop at handoff.
+- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Point the user at `aitk-governance` and `prompts/governance-rules.md` and stop at handoff.
 - **Delete**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative.
 
 When two or more memories collapse into one rule on the same target, propose them as a single merged edit under the matching promote category. The consolidate case is a variant of promote, not a separate action.
