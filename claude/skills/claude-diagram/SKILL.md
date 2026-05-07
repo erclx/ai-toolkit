@@ -61,7 +61,7 @@ When sources came from a code scan rather than planning prose, lead the intro pa
 
 Quote node labels containing spaces or special characters with double quotes (`A["Web shell"]`). Avoid parentheses inside labels, they break some renderers. Use `<br/>` for line breaks inside labels.
 
-No em-dashes (`—`) and no semicolons (`;`) anywhere in the file, including inside mermaid `subgraph` labels and node text. Use a colon or split into two sentences instead. The standards-audit hook does not distinguish prose from mermaid syntax and will reject the file on every violation, forcing a retry per label.
+Apply the toolkit's prose bans to the entire file, including inside mermaid `subgraph` labels and node text. No em-dashes, no semicolons. Use a colon or split into two sentences instead. The standards-audit hook treats mermaid syntax as prose and will reject the file on every violation, forcing a retry per label.
 
 ## Step 4: chat output
 
