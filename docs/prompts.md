@@ -29,10 +29,13 @@ docs/
 
 Prompts are organized into categories in `prompts.toml`. Each category is a named list of prompt file stems. There is no inheritance. Categories are flat file lists.
 
-| Category    | Names                              |
-| ----------- | ---------------------------------- |
-| `authoring` | antigravity-workflow, claude-skill |
-| `infra`     | bash-script, ci-workflow           |
+| Category     | Names                              |
+| ------------ | ---------------------------------- |
+| `essentials` | bash-script, ci-workflow           |
+| `authoring`  | antigravity-workflow, claude-skill |
+| `infra`      | bash-script, ci-workflow           |
+
+`essentials` is the curated minimum installed by `aitk init` when `--with prompts` is selected. Slugs may overlap with other categories.
 
 ## Prompts
 
@@ -71,7 +74,13 @@ What each prompt generates lives in its frontmatter `description`. Browse `promp
 
 ## Workflow
 
-To install prompts into a new project:
+To install the default essentials category into a new project:
+
+```bash
+aitk prompts install essentials ../my-app
+```
+
+To install a different category or everything:
 
 ```bash
 aitk prompts install infra ../my-app

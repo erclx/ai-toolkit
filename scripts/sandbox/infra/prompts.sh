@@ -26,15 +26,21 @@ stage_setup() {
   git commit -m "chore(sandbox): scaffold prompts test directories" --no-verify -q
 
   log_step "Prompts sandbox"
-  log_info "install/ : clean target, no prompts present"
-  log_info "sync/    : stale prompts/ present"
+  log_info "install/    : clean target, installs infra category"
+  log_info "essentials/ : clean target, installs essentials preset"
+  log_info "sync/       : stale prompts/ present"
 
-  select_or_route_scenario "Which scenario?" "install" "sync"
+  select_or_route_scenario "Which scenario?" "install" "essentials" "sync"
 
   case "$SELECTED_OPTION" in
   "install")
-    log_step "Running: aitk prompts install"
+    log_step "Running: aitk prompts install infra"
     exec "$PROJECT_ROOT/scripts/prompts/install.sh" infra install/
+    ;;
+  "essentials")
+    mkdir -p essentials
+    log_step "Running: aitk prompts install essentials"
+    exec "$PROJECT_ROOT/scripts/prompts/install.sh" essentials essentials/
     ;;
   "sync")
     log_step "Running: aitk prompts sync"

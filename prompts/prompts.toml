@@ -1,3 +1,9 @@
+[essentials]
+names = [
+    "bash-script",
+    "ci-workflow",
+]
+
 [authoring]
 names = [
     "antigravity-workflow",
