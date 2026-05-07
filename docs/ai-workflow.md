@@ -100,6 +100,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | Skill                          | When to use                                                                      |
 | ------------------------------ | -------------------------------------------------------------------------------- |
 | `toolkit:claude-feature`       | Before implementation, scan for conflicts and ambiguities                        |
+| `toolkit:claude-diagram`       | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code     |
 | `toolkit:claude-review`        | In a fresh session, review all changes since main                                |
 | `toolkit:claude-docs`          | When decisions diverged from plan, update `.claude/` docs                        |
 | `toolkit:claude-ui-test`       | After UI changes, generate and run e2e tests + visual checklist                  |

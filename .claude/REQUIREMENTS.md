@@ -51,7 +51,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 1. `aitk init`: one-shot bootstrap that layers base tooling, Claude seeds, governance, snippets, and wiki into a project.
 2. Per-domain `list`, `install`, and `sync` subcommands so skills can read catalogs and apply updates.
 3. Governance stacks and rules installed as path-scoped files in `.claude/rules/`.
-4. Claude Code plugin with skills covering planning, review, UI tests, docs sync, memory review, and the git ship chain.
+4. Claude Code plugin with skills covering planning, review, architecture diagrams, UI tests, docs sync, memory review, and the git ship chain.
 5. Sandbox scenarios that provision representative project states for verifying each domain flow.
 6. Prose, commit, branch, PR, and skill authoring standards synced into every project.
 7. Snippets and prompt templates for recurring chat workflows.
