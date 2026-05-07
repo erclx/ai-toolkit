@@ -27,9 +27,9 @@ Run all reads in parallel. Do not recurse speculatively.
 Emit a diagram only when its source signal exists. Skip the rest, do not pad the file.
 
 - **Components** (`flowchart` with `subgraph` boundaries): always, when any signal exists. Shows the layered structure of the system.
-- **Request flow** (`sequenceDiagram`): when prose describes a request lifecycle, an agent loop, or interaction between actors.
-- **Data pipeline** (`flowchart LR`): when prose mentions retrieval, ranking, queues, ETL, or pipelines.
-- **Deployment** (`flowchart`): when `docker-compose.yml`, `Dockerfile`, `fly.toml`, `vercel.json`, or a deploy section in `ARCHITECTURE.md` exists.
+- **Request flow** (`sequenceDiagram`): when prose describes a request lifecycle, an agent loop, or interaction between actors
+- **Data pipeline** (`flowchart LR`): when prose mentions retrieval, ranking, queues, ETL, or pipelines
+- **Deployment** (`flowchart`): when `docker-compose.yml`, `Dockerfile`, `fly.toml`, `vercel.json`, or a deploy section in `ARCHITECTURE.md` exists
 
 Stay inside `flowchart` and `sequenceDiagram`. Do not emit C4, state, ER, or class diagrams. They render inconsistently across viewers.
 
@@ -81,7 +81,7 @@ If the user asks to export the diagrams (`export to svg`, `give me images`, `ren
 mkdir -p .claude/review/diagrams && bunx -y @mermaid-js/mermaid-cli -i .claude/DIAGRAMS.md -o .claude/review/diagrams/diagram.svg
 ```
 
-Swap `diagram.svg` for `diagram.png` when raster is requested. The CLI writes one file per ```mermaid block (`diagram-1.svg`, `diagram-2.svg`, ...). Prefer `bunx`over`npx`when bun is available, fall back to`npx -y @mermaid-js/mermaid-cli ...` otherwise. Output line:
+Swap `diagram.svg` for `diagram.png` when raster is requested. The CLI writes one SVG per `mermaid` block (`diagram-1.svg`, `diagram-2.svg`, ...). Use `bunx` when bun is available. Fall back to `npx -y @mermaid-js/mermaid-cli ...` otherwise. Output line:
 
 ```plaintext
 📝 Wrote N files to .claude/review/diagrams/
