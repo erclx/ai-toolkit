@@ -39,7 +39,7 @@ Write to `.claude/DIAGRAMS.md` from the project root. Always overwrite.
 
 File format:
 
-```markdown
+````markdown
 # Diagrams
 
 <one-paragraph note on what this file contains and which sources drove it>
@@ -48,14 +48,14 @@ File format:
 
 <one-line description of what this diagram shows>
 
-\`\`\`mermaid
+```mermaid
 <diagram>
-\`\`\`
+```
 
 ## <Next section>
 
 ...
-```
+````
 
 When sources came from a code scan rather than planning prose, lead the intro paragraph with `Source: code.` and add `Fidelity is lower than prose-driven diagrams. Verify against the project's intent.`
 
