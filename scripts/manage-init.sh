@@ -261,7 +261,7 @@ main() {
       ;;
     prompts)
       run_domain "Prompts" \
-        bash "$PROJECT_ROOT/scripts/manage-prompts.sh" "install" "all" "$target" </dev/null
+        bash "$PROJECT_ROOT/scripts/manage-prompts.sh" "install" "essentials" "$target" </dev/null
       ;;
     esac
   done
