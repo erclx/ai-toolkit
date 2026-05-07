@@ -3,6 +3,7 @@ argjson
 asciinema
 asyncio
 axios
+bierner
 canva
 clack
 commander
@@ -51,6 +52,8 @@ pyproject
 pytest
 pytestmark
 repr
+rerank
+reranker
 rlength
 semgrep
 setattr
@@ -68,6 +71,7 @@ tsconfig
 uv
 uvicorn
 venv
+vercel
 vite
 vitest
 withgoogle
