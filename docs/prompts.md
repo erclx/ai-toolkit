@@ -31,7 +31,7 @@ Prompts are organized into categories in `prompts.toml`. Each category is a name
 
 | Category     | Names                              |
 | ------------ | ---------------------------------- |
-| `essentials` | bash-script                        |
+| `essentials` | bash-script, ci-workflow           |
 | `authoring`  | antigravity-workflow, claude-skill |
 | `infra`      | bash-script, ci-workflow           |
 
