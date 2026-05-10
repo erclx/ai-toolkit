@@ -30,6 +30,11 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Before restructuring installable content (`snippets/`, `claude/skills/`, `tooling/`, `governance/rules/`), grep the corresponding install and list scripts for depth constraints (`-maxdepth`, fixed globs). Bundle script updates with the restructure or pick a depth the scripts already handle.
 - Before queuing or starting a new feature, confirm a concrete project or use case drives it. If precedent exists, lift patterns from that project rather than writing from scratch.
 
+## Output
+
+- After creating or modifying a file, include its path on its own line so terminal emulators can make it clickable. Do not paraphrase paths into prose ("the seeds folder", "your CLAUDE.md").
+- Use the path that resolves correctly from `pwd`. Relative when the file is at or below `pwd`, absolute otherwise. Shared scratch (`.claude/plans/`, `.claude/memory/`, `.claude/review/`) lives at the main worktree root, so paths to those from a linked worktree must be absolute.
+
 ## After editing
 
 - Update the corresponding skill body in `.claude/skills/`. Load `aitk-claude` and follow `standards/skill.md` conventions.

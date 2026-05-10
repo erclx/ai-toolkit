@@ -4,8 +4,11 @@
 
 ## Context
 
-- Read `.claude/` state docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`) before changes, when present. The `claude-feature` skill loads them in parallel.
-- Coding standards live in `.claude/rules/` and load automatically. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
+The project uses a three-tier context model. Know which tier holds what before reading or writing:
+
+- **Always loaded.** Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`. Project-wide invariants and product scope. The `claude-feature` skill reads the `.claude/` files in parallel.
+- **Path-scoped lazy.** `.claude/rules/*.md` with `paths:` frontmatter. Coding standards that load only when files matching the glob are touched. Always-on rules apply every session.
+- **On-demand lookup.** `.claude/context/<domain>.md`. Per-domain narrative (how a domain is structured, decisions made, gotchas). Check `.claude/context/index.md` before touching domain code. Entries are populated by `claude-docs` at ship time.
 
 ## Behavior
 
@@ -28,12 +31,19 @@
 
 ## Commands
 
-- Run `bun run check` before committing. Full script reference in `docs/development.md`.
+- Run `bun run check` before committing. Full script reference in `.claude/context/development.md`.
+
+## Output
+
+- After creating or modifying a file, include its path on its own line so terminal emulators can make it clickable. Do not paraphrase paths into prose ("the seeds folder", "your CLAUDE.md").
+- Use the path that resolves correctly from `pwd`. Relative when the file is at or below `pwd`, absolute otherwise. Shared scratch (`.claude/plans/`, `.claude/memory/`, `.claude/review/`) lives at the main worktree root, so paths to those from a linked worktree must be absolute.
 
 ## Key paths
 
 - `src/`: [description]
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
+- `.claude/context/`: per-domain narrative (how a domain is structured, decisions, gotchas), indexed via `.claude/context/index.md`
+- `.claude/rules/`: path-scoped coding standards loaded by Claude Code on file match
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 
 ## Spelling
