@@ -125,7 +125,8 @@ compute_index_to() {
   {
     printf '%s\n\n' "$frontmatter"
     printf '# %s\n\n' "$title"
-    printf '%s\n\n' "$subtitle"
+    printf '%s\n' "$subtitle"
+    [ "${#files[@]}" -gt 0 ] && printf '\n'
 
     if [ "$has_categories" -eq 1 ]; then
       local cats=()
