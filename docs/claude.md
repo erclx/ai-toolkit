@@ -109,7 +109,11 @@ Flat by default: one `.md` per domain (`.claude/context/web.md`, `.claude/contex
 
 ### How entries get populated
 
-`claude-feature` flags a feature as context-worthy in its plan via an optional `## Context updates` section listing affected domains. `claude-docs` reads that section at ship time and writes or updates the named entries from the diff. New entries get drafted from the diff plus the plan's reason line.
+`claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing `.claude/context/<domain>.md` entries that reference those files, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
+
+New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
+
+This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
 
 ## Plugin skills
 

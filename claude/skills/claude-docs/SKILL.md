@@ -47,16 +47,18 @@ For each doc with relevant changes, apply updates following these rules:
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
-## Step 4: write context entries
+## Step 4: refresh context entries
 
-Derive `<slug>` from the current branch name (replace `/` with `-`). Read the plan file at `.claude/plans/feature-<slug>.md` resolved against the main worktree root. Skip this step silently if the plan does not exist or contains no `## Context updates` section.
+Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
 
-For each bullet in the Context updates section (format: `- <domain>: <reason>`):
+Run `git diff --name-only main` (or `--staged` when staged) and `git diff main` (or `--staged`) to scope the diff. For each existing `.claude/context/<domain>.md`:
 
-- If `.claude/context/<domain>.md` exists at `pwd`, identify which sections relate to the diff and rewrite only those sections from the diff content. Same pattern as `docs-sync`. Do not touch unrelated sections.
-- If `.claude/context/<domain>.md` does not exist, create it following `standards/context.md`. Title derives from the domain, description from the plan reason. Body content drafts from the diff.
+- Map the entry's section headings to the changed files. An entry is relevant when its prose references files, modules, or decisions touched by the diff.
+- For each relevant entry, rewrite only the sections affected by the diff. Same pattern as `docs-sync`. Do not touch unrelated sections.
 
-Write each entry immediately. Output one line per file:
+Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
+
+Write each updated entry immediately. Output one line per file:
 
 `✅ Context: .claude/context/<domain>.md`
 

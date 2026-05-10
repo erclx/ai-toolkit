@@ -273,19 +273,16 @@ None identified.
 **Questions:**
 
 None identified.
-
-**Context updates** (optional, omit when not applicable):
-
-- web: chat surface refactored to choose provider at the gate, persists to sessionStorage and forwards via x-app-provider header
 EOF
 
-    log_step "Scenario ready: docs writes context entry from plan"
-    log_info "Context: feat/provider-switch branch with a plan that includes a Context updates section"
-    log_info "         .claude/context/web.md already exists with a Layer responsibilities section"
+    log_step "Scenario ready: docs refreshes context entry from diff"
+    log_info "Context: feat/provider-switch branch with diff in src/features/chat/"
+    log_info "         .claude/context/web.md already exists. Its Layer responsibilities section names src/features/chat/."
     log_info "Action:  /claude-docs"
-    log_info "Expect:  Step 3 updates planning docs (none needed here, none diverged)"
-    log_info "         Step 3.5 reads the Context updates section from the plan"
-    log_info "         Rewrites the relevant sections of .claude/context/web.md from the diff"
+    log_info "Expect:  Step 3 updates planning docs (none diverged here)"
+    log_info "         Step 4 reads the diff, maps src/features/chat/api-key-gate.tsx to web.md (which references that path)"
+    log_info "         Rewrites the relevant section of .claude/context/web.md from the diff content"
+    log_info "         Does NOT create new entries (no auto-creation per design)"
     log_info "         Outputs a reminder line to run aitk indexes regen"
     ;;
   *)
