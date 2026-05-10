@@ -71,7 +71,7 @@ log_step "Run aitk init"
 log_info "aitk init completed"
 
 log_step "Assert scaffold"
-for path in "CLAUDE.md" "snippets" "wiki/index.md" ".claude"; do
+for path in "CLAUDE.md" "snippets" "wiki/index.md" ".claude" ".claude/context/index.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then
     log_error "Missing after aitk init: $path"
   fi
