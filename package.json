@@ -34,7 +34,6 @@
     "@tailwindcss/vite": "^4.2.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/bun": "^1.2.10",
-    "@vitejs/plugin-react": "^6.0.1",
     "astro": "^6.1.9",
     "cspell": "^8.17.1",
     "husky": "^9.1.7",
