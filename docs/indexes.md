@@ -34,6 +34,59 @@ Every `index.md` carries `title` and `subtitle` in its own frontmatter. Every si
 
 Optional `category` on a sibling groups it under an H2 heading in the rendered index. When any sibling carries `category`, the walker switches to grouped mode for the whole folder.
 
+## Format reference
+
+The walker generates the `index.md` body from sibling frontmatter on every regen. The output shape is fixed and applies uniformly to every indexed folder (`wiki/`, `docs/`, `standards/`, `.claude/context/`, and any future indexed surface).
+
+Sibling frontmatter (per `*.md` file in the folder):
+
+```yaml
+---
+title: Web
+description: Next.js app structure, layers, and conventions
+---
+```
+
+Index frontmatter (per `index.md`):
+
+```yaml
+---
+title: Context
+subtitle: Per-domain narrative loaded on demand
+---
+```
+
+Generated body (flat, no `category` on any sibling):
+
+```markdown
+# Context
+
+Per-domain narrative loaded on demand
+
+- [Web](web.md): Next.js app structure, layers, and conventions
+- [API](api.md): FastAPI routes and storage
+```
+
+Generated body (grouped, when at least one sibling has `category`):
+
+```markdown
+# Docs
+
+One-line reference for each doc in this folder.
+
+## Agent surface
+
+- [Agents](agents.md): CLI catalog and invocation rules for agents
+- [AI workflow](ai-workflow.md): Overarching AI workflow across domains
+
+## Domain references
+
+- [Claude](claude.md): Claude plugin skills and tooling
+- [Tooling](tooling.md): Stacks, configs, seeds, references, manifests
+```
+
+The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling renders as `- [<title>](<filename>): <description>`. Hand-written content in an auto-managed `index.md` is overwritten on the next regen. To keep prose, set `auto: false` and follow this same format manually.
+
 ## Opt-out
 
 Add `auto: false` to a folder's `index.md` frontmatter to keep it hand-edited. The walker preserves the file untouched. Use this when the folder needs grouping or prose the walker cannot produce from frontmatter alone.

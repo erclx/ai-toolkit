@@ -47,25 +47,25 @@ Aim for one entry per domain. Split into a folder (`.claude/context/<domain>/<su
 
 ```markdown
 ---
-title: Web
-description: Next.js app structure, layers, and conventions
+title: API
+description: HTTP layer structure, route ownership, and request validation
 ---
 
-# Web
+# API
 
 ## Layer responsibilities
 
-- `src/app/` owns routing and the chat surface
-- `src/features/chat/` owns the chat rail and provider gate
-- `src/features/canvas/` owns the spatial workspace
+- `src/routes/` owns the HTTP layer and request parsing
+- `src/services/` owns business logic with no HTTP concerns
+- `src/db/` owns persistence and schema migrations
 
 ## Decisions
 
-- Provider switching happens at the API-key gate, persisted to sessionStorage and forwarded via the `x-app-provider` request header.
-- The chat surface uses `useChat` from the AI SDK, hydrates from sessionStorage on mount, and writes through on `status === 'ready'` only.
+- Validation happens at the route boundary using a schema library. Services trust their inputs.
+- Pagination uses opaque cursor tokens, never offset+limit. Cursor format stays opaque to clients.
 
 ## Gotchas
 
-- Voice input via `SpeechRecognition` only ships in Chromium. Hide the mic button on browsers without the API.
-- The Playwright `webServer` runs `build && start` because the dev-server file watcher freezes WSL2.
+- The `/health` endpoint skips auth middleware. Liveness probes from the orchestrator do not carry tokens.
+- Database connection pool caps at 50. Concurrent requests over that block until a connection frees.
 ```
