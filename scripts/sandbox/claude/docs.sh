@@ -8,7 +8,11 @@ use_config() {
 }
 
 stage_setup() {
-  cat <<'EOF' >package.json
+  select_or_route_scenario "Which scenario?" "drift" "context-entries"
+
+  case "$SELECTED_OPTION" in
+  "drift")
+    cat <<'EOF' >package.json
 {
   "name": "sandbox-docs",
   "version": "1.0.0",
@@ -17,7 +21,7 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >>CLAUDE.md
+    cat <<'EOF' >>CLAUDE.md
 
 # My App
 
@@ -28,8 +32,8 @@ Task management API.
 - `bun run check`: lint and typecheck
 EOF
 
-  mkdir -p .claude
-  cat <<'EOF' >>.claude/ARCHITECTURE.md
+    mkdir -p .claude
+    cat <<'EOF' >>.claude/ARCHITECTURE.md
 
 # Architecture
 
@@ -42,7 +46,7 @@ SQLite via better-sqlite3. Single `src/db.ts` module owns the connection and exp
 Express routes in `src/routes/`. Each route file exports a router. `src/app.ts` mounts them.
 EOF
 
-  cat <<'EOF' >>.claude/REQUIREMENTS.md
+    cat <<'EOF' >>.claude/REQUIREMENTS.md
 
 # Requirements
 
@@ -55,7 +59,7 @@ EOF
 - No task sharing between accounts
 EOF
 
-  cat <<'EOF' >>.claude/TASKS.md
+    cat <<'EOF' >>.claude/TASKS.md
 
 # Tasks
 
@@ -76,8 +80,8 @@ Plan: .claude/plans/feature-postgres-migration.md
 - [ ] Outcome: tasks are scoped to the owning user
 EOF
 
-  mkdir -p src src/routes
-  cat <<'EOF' >src/db.ts
+    mkdir -p src src/routes
+    cat <<'EOF' >src/db.ts
 import Database from "better-sqlite3";
 
 const db = new Database("tasks.db");
@@ -99,7 +103,7 @@ export function createTask(title: string) {
 }
 EOF
 
-  cat <<'EOF' >src/routes/tasks.ts
+    cat <<'EOF' >src/routes/tasks.ts
 import { Router } from "express";
 import { getTasks, createTask } from "../db";
 
@@ -118,9 +122,9 @@ router.post("/", (req, res) => {
 export default router;
 EOF
 
-  git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
+    git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
 
-  cat <<'EOF' >src/db.ts
+    cat <<'EOF' >src/db.ts
 import { Pool } from "pg";
 
 const pool = new Pool({
@@ -141,37 +145,151 @@ export async function createTask(title: string, userId: string) {
 }
 EOF
 
-  git add . && git commit -m "feat(api): migrate storage to Postgres and scope tasks to users" --no-verify -q
+    git add . && git commit -m "feat(api): migrate storage to Postgres and scope tasks to users" --no-verify -q
 
-  mkdir -p .claude/plans
-  cat <<'EOF' >.claude/plans/feature-postgres-migration.md
+    mkdir -p .claude/plans
+    cat <<'EOF' >.claude/plans/feature-postgres-migration.md
 # Feature: Postgres migration
 
 Plan linked from the "Migrate storage to Postgres" task block. The claude-docs skill should sweep this file after marking the task [x].
 EOF
 
-  cat <<'EOF' >.claude/plans/feature-some-old-plan.md
+    cat <<'EOF' >.claude/plans/feature-some-old-plan.md
 # Feature: unlinked plan
 
 Decoy scratch with no task backlink. The claude-docs skill should NOT sweep this file.
 EOF
 
-  log_step "Scenario ready: docs drift after a session pivot"
-  log_info "Context: planning docs are stale relative to HEAD"
-  log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
-  log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
-  log_info "  TASKS.md has 'Migrate storage to Postgres' open, but it shipped in HEAD"
-  log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be swept"
-  log_info "  .claude/plans/feature-some-old-plan.md has no task backlink and should survive"
-  log_info ""
-  log_info "Before invoking the skill, narrate the pivot to Claude in chat:"
-  log_info "  'We pivoted this session: switched storage from SQLite to Postgres,'"
-  log_info "  'and promoted multi-user support from non-goal to in-scope.'"
-  log_info ""
-  log_info "Action:  /claude-docs"
-  log_info "Expect:  ARCHITECTURE.md storage section updated to Postgres"
-  log_info "         REQUIREMENTS.md non-goals updated, multi-user moved in-scope"
-  log_info "         TASKS.md 'Migrate storage to Postgres' marked [x]"
-  log_info "         .claude/plans/feature-postgres-migration.md swept (linked from [x] task)"
-  log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
+    log_step "Scenario ready: docs drift after a session pivot"
+    log_info "Context: planning docs are stale relative to HEAD"
+    log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
+    log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
+    log_info "  TASKS.md has 'Migrate storage to Postgres' open, but it shipped in HEAD"
+    log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be swept"
+    log_info "  .claude/plans/feature-some-old-plan.md has no task backlink and should survive"
+    log_info ""
+    log_info "Before invoking the skill, narrate the pivot to Claude in chat:"
+    log_info "  'We pivoted this session: switched storage from SQLite to Postgres,'"
+    log_info "  'and promoted multi-user support from non-goal to in-scope.'"
+    log_info ""
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  ARCHITECTURE.md storage section updated to Postgres"
+    log_info "         REQUIREMENTS.md non-goals updated, multi-user moved in-scope"
+    log_info "         TASKS.md 'Migrate storage to Postgres' marked [x]"
+    log_info "         .claude/plans/feature-postgres-migration.md swept (linked from [x] task)"
+    log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
+    ;;
+  "context-entries")
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-docs-context",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module"
+}
+EOF
+
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Mixed web and api project.
+
+## Context
+
+- Always loaded: this file, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`
+- On-demand lookup: `.claude/context/<domain>.md`. Check `.claude/context/index.md` first.
+
+## Commands
+
+- `bun run check`: lint and typecheck
+EOF
+
+    mkdir -p .claude/context .claude/plans
+    cat <<'EOF' >.claude/context/index.md
+---
+title: Context
+subtitle: Per-domain narrative loaded on demand
+---
+
+# Context
+
+- [Web](web.md): chat surface and provider switching
+EOF
+
+    cat <<'EOF' >.claude/context/web.md
+---
+title: Web
+description: Chat surface and provider switching
+---
+
+# Web
+
+## Layer responsibilities
+
+- `src/app/` owns routing
+- `src/features/chat/` owns the chat rail
+EOF
+
+    mkdir -p src/features/chat
+    cat <<'EOF' >src/features/chat/screen.tsx
+export function ChatScreen() {
+  return <div>chat</div>;
+}
+EOF
+
+    cat <<'EOF' >src/features/chat/api-key-gate.tsx
+export function ApiKeyGate() {
+  return <div>gate</div>;
+}
+EOF
+
+    git add . && git commit -m "feat(web): initial chat shell" --no-verify -q
+
+    git checkout -b feat/provider-switch -q
+
+    cat <<'EOF' >src/features/chat/api-key-gate.tsx
+export function ApiKeyGate() {
+  // BYOK or local-Ollama gate, persists choice to sessionStorage
+  return <div>gate with provider toggle</div>;
+}
+EOF
+
+    git add . && git commit -m "feat(web): provider switch at the gate" --no-verify -q
+
+    cat <<'EOF' >.claude/plans/feature-provider-switch.md
+# Feature: provider switch at the gate
+
+Add provider selection (Anthropic BYOK vs local Ollama) to the api-key gate, persist the choice to sessionStorage, and forward it as a request header.
+
+**Files to touch:**
+
+- `src/features/chat/api-key-gate.tsx`: add provider toggle UI
+- `src/features/chat/screen.tsx`: read provider from sessionStorage and forward header
+
+**Risks:**
+
+None identified.
+
+**Questions:**
+
+None identified.
+
+**Context updates** (optional, omit when not applicable):
+
+- web: chat surface refactored to choose provider at the gate, persists to sessionStorage and forwards via x-app-provider header
+EOF
+
+    log_step "Scenario ready: docs writes context entry from plan"
+    log_info "Context: feat/provider-switch branch with a plan that includes a Context updates section"
+    log_info "         .claude/context/web.md already exists with a Layer responsibilities section"
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  Step 3 updates planning docs (none needed here, none diverged)"
+    log_info "         Step 3.5 reads the Context updates section from the plan"
+    log_info "         Rewrites the relevant sections of .claude/context/web.md from the diff"
+    log_info "         Outputs a reminder line to run aitk indexes regen"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
+    ;;
+  esac
 }

@@ -8,7 +8,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "full" "small" "multi-concern"
+  select_or_route_scenario "Which scenario?" "full" "small" "multi-concern" "context-worthy"
 
   case "$SELECTED_OPTION" in
   "full")
@@ -203,6 +203,81 @@ EOF
     log_info "Context: two unrelated tasks in TASKS.md, one API change and one prose edit"
     log_info "Action:  /claude-feature 'add pagination to /users and tighten the docs intro'"
     log_info "Expect:  two plan files in .claude/plans/, one per concern, not a single bundled slug"
+    ;;
+  "context-worthy")
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Web frontend with chat surface and provider switching.
+
+## Context
+
+- Always loaded: this file, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`
+- On-demand lookup: `.claude/context/<domain>.md`. Check `.claude/context/index.md` first.
+EOF
+
+    mkdir -p .claude/context src/features/chat
+    cat <<'EOF' >.claude/context/index.md
+---
+title: Context
+subtitle: Per-domain narrative loaded on demand
+---
+
+# Context
+
+- [Web](web.md): chat surface, provider switching, sessionStorage hydration
+EOF
+
+    cat <<'EOF' >.claude/context/web.md
+---
+title: Web
+description: Chat surface, provider switching, sessionStorage hydration
+---
+
+# Web
+
+## Layer responsibilities
+
+- `src/app/` owns routing
+- `src/features/chat/` owns the chat rail and provider gate
+- `src/features/canvas/` owns the spatial workspace
+EOF
+
+    cat <<'EOF' >src/features/chat/screen.tsx
+export function ChatScreen() {
+  return <div>chat rail</div>;
+}
+EOF
+
+    cat <<'EOF' >src/features/chat/canvas-bridge.tsx
+export function CanvasBridge() {
+  return null;
+}
+EOF
+
+    cat <<'EOF' >.claude/TASKS.md
+# Tasks
+
+### Add voice input to the chat textarea
+
+The chat textarea should support a mic toggle that streams partial transcripts via the browser-native Web Speech API. Supported only in Chrome and Edge. The button hides on browsers without `SpeechRecognition`.
+
+- [ ] Outcome: mic toggle appears in supported browsers, hidden in others
+- [ ] Outcome: partial transcripts stream into the textarea while listening
+- [ ] Outcome: stop commits the finalized transcript, escape aborts without rewriting
+
+> Test strategy: manual, verify in Chrome and Firefox.
+EOF
+
+    git add . && git commit -m "feat(web): initial chat shell" --no-verify -q
+
+    log_step "Scenario ready: feature planning (context-worthy)"
+    log_info "Context: web project with .claude/context/web.md already populated"
+    log_info "         Task touches the web domain with a non-obvious browser-API constraint"
+    log_info "Action:  /claude-feature (reference the voice input task in TASKS.md)"
+    log_info "Expect:  plan written to .claude/plans/feature-<slug>.md"
+    log_info "         plan includes a '## Context updates' section with 'web: ...' bullet"
+    log_info "         the bullet captures the new gotcha (browser support gating, abort vs stop)"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

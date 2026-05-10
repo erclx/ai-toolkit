@@ -36,7 +36,10 @@ The project uses a three-tier context model. Know which tier holds what before r
 ## Output
 
 - After creating or modifying a file, include its path on its own line so terminal emulators can make it clickable. Do not paraphrase paths into prose ("the seeds folder", "your CLAUDE.md").
-- Use the path that resolves correctly from `pwd`. Relative when the file is at or below `pwd`, absolute otherwise. Shared scratch (`.claude/plans/`, `.claude/memory/`, `.claude/review/`) lives at the main worktree root, so paths to those from a linked worktree must be absolute.
+- Use the path the user's editor can resolve. The editor is rooted at the main project root.
+- In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
+- In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
+- When the response covers multiple files, group paths under headers: `**Created:**`, `**Modified:**`, `**Deleted:**`. For single-file changes, the path on its own line is enough.
 
 ## Key paths
 
