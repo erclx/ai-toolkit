@@ -21,8 +21,11 @@ Project docs live in `.claude/` at the project root.
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
 ├── TASKS.md         ← per-worktree task tracker, gitignored local scratch
+├── context/         ← per-domain narrative loaded on demand via index.md
 └── rules/           ← path-scoped governance rules, written by aitk gov install
 ```
+
+Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md` discovered via `.claude/context/index.md`). See [claude](claude.md) for the full model.
 
 Run `aitk init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and `.claude/rules/` in one pass. `aitk init` chains claude init and governance install. Claude Code auto-loads every file in `.claude/rules/` at session start, applying always-on rules unconditionally and path-scoped rules to files matching their `paths:` glob.
 
@@ -73,6 +76,7 @@ For features on a mature stack, chain the post-plan pipeline in one session. App
 
 - Use when the plan is tight and the stack has real verify commands and test coverage
 - Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, any review finding above minor, or hook failure
+- Review is skipped entirely when the diff is prose-only (every changed file matches `*.md` or `*.txt`). Prose changes are gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks.
 - Every stop leaves recoverable state. Fix and resume with `/git-ship`
 - Skip autoship for auth, migrations, security-sensitive changes, or work where the plan itself is uncertain
 - After the PR is open, both `autoship` and `git-ship` invoke `claude-memory-capture` to write session patterns into `.claude/memory/`. Prune later with `claude-memory-review`.
