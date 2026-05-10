@@ -48,6 +48,7 @@
 - `.lintstagedrc` is a user-owned seed at root. Sync drops it once on first install and never overwrites it. Projects extend it with extra glob → command entries (e.g. `aitk indexes regen`).
 - Seeded baseline globs:
   - `**/*.{json,md,mdc}` → `["prettier --write --ignore-path .gitignore --ignore-path .prettierignore", "cspell --no-must-find-files"]`
+  - `**/*.md` → `["aitk indexes regen"]`
   - `**/*.sh` → `["shfmt --write --indent 2", "shellcheck --severity=warning"]`
 - Hooks in `.husky/`:
   - `pre-commit` → `bunx lint-staged`

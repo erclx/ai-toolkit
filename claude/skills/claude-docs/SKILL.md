@@ -62,11 +62,7 @@ Write each updated entry immediately. Output one line per file:
 
 `✅ Context: .claude/context/<domain>.md`
 
-After all entries are written, output a one-line reminder:
-
-`💡 Run aitk indexes regen to update .claude/context/index.md`
-
-Skip the reminder if no entries were written.
+The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
 ## Step 5: sweep consumed scratch
 
