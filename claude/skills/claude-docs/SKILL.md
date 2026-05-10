@@ -47,6 +47,25 @@ For each doc with relevant changes, apply updates following these rules:
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
+## Step 3.5: write context entries
+
+Derive `<slug>` from the current branch name (replace `/` with `-`). Read the plan file at `.claude/plans/feature-<slug>.md` resolved against the main worktree root. Skip this step silently if the plan does not exist or contains no `## Context updates` section.
+
+For each bullet in the Context updates section (format: `- <domain>: <reason>`):
+
+- If `.claude/context/<domain>.md` exists at `pwd`, identify which sections relate to the diff and rewrite only those sections from the diff content. Same pattern as `docs-sync`. Do not touch unrelated sections.
+- If `.claude/context/<domain>.md` does not exist, create it with frontmatter (`title` derived from the domain, `description` from the plan reason) and seed content drafted from the diff. Follow `standards/prose.md`.
+
+Write each entry immediately. Output one line per file:
+
+`✅ Context: .claude/context/<domain>.md`
+
+After all entries are written, output a one-line reminder:
+
+`💡 Run aitk indexes regen to update .claude/context/index.md`
+
+Skip the reminder if no entries were written.
+
 ## Step 4: sweep consumed scratch
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.

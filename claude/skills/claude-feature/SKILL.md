@@ -33,12 +33,13 @@ Based on the feature description, identify and read source files that are direct
 
 ## Step 3: build the plan
 
-Construct the plan with four sections:
+Construct the plan with these sections:
 
 - **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
 - **Files to touch:** each file with a one-line reason
 - **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
 - **Questions:** numbered list of things to resolve before starting. If none, use `None identified.`
+- **Context updates** (optional): when the feature will produce durable narrative knowledge for one or more domains (decisions made, gotchas, layer responsibilities), list each affected domain as `<domain>: one-line reason`. `claude-docs` reads this at ship time and writes or updates `.claude/context/<domain>.md`. Omit the section when the work will not outlast the session.
 
 Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
 
@@ -91,6 +92,10 @@ File format:
 **Questions:**
 
 1. <question>
+
+**Context updates** (optional, omit when not applicable):
+
+- <domain>: <one-line reason>
 ```
 
 Then output in chat:
