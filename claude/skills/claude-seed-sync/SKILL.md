@@ -75,17 +75,13 @@ How to respond: fill in `Decision:` per item (`apply` or `skip`), then ping. Cha
 
 Why: <one-line reason>
 
-**Project version (current):**
+``​`diff
 
-``​`markdown
-<current section body>
-​```
+- <project line removed>
+  <unchanged context line>
 
-**Seed version (proposed):**
-
-``​`markdown
-<seed section body>
-​```
+* <seed line added>
+  ​```
 
 Decision:
 
@@ -93,16 +89,15 @@ Decision:
 
 Why: <one-line reason>
 
-**Seed version (proposed):**
+``​`diff
 
-``​`markdown
-<seed section body>
-​```
+- <seed section body, each line prefixed with +>
+  ​```
 
 Decision:
 ````
 
-Add items omit the project block. Customized sections appear in the scope table only, never numbered. A file with no drift still appears in the scope table as `in sync`.
+Update items show both sides in one `diff` block: removed lines from the project version with `-`, added lines from the seed version with `+`, unchanged context lines without a prefix. Add items show only `+` lines. Customized sections appear in the scope table only, never numbered. A file with no drift still appears in the scope table as `in sync`.
 
 After writing, tell the user `✅ Wrote proposal to .claude/review/seed-audit-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping or use the chat shortcut.
 
