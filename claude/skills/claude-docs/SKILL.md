@@ -47,7 +47,24 @@ For each doc with relevant changes, apply updates following these rules:
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
-## Step 4: sweep consumed scratch
+## Step 4: refresh context entries
+
+Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
+
+Run `git diff --name-only main` (or `--staged` when staged) and `git diff main` (or `--staged`) to scope the diff. For each existing `.claude/context/<domain>.md`:
+
+- Map the entry's section headings to the changed files. An entry is relevant when its prose references files, modules, or decisions touched by the diff.
+- For each relevant entry, rewrite only the sections affected by the diff. Same pattern as `docs-sync`. Do not touch unrelated sections.
+
+Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
+
+Write each updated entry immediately. Output one line per file:
+
+`✅ Context: .claude/context/<domain>.md`
+
+The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
+
+## Step 5: sweep consumed scratch
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 

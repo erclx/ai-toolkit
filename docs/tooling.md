@@ -16,7 +16,7 @@ The tooling system ships golden configs layered across a `base` → `web` → fr
 tooling/
 ├── base/
 │   ├── configs/       ← authoritative, always overwrite on sync (prettier, commitlint, husky, shell)
-│   ├── seeds/         ← user-owned, preserved on sync (cspell, lint-staged, prettierignore, dictionary terms, dev/ci docs)
+│   ├── seeds/         ← user-owned, preserved on sync (cspell, lint-staged, prettierignore, dictionary terms, dev/ci context entries)
 │   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
 │   └── reference.md
 ├── web/
@@ -60,7 +60,7 @@ Stack-specific configs override the extends chain. `collect_stack_configs` in `s
 
 Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path. The boundary is structural vs user-extensible: linters and formatters with no project-specific surface (prettier, commitlint, ruff, mypy, eslint, vite) ship as configs. Files projects routinely extend with extra imports, dictionaries, or pipeline steps (`cspell.json`, `.lintstagedrc`) ship as seeds instead.
 
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The `base` stack also seeds `cspell.json` and `.lintstagedrc` as copy-once root configs that projects extend, plus `docs/development.md` and `docs/ci.md` as short human-facing guides with `title` and `description` frontmatter so they slot into the project's `docs/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
+Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The `base` stack also seeds `cspell.json` and `.lintstagedrc` as copy-once root configs that projects extend, plus `.claude/context/development.md` and `.claude/context/ci.md` as short agent-facing context entries with `title` and `description` frontmatter so they slot into the project's `.claude/context/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
 
 References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
 
@@ -137,7 +137,7 @@ Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite
 
 Drop reference docs only: `aitk tooling ref vite-react ../my-app` copies `tooling/vite-react.md` without touching configs, seeds, or deps. Useful when the stack is already synced and only the reference needs refreshing.
 
-Update CI and development docs: the base tooling seeds `docs/ci.md` and `docs/development.md` with the base-level checks and scripts. Stack `reference.md` files contain `## CI docs (extend)` and `## Development docs (extend)` sections that tell the agent which rows to append. Per-stack `ci.md` / `development.md` seeds are not shipped because seeds are user-owned and never overwritten.
+Update CI and development context entries: the base tooling seeds `.claude/context/ci.md` and `.claude/context/development.md` with the base-level checks and scripts. Stack `reference.md` files contain `## CI docs (extend)` and `## Development docs (extend)` sections that tell the agent which rows to append. Per-stack `ci.md` / `development.md` seeds are not shipped because seeds are user-owned and never overwritten.
 
 Scaffold a new stack: `aitk tooling create` generates the stub structure in `tooling/<name>/`.
 

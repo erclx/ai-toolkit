@@ -91,7 +91,7 @@ Queued (run manually after testing the current scenario):
   AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
 
 Re-test (copied to clipboard):
-cd <current-root>/.sandbox && claude --model sonnet
+cd <current-root>/.sandbox && claude --plugin-dir <current-root>/claude --model sonnet
 
 Findings:
   <status>  <item-path>  →  <scenario-path or "none">     # <invocation-hint>
@@ -109,7 +109,7 @@ Rules for the block:
 - `.sandbox/` is a single directory per repo root. Provisioning a second scenario overwrites the first, so the skill provisions one at a time and queues the rest.
 - `Queued:` lists every remaining distinct scenario as a full `manage-sandbox.sh` command, one per line, so the user can copy directly. Omit the section when there is only one scenario.
 - Omit `Provisioning:` and `Queued:` when every pairing is `NONE` or `UNMAPPED`, since there is nothing to provision.
-- Print the re-test command flush-left as a single chained line (`cd … && claude --model sonnet`) so the user can paste it into any terminal.
+- Print the re-test command flush-left as a single chained line (`cd … && claude --plugin-dir … --model sonnet`) so the user can paste it into any terminal. The `--plugin-dir` points at `<current-root>/claude` so unchanged sub-skills (those not dev-injected) stay available to chained skills like `claude-autoship`. Dev-injected skills under the sandbox's `.claude/skills/` still take priority.
 - Pipe the same chained command to the clipboard using the first available tool: `wl-copy`, `xclip -selection clipboard`, `pbcopy`, then `clip.exe`. If none are present, drop the `(copied to clipboard)` suffix from the heading and continue silently.
 - After the `Re-test:` block, print one line: `Note: invoke skills as /<skill-name>, not /toolkit:<skill-name>. The project-scoped copy takes priority.`
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no Step 2 mapping pointed to. Omit the section when empty.

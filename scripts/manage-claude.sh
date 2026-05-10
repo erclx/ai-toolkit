@@ -75,6 +75,20 @@ collect_seeds() {
     fi
   done < <(find "$CLAUDE_SEEDS_DIR/hooks" -maxdepth 1 -type f 2>/dev/null | sort)
 
+  while IFS= read -r file; do
+    local name
+    name=$(basename "$file")
+    local rel="context/$name"
+    local dest="$dest_dir/$rel"
+
+    if [ -f "$dest" ]; then
+      log_info "$rel"
+    else
+      log_add "$rel"
+      _pending+=("$file")
+    fi
+  done < <(find "$CLAUDE_SEEDS_DIR/context" -maxdepth 1 -type f 2>/dev/null | sort)
+
   local claude_md="$PROJECT_ROOT/tooling/claude/seeds/CLAUDE.md"
   if [ -f "$claude_md" ]; then
     local dest="$target/CLAUDE.md"
@@ -125,6 +139,10 @@ apply_seeds() {
       cp "$file" "$dest_dir/hooks/$name"
       chmod +x "$dest_dir/hooks/$name"
       log_add ".claude/hooks/$name"
+    elif [[ "$file" == */seeds/.claude/context/* ]]; then
+      mkdir -p "$dest_dir/context"
+      cp "$file" "$dest_dir/context/$name"
+      log_add ".claude/context/$name"
     else
       cp "$file" "$dest_dir/$name"
       log_add ".claude/$name"

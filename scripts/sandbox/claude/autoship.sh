@@ -13,6 +13,8 @@ use_config() {
 }
 
 stage_setup() {
+  select_or_route_scenario "Which scenario?" "happy-path" "prose-only"
+
   log_step "Configuring autoship environment ($ANCHOR_REPO)"
 
   configure_sandbox_git_identity
@@ -24,7 +26,9 @@ stage_setup() {
 
   printf 'node_modules\n.claude/plans/\n.claude/review/\n' >.gitignore
 
-  cat <<'EOF' >package.json
+  case "$SELECTED_OPTION" in
+  "happy-path")
+    cat <<'EOF' >package.json
 {
   "name": "sandbox-autoship",
   "version": "1.0.0",
@@ -36,7 +40,7 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >CLAUDE.md
+    cat <<'EOF' >CLAUDE.md
 # My App
 
 Greeting utility library.
@@ -46,22 +50,22 @@ Greeting utility library.
 - `bun run check`: lint and typecheck
 EOF
 
-  mkdir -p src
-  cat <<'EOF' >src/index.ts
+    mkdir -p src
+    cat <<'EOF' >src/index.ts
 export function greet(name: string): string {
   return `Hello, ${name}!`;
 }
 EOF
 
-  git add . && git commit --allow-empty -m "feat(project): initial greeting library" --no-verify -q
-  git push --force origin HEAD:main
+    git add . && git commit --allow-empty -m "feat(project): initial greeting library" --no-verify -q
+    git push --force origin HEAD:main
 
-  git push origin --delete feat/add-farewell -q 2>/dev/null || true
-  git checkout -b feat/add-farewell -q
+    git push origin --delete feat/add-farewell -q 2>/dev/null || true
+    git checkout -b feat/add-farewell -q
 
-  mkdir -p .claude/plans .claude/review
+    mkdir -p .claude/plans .claude/review
 
-  cat <<'EOF' >.claude/plans/feature-feat-add-farewell.md
+    cat <<'EOF' >.claude/plans/feature-feat-add-farewell.md
 # Feature: add farewell utility
 
 Add a `farewell` function to `src/index.ts` that returns a goodbye message, and export it alongside `greet`.
@@ -79,8 +83,81 @@ None identified.
 None identified.
 EOF
 
-  log_step "Scenario ready: autoship happy path"
-  log_info "Context: feat/add-farewell branch with approved plan at .claude/plans/feature-feat-add-farewell.md"
-  log_info "Action:  /claude-autoship"
-  log_info "Expect:  implements farewell fn, verify passes, review runs, PR opened as draft"
+    log_step "Scenario ready: autoship happy path"
+    log_info "Context: feat/add-farewell branch with approved plan at .claude/plans/feature-feat-add-farewell.md"
+    log_info "Action:  /claude-autoship"
+    log_info "Expect:  implements farewell fn, verify passes, review runs, PR opened as draft"
+    ;;
+  "prose-only")
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-autoship-prose",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "echo 'format ok'"
+  }
+}
+EOF
+
+    cat <<'EOF' >CLAUDE.md
+# My Notes
+
+Personal notes repo. Mostly markdown.
+
+## Commands
+
+- `bun run check`: format check
+EOF
+
+    mkdir -p docs
+    cat <<'EOF' >docs/intro.md
+# Intro
+
+Project overview goes here.
+EOF
+
+    cat <<'EOF' >README.md
+# My Notes
+
+Notes repo.
+EOF
+
+    git add . && git commit --allow-empty -m "docs(notes): initial layout" --no-verify -q
+    git push --force origin HEAD:main
+
+    git push origin --delete feat/expand-intro -q 2>/dev/null || true
+    git checkout -b feat/expand-intro -q
+
+    mkdir -p .claude/plans .claude/review
+
+    cat <<'EOF' >.claude/plans/feature-expand-intro.md
+# Feature: expand intro doc
+
+Replace the placeholder intro with two short paragraphs covering scope and structure.
+
+**Files to touch:**
+
+- `docs/intro.md`: replace placeholder with real intro prose
+
+**Risks:**
+
+None identified.
+
+**Questions:**
+
+None identified.
+EOF
+
+    log_step "Scenario ready: autoship prose-only diff"
+    log_info "Context: feat/expand-intro branch with a plan that touches only docs/intro.md"
+    log_info "Action:  /claude-autoship"
+    log_info "Expect:  implements prose update, verify passes, REVIEW IS SKIPPED (prose-only diff), PR opened as draft"
+    log_info "         autoship Step 5 should print the skip rationale rather than invoking claude-review"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
+    ;;
+  esac
 }

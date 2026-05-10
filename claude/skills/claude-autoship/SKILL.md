@@ -51,11 +51,13 @@ If all UI changes are covered by e2e tests, continue.
 
 ## Step 5: review
 
-Invoke `toolkit:claude-review`.
+Classify the diff first. Run `git diff main --name-only` (or `git diff --staged --name-only` when staged). If every changed file matches `*.md` or `*.txt`, skip review entirely and continue to Step 7. Prose-only changes are already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on them burns tokens with no signal.
+
+Otherwise invoke `toolkit:claude-review`.
 
 ## Step 6: evaluate findings
 
-Read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
+Skip this step if Step 5 was skipped (prose-only diff). Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
 
 - Any critical or should-fix count greater than zero, stop: `❌ Review found non-minor issues. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
 - Zero critical and zero should-fix, continue. Keep the minor findings to attach to the PR body.

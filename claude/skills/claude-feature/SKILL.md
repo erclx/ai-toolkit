@@ -33,7 +33,7 @@ Based on the feature description, identify and read source files that are direct
 
 ## Step 3: build the plan
 
-Construct the plan with four sections:
+Construct the plan with these sections:
 
 - **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
 - **Files to touch:** each file with a one-line reason

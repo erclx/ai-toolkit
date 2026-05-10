@@ -4,8 +4,13 @@
 
 ## Context
 
-- Read `.claude/` state docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`) before changes, when present. The `claude-feature` skill loads them in parallel.
-- Coding standards live in `.claude/rules/` and load automatically. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
+The project uses a three-tier context model. Know which tier holds what before reading or writing:
+
+- **Always loaded.** Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`, and `.claude/context/index.md`. Project-wide invariants, product scope, and the discovery anchor for domain context.
+- **Path-scoped lazy.** `.claude/rules/*.md` with `paths:` frontmatter. Coding standards that load only when files matching the glob are touched. Always-on rules apply every session.
+- **On-demand lookup.** `.claude/context/<domain>.md` entries. Per-domain narrative (how a domain is structured, decisions made, gotchas). Use the always-loaded `.claude/context/index.md` to pick which entries to read. Entries are populated by `claude-docs` at ship time.
+
+@.claude/context/index.md
 
 ## Behavior
 
@@ -25,15 +30,26 @@
 ## Markdown
 
 - When editing any markdown file, follow `standards/prose.md`.
+- When writing or updating `.claude/context/<domain>.md`, also follow `standards/context.md`.
 
 ## Commands
 
-- Run `bun run check` before committing. Full script reference in `docs/development.md`.
+- Run `bun run check` before committing. Full script reference in `.claude/context/development.md`.
+
+## Output
+
+- After creating or modifying a file, include its path on its own line so terminal emulators can make it clickable. Do not paraphrase paths into prose ("the seeds folder", "your CLAUDE.md").
+- Use the path the user's editor can resolve. The editor is rooted at the main project root.
+- In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
+- In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
+- When the response covers multiple files, group paths under headers: `**Created:**`, `**Modified:**`, `**Deleted:**`. For single-file changes, the path on its own line is enough.
 
 ## Key paths
 
 - `src/`: [description]
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
+- `.claude/context/`: per-domain narrative (how a domain is structured, decisions, gotchas), indexed via `.claude/context/index.md`
+- `.claude/rules/`: path-scoped coding standards loaded by Claude Code on file match
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 
 ## Spelling

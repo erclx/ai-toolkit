@@ -49,6 +49,7 @@ When modifying a skill:
 When modifying the CLAUDE.md seed:
 
 - Check the root `CLAUDE.md` for drift. Rules that govern both target projects and the toolkit itself should stay mirrored.
+- The seed's "Context" section defines the three-tier context model (always-loaded / path-scoped lazy / on-demand lookup at `.claude/context/`). Keep the section coherent with the same model in `docs/claude.md`.
 
 When modifying the root CLAUDE.md:
 
