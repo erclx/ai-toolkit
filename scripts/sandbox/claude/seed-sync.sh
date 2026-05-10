@@ -21,12 +21,13 @@ EOF
 
   if [ -f "CLAUDE.md" ]; then
     head -n 10 CLAUDE.md >CLAUDE.md.tmp && mv CLAUDE.md.tmp CLAUDE.md
+    sed -i 's/before changes, when present\./before edits\./' CLAUDE.md
   fi
 
   git add . && git commit -m "chore(claude): trim CLAUDE.md sections" --no-verify -q
 
   log_step "Scenario ready: seed sync with drift"
-  log_info "Context: project with installed seeds, CLAUDE.md truncated to simulate stale sections"
+  log_info "Context: project with installed seeds, CLAUDE.md truncated and one Context bullet mutated"
   log_info "Action:  /claude-seed-sync"
-  log_info "Expect:  drift report showing missing/stale sections in CLAUDE.md, proposed edits"
+  log_info "Expect:  drift report with one paired -/+ Update (Context) plus missing/empty sections"
 }

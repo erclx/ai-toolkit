@@ -97,6 +97,30 @@ Check the actual context size with `ollama ps` while a model is loaded. The cont
 
 Larger context windows consume more VRAM for the KV cache. Going too high risks CPU offload, which drops inference speed significantly. Check VRAM usage with `nvidia-smi` or `ollama ps` and match the context size to available VRAM after the model weights are loaded.
 
+## Runtime configuration
+
+### Keep-alive timeout
+
+Ollama unloads models from VRAM after 5 minutes of inactivity by default. Setting `OLLAMA_KEEP_ALIVE` in the shell has no effect when Ollama runs as a systemd service. Set it via a drop-in override:
+
+```bash
+sudo systemctl edit ollama
+```
+
+Add to the drop-in:
+
+```ini
+[Service]
+Environment="OLLAMA_KEEP_ALIVE=1h"
+```
+
+Reload and restart:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+```
+
 ## Statusline
 
 Claude Code reports a hardcoded Anthropic context size for Ollama models. The total is wrong, but `used_percentage` is proportionally correct.
@@ -114,7 +138,13 @@ used_k=$(awk "BEGIN {printf \"%.0f\", ($used_pct/100)*$ctx_size/1000}")
 total_k=$(awk "BEGIN {printf \"%.0f\", $real_ctx/1000}")
 ```
 
-The context value position in `ollama ps` depends on column layout. Columns like `SIZE` contain spaces (e.g. `20 GB`), which shift field numbering. Verify the correct field index with `ollama ps | awk 'NR>1 {for(i=1;i<=NF;i++) print i, $i}'`. The script reads the first loaded model and assumes only one is active.
+The context value position in `ollama ps` depends on column layout. Columns like `SIZE` contain spaces (e.g. `20 GB`), which shift field numbering. Verify the correct field index:
+
+```bash
+ollama ps | awk 'NR>1 {for(i=1;i<=NF;i++) print i, $i}'
+```
+
+The script reads the first loaded model and assumes only one is active.
 
 ## Web search
 
