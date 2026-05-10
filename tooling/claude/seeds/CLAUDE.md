@@ -6,9 +6,11 @@
 
 The project uses a three-tier context model. Know which tier holds what before reading or writing:
 
-- **Always loaded.** Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`. Project-wide invariants and product scope. The `claude-feature` skill reads the `.claude/` files in parallel.
+- **Always loaded.** Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`, and `.claude/context/index.md`. Project-wide invariants, product scope, and the discovery anchor for domain context.
 - **Path-scoped lazy.** `.claude/rules/*.md` with `paths:` frontmatter. Coding standards that load only when files matching the glob are touched. Always-on rules apply every session.
-- **On-demand lookup.** `.claude/context/<domain>.md`. Per-domain narrative (how a domain is structured, decisions made, gotchas). Check `.claude/context/index.md` before touching domain code. Entries are populated by `claude-docs` at ship time.
+- **On-demand lookup.** `.claude/context/<domain>.md` entries. Per-domain narrative (how a domain is structured, decisions made, gotchas). Use the always-loaded `.claude/context/index.md` to pick which entries to read. Entries are populated by `claude-docs` at ship time.
+
+@.claude/context/index.md
 
 ## Behavior
 
@@ -28,6 +30,7 @@ The project uses a three-tier context model. Know which tier holds what before r
 ## Markdown
 
 - When editing any markdown file, follow `standards/prose.md`.
+- When writing or updating `.claude/context/<domain>.md`, also follow `standards/context.md`.
 
 ## Commands
 

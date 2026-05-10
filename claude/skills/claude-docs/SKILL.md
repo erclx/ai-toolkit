@@ -54,7 +54,7 @@ Derive `<slug>` from the current branch name (replace `/` with `-`). Read the pl
 For each bullet in the Context updates section (format: `- <domain>: <reason>`):
 
 - If `.claude/context/<domain>.md` exists at `pwd`, identify which sections relate to the diff and rewrite only those sections from the diff content. Same pattern as `docs-sync`. Do not touch unrelated sections.
-- If `.claude/context/<domain>.md` does not exist, create it with frontmatter (`title` derived from the domain, `description` from the plan reason) and seed content drafted from the diff. Follow `standards/prose.md`.
+- If `.claude/context/<domain>.md` does not exist, create it following `standards/context.md`. Title derives from the domain, description from the plan reason. Body content drafts from the diff.
 
 Write each entry immediately. Output one line per file:
 

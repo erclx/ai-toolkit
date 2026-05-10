@@ -94,19 +94,12 @@ Target projects scale by splitting context across three loading tiers. Knowing w
 
 ### What goes where
 
-`.claude/context/<domain>.md` (agent narrative):
+For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `standards/context.md`. The conceptual placement decision is:
 
-- Per-domain "how this is structured and why"
-- Decisions that don't fit `ARCHITECTURE.md` (project-wide invariants only)
-- Non-obvious constraints, gotchas, or things tried and rejected
-- Layer responsibilities specific to the domain
-
-Not in `.claude/context/`:
-
-- Function-level documentation. Read the code.
-- Rules. Those go in `.claude/rules/` with a `paths:` glob.
-- Tutorials or human onboarding. Those go in `docs/` if a public audience exists.
-- Generated content (API references). Generate, don't write by hand.
+- Per-domain narrative → `.claude/context/<domain>.md`
+- Path-scoped rules → `.claude/rules/<scope>.md` with `paths:` glob
+- Tutorials or human onboarding → `docs/` if a public audience exists
+- Function-level docs → read the code instead
 
 ### Layout
 
