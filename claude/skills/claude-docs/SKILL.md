@@ -47,7 +47,7 @@ For each doc with relevant changes, apply updates following these rules:
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
-## Step 3.5: write context entries
+## Step 4: write context entries
 
 Derive `<slug>` from the current branch name (replace `/` with `-`). Read the plan file at `.claude/plans/feature-<slug>.md` resolved against the main worktree root. Skip this step silently if the plan does not exist or contains no `## Context updates` section.
 
@@ -66,7 +66,7 @@ After all entries are written, output a one-line reminder:
 
 Skip the reminder if no entries were written.
 
-## Step 4: sweep consumed scratch
+## Step 5: sweep consumed scratch
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
