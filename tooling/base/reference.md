@@ -90,11 +90,12 @@
 - Extensions: `esbenp.prettier-vscode`, `streetsidesoftware.code-spell-checker`, `mkhl.shfmt`, `timonwong.shellcheck`, `mads-hartmann.bash-ide-vscode`.
 - Settings: `shellcheck.customArgs: ["--severity=warning"]`.
 
-## Docs
+## Context
 
-- Seeded at `docs/development.md` and `docs/ci.md` on install. User-owned, never overwritten by sync.
-- Each carries `title` and `description` frontmatter so the files slot into `docs/index.md` if the project adopts the `indexes` system. Indexes stay opt-in.
+- Seeded at `.claude/context/development.md` and `.claude/context/ci.md` on install. User-owned, never overwritten by sync.
+- Each carries `title` and `description` frontmatter so the files slot into `.claude/context/index.md` if the project adopts the `indexes` system. Indexes stay opt-in.
 - Extend freely with project-specific commands, workflows, or deploy steps. Canonical rationale stays in this reference.
+- The `.claude/context/` location matches the three-tier context model: project-wide invariants in `CLAUDE.md` and `.claude/REQUIREMENTS.md`/`.claude/ARCHITECTURE.md`, path-scoped rules in `.claude/rules/`, and on-demand domain narrative in `.claude/context/`.
 
 ## Package Scripts
 

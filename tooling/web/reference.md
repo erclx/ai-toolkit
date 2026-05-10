@@ -64,7 +64,7 @@ Sticky negative knowledge. Do not relearn.
 
 ## CI docs (extend)
 
-Extend `docs/ci.md` so the `## Checks` table reflects the web jobs.
+Extend `.claude/context/ci.md` so the `## Checks` table reflects the web jobs.
 
 Append rows:
 
@@ -78,7 +78,7 @@ Under `## Running CI locally`, document that `bun run check:full` runs verify pl
 
 ## Development docs (extend)
 
-Extend `docs/development.md` so the `## Scripts` table lists every web script. Stack adapters add their `dev`, `build`, `preview`, `typecheck` rows.
+Extend `.claude/context/development.md` so the `## Scripts` table lists every web script. Stack adapters add their `dev`, `build`, `preview`, `typecheck` rows.
 
 Append rows:
 

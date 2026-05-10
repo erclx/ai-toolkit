@@ -21,7 +21,7 @@ The chain is:
 
 - `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
 - `aitk tooling sync <stack>` adds stack-specific deps, scripts, gitignore entries, and drops `tooling/<stack>.md` (plus parents) as the agent's audit context
-- The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `docs/ci.md` and `docs/development.md` per the reference's extend sections
+- The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections
 - `verify-scaffold` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
 ### Stack decision
