@@ -32,12 +32,12 @@ The `aitk` category is internal. It holds runbooks that only make sense inside t
 
 Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Both are valid arguments to `aitk snippets install`.
 
-| Kind     | Name         | Slugs                                                                                                           |
-| -------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
-| Preset   | `essentials` | decision-help, compact-summary, step-by-step                                                                    |
-| Category | `base`       | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research      |
-| Category | `claude`     | claude/feature-recap, claude/figma-steps                                                                        |
-| Category | `aitk`       | aitk/format-edits, aitk/sandbox-worktree, aitk/toolkit-feedback, aitk/vocab-capture (internal, not installable) |
+| Kind     | Name         | Slugs                                                                                                      |
+| -------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| Preset   | `essentials` | decision-help, compact-summary, step-by-step                                                               |
+| Category | `base`       | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research |
+| Category | `claude`     | claude/feature-recap, claude/figma-steps                                                                   |
+| Category | `aitk`       | aitk/format-edits, aitk/sandbox-worktree, aitk/vocab-capture (internal, not installable)                   |
 
 `essentials` is the default for `aitk init` when `--snippets` is omitted.
 
@@ -56,8 +56,9 @@ Presets are virtual curated subsets defined in `snippets.toml`. Categories are a
 | `claude/figma-steps`    | Generate Figma instructions from a design spec                                                                 |
 | `aitk/format-edits`     | Format proposed edits as old → new pairs with file and section headers and `>` blockquotes                     |
 | `aitk/sandbox-worktree` | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
-| `aitk/toolkit-feedback` | Format a session-context paste-back report about an issue with the ai/toolkit                                  |
 | `aitk/vocab-capture`    | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
+
+The toolkit-feedback flow now ships as the `toolkit-feedback` plugin skill (see `docs/claude.md`) plus the `aitk feedback` CLI. It replaces the former `aitk/toolkit-feedback` snippet.
 
 The memory review phases (challenge, discuss, apply, cleanup) used to live as `claude/memory-*` snippets. They are now folded into the `claude-memory-review` skill body. Re-ping the skill with the matching phase phrase.
 

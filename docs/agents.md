@@ -61,15 +61,16 @@ Full help: `aitk <command> --help`.
 
 ### Project-level
 
-| Command                  | Purpose                                              |
-| ------------------------ | ---------------------------------------------------- |
-| `aitk init [path]`       | Bootstrap a project with selected toolkit domains    |
-| `aitk sync [path]`       | Sync all installed domains in a target project       |
-| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)        |
-| `aitk sandbox reset`     | Reset sandbox to baseline                            |
-| `aitk sandbox clean`     | Wipe the sandbox                                     |
-| `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter |
-| `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS    |
+| Command                  | Purpose                                                                    |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `aitk init [path]`       | Bootstrap a project with selected toolkit domains                          |
+| `aitk sync [path]`       | Sync all installed domains in a target project                             |
+| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)                              |
+| `aitk sandbox reset`     | Reset sandbox to baseline                                                  |
+| `aitk sandbox clean`     | Wipe the sandbox                                                           |
+| `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                       |
+| `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                          |
+| `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/` in the toolkit repo |
 
 ### Domain commands
 
