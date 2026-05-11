@@ -14,7 +14,7 @@ Read `standards/prose.md` before writing or editing any prose in `standards/` or
 ## Cross-references
 
 - Do not reference one standard from another. Standards are loaded simultaneously by skills, so signpost links between them add noise without value.
-- A functional cross-reference that changes behavior is allowed (for example, `standards/diagrams.md` notes that Mermaid blocks fenced as code skip the prose hook, so surrounding prose still follows `standards/prose.md`). Bare signposts are not.
+- A functional cross-reference that changes behavior is allowed (for example, telling the reader which sibling standard still applies when a hook would otherwise skip the content). Bare signposts are not.
 
 ## Sync checklist
 
