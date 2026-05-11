@@ -167,6 +167,12 @@ cmd_sync() {
   local has_diffs=false
   [ -s "$DRIFTED_FILE" ] && has_diffs=true
 
+  if [ "$has_diffs" = true ] && [[ "${AITK_NON_INTERACTIVE:-}" == "1" ]]; then
+    log_warn "Drifts detected. Refusing to auto-apply in non-interactive mode."
+    log_info "Run interactively, or use /claude-seed-sync for per-section audit that preserves customizations."
+    exit 0
+  fi
+
   if [ "$has_diffs" = true ]; then
     select_option "Apply $count changes?" "Review diffs" "Apply all" "No"
   else

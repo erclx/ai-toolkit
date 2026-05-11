@@ -49,6 +49,8 @@ scripts/
 
 `--json` emits `{standards: [{name, description, target, content}]}`. Skills that audit drift (`claude-seed-sync`) consume `target` and `content` to diff installed copies per section. The shape mirrors `aitk claude seeds list --json`.
 
+`aitk standards sync` is file-level. Selecting "Apply all" overwrites whole files and destroys any local customizations. Under `AITK_NON_INTERACTIVE=1`, the command refuses to auto-apply when drifts are detected. For projects that customize sections of `standards/*.md`, use the `/claude-seed-sync` skill instead. It diffs per `##` section and preserves customizations by default.
+
 ## Workflow
 
 To set up a new project:

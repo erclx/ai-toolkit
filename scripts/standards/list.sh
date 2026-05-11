@@ -41,16 +41,22 @@ list_text() {
 
 list_json() {
   local first=1
-  local file name title
+  local file name title target
   printf '['
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
     title=$(read_frontmatter_field "$file" "description")
+    target="standards/$(basename "$file")"
     if [ "$first" -eq 0 ]; then
       printf ','
     fi
-    printf '{"name":"%s","description":"%s"}' "$name" "$(json_escape "$title")"
+    jq -nc \
+      --arg name "$name" \
+      --arg description "$title" \
+      --arg target "$target" \
+      --rawfile content "$file" \
+      '{name: $name, description: $description, target: $target, content: $content}'
     first=0
   done < <(find "$STANDARDS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
   printf ']'

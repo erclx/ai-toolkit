@@ -12,19 +12,24 @@ Surfaces drift between the toolkit's current seed docs and what was installed in
 - If the `aitk` CLI is not on PATH, stop: `❌ aitk CLI not found. Install the toolkit first.`
 - If no `.claude/` directory exists at the project root, stop: `❌ No .claude/ directory found. Run aitk claude init first.`
 
-## Step 1: read toolkit seeds
+## Step 1: read toolkit sources
 
-Run from the project root:
+Run both in parallel from the project root:
 
 ```bash
 aitk claude seeds list --json 2>/dev/null
+aitk standards list --json 2>/dev/null
 ```
 
-The JSON is an array of `{name, source, target, content}`. `target` is the path relative to the project root where each seed installs.
+Seeds emit an array of `{name, source, target, content}`. Standards emit `{standards: [{name, description, target, content}]}`. In both cases `target` is the path relative to the project root where the file installs. Merge the two into one list of entries tagged by source (`seed` or `standard`).
+
+If the target project has no `standards/` directory, skip the standards stage silently.
 
 ## Step 2: read installed copies
 
-For each seed in the JSON, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
+For each entry in the merged list, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
+
+When detecting target-only files for `local-only` flagging, skip files the toolkit's own walkers regenerate from sibling frontmatter (today: any `index.md` produced by `aitk indexes regen`). They are absent from source catalogs by design, so flagging them as `local-only` is a false positive.
 
 Note on `settings.json`: the seed now ships only the PostToolUse hook block. If a target project's `.claude/settings.json` carries `attribution` or `permissions` keys, those are stale: the user-level `~/.claude/settings.json` (installed via `aitk claude setup`) owns them now. Flag those keys in the scope table for removal rather than diffing them as content drift.
 
@@ -64,12 +69,16 @@ How to respond: fill in `Decision:` per item (`apply` or `skip`), then ping. Cha
 
 ## Scope
 
-| File       | Status     | Note                         |
-| ---------- | ---------- | ---------------------------- |
-| `<target>` | diffed     | <counts>                     |
-| `<target>` | in sync    |                              |
-| `<target>` | skipped    | non-text, compare manually   |
-| `<target>` | customized | <section> skipped by default |
+Group rows by source. `Seeds` first, then `Standards`. Mark target-only files (present in target, absent in source) as `local-only` and leave them untouched.
+
+| Source   | File       | Status     | Note                         |
+| -------- | ---------- | ---------- | ---------------------------- |
+| seed     | `<target>` | diffed     | <counts>                     |
+| seed     | `<target>` | in sync    |                              |
+| seed     | `<target>` | skipped    | non-text, compare manually   |
+| seed     | `<target>` | customized | <section> skipped by default |
+| standard | `<target>` | diffed     | <counts>                     |
+| standard | `<target>` | local-only | not in toolkit, preserved    |
 
 ## 1. 📝 Update → `<target-path>` / <section>
 
