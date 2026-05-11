@@ -85,7 +85,8 @@ description: Reviews code for bugs, clarity, and standards compliance. Use when 
 
 Before reviewing, read from the project root:
 
-- `standards/code.md`: coding standards and conventions
+- `CLAUDE.md`: project conventions and behavior rules
+- `.claude/rules/`: path-scoped coding rules
 
 ## Guards
 

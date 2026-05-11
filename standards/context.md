@@ -18,8 +18,9 @@ Both fields feed `.claude/context/index.md` when regenerated.
 
 These cover most entries. Add domain-specific headings as needed. Do not pad an entry with empty sections.
 
-- `## Layer responsibilities`: which folders own what, how the domain is sliced.
+- `## Layer responsibilities`: which folders own what, how the domain is sliced. One line per item in owns-X form. Implementation detail moves to `## Decisions`, `## Hidden contracts`, or `## Gotchas`.
 - `## Decisions`: non-obvious technical choices that do not fit `ARCHITECTURE.md` and would otherwise need re-deriving from code.
+- `## Hidden contracts`: invariants the code does not self-document (shape constraints, skip rules, header semantics). Use when the reader needs the invariant itself. Use `## Decisions` when they need the reasoning behind picking it.
 - `## Gotchas`: workarounds, things tried and rejected, scar tissue worth preserving.
 
 ## What goes in
@@ -63,6 +64,11 @@ description: HTTP layer structure, route ownership, and request validation
 
 - Validation happens at the route boundary using a schema library. Services trust their inputs.
 - Pagination uses opaque cursor tokens, never offset+limit. Cursor format stays opaque to clients.
+
+## Hidden contracts
+
+- Route handlers return a plain object. The serializer wraps it in `{ data, meta }`. Handlers never wrap manually.
+- Cursor tokens are base64-encoded JSON of `{ id, sort }`. Any handler that issues a cursor must use the shared encoder.
 
 ## Gotchas
 
