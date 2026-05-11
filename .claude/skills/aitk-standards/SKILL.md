@@ -11,6 +11,11 @@ Read `docs/standards.md` for system overview and install vs sync before editing.
 
 Read `standards/prose.md` before writing or editing any prose in `standards/` or `docs/`. It is the canonical voice and formatting reference.
 
+## Cross-references
+
+- Do not reference one standard from another. Standards are loaded simultaneously by skills, so signpost links between them add noise without value.
+- A functional cross-reference that changes behavior is allowed (for example, `standards/diagrams.md` notes that Mermaid blocks fenced as code skip the prose hook, so surrounding prose still follows `standards/prose.md`). Bare signposts are not.
+
 ## Sync checklist
 
 When adding a standard:
