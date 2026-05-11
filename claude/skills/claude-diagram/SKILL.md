@@ -17,8 +17,7 @@ Read these from the project root, skipping any that do not exist:
 - `.claude/REQUIREMENTS.md`: tech stack, MVP feature list
 - `CLAUDE.md`: project type, conventions
 - `package.json`, `pyproject.toml`, `Cargo.toml`: language and framework markers
-- `docker-compose.yml`, `Dockerfile`, `fly.toml`, `vercel.json`: deploy topology
-- Top-level folder layout via `ls`
+- Top-level folder layout and root config files via `ls`: deploy targets, infrastructure config, component boundaries
 
 Run all reads in parallel. Do not recurse speculatively.
 
@@ -26,12 +25,14 @@ Run all reads in parallel. Do not recurse speculatively.
 
 Emit a diagram only when its source signal exists. Skip the rest, do not pad the file.
 
-- **Components** (`flowchart` with `subgraph` boundaries): always, when any signal exists. Shows the layered structure of the system.
+- **Components** (`flowchart TB` with `subgraph` boundaries): always, when any signal exists. Shows the layered structure of the system.
 - **Request flow** (`sequenceDiagram`): when prose describes a request lifecycle, an agent loop, or interaction between actors
-- **Data pipeline** (`flowchart LR`): when prose mentions retrieval, ranking, queues, ETL, or pipelines
-- **Deployment** (`flowchart`): when `docker-compose.yml`, `Dockerfile`, `fly.toml`, `vercel.json`, or a deploy section in `ARCHITECTURE.md` exists
+- **Data pipeline** (`flowchart TB`): when prose mentions retrieval, ranking, queues, ETL, or pipelines
+- **Deployment** (`flowchart TB`): when the top-level listing contains deploy or infrastructure config, or `ARCHITECTURE.md` has a deploy section
 
 Stay inside `flowchart` and `sequenceDiagram`. Do not emit C4, state, ER, or class diagrams. They render inconsistently across viewers.
+
+Follow `standards/diagrams.md` for layout, labeling, narrative, and explanation rules. `flowchart TB` is the default. Reach for `flowchart LR` only when a pipeline genuinely cannot read top-to-bottom, and call it out in the explanation paragraph.
 
 ## Step 3: write the file
 

@@ -47,7 +47,15 @@ For each doc with relevant changes, apply updates following these rules:
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
-## Step 4: refresh context entries
+## Step 4: flag diagram staleness
+
+If `.claude/DIAGRAMS.md` exists at `pwd` and this session edited any source `claude-diagram` reads (planning docs, deploy or infrastructure config, top-level component folders), surface a one-line warning:
+
+`⚠ DIAGRAMS.md may be stale. Run /claude-diagram`
+
+Do not regenerate inline. The author decides when to re-run the diagram skill. Skip the step silently when `.claude/DIAGRAMS.md` does not exist.
+
+## Step 5: refresh context entries
 
 Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
 
