@@ -30,6 +30,10 @@ paths:
 
 - Encapsulate data fetching and complex effects in custom hooks.
 - Use `useMemo` for derived state over `useEffect`.
+- Do not call `setState` inside `useEffect` to sync derived state. The `react-hooks/set-state-in-effect` lint enforces this.
+- Compare the previous value during render and call `setState` from the render body when it changes, over syncing in an effect.
+- Lift the state to a parent and reset the child with a `key` prop, over running a reset effect in the child.
+- Return a sentinel (`undefined` or a `useSyncExternalStore` placeholder) from hooks that hydrate asynchronously and gate consumers on it, over running a hydration effect.
 
 ## Memoization
 
