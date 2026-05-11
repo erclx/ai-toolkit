@@ -70,7 +70,7 @@ See the [full documentation](https://docs.example.com) for detailed API referenc
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See the [contributing guidelines](CONTRIBUTING.md).
 
 ## License
 
