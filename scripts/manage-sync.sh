@@ -394,7 +394,7 @@ main() {
   run_git_workflow "$target"
 
   if [ -d "$target/.claude" ]; then
-    echo -e "${GREY}Tip: run \`/claude-seed-sync\` to audit seed drift.${NC}" >&2
+    echo -e "${GREY}Tip: run \`/claude-seed-sync\` to audit seed and standards drift per section, preserving local customizations.${NC}" >&2
   fi
 }
 
