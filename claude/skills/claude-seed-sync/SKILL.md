@@ -29,6 +29,8 @@ If the target project has no `standards/` directory, skip the standards stage si
 
 For each entry in the merged list, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
 
+When detecting target-only files for `local-only` flagging, skip files the toolkit's own walkers regenerate from sibling frontmatter (today: any `index.md` produced by `aitk indexes regen`). They are absent from source catalogs by design, so flagging them as `local-only` is a false positive.
+
 Note on `settings.json`: the seed now ships only the PostToolUse hook block. If a target project's `.claude/settings.json` carries `attribution` or `permissions` keys, those are stale: the user-level `~/.claude/settings.json` (installed via `aitk claude setup`) owns them now. Flag those keys in the scope table for removal rather than diffing them as content drift.
 
 ## Step 3: diff per section
