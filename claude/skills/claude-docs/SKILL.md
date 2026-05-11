@@ -49,14 +49,7 @@ Write each updated file immediately. Claude Code's tool permission dialog is the
 
 ## Step 4: flag diagram staleness
 
-If `.claude/DIAGRAMS.md` exists at `pwd` and this session touched any of these files, surface a one-line warning:
-
-- `.claude/ARCHITECTURE.md`
-- `.claude/REQUIREMENTS.md`
-- Deploy config: `Dockerfile`, `docker-compose.yml`, `fly.toml`, `vercel.json`
-- Any new top-level component folder
-
-Output:
+If `.claude/DIAGRAMS.md` exists at `pwd` and this session edited any source `claude-diagram` reads (planning docs, deploy or infrastructure config, top-level component folders), surface a one-line warning:
 
 `⚠ DIAGRAMS.md may be stale. Run /claude-diagram`
 
