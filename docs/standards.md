@@ -24,16 +24,18 @@ scripts/
 
 ## Standards
 
-| File           | Covers                                      |
-| -------------- | ------------------------------------------- |
-| `branch.md`    | Branch naming format and type conventions   |
-| `changelog.md` | Changelog format and entry conventions      |
-| `commit.md`    | Commit message format and type conventions  |
-| `pr.md`        | Pull request title and body conventions     |
-| `prose.md`     | Voice, structure, formatting, and language  |
-| `readme.md`    | Readme structure and content conventions    |
-| `skill.md`     | Claude skill structure and authoring rules  |
-| `snippets.md`  | Snippet reference and authoring conventions |
+| File           | Covers                                           |
+| -------------- | ------------------------------------------------ |
+| `branch.md`    | Branch naming format and type conventions        |
+| `changelog.md` | Changelog format and entry conventions           |
+| `commit.md`    | Commit message format and type conventions       |
+| `context.md`   | Shape and content rules for `.claude/context/`   |
+| `diagrams.md`  | Conventions for Mermaid in `.claude/DIAGRAMS.md` |
+| `pr.md`        | Pull request title and body conventions          |
+| `prose.md`     | Voice, structure, formatting, and language       |
+| `readme.md`    | Readme structure and content conventions         |
+| `skill.md`     | Claude skill structure and authoring rules       |
+| `snippets.md`  | Snippet reference and authoring conventions      |
 
 ## CLI
 
@@ -44,6 +46,8 @@ scripts/
 | `aitk standards list [--json]`  | Emit catalog of standards with descriptions           |
 
 `aitk standards` with no args shows a picker for `install`, `sync`, or `list`. The install command requires confirmation before writing files.
+
+`--json` emits `{standards: [{name, description, target, content}]}`. Skills that audit drift (`claude-seed-sync`) consume `target` and `content` to diff installed copies per section. The shape mirrors `aitk claude seeds list --json`.
 
 ## Workflow
 

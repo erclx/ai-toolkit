@@ -21,6 +21,7 @@ excalidraw
 execa
 fastapi
 firecrawl
+flowchart
 gitattributes
 glama
 gsub
@@ -29,6 +30,7 @@ httpx
 kwargs
 labelledby
 lucide
+mermaid
 modelcontextprotocol
 modelfile
 monkeypatch
@@ -60,6 +62,7 @@ setattr
 sidepanel
 statusline
 streamable
+subgraph
 tabindex
 tanstack
 tavily
