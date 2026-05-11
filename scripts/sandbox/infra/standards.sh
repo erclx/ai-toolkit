@@ -43,7 +43,10 @@ stage_setup() {
     ;;
   "list")
     log_step "Running: aitk standards list"
-    exec "$PROJECT_ROOT/scripts/standards/list.sh"
+    "$PROJECT_ROOT/scripts/standards/list.sh"
+    log_step "Running: aitk standards list --json | jq '.standards[0] | keys'"
+    "$PROJECT_ROOT/scripts/standards/list.sh" --json | jq '.standards[0] | keys'
+    log_info "Expect keys: description, name, target, content"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

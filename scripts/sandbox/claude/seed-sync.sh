@@ -5,6 +5,7 @@ set -o pipefail
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"
+  export SANDBOX_INJECT_STANDARDS="true"
 }
 
 stage_setup() {
@@ -24,10 +25,14 @@ EOF
     sed -i 's/before changes, when present\./before edits\./' CLAUDE.md
   fi
 
-  git add . && git commit -m "chore(claude): trim CLAUDE.md sections" --no-verify -q
+  if [ -f "standards/prose.md" ]; then
+    sed -i 's/^- Use active voice\./- Use active voice and present tense./' standards/prose.md
+  fi
 
-  log_step "Scenario ready: seed sync with drift"
-  log_info "Context: project with installed seeds, CLAUDE.md truncated and one Context bullet mutated"
+  git add . && git commit -m "chore(claude): trim CLAUDE.md and drift standards" --no-verify -q
+
+  log_step "Scenario ready: seed sync with drift across seeds and standards"
+  log_info "Context: project with installed seeds and standards, CLAUDE.md truncated, one Context bullet mutated, standards/prose.md drifted"
   log_info "Action:  /claude-seed-sync"
-  log_info "Expect:  drift report with one paired -/+ Update (Context) plus missing/empty sections"
+  log_info "Expect:  drift report covering both seeds and standards, scope table grouped by source"
 }
