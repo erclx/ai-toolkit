@@ -43,7 +43,7 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - Do not use em dashes (`—`) or semicolons (`;`). Rewrite or restructure the sentence to avoid them.
 - Do not use parenthetical asides in prose (`the config (which is optional) controls...`). Split into its own sentence or drop it. Parentheses in rule definitions for grouping examples are fine.
 - Use descriptive anchor text for links. Avoid `click here` or `read more`.
-- Reference files with a code span by default. Use a labeled markdown link (`[label](path)`) only on rendered-for-human surfaces (`README.md`, `docs/`) for cross-folder navigation. Never repeat the path verbatim as the label.
+- Wrap file references in backticks by default. Use a labeled markdown link (`[label](path)`) only on rendered-for-human surfaces (`README.md`, `docs/`) for cross-folder navigation. Never repeat the path verbatim as the label.
 
 ## Language
 
