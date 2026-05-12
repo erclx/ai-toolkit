@@ -89,6 +89,38 @@ inject_placeholder_file() {
   log_info "$name"
 }
 
+inject_placeholder_dir() {
+  local dir_name="$1"
+  local placeholder="$2"
+  local target_file="$3"
+  local src_dir="$CLAUDE_DIR/$dir_name"
+
+  if [ ! -d "$src_dir" ]; then
+    log_warn "$dir_name/ not found, skipping"
+    return
+  fi
+
+  if ! grep -qF "$placeholder" "$target_file" 2>/dev/null; then
+    log_warn "$placeholder not found in template, skipping $dir_name/"
+    return
+  fi
+
+  local payload
+  payload=$(mktemp)
+
+  while IFS= read -r file; do
+    local base
+    base=$(basename "$file")
+    [ "$base" = "index.md" ] && continue
+    printf "\n<!-- %s -->\n\n" "$base" >>"$payload"
+    cat "$file" >>"$payload"
+  done < <(find "$src_dir" -maxdepth 1 -type f -name "*.md" 2>/dev/null | sort)
+
+  substitute_placeholder "$placeholder" "$payload" "$target_file"
+  rm -f "$payload"
+  log_info "$dir_name/"
+}
+
 build_implementer() {
   local payload_file
   payload_file=$(build_rules_payload "$RULES_DIR" "" "*.md")
@@ -136,7 +168,7 @@ build_planner() {
   inject_placeholder_file "REQUIREMENTS.md" "{{REQUIREMENTS}}" "$output_file"
   inject_placeholder_file "ARCHITECTURE.md" "{{ARCHITECTURE}}" "$output_file"
   inject_placeholder_file "DESIGN.md" "{{DESIGN}}" "$output_file"
-  inject_placeholder_file "WIREFRAMES.md" "{{WIREFRAMES}}" "$output_file"
+  inject_placeholder_dir "wireframes" "{{WIREFRAMES}}" "$output_file"
 }
 
 main() {

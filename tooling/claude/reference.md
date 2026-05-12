@@ -16,7 +16,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── REQUIREMENTS.md    ← seeded. Project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md    ← seeded. Technical design decisions and open questions
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it
-├── WIREFRAMES.md      ← seeded. ASCII wireframes for layout, UI copy, interaction rules, and meaningful states
+├── wireframes/        ← seeded. Per-surface ASCII layouts. `index.md` is the discovery anchor; `<surface>.md` files hold the sketches and behavior bullets.
 ├── GOV.md             ← retired. Removed by `aitk gov sync` if present from a prior install
 ├── settings.json      ← seeded. Project-level Claude Code config (PostToolUse hook only). User-level config installed separately via `aitk claude setup`.
 ├── plans/             ← execution detail for multi-step tasks, gitignored. `feature-*.md` entries swept by claude-docs.

@@ -61,11 +61,24 @@ Two variants only: `primary` (accent background, white text) and `secondary` (tr
 Use Lucide icons exclusively. Icon size matches text size of the surrounding label.
 EOF
 
-  cat <<'EOF' >>.claude/WIREFRAMES.md
+  mkdir -p .claude/wireframes
+  rm -f .claude/wireframes/feature-name.md
+  cat <<'EOF' >.claude/wireframes/index.md
+---
+title: Wireframes
+subtitle: Per-surface ASCII layouts loaded on demand
+---
 
 # Wireframes
+EOF
 
-## Task list surface
+  cat <<'EOF' >.claude/wireframes/task-list.md
+---
+title: Task list surface
+description: Vertical list of task rows on the home view.
+---
+
+# Task list surface
 
 A vertical list of task rows. Each row shows the task title and a checkbox.
 
@@ -75,8 +88,15 @@ States:
 - **Empty**: centered illustration with copy "No tasks yet. Add one to get started." and a primary button "Add task"
 - **Populated**: list of rows
 - **Error**: inline error banner above the list with a retry button
+EOF
 
-## Add task surface
+  cat <<'EOF' >.claude/wireframes/add-task.md
+---
+title: Add task surface
+description: Modal dialog for creating a new task.
+---
+
+# Add task surface
 
 Modal dialog with a single text input and a primary "Add" button plus a secondary "Cancel" button.
 EOF
@@ -244,14 +264,14 @@ EOF
   git add . && git commit -m "feat(ui): initial task list and add modal" --no-verify -q
 
   log_step "Scenario ready: UX audit with seeded drift"
-  log_info "Context: small Vite/React app with DESIGN.md, WIREFRAMES.md, and components that drift on purpose"
+  log_info "Context: small Vite/React app with DESIGN.md, wireframes/, and components that drift on purpose"
   log_info "Seeded drift to look for in the audit:"
   log_info "  Button.tsx adds a third variant 'ghost' not in DESIGN.md"
   log_info "  Button.css uses raw 12px/18px instead of --space tokens"
   log_info "  TaskList.tsx mixes Lucide and MUI icons (DESIGN.md says Lucide only)"
   log_info "  TaskList.tsx uses inline px styles instead of tokens"
-  log_info "  TaskList.tsx renders nothing while loading (no skeleton state from WIREFRAMES.md)"
-  log_info "  TaskList.tsx has no empty state (WIREFRAMES.md describes one)"
+  log_info "  TaskList.tsx renders nothing while loading (no skeleton state from wireframes/)"
+  log_info "  TaskList.tsx has no empty state (wireframes/ describes one)"
   log_info "  TaskList.tsx has no error state"
   log_info "  AddTaskModal.tsx has two primary buttons. Cancel should be secondary"
   log_info "Action:  /claude-ux-audit"

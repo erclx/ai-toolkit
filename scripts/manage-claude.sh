@@ -89,6 +89,20 @@ collect_seeds() {
     fi
   done < <(find "$CLAUDE_SEEDS_DIR/context" -maxdepth 1 -type f 2>/dev/null | sort)
 
+  while IFS= read -r file; do
+    local name
+    name=$(basename "$file")
+    local rel="wireframes/$name"
+    local dest="$dest_dir/$rel"
+
+    if [ -f "$dest" ]; then
+      log_info "$rel"
+    else
+      log_add "$rel"
+      _pending+=("$file")
+    fi
+  done < <(find "$CLAUDE_SEEDS_DIR/wireframes" -maxdepth 1 -type f 2>/dev/null | sort)
+
   local claude_md="$PROJECT_ROOT/tooling/claude/seeds/CLAUDE.md"
   if [ -f "$claude_md" ]; then
     local dest="$target/CLAUDE.md"
@@ -143,6 +157,10 @@ apply_seeds() {
       mkdir -p "$dest_dir/context"
       cp "$file" "$dest_dir/context/$name"
       log_add ".claude/context/$name"
+    elif [[ "$file" == */seeds/.claude/wireframes/* ]]; then
+      mkdir -p "$dest_dir/wireframes"
+      cp "$file" "$dest_dir/wireframes/$name"
+      log_add ".claude/wireframes/$name"
     else
       cp "$file" "$dest_dir/$name"
       log_add ".claude/$name"
@@ -336,7 +354,8 @@ cmd_sync() {
   validate_target "$target"
 
   local roles=("PLANNER.md" "REVIEWER.md" "IMPLEMENTER.md")
-  local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md" "DESIGN.md" "WIREFRAMES.md")
+  local seeded=("ARCHITECTURE.md" "REQUIREMENTS.md" "TASKS.md" "DESIGN.md")
+  local seeded_dirs=("wireframes")
   local drifted=()
   local gi_pending=()
   local has_roles=0
@@ -375,6 +394,14 @@ cmd_sync() {
       log_info "$name"
     else
       log_warn "$name missing. Run \`aitk claude init\`"
+    fi
+  done
+  for name in "${seeded_dirs[@]}"; do
+    local dest="$target/.claude/$name"
+    if [ -d "$dest" ]; then
+      log_info "$name/"
+    else
+      log_warn "$name/ missing. Run \`aitk claude init\`"
     fi
   done
 

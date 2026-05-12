@@ -18,7 +18,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 - `.claude/REQUIREMENTS.md`
 - `.claude/ARCHITECTURE.md`
 - `.claude/DESIGN.md`
-- `.claude/WIREFRAMES.md`
+- `.claude/wireframes/index.md` and every `.claude/wireframes/<surface>.md`
 
 ## Step 2: identify what changed
 
@@ -26,7 +26,7 @@ Review the session for decisions that diverged from the original plan:
 
 - Requirements added, removed, or changed scope
 - Architecture or technical decisions made or revised
-- Design or UX decisions that differ from DESIGN.md or WIREFRAMES.md
+- Design or UX decisions that differ from DESIGN.md or any `.claude/wireframes/<surface>.md`
 - Tasks completed, blocked, or newly identified
 
 ## Step 3: update
@@ -39,13 +39,49 @@ For each doc with relevant changes, apply updates following these rules:
 - Add newly identified tasks to "Up next".
 - Do not reorder, reformat, or touch tasks that did not change.
 
-**REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, WIREFRAMES.md**
+**REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, `.claude/wireframes/<surface>.md`**
 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
 - Follow `standards/prose.md` for all edits.
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
+
+## Step 4: wireframe coverage sweep
+
+Skip this step silently when `.claude/wireframes/` does not exist or has no surface files.
+
+Run `git diff --name-only main` (or `--staged` when staged) and filter for UI-affecting paths. UI-affecting paths are framework-dependent. Default heuristic: any file under a `components/`, `features/`, `pages/`, `app/`, `routes/`, or `screens/` folder, plus any `*.tsx`, `*.jsx`, `*.vue`, or `*.svelte` file anywhere in the diff.
+
+For each UI-affecting path, derive a candidate surface slug from the file's basename and parent folder (e.g. `web/src/features/mock/MockDemoStrip.tsx` → `mock-demo-strip` or `mock`). Cross-reference against the surface files in `.claude/wireframes/`:
+
+- **Contradicted sections:** when a surface file exists for a path in the diff and the diff renames or removes a literal string that appears in the wireframe prose (e.g. provider name, button label, copy string), output a one-line report entry and stop. Do not auto-rewrite prose. Operator resolves.
+- **Uncovered surfaces:** when a UI-affecting path has no matching surface file by slug, write `.claude/wireframes/<slug>.md` with this stub:
+
+  ```markdown
+  ---
+  title: <Slug as title case>
+  description: TODO: describe the surface.
+  ---
+
+  # <Slug as title case>
+
+  TODO: describe when and where this surface appears.
+
+  ## Behavior
+
+  - TODO
+  ```
+
+  Skip the write when the slug would collide with an existing file (different surface, same slug). Surface the collision in the report instead.
+
+Output one line per finding:
+
+- `⚠ Wireframe drift in .claude/wireframes/<surface>.md: <contradicted string>`
+- `📝 Stubbed: .claude/wireframes/<surface>.md`
+- `⚠ Slug collision: <slug> matches existing <existing-surface>.md, review and rename`
+
+If the sweep finds nothing, skip silently.
 
 ## Step 4: flag diagram staleness
 

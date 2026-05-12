@@ -8,7 +8,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "drift" "context-entries"
+  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage"
 
   case "$SELECTED_OPTION" in
   "drift")
@@ -284,6 +284,88 @@ EOF
     log_info "         Rewrites the relevant section of .claude/context/web.md from the diff content"
     log_info "         Does NOT create new entries (no auto-creation per design)"
     log_info "         Outputs a reminder line to run aitk indexes regen"
+    ;;
+  "wireframe-coverage")
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-docs-wireframes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module"
+}
+EOF
+
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Web client with a BYOK gate and a chat surface.
+EOF
+
+    mkdir -p .claude/wireframes src/features/chat src/features/mock
+    rm -f .claude/wireframes/feature-name.md
+    cat <<'EOF' >.claude/wireframes/index.md
+---
+title: Wireframes
+subtitle: Per-surface ASCII layouts loaded on demand
+---
+
+# Wireframes
+EOF
+
+    cat <<'EOF' >.claude/wireframes/byok-gate.md
+---
+title: BYOK gate
+description: Anthropic-only gate that asks the visitor to paste a key.
+---
+
+# BYOK gate
+
+Gate shown to first-time visitors. Requires an Anthropic API key.
+
+```plaintext
+[ Paste your Anthropic key ]
+[ Continue ]
+```
+
+## Behavior
+
+- Anthropic is the only supported provider.
+EOF
+
+    cat <<'EOF' >src/features/chat/api-key-gate.tsx
+export function ApiKeyGate() {
+  return <div>BYOK gate</div>;
+}
+EOF
+
+    git add . && git commit -m "feat(web): initial BYOK gate" --no-verify -q
+
+    git checkout -b feat/widen-and-mock -q
+
+    cat <<'EOF' >src/features/chat/api-key-gate.tsx
+export function ApiKeyGate() {
+  // Now supports Anthropic, OpenAI, and Gemini
+  return <div>Multi-provider gate</div>;
+}
+EOF
+
+    cat <<'EOF' >src/features/mock/MockDemoStrip.tsx
+export function MockDemoStrip() {
+  return <div>mock demo strip</div>;
+}
+EOF
+
+    git add . && git commit -m "feat(web): widen BYOK to three providers and add mock demo strip" --no-verify -q
+
+    log_step "Scenario ready: docs wireframe coverage sweep"
+    log_info "Context: branch widens BYOK gate to three providers and adds a new mock demo surface"
+    log_info "  .claude/wireframes/byok-gate.md still says Anthropic-only"
+    log_info "  src/features/mock/MockDemoStrip.tsx has no matching wireframe surface"
+    log_info ""
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  Step 4 reports drift in .claude/wireframes/byok-gate.md (Anthropic-only contradicted)"
+    log_info "         Step 4 stubs .claude/wireframes/mock-demo-strip.md with a TODO"
+    log_info "         Operator resolves drift manually; auto-rewrite of prose is out of scope"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

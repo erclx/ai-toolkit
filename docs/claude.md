@@ -210,7 +210,9 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 ### init
 
-Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `WIREFRAMES.md`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
+Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
+
+The `wireframes/` folder ships with one example surface and an `index.md` discovery anchor. Add a new file per surface as the UI grows. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
 
 The seed `settings.json` contains only the PostToolUse hook block that pairs with the project-local `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
@@ -238,7 +240,7 @@ Checks seeded project docs and, if roles are installed, diffs them against the t
 
 Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and writes output to `.claude/.tmp/roles/`. Also copies `REVIEWER.md` to `.claude/.tmp/roles/`. Requires roles to be installed.
 
-For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from the `planner` stack, and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `WIREFRAMES.md`).
+For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from the `planner` stack, and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, and the concatenated surface files under `.claude/wireframes/`).
 
 For `IMPLEMENTER.md`: injects all governance rules from `.claude/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`).
 
@@ -274,12 +276,12 @@ Use both: run `claude-review` locally before pushing, then let Code Review catch
 
 ### Planning
 
-| Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                                                             |
-| ---------- | ------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                                                          |
-| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                                                                  |
-| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: summary, files to touch, risks, questions                                                       |
-| Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, WIREFRAMES. Coding rules in `.claude/rules/` auto-load |
+| Aspect     | Plan mode                                        | Ultraplan                                               | `claude-feature` skill                                                                                                                                     |
+| ---------- | ------------------------------------------------ | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| What       | Permission mode: Claude explores but cannot edit | Cloud-based plan drafting with browser review UI        | Skill that reads project docs and proposes files to touch                                                                                                  |
+| Activation | `Shift+Tab` or `/plan`                           | `/ultraplan` or the word "ultraplan" in prompt          | `/claude-feature`                                                                                                                                          |
+| Output     | Free-form plan in terminal                       | Rich plan in browser with inline comments and reactions | Structured output: summary, files to touch, risks, questions                                                                                               |
+| Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, and the relevant `.claude/wireframes/<surface>.md`. Coding rules in `.claude/rules/` auto-load |
 
 Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.
 
