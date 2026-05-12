@@ -18,7 +18,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
-- `.claude/TASKS.md`: current scope and status
+- `.claude/TASKS.md`: current scope and status. If the relevant task entry has a `Brief:` line, read the referenced `.claude/briefs/<slug>.md` next. The brief carries outcomes, constraints, files to read, and open questions the orchestrator framed for this worker session.
 
 Also read these when the feature touches code or UI. Skip them for prose, docs, catalog, or config-only changes:
 

@@ -24,18 +24,19 @@ scripts/
 
 ## Standards
 
-| File           | Covers                                           |
-| -------------- | ------------------------------------------------ |
-| `branch.md`    | Branch naming format and type conventions        |
-| `changelog.md` | Changelog format and entry conventions           |
-| `commit.md`    | Commit message format and type conventions       |
-| `context.md`   | Shape and content rules for `.claude/context/`   |
-| `diagrams.md`  | Conventions for Mermaid in `.claude/DIAGRAMS.md` |
-| `pr.md`        | Pull request title and body conventions          |
-| `prose.md`     | Voice, structure, formatting, and language       |
-| `readme.md`    | Readme structure and content conventions         |
-| `skill.md`     | Claude skill structure and authoring rules       |
-| `snippets.md`  | Snippet reference and authoring conventions      |
+| File            | Covers                                                                        |
+| --------------- | ----------------------------------------------------------------------------- |
+| `branch.md`     | Branch naming format and type conventions                                     |
+| `changelog.md`  | Changelog format and entry conventions                                        |
+| `commit.md`     | Commit message format and type conventions                                    |
+| `context.md`    | Shape and content rules for `.claude/context/`                                |
+| `diagrams.md`   | Conventions for Mermaid in `.claude/DIAGRAMS.md`                              |
+| `pr.md`         | Pull request title and body conventions                                       |
+| `prose.md`      | Voice, structure, formatting, and language                                    |
+| `readme.md`     | Readme structure and content conventions                                      |
+| `skill.md`      | Claude skill structure and authoring rules                                    |
+| `snippets.md`   | Snippet reference and authoring conventions                                   |
+| `versioning.md` | Phase label vs semver discipline across TASKS, briefs, PRs, commits, and tags |
 
 ## CLI
 
