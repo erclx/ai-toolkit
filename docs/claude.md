@@ -122,7 +122,7 @@ Larger projects use an orchestrator session that breaks work into TASKS entries 
 
 | Artifact                          | Author       | Holds                                                                                            | Lifecycle                                             |
 | --------------------------------- | ------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
-| `.claude/TASKS.md`                | orchestrator | One block per task with outcomes and a test strategy. Phase labels (`v0`, `v1`) live here.       | Gitignored, shared across worktrees.                  |
+| `.claude/TASKS.md`                | orchestrator | One block per task with outcomes and a test strategy. Phase labels live here.                    | Gitignored, shared across worktrees.                  |
 | `.claude/briefs/<slug>.md`        | orchestrator | Goal, outcomes, constraints, files to read, sequence, test strategy, open questions for one task | Gitignored, shared across worktrees, deleted on ship. |
 | `.claude/plans/feature-<slug>.md` | worker       | Files to touch with reasons, risks, answered questions for one task                              | Gitignored, shared across worktrees, deleted on ship. |
 | `.claude/ROADMAP.md`              | orchestrator | Cross-block coordination map (active picture, parallel-safety matrix, blocking dependencies)     | Gitignored, shared across worktrees. Optional.        |
@@ -131,7 +131,7 @@ Drafting flow: orchestrator writes a TASKS block, runs `claude-brief` to produce
 
 `ROADMAP.md` is optional. Small projects skip it. Create one when two or more streams run in parallel and the orchestrator needs a single page to track who blocks whom.
 
-Phase labels (`v0`, `v1`, `v5.5`) stay inside TASKS, briefs, and ROADMAP. They never appear in PR titles, commit messages, or git tags. See `standards/versioning.md` for the rules and the why.
+Phase labels stay inside TASKS, briefs, and ROADMAP. They never appear in PR titles, commit messages, or git tags. See `standards/versioning.md` for the rules and the why.
 
 ## Plugin skills
 

@@ -12,7 +12,7 @@ Read these files from the project root in parallel:
 - `standards/branch.md`: branch format, valid types, and constraints
 - `standards/pr.md`: structure, rules, and banned phrases
 - `standards/prose.md`: prose conventions for all generated text
-- `standards/versioning.md`: phase labels (`v0`, `v1`, `v5.5`) belong in TASKS and briefs, never in PR titles or bodies
+- `standards/versioning.md`: phase label vs semver discipline
 
 Then run these commands in parallel to gather git context:
 

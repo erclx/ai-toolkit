@@ -8,7 +8,7 @@ Tasks chain through three artifacts:
 - **Brief** (`.claude/briefs/<slug>.md`): orchestrator handoff context for a worker session. Outcomes, constraints, files to read, sequence, open questions. Drafted by `claude-brief`. Add a `Brief:` line under the task title pointing to it.
 - **Plan** (`.claude/plans/feature-<slug>.md`): worker's file-touch list, risks, and resolved questions. Drafted by `claude-feature`. Add a `Plan:` line under the task title pointing to it.
 
-When a task needs execution detail beyond this board, the worker writes a plan. When a task needs cross-session orchestration (parallel streams, phase ordering, complex handoff), the orchestrator writes a brief first. Both files are gitignored and deleted on ship. Versions and phase labels (`v0`, `v1`, `v5.5`) belong here and in briefs, not in PR titles, commit messages, or git tags. See `standards/versioning.md`.
+When a task needs execution detail beyond this board, the worker writes a plan. When a task needs cross-session orchestration (parallel streams, phase ordering, complex handoff), the orchestrator writes a brief first. Both files are gitignored and deleted on ship. Phase labels belong here and in briefs, not in PR titles, commit messages, or git tags. See `standards/versioning.md`.
 
 What belongs:
 
