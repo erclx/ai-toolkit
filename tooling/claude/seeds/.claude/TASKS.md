@@ -2,7 +2,13 @@
 
 Track what is being built and why, at the level of features and outcomes. No code-level steps or technical decisions. Those live in `ARCHITECTURE.md`. Update this doc whenever a task is started, completed, or scope changes.
 
-When a task needs execution detail beyond this board, create a plan in `.claude/plans/` and add a `Plan:` line under the title pointing to it. When that task ships, delete its plan file.
+Tasks chain through three artifacts:
+
+- **TASKS bullet** (this file): outcome and test strategy. One block per task.
+- **Brief** (`.claude/briefs/<slug>.md`): orchestrator handoff context for a worker session. Outcomes, constraints, files to read, sequence, open questions. Drafted by `claude-brief`. Add a `Brief:` line under the task title pointing to it.
+- **Plan** (`.claude/plans/feature-<slug>.md`): worker's file-touch list, risks, and resolved questions. Drafted by `claude-feature`. Add a `Plan:` line under the task title pointing to it.
+
+When a task needs execution detail beyond this board, the worker writes a plan. When a task needs cross-session orchestration (parallel streams, phase ordering, complex handoff), the orchestrator writes a brief first. Both files are gitignored and deleted on ship. Phase labels belong here and in briefs, not in PR titles, commit messages, or git tags. See `standards/versioning.md`.
 
 What belongs:
 
@@ -24,11 +30,12 @@ Title form by task type:
 
 One section only: Up next. Completed blocks stay in Up next until archived manually. Do not move them automatically. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
 
-Task block format. Include the `Plan:` line only when a `.claude/plans/` file exists for the task:
+Task block format. Include the `Brief:` line only when `.claude/briefs/<slug>.md` exists. Include the `Plan:` line only when `.claude/plans/feature-<slug>.md` exists.
 
 ```markdown
 ### Title
 
+Brief: .claude/briefs/<slug>.md
 Plan: .claude/plans/feature-<slug>.md
 
 - [ ] Outcome: what done looks like

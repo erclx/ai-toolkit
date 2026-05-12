@@ -13,6 +13,7 @@ Claude Code plugin and skills for the Toolkit.
 ```plaintext
 claude/
 ├── skills/              ← plugin skills (auto-discovered by plugin)
+│   ├── claude-brief/        ← draft `.claude/briefs/<slug>.md` handoff context from a TASKS entry
 │   ├── claude-diagram/      ← draft .claude/DIAGRAMS.md with mermaid diagrams from architecture and code signals
 │   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
@@ -115,6 +116,23 @@ New entries are not created automatically. Auto-creation risks padding the catal
 
 This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
 
+## Orchestration
+
+Larger projects use an orchestrator session that breaks work into TASKS entries and hands each entry to a worker session running in a linked worktree. The toolkit ships three artifacts to make this flow mechanical.
+
+| Artifact                          | Author       | Holds                                                                                            | Lifecycle                                             |
+| --------------------------------- | ------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `.claude/TASKS.md`                | orchestrator | One block per task with outcomes and a test strategy. Phase labels live here.                    | Gitignored, shared across worktrees.                  |
+| `.claude/briefs/<slug>.md`        | orchestrator | Goal, outcomes, constraints, files to read, sequence, test strategy, open questions for one task | Gitignored, shared across worktrees, deleted on ship. |
+| `.claude/plans/feature-<slug>.md` | worker       | Files to touch with reasons, risks, answered questions for one task                              | Gitignored, shared across worktrees, deleted on ship. |
+| `.claude/ROADMAP.md`              | orchestrator | Cross-block coordination map (active picture, parallel-safety matrix, blocking dependencies)     | Gitignored, shared across worktrees. Optional.        |
+
+Drafting flow: orchestrator writes a TASKS block, runs `claude-brief` to produce a brief, hands the worker a brief slug. Worker enters a linked worktree, runs `claude-feature` against the brief to produce a plan, then implements. `claude-docs` deletes the brief and plan when the task ships.
+
+`ROADMAP.md` is optional. Small projects skip it. Create one when two or more streams run in parallel and the orchestrator needs a single page to track who blocks whom.
+
+Phase labels stay inside TASKS, briefs, and ROADMAP. They never appear in PR titles, commit messages, or git tags. See `standards/versioning.md` for the rules and the why.
+
 ## Plugin skills
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
@@ -123,6 +141,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | ------------------------ | -------------------------------------------------------------------------------------------- |
 | `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                          |
 | `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph        |
+| `claude-brief`           | Draft `.claude/briefs/<slug>.md` handoff context from a TASKS entry                          |
 | `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals         |
 | `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                                 |
 | `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                             |

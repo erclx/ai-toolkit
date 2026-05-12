@@ -17,3 +17,4 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Readme reference](readme.md): Readme structure and content conventions
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
 - [Snippet reference](snippets.md): Snippet reference and authoring conventions
+- [Versioning reference](versioning.md): Phase label vs semver discipline across TASKS, briefs, PRs, commits, and tags
