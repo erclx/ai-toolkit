@@ -1,6 +1,6 @@
 ---
 name: claude-ux-audit
-description: Audits the current UI for incomplete, inconsistent, or confusing patterns. Reads DESIGN.md and WIREFRAMES.md for intent, scans UI files, and outputs observations grouped by surface. Use when asked "audit the UX", "audit the UI", "UX audit", or "find UI roughness". Do NOT use for new feature planning or code changes.
+description: Audits the current UI for incomplete, inconsistent, or confusing patterns. Reads DESIGN.md and .claude/wireframes/ for intent, scans UI files, and outputs observations grouped by surface. Use when asked "audit the UX", "audit the UI", "UX audit", or "find UI roughness". Do NOT use for new feature planning or code changes.
 ---
 
 # Claude UX audit
@@ -15,7 +15,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: project type and conventions
 - `.claude/DESIGN.md`: visual intent, tokens, typography, spacing rules
-- `.claude/WIREFRAMES.md`: intended UI layout, UI copy, interaction rules
+- `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3.
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 
 ## Step 2: identify surfaces
@@ -31,7 +31,7 @@ For each surface, look for:
 3. **Inconsistencies**: spacing, tone of voice, interaction patterns, icon use, keyboard affordances
 4. **Roughness in daily use**: friction, redundant steps, unclear affordances, ambiguous labels
 
-Use `DESIGN.md` and `WIREFRAMES.md` as ground truth for intent. Flag where implementation drifts from documented intent. Observations only, no implementation suggestions or fixes.
+Use `DESIGN.md` and the per-surface `.claude/wireframes/<surface>.md` files as ground truth for intent. For each implementation surface, read the matching wireframe file before flagging drift. Observations only, no implementation suggestions or fixes.
 
 ## Step 4: report and persist
 

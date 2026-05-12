@@ -23,7 +23,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 Also read these when the feature touches code or UI. Skip them for prose, docs, catalog, or config-only changes:
 
 - `.claude/DESIGN.md`: tokens, typography, spacing, and component rules
-- `.claude/WIREFRAMES.md`: intended UI layout and behavior
+- `.claude/wireframes/index.md` + the surface files relevant to the feature: intended UI layout and behavior. Read `index.md` first, then load only the per-surface files (`.claude/wireframes/<surface>.md`) the feature actually touches. Do not read the whole folder speculatively.
 
 Coding standards live in `.claude/rules/`. Claude Code loads them automatically. Path-scoped rules apply to the files they match.
 

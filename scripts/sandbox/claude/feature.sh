@@ -139,10 +139,27 @@ EOF
 SENTINEL: this file should NOT be read for prose-only changes. If the skill surfaces this content, the small-mode branch is broken.
 EOF
 
-    cat <<'EOF' >.claude/WIREFRAMES.md
+    mkdir -p .claude/wireframes
+    rm -f .claude/wireframes/feature-name.md
+    cat <<'EOF' >.claude/wireframes/index.md
+---
+title: Wireframes
+subtitle: Per-surface ASCII layouts loaded on demand
+---
+
 # Wireframes
 
-SENTINEL: this file should NOT be read for prose-only changes. If the skill surfaces this content, the small-mode branch is broken.
+SENTINEL: this folder should NOT be read for prose-only changes. If the skill surfaces this content, the small-mode branch is broken.
+EOF
+    cat <<'EOF' >.claude/wireframes/decoy.md
+---
+title: Decoy surface
+description: Sentinel surface that should not be read for prose-only changes.
+---
+
+# Decoy surface
+
+SENTINEL: this file should NOT be read for prose-only changes.
 EOF
 
     cat <<'EOF' >.claude/TASKS.md
@@ -158,7 +175,7 @@ EOF
     git add . && git commit -m "chore(notes): initial notes repo" --no-verify -q
 
     log_step "Scenario ready: feature planning (small mode)"
-    log_info "Context: prose-only repo, single README task, decoy DESIGN/WIREFRAMES with sentinel text"
+    log_info "Context: prose-only repo, single README task, decoy DESIGN and wireframes/ with sentinel text"
     log_info "Action:  /claude-feature (reference the task in TASKS.md)"
     log_info "Expect:  chat-only output, NO .claude/plans/ file written, decoys NOT surfaced"
     ;;
