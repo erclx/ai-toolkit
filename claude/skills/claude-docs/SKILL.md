@@ -83,7 +83,7 @@ Output one line per finding:
 
 If the sweep finds nothing, skip silently.
 
-## Step 4: flag diagram staleness
+## Step 5: flag diagram staleness
 
 If `.claude/DIAGRAMS.md` exists at `pwd` and this session edited any source `claude-diagram` reads (planning docs, deploy or infrastructure config, top-level component folders), surface a one-line warning:
 
@@ -91,7 +91,7 @@ If `.claude/DIAGRAMS.md` exists at `pwd` and this session edited any source `cla
 
 Do not regenerate inline. The author decides when to re-run the diagram skill. Skip the step silently when `.claude/DIAGRAMS.md` does not exist.
 
-## Step 5: refresh context entries
+## Step 6: refresh context entries
 
 Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
 
@@ -108,7 +108,7 @@ Write each updated entry immediately. Output one line per file:
 
 The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
-## Step 5: sweep consumed scratch
+## Step 7: sweep consumed scratch
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
