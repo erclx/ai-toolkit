@@ -38,7 +38,7 @@ External release identity used in git tags and release notes. Independent of pha
 ## Rules
 
 - PR titles describe the user-observable change in conventional-commit form. Do not prefix or suffix with phase labels.
-- Commit subjects follow `standards/commit.md`. Do not embed phase labels.
+- Commit subjects do not embed phase labels.
 - Git tags use semver only. Phase labels never become tags.
 - A PR that cuts a release may reference its semver tag in the title or body. Phase labels still do not appear.
 
