@@ -106,6 +106,7 @@ unrequested
 upstreaming
 vitejs
 wireframes
+wordlist
 worktree
 worktrees
 wshobson

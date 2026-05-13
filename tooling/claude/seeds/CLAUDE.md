@@ -20,6 +20,7 @@ The project uses a three-tier context model. Know which tier holds what before r
 - On simplification requests, edit only what the user named.
 - Do not add features the user did not ask for.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
+- When planning an edit to `CLAUDE.md`, show the proposed change as a fenced `diff` block in chat first, then wait for approval before calling `Edit`
 
 ## Indexes
 
