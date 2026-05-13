@@ -55,7 +55,7 @@ Review the full diff and changed file contents for:
 4. Security issues relevant to the project context
 5. Violations of rules from `.claude/rules/` that apply to the changed files
 
-Use `CLAUDE.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, and the auto-loaded `.claude/rules/` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
+Use `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`, and the auto-loaded `.claude/rules/` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
 
 ### High-signal filter
 

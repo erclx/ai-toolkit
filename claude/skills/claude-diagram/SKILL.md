@@ -7,7 +7,7 @@ description: Drafts `.claude/DIAGRAMS.md` with one or more Mermaid diagrams desc
 
 ## Guards
 
-- If no `.claude/ARCHITECTURE.md`, no `.claude/REQUIREMENTS.md`, and no top-level folder structure to scan, stop: `❌ No source signal. Add ARCHITECTURE.md or run inside a project folder.`
+- If no `.claude/ARCHITECTURE.md`, no `.claude/REQUIREMENTS.md`, and no top-level folder structure to scan, stop: `❌ No source signal. Add .claude/ARCHITECTURE.md or run inside a project folder.`
 
 ## Step 1: read sources in parallel
 
@@ -28,7 +28,7 @@ Emit a diagram only when its source signal exists. Skip the rest, do not pad the
 - **Components** (`flowchart TB` with `subgraph` boundaries): always, when any signal exists. Shows the layered structure of the system.
 - **Request flow** (`sequenceDiagram`): when prose describes a request lifecycle, an agent loop, or interaction between actors
 - **Data pipeline** (`flowchart TB`): when prose mentions retrieval, ranking, queues, ETL, or pipelines
-- **Deployment** (`flowchart TB`): when the top-level listing contains deploy or infrastructure config, or `ARCHITECTURE.md` has a deploy section
+- **Deployment** (`flowchart TB`): when the top-level listing contains deploy or infrastructure config, or `.claude/ARCHITECTURE.md` has a deploy section
 
 Stay inside `flowchart` and `sequenceDiagram`. Do not emit C4, state, ER, or class diagrams. They render inconsistently across viewers.
 

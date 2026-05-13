@@ -20,7 +20,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 ## Step 2: identify surfaces
 
-List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `TASKS.md` as in-progress.
+List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `.claude/TASKS.md` as in-progress.
 
 ## Step 3: audit each surface
 
@@ -31,7 +31,7 @@ For each surface, look for:
 3. **Inconsistencies**: spacing, tone of voice, interaction patterns, icon use, keyboard affordances
 4. **Roughness in daily use**: friction, redundant steps, unclear affordances, ambiguous labels
 
-Use `DESIGN.md` and the per-surface `.claude/wireframes/<surface>.md` files as ground truth for intent. For each implementation surface, read the matching wireframe file before flagging drift. Observations only, no implementation suggestions or fixes.
+Use `.claude/DESIGN.md` and the per-surface `.claude/wireframes/<surface>.md` files as ground truth for intent. For each implementation surface, read the matching wireframe file before flagging drift. Observations only, no implementation suggestions or fixes.
 
 ## Step 4: report and persist
 
