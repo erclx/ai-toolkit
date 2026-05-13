@@ -21,6 +21,8 @@ Read `docs/claude.md` for plugin setup, skills inventory, and aitk claude CLI be
 - Plugin skills under `claude/skills/` do not use the `aitk-*` prefix. That prefix is reserved for internal skills under `.claude/skills/`. If a plan suggests `aitk-*` for a plugin skill, flag the mismatch before creating the folder.
 - When handing off a plugin skill test from a linked worktree, print the two-line invocation block: `cd` to the sandbox path, then `claude --plugin-dir <worktree-root>/claude --model sonnet`. Without `--plugin-dir`, Claude loads main's stale copy. Default to `--model sonnet` for skill testing.
 - For unconditional pre-push or per-edit automation (formatters, audits, scaffold checks), propose a husky hook instead of a CLAUDE.md or skill bullet. CLAUDE.md only fires when Claude is acting. A hook fires for everyone.
+- When extending PostToolUse hooks (`standards-audit` and similar), ship only unambiguous regex bans. Defer wordlist or pattern checks to the end-of-cycle `claude-standards-audit` skill. State the two-layer split when proposing hook scope changes.
+- Default cross-project Claude behavior rules (output formatting, path-printing, etc.) to the seeded `CLAUDE.md` plus the toolkit's own `CLAUDE.md`. Reserve `~/.claude/` for environment-specific config (terminal capability, machine specifics).
 
 ## Couplings
 
@@ -34,7 +36,7 @@ When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
 - Add the skill to the skills table in `docs/claude.md`
-- Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point.
+- Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point. Exception: skills whose body explicitly forbids probing, listing, grepping, or reading project surfaces have nothing for a seeded sandbox to anchor against. Skip the scenario for these and do not list it as a follow-up.
 - Claude sandboxes provision fixture state only. The user runs `claude` from the scenario directory and invokes the skill manually. "Sandbox cannot drive Claude" is not a reason to skip one, because driving is not its job.
 - Do not create a matching Gemini command unless explicitly requested. Parity only applies when an existing counterpart changes. Never create a new Antigravity workflow, the surface is frozen.
 
