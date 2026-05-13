@@ -7,9 +7,9 @@ description: Drafts `.claude/DESIGN.md` on day one of a project from `REQUIREMEN
 
 ## Guards
 
-- If `.claude/DESIGN.md` already exists and has content beyond the seed template, stop: `❌ DESIGN.md already populated. Edit directly or archive the existing file first.`
-- If `.claude/REQUIREMENTS.md` is missing, stop: `❌ REQUIREMENTS.md not found. Write requirements before proposing a design system.`
-- If `REQUIREMENTS.md` has no `## Personality` section, stop: `❌ REQUIREMENTS.md missing ## Personality section. Add a paragraph describing voice and tone before running this skill.`
+- If `.claude/DESIGN.md` already exists and has content beyond the seed template, stop: `❌ .claude/DESIGN.md already populated. Edit directly or archive the existing file first.`
+- If `.claude/REQUIREMENTS.md` is missing, stop: `❌ .claude/REQUIREMENTS.md not found. Write requirements before proposing a design system.`
+- If `.claude/REQUIREMENTS.md` has no `## Personality` section, stop: `❌ .claude/REQUIREMENTS.md missing ## Personality section. Add a paragraph describing voice and tone before running this skill.`
 - If `aitk` is not on PATH, stop: `❌ aitk CLI not found.`
 
 ## Step 1: read source signals in parallel
@@ -41,7 +41,7 @@ Every proposed table cell is speculative, so every filled table cell gets a trai
 
 Anchor proposals to signals, not defaults. If the personality says "calm and dense", that pins muted grays and tight spacing. If the requirements say "no motion", Motion writes `No animation.` with no tag. If the architecture names a CLI-only surface, Typography leans monospaced and Borders stays minimal.
 
-- **Personality**: transcribe the `## Personality` paragraph from `REQUIREMENTS.md` verbatim. This is the one section that is not a proposal. No tag.
+- **Personality**: transcribe the `## Personality` paragraph from `.claude/REQUIREMENTS.md` verbatim. This is the one section that is not a proposal. No tag.
 - **Color**: one row per role. Rewrite the Intent cell in personality language, for example `warm off-white page canvas` instead of the seed default `page canvas`. Propose hex values that match the personality. Dense and calm → low saturation, high text contrast. Playful → saturated accents. Every Intent and Value cell gets `? verify`.
 - **Typography**: one row per role. Propose families that fit the platform (system UI for web, monospaced for CLI tools, serif for editorial) and a harmonious scale. Every cell gets `? verify`.
 - **Spacing**: propose a base unit that matches density intent. Dense → 4px base. Roomy → 8px base. Keep the Multiplier column as the seed ships it, no tag. Only the Value column gets `? verify`.

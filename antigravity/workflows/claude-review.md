@@ -48,7 +48,7 @@ Review the full diff and changed file contents for:
 4. Security issues relevant to the project context
 5. Violations of rules defined in `GOV.md`
 
-Use `CLAUDE.md`, `GEMINI.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, and `GOV.md` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
+Use `CLAUDE.md`, `GEMINI.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`, and `GOV.md` as project context to inform what is intentional vs problematic. Do not fix, rewrite, or suggest refactors outside the scope of a finding.
 
 ### Severity
 
