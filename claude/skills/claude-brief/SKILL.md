@@ -20,7 +20,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
 - `.claude/TASKS.md`: locate the named entry and read its outcomes plus test strategy
-- `.claude/ROADMAP.md`: parallel-safety and phase ordering, if it exists
+- `.claude/briefs/ROADMAP.md`: parallel-safety and phase ordering, if it exists
 - `.claude/context/index.md`: pick the relevant domain entries based on the task's outcomes, then read those entries
 
 ## Step 2: scan referenced surfaces

@@ -20,8 +20,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ├── GOV.md             ← retired. Removed by `aitk gov sync` if present from a prior install
 ├── settings.json      ← seeded. Project-level Claude Code config (PostToolUse hook only). User-level config installed separately via `aitk claude setup`.
 ├── plans/             ← execution detail for multi-step tasks, gitignored. `feature-*.md` entries swept by claude-docs.
-├── briefs/            ← orchestrator-authored handoff context per task, gitignored. Drafted by claude-brief, swept by claude-docs.
-├── ROADMAP.md         ← optional cross-block coordination map, gitignored. Created on demand when streams cross two.
+├── briefs/            ← orchestrator-authored handoff context per task, gitignored. Drafted by claude-brief, swept by claude-docs. Houses the optional `ROADMAP.md` cross-block coordination map when streams cross two.
 ├── review/            ← scratch for claude-review and claude-ui-test output, gitignored
 ├── .tmp/              ← ephemeral scratch space, gitignored
 └── memory/            ← session memory files, gitignored
@@ -29,7 +28,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 
 ## Gitignore
 
-- `# Claude`: `.claude/.tmp/`, `.claude/briefs/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/ROADMAP.md`, `.claude/worktrees/`, `.claude/TASKS.md`
+- `# Claude`: `.claude/.tmp/`, `.claude/briefs/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`, `.claude/TASKS.md`
 
 ## CLI
 
