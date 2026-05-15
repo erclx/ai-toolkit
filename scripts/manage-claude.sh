@@ -406,59 +406,63 @@ cmd_sync() {
   done
 
   log_step "Scanning .gitignore"
+  local gi_pruned=0
+  prune_gitignore "claude" "$target" gi_pruned
   collect_gitignore_entries "$target" gi_pending
 
   local total=$((${#drifted[@]} + ${#gi_pending[@]}))
 
-  if [ "$total" -eq 0 ]; then
+  if [ "$total" -eq 0 ] && [ "$gi_pruned" -eq 0 ]; then
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Claude workflow up to date${NC}"
     return
   fi
 
-  local summary=""
-  [ "${#drifted[@]}" -gt 0 ] && summary+="${#drifted[@]} roles"
-  [ "${#gi_pending[@]}" -gt 0 ] && {
-    [ -n "$summary" ] && summary+=", "
-    summary+="${#gi_pending[@]} .gitignore"
-  }
+  if [ "$total" -gt 0 ]; then
+    local summary=""
+    [ "${#drifted[@]}" -gt 0 ] && summary+="${#drifted[@]} roles"
+    [ "${#gi_pending[@]}" -gt 0 ] && {
+      [ -n "$summary" ] && summary+=", "
+      summary+="${#gi_pending[@]} .gitignore"
+    }
 
-  if [ "${AITK_NON_INTERACTIVE:-}" = "1" ]; then
-    log_info "Applying $total update(s) (non-interactive)"
-  else
-    if [ "${#drifted[@]}" -gt 0 ]; then
-      select_option "Apply $total update(s) ($summary)?" "Review diffs" "Apply all" "Cancel"
+    if [ "${AITK_NON_INTERACTIVE:-}" = "1" ]; then
+      log_info "Applying $total update(s) (non-interactive)"
     else
-      select_option "Apply $total update(s) ($summary)?" "Apply all" "Cancel"
-    fi
+      if [ "${#drifted[@]}" -gt 0 ]; then
+        select_option "Apply $total update(s) ($summary)?" "Review diffs" "Apply all" "Cancel"
+      else
+        select_option "Apply $total update(s) ($summary)?" "Apply all" "Cancel"
+      fi
 
-    case "$SELECTED_OPTION" in
-    "Review diffs")
-      for file in "${drifted[@]}"; do
-        code --diff "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
-      done
-      select_option "Apply $total update(s)?" "Apply all" "Cancel"
-      [ "$SELECTED_OPTION" = "Cancel" ] && {
+      case "$SELECTED_OPTION" in
+      "Review diffs")
+        for file in "${drifted[@]}"; do
+          code --diff "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
+        done
+        select_option "Apply $total update(s)?" "Apply all" "Cancel"
+        [ "$SELECTED_OPTION" = "Cancel" ] && {
+          log_warn "Cancelled"
+          exit 1
+        }
+        ;;
+      "Cancel")
         log_warn "Cancelled"
         exit 1
-      }
-      ;;
-    "Cancel")
-      log_warn "Cancelled"
-      exit 1
-      ;;
-    esac
-  fi
+        ;;
+      esac
+    fi
 
-  log_step "Applying changes"
-  for file in "${drifted[@]}"; do
-    cp "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
-    log_add ".claude/$file"
-  done
+    log_step "Applying changes"
+    for file in "${drifted[@]}"; do
+      cp "$CLAUDE_ROLES_DIR/$file" "$target/.claude/$file"
+      log_add ".claude/$file"
+    done
 
-  if [ "${#gi_pending[@]}" -gt 0 ]; then
-    merge_gitignore "claude" "$target"
+    if [ "${#gi_pending[@]}" -gt 0 ]; then
+      merge_gitignore "claude" "$target"
+    fi
   fi
 
   trap - EXIT
