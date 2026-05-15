@@ -27,10 +27,10 @@ Ask exactly four questions in chat. Each carries a proposed default derived from
 ```markdown
 **Discovery:**
 
-1. Audience — proposing: technical peers. Override?
-2. Length — proposing: 75-90s. Override?
-3. Hero moment — proposing: <best guess from context, or "the single thing that has to land">. Override?
-4. What to cut — proposing: <best guess, or "anything that is not the hero moment">. Override?
+1. Audience: proposing technical peers. Override?
+2. Length: proposing 75-90s. Override?
+3. Hero moment: proposing <best guess from context, or "the single thing that has to land">. Override?
+4. What to cut: proposing <best guess, or "anything that is not the hero moment">. Override?
 ```
 
 Wait for answers before drafting. Do not infer silence as acceptance.
