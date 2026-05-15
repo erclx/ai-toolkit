@@ -245,6 +245,122 @@ merge_gitignore() {
   done <"$manifest"
 }
 
+prune_gitignore() {
+  local stack_name="$1"
+  local target_path="${2:-.}"
+  local __prune_discard=0
+  local -n _pruned=${3:-__prune_discard}
+  local tooling_dir="$PROJECT_ROOT/tooling"
+  local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  if [ ! -f "$manifest" ]; then
+    return
+  fi
+
+  local extends
+  extends=$(grep '^extends' "$manifest" | cut -d'"' -f2)
+
+  if [ -n "$extends" ]; then
+    prune_gitignore "$extends" "$target_path" _pruned
+  fi
+
+  local gitignore="$target_path/.gitignore"
+  [ ! -f "$gitignore" ] && return
+
+  local in_section=0
+  local current_header=""
+  local current_entries=()
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\[gitignore\] ]]; then
+      in_section=1
+      continue
+    fi
+
+    if [[ "$in_section" -eq 1 && "$line" =~ ^\[.+\] ]]; then
+      break
+    fi
+
+    [ "$in_section" -eq 0 ] && continue
+    [ -z "$line" ] && continue
+
+    if [[ "$line" =~ ^\"(#[^\"]+)\"[[:space:]]*=[[:space:]]*\[(.*)$ ]]; then
+      current_header="${BASH_REMATCH[1]}"
+      current_entries=()
+      local rest="${BASH_REMATCH[2]}"
+
+      if [[ "$rest" =~ \] ]]; then
+        rest="${rest%%]*}"
+        while IFS= read -r entry; do
+          entry=$(echo "$entry" | tr -d '",' | xargs)
+          [ -n "$entry" ] && current_entries+=("$entry")
+        done < <(echo "$rest" | tr ',' '\n')
+
+        prune_gitignore_section "$gitignore" "$current_header" _pruned "${current_entries[@]}"
+      fi
+
+      current_header=""
+      current_entries=()
+    fi
+  done <"$manifest"
+}
+
+prune_gitignore_section() {
+  local gitignore="$1"
+  local header="$2"
+  local -n _pruned_total=$3
+  shift 3
+  local allowed=("$@")
+
+  local tmpfile
+  tmpfile=$(mktemp)
+  local in_section=0
+  local removed=()
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$line" = "$header" ]; then
+      in_section=1
+      printf '%s\n' "$line" >>"$tmpfile"
+      continue
+    fi
+
+    if [ "$in_section" -eq 1 ]; then
+      if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
+        in_section=0
+        printf '%s\n' "$line" >>"$tmpfile"
+        continue
+      fi
+
+      local keep=0
+      local normalized_line="${line%/}"
+      for entry in "${allowed[@]}"; do
+        if [ "$line" = "$entry" ] || [ "$normalized_line" = "${entry%/}" ]; then
+          keep=1
+          break
+        fi
+      done
+
+      if [ "$keep" -eq 1 ]; then
+        printf '%s\n' "$line" >>"$tmpfile"
+      else
+        removed+=("$line")
+      fi
+    else
+      printf '%s\n' "$line" >>"$tmpfile"
+    fi
+  done <"$gitignore"
+
+  if [ "${#removed[@]}" -gt 0 ]; then
+    mv "$tmpfile" "$gitignore"
+    _pruned_total=$((_pruned_total + ${#removed[@]}))
+    for entry in "${removed[@]}"; do
+      log_rem "$entry"
+    done
+  else
+    rm -f "$tmpfile"
+  fi
+}
+
 resolve_missing_deps() {
   local stack_name="$1"
   local target_path="$2"
