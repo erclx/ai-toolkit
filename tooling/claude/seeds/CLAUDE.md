@@ -54,7 +54,7 @@ The project uses a three-tier context model. Know which tier holds what before r
 - `.claude/rules/`: path-scoped coding standards loaded by Claude Code on file match
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `.claude/briefs/`: orchestrator-authored handoff context per task (outcomes, constraints, files to read, open questions). Gitignored, deleted on ship like plans.
-- `.claude/plans/ROADMAP.md`: cross-block coordination map. Optional, created when two or more streams run in parallel.
+- `.claude/briefs/ROADMAP.md`: cross-block coordination map. Optional, created when two or more streams run in parallel.
 
 ## Spelling
 

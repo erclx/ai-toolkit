@@ -26,14 +26,14 @@ External release identity used in git tags and release notes. Independent of pha
 
 ## Where each appears
 
-| Surface                                                           | Phase labels | Semver tags                         |
-| ----------------------------------------------------------------- | ------------ | ----------------------------------- |
-| `.claude/TASKS.md`, `.claude/briefs/`, `.claude/plans/ROADMAP.md` | yes          | no                                  |
-| Chat with the operator                                            | yes          | no                                  |
-| PR titles                                                         | no           | only when the PR cuts a release     |
-| Commit messages                                                   | no           | only when the commit cuts a release |
-| Git tags                                                          | no           | yes                                 |
-| README and `CHANGELOG.md`                                         | no           | yes                                 |
+| Surface                                                        | Phase labels | Semver tags                         |
+| -------------------------------------------------------------- | ------------ | ----------------------------------- |
+| `.claude/TASKS.md`, `.claude/briefs/` (including `ROADMAP.md`) | yes          | no                                  |
+| Chat with the operator                                         | yes          | no                                  |
+| PR titles                                                      | no           | only when the PR cuts a release     |
+| Commit messages                                                | no           | only when the commit cuts a release |
+| Git tags                                                       | no           | yes                                 |
+| README and `CHANGELOG.md`                                      | no           | yes                                 |
 
 ## Rules
 
