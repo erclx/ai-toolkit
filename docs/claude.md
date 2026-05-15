@@ -20,6 +20,7 @@ claude/
 │   ├── claude-memory-capture/ ← extract durable patterns from the session into `.claude/memory/`
 │   ├── claude-memory-review/ ← review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete
 │   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
+│   ├── claude-screencast/   ← draft a stack-agnostic screencast script with pre-seeded beats and defaults
 │   ├── claude-standards-audit/ ← audit changed markdown files against applicable authoring standards
 │   ├── claude-ui-test/      ← generate and run Playwright e2e tests for UI changes
 │   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
@@ -148,6 +149,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                             |
 | `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
 | `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                          |
+| `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
 | `claude-seed-sync`       | Audit installed seed docs and standards against toolkit sources, write per-section proposals |
 | `claude-standards-audit` | Audit changed markdown files against applicable authoring standards, reporting only          |
 | `claude-ui-test`         | Generate and run Playwright e2e tests, with manual checklist for visual-only items           |
