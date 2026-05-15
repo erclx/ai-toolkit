@@ -1,6 +1,6 @@
 ---
 name: claude-screencast
-description: Drafts a screencast script with pre-seeded beats, defaults, and decisions to `.claude/.tmp/screencast/<slug>.md`. Reads project context, asks four discovery questions with proposed defaults, then writes a shippable draft. Use when asked to "draft a screencast", "write a recording script", "plan a demo video", or "scaffold a screencast for X". Do NOT use to edit an existing script. Re-running overwrites.
+description: Drafts a screencast script with pre-seeded beats, defaults, and decisions to `.claude/.tmp/screencast/<slug>.md`. Reads project context, asks four discovery questions with proposed defaults, then writes a shippable draft. Use when asked to "draft a screencast", "write a recording script", "plan a demo video", or "scaffold a screencast for X". Do NOT re-invoke to refine an existing draft. Re-running overwrites. Edit the draft file directly.
 ---
 
 # Claude screencast
