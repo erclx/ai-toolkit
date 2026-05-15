@@ -16,7 +16,9 @@ Read `docs/indexes.md` from the toolkit if context on the system is needed befor
 
 ## Scan
 
-Walk the project root for folders containing three or more sibling `*.md` files. Prune `.git`, `node_modules`, `.claude`, anything matched by `.gitignore`, and any folder that already contains an `index.md`.
+Walk the project root for folders containing three or more sibling `*.md` files. Prune `.git`, `node_modules`, `.claude`, `snippets`, anything matched by `.gitignore`, and any folder that already contains an `index.md`.
+
+Skip `snippets/` even when it lives at a non-root path. Snippets are invoked by reference (`@snippet-name`) rather than browsed, so they need neither `index.md` nor per-file frontmatter. Adding them creates noise that targets keep reporting.
 
 For each candidate, capture:
 
