@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 

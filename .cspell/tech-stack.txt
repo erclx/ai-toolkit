@@ -36,6 +36,7 @@ modelfile
 monkeypatch
 mypy
 nameref
+namerefs
 nextjs
 noopener
 noreferrer

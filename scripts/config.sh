@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -z "${GITHUB_ORG:-}" ]; then
   _origin_url="$(git config --get remote.origin.url 2>/dev/null || true)"

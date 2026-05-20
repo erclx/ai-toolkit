@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 resolve_sandbox_git_identity() {
   SANDBOX_GIT_NAME="${SANDBOX_GIT_NAME:-$(git config --global user.name 2>/dev/null || true)}"

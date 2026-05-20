@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 inject_governance() {
   log_step "Injecting governance assets"

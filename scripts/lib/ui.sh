@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+  echo "aitk requires bash 4 or newer. Current: ${BASH_VERSION:-unknown}." >&2
+  echo "Install via Homebrew: brew install bash" >&2
+  exit 1
+fi
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'

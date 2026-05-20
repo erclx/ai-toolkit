@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 TOOLING_STACK_EXCLUDE=("claude")
 
