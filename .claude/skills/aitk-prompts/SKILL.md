@@ -23,7 +23,7 @@ Read `docs/prompts.md` for system overview and categories before editing.
 ## Exportable prompts
 
 - When adding an exportable prompt, register it under the appropriate category in `prompts.toml` using the file stem as the name.
-- `essentials` is the curated minimum installed by `aitk init` when `--with prompts` is selected. Keep it tight: only prompts that earn their weight on nearly every project. Slugs may overlap with other categories.
+- `essentials` is the curated minimum for `aitk prompts install`. Keep it tight: only prompts that earn their weight on nearly every project. Slugs may overlap with other categories.
 
 ## Sync checklist
 
