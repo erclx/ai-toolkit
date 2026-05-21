@@ -40,7 +40,6 @@ Read these from the project root in parallel, skipping any that do not exist:
 - **Optional domains (`--with`):**
   - `standards`: include if `docs/`, `standards/`, or `.claude/` already exists in the project
   - `prompts`: never auto-enable. Add only if the user asked for it.
-  - `antigravity`: never auto-enable. Add only if the user asked for it.
 - **Skip (`--skip`):** only `wiki` is supported. Default is keep wiki on.
 
 ## Gap handling

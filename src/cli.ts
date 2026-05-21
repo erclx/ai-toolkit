@@ -11,7 +11,6 @@ import { register as prompts } from '@/commands/prompts'
 import { register as tooling } from '@/commands/tooling'
 import { register as claude } from '@/commands/claude'
 import { register as wiki } from '@/commands/wiki'
-import { register as antigravity } from '@/commands/antigravity'
 import { register as indexes } from '@/commands/indexes'
 import { register as design } from '@/commands/design'
 import { register as feedback } from '@/commands/feedback'
@@ -36,7 +35,6 @@ function showHelp(): void {
     `${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks (sync, ref, create)${NC}`,
     `${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}`,
     `${GREY}│${NC}    wiki [cmd]         ${GREY}# Wiki commands (init)${NC}`,
-    `${GREY}│${NC}    antigravity [cmd]  ${GREY}# Antigravity workflows (install, sync)${NC}`,
     `${GREY}│${NC}    indexes [cmd]      ${GREY}# Regenerate index.md files (regen)${NC}`,
     `${GREY}│${NC}    design [cmd]       ${GREY}# Design system commands (render)${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/${NC}`,
@@ -61,8 +59,6 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk tooling sync base`,
     `${GREY}│${NC}    aitk tooling create`,
     `${GREY}│${NC}    aitk claude prompt`,
-    `${GREY}│${NC}    aitk antigravity install git ../my-app`,
-    `${GREY}│${NC}    aitk antigravity sync ../my-app`,
     `${GREY}│${NC}    aitk indexes regen`,
     `${GREY}│${NC}    aitk indexes regen --dry-run --json`,
     `${GREY}│${NC}    aitk design render`,
@@ -95,7 +91,6 @@ prompts(program)
 tooling(program)
 claude(program)
 wiki(program)
-antigravity(program)
 indexes(program)
 design(program)
 feedback(program)

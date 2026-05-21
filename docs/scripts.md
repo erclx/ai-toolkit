@@ -31,7 +31,6 @@ src/
     ├── tooling.ts       ← pass-through to manage-tooling.sh
     ├── claude.ts        ← pass-through to manage-claude.sh
     ├── wiki.ts          ← pass-through to manage-wiki.sh
-    ├── antigravity.ts   ← pass-through to manage-antigravity.sh
     └── indexes.ts       ← pass-through to manage-indexes.sh
 
 scripts/
@@ -43,7 +42,6 @@ scripts/
 ├── manage-tooling.sh    ← aitk tooling entry point
 ├── manage-snippets.sh       ← aitk snippets entry point
 ├── manage-prompts.sh        ← aitk prompts entry point
-├── manage-antigravity.sh    ← aitk antigravity entry point
 ├── manage-wiki.sh           ← aitk wiki entry point
 ├── manage-indexes.sh        ← aitk indexes entry point
 ├── config.sh            ← shared project config (GITHUB_ORG with git remote fallback)
@@ -103,7 +101,7 @@ scripts/
 
 ## manage-sync.sh
 
-`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, antigravity, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
+`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
 
 Claude role sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. Role drift lands under a `claude/` domain line when any of `PLANNER.md`, `IMPLEMENTER.md`, or `REVIEWER.md` changed. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
