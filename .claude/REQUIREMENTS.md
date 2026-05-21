@@ -60,7 +60,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 
 - Bun for CLI runtime and scripts
 - TypeScript with Commander for the CLI entry point
-- Bash for domain scripts, sandbox provisioning, and hook functions
+- Bash 4+ for domain scripts, sandbox provisioning, and hook functions
 - Markdown for all authored content
 - Git and GitHub CLI for ship workflows
 

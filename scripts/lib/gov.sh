@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 strip_frontmatter() {
   local file="$1"

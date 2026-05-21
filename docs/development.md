@@ -11,6 +11,7 @@ Local dev workflow for the toolkit.
 ## Setup
 
 - Install [Bun](https://bun.sh): `curl -fsSL https://bun.sh/install | bash`
+- Install bash 4+ on macOS: `brew install bash`.
 - Install dependencies: `bun install`
 
 ## Scripts

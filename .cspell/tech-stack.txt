@@ -36,6 +36,7 @@ modelfile
 monkeypatch
 mypy
 nameref
+namerefs
 nextjs
 noopener
 noreferrer
@@ -75,6 +76,7 @@ uv
 uvicorn
 venv
 vercel
+versinfo
 vite
 vitest
 withgoogle

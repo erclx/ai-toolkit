@@ -14,7 +14,8 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 
 ### Script Setup
 
-- Start with `#!/bin/bash`, `set -e`, and `set -o pipefail`.
+- Start with `#!/usr/bin/env bash`, `set -e`, and `set -o pipefail`.
+- Bash 4+ features (namerefs, associative arrays) are allowed.
 - Implement visual help screen (using `show_help`) if script accepts arguments.
 - Do not rely on unset variables (use `${VAR:-default}`).
 
@@ -297,7 +298,7 @@ run_check() {
 **Complete Script Structure:**
 
 ```bash
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -o pipefail
 
@@ -338,7 +339,7 @@ main "$@"
 **Example:**
 
 ```bash
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -o pipefail
 
@@ -429,7 +430,7 @@ main "$@"
 
 Before responding, verify:
 
-- File starts with shebang, `set -e`, `set -o pipefail` and uses exactly 2 spaces for indentation.
+- File starts with `#!/usr/bin/env bash`, `set -e`, `set -o pipefail` and uses exactly 2 spaces for indentation.
 - Timeline opens via `open_timeline "Title"`, which writes `┌` and `│ Title` to stderr.
 - Timeline closes via `trap close_timeline EXIT` registered immediately after `open_timeline`. Success paths use `trap - EXIT` then manual `└\n` (to stderr) then success message. Cancellation and error paths never print `└` manually. The trap owns those.
 - `open_timeline` and `close_timeline` are defined and write to stderr via `>&2`.
