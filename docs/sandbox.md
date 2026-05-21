@@ -31,7 +31,7 @@ scripts/sandbox/
 │   ├── tooling.sh        ← interactive tests for tooling commands
 │   ├── antigravity.sh    ← interactive tests for antigravity install and sync
 │   ├── wiki.sh           ← interactive tests for wiki commands
-│   └── indexes.sh        ← scenarios for aitk indexes regen, including lint-staged auto-stage and --no-stage, plus a bootstrap seed for the indexes-install skill
+│   └── indexes.sh        ← scenarios for aitk indexes regen, including lint-staged auto-stage and --no-stage, plus a bootstrap seed for the setup-indexes skill
 ├── git/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
@@ -48,12 +48,12 @@ scripts/sandbox/
 │   ├── docs.sh         ← stale planning docs after a session pivot for testing /claude-docs
 │   ├── seed-sync.sh    ← drifted seeds for testing /claude-seed-sync
 │   ├── standards-audit.sh ← markdown branch with seeded prose and skill violations for testing /claude-standards-audit
-│   ├── init-project.sh ← scenarios for /toolkit:init-project (fresh, vite-react, astro)
+│   ├── setup-init.sh ← scenarios for /toolkit:setup-init (fresh, vite-react, astro)
 │   ├── design-extract.sh ← tokenized notes app for testing /toolkit:claude-design-extract and aitk design render
 │   ├── design-propose.sh ← greenfield project with personality paragraph for testing /toolkit:claude-design-propose
 │   ├── diagram.sh        ← multi-component project with layered ARCHITECTURE.md for testing /toolkit:claude-diagram
 │   ├── memory.sh         ← seeded .claude/memory/ mix for testing /toolkit:claude-memory-review
-│   ├── verify-scaffold.sh ← scaffolded project scenarios for testing /toolkit:verify-scaffold (pass, fail)
+│   ├── setup-verify.sh ← scaffolded project scenarios for testing /toolkit:setup-verify (pass, fail)
 │   └── worktree.sh       ← scenarios for /toolkit:claude-worktree (matched-plan, multi-plan, branch-only)
 ├── dev/
 │   ├── apply.sh       ← file changes scenario for testing /dev:apply
@@ -134,7 +134,7 @@ By default, sandboxes are minimal: no seeds, no standards, no gov rules, no Gemi
 
 Rule for `claude/` scenarios: default to `SANDBOX_INJECT_SEEDS="true"` so each scenario models a real post-`aitk init` project state. Two documented exceptions:
 
-- `init-project.sh`: tests `aitk init` itself, so pre-injecting seeds would invalidate the test.
+- `setup-init.sh`: tests `aitk init` itself, so pre-injecting seeds would invalidate the test.
 - `autoship.sh`: the anchor wipe in `stage_setup` runs after asset injection and would delete the seeded files.
 
 ### use_anchor

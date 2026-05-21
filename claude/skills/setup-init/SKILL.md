@@ -1,6 +1,6 @@
 ---
-name: init-project
-description: Detects a new project's type and runs `aitk init` with resolved stack, snippets, and optional domains in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `gov-install` instead.
+name: setup-init
+description: Detects a new project's type and runs `aitk init` with resolved stack, snippets, and optional domains in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
 ---
 
 # Init project
@@ -47,7 +47,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 
 If a detected technology has no matching rule or stack, do not guess. Surface the gap and either:
 
-1. Defer to `gov-install`. Author a rule in the toolkit, then re-run this skill.
+1. Defer to `setup-gov`. Author a rule in the toolkit, then re-run this skill.
 2. Proceed with the matched layer, listing the gap in the final report.
 
 Rules, snippets, and stacks are authored in the toolkit repo, never in the target project on the fly.
@@ -97,7 +97,7 @@ Step 3: post-sync fixups. Golden configs arrive from sync, so no config generati
 
 Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files. Generating from prose duplicates what sync already installed.
 
-Step 4: invoke `verify-scaffold`. Runs the `package.json` scripts and reports pass/fail.
+Step 4: invoke `setup-verify`. Runs the `package.json` scripts and reports pass/fail.
 
 ## Report
 
@@ -106,6 +106,6 @@ After the chain, report:
 - Domains installed with a check per domain
 - Tooling stack synced (or skipped). Name the layers pulled via the extends chain.
 - Any post-sync fixups applied (ESLint pin, filename renames)
-- `verify-scaffold` outcome
+- `setup-verify` outcome
 - Any domains or scripts that failed
 - Any detection gaps surfaced during resolve

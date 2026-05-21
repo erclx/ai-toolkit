@@ -29,9 +29,9 @@ EOF
 
     git add . && git commit -m "chore(sandbox): scaffolded project with passing scripts" --no-verify -q
 
-    log_step "Scenario ready: verify-scaffold happy path"
+    log_step "Scenario ready: setup-verify happy path"
     log_info "Context: package.json with lint:fix, typecheck, check, test:run, build all echoing ok"
-    log_info "Action:  /toolkit:verify-scaffold"
+    log_info "Action:  /toolkit:setup-verify"
     log_info "Expect:  five green checks, summary 'Scaffold verified'"
     ;;
   "fail")
@@ -53,9 +53,9 @@ EOF
 
     git add . && git commit -m "chore(sandbox): scaffolded project with failing typecheck" --no-verify -q
 
-    log_step "Scenario ready: verify-scaffold fail path"
+    log_step "Scenario ready: setup-verify fail path"
     log_info "Context: package.json with typecheck that exits non-zero"
-    log_info "Action:  /toolkit:verify-scaffold"
+    log_info "Action:  /toolkit:setup-verify"
     log_info "Expect:  lint passes, typecheck fails, run stops before check/test/build, failing output surfaced"
     ;;
   *)

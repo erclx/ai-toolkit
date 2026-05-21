@@ -37,15 +37,13 @@ claude/
 │   ├── git-ship/            ← run the full post-feature workflow in one sequence
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
-│   ├── git-stash/           ← stash a focused subset of changes or pop by message match
 │   ├── git-worktree/        ← list and clean up linked worktrees after shipping
-│   ├── gov-install/         ← detect project stack and install matching governance rules
-│   ├── indexes-install/     ← bootstrap the index.md system in a target project
-│   ├── init-project/        ← detect project type and run one-shot `aitk init` with resolved flags
-│   ├── release-changelog/   ← generate changelog entry from commits and staged changes since main
 │   ├── session-resume/      ← resume from tracked work and relevant context at session start
-│   ├── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
-│   └── verify-scaffold/     ← run package.json scripts after scaffold to catch config and wiring mistakes
+│   ├── setup-gov/           ← detect project stack and install matching governance rules
+│   ├── setup-indexes/       ← bootstrap the index.md system in a target project
+│   ├── setup-init/          ← detect project type and run one-shot `aitk init` with resolved flags
+│   ├── setup-verify/        ← run package.json scripts after scaffold to catch config and wiring mistakes
+│   └── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
 └── .claude-plugin/
     └── plugin.json      ← plugin manifest
 
@@ -166,21 +164,19 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-pr`                 | Generate a PR description and open a pull request                                            |
 | `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
 | `git-stage`              | Batch-commit staged files grouped by concern                                                 |
-| `git-stash`              | Stash a focused subset of changes or pop by message match                                    |
 | `git-worktree`           | List and clean up linked worktrees after shipping                                            |
-| `gov-install`            | Detect project stack from files and install matching governance rules                        |
-| `indexes-install`        | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
-| `init-project`           | Detect project type and run one-shot `aitk init` with resolved flags                         |
-| `release-changelog`      | Generate a changelog entry from commits and staged changes since main                        |
+| `setup-gov`              | Detect project stack from files and install matching governance rules                        |
+| `setup-indexes`          | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
+| `setup-init`             | Detect project type and run one-shot `aitk init` with resolved flags                         |
 | `git-ship`               | Run the full post-feature workflow in one sequence                                           |
 | `session-resume`         | Resume from tracked work and relevant context at session start                               |
 | `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces            |
 | `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback` |
-| `verify-scaffold`        | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
+| `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`, `release-changelog`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
-Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `gov-install` is the reference.
+Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
 
 ## Internal skills
 

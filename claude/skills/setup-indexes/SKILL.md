@@ -1,5 +1,5 @@
 ---
-name: indexes-install
+name: setup-indexes
 description: Bootstraps the toolkit's `index.md` system in a target project. Scans for markdown-heavy folders, drafts `title` and `description` frontmatter, scaffolds `index.md` per chosen folder, and runs `aitk indexes regen` to validate. Use when asked to "set up indexes", "bootstrap indexes", "add index.md to this project", or "install indexes". Assumes the `aitk` CLI is on PATH.
 ---
 

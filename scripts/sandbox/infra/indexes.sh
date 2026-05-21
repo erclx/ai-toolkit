@@ -38,7 +38,7 @@ seed_bare_folder() {
   cat <<'EOF' >CLAUDE.md
 # Project
 
-Sample project for testing the indexes-install skill.
+Sample project for testing the setup-indexes skill.
 
 ## Rules
 
@@ -109,7 +109,7 @@ stage_setup() {
   log_info "path        : passes a positional file and confirms walk-up"
   log_info "lint-staged : stages sibling, regen stages regenerated index"
   log_info "no-stage    : same as lint-staged but --no-stage skips git add"
-  log_info "bootstrap   : seeds raw markdown for the indexes-install skill"
+  log_info "bootstrap   : seeds raw markdown for the setup-indexes skill"
 
   select_or_route_scenario "Which scenario?" "regen" "dry-run" "json" "opt-out" "path" "lint-staged" "no-stage" "bootstrap"
 
@@ -164,7 +164,7 @@ stage_setup() {
   "bootstrap")
     seed_bare_folder
     log_step "Seeded docs/ with 5 raw markdown files (no frontmatter, no index.md)"
-    log_info "Open Claude in this sandbox and invoke /indexes-install"
+    log_info "Open Claude in this sandbox and invoke /setup-indexes"
     log_info "The skill should detect docs/ as a candidate and walk the bootstrap flow"
     ;;
   *)

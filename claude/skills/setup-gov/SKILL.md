@@ -1,5 +1,5 @@
 ---
-name: gov-install
+name: setup-gov
 description: Detects a project's stack from its files and installs matching toolkit governance rules into `.claude/rules/`. Use after scaffolding a new project, when asked to "install gov rules", "install governance", "set up governance", or when a target project has no `.claude/rules/` yet. Assumes the `aitk` CLI is on PATH.
 ---
 

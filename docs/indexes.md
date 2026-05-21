@@ -111,7 +111,7 @@ A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers
 
 ## Bootstrap
 
-Use the `indexes-install` plugin skill to add the system to a project that does not have it yet. The skill scans for markdown-heavy folders, drafts `title` and `description` for each sibling from its first heading and paragraph, scaffolds `index.md` per chosen folder, and runs `aitk indexes regen --dry-run` to validate before writing.
+Use the `setup-indexes` plugin skill to add the system to a project that does not have it yet. The skill scans for markdown-heavy folders, drafts `title` and `description` for each sibling from its first heading and paragraph, scaffolds `index.md` per chosen folder, and runs `aitk indexes regen --dry-run` to validate before writing.
 
 The skill is the only supported migration path. The CLI does not own bootstrap because authoring readable `description` text is judgment work, not a deterministic transformation.
 
@@ -123,4 +123,4 @@ See `agents.md` for the `aitk indexes regen` invocation contract: flags, exit co
 
 - `agents.md`: CLI flags, exit codes, JSON output
 - `scripts.md`: `lib/index.sh` function reference for regeneration logic
-- `claude/skills/indexes-install/`: bootstrap skill source
+- `claude/skills/setup-indexes/`: bootstrap skill source
