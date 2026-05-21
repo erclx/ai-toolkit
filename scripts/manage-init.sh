@@ -13,7 +13,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Bootstrap a project with base tooling and toolkit domains."
   echo -e "${GREY}│${NC}  Installs base configs, Claude workflow, governance, snippets, and wiki."
-  echo -e "${GREY}│${NC}  Optionally installs standards and prompts."
+  echo -e "${GREY}│${NC}  Optionally installs standards."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path       Target directory (default: current directory)"
@@ -22,7 +22,7 @@ show_help() {
   echo -e "${GREY}│${NC}    --stack <name>    ${GREY}# Governance stack (e.g., base, astro, react)${NC}"
   echo -e "${GREY}│${NC}    --add <rules>     ${GREY}# Comma-separated governance rules to layer on${NC}"
   echo -e "${GREY}│${NC}    --snippets <cat>  ${GREY}# Snippets preset, category, or 'all' (default: essentials)${NC}"
-  echo -e "${GREY}│${NC}    --with <list>     ${GREY}# Opt-in optional domains: standards,prompts${NC}"
+  echo -e "${GREY}│${NC}    --with <list>     ${GREY}# Opt-in optional domains: standards${NC}"
   echo -e "${GREY}│${NC}    --skip <list>     ${GREY}# Skip core domains (only 'wiki' supported)${NC}"
   echo -e "${GREY}│${NC}    -h, --help        ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
@@ -163,7 +163,7 @@ main() {
 
   local -A with_set=()
   local -A skip_set=()
-  parse_csv_into "$with_csv" with_set "standards,prompts" "--with"
+  parse_csv_into "$with_csv" with_set "standards" "--with"
   parse_csv_into "$skip_csv" skip_set "wiki" "--skip"
 
   log_step "Core domains"
@@ -186,11 +186,9 @@ main() {
   local optional=()
 
   if [ "$flags_provided" -eq 1 ]; then
-    for label in standards prompts; do
-      if [ -n "${with_set[$label]:-}" ]; then
-        optional+=("$label")
-      fi
-    done
+    if [ -n "${with_set[standards]:-}" ]; then
+      optional+=("standards")
+    fi
     if [ "${#optional[@]}" -gt 0 ]; then
       log_step "Optional domains"
       for label in "${optional[@]}"; do
@@ -199,7 +197,7 @@ main() {
     fi
   else
     log_step "Optional domains"
-    local opt_labels=("standards" "prompts")
+    local opt_labels=("standards")
     for label in "${opt_labels[@]}"; do
       select_option "Install ${label}?" "No" "Yes"
       if [ "$SELECTED_OPTION" = "Yes" ]; then
@@ -258,10 +256,6 @@ main() {
     standards)
       run_domain "Standards" \
         bash "$PROJECT_ROOT/scripts/manage-standards.sh" "install" "$target" </dev/null
-      ;;
-    prompts)
-      run_domain "Prompts" \
-        bash "$PROJECT_ROOT/scripts/manage-prompts.sh" "install" "essentials" "$target" </dev/null
       ;;
     esac
   done

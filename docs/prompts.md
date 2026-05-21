@@ -35,7 +35,7 @@ Prompts are organized into categories in `prompts.toml`. Each category is a name
 | `authoring`  | claude-skill             |
 | `infra`      | bash-script, ci-workflow |
 
-`essentials` is the curated minimum installed by `aitk init` when `--with prompts` is selected. Slugs may overlap with other categories.
+`essentials` is the curated minimum for `aitk prompts install`. Slugs may overlap with other categories.
 
 ## Prompts
 
