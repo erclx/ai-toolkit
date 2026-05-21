@@ -2,6 +2,7 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/inject.sh"
 
 collect_upstream_stacks() {
