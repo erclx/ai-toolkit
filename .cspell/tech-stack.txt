@@ -76,6 +76,7 @@ uv
 uvicorn
 venv
 vercel
+versinfo
 vite
 vitest
 withgoogle
