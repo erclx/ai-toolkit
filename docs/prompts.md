@@ -29,11 +29,11 @@ docs/
 
 Prompts are organized into categories in `prompts.toml`. Each category is a named list of prompt file stems. There is no inheritance. Categories are flat file lists.
 
-| Category     | Names                              |
-| ------------ | ---------------------------------- |
-| `essentials` | bash-script, ci-workflow           |
-| `authoring`  | antigravity-workflow, claude-skill |
-| `infra`      | bash-script, ci-workflow           |
+| Category     | Names                    |
+| ------------ | ------------------------ |
+| `essentials` | bash-script, ci-workflow |
+| `authoring`  | claude-skill             |
+| `infra`      | bash-script, ci-workflow |
 
 `essentials` is the curated minimum installed by `aitk init` when `--with prompts` is selected. Slugs may overlap with other categories.
 
@@ -41,17 +41,16 @@ Prompts are organized into categories in `prompts.toml`. Each category is a name
 
 What each prompt generates lives in its frontmatter `description`. Browse `prompts/index.md` or run `aitk prompts list` for the full catalog.
 
-| File                      | Exportable |
-| ------------------------- | ---------- |
-| `antigravity-workflow.md` | Yes        |
-| `bash-script.md`          | Yes        |
-| `ci-workflow.md`          | Yes        |
-| `claude-skill.md`         | Yes        |
-| `governance-rules.md`     | No         |
-| `gemini-cli.md`           | No         |
-| `meta-prompt.md`          | No         |
-| `standards-reference.md`  | No         |
-| `tooling-reference.md`    | No         |
+| File                     | Exportable |
+| ------------------------ | ---------- |
+| `bash-script.md`         | Yes        |
+| `ci-workflow.md`         | Yes        |
+| `claude-skill.md`        | Yes        |
+| `governance-rules.md`    | No         |
+| `gemini-cli.md`          | No         |
+| `meta-prompt.md`         | No         |
+| `standards-reference.md` | No         |
+| `tooling-reference.md`   | No         |
 
 ## Conventions
 

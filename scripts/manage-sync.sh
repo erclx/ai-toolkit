@@ -73,13 +73,6 @@ detect_domains() {
     log_warn "governance (not installed, skipping)"
   fi
 
-  if [ -d "$target/.agent/workflows" ]; then
-    log_info "antigravity"
-    found=$((found + 1))
-  else
-    log_warn "antigravity (not installed, skipping)"
-  fi
-
   if [ -d "$target/.claude" ]; then
     log_info "claude"
     found=$((found + 1))
@@ -107,10 +100,6 @@ run_syncs() {
 
   if [ -d "$target/.claude/rules" ] || [ -f "$target/.claude/GOV.md" ]; then
     bash "$PROJECT_ROOT/scripts/manage-gov.sh" sync "$target"
-  fi
-
-  if [ -d "$target/.agent/workflows" ]; then
-    bash "$PROJECT_ROOT/scripts/manage-antigravity.sh" sync "$target"
   fi
 
   if [ -d "$target/.claude" ]; then
@@ -233,14 +222,6 @@ run_git_workflow() {
     changed_domains+=("governance")
     changed_files["governance"]="${gov_names[*]}"
     domain_verbs["governance"]=$(get_domain_verb "$target" ".claude/rules/" ".claude/GOV.md")
-  fi
-
-  local -a ag_names
-  mapfile -t ag_names < <(get_changed_names "$target" ".agent/workflows/")
-  if [ "${#ag_names[@]}" -gt 0 ] && [ -n "${ag_names[0]}" ]; then
-    changed_domains+=("antigravity")
-    changed_files["antigravity"]="${ag_names[*]}"
-    domain_verbs["antigravity"]=$(get_domain_verb "$target" ".agent/workflows/")
   fi
 
   local -a cl_names

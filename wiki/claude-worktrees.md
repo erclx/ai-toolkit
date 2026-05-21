@@ -95,7 +95,6 @@ The seven toolkit domains have different collision profiles. A worktree-based fa
 - `snippets/`
 - `gemini/commands/`
 - `prompts/`
-- `antigravity/workflows/`
 - A new skill under `claude/skills/<new-name>/` or `.claude/skills/<new-name>/`
 - Independent fixes in different subtrees of `scripts/`
 

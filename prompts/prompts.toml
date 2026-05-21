@@ -6,7 +6,6 @@ names = [
 
 [authoring]
 names = [
-    "antigravity-workflow",
     "claude-skill",
 ]
 

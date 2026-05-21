@@ -15,7 +15,6 @@ One-line reference for each doc in this folder.
 
 ## Domain references
 
-- [Antigravity](antigravity.md): Antigravity workflow source and sync
 - [Claude](claude.md): Claude plugin skills and tooling
 - [Design](design.md): DESIGN.md token shape, extract skill, render command
 - [Gemini](gemini.md): Gemini CLI command definitions

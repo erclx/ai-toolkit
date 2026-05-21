@@ -29,7 +29,6 @@ scripts/sandbox/
 │   ├── snippets.sh       ← interactive tests for snippets commands
 │   ├── claude.sh         ← interactive tests for claude workflow commands
 │   ├── tooling.sh        ← interactive tests for tooling commands
-│   ├── antigravity.sh    ← interactive tests for antigravity install and sync
 │   ├── wiki.sh           ← interactive tests for wiki commands
 │   └── indexes.sh        ← scenarios for aitk indexes regen, including lint-staged auto-stage and --no-stage, plus a bootstrap seed for the setup-indexes skill
 ├── git/

@@ -76,17 +76,16 @@ Full help: `aitk <command> --help`.
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain        | Subcommands                                                 |
-| ------------- | ----------------------------------------------------------- |
-| `tooling`     | `list`, `sync`, `ref`, `create`                             |
-| `snippets`    | `list`, `install`, `sync`, `create`                         |
-| `standards`   | `list`, `install`, `sync`                                   |
-| `prompts`     | `list`, `install`, `sync`                                   |
-| `gov`         | `list`, `install`, `sync`, `build`                          |
-| `claude`      | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
-| `antigravity` | `install`, `sync`                                           |
-| `wiki`        | `init`                                                      |
-| `design`      | `render`                                                    |
+| Domain      | Subcommands                                                 |
+| ----------- | ----------------------------------------------------------- |
+| `tooling`   | `list`, `sync`, `ref`, `create`                             |
+| `snippets`  | `list`, `install`, `sync`, `create`                         |
+| `standards` | `list`, `install`, `sync`                                   |
+| `prompts`   | `list`, `install`, `sync`                                   |
+| `gov`       | `list`, `install`, `sync`, `build`                          |
+| `claude`    | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
+| `wiki`      | `init`                                                      |
+| `design`    | `render`                                                    |
 
 Common patterns:
 

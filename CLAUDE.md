@@ -78,17 +78,16 @@ When adding new content, place it in the canonical owner. If another surface nee
 
 The toolkit has the following domains. Each maps to a skill. Load the skill before editing anything in that domain.
 
-| Task type                                                              | Skill to load      |
-| ---------------------------------------------------------------------- | ------------------ |
-| Modifying `src/`, `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/` | `aitk-scripts`     |
-| Modifying `tooling/`, manifests, golden configs, seeds                 | `aitk-tooling`     |
-| Modifying `standards/`, `docs/`                                        | `aitk-standards`   |
-| Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance`  |
-| Modifying `snippets/`                                                  | `aitk-snippets`    |
-| Modifying `prompts/`                                                   | `aitk-prompts`     |
-| Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`      |
-| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`      |
-| Modifying `antigravity/workflows/`, `workflows.toml`                   | `aitk-antigravity` |
+| Task type                                                              | Skill to load     |
+| ---------------------------------------------------------------------- | ----------------- |
+| Modifying `src/`, `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/` | `aitk-scripts`    |
+| Modifying `tooling/`, manifests, golden configs, seeds                 | `aitk-tooling`    |
+| Modifying `standards/`, `docs/`                                        | `aitk-standards`  |
+| Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance` |
+| Modifying `snippets/`                                                  | `aitk-snippets`   |
+| Modifying `prompts/`                                                   | `aitk-prompts`    |
+| Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`     |
+| Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`     |
 
 ## Key paths
 
@@ -103,7 +102,6 @@ The toolkit has the following domains. Each maps to a skill. Load the skill befo
 - `src/`: TypeScript CLI entry point, commander subcommands, exec helper
 - `docs/`: human-readable reference docs for each toolkit domain
 - `scripts/`: bash domain scripts, core maintenance, sandbox, and prompt generation
-- `antigravity/`: workflow source and group manifest for Antigravity sync
 - `wiki/`: internal reference pages for tools, workflows, and concepts
 
 ## Commands
