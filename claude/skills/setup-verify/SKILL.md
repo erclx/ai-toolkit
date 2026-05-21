@@ -1,5 +1,5 @@
 ---
-name: verify-scaffold
+name: setup-verify
 description: Verifies a freshly scaffolded project by running its `package.json` scripts in order and reporting pass/fail per script. Use after the agent has followed a tooling stack reference and generated configs, or when asked to "verify the scaffold", "check the setup", "run verify", or "make sure everything works". Do NOT use on a project without `package.json`, or to run E2E or dev servers.
 ---
 
@@ -42,7 +42,7 @@ For each script run, report one of:
 End with a summary line:
 
 - On pass: `✅ Scaffold verified (<n> scripts passed).`
-- On fail: `❌ Scaffold failed at <script>. Fix the error and re-run verify-scaffold.`
+- On fail: `❌ Scaffold failed at <script>. Fix the error and re-run setup-verify.`
 
 ## Out of scope
 

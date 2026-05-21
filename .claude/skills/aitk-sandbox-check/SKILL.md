@@ -45,7 +45,7 @@ For each changed skill path under `claude/skills/<skill-name>/SKILL.md` or `.cla
 3. If it exists, record that path as the scenario.
 4. If it does not exist, do not guess. Ask the user: `Scenario for <skill-name>? (path under scripts/sandbox/, or "none" if the skill has no scenario)`. Record the answer. Accept `none` as an explicit opt-out.
 
-Do not guess past the first fallback. Fuzzy matching across sandbox categories produces wrong pairings (`gov-install` is `infra/gov.sh`, not `gov/install.sh`).
+Do not guess past the first fallback. Fuzzy matching across sandbox categories produces wrong pairings (`setup-gov` is `infra/gov.sh`, not `gov/install.sh`).
 
 ## Step 2b: map script changes
 

@@ -15,20 +15,20 @@ This doc stays at the narrative layer. For command flags and JSON shapes, see [a
 Two steps, in order:
 
 1. Run the framework's own scaffold if the project needs one, such as `bun init`, `npm create vite`, or `npm create astro`. The toolkit does not wrap framework scaffolding.
-2. Invoke `toolkit:init-project` in Claude Code. The skill detects the stack, resolves flags, previews the full chain, and runs it end-to-end.
+2. Invoke `toolkit:setup-init` in Claude Code. The skill detects the stack, resolves flags, previews the full chain, and runs it end-to-end.
 
 The chain is:
 
 - `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
 - `aitk tooling sync <stack>` adds stack-specific deps, scripts, gitignore entries, and drops `tooling/<stack>.md` (plus parents) as the agent's audit context
 - The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections
-- `verify-scaffold` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
+- `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
 ### Stack decision
 
 The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, governance core rules, snippets, and wiki. Most projects need nothing more.
 
-Escalate only for real web apps. The `init-project` skill reads `package.json` and root configs, then picks the matching tooling stack (`vite-react` today) and the matching governance stack (`react`, `astro`, `node`).
+Escalate only for real web apps. The `setup-init` skill reads `package.json` and root configs, then picks the matching tooling stack (`vite-react` today) and the matching governance stack (`react`, `astro`, `node`).
 
 Markdown-heavy projects, CLI tools, docs sites, research notebooks, and scripting repos stay on `base`. Escalation is a ceiling move, not a default.
 
@@ -36,7 +36,7 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 ### Optional domains
 
-`toolkit:init-project` passes optional domains through `--with`:
+`toolkit:setup-init` passes optional domains through `--with`:
 
 - `standards`: auto-enabled when `docs/`, `standards/`, or `.claude/` already exist in the project
 - `prompts`: off by default, add only when the project uses AI chat role prompts
@@ -47,8 +47,8 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 When a new need appears after scaffold, install the one domain without re-running `aitk init`.
 
-- Governance rule for a newly adopted library: invoke `toolkit:gov-install`, or run `aitk gov install <stack> --add <rule> <path>`
-- Index.md system for a markdown-heavy folder that emerged: invoke `toolkit:indexes-install`
+- Governance rule for a newly adopted library: invoke `toolkit:setup-gov`, or run `aitk gov install <stack> --add <rule> <path>`
+- Index.md system for a markdown-heavy folder that emerged: invoke `toolkit:setup-indexes`
 - A single snippet: `aitk snippets install <name> <path>`
 - A single standard: `aitk standards install <name> <path>`
 
@@ -87,7 +87,7 @@ cd <your-project>
 claude --plugin-dir <toolkit>/claude
 ```
 
-In the session, invoke `toolkit:init-project`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
+In the session, invoke `toolkit:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
 
 Ongoing: invoke `toolkit:claude-seed-sync` for seed drift, or run `aitk sync .` for a catch-all refresh.
 
@@ -98,7 +98,7 @@ bun create vite my-app && cd my-app
 claude --plugin-dir <toolkit>/claude
 ```
 
-Invoke `toolkit:init-project`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.
+Invoke `toolkit:setup-init`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.
 
 Ongoing maintenance:
 
