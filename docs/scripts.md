@@ -12,7 +12,7 @@ category: Domain references
 
 `scripts/` contains core maintenance scripts, sandbox provisioning, domain entry points, and shared library functions. Lib functions are sourced, never executed directly. Each `manage-*.sh` dispatches to subcommands only: no domain logic lives in entry points directly.
 
-Domain scripts require bash 4 or newer. They use namerefs (`local -n`) and other bash 4+ features. `scripts/lib/ui.sh` runs a version guard on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected. Shebangs use `#!/usr/bin/env bash` so Homebrew's bash is picked up from `PATH`.
+Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected.
 
 ## Structure
 

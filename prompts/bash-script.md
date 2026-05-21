@@ -14,8 +14,8 @@ Enforce strict formatting with visual timeline UI and state-based interactivity.
 
 ### Script Setup
 
-- Start with `#!/usr/bin/env bash`, `set -e`, and `set -o pipefail`. Stock macOS bash is 3.2 at `/bin/bash`. The `env` shebang picks up Homebrew bash on `PATH`.
-- Target bash 4+ features freely (namerefs, associative arrays). Scripts running under the toolkit source `lib/ui.sh`, which guards the version. Standalone scripts should add their own `BASH_VERSINFO` check at the top.
+- Start with `#!/usr/bin/env bash`, `set -e`, and `set -o pipefail`.
+- Bash 4+ features (namerefs, associative arrays) are allowed.
 - Implement visual help screen (using `show_help`) if script accepts arguments.
 - Do not rely on unset variables (use `${VAR:-default}`).
 

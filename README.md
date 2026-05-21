@@ -19,7 +19,7 @@ Three design choices shape the toolkit.
 - [Bun](https://bun.sh) for the CLI runtime and scripts
 - [Git](https://git-scm.com) with worktree support
 - [GitHub CLI](https://cli.github.com) (optional) for ship flows
-- Shell: `zsh` or `bash` 4+. macOS ships bash 3.2 at `/bin/bash`. Run `brew install bash` to add a modern version on `PATH`.
+- Shell: `zsh` or bash 4+ (`brew install bash` on macOS).
 
 ## Quickstart
 
