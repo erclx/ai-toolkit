@@ -210,7 +210,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
 
-The `.claude/wireframes/` folder ships with one example surface and an `index.md` discovery anchor. Add a new file per surface as the UI grows. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
+The `.claude/wireframes/` folder ships with an `index.md` discovery anchor. Add a file per surface as the UI grows, following `standards/wireframes.md`. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
 
 The seed `settings.json` contains only the PostToolUse hook block that pairs with the project-local `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
