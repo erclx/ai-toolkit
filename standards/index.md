@@ -18,3 +18,4 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
 - [Snippet reference](snippets.md): Snippet reference and authoring conventions
 - [Versioning reference](versioning.md): Phase label vs semver discipline across TASKS, briefs, PRs, commits, and tags
+- [Wireframe reference](wireframes.md): Shape and content rules for .claude/wireframes/<surface>.md files
