@@ -13,6 +13,8 @@ Claude Code plugin and skills for the Toolkit.
 ```plaintext
 claude/
 ├── skills/              ← plugin skills (auto-discovered by plugin)
+│   ├── bash-script/         ← generate production bash scripts with a visual timeline UI
+│   ├── ci-workflow/         ← generate GitHub Actions CI workflow files
 │   ├── claude-brief/        ← draft `.claude/briefs/<slug>.md` handoff context from a TASKS entry
 │   ├── claude-diagram/      ← draft .claude/DIAGRAMS.md with mermaid diagrams from architecture and code signals
 │   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
@@ -138,6 +140,8 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 
 | Skill                    | Description                                                                                  |
 | ------------------------ | -------------------------------------------------------------------------------------------- |
+| `bash-script`            | Generate production bash scripts with a visual timeline UI and error handling                |
+| `ci-workflow`            | Generate GitHub Actions CI workflow files with parallel, gated jobs                          |
 | `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                          |
 | `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph        |
 | `claude-brief`           | Draft `.claude/briefs/<slug>.md` handoff context from a TASKS entry                          |
