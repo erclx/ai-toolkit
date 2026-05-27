@@ -43,7 +43,7 @@ Ask the user which to bootstrap. Accept folder paths, `all`, or `none`. The user
 For each chosen folder, read every `*.md` sibling and draft frontmatter:
 
 - `title`: derived from the first H1. If absent, derive from the filename in sentence case.
-- `description`: one line summarizing the file's purpose, drawn from the first paragraph after the H1. Keep under 100 characters, sentence case, no trailing period, no leading article.
+- `description`: one line summarizing the file's purpose, drawn from the first paragraph after the H1. Follow `standards/prose.md` § Frontmatter descriptions for length and style.
 
 Surface every drafted entry to the user grouped by file:
 

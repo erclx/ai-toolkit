@@ -43,7 +43,7 @@ For each new memory, write to `.claude/memory/<type>-<slug>.md` with this frontm
 ```markdown
 ---
 name: <memory name>
-description: <one-line description, under 100 chars, no trailing period>
+description: <one-line description per standards/prose.md § Frontmatter descriptions>
 type: <feedback|project|user|reference>
 ---
 

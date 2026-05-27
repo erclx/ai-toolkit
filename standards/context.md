@@ -10,7 +10,7 @@ Applies to per-domain narrative entries under `.claude/context/`. Skip for `inde
 ## Frontmatter
 
 - `title` (required): sentence case, names the domain (`Web`, `API`, `Agents`).
-- `description` (required): one line describing what the domain covers, under 100 characters, no trailing period.
+- `description` (required): one line describing what the domain covers.
 
 Both fields feed `.claude/context/index.md` when regenerated.
 
