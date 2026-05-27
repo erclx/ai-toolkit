@@ -49,9 +49,9 @@ scripts/
 
 `aitk standards` with no args shows a picker for `install`, `sync`, or `list`. The install command requires confirmation before writing files.
 
-`--json` emits `{standards: [{name, description, target, content}]}`. Skills that audit drift (`claude-seed-sync`) consume `target` and `content` to diff installed copies per section. The shape mirrors `aitk claude seeds list --json`.
+`--json` emits `{standards: [{name, description, target, content}]}`. Skills that audit drift (`claude-seed-sync`) consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`.
 
-`aitk standards sync` is file-level. Selecting "Apply all" overwrites whole files and destroys any local customizations. Under `AITK_NON_INTERACTIVE=1`, the command refuses to auto-apply when drifts are detected. For projects that customize sections of `standards/*.md`, use the `/claude-seed-sync` skill instead. It diffs per `##` section and preserves customizations by default.
+`aitk standards sync` is file-level. Selecting "Apply all" overwrites whole files and destroys any local customizations. Under `AITK_NON_INTERACTIVE=1`, the command refuses to auto-apply when drifts are detected. For projects that customize sections of `standards/*.md`, use the `/claude-seed-sync` skill instead. It diffs the preamble plus each `##` section and preserves customizations by default.
 
 ## Workflow
 
