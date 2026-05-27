@@ -64,7 +64,7 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 ### Targeted
 
-- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`, plus installed standards under `standards/`: invoke `toolkit:claude-seed-sync`. The skill diffs section by section across both surfaces and proposes per-section edits. User customizations are preserved.
+- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`, plus installed standards under `standards/`: invoke `toolkit:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part across both surfaces and proposes per-part edits. User customizations are preserved.
 - Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules
 - Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
 - Reference docs for a stack: `aitk tooling ref <stack> <path>`

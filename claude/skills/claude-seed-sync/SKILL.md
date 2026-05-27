@@ -35,7 +35,7 @@ Note on `settings.json`: the seed now ships only the PostToolUse hook block. If 
 
 ## Step 3: diff per section
 
-For each seed file present in both sides, parse by `##` headers and compare section by section.
+For each seed file present in both sides, parse the body into a preamble (everything between H1 and the first H2) plus one part per `##` header, then compare part by part. Treat the preamble as a single unit with the same verdicts as a section. Use `(preamble)` as its label in the proposal.
 
 - **Identical:** ignore.
 - **Toolkit-only section** (present in source, absent in target): candidate to **Add**.

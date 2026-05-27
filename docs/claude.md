@@ -152,7 +152,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
 | `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                          |
 | `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
-| `claude-seed-sync`       | Audit installed seed docs and standards against toolkit sources, write per-section proposals |
+| `claude-seed-sync`       | Audit installed seed docs and standards against toolkit sources, write per-part proposals    |
 | `claude-standards-audit` | Audit changed markdown files against applicable authoring standards, reporting only          |
 | `claude-ui-test`         | Generate and run Playwright e2e tests, with manual checklist for visual-only items           |
 | `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies               |
@@ -236,7 +236,7 @@ Installs role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) into `.cla
 
 Checks seeded project docs and, if roles are installed, diffs them against the toolkit source and applies updates. Also reconciles `.gitignore` against the `[gitignore]` section of `tooling/claude/manifest.toml`: appends any missing entries and prunes entries inside the `# Claude` section that the manifest no longer declares. Removed entries are logged as `-` lines. Never touches seeded project docs. Offers a diff review before applying role drift. Only syncs roles when at least one role file is present in the target.
 
-`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so role drift lands in the combined toolkit-sync PR alongside other domains. Seed audits are not automated. Run the `claude-seed-sync` skill for per-section reconciliation. `aitk sync` prints a tip reminder at the tail.
+`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so role drift lands in the combined toolkit-sync PR alongside other domains. Seed audits are not automated. Run the `claude-seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `aitk sync` prints a tip reminder at the tail.
 
 ### prompt
 
