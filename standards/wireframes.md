@@ -12,7 +12,7 @@ A wireframe file captures the spatial layout and interaction intent of one UI su
 ## Frontmatter
 
 - `title` (required): sentence case, names the surface (`Header`, `Section nav`, `Footer`).
-- `description` (required): one line on when and where the surface appears, under 100 characters, no trailing period.
+- `description` (required): one line on when and where the surface appears.
 
 Both fields feed `.claude/wireframes/index.md` when regenerated.
 

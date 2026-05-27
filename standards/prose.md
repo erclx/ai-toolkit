@@ -64,8 +64,8 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 When frontmatter carries a short `title` or `description` used for catalog display:
 
-- `title`: sentence case, under 60 characters, no trailing period. Proper nouns retain their casing.
-- `description`: sentence case, under 100 characters, no trailing period, no leading article (`the`, `a`).
+- `title`: sentence case, identifies the file uniquely against its siblings in the same catalog. Proper nouns retain their casing. No trailing period.
+- `description`: sentence case, names the specific topics covered so a reader can decide whether to open the file. Lead with concrete subjects, strip filler like "guide to", "overview of", or "documentation about". No trailing period, no leading article (`the`, `a`).
 - Do not mechanically reuse the H1 as the description.
 
 ## Examples
