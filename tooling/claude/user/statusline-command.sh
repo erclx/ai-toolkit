@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 input=$(cat)
 
-IFS=$'\t' read -r model effort remaining used_pct ctx_size <<<"$(
+{
+  IFS= read -r model
+  IFS= read -r effort
+  IFS= read -r remaining
+  IFS= read -r used_pct
+  IFS= read -r ctx_size
+} <<<"$(
   echo "$input" | jq -r '
-    [ .model.display_name,
-      .effort.level,
-      .context_window.remaining_percentage,
-      .context_window.used_percentage,
-      .context_window.context_window_size
-    ] | map(. // "") | @tsv'
+    .model.display_name // "",
+    .effort.level // "",
+    .context_window.remaining_percentage // "",
+    .context_window.used_percentage // "",
+    .context_window.context_window_size // ""'
 )"
 
 real_ctx="$ctx_size"
