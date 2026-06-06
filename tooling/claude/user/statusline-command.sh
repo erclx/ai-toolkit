@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 input=$(cat)
 
-# Single jq pass: all fields tab-separated, missing -> empty string
 IFS=$'\t' read -r model effort remaining used_pct ctx_size <<<"$(
   echo "$input" | jq -r '
     [ .model.display_name,
@@ -37,11 +36,11 @@ if [ -n "$remaining" ]; then
   rounded=$(printf '%.0f' "$remaining")
   reset=$'\033[0m'
   if [ "$rounded" -lt 15 ]; then
-    ctx_part=$'\033[31m'"⚠ ${rounded}%${reset}" # red
+    ctx_part=$'\033[31m'"⚠ ${rounded}%${reset}"
   elif [ "$rounded" -lt 30 ]; then
-    ctx_part=$'\033[33m'"${rounded}%${reset}" # yellow
+    ctx_part=$'\033[33m'"${rounded}%${reset}"
   else
-    ctx_part=$'\033[32m'"${rounded}%${reset}" # green
+    ctx_part=$'\033[32m'"${rounded}%${reset}"
   fi
   [ -n "$parts" ] && parts="$parts | $ctx_part" || parts="$ctx_part"
 fi
