@@ -258,7 +258,7 @@ Three things land:
 - `attribution.commit` and `attribution.pr` set to empty strings to suppress Claude attribution in commits and PRs.
 - `permissions.allow` and `permissions.deny` merged from `tooling/claude/user/settings.template.json`. Defaults: `Bash(bun run *)` on allow, and `Read(**/.env)` plus `Read(**/.env.*)` on deny. Existing user entries are preserved through `unique`-merge.
 
-The statusline renders as: `Sonnet 4.6 | 40k / 200k | 20%`. Fields are model name, tokens used vs context window size, and remaining percentage. The percentage shows a `⚠` prefix when below 15%.
+The statusline renders as: `Opus 4.8 | xhigh | 80k / 1000k | 92%`. Fields are model name, effort level, tokens used vs context window size, and remaining percentage. The effort field is omitted when the model does not report one. The percentage is colored by headroom: green at 30% or above, yellow below 30%, and red with a `⚠` prefix below 15%.
 
 ## Built-in vs toolkit features
 

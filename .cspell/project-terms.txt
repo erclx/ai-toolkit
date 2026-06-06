@@ -111,6 +111,7 @@ worktree
 worktrees
 wshobson
 xclip
+xhigh
 xsel
 yctimlin
 yolo
