@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 input=$(cat)
-model=$(echo "$input" | jq -r '.model.display_name // empty')
-remaining=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty')
-used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
-ctx_size=$(echo "$input" | jq -r '.context_window.context_window_size // empty')
+
+# Single jq pass: all fields tab-separated, missing -> empty string
+IFS=$'\t' read -r model effort remaining used_pct ctx_size <<<"$(
+  echo "$input" | jq -r '
+    [ .model.display_name,
+      .effort.level,
+      .context_window.remaining_percentage,
+      .context_window.used_percentage,
+      .context_window.context_window_size
+    ] | map(. // "") | @tsv'
+)"
 
 real_ctx="$ctx_size"
 if [[ "${ANTHROPIC_BASE_URL:-}" == *"localhost"* ]] && command -v ollama &>/dev/null; then
@@ -15,6 +22,10 @@ parts=""
 
 [ -n "$model" ] && parts="$model"
 
+if [ -n "$effort" ]; then
+  [ -n "$parts" ] && parts="$parts | $effort" || parts="$effort"
+fi
+
 if [ -n "$used_pct" ] && [ -n "$ctx_size" ]; then
   used_k=$(awk "BEGIN {printf \"%.0f\", ($used_pct/100)*$ctx_size/1000}")
   total_k=$(awk "BEGIN {printf \"%.0f\", $real_ctx/1000}")
@@ -24,10 +35,13 @@ fi
 
 if [ -n "$remaining" ]; then
   rounded=$(printf '%.0f' "$remaining")
+  reset=$'\033[0m'
   if [ "$rounded" -lt 15 ]; then
-    ctx_part="⚠ ${rounded}%"
+    ctx_part=$'\033[31m'"⚠ ${rounded}%${reset}" # red
+  elif [ "$rounded" -lt 30 ]; then
+    ctx_part=$'\033[33m'"${rounded}%${reset}" # yellow
   else
-    ctx_part="${rounded}%"
+    ctx_part=$'\033[32m'"${rounded}%${reset}" # green
   fi
   [ -n "$parts" ] && parts="$parts | $ctx_part" || parts="$ctx_part"
 fi
