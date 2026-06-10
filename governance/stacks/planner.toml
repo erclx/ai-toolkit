@@ -1,2 +1,2 @@
 extends = ""
-rules = ["400-ui", "430-ux-completeness"]
+rules = ["400-ui", "430-ux-completeness", "500-prose", "510-context", "520-wireframes"]

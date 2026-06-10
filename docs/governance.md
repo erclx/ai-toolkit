@@ -27,21 +27,22 @@ scripts/
 
 ## Install path
 
-Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`). Source files carry the Claude shape directly, so install is a true passthrough copy. Claude Code reads these natively.
+Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`). Source files carry the Claude shape directly, so install is a true passthrough copy. Claude Code reads these natively.
 
 ## Key decisions
 
-Source rules live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `ui/`) under `governance/rules/`. Install preserves that layout under `.claude/rules/`.
+Source rules live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`) under `governance/rules/`. Install preserves that layout under `.claude/rules/`.
 
 Rules follow a numbering scheme by domain. When adding a rule, pick a number in the appropriate range:
 
-| Range     | Domain                                                       |
-| --------- | ------------------------------------------------------------ |
-| `000–099` | core (constitution, testing, error handling, planning, etc.) |
-| `100–199` | lang (TypeScript, Python, etc.)                              |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                   |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)            |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness)          |
+| Range     | Domain                                                            |
+| --------- | ----------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)      |
+| `100–199` | lang (TypeScript, Python, etc.)                                   |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                        |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                 |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness)               |
+| `500–599` | claude (markdown prose, .claude/ context and wireframe authoring) |
 
 **Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target and removes any stale `.claude/GOV.md` left from the retired build. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.claude/.tmp/gov/rules.md`, stripping frontmatter. Useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the paste payload.
 
@@ -49,15 +50,15 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## Stacks
 
-| Stack            | Extends | Rules                                                                                                                            |
-| ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `base`           | -       | 000–070 core rules                                                                                                               |
-| `node`           | base    | 100-typescript                                                                                                                   |
-| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
-| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
-| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                         |
-| `python-fastapi` | python  | 220-fastapi                                                                                                                      |
-| `planner`        | -       | 400-ui, used by `aitk claude prompt` to inject UI copy rules into PLANNER.md. Not installed into projects                        |
+| Stack            | Extends | Rules                                                                                                                                |
+| ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `base`           | -       | 000–070 core rules, 500–520 claude authoring (prose, context, wireframes)                                                            |
+| `node`           | base    | 100-typescript                                                                                                                       |
+| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness     |
+| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                                   |
+| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                             |
+| `python-fastapi` | python  | 220-fastapi                                                                                                                          |
+| `planner`        | -       | 400-ui, 430-ux-completeness, 500–520 claude authoring, injected into PLANNER.md by `aitk claude prompt`. Not installed into projects |
 
 ## CLI
 

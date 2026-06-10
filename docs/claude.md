@@ -86,11 +86,11 @@ For the full alias set covering resume, continue, worktree, and model shortcuts,
 
 Target projects scale by splitting context across three loading tiers. Knowing which tier holds what keeps sessions fast and content discoverable.
 
-| Tier             | Surface                                                                | Load behavior                           | Holds                                                            |
-| ---------------- | ---------------------------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------- |
-| Always loaded    | Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md` | Eager at session start                  | Cross-cutting behavior, product scope, project-wide invariants   |
-| Path-scoped lazy | `.claude/rules/<scope>.md` with `paths:` frontmatter                   | Lazy by glob match when files are read  | Do/don't rules, naming and pattern conventions for a file scope  |
-| On-demand lookup | `.claude/context/<domain>.md`                                          | Read by Claude when a domain is touched | Per-domain narrative: structure, decisions, gotchas, scar tissue |
+| Tier             | Surface                                                                | Load behavior                                        | Holds                                                                     |
+| ---------------- | ---------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| Always loaded    | Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md` | Eager at session start                               | Cross-cutting behavior, product scope, project-wide invariants            |
+| Path-scoped lazy | `.claude/rules/<scope>.md` with `paths:` frontmatter                   | Lazy by glob match when files are read               | Do/don't rules, naming and pattern conventions for a file scope           |
+| On-demand lookup | `.claude/context/<domain>.md`, `.claude/wireframes/<surface>.md`       | Read by Claude when the domain or surface is touched | Per-domain narrative and per-surface layout intent, indexed for discovery |
 
 `.claude/context/<domain>.md` is the new tier introduced for larger projects. It exists because nested `CLAUDE.md` files would auto-load along the cwd's ancestor chain and bloat context as a session walks the repo. The `index.md` lookup pattern keeps the cost on-demand.
 
@@ -212,7 +212,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 ### init
 
-Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
+Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding and doc-authoring standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
 
 The `.claude/wireframes/` folder ships with an `index.md` discovery anchor. Add a file per surface as the UI grows, following `standards/wireframes.md`. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
 
