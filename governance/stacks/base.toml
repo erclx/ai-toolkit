@@ -1,2 +1,2 @@
 extends = ""
-rules = ["000-constitution", "010-testing", "020-concurrency", "030-error-handling", "040-performance", "050-logging", "060-naming", "070-planning", "500-prose", "510-context", "520-wireframes", "530-requirements", "540-architecture", "550-design", "560-diagrams"]
+rules = ["000-constitution", "010-testing", "020-concurrency", "030-error-handling", "040-performance", "050-logging", "060-naming", "070-planning", "500-prose", "510-context", "520-wireframes", "530-requirements", "540-architecture", "550-design", "560-diagrams", "570-skill"]
