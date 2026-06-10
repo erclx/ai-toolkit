@@ -10,6 +10,8 @@ The project uses a three-tier context model. Know which tier holds what before r
 - Path-scoped lazy: `.claude/rules/*.md` with `paths:` frontmatter. Coding standards that load only when files matching the glob are touched. Always-on rules apply every session.
 - On-demand lookup: `.claude/context/<domain>.md` entries. Per-domain narrative (how a domain is structured, decisions made, gotchas). Use the always-loaded `.claude/context/index.md` to pick which entries to read. Entries are populated by `claude-docs` at ship time.
 
+@.claude/REQUIREMENTS.md
+@.claude/ARCHITECTURE.md
 @.claude/context/index.md
 
 ## Behavior
