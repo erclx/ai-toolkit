@@ -24,10 +24,10 @@ What does not belong:
 
 One section only: Up next. Completed blocks stay in Up next until archived manually. Do not move them automatically. When Up next has no real tasks, keep the `### Nothing queued` placeholder. Remove it when adding the first real task.
 
-Task block format. Include the `Brief:` line only when `.claude/briefs/<slug>.md` exists. Include the `Plan:` line only when `.claude/plans/feature-<slug>.md` exists.
+Task block format. Prefix each title with a `vX.Y:` phase label for ordering and dependencies (see `standards/versioning.md`), then a short outcome. Include the `Brief:` line only when `.claude/briefs/<slug>.md` exists. Include the `Plan:` line only when `.claude/plans/feature-<slug>.md` exists.
 
 ```markdown
-### Title
+### vX.Y: Title
 
 Brief: .claude/briefs/<slug>.md
 Plan: .claude/plans/feature-<slug>.md
