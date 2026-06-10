@@ -12,8 +12,7 @@ show_help() {
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk init [target-path] [options]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Bootstrap a project with base tooling and toolkit domains."
-  echo -e "${GREY}│${NC}  Installs base configs, Claude workflow, governance, snippets, and wiki."
-  echo -e "${GREY}│${NC}  Optionally installs standards."
+  echo -e "${GREY}│${NC}  Installs base configs, Claude workflow, governance, standards, snippets, and wiki."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    target-path       Target directory (default: current directory)"
@@ -22,16 +21,15 @@ show_help() {
   echo -e "${GREY}│${NC}    --stack <name>    ${GREY}# Governance stack (e.g., base, astro, react)${NC}"
   echo -e "${GREY}│${NC}    --add <rules>     ${GREY}# Comma-separated governance rules to layer on${NC}"
   echo -e "${GREY}│${NC}    --snippets <cat>  ${GREY}# Snippets preset, category, or 'all' (default: essentials)${NC}"
-  echo -e "${GREY}│${NC}    --with <list>     ${GREY}# Opt-in optional domains: standards${NC}"
-  echo -e "${GREY}│${NC}    --skip <list>     ${GREY}# Skip core domains (only 'wiki' supported)${NC}"
+  echo -e "${GREY}│${NC}    --skip <list>     ${GREY}# Skip core domains: wiki, standards${NC}"
   echo -e "${GREY}│${NC}    -h, --help        ${GREY}# Show this help message${NC}"
   echo -e "${GREY}│${NC}"
-  echo -e "${GREY}│${NC}  Passing any option skips the interactive optional-domain picker."
+  echo -e "${GREY}│${NC}  Passing any option skips the confirmation prompt."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
   echo -e "${GREY}│${NC}    aitk init"
   echo -e "${GREY}│${NC}    aitk init ../my-app"
-  echo -e "${GREY}│${NC}    aitk init --stack astro --add 260-shadcn --with standards ../my-app"
+  echo -e "${GREY}│${NC}    aitk init --stack astro --add 260-shadcn ../my-app"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -80,7 +78,6 @@ main() {
   local stack=""
   local add_rules=""
   local snippets_cat="essentials"
-  local with_csv=""
   local skip_csv=""
   local flags_provided=0
 
@@ -113,16 +110,6 @@ main() {
       ;;
     --snippets=*)
       snippets_cat="${1#--snippets=}"
-      flags_provided=1
-      shift
-      ;;
-    --with)
-      with_csv="$2"
-      flags_provided=1
-      shift 2
-      ;;
-    --with=*)
-      with_csv="${1#--with=}"
       flags_provided=1
       shift
       ;;
@@ -161,10 +148,8 @@ main() {
 
   guard_root "$target"
 
-  local -A with_set=()
   local -A skip_set=()
-  parse_csv_into "$with_csv" with_set "standards" "--with"
-  parse_csv_into "$skip_csv" skip_set "wiki" "--skip"
+  parse_csv_into "$skip_csv" skip_set "wiki,standards" "--skip"
 
   log_step "Core domains"
   log_info "base tooling (configs, seeds, deps, scripts)"
@@ -178,43 +163,25 @@ main() {
   else
     log_warn "governance (skipped: no --stack)"
   fi
+  if [ -z "${skip_set[standards]:-}" ]; then
+    log_info "standards (authoring conventions)"
+  fi
   log_info "snippets ($snippets_cat)"
   if [ -z "${skip_set[wiki]:-}" ]; then
     log_info "wiki (index and reference pages)"
   fi
 
-  local optional=()
-
-  if [ "$flags_provided" -eq 1 ]; then
-    if [ -n "${with_set[standards]:-}" ]; then
-      optional+=("standards")
-    fi
-    if [ "${#optional[@]}" -gt 0 ]; then
-      log_step "Optional domains"
-      for label in "${optional[@]}"; do
-        log_add "$label"
-      done
-    fi
-  else
-    log_step "Optional domains"
-    local opt_labels=("standards")
-    for label in "${opt_labels[@]}"; do
-      select_option "Install ${label}?" "No" "Yes"
-      if [ "$SELECTED_OPTION" = "Yes" ]; then
-        optional+=("$label")
-        log_add "$label"
-      fi
-    done
-  fi
-
-  local core_count=5
+  local core_count=6
   if [ -n "${skip_set[wiki]:-}" ]; then
+    core_count=$((core_count - 1))
+  fi
+  if [ -n "${skip_set[standards]:-}" ]; then
     core_count=$((core_count - 1))
   fi
   if [ -z "$stack" ]; then
     core_count=$((core_count - 1))
   fi
-  local total=$((core_count + ${#optional[@]}))
+  local total=$core_count
 
   if [ "$flags_provided" -eq 0 ]; then
     select_option "Install $total domains to $target?" "Yes" "Cancel"
@@ -243,6 +210,11 @@ main() {
     log_warn "Skipped: no --stack provided. Run 'aitk gov install <stack> $target' to install rules."
   fi
 
+  if [ -z "${skip_set[standards]:-}" ]; then
+    run_domain "Standards" \
+      bash "$PROJECT_ROOT/scripts/manage-standards.sh" "install" "$target" </dev/null
+  fi
+
   run_domain "Snippets" \
     bash "$PROJECT_ROOT/scripts/manage-snippets.sh" "install" "$snippets_cat" "$target" </dev/null
 
@@ -250,15 +222,6 @@ main() {
     run_domain "Wiki" \
       bash "$PROJECT_ROOT/scripts/manage-wiki.sh" "init" "$target" </dev/null
   fi
-
-  for label in "${optional[@]}"; do
-    case "$label" in
-    standards)
-      run_domain "Standards" \
-        bash "$PROJECT_ROOT/scripts/manage-standards.sh" "install" "$target" </dev/null
-      ;;
-    esac
-  done
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
