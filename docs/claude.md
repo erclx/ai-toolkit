@@ -40,7 +40,7 @@ claude/
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
 │   ├── git-worktree/        ← list and clean up linked worktrees after shipping
-│   ├── operator/            ← front door: orient on toolkit docs, then run or route any operation
+│   ├── toolkit-operator/    ← front door: orient on toolkit docs, then run or route any operation
 │   ├── session-resume/      ← resume from tracked work and relevant context at session start
 │   ├── setup-gov/           ← detect project stack and install matching governance rules
 │   ├── setup-indexes/       ← bootstrap the index.md system in a target project
@@ -170,7 +170,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
 | `git-stage`              | Batch-commit staged files grouped by concern                                                 |
 | `git-worktree`           | List and clean up linked worktrees after shipping                                            |
-| `operator`               | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation |
+| `toolkit-operator`       | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation |
 | `setup-gov`              | Detect project stack from files and install matching governance rules                        |
 | `setup-indexes`          | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
 | `setup-init`             | Detect project type and run one-shot `aitk init` with resolved flags                         |
@@ -180,7 +180,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback` |
 | `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`, `operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
 

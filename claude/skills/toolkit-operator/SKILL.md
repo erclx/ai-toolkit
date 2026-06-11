@@ -1,5 +1,5 @@
 ---
-name: operator
+name: toolkit-operator
 description: Front door to the toolkit in a target project. Orients on the toolkit's own docs and live `aitk` catalogs, then runs or routes any toolkit operation from a plain-language intent. Use when you want one entry point instead of picking a specific setup or sync skill, or when asked to "use the toolkit", "what can the toolkit do", "sync my standards", "install rules", or "help me set up this project". User-invoked only. Defers first-time scaffold to setup-init and seed drift to claude-seed-sync.
 disable-model-invocation: true
 ---
