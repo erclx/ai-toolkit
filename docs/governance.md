@@ -35,14 +35,14 @@ Source rules live in subdirectories by domain (`core/`, `lang/`, `framework/`, `
 
 Rules follow a numbering scheme by domain. When adding a rule, pick a number in the appropriate range:
 
-| Range     | Domain                                                                                   |
-| --------- | ---------------------------------------------------------------------------------------- |
-| `000–099` | core (constitution, testing, error handling, planning, etc.)                             |
-| `100–199` | lang (TypeScript, Python, etc.)                                                          |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                               |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                        |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness)                                      |
-| `500–599` | claude (markdown prose, .claude/ context, wireframe, canonical-doc, and skill authoring) |
+| Range     | Domain                                                                                               |
+| --------- | ---------------------------------------------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)                                         |
+| `100–199` | lang (TypeScript, Python, etc.)                                                                      |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                           |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                    |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness)                                                  |
+| `500–599` | claude (markdown prose, .claude/ context, wireframe, canonical-doc, task-board, and skill authoring) |
 
 **Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target and removes any stale `.claude/GOV.md` left from the retired build. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.claude/.tmp/gov/rules.md`, stripping frontmatter. Useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the paste payload.
 
@@ -52,13 +52,13 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 | Stack            | Extends | Rules                                                                                                                                |
 | ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `base`           | -       | 000–070 core rules, 500–570 claude authoring (prose, context, wireframes, canonical docs, skills)                                    |
+| `base`           | -       | 000–070 core rules, 500–570 claude authoring (prose, context, wireframes, canonical docs, tasks, skills)                             |
 | `node`           | base    | 100-typescript                                                                                                                       |
 | `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness     |
 | `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                                   |
 | `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                             |
 | `python-fastapi` | python  | 220-fastapi                                                                                                                          |
-| `planner`        | -       | 400-ui, 430-ux-completeness, 500–550 claude authoring, injected into PLANNER.md by `aitk claude prompt`. Not installed into projects |
+| `planner`        | -       | 400-ui, 430-ux-completeness, 500–555 claude authoring, injected into PLANNER.md by `aitk claude prompt`. Not installed into projects |
 
 ## CLI
 
