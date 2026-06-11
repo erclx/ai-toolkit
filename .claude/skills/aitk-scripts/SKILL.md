@@ -43,6 +43,10 @@ After editing scripts in a domain that has a sandbox scenario:
 - Run `aitk sandbox infra:{domain} install` and `aitk sandbox infra:{domain} sync` to verify
 - Skip `create` scenarios. They require interactive input and will loop on empty input.
 
+After editing install or sync code (`manage-*.sh`, `lib/inject.sh`):
+
+- Run `bun run check:install` plus the affected stack's sandbox scenario before declaring done. Hand-tests do not count as e2e.
+
 ## Reference
 
 - `docs/scripts.md`: structure, file inventory, core scripts, lib responsibilities
