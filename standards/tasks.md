@@ -31,12 +31,11 @@ Prefix each block title with a `vX.Y:` phase label for ordering and dependencies
 - Fix: a problem statement describing what is wrong
 - Chore: an imperative describing what is being done
 
-Phase-label format and where labels may appear are governed by `standards/versioning.md`. Include the `Brief:` line only when `.claude/briefs/<slug>.md` exists, and the `Plan:` line only when `.claude/plans/feature-<slug>.md` exists.
+Phase-label format and where labels may appear are governed by `standards/versioning.md`. Include the `Plan:` line only when `.claude/plans/feature-<slug>.md` exists.
 
 ```markdown
 ### vX.Y: Title
 
-Brief: .claude/briefs/<slug>.md
 Plan: .claude/plans/feature-<slug>.md
 
 - [ ] Outcome: what done looks like

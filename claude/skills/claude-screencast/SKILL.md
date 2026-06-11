@@ -17,7 +17,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: behavior rules and project pitch
 - `.claude/REQUIREMENTS.md`: feature scope, non-goals, audience hints
-- `.claude/TASKS.md`: current scope. If a relevant task entry has a `Brief:` line, read the referenced `.claude/briefs/<slug>.md`.
+- `.claude/TASKS.md`: current scope
 - Recent commits via `git log --oneline -20 2>/dev/null || echo "FALLBACK"`: what shipped recently is usually the recording subject.
 
 ## Step 2: discovery with proposed defaults
