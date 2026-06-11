@@ -39,6 +39,7 @@ scripts/
 | `requirements.md` | Shape and content rules for `.claude/REQUIREMENTS.md`                         |
 | `skill.md`        | Claude skill structure and authoring rules                                    |
 | `snippets.md`     | Snippet reference and authoring conventions                                   |
+| `tasks.md`        | Shape and content rules for `.claude/TASKS.md`                                |
 | `versioning.md`   | Phase label vs semver discipline across TASKS, briefs, PRs, commits, and tags |
 | `wireframes.md`   | Shape and content rules for `.claude/wireframes/` surface files               |
 
