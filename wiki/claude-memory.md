@@ -38,13 +38,16 @@ Toggle auto-memory with `/memory` or set `autoMemoryEnabled: false` in settings.
 
 Project-scoped memory complements Claude Code's auto-memory. Files live at `.claude/memory/` in the project tree, gitignored, written by capture and curated through a review loop. The toolkit treats memory as a holding pen, not long-term storage. Every review should promote each entry to a durable surface (`CLAUDE.md`, skill body, standards, governance) or delete it. User-type memories are the exception when no in-repo target exists.
 
+Capture and propose run together at ship time. The cost of review is re-deriving why an entry was captured, and that context is gone once the session ends. Writing the proposed fix while the session is fresh turns the later decision into a one-glance confirm and stops the pen from stacking to ten or more cold entries. Propose reads `CLAUDE.md`, the skill bodies, standards, and governance each ship, so it pays a read cost, but that work moves earlier where the batch is small.
+
 The loop:
 
-1. **Capture** with `/claude-memory-capture`. Extracts durable patterns from the session and writes `feedback`, `project`, `user`, or `reference` entries.
-2. **Propose** with `/claude-memory-review`. Reads `.claude/memory/`, classifies each entry, and writes `.claude/review/memory-review-<branch>.md` with a `Decision:` slot per item.
-3. **Challenge, Discuss, Apply, Cleanup** by re-pinging `/claude-memory-review` with the matching phase phrase. Challenge applies absorbed, delta, and generality tests to promote items. Discuss writes `Take:` lines for question decisions. Apply commits decisions and flips emoji statuses. Cleanup sweeps stale entries and deletes the receipt.
+1. **Capture** with `/claude-memory-capture`. Extracts durable patterns from the session and writes `feedback`, `project`, `user`, or `reference` entries. The ship skills run it as the second-to-last step.
+2. **Propose** with `/claude-memory-review`, run automatically right after capture by `claude-autoship` and `git-ship`. Reads the whole pen, classifies each entry, and writes `.claude/review/memory-review-<branch>.md` with a `Decision:` slot and a proposed fix per item. Running over the full pen each ship lets cross-session duplicates merge into one rule.
+3. **Apply** with `/claude-memory-review` after reviewing the receipt. Apply mutates tracked files, so it runs in a worktree and ships as its own commit, separate from the feature. A feature reviewer should not have to vet a change to how the agent operates.
+4. **Challenge, Discuss, Cleanup** by re-pinging `/claude-memory-review` with the matching phase phrase. Challenge applies absorbed, delta, and generality tests to promote items. Discuss writes `Take:` lines for question decisions. Cleanup sweeps stale entries and deletes the receipt.
 
-The skill detects the phase from the user's phrasing and the review file state. See `claude/skills/claude-memory-review/SKILL.md` for the phase-by-phase contract.
+The skill detects the phase from the user's phrasing and the review file state. Capture writes the information at ship, Propose writes the fix at ship, and Apply is the only gated step. See `claude/skills/claude-memory-review/SKILL.md` for the phase-by-phase contract.
 
 `.claude/memory/` and `.claude/review/` always live at the main worktree root, never inside a linked worktree. The skill resolves the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-` before reading or writing.
 

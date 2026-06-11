@@ -34,6 +34,33 @@ EOF
 
   mkdir -p src
   echo 'export const PORT = 8080;' >src/server.js
+
+  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n' >.gitignore
+
+  mkdir -p .claude/memory
+  cat <<'EOF' >.claude/memory/feedback-port-from-env.md
+---
+name: Read PORT from the environment
+description: Resolve the listen port from env with a fallback, not a hardcoded constant
+type: feedback
+---
+
+The server reads its listen port from `process.env.PORT` with a fallback, never a hardcoded literal.
+
+**Why:** A past deploy bound the wrong port because the value was hardcoded in source.
+
+**How to apply:** When touching server startup, resolve the port from the environment and keep the literal only as a fallback.
+EOF
+  cat <<'EOF' >.claude/memory/MEMORY.md
+# Memory Index
+
+## Feedback
+
+| Name | File | Description |
+| ---- | ---- | ----------- |
+| Read PORT from the environment | [feedback-port-from-env.md](feedback-port-from-env.md) | Resolve the listen port from env with a fallback, not a hardcoded constant |
+EOF
+
   git add . && git commit -m "chore(project): init" -q
 
   git push --force origin HEAD:main
@@ -54,15 +81,17 @@ EOF
     printf "# Changelog\n\n## [0.1.0]\n\n- Initial release\n" >CHANGELOG.md
 
     log_step "Scenario ready: with changelog"
-    log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, CHANGELOG.md present"
+    log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, CHANGELOG.md present, one seeded memory entry"
     log_info "Action:  /git:ship"
     log_info "Expect:  README updated, changes committed, branch renamed, PR opened, changelog appended"
+    log_info "         then captures session memory and runs Propose; receipt at .claude/review/memory-review-<slug>.md, Apply not run"
     ;;
   "without-changelog")
     log_step "Scenario ready: without changelog"
-    log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, no CHANGELOG.md"
+    log_info "Context: draft/init branch, port changed to 3000, health check added, README stale, no CHANGELOG.md, one seeded memory entry"
     log_info "Action:  /git:ship"
     log_info "Expect:  README updated, changes committed, branch renamed, PR opened, changelog step skipped"
+    log_info "         then captures session memory and runs Propose; receipt at .claude/review/memory-review-<slug>.md, Apply not run"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

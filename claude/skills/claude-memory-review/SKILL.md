@@ -26,6 +26,8 @@ If the user just re-pings the skill with no new phrase and a receipt exists, def
 
 ## Propose phase
 
+Propose is the ship-time entry point. The ship skills run it right after capture, so the fix is written while session context is fresh. Run it over every entry in the pen, including entries carried from earlier sessions, so cross-session duplicates merge into one rule.
+
 ### Step 1: read the memory folder
 
 Read in parallel from the project root:
@@ -149,6 +151,8 @@ Before applying any item, check the worktree state:
 If the result is `MAIN`, stop and tell the user: `❌ Apply phase mutates tracked files. Run /claude-worktree first.` Discuss and Challenge phases only touch `.claude/review/` scratch and run from anywhere.
 
 Before applying a promote to root `CLAUDE.md`, load `aitk-claude` so its seed-mirror rule fires on the edit.
+
+Promotions are a separate concern from any feature in flight. Keep the promoted edits on their own commit. Do not fold a `CLAUDE.md` or skill-body change into a feature's commits, because a feature reviewer should not have to vet a change to how the agent operates.
 
 For each item, parse the `Decision:` line:
 

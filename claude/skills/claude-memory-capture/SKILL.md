@@ -67,6 +67,12 @@ Respond with one line per memory written or updated:
 - `✅ Wrote: .claude/memory/<file> (<type>)`
 - `✏️ Updated: .claude/memory/<file> (<type>)`
 
+When at least one entry was written or updated, add a closing line so the standalone caller proposes fixes while context is fresh:
+
+`→ Run /claude-memory-review to propose fixes for the pen before the session ends.`
+
+The ship skills run review Propose themselves, so this line is for the standalone `/claude-memory-capture` path.
+
 If nothing was captured, output:
 
 `✅ Nothing worth capturing.`
