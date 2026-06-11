@@ -170,13 +170,13 @@ Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name v
 
 Sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
 
-| Function                 | What it does                                                                                                                      |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `read_frontmatter_field` | Read a YAML field from a markdown file's frontmatter. Strips wrapping quotes.                                                     |
-| `extract_frontmatter`    | Emit the frontmatter block verbatim.                                                                                              |
-| `list_indexes`           | Find every `index.md` under a root. Prunes `.git` and `node_modules` directly, defers to `git check-ignore --stdin` for the rest. |
-| `compute_index_to`       | Compute the intended `index.md` content into a target file. Fails on missing sibling frontmatter.                                 |
-| `write_index`            | Wraps `compute_index_to` with `auto:false` opt-out. Skips the write when content is unchanged.                                    |
-| `walk_and_write_indexes` | Run `write_index` across every folder `list_indexes` returns.                                                                     |
-| `find_indexed_ancestor`  | Walk up from a path until an `index.md` is found, bounded by a root.                                                              |
-| `regen_one`              | CLI-facing. Dry-run aware, emits JSON records. Reports `written`, `would-write`, `unchanged`, `skipped`, `error`.                 |
+| Function                 | What it does                                                                                                                                              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `read_frontmatter_field` | Read a YAML field from a markdown file's frontmatter. Strips wrapping quotes.                                                                             |
+| `extract_frontmatter`    | Emit the frontmatter block verbatim.                                                                                                                      |
+| `list_indexes`           | Find every `index.md` under a root. Prunes `.git` and `node_modules` directly, defers to `git check-ignore --stdin` for the rest.                         |
+| `compute_index_to`       | Compute the intended `index.md` content into a target file. Links immediate child folders that carry an `index.md`. Fails on missing sibling frontmatter. |
+| `write_index`            | Wraps `compute_index_to` with `auto:false` opt-out. Skips the write when content is unchanged.                                                            |
+| `walk_and_write_indexes` | Run `write_index` across every folder `list_indexes` returns.                                                                                             |
+| `find_indexed_ancestor`  | Walk up from a path until an `index.md` is found, bounded by a root.                                                                                      |
+| `regen_one`              | CLI-facing. Dry-run aware, emits JSON records. Reports `written`, `would-write`, `unchanged`, `skipped`, `error`.                                         |

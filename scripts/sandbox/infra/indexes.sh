@@ -33,6 +33,35 @@ description: Second sample entry
 EOF
 }
 
+seed_nested_folder() {
+  seed_folder
+  mkdir -p docs/guides
+  cat <<'EOF' >docs/guides/index.md
+---
+title: Guides
+subtitle: Step-by-step how-tos
+---
+
+# Stale content that should be overwritten
+EOF
+  cat <<'EOF' >docs/guides/setup.md
+---
+title: Setup
+description: Local environment bootstrap
+---
+
+# Setup
+EOF
+  cat <<'EOF' >docs/guides/deploy.md
+---
+title: Deploy
+description: Release and rollback steps
+---
+
+# Deploy
+EOF
+}
+
 seed_bare_folder() {
   mkdir -p docs
   cat <<'EOF' >CLAUDE.md
@@ -103,6 +132,7 @@ seed_git_repo() {
 stage_setup() {
   log_step "Indexes sandbox"
   log_info "regen       : walks CWD and rewrites every index.md"
+  log_info "nested      : parent index links a child folder's index.md"
   log_info "dry-run     : reports drift without writing (exits 2 on drift)"
   log_info "json        : emits machine-readable records on stdout"
   log_info "opt-out     : adds auto: false to index.md and confirms skip"
@@ -111,13 +141,21 @@ stage_setup() {
   log_info "no-stage    : same as lint-staged but --no-stage skips git add"
   log_info "bootstrap   : seeds raw markdown for the setup-indexes skill"
 
-  select_or_route_scenario "Which scenario?" "regen" "dry-run" "json" "opt-out" "path" "lint-staged" "no-stage" "bootstrap"
+  select_or_route_scenario "Which scenario?" "regen" "nested" "dry-run" "json" "opt-out" "path" "lint-staged" "no-stage" "bootstrap"
 
   case "$SELECTED_OPTION" in
   "regen")
     seed_folder
     log_step "Running: aitk indexes regen"
     exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen
+    ;;
+  "nested")
+    seed_nested_folder
+    log_step "Running: aitk indexes regen"
+    "$PROJECT_ROOT/scripts/manage-indexes.sh" regen
+    log_step "Generated docs/index.md"
+    pipe_output <docs/index.md
+    log_info "Expect: docs/index.md links guides/index.md after the sibling files"
     ;;
   "dry-run")
     seed_folder
