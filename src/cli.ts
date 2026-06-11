@@ -12,6 +12,7 @@ import { register as tooling } from '@/commands/tooling'
 import { register as claude } from '@/commands/claude'
 import { register as wiki } from '@/commands/wiki'
 import { register as indexes } from '@/commands/indexes'
+import { register as docs } from '@/commands/docs'
 import { register as design } from '@/commands/design'
 import { register as feedback } from '@/commands/feedback'
 
@@ -36,6 +37,7 @@ function showHelp(): void {
     `${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}`,
     `${GREY}│${NC}    wiki [cmd]         ${GREY}# Wiki commands (init)${NC}`,
     `${GREY}│${NC}    indexes [cmd]      ${GREY}# Regenerate index.md files (regen)${NC}`,
+    `${GREY}│${NC}    docs [cmd|topic]   ${GREY}# Emit toolkit reference docs (list, <topic>)${NC}`,
     `${GREY}│${NC}    design [cmd]       ${GREY}# Design system commands (render)${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/${NC}`,
     `${GREY}│${NC}`,
@@ -61,6 +63,8 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk claude prompt`,
     `${GREY}│${NC}    aitk indexes regen`,
     `${GREY}│${NC}    aitk indexes regen --dry-run --json`,
+    `${GREY}│${NC}    aitk docs list --json`,
+    `${GREY}│${NC}    aitk docs agents`,
     `${GREY}│${NC}    aitk design render`,
     `${GREY}│${NC}    pbpaste | aitk feedback`,
     `${GREY}└${NC}`,
@@ -92,6 +96,7 @@ tooling(program)
 claude(program)
 wiki(program)
 indexes(program)
+docs(program)
 design(program)
 feedback(program)
 
