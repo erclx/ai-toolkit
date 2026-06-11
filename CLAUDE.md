@@ -17,6 +17,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - This repo is behavior-heavy. Planning and review are the work here, so a higher supervision ratio than a typical app repo is expected.
 - Toolkit surfaces stay general-purpose. Map to external-tool schemas in a thin sync adapter rather than adopting them as the canonical shape.
 - When toolkit-internal content (runbooks, dev helpers) sits in an installable surface, add an `aitk` internal category and filter it out at every CLI entry point (install, sync, list, create). Prefer this over relocating to a different surface so content stays alongside siblings and the boundary is enforced in code.
+- Authoring standards install to project-root `standards/`, never plugin-bundled or under `.claude/standards/`, so `standards/X.md` references resolve identically in the toolkit and target installs. `$CLAUDE_PLUGIN_ROOT` and `$CLAUDE_PROJECT_DIR` are empty in model Bash.
 
 ## Behavior
 
