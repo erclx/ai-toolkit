@@ -119,6 +119,31 @@ compute_index_to() {
     fi
   done
 
+  # Reuse list_indexes so nested discovery inherits the same prune and
+  # .gitignore rules. Keep only direct children of this folder.
+  local subdirs=()
+  local child_index child_dir
+  while IFS= read -r child_index; do
+    [ -z "$child_index" ] && continue
+    child_dir=$(dirname "$child_index")
+    [ "$(dirname "$child_dir")" = "$dir" ] || continue
+    subdirs+=("$child_dir")
+  done < <(list_indexes "$dir" | sort)
+
+  local subdir_lines=()
+  local subdir
+  for subdir in "${subdirs[@]}"; do
+    local name child_title child_subtitle
+    name=$(basename "$subdir")
+    child_title=$(read_frontmatter_field "$subdir/index.md" "title")
+    child_subtitle=$(read_frontmatter_field "$subdir/index.md" "subtitle")
+    if [ -z "$child_title" ] || [ -z "$child_subtitle" ]; then
+      printf 'WARNING: skipping nested index %s/index.md (missing title or subtitle)\n' "$subdir" >&2
+      continue
+    fi
+    subdir_lines+=("$(printf -- '- [%s](%s/index.md): %s' "$child_title" "$name" "$child_subtitle")")
+  done
+
   local frontmatter
   frontmatter=$(extract_frontmatter "$index_file")
 
@@ -126,7 +151,7 @@ compute_index_to() {
     printf '%s\n\n' "$frontmatter"
     printf '# %s\n\n' "$title"
     printf '%s\n' "$subtitle"
-    [ "${#files[@]}" -gt 0 ] && printf '\n'
+    { [ "${#files[@]}" -gt 0 ] || [ "${#subdir_lines[@]}" -gt 0 ]; } && printf '\n'
 
     if [ "$has_categories" -eq 1 ]; then
       local cats=()
@@ -158,6 +183,14 @@ compute_index_to() {
         fm_t=$(read_frontmatter_field "$f" "title")
         fm_d=$(read_frontmatter_field "$f" "description")
         printf -- '- [%s](%s): %s\n' "$fm_t" "$name" "$fm_d"
+      done
+    fi
+
+    if [ "${#subdir_lines[@]}" -gt 0 ]; then
+      [ "$has_categories" -eq 1 ] && printf '\n## Sub-catalogs\n\n'
+      local sub_line
+      for sub_line in "${subdir_lines[@]}"; do
+        printf '%s\n' "$sub_line"
       done
     fi
   } >"$out"
