@@ -19,11 +19,11 @@ stage_setup() {
   "type": "module"
 }
 EOF
-    git add . && git commit -m "chore(sandbox): fresh empty project for operator" --no-verify -q
+    git add . && git commit -m "chore(sandbox): fresh empty project for toolkit-operator" --no-verify -q
 
-    log_step "Scenario ready: operator skill on an empty repo"
+    log_step "Scenario ready: toolkit-operator skill on an empty repo"
     log_info "Context: package.json only, toolkit not yet installed"
-    log_info "Action:  /toolkit:operator then 'help me set up this project'"
+    log_info "Action:  /toolkit:toolkit-operator then 'help me set up this project'"
     log_info "Expect:  orients via aitk docs, routes first-time scaffold to setup-init"
     ;;
   "installed")
@@ -37,11 +37,11 @@ EOF
     done < <(find "$src_standards" -type f -name "*.md" ! -name "index.md" | sort | head -n 2)
     cp "$src_standards/index.md" standards/index.md
 
-    git add . && git commit -m "chore(sandbox): project with stale standards for operator" --no-verify -q
+    git add . && git commit -m "chore(sandbox): project with stale standards for toolkit-operator" --no-verify -q
 
-    log_step "Scenario ready: operator skill on a project with installed standards"
+    log_step "Scenario ready: toolkit-operator skill on a project with installed standards"
     log_info "Context: standards/ present with two stale files"
-    log_info "Action:  /toolkit:operator then 'sync my standards'"
+    log_info "Action:  /toolkit:toolkit-operator then 'sync my standards'"
     log_info "Expect:  orients via aitk docs, reads catalogs, routes to aitk standards sync"
     ;;
   *)
