@@ -18,7 +18,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
-- `.claude/TASKS.md`: current scope and status. If the relevant task entry has a `Brief:` line, read the referenced `.claude/briefs/<slug>.md` next. The brief carries outcomes, constraints, files to read, and open questions the orchestrator framed for this worker session.
+- `.claude/TASKS.md`: current scope and status
 
 Also read these when the feature touches code or UI. Skip them for prose, docs, catalog, or config-only changes:
 
@@ -36,6 +36,7 @@ Based on the feature description, identify and read source files that are direct
 Construct the plan with these sections:
 
 - **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
+- **Constraints:** durable rules the work must respect (patterns to reuse, surfaces not to touch, platform limits). Optional. Include when an orchestrator or prior context supplies them, omit the section otherwise.
 - **Files to touch:** each file with a one-line reason
 - **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
 - **Questions:** numbered list of things to resolve before starting. If none, use `None identified.`
@@ -79,6 +80,10 @@ File format:
 - <one-line bullet covering the goal>
 - <one-line bullet covering the main deliverables>
 - <one-line bullet covering the key decision or trade-off>
+
+**Constraints:**
+
+- <durable rule the work must respect>
 
 **Files to touch:**
 

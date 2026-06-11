@@ -15,7 +15,6 @@ claude/
 ├── skills/              ← plugin skills (auto-discovered by plugin)
 │   ├── bash-script/         ← generate production bash scripts with a visual timeline UI
 │   ├── ci-workflow/         ← generate GitHub Actions CI workflow files
-│   ├── claude-brief/        ← draft `.claude/briefs/<slug>.md` handoff context from a TASKS entry
 │   ├── claude-diagram/      ← draft .claude/DIAGRAMS.md with mermaid diagrams from architecture and code signals
 │   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
@@ -120,20 +119,16 @@ This is ship-time and not plan-time because the plan describes intent, while con
 
 ## Orchestration
 
-Larger projects use an orchestrator session that breaks work into TASKS entries and hands each entry to a worker session running in a linked worktree. The toolkit ships three artifacts to make this flow mechanical.
+Larger projects use an orchestrator session that breaks work into TASKS entries and hands each entry to a worker session running in a linked worktree. The toolkit ships two artifacts to make this flow mechanical.
 
-| Artifact                          | Author       | Holds                                                                                            | Lifecycle                                             |
-| --------------------------------- | ------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
-| `.claude/TASKS.md`                | orchestrator | One block per task with outcomes and a test strategy. Phase labels live here.                    | Gitignored, shared across worktrees.                  |
-| `.claude/briefs/<slug>.md`        | orchestrator | Goal, outcomes, constraints, files to read, sequence, test strategy, open questions for one task | Gitignored, shared across worktrees, deleted on ship. |
-| `.claude/plans/feature-<slug>.md` | worker       | Files to touch with reasons, risks, answered questions for one task                              | Gitignored, shared across worktrees, deleted on ship. |
-| `.claude/briefs/ROADMAP.md`       | orchestrator | Cross-block coordination map (active picture, parallel-safety matrix, blocking dependencies)     | Gitignored, shared across worktrees. Optional.        |
+| Artifact                          | Author                 | Holds                                                                                     | Lifecycle                                             |
+| --------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `.claude/TASKS.md`                | orchestrator           | One block per task with outcomes and a test strategy. Phase labels live here.             | Gitignored, shared across worktrees.                  |
+| `.claude/plans/feature-<slug>.md` | orchestrator or worker | Files to touch with reasons, optional constraints, risks, answered questions for one task | Gitignored, shared across worktrees, deleted on ship. |
 
-Drafting flow: orchestrator writes a TASKS block, runs `claude-brief` to produce a brief, hands the worker a brief slug. Worker enters a linked worktree, runs `claude-feature` against the brief to produce a plan, then implements. `claude-docs` deletes the brief and plan when the task ships.
+Drafting flow: orchestrator writes a TASKS block, runs `claude-feature` to produce a plan carrying the reading list and any constraints, then hands the worker a plan slug. Worker enters a linked worktree, reads the plan, and implements. `claude-docs` deletes the plan when the task ships.
 
-`.claude/briefs/ROADMAP.md` is optional. Small projects skip it. Create one when two or more streams run in parallel and the orchestrator needs a single page to track who blocks whom. It sits inside the already-gitignored `briefs/` folder alongside other orchestrator-authored coordination scratch, so no dedicated gitignore entry is needed.
-
-Phase labels stay inside TASKS, briefs, and ROADMAP. They never appear in PR titles, commit messages, or git tags. See `standards/versioning.md` for the rules and the why.
+Phase labels stay inside TASKS. They never appear in PR titles, commit messages, or git tags. See `standards/versioning.md` for the rules and the why.
 
 ## Plugin skills
 
@@ -145,7 +140,6 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `ci-workflow`            | Generate GitHub Actions CI workflow files with parallel, gated jobs                          |
 | `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                          |
 | `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph        |
-| `claude-brief`           | Draft `.claude/briefs/<slug>.md` handoff context from a TASKS entry                          |
 | `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals         |
 | `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                                 |
 | `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                             |
