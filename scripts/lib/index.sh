@@ -119,9 +119,8 @@ compute_index_to() {
     fi
   done
 
-  # Immediate subfolders that carry their own index.md become nested catalog
-  # links. Reuse list_indexes so the same prune and .gitignore rules apply,
-  # then keep only direct children of this folder.
+  # Reuse list_indexes so nested discovery inherits the same prune and
+  # .gitignore rules. Keep only direct children of this folder.
   local subdirs=()
   local child_index child_dir
   while IFS= read -r child_index; do

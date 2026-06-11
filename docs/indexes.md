@@ -92,16 +92,17 @@ Generated body (with a nested subfolder):
 
 Per-domain narrative loaded on demand
 
-- [Web](web.md): Next.js app structure, layers, and conventions
-- [Scripts](scripts.md): CLI helper overview
-- [Scripts](scripts/index.md): per-tool reference
+- [Web](web.md): app structure and routing
+- [Workflows](workflows/index.md): per-pipeline reference
 ```
 
 A folder that holds its own `index.md` is a child catalog. The parent links it so an agent reading the parent discovers the sub-catalog without opening files. Linking is recursive because each folder regenerates independently.
 
 The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling file renders as `- [<title>](<filename>): <description>`. Each immediate subfolder that carries an `index.md` renders as `- [<child title>](<child>/index.md): <child subtitle>`, listed after the sibling files.
 
-In grouped mode those folder entries collect under a trailing `## Sub-catalogs` heading. A child whose `index.md` is missing `title` or `subtitle` is skipped with a warning. Hand-written content in an auto-managed `index.md` is overwritten on the next regen. To keep prose, set `auto: false` and follow this same format manually.
+In grouped mode those folder entries collect under a trailing `## Sub-catalogs` heading. A child whose `index.md` is missing `title` or `subtitle` is skipped with a warning. When a folder has both an overview file and a same-named subfolder, both entries appear.
+
+Hand-written content in an auto-managed `index.md` is overwritten on the next regen. To keep prose, set `auto: false` and follow this same format manually.
 
 ## Opt-out
 
