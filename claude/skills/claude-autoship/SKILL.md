@@ -82,7 +82,7 @@ gh pr ready --undo
 ```
 
 7. `toolkit:claude-memory-capture`: extract durable patterns from the session into `.claude/memory/`
-8. `toolkit:claude-memory-review`: propose fixes for every entry in `.claude/memory/`, writing the decision-ready receipt while session context is fresh. The skill no-ops when the pen is empty.
+8. `toolkit:claude-memory-review`: if `claude-memory-capture` wrote or updated at least one entry this session, propose fixes scoped to those entries, writing the decision-ready receipt while session context is fresh. Skip when capture wrote nothing.
 
 Stop at the Propose phase. Do not run Apply. Promoting an entry to `CLAUDE.md` or a skill body mutates how the agent operates and ships as its own change, separate from this feature.
 
@@ -97,7 +97,7 @@ Respond with up to four lines:
 <Memory proposal at .claude/review/memory-review-<slug>.md>
 ```
 
-Omit the second line if there were no minor findings. Omit the third line if `claude-memory-capture` wrote nothing. Omit the fourth line if the pen was empty and no proposal was written.
+Omit the second line if there were no minor findings. Omit the third and fourth lines if `claude-memory-capture` wrote nothing this session, since no captures means no scoped review and no proposal.
 
 ## Failure recovery
 

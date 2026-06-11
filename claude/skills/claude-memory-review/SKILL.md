@@ -26,7 +26,12 @@ If the user just re-pings the skill with no new phrase and a receipt exists, def
 
 ## Propose phase
 
-Propose is the ship-time entry point. The ship skills run it right after capture, so the fix is written while session context is fresh. Run it over every entry in the pen, including entries carried from earlier sessions, so cross-session duplicates merge into one rule.
+Propose is the ship-time entry point. The ship skills run it right after capture, so the fix is written while session context is fresh.
+
+### Scope
+
+- **Ship-scoped:** when a ship caller (`git-ship`, `claude-autoship`) names the entries captured this session, classify only those entries. Read the full pen for merge and absorbed comparison, but do not propose actions on carried entries the captures do not touch. Each carried entry was already proposed on in its own ship cycle.
+- **Full sweep:** when invoked standalone with no named set, classify every entry in the pen, including entries carried from earlier sessions, so cross-session duplicates merge into one rule.
 
 ### Step 1: read the memory folder
 
@@ -49,7 +54,7 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 
 `.claude/memory/` is a holding pen. Default every entry to promote or delete on review. Skip is the rare exception, reserved for active task overlap or user-type memories with no in-repo target.
 
-For each memory entry, pick one action:
+For each in-scope entry (see Scope), pick one action:
 
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.

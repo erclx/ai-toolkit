@@ -21,7 +21,7 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 5. Invoke `toolkit:git-branch` to rename branch to match conventional format
 6. Invoke `toolkit:git-pr` to push branch and open pull request
 7. Invoke `toolkit:claude-memory-capture` to extract durable patterns from the session into `.claude/memory/`
-8. Invoke `toolkit:claude-memory-review` to propose fixes for every entry in `.claude/memory/` while session context is fresh. The skill no-ops when the pen is empty.
+8. If `claude-memory-capture` wrote or updated at least one entry this session, invoke `toolkit:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If capture wrote nothing, skip this step.
 
 Stop at the Propose phase. Do not run Apply. Promoting an entry to `CLAUDE.md` or a skill body ships as its own change, separate from this feature.
 
@@ -35,4 +35,4 @@ Output up to three lines:
 <Memory proposal at .claude/review/memory-review-<slug>.md>
 ```
 
-Omit the second line if `claude-memory-capture` wrote nothing. Omit the third line if the pen was empty and no proposal was written.
+Omit the second and third lines if `claude-memory-capture` wrote nothing this session, since no captures means no scoped review and no proposal.
