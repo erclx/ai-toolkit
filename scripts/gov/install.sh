@@ -213,6 +213,10 @@ cmd_install() {
     local rel="${claude_file#"$target/"}"
     log_add "$rel"
   done
+
+  if [ ! -d "$target/standards" ]; then
+    log_warn "Rules reference standards/. Run 'aitk standards install $target' or 'aitk init' so the references resolve."
+  fi
 }
 
 main() {

@@ -34,14 +34,14 @@ Markdown-heavy projects, CLI tools, docs sites, research notebooks, and scriptin
 
 Run `aitk tooling list --json` and `aitk gov list --json` to see the current catalogs. Never hardcode stack names.
 
-### Optional domains
+### Core domains and skips
 
-`toolkit:setup-init` passes optional domains through `--with`:
+`aitk init` installs base tooling, Claude workflow, governance, standards, snippets, and wiki by default. `standards` and `wiki` are skippable:
 
-- `standards`: auto-enabled when `docs/`, `standards/`, or `.claude/` already exist in the project
-- `prompts`: off by default, add only when the project uses AI chat role prompts
+- `--skip standards`: leave standards out. Rare, since the governance rules and toolkit skills reference `standards/`.
+- `--skip wiki`: leave the wiki out.
 
-`wiki` is on by default. Pass `--skip wiki` to opt out.
+Prompts are not part of `aitk init`. Install them with `aitk prompts` when a project uses AI chat role prompts.
 
 ## Add a domain later
 

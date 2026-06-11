@@ -31,7 +31,7 @@ SCRIPT
 
   log_step "Init sandbox"
   log_info "default     : interactive full init (prompts for optional domains)"
-  log_info "with-flags  : non-interactive init with --stack, --with, --skip"
+  log_info "with-flags  : non-interactive init with --stack, --skip"
 
   select_or_route_scenario "Which scenario?" "default" "with-flags"
 
@@ -41,9 +41,9 @@ SCRIPT
     exec "$PROJECT_ROOT/scripts/manage-init.sh" .
     ;;
   "with-flags")
-    log_step "Running: aitk init --stack base --with standards --skip wiki ."
+    log_step "Running: aitk init --stack base --skip wiki ."
     export AITK_NON_INTERACTIVE=1
-    exec "$PROJECT_ROOT/scripts/manage-init.sh" --stack base --with standards --skip wiki .
+    exec "$PROJECT_ROOT/scripts/manage-init.sh" --stack base --skip wiki .
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

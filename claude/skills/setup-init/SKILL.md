@@ -1,6 +1,6 @@
 ---
 name: setup-init
-description: Detects a new project's type and runs `aitk init` with resolved stack, snippets, and optional domains in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
+description: Detects a new project's type and runs `aitk init` with a resolved stack and snippets in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
 ---
 
 # Init project
@@ -37,10 +37,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 - **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match.
 - **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `paths` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
 - **Snippets:** default to `all`. Narrow only if the user asked for a specific category.
-- **Optional domains (`--with`):**
-  - `standards`: include if `docs/`, `standards/`, or `.claude/` already exists in the project
-  - `prompts`: never auto-enable. Add only if the user asked for it.
-- **Skip (`--skip`):** only `wiki` is supported. Default is keep wiki on.
+- **Skip (`--skip`):** `standards` and `wiki` are core and install by default. Add `--skip standards` or `--skip wiki` only when the user explicitly wants them left out.
 
 ## Gap handling
 
@@ -60,7 +57,6 @@ Before executing, output:
 - **Tooling stack:** picked tooling stack
 - **Extras:** each `--add` rule with a one-line reason
 - **Snippets:** resolved category
-- **Optional:** each `--with` entry with a one-line reason
 - **Skip:** any `--skip` entries with reason
 - **Target:** resolved target path
 - **Commands:** the full chain that will run
@@ -69,14 +65,13 @@ Before executing, output:
 
 Run the chain in order. Each step's permission dialog is the confirmation gate. Run from the target project's current directory.
 
-Step 1: `aitk init` installs base tooling, claude seeds, governance rules, snippets, and wiki.
+Step 1: `aitk init` installs base tooling, claude seeds, governance rules, standards, snippets, and wiki.
 
 ```bash
 AITK_NON_INTERACTIVE=1 aitk init \
   --stack <stack> \
   --add <rules> \
   --snippets <category> \
-  --with <domains> \
   <target>
 ```
 

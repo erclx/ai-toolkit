@@ -46,7 +46,7 @@ git init
 aitk init
 ```
 
-`aitk init` installs base tooling configs, Claude seeds, snippets, and a wiki stub in one pass. Pass `--stack <name>` to also install governance rules for a framework stack into `.claude/rules/`. Run `aitk tooling list --json` to see the catalog.
+`aitk init` installs base tooling configs, Claude seeds, standards, snippets, and a wiki stub in one pass. Pass `--stack <name>` to also install governance rules for a framework stack into `.claude/rules/`. Run `aitk tooling list --json` to see the catalog.
 
 For the full outsider journey (scaffold, add a domain later, sync upstream drift), see [target projects](docs/target-projects.md).
 
