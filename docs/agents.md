@@ -69,6 +69,7 @@ Full help: `aitk <command> --help`.
 | `aitk sandbox reset`     | Reset sandbox to baseline                                                  |
 | `aitk sandbox clean`     | Wipe the sandbox                                                           |
 | `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                       |
+| `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                   |
 | `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                          |
 | `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/` in the toolkit repo |
 
@@ -103,6 +104,15 @@ SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
 ```
 
 Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` scenarios require interactive input and loop on empty input, so skip them in automated runs.
+
+## Docs
+
+`aitk docs` emits the toolkit's own reference docs so an agent in a target project can orient without the toolkit source checked out. The CLI resolves its bundled `docs/` from its install root.
+
+- `aitk docs list [--json]` lists target-facing docs. The catalog filters to the `Agent surface` and `Domain references` categories and drops `Infrastructure`.
+- `aitk docs <topic>` prints one doc to stdout, resolved by exact name. Any doc is reachable by name, including the `Infrastructure` topics the list omits.
+
+Data prints to stdout and the frame to stderr, so `aitk docs <topic> > out.md` captures clean markdown.
 
 ## Indexes
 
@@ -140,6 +150,7 @@ Use these to discover what's available instead of hardcoding names.
 | `aitk gov list --json`          | Governance stacks and rule sets              |
 | `aitk claude seeds list --json` | Seed doc sources with content                |
 | `aitk claude roles list --json` | Role prompt sources with content             |
+| `aitk docs list --json`         | Target-facing reference docs with categories |
 
 ## Non-interactive examples
 
