@@ -4,6 +4,8 @@ asciinema
 asyncio
 axios
 bierner
+calibri
+cambria
 canva
 clack
 commander
@@ -47,8 +49,11 @@ ollama
 parametrize
 pathlib
 pathspec
+pdftoppm
 pip
 pnpm
+pptx
+pptxgenjs
 pycache
 pydantic
 pyproject
@@ -61,6 +66,7 @@ rlength
 semgrep
 setattr
 sidepanel
+soffice
 statusline
 streamable
 subgraph
@@ -74,12 +80,14 @@ toupper
 tsconfig
 uv
 uvicorn
+valign
 venv
 vercel
 versinfo
 vite
 vitest
 withgoogle
+wslpath
 xoxb
 xoxc
 xoxd
