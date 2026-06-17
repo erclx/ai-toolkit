@@ -62,6 +62,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Prompts](docs/prompts.md): system prompt templates for AI authoring
 - [Tooling stacks](docs/tooling.md): golden configs, seeds, and references per framework
 - [Design system](docs/design.md): `DESIGN.md` token shape, extract skill, render command
+- [Slides](docs/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
 - [Sandbox](docs/sandbox.md): scenario-based scaffolds for verifying each domain flow
 
 ## Documentation
