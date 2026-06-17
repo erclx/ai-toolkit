@@ -7,10 +7,6 @@ description: CLI entry point, bash scripts, sandbox scenarios, and lib functions
 
 Read `docs/scripts.md` for structure, file inventory, and lib responsibilities before editing.
 
-## Before editing
-
-- Read `.claude/GOV.md` before writing or editing code in `src/` or `scripts/`.
-
 ## Lib rules
 
 - Each lib file owns one concern. Read `docs/scripts.md` for responsibilities before adding or modifying.
