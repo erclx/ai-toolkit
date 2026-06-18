@@ -1,7 +1,6 @@
 ---
 title: Scripts
 description: Bash scripts, lib functions, sandbox hooks
-category: Domain references
 ---
 
 # Scripts reference
@@ -79,7 +78,7 @@ scripts/
 │   └── init.sh          ← scaffolds wiki/ folder with stub index.md
 ├── indexes/
 │   └── regen.sh         ← regenerates index.md files, supports --dry-run, --json, positional paths, and auto-stage of rewritten indexes when run inside a git repo (--no-stage to opt out)
-├── sandbox/             ← scenario scripts, see docs/sandbox.md
+├── sandbox/             ← scenario scripts, see .claude/context/sandbox.md
 └── lib/
     ├── ui.sh            ← logging functions, color palette, select_option
     ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps

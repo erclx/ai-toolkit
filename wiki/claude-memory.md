@@ -66,7 +66,7 @@ paths:
 
 User-level rules at `~/.claude/rules/` apply to all projects.
 
-The toolkit installs governance into `.claude/rules/` by default. See `docs/governance.md` for the install, sync, and frontmatter contract.
+The toolkit installs governance into `.claude/rules/` by default. See `.claude/context/governance.md` for the install, sync, and frontmatter contract.
 
 ## Imports
 

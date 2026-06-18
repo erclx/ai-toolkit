@@ -1,7 +1,6 @@
 ---
 title: Sandbox
 description: Sandbox scenarios for verifying domain flows
-category: Infrastructure
 ---
 
 # Sandbox system

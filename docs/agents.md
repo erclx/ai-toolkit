@@ -139,7 +139,7 @@ Skills can parse drift without branching on exit code:
 aitk indexes regen --dry-run --json | jq '.results[] | select(.action == "would-write")'
 ```
 
-For the system rationale, frontmatter contract, when to adopt, and bootstrap path, see `docs/indexes.md`.
+For the system rationale, frontmatter contract, when to adopt, and bootstrap path, see `.claude/context/indexes.md`.
 
 ## Runtime catalogs
 

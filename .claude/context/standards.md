@@ -1,7 +1,6 @@
 ---
 title: Standards
 description: Authoring conventions synced to projects
-category: Domain references
 ---
 
 # Standards system

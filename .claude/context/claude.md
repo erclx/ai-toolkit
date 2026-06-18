@@ -1,7 +1,6 @@
 ---
 title: Claude
 description: Claude plugin skills and tooling
-category: Domain references
 ---
 
 # Claude tooling
@@ -82,7 +81,7 @@ alias clp='claude --plugin-dir $TOOLKIT/claude'
 alias clps='clp --model sonnet'
 ```
 
-For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../wiki/zshrc-aliases.md).
+For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../../wiki/zshrc-aliases.md).
 
 ## Three-tier context model
 
@@ -188,7 +187,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 | Skill                | Description                                                                                            |
 | -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or `docs/claude.md`                             |
+| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or `.claude/context/claude.md`                  |
 | `aitk-gemini`        | Load before editing Gemini commands                                                                    |
 | `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                  |
 | `aitk-prompts`       | Load before editing system prompt templates                                                            |

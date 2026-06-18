@@ -1,7 +1,6 @@
 ---
 title: Indexes
 description: Folder index.md system, frontmatter contract, when to adopt
-category: Domain references
 ---
 
 # Indexes system

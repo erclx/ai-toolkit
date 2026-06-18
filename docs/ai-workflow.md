@@ -25,7 +25,7 @@ Project docs live in `.claude/` at the project root.
 └── rules/           ← path-scoped governance rules, written by aitk gov install
 ```
 
-Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md` discovered via `.claude/context/index.md`). See [claude](claude.md) for the full model.
+Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md` discovered via `.claude/context/index.md`). See [claude](../.claude/context/claude.md) for the full model.
 
 Run `aitk init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and `.claude/rules/` in one pass. `aitk init` chains claude init and governance install. Claude Code auto-loads every file in `.claude/rules/` at session start, applying always-on rules unconditionally and path-scoped rules to files matching their `paths:` glob.
 
@@ -123,4 +123,4 @@ review finds  → Session 2 (fix alongside review, before ship)
 
 ## Snippets
 
-For the full list of snippets that complement this workflow, see `docs/snippets.md`.
+For the full list of snippets that complement this workflow, see `.claude/context/snippets.md`.

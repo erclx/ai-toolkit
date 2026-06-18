@@ -1,7 +1,6 @@
 ---
 title: Extensions
 description: External browser and editor extensions
-category: Infrastructure
 ---
 
 # Extensions

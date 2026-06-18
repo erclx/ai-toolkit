@@ -1,7 +1,6 @@
 ---
 title: Snippets
 description: Reusable prompt snippets for Claude and Gemini
-category: Domain references
 ---
 
 # Snippets system
@@ -58,7 +57,7 @@ Presets are virtual curated subsets defined in `snippets.toml`. Categories are a
 | `aitk/sandbox-worktree` | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
 | `aitk/vocab-capture`    | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
 
-The toolkit-feedback flow now ships as the `toolkit-feedback` plugin skill (see `docs/claude.md`) plus the `aitk feedback` CLI. It replaces the former `aitk/toolkit-feedback` snippet.
+The toolkit-feedback flow now ships as the `toolkit-feedback` plugin skill (see `.claude/context/claude.md`) plus the `aitk feedback` CLI. It replaces the former `aitk/toolkit-feedback` snippet.
 
 The memory review phases (challenge, discuss, apply, cleanup) used to live as `claude/memory-*` snippets. They are now folded into the `claude-memory-review` skill body. Re-ping the skill with the matching phase phrase.
 

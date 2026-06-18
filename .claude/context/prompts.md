@@ -1,7 +1,6 @@
 ---
 title: Prompts
 description: System prompt templates for AI authoring
-category: Domain references
 ---
 
 # Prompts system
