@@ -23,20 +23,16 @@ Three design choices shape the toolkit.
 
 ## Quickstart
 
-Clone, install dependencies, and link the CLI globally.
+Clone the repo, then run the bootstrap script. It installs dependencies, links the CLI globally, and adds the Claude Code shell aliases to `~/.zshrc`.
 
 ```bash
 git clone https://github.com/erclx/aitk.git
 cd aitk
 bun install
-bun link
+bun run bootstrap
 ```
 
-Confirm the install.
-
-```bash
-aitk --help
-```
+The script is idempotent. Re-run it after pulling upstream changes without duplicating anything. It confirms the install by resolving `aitk --help` on the last step. See [zshrc aliases](wiki/zshrc-aliases.md) for what each alias does.
 
 Scaffold a fresh project.
 

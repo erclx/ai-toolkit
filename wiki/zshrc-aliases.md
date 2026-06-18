@@ -9,7 +9,7 @@ Claude Code auto-discovers the toolkit plugin from `claude/.claude-plugin/plugin
 
 ## The aliases
 
-Set `TOOLKIT` to wherever you cloned the repository, then place the alias block below it in `~/.zshrc`.
+`bun run bootstrap` installs this block. It owns the canonical copy in `scripts/core/bootstrap.sh` and appends it to `~/.zshrc` between `# >>> aitk aliases >>>` markers, sets `TOOLKIT` to the cloned path, and skips on re-run. The block below is reference for what lands.
 
 ```zsh
 TOOLKIT=~/path/to/toolkit
@@ -25,7 +25,7 @@ alias clpc='clp -c'
 alias clps='clp --model sonnet'
 ```
 
-Place this block near the end of `~/.zshrc`, after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clpc` and `clps` inherit `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions.
+The block sits after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clpc` and `clps` inherit `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions. To switch a hand-rolled block over to the managed one, delete it and re-run the bootstrap.
 
 ## What each one does
 

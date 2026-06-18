@@ -45,6 +45,7 @@ scripts/
 ├── manage-indexes.sh        ← aitk indexes entry point
 ├── config.sh            ← shared project config (GITHUB_ORG with git remote fallback)
 ├── core/
+│   ├── bootstrap.sh     ← installs deps, links the CLI, appends Claude Code aliases to ~/.zshrc
 │   ├── verify.sh        ← runs all checks: format, spell, shell, index drift
 │   ├── install-check.sh ← clones repo into tmp, runs aitk init, asserts scaffold lands
 │   ├── update.sh        ← interactive dependency update + verify
@@ -90,13 +91,14 @@ scripts/
 
 ## Core scripts
 
-| Script             | `bun run`  | What it does                                                                                                     |
-| ------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------- |
-| `verify.sh`        | `check`    | Runs format, format check, spell check, shell check, and index drift check in sequence                           |
-| `update.sh`        | `update`   | Interactive dep update via `bun update --interactive`, then verify                                               |
-| `clean.sh`         | `clean`    | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                |
-| `snapshot.sh`      | `snapshot` | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                   |
-| `regen-indexes.sh` |            | Walks the repo and rewrites every `index.md` from each folder's frontmatter, skipping vendored and scratch paths |
+| Script             | `bun run`   | What it does                                                                                                      |
+| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `bootstrap.sh`     | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable |
+| `verify.sh`        | `check`     | Runs format, format check, spell check, shell check, and index drift check in sequence                            |
+| `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                |
+| `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                 |
+| `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                    |
+| `regen-indexes.sh` |             | Walks the repo and rewrites every `index.md` from each folder's frontmatter, skipping vendored and scratch paths  |
 
 ## manage-sync.sh
 
