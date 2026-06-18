@@ -1,6 +1,6 @@
 # Requirements
 
-Describe what the toolkit does and why. Not how it works. Domain architecture lives in `docs/<domain>.md`. Behavioral rules live in `CLAUDE.md`. Update this doc when scope changes, goals shift, or a non-goal is promoted to a feature.
+Describe what the toolkit does and why. Not how it works. Domain architecture lives in `.claude/context/<domain>.md`. Behavioral rules live in `CLAUDE.md`. Update this doc when scope changes, goals shift, or a non-goal is promoted to a feature.
 
 What belongs:
 
@@ -9,13 +9,13 @@ What belongs:
 - User-facing goals stated as outcomes, not implementation
 - Explicit non-goals: scope boundaries that prevent feature creep. Mark deferred items "(deferred)" to signal they are not permanently excluded.
 - MVP features as a numbered list: feature name and one-line description. No implementation detail.
-- Tech stack as a plain list of tools. Rationale lives in the relevant `docs/<domain>.md`.
+- Tech stack as a plain list of tools. Rationale lives in the relevant `.claude/context/<domain>.md`.
 - Hard constraints that shape all decisions
 
 What does not belong:
 
 - Implementation details, API names, or internal component references
-- Rationale for tech choices. That lives in the relevant `docs/<domain>.md`.
+- Rationale for tech choices. That lives in the relevant `.claude/context/<domain>.md`.
 - Anything that describes how a feature is built rather than what it does
 
 ## Worldview
