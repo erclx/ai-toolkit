@@ -74,6 +74,7 @@ Full help: `aitk <command> --help`.
 | `aitk slides render`     | Render a `.claude/SLIDES.md` source into a PowerPoint deck                 |
 | `aitk slides list`       | List the available slide layouts (`--json` for the catalog)                |
 | `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/` in the toolkit repo |
+| `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)      |
 
 ### Domain commands
 

@@ -86,6 +86,7 @@ vercel
 versinfo
 vite
 vitest
+webvtt
 withgoogle
 wslpath
 xoxb

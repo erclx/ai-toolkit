@@ -26,6 +26,7 @@ One-line reference for each doc in this folder.
 - [Snippets](snippets.md): Reusable prompt snippets for Claude and Gemini
 - [Standards](standards.md): Authoring conventions synced to projects
 - [Tooling](tooling.md): Stacks, configs, seeds, references, manifests
+- [Transcripts](transcripts.md): Fetch YouTube transcripts with metadata frontmatter into any repo
 
 ## Infrastructure
 
