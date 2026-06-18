@@ -8,7 +8,7 @@ category: Agent surface
 
 How a project outside this repo consumes the toolkit across its lifecycle. Three phases: scaffold once, add a domain later when a new need appears, and sync when the upstream toolkit moves.
 
-This doc stays at the narrative layer. For command flags and JSON shapes, see [agents](agents.md). For per-domain mechanics, see each `docs/<domain>.md`.
+This doc stays at the narrative layer. For command flags and JSON shapes, see [agents](agents.md). For per-domain mechanics, see each `.claude/context/<domain>.md`.
 
 ## Scaffold
 
@@ -74,7 +74,7 @@ Use a targeted entry point when only one surface moved upstream. Use the catch-a
 
 ## Verify a sync
 
-Before running a sync against a real project, run the relevant sandbox scenario. The sandbox provisions a representative project state and routes `SANDBOX_SCENARIO=sync` through the domain flow. See [sandbox](sandbox.md) for the scenario catalog and routing patterns.
+Before running a sync against a real project, run the relevant sandbox scenario. The sandbox provisions a representative project state and routes `SANDBOX_SCENARIO=sync` through the domain flow. See [sandbox](../.claude/context/sandbox.md) for the scenario catalog and routing patterns.
 
 ## Scenarios
 
@@ -111,5 +111,5 @@ Ongoing maintenance:
 
 - [agents](agents.md): CLI flags, exit codes, and JSON output shapes
 - [AI workflow](ai-workflow.md): feature-development loop inside a toolkit-managed project
-- [tooling](tooling.md), [governance](governance.md), [claude](claude.md), [indexes](indexes.md), [snippets](snippets.md), [standards](standards.md): per-domain mechanics
-- [sandbox](sandbox.md): scenario catalog for verifying domain flows
+- [tooling](../.claude/context/tooling.md), [governance](../.claude/context/governance.md), [claude](../.claude/context/claude.md), [indexes](../.claude/context/indexes.md), [snippets](../.claude/context/snippets.md), [standards](../.claude/context/standards.md): per-domain mechanics
+- [sandbox](../.claude/context/sandbox.md): scenario catalog for verifying domain flows

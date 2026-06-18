@@ -1,7 +1,6 @@
 ---
 title: Development
 description: Local dev workflow, scripts, and husky hooks
-category: Infrastructure
 ---
 
 # Development

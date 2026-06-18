@@ -5,11 +5,11 @@ description: Governance rules and stack definitions. Source `.md` files install 
 
 # Governance
 
-Read `docs/governance.md` for system overview, numbering scheme, and stack structure before editing.
+Read `.claude/context/governance.md` for system overview, numbering scheme, and stack structure before editing.
 
 ## Rules
 
-- Read `docs/governance.md` for the numbering ranges before picking a number for a new rule.
+- Read `.claude/context/governance.md` for the numbering ranges before picking a number for a new rule.
 - Follow `prompts/governance-rules.md` for frontmatter, heading style, and bullet conventions when writing a new rule file.
 - `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. Do not duplicate.
 
@@ -41,5 +41,5 @@ After writing or revising a rule, audit each bullet against the checklist. Trigg
 
 ## Reference
 
-- `docs/governance.md`: system overview, numbering scheme, install vs sync vs build, stacks
+- `.claude/context/governance.md`: system overview, numbering scheme, install vs sync vs build, stacks
 - `prompts/governance-rules.md`: conventions for writing rule files

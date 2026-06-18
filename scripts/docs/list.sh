@@ -9,6 +9,9 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/index.sh"
 
 DOCS_DIR="$PROJECT_ROOT/docs"
+CONTEXT_DIR="$PROJECT_ROOT/.claude/context"
+
+INTERNAL_TOPICS=" ci development extensions sandbox "
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -28,9 +31,16 @@ is_target_facing() {
   esac
 }
 
+is_internal_topic() {
+  case "$INTERNAL_TOPICS" in
+  *" $1 "*) return 0 ;;
+  *) return 1 ;;
+  esac
+}
+
 list_text() {
-  log_step "Docs"
   local file name description category
+  log_step "Docs"
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
@@ -39,11 +49,32 @@ list_text() {
     description=$(read_frontmatter_field "$file" "description")
     log_info "$name : $description"
   done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+
+  log_step "Domain context"
+  while IFS= read -r file; do
+    name=$(basename "$file" .md)
+    [ "$name" = "index" ] && continue
+    is_internal_topic "$name" && continue
+    description=$(read_frontmatter_field "$file" "description")
+    log_info "$name : $description"
+  done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+}
+
+emit_json_entry() {
+  local name="$1" description="$2" category="$3" target="$4"
+  [ "$JSON_FIRST" -eq 0 ] && printf ','
+  jq -nc \
+    --arg name "$name" \
+    --arg description "$description" \
+    --arg category "$category" \
+    --arg target "$target" \
+    '{name: $name, description: $description, category: $category, target: $target}'
+  JSON_FIRST=0
 }
 
 list_json() {
-  local first=1
-  local file name description category target
+  local file name description category
+  JSON_FIRST=1
   printf '['
   while IFS= read -r file; do
     name=$(basename "$file" .md)
@@ -51,18 +82,16 @@ list_json() {
     category=$(read_frontmatter_field "$file" "category")
     is_target_facing "$category" || continue
     description=$(read_frontmatter_field "$file" "description")
-    target="docs/$(basename "$file")"
-    if [ "$first" -eq 0 ]; then
-      printf ','
-    fi
-    jq -nc \
-      --arg name "$name" \
-      --arg description "$description" \
-      --arg category "$category" \
-      --arg target "$target" \
-      '{name: $name, description: $description, category: $category, target: $target}'
-    first=0
+    emit_json_entry "$name" "$description" "$category" "docs/$(basename "$file")"
   done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+
+  while IFS= read -r file; do
+    name=$(basename "$file" .md)
+    [ "$name" = "index" ] && continue
+    is_internal_topic "$name" && continue
+    description=$(read_frontmatter_field "$file" "description")
+    emit_json_entry "$name" "$description" "" ".claude/context/$(basename "$file")"
+  done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
   printf ']'
 }
 

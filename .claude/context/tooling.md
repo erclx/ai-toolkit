@@ -1,7 +1,6 @@
 ---
 title: Tooling
 description: Stacks, configs, seeds, references, manifests
-category: Domain references
 ---
 
 # Tooling system
@@ -42,7 +41,7 @@ tooling/
 │   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
 │   ├── manifest.toml  ← gitignore only, no deps or scripts
 │   └── reference.md
-└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see docs/claude.md
+└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see .claude/context/claude.md
 ```
 
 Stack-specific configs override the extends chain. `collect_stack_configs` in `scripts/tooling/sync.sh` walks the current stack first. Files seen there block the same relative path from being copied from parent layers.

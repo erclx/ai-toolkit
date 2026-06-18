@@ -1,7 +1,6 @@
 ---
 title: Governance
 description: Path-scoped Claude rules, stacks, install and sync
-category: Domain references
 ---
 
 # Governance system

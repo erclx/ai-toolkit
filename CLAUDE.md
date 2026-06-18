@@ -47,7 +47,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 ## After editing
 
 - Update the corresponding skill body in `.claude/skills/`. Load `aitk-claude` and follow `standards/skill.md` conventions.
-- Update affected files in `docs/`. Load `aitk-standards` and follow `standards/prose.md`.
+- Update per-domain narrative in `.claude/context/<X>.md` (follow `standards/context.md`) and any affected consumer docs in `docs/`. Load `aitk-standards` and follow `standards/prose.md`.
 
 ## Conventions
 
@@ -69,7 +69,8 @@ Each rule or knowledge item lives in exactly one surface. Other surfaces point, 
 
 - Cross-domain behavior or design principle: `CLAUDE.md`
 - Behavior triggered only when editing domain X: `.claude/skills/aitk-<X>/SKILL.md`
-- Narrative or conceptual knowledge about domain X: `docs/<X>.md`
+- Per-domain internal narrative about domain X (structure, decisions, gotchas): `.claude/context/<X>.md`
+- Consumer-facing reference (AI workflow, target-project integration): `docs/`
 - CLI command surface or invocation contract: `docs/agents.md`
 - Skill authoring strategy and redundancy notes: `wiki/skills-strategy.md`
 
@@ -83,12 +84,16 @@ The toolkit has the following domains. Each maps to a skill. Load the skill befo
 | ---------------------------------------------------------------------- | ----------------- |
 | Modifying `src/`, `scripts/`, sandbox scenarios, `manage-*.sh`, `lib/` | `aitk-scripts`    |
 | Modifying `tooling/`, manifests, golden configs, seeds                 | `aitk-tooling`    |
-| Modifying `standards/`, `docs/`                                        | `aitk-standards`  |
+| Modifying `standards/`, `docs/`, `.claude/context/`                    | `aitk-standards`  |
 | Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance` |
 | Modifying `snippets/`                                                  | `aitk-snippets`   |
 | Modifying `prompts/`                                                   | `aitk-prompts`    |
 | Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`     |
 | Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`     |
+
+The per-domain context catalog is always loaded so the entries are discoverable without a lookup. Load each entry on demand.
+
+@.claude/context/index.md
 
 ## Key paths
 
@@ -98,10 +103,11 @@ The toolkit has the following domains. Each maps to a skill. Load the skill befo
 - `gemini/commands/`: Gemini CLI command definitions
 - `claude/skills/`: plugin skills installable in target projects
 - `.claude/skills/`: internal skills, toolkit repo only
+- `.claude/context/`: per-domain internal narrative (how each domain is built, decisions, gotchas), indexed via `.claude/context/index.md`
 - `snippets/`: reusable prompt snippets for Claude and Gemini chat
 - `prompts/`: system prompt generators for AI-assisted authoring tasks
 - `src/`: TypeScript CLI entry point, commander subcommands, exec helper
-- `docs/`: human-readable reference docs for each toolkit domain
+- `docs/`: consumer-facing reference (CLI surface, AI workflow, target-project integration)
 - `scripts/`: bash domain scripts, core maintenance, sandbox, and prompt generation
 - `wiki/`: internal reference pages for tools, workflows, and concepts
 

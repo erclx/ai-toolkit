@@ -5,7 +5,7 @@ description: Reusable prompt snippets for Claude and Gemini. Use for adding snip
 
 # Snippets
 
-Read `docs/snippets.md` for system overview, categories, and structure before editing.
+Read `.claude/context/snippets.md` for system overview, categories, and structure before editing.
 
 ## Authoring rules
 
@@ -22,14 +22,14 @@ Read `docs/snippets.md` for system overview, categories, and structure before ed
 
 - `essentials` is the default `aitk init` install. Keep it tight: only snippets the user reaches for in nearly every session.
 - Slugs may include a folder prefix (`claude/feature-recap`). They resolve to `snippets/<slug>.md` on install.
-- New presets append a section to `snippets.toml` and a row in `docs/snippets.md`.
+- New presets append a section to `snippets.toml` and a row in `.claude/context/snippets.md`.
 
 ## Sync checklist
 
 When adding a snippet:
 
 - Place the file in `snippets/{category}/{name}.md` (or `snippets/{name}.md` for base)
-- Update `docs/snippets.md` categories table and snippets table
+- Update `.claude/context/snippets.md` categories table and snippets table
 - If the snippet belongs in `essentials`, add it to `snippets/snippets.toml`
 
 When renaming a snippet:
@@ -39,5 +39,5 @@ When renaming a snippet:
 
 ## Reference
 
-- `docs/snippets.md`: system overview, categories, CLI
+- `.claude/context/snippets.md`: system overview, categories, CLI
 - `standards/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions

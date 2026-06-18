@@ -1,7 +1,6 @@
 ---
 title: CI
 description: GitHub Actions workflow triggers and checks
-category: Infrastructure
 ---
 
 # CI

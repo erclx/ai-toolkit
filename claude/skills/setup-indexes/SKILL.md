@@ -7,7 +7,7 @@ description: Bootstraps the toolkit's `index.md` system in a target project. Sca
 
 Adds the index.md system to a project that does not have it. Operates in the active Claude session: Claude reads files, drafts frontmatter, confirms with the user, and writes. The CLI handles validation and regeneration only.
 
-Read `docs/indexes.md` from the toolkit if context on the system is needed before scanning.
+Read `.claude/context/indexes.md` from the toolkit if context on the system is needed before scanning.
 
 ## Scope
 
@@ -144,5 +144,5 @@ Replace bracketed values with the values from this run. Drop the "Folders bootst
 
 ## Reference
 
-- `docs/indexes.md`: system rationale, frontmatter contract, when to adopt
+- `.claude/context/indexes.md`: system rationale, frontmatter contract, when to adopt
 - `docs/agents.md`: `aitk indexes regen` flags, exit codes, JSON shape

@@ -1,7 +1,6 @@
 ---
 title: Design
 description: DESIGN.md token shape, extract skill, render command
-category: Domain references
 ---
 
 # Design

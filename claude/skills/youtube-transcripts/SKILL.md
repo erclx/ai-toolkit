@@ -5,7 +5,7 @@ description: Fetches a YouTube video transcript with metadata frontmatter into t
 
 # YouTube transcripts
 
-Turn a pasted YouTube URL into a markdown file with YAML frontmatter and a cleaned prose body. The `aitk transcripts` command owns the fetch, VTT cleanup, and frontmatter. Do not reimplement that logic. See `docs/transcripts.md` for the output format and field list.
+Turn a pasted YouTube URL into a markdown file with YAML frontmatter and a cleaned prose body. The `aitk transcripts` command owns the fetch, VTT cleanup, and frontmatter. Do not reimplement that logic. See `.claude/context/transcripts.md` for the output format and field list.
 
 ## Guards
 

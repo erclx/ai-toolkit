@@ -1,7 +1,6 @@
 ---
 title: Slides
 description: SLIDES.md source shape, layout catalog, render command, draft skill
-category: Domain references
 ---
 
 # Slides

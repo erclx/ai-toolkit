@@ -1,7 +1,6 @@
 ---
 title: Transcripts
 description: Fetch YouTube transcripts with metadata frontmatter into any repo
-category: Domain references
 ---
 
 # Transcripts

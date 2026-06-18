@@ -54,17 +54,17 @@ For the full outsider journey (scaffold, add a domain later, sync upstream drift
 
 Each domain has a canonical source in this repo and a thin install or sync CLI on the target side.
 
-- [Claude Code plugin](docs/claude.md): skills for planning, review, docs sync, and the git ship chain
-- [Governance rules](docs/governance.md): Cursor rules and stacks, installable per project
-- [Standards](docs/standards.md): shared authoring conventions, synced to projects
-- [Gemini commands](docs/gemini.md): slash commands for the Gemini CLI
-- [Snippets](docs/snippets.md): reusable prompts for Claude and Gemini chat
-- [Prompts](docs/prompts.md): system prompt templates for AI authoring
-- [Tooling stacks](docs/tooling.md): golden configs, seeds, and references per framework
-- [Design system](docs/design.md): `DESIGN.md` token shape, extract skill, render command
-- [Slides](docs/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
-- [Transcripts](docs/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
-- [Sandbox](docs/sandbox.md): scenario-based scaffolds for verifying each domain flow
+- [Claude Code plugin](.claude/context/claude.md): skills for planning, review, docs sync, and the git ship chain
+- [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
+- [Standards](.claude/context/standards.md): shared authoring conventions, synced to projects
+- [Gemini commands](.claude/context/gemini.md): slash commands for the Gemini CLI
+- [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
+- [Prompts](.claude/context/prompts.md): system prompt templates for AI authoring
+- [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
+- [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill, render command
+- [Slides](.claude/context/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
+- [Transcripts](.claude/context/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
+- [Sandbox](.claude/context/sandbox.md): scenario-based scaffolds for verifying each domain flow
 
 ## Documentation
 

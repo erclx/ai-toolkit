@@ -1,6 +1,6 @@
 ---
 name: aitk-ask
-description: Answers repository-knowledge questions about this toolkit by looking up `docs/index.md` and `wiki/index.md` first, then the specific file those indexes point to. Use when asked "how do I use X", "what does Y do", "where is Z documented", or "how do I set up a target project". Do NOT use for code changes, editing, debugging, or questions about external tools not documented in this repo.
+description: Answers repository-knowledge questions about this toolkit by looking up `docs/index.md`, `.claude/context/index.md`, and `wiki/index.md` first, then the specific file those indexes point to. Use when asked "how do I use X", "what does Y do", "where is Z documented", or "how do I set up a target project". Do NOT use for code changes, editing, debugging, or questions about external tools not documented in this repo.
 disable-model-invocation: true
 ---
 
@@ -14,18 +14,19 @@ Manual Q&A surface for toolkit self-knowledge. User triggers with `/aitk-ask <qu
 - Do not modify any file. This skill is read-only.
 - Do not open `src/`, `scripts/`, or any source file. Prose surfaces only.
 
-## Step 1: read both indexes in parallel
+## Step 1: read the indexes in parallel
 
 From the project root, read these together:
 
-- `docs/index.md`: one-line summary per domain reference
+- `docs/index.md`: one-line summary per consumer-facing reference (CLI surface, AI workflow, target-project integration)
+- `.claude/context/index.md`: one-line summary per domain's internal narrative (how a domain is built, decisions, gotchas)
 - `wiki/index.md`: one-line summary per tool and concept reference
 
-Both indexes are small. Parallel read avoids routing errors between domain references and wiki prose.
+All three indexes are small. Parallel read avoids routing errors between consumer references, domain context, and wiki prose.
 
 ## Step 2: pick one file
 
-Match the question against the one-line summaries in both indexes. Pick the single most relevant file. Prefer `docs/` for domain structure, CLI surface, and target-project integration. Prefer `wiki/` for Claude Code concepts, tool reference, and workflow prose.
+Match the question against the one-line summaries in all three indexes. Pick the single most relevant file. Prefer `docs/` for CLI surface, AI workflow, and target-project integration. Prefer `.claude/context/` for how a specific domain is built (structure, decisions, gotchas). Prefer `wiki/` for Claude Code concepts, tool reference, and workflow prose.
 
 If two entries look equally relevant, read both. Do not read more than two.
 

@@ -29,7 +29,7 @@ Run each prompt in a fresh session. Invoke with `/aitk-ask <question>`. Judge by
 ## 5. two-file ambiguity
 
 - **Prompt:** `/aitk-ask how do skills get installed from the toolkit into a project?`
-- **Expected source:** `docs/claude.md` and `wiki/claude-skills.md` both plausible. Either one alone is acceptable. Two-file `Source:` line is also acceptable.
+- **Expected source:** `.claude/context/claude.md` and `wiki/claude-skills.md` both plausible. Either one alone is acceptable. Two-file `Source:` line is also acceptable.
 - **Shape:** tests the "read at most two" rule.
 
 ## 6. escalation to CLAUDE.md / REQUIREMENTS.md

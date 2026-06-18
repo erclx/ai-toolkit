@@ -5,11 +5,11 @@ description: Tooling stacks, golden configs, seeds, references, and manifests. U
 
 # Tooling
 
-Read `docs/tooling.md` for system overview, configs vs seeds vs references, extends chain, and manifest authoring before editing.
+Read `.claude/context/tooling.md` for system overview, configs vs seeds vs references, extends chain, and manifest authoring before editing.
 
 ## Layer model
 
-Stack-specific configs override extends-chain configs at the same relative path. `collect_stack_configs` in `scripts/tooling/sync.sh` walks current-first. Refer to `docs/tooling.md` for the layer inventory and what each one owns.
+Stack-specific configs override extends-chain configs at the same relative path. `collect_stack_configs` in `scripts/tooling/sync.sh` walks current-first. Refer to `.claude/context/tooling.md` for the layer inventory and what each one owns.
 
 ## Manifest rules
 
@@ -63,5 +63,5 @@ Seed files merge across layers. Each stack contributes words to the target's `.c
 
 ## Reference
 
-- `docs/tooling.md`: system overview, configs vs seeds vs references, extends chain, manifest authoring
+- `.claude/context/tooling.md`: system overview, configs vs seeds vs references, extends chain, manifest authoring
 - `prompts/tooling-reference.md`: conventions for writing reference.md docs
