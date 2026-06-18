@@ -71,6 +71,8 @@ Full help: `aitk <command> --help`.
 | `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                       |
 | `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                   |
 | `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                          |
+| `aitk slides render`     | Render a `.claude/SLIDES.md` source into a PowerPoint deck                 |
+| `aitk slides list`       | List the available slide layouts (`--json` for the catalog)                |
 | `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/` in the toolkit repo |
 
 ### Domain commands
@@ -87,6 +89,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `claude`    | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
 | `wiki`      | `init`                                                      |
 | `design`    | `render`                                                    |
+| `slides`    | `render`, `list`                                            |
 
 Common patterns:
 

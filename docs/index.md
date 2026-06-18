@@ -22,6 +22,7 @@ One-line reference for each doc in this folder.
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
 - [Prompts](prompts.md): System prompt templates for AI authoring
 - [Scripts](scripts.md): Bash scripts, lib functions, sandbox hooks
+- [Slides](slides.md): SLIDES.md source shape, layout catalog, render command, draft skill
 - [Snippets](snippets.md): Reusable prompt snippets for Claude and Gemini
 - [Standards](standards.md): Authoring conventions synced to projects
 - [Tooling](tooling.md): Stacks, configs, seeds, references, manifests

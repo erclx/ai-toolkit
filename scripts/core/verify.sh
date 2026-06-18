@@ -53,6 +53,10 @@ main() {
   run_check "bun run check:shell" "Shell check failed"
   log_info "Shell check passed"
 
+  log_step "Tests"
+  run_check "bun run test" "Tests failed"
+  log_info "Tests passed"
+
   if [ "$NESTED" = false ]; then
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Verification passed${NC}"
