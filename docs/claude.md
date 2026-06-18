@@ -46,7 +46,8 @@ claude/
 │   ├── setup-indexes/       ← bootstrap the index.md system in a target project
 │   ├── setup-init/          ← detect project type and run one-shot `aitk init` with resolved flags
 │   ├── setup-verify/        ← run package.json scripts after scaffold to catch config and wiring mistakes
-│   └── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
+│   ├── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
+│   └── youtube-transcripts/ ← fetch a YouTube transcript with metadata frontmatter via aitk transcripts
 └── .claude-plugin/
     └── plugin.json      ← plugin manifest
 
@@ -175,6 +176,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces            |
 | `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback` |
 | `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
+| `youtube-transcripts`    | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                  |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
 

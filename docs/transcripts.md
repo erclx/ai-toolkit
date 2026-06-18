@@ -1,0 +1,59 @@
+---
+title: Transcripts
+description: Fetch YouTube transcripts with metadata frontmatter into any repo
+category: Domain references
+---
+
+# Transcripts
+
+`aitk transcripts <url>` fetches a YouTube video's captions and writes them as a markdown file with metadata frontmatter. It wraps `yt-dlp`, cleans the raw VTT captions into readable prose, and tags the output with the video's title, channel, duration, and publish date. The companion plugin skill drives the command from a chat request.
+
+The command is toolkit-native. It runs against the current working directory, so any repo with `aitk` and `yt-dlp` on PATH can pull transcripts without installing anything.
+
+## External dependency
+
+The command shells out to the `yt-dlp` binary, the same way the git skills shell out to `git` and `gh`. It is not bundled. Install it from the [yt-dlp project](https://github.com/yt-dlp/yt-dlp) before running. The command checks for it on PATH and fails with an install pointer when it is missing.
+
+## Fetch command
+
+`aitk transcripts <url>` writes one file per video to the output directory. The filename is `<title-slug>--<video-id>.md`, so re-fetching the same video overwrites in place and two videos never collide.
+
+| Option              | Default       | Behavior                                         |
+| ------------------- | ------------- | ------------------------------------------------ |
+| `--out <path>`      | `transcripts` | Output directory, resolved against the CWD       |
+| `--keep-timestamps` | off           | Prefix each line with `[mm:ss]` instead of prose |
+
+The written file path prints to stdout so it pipes clean into a wrapper. The framed run UI goes to stderr.
+
+## Output shape
+
+Each file opens with frontmatter, then an `# <title>` heading, then the transcript body:
+
+```markdown
+---
+title: 'How transformers work'
+channel: 'Some Channel'
+video_id: dQw4w9WgXcQ
+url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+duration: 612
+published: 2026-01-14
+fetched_at: 2026-06-18
+has_transcript: true
+---
+
+# How transformers work
+
+...
+```
+
+The body is the value-add over a raw caption dump. YouTube auto-captions arrive as rolling VTT cues that repeat each line as the window slides. The parser strips the inline tags, removes the rolling overlap, and joins the result into paragraphs. With `--keep-timestamps`, it emits one `[mm:ss]` line per cue instead.
+
+When a video has no captions, the command still writes the frontmatter with `has_transcript: false` and a one-line note in place of the body, so a missing transcript is a recorded fact rather than a silent gap.
+
+## Scope
+
+The command fetches one URL per run. Curated-channel batch mode, where a channel list resolves to recent uploads, is a planned follow-up.
+
+## Related
+
+- `agents.md`: CLI flags and invocation contract for `aitk transcripts`
