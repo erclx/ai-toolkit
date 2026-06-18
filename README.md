@@ -63,6 +63,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Tooling stacks](docs/tooling.md): golden configs, seeds, and references per framework
 - [Design system](docs/design.md): `DESIGN.md` token shape, extract skill, render command
 - [Slides](docs/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
+- [Transcripts](docs/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
 - [Sandbox](docs/sandbox.md): scenario-based scaffolds for verifying each domain flow
 
 ## Documentation
