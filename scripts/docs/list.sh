@@ -11,8 +11,6 @@ source "$PROJECT_ROOT/scripts/lib/index.sh"
 DOCS_DIR="$PROJECT_ROOT/docs"
 CONTEXT_DIR="$PROJECT_ROOT/.claude/context"
 
-# Toolkit-internal context entries (former Infrastructure docs). Reachable by
-# name via `aitk docs <topic>` but kept out of the downstream catalog.
 INTERNAL_TOPICS=" ci development extensions sandbox "
 
 show_help() {
