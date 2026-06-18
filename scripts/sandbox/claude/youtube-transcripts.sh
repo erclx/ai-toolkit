@@ -17,8 +17,6 @@ stage_setup() {
 }
 EOF
 
-  # Deterministic offline yt-dlp stand-in so the fetch runs without network.
-  # Emits the metadata JSON and writes a VTT into the -o template directory.
   mkdir -p bin
   cat <<'EOF' >bin/yt-dlp
 #!/usr/bin/env bash
