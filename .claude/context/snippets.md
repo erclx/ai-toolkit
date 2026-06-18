@@ -19,7 +19,7 @@ snippets/
 │   └── *.md           ← claude snippets, installed as snippets/claude/{name}.md
 ├── aitk/
 │   └── *.md           ← toolkit-internal runbooks, excluded from install
-docs/
+.claude/context/
 └── snippets.md        ← this file
 ```
 

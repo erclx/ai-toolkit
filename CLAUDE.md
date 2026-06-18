@@ -91,6 +91,10 @@ The toolkit has the following domains. Each maps to a skill. Load the skill befo
 | Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`     |
 | Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`     |
 
+The per-domain context catalog is always loaded so the entries are discoverable without a lookup. Load each entry on demand.
+
+@.claude/context/index.md
+
 ## Key paths
 
 - `governance/rules/`: governance rules

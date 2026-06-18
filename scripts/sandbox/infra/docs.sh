@@ -8,9 +8,9 @@ use_config() {
 
 stage_setup() {
   log_step "Docs sandbox"
-  log_info "list : target-facing catalog, Infrastructure filtered out"
-  log_info "get  : print one doc to stdout by exact name"
-  log_info "aitk docs reads the toolkit's own docs/, no target needed"
+  log_info "list : downstream catalog, toolkit-internal context entries filtered out"
+  log_info "get  : print one doc to stdout by exact name, from docs/ or .claude/context/"
+  log_info "aitk docs reads the toolkit's own docs/ and .claude/context/, no target needed"
 
   select_or_route_scenario "Which scenario?" "list" "get"
 
@@ -21,12 +21,18 @@ stage_setup() {
     log_step "Running: aitk docs list --json | jq '.docs[0] | keys'"
     "$PROJECT_ROOT/scripts/docs/list.sh" --json | jq '.docs[0] | keys'
     log_info "Expect keys: category, description, name, target"
-    log_info "Expect no Infrastructure topics: ci, development, extensions, sandbox"
+    log_info "Expect domain context topics: tooling, governance, standards"
+    log_info "Expect no toolkit-internal topics: ci, development, extensions, sandbox"
     ;;
   "get")
-    log_step "Running: aitk docs agents | head -5"
-    "$PROJECT_ROOT/scripts/docs/get.sh" agents | head -5
+    log_step "Running: aitk docs agents"
+    agents_doc=$("$PROJECT_ROOT/scripts/docs/get.sh" agents)
+    head -5 <<<"$agents_doc"
     log_info "Expect the agents doc body on stdout, frontmatter stripped"
+    log_step "Running: aitk docs tooling"
+    tooling_doc=$("$PROJECT_ROOT/scripts/docs/get.sh" tooling)
+    head -5 <<<"$tooling_doc"
+    log_info "Expect the tooling doc resolved from .claude/context/, not docs/"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

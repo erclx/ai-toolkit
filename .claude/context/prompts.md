@@ -18,7 +18,7 @@ prompts/
 ├── index.md          ← generated from installed files on install and sync
 ├── *.md              ← system prompt generators
 └── prompts.toml      ← category definitions (name lists)
-docs/
+.claude/context/
 └── prompts.md        ← this file
 ```
 

@@ -111,10 +111,10 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 
 ## Docs
 
-`aitk docs` emits the toolkit's own reference docs so an agent in a target project can orient without the toolkit source checked out. The CLI resolves its bundled `docs/` from its install root.
+`aitk docs` emits the toolkit's own reference docs so an agent in a target project can orient without the toolkit source checked out. The CLI resolves its bundled `docs/` and `.claude/context/` from its install root.
 
-- `aitk docs list [--json]` lists target-facing docs. The catalog filters to the `Agent surface` and `Domain references` categories and drops `Infrastructure`.
-- `aitk docs <topic>` prints one doc to stdout, resolved by exact name. Any doc is reachable by name, including the `Infrastructure` topics the list omits.
+- `aitk docs list [--json]` lists the downstream catalog: the consumer-facing `docs/` surface plus per-domain narrative from `.claude/context/`. Toolkit-internal context entries (`ci`, `development`, `extensions`, `sandbox`) are dropped.
+- `aitk docs <topic>` prints one doc to stdout, resolved by exact name from `docs/` first, then `.claude/context/`. Any doc is reachable by name, including the toolkit-internal topics the list omits.
 
 Data prints to stdout and the frame to stderr, so `aitk docs <topic> > out.md` captures clean markdown.
 
@@ -154,7 +154,7 @@ Use these to discover what's available instead of hardcoding names.
 | `aitk gov list --json`          | Governance stacks and rule sets              |
 | `aitk claude seeds list --json` | Seed doc sources with content                |
 | `aitk claude roles list --json` | Role prompt sources with content             |
-| `aitk docs list --json`         | Target-facing reference docs with categories |
+| `aitk docs list --json`         | Consumer docs plus per-domain context        |
 
 ## Non-interactive examples
 
