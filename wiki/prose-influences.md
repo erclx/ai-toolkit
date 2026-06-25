@@ -31,6 +31,10 @@ These patterns are not covered by the industry guides. They target habits common
 - Parenthetical asides in prose
 - List lead-ins (`Here are the X:`, `The following X:`)
 
+## Positive guidance
+
+The bans above subtract slop. They also push output toward a uniform staccato cadence, so prose.md pairs them with construction guidance: vary sentence length and opening structure, use substantive connectives where flow matters, and never pad for rhythm. This guidance is soft judgment, not a fixed pattern, so the standards audit does not score it mechanically.
+
 ## Where we diverge
 
 - The industry guides allow semicolons and em dashes with moderation. We ban both outright because AI models overuse them consistently.
