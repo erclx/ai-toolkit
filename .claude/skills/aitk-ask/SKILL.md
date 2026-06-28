@@ -50,7 +50,7 @@ When neither index points at a relevant file, fall through in this order:
 
 1. `CLAUDE.md` for behavior rules and conventions
 2. `.claude/REQUIREMENTS.md` for scope and non-goals
-3. `standards/*.md` for authoring conventions
+3. `.claude/standards/*.md` for authoring conventions
 4. `governance/rules/` and `governance/stacks/` for rule content
 
 Stop at the first file that answers the question. If none do, reply:
@@ -65,7 +65,7 @@ Do not guess. Do not read source files. Do not grep the whole repo.
 
 - Direct. Developer-level technical knowledge assumed.
 - No marketing words, no hedging clusters, no filler lead-ins
-- Follow `standards/prose.md` for any multi-line answer
+- Follow `.claude/standards/prose.md` for any multi-line answer
 - Prose by default. Use bullets only when the answer is a discrete list already present in the source file.
 
 ## Do not

@@ -19,7 +19,7 @@ Read in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: Memory section rules, including save thresholds and file format overrides
 - `.claude/memory/MEMORY.md`: existing index, to avoid duplicates
-- `standards/prose.md`: prose conventions applied to memory file bodies
+- `.claude/standards/prose.md`: prose conventions applied to memory file bodies
 
 ## Step 2: classify candidates
 
@@ -43,7 +43,7 @@ For each new memory, write to `.claude/memory/<type>-<slug>.md` with this frontm
 ```markdown
 ---
 name: <memory name>
-description: <one-line description per standards/prose.md § Frontmatter descriptions>
+description: <one-line description per .claude/standards/prose.md § Frontmatter descriptions>
 type: <feedback|project|user|reference>
 ---
 

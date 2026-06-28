@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/design.md` for visual intent, the token tables, and the render contract. It is the single source.
+- Follow `.claude/standards/design.md` for visual intent, the token tables, and the render contract. It is the single source.

@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/diagrams.md` for Mermaid diagram layout, labeling, and narrative. It is the single source.
+- Follow `.claude/standards/diagrams.md` for Mermaid diagram layout, labeling, and narrative. It is the single source.

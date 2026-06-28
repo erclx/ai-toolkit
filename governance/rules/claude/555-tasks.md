@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/tasks.md` for board sections, what belongs, and the task block format. It is the single source.
+- Follow `.claude/standards/tasks.md` for board sections, what belongs, and the task block format. It is the single source.

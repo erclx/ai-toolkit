@@ -8,7 +8,7 @@ description: Audits changed markdown files against applicable authoring standard
 ## Guards
 
 - Run `git diff main --name-only`. If no markdown files changed, stop: `✅ No markdown changes to audit.`
-- If `standards/` does not exist at the project root, stop: `❌ No standards/ directory. Install toolkit standards first.`
+- If `.claude/standards/` does not exist, stop: `❌ No .claude/standards/ directory. Install toolkit standards first.`
 
 ## Step 1: scope the audit
 
@@ -24,11 +24,11 @@ Filter to markdown (`.md`). Drop generated files the project does not hand-autho
 
 For each changed markdown file, pick the applicable standards:
 
-- Any markdown with prose: `standards/prose.md`
-- `SKILL.md` under `.claude/skills/` or `claude/skills/`: also `standards/skill.md`
-- `README.md` at any level: also `standards/readme.md`
-- Branch names proposed in the session: `standards/branch.md`
-- PR titles or bodies drafted in the session: `standards/pr.md`
+- Any markdown with prose: `.claude/standards/prose.md`
+- `SKILL.md` under `.claude/skills/` or `claude/skills/`: also `.claude/standards/skill.md`
+- `README.md` at any level: also `.claude/standards/readme.md`
+- Branch names proposed in the session: `.claude/standards/branch.md`
+- PR titles or bodies drafted in the session: `.claude/standards/pr.md`
 
 Skip a file if none of the standards applies.
 
@@ -37,7 +37,7 @@ Skip a file if none of the standards applies.
 Read each applicable standard once. For each changed file, audit against every rule:
 
 - **Pattern rules**: grep the file for banned tokens called out by the standard. Grep is authoritative. Reading alone misses occurrences.
-- **Judgment rules**: check each rule in context. Apply "ban the shape not instances", "crisp one-line phrasing", and "imperative voice" from `standards/skill.md` where relevant.
+- **Judgment rules**: check each rule in context. Apply "ban the shape not instances", "crisp one-line phrasing", and "imperative voice" from `.claude/standards/skill.md` where relevant.
 
 For prose specifically, grep every changed markdown file for `—` and `;`. Both are banned in prose.
 

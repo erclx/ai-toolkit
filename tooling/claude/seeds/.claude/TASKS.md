@@ -1,6 +1,6 @@
 # Tasks
 
-Authoring guidance: `standards/tasks.md`.
+Authoring guidance: `.claude/standards/tasks.md`.
 
 ## Up next
 

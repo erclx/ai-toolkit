@@ -29,7 +29,7 @@ Read `.claude/context/prompts.md` for system overview and categories before edit
 
 When adding an exportable prompt:
 
-- Create the `.md` file in `prompts/` starting with a frontmatter block carrying `title` and `description`. See `standards/prose.md` for the style rule.
+- Create the `.md` file in `prompts/` starting with a frontmatter block carrying `title` and `description`. See `.claude/standards/prose.md` for the style rule.
 - Add the name to the correct category in `prompts.toml`
 - If the prompt belongs in `essentials`, also add it to the `[essentials]` section
 - Update the prompts table and categories table in `.claude/context/prompts.md`

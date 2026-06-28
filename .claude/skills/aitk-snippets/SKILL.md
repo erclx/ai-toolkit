@@ -21,7 +21,7 @@ Read `.claude/context/snippets.md` for system overview, categories, and structur
 `snippets/snippets.toml` defines virtual presets (curated slug lists) that `aitk snippets install` resolves alongside folder-derived categories. Folder-based categories (`base`, `claude`) need no toml entry.
 
 - `essentials` is the default `aitk init` install. Keep it tight: only snippets the user reaches for in nearly every session.
-- Slugs may include a folder prefix (`claude/feature-recap`). They resolve to `snippets/<slug>.md` on install.
+- Slugs may include a folder prefix (`claude/feature-recap`). They resolve to `.claude/snippets/<slug>.md` on install.
 - New presets append a section to `snippets.toml` and a row in `.claude/context/snippets.md`.
 
 ## Sync checklist
@@ -40,4 +40,4 @@ When renaming a snippet:
 ## Reference
 
 - `.claude/context/snippets.md`: system overview, categories, CLI
-- `standards/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions
+- `.claude/standards/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions

@@ -7,7 +7,7 @@ description: Generates and validates conventional branch names. Use for any bran
 
 Before generating a branch name, read from the project root:
 
-- `standards/branch.md`: format, types, length limit, and constraints
+- `.claude/standards/branch.md`: format, types, length limit, and constraints
 
 Follow it exactly.
 

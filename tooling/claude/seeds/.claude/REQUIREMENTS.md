@@ -1,6 +1,6 @@
 # Requirements
 
-Authoring guidance: `standards/requirements.md`.
+Authoring guidance: `.claude/standards/requirements.md`.
 
 ## Problem
 

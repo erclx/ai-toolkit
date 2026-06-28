@@ -11,8 +11,8 @@ Read `.claude/context/claude.md` for plugin setup, skills inventory, and aitk cl
 
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
 - Read `.claude/context/claude.md` before adding a skill. It lists all existing skills.
-- Follow `standards/skill.md` for skill structure and frontmatter conventions.
-- Audit skill bodies against both `standards/skill.md` and `standards/prose.md`. The first covers structure and frontmatter. The second covers the body.
+- Follow `.claude/standards/skill.md` for skill structure and frontmatter conventions.
+- Audit skill bodies against both `.claude/standards/skill.md` and `.claude/standards/prose.md`. The first covers structure and frontmatter. The second covers the body.
 
 ## Authoring conventions
 
@@ -62,4 +62,4 @@ When modifying the root CLAUDE.md:
 - `.claude/context/snippets.md`: snippets catalog and invocation
 - `.claude/context/indexes.md`: index.md system rationale and contracts
 - `tooling/claude/reference.md`: seed layout and design notes
-- `standards/skill.md`: skill structure, frontmatter, and authoring rules
+- `.claude/standards/skill.md`: skill structure, frontmatter, and authoring rules

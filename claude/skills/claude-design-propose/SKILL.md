@@ -19,7 +19,7 @@ Read these from the project root, skipping any that do not exist:
 - `.claude/REQUIREMENTS.md`: the `## Personality` paragraph, worldview, non-goals
 - `.claude/ARCHITECTURE.md`: platform, tech stack, surface type (CLI, web, desktop)
 - `CLAUDE.md`: voice rules, spelling, conventions
-- `standards/prose.md`: tone constraints if present
+- `.claude/standards/prose.md`: tone constraints if present
 
 Do not scan `src/`, stylesheets, or UI modules. This skill runs before code exists. If those files are present, the scenario is wrong and `claude-design-extract` is the correct tool.
 
@@ -35,7 +35,7 @@ Use the returned content as the target shape. Keep every section heading and eve
 
 ## Step 3: propose tokens from personality and requirements
 
-Walk each section once. Follow `standards/prose.md` throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
+Walk each section once. Follow `.claude/standards/prose.md` throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
 
 Every proposed table cell is speculative, so every filled table cell gets a trailing `? verify` tag inside the cell value, never as a trailing column.
 
