@@ -23,7 +23,7 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 ## Extract skill
 
-`toolkit:claude-design-extract` drafts `.claude/DESIGN.md` from a project's existing prose and CLI UI surfaces. The skill reads `CLAUDE.md`, `standards/prose.md`, CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh`, and any stylesheet or theme config it finds. It fills the seed template from those signals and marks any inferred cell with a trailing `? verify` tag.
+`toolkit:claude-design-extract` drafts `.claude/DESIGN.md` from a project's existing prose and CLI UI surfaces. The skill reads `CLAUDE.md`, `.claude/standards/prose.md`, CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh`, and any stylesheet or theme config it finds. It fills the seed template from those signals and marks any inferred cell with a trailing `? verify` tag.
 
 The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
 

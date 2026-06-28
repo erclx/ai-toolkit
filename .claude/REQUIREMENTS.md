@@ -71,4 +71,4 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 - JSON output on `list` commands must pipe clean through any wrapper. UI and logs go to stderr.
 - The toolkit is the authoritative source. Target projects consume via install and sync, never author in place.
 - Skills detect and call the CLI. They do not reimplement CLI logic.
-- Authored content follows `standards/prose.md`. No em dashes, no semicolons, no marketing buzzwords.
+- Authored content follows `.claude/standards/prose.md`. No em dashes, no semicolons, no marketing buzzwords.

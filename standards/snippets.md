@@ -12,8 +12,8 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 ## Invocation channels
 
 - Chrome extension: type `>slug` in a supported chat UI (claude.ai, gemini.google.com) to insert the snippet text inline
-- Claude Code terminal: prefix the install path with `@` (e.g. `@snippets/claude/feature`)
-- Snippets install preserving the source folder structure. A snippet at `claude/edit.md` installs as `snippets/claude/edit.md` and is invoked as `@snippets/claude/edit`
+- Claude Code terminal: prefix the install path with `@` (e.g. `@.claude/snippets/claude/feature`)
+- Snippets install preserving the source folder structure. A snippet at `claude/edit.md` installs as `.claude/snippets/claude/edit.md` and is invoked as `@.claude/snippets/claude/edit`
 
 ## Use patterns
 

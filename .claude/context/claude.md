@@ -28,6 +28,7 @@ claude/
 │   ├── claude-worktree/     ← enter a worktree at .claude/worktrees/<name>/ with name derived from plan or branch
 │   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
 │   ├── claude-context-migrate/ ← classify docs/ content and propose `git mv` to .claude/context/
+│   ├── claude-standards-relocate/ ← propose `git mv` of root standards/ and snippets/ into .claude/
 │   ├── create-skill/        ← create a new skill file in .claude/skills/
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
@@ -97,7 +98,7 @@ Target projects scale by splitting context across three loading tiers. Knowing w
 
 ### What goes where
 
-For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `standards/context.md`. The conceptual placement decision is:
+For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `.claude/standards/context.md`. The conceptual placement decision is:
 
 - Per-domain narrative → `.claude/context/<domain>.md`
 - Path-scoped rules → `.claude/rules/<scope>.md` with `paths:` glob
@@ -114,7 +115,7 @@ Flat by default: one `.md` per domain (`.claude/context/web.md`, `.claude/contex
 
 `claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing `.claude/context/<domain>.md` entries that reference those files, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
 
-New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
+New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `.claude/standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
 
 This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
 
@@ -129,55 +130,56 @@ Larger projects use an orchestrator session that breaks work into TASKS entries 
 
 Drafting flow: orchestrator writes a TASKS block, runs `claude-feature` to produce a plan carrying the reading list and any constraints, then hands the worker a plan slug. Worker enters a linked worktree, reads the plan, and implements. `claude-docs` deletes the plan when the task ships.
 
-Phase labels stay inside TASKS. They never appear in PR titles, commit messages, or git tags. See `standards/versioning.md` for the rules and the why.
+Phase labels stay inside TASKS. They never appear in PR titles, commit messages, or git tags. See `.claude/standards/versioning.md` for the rules and the why.
 
 ## Plugin skills
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-| Skill                    | Description                                                                                  |
-| ------------------------ | -------------------------------------------------------------------------------------------- |
-| `bash-script`            | Generate production bash scripts with a visual timeline UI and error handling                |
-| `ci-workflow`            | Generate GitHub Actions CI workflow files with parallel, gated jobs                          |
-| `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                          |
-| `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph        |
-| `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals         |
-| `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                                 |
-| `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                             |
-| `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                             |
-| `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
-| `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                          |
-| `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
-| `claude-seed-sync`       | Audit installed seed docs and standards against toolkit sources, write per-part proposals    |
-| `claude-slides-draft`    | Draft a `.claude/SLIDES.md` source and render it to PowerPoint via `aitk slides render`      |
-| `claude-standards-audit` | Audit changed markdown files against applicable authoring standards, reporting only          |
-| `claude-ui-test`         | Generate and run Playwright e2e tests, with manual checklist for visual-only items           |
-| `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies               |
-| `claude-worktree`        | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch        |
-| `claude-autoship`        | Chain implement → verify → review → ship after a plan is approved                            |
-| `claude-context-migrate` | Classify `docs/` content and propose `git mv` to `.claude/context/`                          |
-| `create-skill`           | Create a new skill file in .claude/skills/                                                   |
-| `create-snippet`         | Create a new snippet file in snippets/                                                       |
-| `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                                   |
-| `git-branch`             | Rename current branch to match conventional format                                           |
-| `git-commit`             | Generate a conventional commit message from staged changes                                   |
-| `git-followup`           | Stage, commit, push, and sync the open PR for a small followup edit                          |
-| `git-pr`                 | Generate a PR description and open a pull request                                            |
-| `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
-| `git-stage`              | Batch-commit staged files grouped by concern                                                 |
-| `git-worktree`           | List and clean up linked worktrees after shipping                                            |
-| `toolkit-operator`       | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation |
-| `setup-gov`              | Detect project stack from files and install matching governance rules                        |
-| `setup-indexes`          | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
-| `setup-init`             | Detect project type and run one-shot `aitk init` with resolved flags                         |
-| `git-ship`               | Run the full post-feature workflow in one sequence                                           |
-| `session-resume`         | Resume from tracked work and relevant context at session start                               |
-| `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces            |
-| `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback` |
-| `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
-| `youtube-transcripts`    | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                  |
+| Skill                       | Description                                                                                  |
+| --------------------------- | -------------------------------------------------------------------------------------------- |
+| `bash-script`               | Generate production bash scripts with a visual timeline UI and error handling                |
+| `ci-workflow`               | Generate GitHub Actions CI workflow files with parallel, gated jobs                          |
+| `claude-design-extract`     | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                          |
+| `claude-design-propose`     | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph        |
+| `claude-diagram`            | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals         |
+| `claude-docs`               | Update .claude/ planning docs to reflect mid-cycle decisions                                 |
+| `claude-feature`            | Plan a feature by reading Claude setup and scanning source files                             |
+| `claude-memory-capture`     | Extract durable patterns from the session into `.claude/memory/`                             |
+| `claude-memory-review`      | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
+| `claude-review`             | Review all changes since main for bugs, edge cases, and logic flaws                          |
+| `claude-screencast`         | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
+| `claude-seed-sync`          | Audit installed seed docs and standards against toolkit sources, write per-part proposals    |
+| `claude-slides-draft`       | Draft a `.claude/SLIDES.md` source and render it to PowerPoint via `aitk slides render`      |
+| `claude-standards-audit`    | Audit changed markdown files against applicable authoring standards, reporting only          |
+| `claude-standards-relocate` | Propose `git mv` of root standards/ and snippets/ into .claude/                              |
+| `claude-ui-test`            | Generate and run Playwright e2e tests, with manual checklist for visual-only items           |
+| `claude-ux-audit`           | Audit existing UI surfaces for missing states, edge cases, and inconsistencies               |
+| `claude-worktree`           | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch        |
+| `claude-autoship`           | Chain implement → verify → review → ship after a plan is approved                            |
+| `claude-context-migrate`    | Classify `docs/` content and propose `git mv` to `.claude/context/`                          |
+| `create-skill`              | Create a new skill file in .claude/skills/                                                   |
+| `create-snippet`            | Create a new snippet file in snippets/                                                       |
+| `docs-sync`                 | Rewrite stale README.md and docs/\*.md sections since main                                   |
+| `git-branch`                | Rename current branch to match conventional format                                           |
+| `git-commit`                | Generate a conventional commit message from staged changes                                   |
+| `git-followup`              | Stage, commit, push, and sync the open PR for a small followup edit                          |
+| `git-pr`                    | Generate a PR description and open a pull request                                            |
+| `git-split`                 | Split a mixed-commit branch into focused branches and open PRs                               |
+| `git-stage`                 | Batch-commit staged files grouped by concern                                                 |
+| `git-worktree`              | List and clean up linked worktrees after shipping                                            |
+| `toolkit-operator`          | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation |
+| `setup-gov`                 | Detect project stack from files and install matching governance rules                        |
+| `setup-indexes`             | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
+| `setup-init`                | Detect project type and run one-shot `aitk init` with resolved flags                         |
+| `git-ship`                  | Run the full post-feature workflow in one sequence                                           |
+| `session-resume`            | Resume from tracked work and relevant context at session start                               |
+| `systematic-debugging`      | Enforce root-cause investigation before fixes when a test fails or a bug surfaces            |
+| `toolkit-feedback`          | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback` |
+| `setup-verify`              | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
+| `youtube-transcripts`       | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                  |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `create-skill`, `git-followup`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `.claude/standards/skill.md` for authoring conventions.
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
 
@@ -213,9 +215,9 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `TASKS.md`, `DESIGN.md`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding and doc-authoring standards arrive separately via `aitk gov install`, which writes path-scoped rules to `.claude/rules/`.
 
-The `.claude/wireframes/` folder ships with an `index.md` discovery anchor. Add a file per surface as the UI grows, following `standards/wireframes.md`. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
+The `.claude/wireframes/` folder ships with an `index.md` discovery anchor. Add a file per surface as the UI grows, following `.claude/standards/wireframes.md`. Read `index.md` first, then load only the surface files the current task touches. Per-surface files keep the lazy-load model honest as the project grows.
 
-The seed `settings.json` contains only the PostToolUse hook block that pairs with the project-local `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
+The seed `settings.json` contains only the PostToolUse hook block that pairs with the project-local `.claude/hooks/standards-audit.sh`. The hook greps markdown files for em-dashes and semicolons banned in `.claude/standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
 User-level pieces (attribution, permission allows, and `.env` denies) live at `~/.claude/settings.json` and install once per machine via `aitk claude setup`. Project settings layer on top of user settings, so per-project files only need to carry what is genuinely project-specific.
 

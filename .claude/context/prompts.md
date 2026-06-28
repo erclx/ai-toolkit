@@ -53,7 +53,7 @@ What each prompt generates lives in its frontmatter `description`. Browse `promp
 
 ## Conventions
 
-- Frontmatter `title` and `description` are required on every prompt. See `standards/prose.md` for the style rule.
+- Frontmatter `title` and `description` are required on every prompt. See `.claude/standards/prose.md` for the style rule.
 - All-caps H1 title: `# BASH SCRIPT ARCHITECT`
 - All-caps H2 sections: `## ROLE`, `## CRITICAL CONSTRAINTS`
 - Title case H3 subsections: `### Must Do`, `### Must Not Do`
@@ -95,7 +95,7 @@ aitk prompts sync ../my-app
 
 ## Adding a prompt
 
-Create a `.md` file in `prompts/` following the all-caps heading convention. Start the file with a frontmatter block containing `title` and `description` (see `standards/prose.md`). Include role, constraints, output format, at least one complete example, and a validation checklist if the output is complex.
+Create a `.md` file in `prompts/` following the all-caps heading convention. Start the file with a frontmatter block containing `title` and `description` (see `.claude/standards/prose.md`). Include role, constraints, output format, at least one complete example, and a validation checklist if the output is complex.
 
 To make a prompt installable, register it in `prompts.toml` under the appropriate category:
 
