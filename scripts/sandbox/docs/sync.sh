@@ -30,9 +30,9 @@ start();
 ```
 EOF
 
-  mkdir -p standards
-  echo "Mock readme rules" >standards/readme.md
-  echo "Mock prose rules" >standards/prose.md
+  mkdir -p .claude/standards
+  echo "Mock readme rules" >.claude/standards/readme.md
+  echo "Mock prose rules" >.claude/standards/prose.md
 
   git add . && git commit -m "feat(server): add base config and start function" -q
 

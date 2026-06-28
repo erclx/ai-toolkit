@@ -27,20 +27,20 @@ EOF
     log_info "Expect:  orients via aitk docs, routes first-time scaffold to setup-init"
     ;;
   "installed")
-    mkdir -p standards
+    mkdir -p .claude/standards
     local src_standards="$PROJECT_ROOT/standards"
     while IFS= read -r file; do
       local filename
       filename=$(basename "$file")
-      cp "$file" "standards/$filename"
-      echo "<!-- stale -->" >>"standards/$filename"
+      cp "$file" ".claude/standards/$filename"
+      echo "<!-- stale -->" >>".claude/standards/$filename"
     done < <(find "$src_standards" -type f -name "*.md" ! -name "index.md" | sort | head -n 2)
-    cp "$src_standards/index.md" standards/index.md
+    cp "$src_standards/index.md" .claude/standards/index.md
 
     git add . && git commit -m "chore(sandbox): project with stale standards for toolkit-operator" --no-verify -q
 
     log_step "Scenario ready: toolkit-operator skill on a project with installed standards"
-    log_info "Context: standards/ present with two stale files"
+    log_info "Context: .claude/standards/ present with two stale files"
     log_info "Action:  /toolkit:toolkit-operator then 'sync my standards'"
     log_info "Expect:  orients via aitk docs, reads catalogs, routes to aitk standards sync"
     ;;

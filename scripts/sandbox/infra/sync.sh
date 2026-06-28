@@ -27,7 +27,7 @@ stage_setup() {
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file")
-    echo "<!-- stale -->" >>"standards/$filename"
+    echo "<!-- stale -->" >>".claude/standards/$filename"
   done < <(find "$src_standards" -type f -name "*.md" | sort | head -n 2)
 
   while IFS= read -r file; do
@@ -50,7 +50,7 @@ stage_setup() {
 
   log_step "Sync sandbox"
   log_info "Anchor: $ANCHOR_REPO"
-  log_info "Stale: standards/ (2 files), .claude/rules/ (2 files)"
+  log_info "Stale: .claude/standards/ (2 files), .claude/rules/ (2 files)"
   log_info "Remote: git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
   log_step "Running: aitk sync"

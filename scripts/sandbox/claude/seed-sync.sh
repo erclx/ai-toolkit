@@ -25,14 +25,14 @@ EOF
     sed -i 's/before changes, when present\./before edits\./' CLAUDE.md
   fi
 
-  if [ -f "standards/prose.md" ]; then
-    sed -i 's/^- Use active voice\./- Use active voice and present tense./' standards/prose.md
+  if [ -f ".claude/standards/prose.md" ]; then
+    sed -i 's/^- Use active voice\./- Use active voice and present tense./' .claude/standards/prose.md
   fi
 
   git add . && git commit -m "chore(claude): trim CLAUDE.md and drift standards" --no-verify -q
 
   log_step "Scenario ready: seed sync with drift across seeds and standards"
-  log_info "Context: project with installed seeds and standards, CLAUDE.md truncated, one Context bullet mutated, standards/prose.md drifted"
+  log_info "Context: project with installed seeds and standards, CLAUDE.md truncated, one Context bullet mutated, .claude/standards/prose.md drifted"
   log_info "Action:  /claude-seed-sync"
   log_info "Expect:  drift report covering both seeds and standards, scope table grouped by source"
 }
