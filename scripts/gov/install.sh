@@ -215,7 +215,7 @@ cmd_install() {
   done
 
   if [ ! -d "$target/standards" ]; then
-    log_warn "Rules reference standards/. Run 'aitk standards install $target' or 'aitk init' so the references resolve."
+    log_warn "Rules reference .claude/standards/. Run 'aitk standards install $target' or 'aitk init' so the references resolve."
   fi
 }
 

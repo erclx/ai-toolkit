@@ -203,8 +203,8 @@ cmd_install() {
     log_info "$(derive_dest_rel_path "$f")"
   done
 
-  local dest_dir="$target_abs/snippets"
-  local dest_dir_display="${target%/}/snippets"
+  local dest_dir="$target_abs/.claude/snippets"
+  local dest_dir_display="${target%/}/.claude/snippets"
 
   select_option "Install ${#files[@]} snippets to $dest_dir_display?" "Yes" "No"
 
@@ -221,7 +221,7 @@ cmd_install() {
     local dest_file="$dest_dir/$rel_path"
     mkdir -p "$(dirname "$dest_file")"
     cp "$f" "$dest_file"
-    log_add "snippets/$rel_path"
+    log_add ".claude/snippets/$rel_path"
   done
 }
 

@@ -193,19 +193,19 @@ run_git_workflow() {
   declare -A domain_verbs
 
   local -a std_names
-  mapfile -t std_names < <(get_changed_names "$target" "standards/")
+  mapfile -t std_names < <(get_changed_names "$target" ".claude/standards/")
   if [ "${#std_names[@]}" -gt 0 ] && [ -n "${std_names[0]}" ]; then
     changed_domains+=("standards")
     changed_files["standards"]="${std_names[*]}"
-    domain_verbs["standards"]=$(get_domain_verb "$target" "standards/")
+    domain_verbs["standards"]=$(get_domain_verb "$target" ".claude/standards/")
   fi
 
   local -a snp_names
-  mapfile -t snp_names < <(get_changed_names "$target" "snippets/")
+  mapfile -t snp_names < <(get_changed_names "$target" ".claude/snippets/")
   if [ "${#snp_names[@]}" -gt 0 ] && [ -n "${snp_names[0]}" ]; then
     changed_domains+=("snippets")
     changed_files["snippets"]="${snp_names[*]}"
-    domain_verbs["snippets"]=$(get_domain_verb "$target" "snippets/")
+    domain_verbs["snippets"]=$(get_domain_verb "$target" ".claude/snippets/")
   fi
 
   local -a prm_names

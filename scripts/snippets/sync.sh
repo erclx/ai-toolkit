@@ -76,10 +76,10 @@ validate_target() {
 
 collect_changes() {
   local target_dir="$1"
-  local target_snippets_dir="$target_dir/snippets"
+  local target_snippets_dir="$target_dir/.claude/snippets"
 
   if [ ! -d "$target_snippets_dir" ]; then
-    log_warn "No snippets/ found in target. Run 'aitk snippets install' first."
+    log_warn "No .claude/snippets/ found in target. Run 'aitk snippets install' first."
     echo "0"
     return
   fi
@@ -97,12 +97,12 @@ collect_changes() {
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "snippets/$rel"
+      log_warn ".claude/snippets/$rel"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       count=$((count + 1))
     else
-      log_info "snippets/$rel"
+      log_info ".claude/snippets/$rel"
     fi
   done < <(find "$target_snippets_dir" -type f -name "*.md" | sort)
 

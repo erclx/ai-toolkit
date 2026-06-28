@@ -47,7 +47,7 @@ list_json() {
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
     title=$(read_frontmatter_field "$file" "description")
-    target="standards/$(basename "$file")"
+    target=".claude/standards/$(basename "$file")"
     if [ "$first" -eq 0 ]; then
       printf ','
     fi
