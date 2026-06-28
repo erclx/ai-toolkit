@@ -18,7 +18,7 @@ Read `.claude/context/indexes.md` from the toolkit if context on the system is n
 
 Walk the project root for folders containing three or more sibling `*.md` files. Prune `.git`, `node_modules`, `.claude`, `snippets`, anything matched by `.gitignore`, and any folder that already contains an `index.md`.
 
-Skip `snippets/` even when it lives at a non-root path. Snippets are invoked by reference (`@snippet-name`) rather than browsed, so they need neither `index.md` nor per-file frontmatter. Adding them creates noise that targets keep reporting.
+Skip `.claude/snippets/`. Snippets are invoked by reference (`@snippet-name`) rather than browsed, so they need neither `index.md` nor per-file frontmatter. Adding them creates noise that targets keep reporting.
 
 For each candidate, capture:
 
@@ -43,7 +43,7 @@ Ask the user which to bootstrap. Accept folder paths, `all`, or `none`. The user
 For each chosen folder, read every `*.md` sibling and draft frontmatter:
 
 - `title`: derived from the first H1. If absent, derive from the filename in sentence case.
-- `description`: one line summarizing the file's purpose, drawn from the first paragraph after the H1. Follow `standards/prose.md` § Frontmatter descriptions for length and style.
+- `description`: one line summarizing the file's purpose, drawn from the first paragraph after the H1. Follow `.claude/standards/prose.md` § Frontmatter descriptions for length and style.
 
 Surface every drafted entry to the user grouped by file:
 

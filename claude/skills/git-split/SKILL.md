@@ -7,8 +7,8 @@ description: Splits a mixed-commit branch into focused branches off main using c
 
 Before proposing a split, read from the project root in parallel:
 
-- `standards/branch.md`: format, types, length limit, and constraints
-- `standards/pr.md`: PR title format, body sections, and content rules
+- `.claude/standards/branch.md`: format, types, length limit, and constraints
+- `.claude/standards/pr.md`: PR title format, body sections, and content rules
 
 Follow both exactly.
 

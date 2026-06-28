@@ -33,9 +33,9 @@ The project uses a three-tier context model. Know which tier holds what before r
 
 ## Markdown
 
-- When editing any markdown file, follow `standards/prose.md`.
-- When writing or updating `.claude/context/<domain>.md`, also follow `standards/context.md`.
-- When writing or updating `.claude/wireframes/<surface>.md`, also follow `standards/wireframes.md`.
+- When editing any markdown file, follow `.claude/standards/prose.md`.
+- When writing or updating `.claude/context/<domain>.md`, also follow `.claude/standards/context.md`.
+- When writing or updating `.claude/wireframes/<surface>.md`, also follow `.claude/standards/wireframes.md`.
 
 ## Commands
 

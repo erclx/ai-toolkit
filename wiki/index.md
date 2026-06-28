@@ -1,11 +1,11 @@
 ---
 title: Wiki
-subtitle: 'Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `standards/prose.md` when writing or editing any wiki page.'
+subtitle: 'Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `.claude/standards/prose.md` when writing or editing any wiki page.'
 ---
 
 # Wiki
 
-Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `standards/prose.md` when writing or editing any wiki page.
+Reference pages for tools, workflows, and concepts. Written and maintained by hand. Follow `.claude/standards/prose.md` when writing or editing any wiki page.
 
 - [Claude Code](claude-code.md): CLI flags, CLAUDE.md, hooks, memory, and MCP
 - [Claude Code commands](claude-commands.md): Full built-in slash command reference

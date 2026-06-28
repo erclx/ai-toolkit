@@ -7,8 +7,8 @@ description: Groups staged files by concern and generates one conventional commi
 
 Read these files from the project root in parallel:
 
-- `standards/commit.md`: format, types, scopes, and constraints
-- `standards/prose.md`: prose conventions for all generated text
+- `.claude/standards/commit.md`: format, types, scopes, and constraints
+- `.claude/standards/prose.md`: prose conventions for all generated text
 
 ## Context
 

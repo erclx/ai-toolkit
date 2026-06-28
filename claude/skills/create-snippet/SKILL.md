@@ -7,8 +7,8 @@ description: Creates a new snippet file in `snippets/`. Use when asked to create
 
 Read these files from the project root in parallel:
 
-- `standards/snippets.md`: authoring conventions, invocation channels, use patterns
-- `standards/prose.md`: prose conventions for all generated text
+- `.claude/standards/snippets.md`: authoring conventions, invocation channels, use patterns
+- `.claude/standards/prose.md`: prose conventions for all generated text
 
 ## Steps
 
@@ -17,7 +17,7 @@ Read these files from the project root in parallel:
 
 ## Guards
 
-- If `standards/snippets.md` is not present, stop: `❌ standards/snippets.md not found. Run aitk standards install first.`
+- If `.claude/standards/snippets.md` is not present, stop: `❌ .claude/standards/snippets.md not found. Run aitk standards install first.`
 - If `snippets/` does not exist, stop: `❌ No snippets/ directory found.`
 
 ## After writing

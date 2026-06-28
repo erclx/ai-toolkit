@@ -8,5 +8,5 @@ paths:
 
 ## Authority
 
-- Follow `standards/prose.md` for all prose: voice, structure, formatting, language, and banned punctuation. It is the single source.
+- Follow `.claude/standards/prose.md` for all prose: voice, structure, formatting, language, and banned punctuation. It is the single source.
 - Read it before a substantial prose edit. Do not work the bans from memory.

@@ -66,7 +66,7 @@ cmd_install() {
   target=$(validate_target "$target")
   guard_root "$target"
 
-  local dest_dir="${target%/}/standards"
+  local dest_dir="${target%/}/.claude/standards"
 
   log_step "Scanning standards"
 
@@ -75,7 +75,7 @@ cmd_install() {
     local filename
     filename=$(basename "$file")
     [ "$filename" = "index.md" ] && continue
-    log_info "standards/$filename"
+    log_info ".claude/standards/$filename"
     files+=("$file")
   done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
 
@@ -95,12 +95,12 @@ cmd_install() {
     local filename
     filename=$(basename "$file")
     cp "$file" "$dest_dir/$filename"
-    log_add "standards/$filename"
+    log_add ".claude/standards/$filename"
   done
 
   cp "$STANDARDS_SOURCE/index.md" "$dest_dir/index.md"
   write_index "$dest_dir"
-  log_add "standards/index.md"
+  log_add ".claude/standards/index.md"
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"
@@ -109,11 +109,11 @@ cmd_install() {
 
 collect_sync_changes() {
   local target_dir="$1"
-  local standards_target="$target_dir/standards"
+  local standards_target="$target_dir/.claude/standards"
   local count=0
 
   if [ ! -d "$standards_target" ]; then
-    log_warn "No standards/ found in target. Run 'aitk standards install' first."
+    log_warn "No .claude/standards/ found in target. Run 'aitk standards install' first."
     echo "0"
     return
   fi
@@ -130,12 +130,12 @@ collect_sync_changes() {
     fi
 
     if ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
-      log_warn "standards/$filename"
+      log_warn ".claude/standards/$filename"
       echo "$src_file|$dest_file" >>"$PENDING_FILE"
       echo "$src_file|$dest_file" >>"$DRIFTED_FILE"
       count=$((count + 1))
     else
-      log_info "standards/$filename"
+      log_info ".claude/standards/$filename"
     fi
   done < <(find "$standards_target" -type f -name "*.md" | sort)
 
@@ -156,8 +156,8 @@ cmd_sync() {
   count=$(collect_sync_changes "$target")
 
   if [ "$count" -eq 0 ]; then
-    cp "$STANDARDS_SOURCE/index.md" "$target/standards/index.md"
-    write_index "$target/standards"
+    cp "$STANDARDS_SOURCE/index.md" "$target/.claude/standards/index.md"
+    write_index "$target/.claude/standards"
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
@@ -195,9 +195,9 @@ cmd_sync() {
   esac
 
   apply_changes "$target"
-  cp "$STANDARDS_SOURCE/index.md" "$target/standards/index.md"
-  write_index "$target/standards"
-  log_add "standards/index.md"
+  cp "$STANDARDS_SOURCE/index.md" "$target/.claude/standards/index.md"
+  write_index "$target/.claude/standards"
+  log_add ".claude/standards/index.md"
 
   trap - EXIT
   echo -e "${GREY}└${NC}\n"

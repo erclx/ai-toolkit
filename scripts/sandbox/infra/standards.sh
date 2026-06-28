@@ -11,15 +11,15 @@ use_config() {
 stage_setup() {
   mkdir -p install
   touch install/.gitkeep
-  mkdir -p sync/standards
+  mkdir -p sync/.claude/standards
 
   local src_standards="$PROJECT_ROOT/standards"
 
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file")
-    cp "$file" "sync/standards/$filename"
-    echo "<!-- stale -->" >>"sync/standards/$filename"
+    cp "$file" "sync/.claude/standards/$filename"
+    echo "<!-- stale -->" >>"sync/.claude/standards/$filename"
   done < <(find "$src_standards" -type f -name "*.md" | sort | head -n 2)
 
   git add .
@@ -27,7 +27,7 @@ stage_setup() {
 
   log_step "Standards sandbox"
   log_info "install/ : clean target, no standards present"
-  log_info "sync/    : stale standards/ present"
+  log_info "sync/    : stale .claude/standards/ present"
   log_info "list     : read-only catalog dump, no target needed"
 
   select_or_route_scenario "Which scenario?" "install" "sync" "list"

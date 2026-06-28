@@ -45,6 +45,11 @@ main() {
   run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- $index_files" "Indexes drifted. Run bun run check and commit the updated index files."
   log_info "Indexes clean"
 
+  log_step "Consumed copies"
+  run_check "bash $PROJECT_ROOT/scripts/core/regen-claude-copies.sh" "Consumed-copy regen failed"
+  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- .claude/standards .claude/snippets" "Consumed copies drifted. Run bun run check and commit .claude/standards and .claude/snippets."
+  log_info "Consumed copies clean"
+
   log_step "Spelling"
   run_check "bun run check:spell" "Spell check failed"
   log_info "Spell check passed"

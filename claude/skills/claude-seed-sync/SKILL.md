@@ -23,7 +23,7 @@ aitk standards list --json 2>/dev/null
 
 Seeds emit an array of `{name, source, target, content}`. Standards emit `{standards: [{name, description, target, content}]}`. In both cases `target` is the path relative to the project root where the file installs. Merge the two into one list of entries tagged by source (`seed` or `standard`).
 
-If the target project has no `standards/` directory, skip the standards stage silently.
+If the target project has no `.claude/standards/` directory, skip the standards stage silently.
 
 ## Step 2: read installed copies
 

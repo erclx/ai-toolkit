@@ -1,6 +1,6 @@
 # Design
 
-Authoring guidance: `standards/design.md`.
+Authoring guidance: `.claude/standards/design.md`.
 
 ## Personality
 

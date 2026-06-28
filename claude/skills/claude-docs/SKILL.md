@@ -43,7 +43,7 @@ For each doc with relevant changes, apply updates following these rules:
 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
-- Follow `standards/prose.md` for all edits.
+- Follow `.claude/standards/prose.md` for all edits.
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
@@ -100,7 +100,7 @@ Run `git diff --name-only main` (or `--staged` when staged) and `git diff main` 
 - Map the entry's section headings to the changed files. An entry is relevant when its prose references files, modules, or decisions touched by the diff.
 - For each relevant entry, rewrite only the sections affected by the diff. Same pattern as `docs-sync`. Do not touch unrelated sections.
 
-Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
+Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `.claude/standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
 
 Write each updated entry immediately. Output one line per file:
 
@@ -112,7 +112,7 @@ The base lint-staged config runs `aitk indexes regen` on every committed `*.md`,
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
-**Plans.** For each task block marked `[x]` in Step 3, check for a `Plan:` line directly under the title. Parse the path. If it points inside `.claude/plans/` and the file exists, delete it. If the path is outside `.claude/plans/`, warn and skip. Mirrors the `snippets/claude/tasks-done.md` pattern.
+**Plans.** For each task block marked `[x]` in Step 3, check for a `Plan:` line directly under the title. Parse the path. If it points inside `.claude/plans/` and the file exists, delete it. If the path is outside `.claude/plans/`, warn and skip. Mirrors the `.claude/snippets/claude/tasks-done.md` pattern.
 
 **Reviews.** Derive `<slug>` from the current branch name (replace `/` with `-`). If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 

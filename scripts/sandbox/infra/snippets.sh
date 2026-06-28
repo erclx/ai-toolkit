@@ -11,17 +11,17 @@ use_config() {
 stage_setup() {
   mkdir -p install
   touch install/.gitkeep
-  mkdir -p sync/snippets
+  mkdir -p sync/.claude/snippets
 
   local src_snippets="$PROJECT_ROOT/snippets"
 
   while IFS= read -r file; do
     local rel parent
     rel="${file#"$src_snippets/"}"
-    parent=$(dirname "sync/snippets/$rel")
+    parent=$(dirname "sync/.claude/snippets/$rel")
     mkdir -p "$parent"
-    cp "$file" "sync/snippets/$rel"
-    echo "<!-- stale -->" >>"sync/snippets/$rel"
+    cp "$file" "sync/.claude/snippets/$rel"
+    echo "<!-- stale -->" >>"sync/.claude/snippets/$rel"
   done < <(find "$src_snippets" -type f -name "*.md" | sort | head -n 2)
 
   git add .
@@ -30,7 +30,7 @@ stage_setup() {
   log_step "Snippets sandbox"
   log_info "install/    : clean target, installs base category"
   log_info "essentials/ : clean target, installs essentials preset"
-  log_info "sync/       : stale snippets/ present"
+  log_info "sync/       : stale .claude/snippets/ present"
   log_info "create      : runs against toolkit source directly"
   log_info "list        : read-only catalog dump, no target needed"
 

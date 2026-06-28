@@ -16,7 +16,7 @@ Read these from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: voice, personality, spelling rules
 - `.claude/REQUIREMENTS.md`: worldview and non-goals that shape visual intent
-- `standards/prose.md`: tone constraints
+- `.claude/standards/prose.md`: tone constraints
 - `src/ui.ts`, `src/ui.tsx`, `src/components/**`: color codes, typography, spacing constants
 - `scripts/lib/ui.sh`, `scripts/lib/*.sh`: ANSI color codes, frame glyphs, spacing conventions
 - `docs/agents.md`, `docs/index.md`: any output shape or framing rules already documented
@@ -38,7 +38,7 @@ Use the returned content as the target shape. Keep every section heading and eve
 
 Walk each section once, pulling concrete signals from Step 1:
 
-- **Personality**: one paragraph. Transcribe what `CLAUDE.md` and `.claude/REQUIREMENTS.md` say about voice, tone, and visual feeling. Do not invent rules the source does not state. Follow `standards/prose.md`: no em dashes, no semicolons, no marketing buzzwords. If nothing matches, write a one-sentence placeholder ending in `? verify`.
+- **Personality**: one paragraph. Transcribe what `CLAUDE.md` and `.claude/REQUIREMENTS.md` say about voice, tone, and visual feeling. Do not invent rules the source does not state. Follow `.claude/standards/prose.md`: no em dashes, no semicolons, no marketing buzzwords. If nothing matches, write a one-sentence placeholder ending in `? verify`.
 - **Color**: one row per role. Source hex values from the CLI UI files or stylesheets. If a role has no source signal, leave `Value` blank rather than guessing.
 - **Typography**: one row per role. Source families and sizes from stylesheet or theme config. Leave cells blank when no signal exists.
 - **Spacing**: fill the base unit and multipliers from stylesheet tokens or obvious repeated values in the UI code.

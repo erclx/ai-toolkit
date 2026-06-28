@@ -1,6 +1,6 @@
 # Architecture
 
-Authoring guidance: `standards/architecture.md`.
+Authoring guidance: `.claude/standards/architecture.md`.
 
 ## Overview
 

@@ -5,7 +5,7 @@ description: Industry style guides behind prose.md and AI-specific additions
 
 # Prose influences
 
-The rules in `standards/prose.md` draw from three industry style guides plus AI-specific additions.
+The rules in `.claude/standards/prose.md` draw from three industry style guides plus AI-specific additions.
 
 ## Industry guides
 
@@ -30,6 +30,10 @@ These patterns are not covered by the industry guides. They target habits common
 - Em dash and semicolon overuse
 - Parenthetical asides in prose
 - List lead-ins (`Here are the X:`, `The following X:`)
+
+## Positive guidance
+
+The bans above subtract slop. They also push output toward a uniform staccato cadence, so prose.md pairs them with construction guidance: vary sentence length and opening structure, use substantive connectives where flow matters, and never pad for rhythm. This guidance is soft judgment, not a fixed pattern, so the standards audit does not score it mechanically.
 
 ## Where we diverge
 

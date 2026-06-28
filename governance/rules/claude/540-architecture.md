@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/architecture.md` for the overview, named decision entries, and risks. It is the single source.
+- Follow `.claude/standards/architecture.md` for the overview, named decision entries, and risks. It is the single source.

@@ -7,8 +7,8 @@ description: Generates conventional commit messages from staged changes. Use for
 
 Before generating a commit message, read from the project root:
 
-- `standards/commit.md`: format, types, scopes, and constraints
-- `standards/versioning.md`: phase label vs semver discipline
+- `.claude/standards/commit.md`: format, types, scopes, and constraints
+- `.claude/standards/versioning.md`: phase label vs semver discipline
 
 Follow them exactly.
 

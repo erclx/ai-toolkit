@@ -7,8 +7,8 @@ description: Rewrites stale `README.md` and `docs/*.md` sections based on change
 
 Read these files from the project root in parallel:
 
-- `standards/prose.md`: prose conventions for all generated text
-- `standards/readme.md`: README structure, required sections, and content rules
+- `.claude/standards/prose.md`: prose conventions for all generated text
+- `.claude/standards/readme.md`: README structure, required sections, and content rules
 
 ## Context
 

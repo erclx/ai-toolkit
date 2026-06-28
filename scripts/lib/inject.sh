@@ -6,7 +6,7 @@ inject_governance() {
   local rules_source="$PROJECT_ROOT/governance/rules"
   local rules_target=".claude/rules"
   local standards_source="$PROJECT_ROOT/standards"
-  local standards_target="standards"
+  local standards_target=".claude/standards"
 
   if [ -d "$rules_source" ]; then
     source "$PROJECT_ROOT/scripts/lib/gov.sh"
@@ -30,7 +30,7 @@ inject_governance() {
     cp -r "$standards_source/." "$standards_target/"
     shopt -s nullglob
     for f in "$standards_target"/*.md; do
-      log_add "standards/$(basename "$f")"
+      log_add ".claude/standards/$(basename "$f")"
     done
     shopt -u nullglob
   else

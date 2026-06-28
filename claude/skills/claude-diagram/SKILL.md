@@ -32,7 +32,7 @@ Emit a diagram only when its source signal exists. Skip the rest, do not pad the
 
 Stay inside `flowchart` and `sequenceDiagram`. Do not emit C4, state, ER, or class diagrams. They render inconsistently across viewers.
 
-Follow `standards/diagrams.md` for layout, labeling, narrative, and explanation rules. `flowchart TB` is the default. Reach for `flowchart LR` only when a pipeline genuinely cannot read top-to-bottom, and call it out in the explanation paragraph.
+Follow `.claude/standards/diagrams.md` for layout, labeling, narrative, and explanation rules. `flowchart TB` is the default. Reach for `flowchart LR` only when a pipeline genuinely cannot read top-to-bottom, and call it out in the explanation paragraph.
 
 ## Step 3: write the file
 

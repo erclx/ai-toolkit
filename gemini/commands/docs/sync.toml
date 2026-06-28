@@ -31,11 +31,11 @@ Goal: Update README.md and any affected files in `docs/` based on code changes.
 </CODE_DIFF>
 
 <README_STANDARDS>
-!{cat standards/readme.md 2>/dev/null || echo "DOCS_MISSING"}
+!{cat .claude/standards/readme.md 2>/dev/null || echo "DOCS_MISSING"}
 </README_STANDARDS>
 
 <PROSE_STANDARDS>
-!{cat standards/prose.md 2>/dev/null || echo "DOCS_MISSING"}
+!{cat .claude/standards/prose.md 2>/dev/null || echo "DOCS_MISSING"}
 </PROSE_STANDARDS>
 </DATA_CONTEXT>
 

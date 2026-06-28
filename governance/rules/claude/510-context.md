@@ -12,4 +12,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/context.md` for entry shape: frontmatter, sections, length, and what goes in. It is the single source.
+- Follow `.claude/standards/context.md` for entry shape: frontmatter, sections, length, and what goes in. It is the single source.

@@ -8,4 +8,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/skill.md` for skill structure, frontmatter fields, and invocation rules. It is the single source.
+- Follow `.claude/standards/skill.md` for skill structure, frontmatter fields, and invocation rules. It is the single source.

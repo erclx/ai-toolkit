@@ -46,12 +46,13 @@ scripts/
 ├── config.sh            ← shared project config (GITHUB_ORG with git remote fallback)
 ├── core/
 │   ├── bootstrap.sh     ← installs deps, links the CLI, appends Claude Code aliases to ~/.zshrc
-│   ├── verify.sh        ← runs all checks: format, spell, shell, index drift
+│   ├── verify.sh        ← runs all checks: format, spell, shell, index and consumed-copy drift
 │   ├── install-check.sh ← clones repo into tmp, runs aitk init, asserts scaffold lands
 │   ├── update.sh        ← interactive dependency update + verify
 │   ├── clean.sh         ← wipes node_modules, clears cache, reinstalls
 │   ├── snapshot.sh      ← writes PROJECT-SNAPSHOT.md to .claude/.tmp/project/
-│   └── regen-indexes.sh ← regenerates prompts/index.md and standards/index.md
+│   ├── regen-indexes.sh ← regenerates prompts/index.md and standards/index.md
+│   └── regen-claude-copies.sh ← mirrors standards/ and snippets/ into .claude/ consumed copies
 ├── gov/
 │   ├── install.sh       ← bootstraps rules for a stack into a target project, supports --add for extras
 │   ├── sync.sh          ← diffs and updates rules already present in target
