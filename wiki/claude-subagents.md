@@ -13,6 +13,8 @@ See [Anthropic's subagent docs](https://code.claude.com/docs/en/sub-agents) and 
 
 A spawned subagent inherits nothing from the parent conversation. It gets its own system prompt, the prompt string passed through the `Agent` tool, the project's `CLAUDE.md`, and whatever tools the parent chose to expose. Parent messages, prior tool results, and session history do not cross the boundary.
 
+The forked subagent is the exception. A skill with `context: fork`, or an `Agent` call with the `fork` subagent type, inherits the parent's full conversation and runs on the parent's model. Reach for a fork when the subagent needs the reasoning built up so far. Reach for a default cold subagent when independence from that reasoning is the point, as in review.
+
 Only the subagent's final message returns to the parent. Intermediate tool calls, file reads, and scratch thinking stay inside the subagent and do not bloat the caller's context. This is the property to exploit.
 
 The parent-to-subagent channel is the prompt string alone. Any file paths, error messages, constraints, or decisions the subagent needs must be written into that prompt. A terse prompt produces shallow, generic work.
@@ -21,7 +23,7 @@ The parent-to-subagent channel is the prompt string alone. Any file paths, error
 
 Three paths reach a subagent from inside Claude Code:
 
-- `Agent` tool: the built-in interface. Pass `description`, `prompt`, and `subagent_type`. Built-in types include `general-purpose`, `Explore`, and `Plan`. The tool was named `Task` before v2.1.63.
+- `Agent` tool: the built-in interface. Pass `description`, `prompt`, and `subagent_type`. Built-in types include `general-purpose`, `Explore`, and `Plan`. The tool was named `Task` before v2.1.63. Pass `isolation: worktree` to run the subagent in its own temporary git worktree so its edits stay out of the parent's working directory.
 - Skill frontmatter: set `context: fork` and `agent: <type>` in a `SKILL.md` to run the skill body itself inside a forked subagent. See [Claude Code skills](claude-skills.md) for the full frontmatter reference.
 - Filesystem agents: drop a markdown file with YAML frontmatter under `.claude/agents/` for project scope or `~/.claude/agents/` for personal scope. These load at startup and do not hot-reload during a session.
 
@@ -47,11 +49,11 @@ Several independent reviews of the same artifact run faster as separate subagent
 
 ## Parallel vs sequential
 
-Launch subagents in parallel by emitting multiple `Agent` tool calls inside a single assistant message. The harness fires them concurrently. Use this when the lenses are independent and the parent does not need one result to inform the next.
+A foreground subagent blocks the main conversation until it returns, and this is the default. Two paths run subagents concurrently instead: emit multiple `Agent` calls in a single assistant message, or send one to the background with `Ctrl+B`. Use concurrency when the lenses are independent and the parent does not need one result to inform the next.
 
-Run them sequentially when a later subagent needs output from an earlier one, or when ordering matters for user-visible state (for example, review before ship). The cost is wall time.
+Run subagents sequentially when a later one needs output from an earlier one, or when ordering matters for user-visible state, such as review before ship. The cost is wall time.
 
-Do not launch parallel subagents just because you can. Each spawned session pays its own startup and context cost. If the work is small, inline it.
+Do not fan out just because you can. Each spawned subagent pays its own startup and context cost. If the work is small, inline it. For sustained independent work rather than a single delegated task, a background session is the better tool. See the [background sessions](claude-worktrees.md#background-sessions) section for the worktree-isolated variant.
 
 ## Pitfalls
 
