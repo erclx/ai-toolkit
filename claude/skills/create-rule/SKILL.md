@@ -16,8 +16,8 @@ Author a project-local governance rule. The rule lives in the target project, no
 
 Resolve both from the request, and ask only for what is missing. Attach a proposed default derived from the request.
 
-- What the rule enforces: one topic, phrased as a standard (`SQLModel table and session conventions`).
-- Scope: a path glob relative to the project root (`backend/**/*.py`) for a path-scoped rule, or always-on when the rule states a global principle with no file scope.
+- What the rule enforces: one topic, phrased as a standard (`<topic> conventions`).
+- Scope: a path glob relative to the project root (`<dir>/**/*.<ext>`) for a path-scoped rule, or always-on when the rule states a global principle with no file scope.
 
 ## Step 2: resolve band and subdir
 
@@ -64,7 +64,7 @@ Rule anatomy:
 - Title is the topic in screaming case followed by `STANDARDS`.
 - Group bullets under `## <Group>` headings by sub-topic.
 - Each bullet is one imperative rule. State the rule, not the rationale.
-- Point at a sibling rule by path when one governs a shared concern (`per .claude/rules/framework/220-fastapi.md`).
+- Point at a sibling rule by path when one governs a shared concern (`per .claude/rules/<subdir>/<rule>.md`).
 - Follow `.claude/standards/prose.md` for all prose.
 
 ## After writing
