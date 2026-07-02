@@ -56,14 +56,14 @@ collect_references() {
   local reference_file="$PROJECT_ROOT/tooling/$stack/reference.md"
   [ ! -f "$reference_file" ] && return
 
-  local dest="$target/tooling/$stack.md"
+  local dest="$target/.claude/tooling/$stack.md"
 
   if [ -f "$dest" ] && diff -q "$reference_file" "$dest" >/dev/null 2>&1; then
-    log_info "tooling/$stack.md"
+    log_info ".claude/tooling/$stack.md"
     return
   fi
 
-  log_add "tooling/$stack.md"
+  log_add ".claude/tooling/$stack.md"
   _pending+=("$stack")
 }
 
@@ -72,13 +72,15 @@ apply_references() {
   shift
   local stacks=("$@")
 
-  mkdir -p "$target/tooling"
+  mkdir -p "$target/.claude/tooling"
 
   for stack in "${stacks[@]}"; do
     local src="$PROJECT_ROOT/tooling/$stack/reference.md"
-    cp "$src" "$target/tooling/$stack.md"
-    log_add "tooling/$stack.md"
+    cp "$src" "$target/.claude/tooling/$stack.md"
+    log_add ".claude/tooling/$stack.md"
+    rm -f "$target/tooling/$stack.md"
   done
+  rmdir "$target/tooling" 2>/dev/null || true
 }
 
 main() {
@@ -118,7 +120,7 @@ main() {
     exit 0
   fi
 
-  local dest_display="$target/tooling/"
+  local dest_display="$target/.claude/tooling/"
   dest_display="${dest_display#./}"
 
   select_option "Sync ${#pending[@]} reference(s) to $dest_display?" "Yes" "No"

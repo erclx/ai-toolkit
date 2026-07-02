@@ -20,7 +20,7 @@ Two steps, in order:
 The chain is:
 
 - `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
-- `aitk tooling sync <stack>` adds stack-specific deps, scripts, gitignore entries, and drops `tooling/<stack>.md` (plus parents) as the agent's audit context
+- `aitk tooling sync <stack>` adds stack-specific deps, scripts, gitignore entries, and drops `.claude/tooling/<stack>.md` (plus parents) as the agent's audit context
 - The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections
 - `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
@@ -106,6 +106,18 @@ Ongoing maintenance:
 - Catch-all sync: `aitk sync .`
 - Governance rule refresh only: `aitk gov sync .`
 - Layer a new rule on top, for example `260-shadcn` after adopting shadcn: `aitk gov install react --add 260-shadcn .`
+
+### Monorepo with multiple language roots
+
+The repo root owns the shared `base` layer, and each language lives in its own subfolder.
+
+```bash
+aitk init --stack react .
+aitk tooling sync vite-react ./frontend --skip base
+aitk tooling sync python ./backend --skip base
+```
+
+`--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite) and its own `.claude/tooling/<stack>.md` audit docs.
 
 ## Related
 

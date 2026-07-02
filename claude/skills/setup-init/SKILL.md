@@ -83,11 +83,20 @@ Step 2: `aitk tooling sync <tooling-stack>` installs stack deps, scripts, gitign
 AITK_NON_INTERACTIVE=1 aitk tooling sync <tooling-stack> <target>
 ```
 
+Monorepo with multiple language roots: run `aitk init` once at the repo root so `base` (husky, prettier, cspell, commitlint, CI) lands single, then sync each subtree with `--skip base` so the shared layer is not re-dropped.
+
+```bash
+AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react ./frontend --skip base
+AITK_NON_INTERACTIVE=1 aitk tooling sync python ./backend --skip base
+```
+
+Without `--skip base`, each subtree re-drops husky, and git honors only one `core.hooksPath`, so the extra hook dirs silently break. Each subtree keeps its own framework configs and its own `.claude/tooling/<stack>.md` audit docs.
+
 Step 3: post-sync fixups. Golden configs arrive from sync, so no config generation is required. But a few items may need a one-time touch:
 
 - **ESLint version pin.** If `bun create vite` installed `eslint@^10` and the manifest pins `eslint@^9`, sync does not override a present dep. Run `bun add -d eslint@^9` if `bun run lint:fix` fails with `Class extends value undefined`.
 - **File naming.** `bun create vite`'s `App.tsx` violates the `KEBAB_CASE` rule. Rename to `app.tsx` and update the import in `main.tsx`.
-- **Docs.** Open `<target>/tooling/<tooling-stack>.md` and `<target>/tooling/web.md` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
+- **Docs.** Open `<target>/.claude/tooling/<tooling-stack>.md` and `<target>/.claude/tooling/web.md` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
 
 Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files. Generating from prose duplicates what sync already installed.
 
