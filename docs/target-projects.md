@@ -24,6 +24,15 @@ The chain is:
 - The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections
 - `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
+### From scaffold to first feature
+
+Scaffold installs tooling and seeds. It does not fill the planning docs or the design system. Complete those before the first feature session:
+
+1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
+2. For a UI project, invoke `toolkit:claude-design-propose` to draft `.claude/DESIGN.md` from the requirements and a `## Personality` section. Skip for non-UI projects.
+3. Optionally invoke `toolkit:claude-diagram` to draft `.claude/DIAGRAMS.md` from the architecture.
+4. Start the feature loop. See [AI workflow](ai-workflow.md) for the per-feature sequence.
+
 ### Stack decision
 
 The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, governance core rules, snippets, and wiki. Most projects need nothing more.

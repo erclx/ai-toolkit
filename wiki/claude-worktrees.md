@@ -22,6 +22,8 @@ claude -w                         # auto-generated name
 
 Trees created this way are auto-cleaned on exit when the working copy is unchanged. If there are changes, the tree persists and can be resumed later. `.claude/worktrees/` is already marked as a writable path in the default permission model, so edits inside it don't trigger protected-path prompts.
 
+By default the branch starts from `origin/HEAD`, the remote's default branch, so it matches the remote rather than your local work. Set `worktree.baseRef: "head"` to branch from local `HEAD` instead, which is what you want when the worktree should carry in-progress changes. Passing `#<pr>` or a PR URL branches from that PR at `.claude/worktrees/pr-<number>`.
+
 **Plain `git worktree`.** Use this when you want the worktree to live outside the repo, on an existing branch, or under your own naming scheme:
 
 ```bash
@@ -41,6 +43,12 @@ All three paths produce the same session isolation. The native flag is convenien
 `ExitWorktree(action)` returns the session to the original directory. `action: "keep"` leaves the worktree on disk for later resume. `action: "remove"` deletes the worktree directory and its branch. The tool refuses `remove` when the worktree has uncommitted files or unmerged commits unless `discard_changes: true` is passed. On session exit while still inside the worktree, the user is prompted to keep or remove.
 
 The tool descriptions explicitly require an instruction trail before invocation: a user request, a `CLAUDE.md` rule, or a memory entry. Wrapping invocation in a skill is the canonical pattern, since the skill body is the instruction trail. The `claude-worktree` plugin skill is the toolkit's reference wrapper.
+
+## Background sessions
+
+A background session is a full independent Claude Code session that runs without an attached terminal. Start one with `claude --bg "<task>"`, or send the current session to the background with `/bg`, then manage every session from the `claude agents` view. Unlike a subagent, which runs inside the parent's context, a background session has its own conversation, transcript, and quota.
+
+Each background session moves itself into its own worktree under `.claude/worktrees/` before editing files, so parallel sessions never collide. Disable this with `worktree.bgIsolation: "none"`. Agent view aggregates every session on one screen, so this is a cleaner path to many-at-once work than juggling terminals by hand.
 
 ## Session scoping and `/resume`
 

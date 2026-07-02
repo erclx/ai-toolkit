@@ -101,17 +101,18 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 
 ## Skills
 
-| Skill                          | When to use                                                                      |
-| ------------------------------ | -------------------------------------------------------------------------------- |
-| `toolkit:claude-feature`       | Before implementation, scan for conflicts and ambiguities                        |
-| `toolkit:claude-diagram`       | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code     |
-| `toolkit:claude-review`        | In a fresh session, review all changes since main                                |
-| `toolkit:claude-docs`          | When decisions diverged from plan, update `.claude/` docs                        |
-| `toolkit:claude-ui-test`       | After UI changes, generate and run e2e tests + visual checklist                  |
-| `toolkit:claude-ux-audit`      | Audit existing UI surfaces for missing states, edge cases, inconsistencies       |
-| `toolkit:claude-autoship`      | After plan approval, chain implement → verify → review → draft PR                |
-| `toolkit:systematic-debugging` | When a test fails or bug surfaces, enforce root-cause investigation before fixes |
-| `toolkit:git-ship`             | Post-feature: sync docs, commit, rename branch, open PR                          |
+| Skill                           | When to use                                                                                                            |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `toolkit:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                              |
+| `toolkit:claude-diagram`        | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code                                           |
+| `toolkit:claude-design-propose` | Day one on a UI project, draft `.claude/DESIGN.md` from requirements. Use `claude-design-extract` if UI already exists |
+| `toolkit:claude-review`         | In a fresh session, review all changes since main                                                                      |
+| `toolkit:claude-docs`           | When decisions diverged from plan, update `.claude/` docs                                                              |
+| `toolkit:claude-ui-test`        | After UI changes, generate and run e2e tests + visual checklist                                                        |
+| `toolkit:claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, inconsistencies                                             |
+| `toolkit:claude-autoship`       | After plan approval, chain implement → verify → review → draft PR                                                      |
+| `toolkit:systematic-debugging`  | When a test fails or bug surfaces, enforce root-cause investigation before fixes                                       |
+| `toolkit:git-ship`              | Post-feature: sync docs, commit, rename branch, open PR                                                                |
 
 ## Feedback routing
 

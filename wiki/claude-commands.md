@@ -29,7 +29,9 @@ Built-in slash commands available in every Claude Code session. Some commands de
 ## Planning and tasks
 
 - `/plan [description]`: enter plan mode
+- `/goal [condition|clear]`: set a completion condition. Claude works each turn until a fast model confirms it holds, then clears. `clear` cancels an active goal
 - `/ultraplan <prompt>`: draft a plan in a cloud session, review in browser, then execute remotely or teleport back. Team or Enterprise only
+- `/bg [prompt]` or `/background [prompt]`: move the current session to a background agent, managed from agent view
 - `/tasks`: list and manage background tasks
 - `/btw <question>`: ask a quick side question without adding to conversation history
 
@@ -37,7 +39,7 @@ Built-in slash commands available in every Claude Code session. Some commands de
 
 - `/config`: open the settings interface
 - `/model [model]`: select or change the active model
-- `/effort [low|medium|high|max|auto]`: set the model effort level
+- `/effort [low|medium|high|xhigh|max|auto]`: set the model effort level
 - `/fast [on|off]`: toggle fast mode
 - `/theme`: change the color theme
 - `/color [color|default]`: set the prompt bar color for the current session
