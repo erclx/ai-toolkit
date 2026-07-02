@@ -165,6 +165,9 @@ AITK_NON_INTERACTIVE=1 aitk tooling create astro
 # Sync a stack into a target project
 AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project
 
+# Sync a monorepo subtree, skipping the base layer the repo root already owns
+AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react /path/to/repo/frontend --skip base
+
 # Verify a stack end-to-end in a throwaway scaffold
 aitk tooling verify vite-react
 
