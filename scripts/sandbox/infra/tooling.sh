@@ -25,10 +25,11 @@ EOF
   log_info "sync        : syncs configs, seeds, deps, gitignore, and reference docs for a stack"
   log_info "sync-drift  : sync with a pre-drifted markdown seed in place; seed must stay unchanged"
   log_info "ref         : drops reference docs only"
+  log_info "monorepo    : base at root, subtree synced with --skip base; only one .husky expected"
   log_info "create      : creates a new stack stub"
   log_info "list        : read-only catalog dump, no target needed"
 
-  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "ref" "create" "list"
+  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "ref" "monorepo" "create" "list"
 
   case "$SELECTED_OPTION" in
   "sync")
@@ -62,6 +63,17 @@ EOF
   "ref")
     log_step "Running: aitk tooling ref"
     exec "$PROJECT_ROOT/scripts/tooling/ref.sh" base .
+    ;;
+  "monorepo")
+    log_step "Staging base tooling at repo root"
+    AITK_NON_INTERACTIVE=1 bash "$PROJECT_ROOT/scripts/tooling/sync.sh" base .
+    bunx husky
+    mkdir -p frontend
+
+    log_step "Running: aitk tooling sync vite-react ./frontend --skip base"
+    log_info "Expected: frontend gets web and vite-react configs, no base configs."
+    log_info "Expected: only the root .husky exists, no frontend/.husky."
+    exec "$PROJECT_ROOT/scripts/tooling/sync.sh" vite-react ./frontend --skip base
     ;;
   "create")
     log_step "Running: aitk tooling create"

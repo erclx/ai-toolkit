@@ -16,11 +16,12 @@ declare -A SEEN_GITIGNORE
 declare -A SEEN_SCRIPTS
 declare -A SEEN_DEPS
 declare -A CONFIG_SOURCE_STACK
+SKIP_STACK=""
 
 show_help() {
   echo -e "${GREY}┌${NC}"
   log_step "Tooling sync usage"
-  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling sync [stack] [target-path] [--no-ref]"
+  echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling sync [stack] [target-path] [--no-ref] [--skip <stack>]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs configs, seeds, deps, scripts, gitignore entries, and reference docs."
   echo -e "${GREY}│${NC}  Reference docs drop to target/.claude/tooling/<stack>.md across the extends chain."
@@ -30,8 +31,9 @@ show_help() {
   echo -e "${GREY}│${NC}    target-path   Target directory (default: current directory)"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Options:${NC}"
-  echo -e "${GREY}│${NC}    --no-ref      ${GREY}# Skip dropping reference docs${NC}"
-  echo -e "${GREY}│${NC}    -h, --help    ${GREY}# Show this help message${NC}"
+  echo -e "${GREY}│${NC}    --no-ref         ${GREY}# Skip dropping reference docs${NC}"
+  echo -e "${GREY}│${NC}    --skip <stack>   ${GREY}# Drop a layer from the chain (e.g. --skip base for a monorepo subtree)${NC}"
+  echo -e "${GREY}│${NC}    -h, --help       ${GREY}# Show this help message${NC}"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -54,6 +56,8 @@ collect_stack_configs() {
   local -n _new=$3
   local -n _drifted=$4
   local -n _matching=$5
+
+  [ "$stack" = "${SKIP_STACK:-}" ] && return
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   local extends
@@ -89,6 +93,8 @@ collect_stack_seeds() {
   local -n _seeded=$3
   local -n _seed_missing=$4
 
+  [ "$stack" = "${SKIP_STACK:-}" ] && return
+
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   local extends
   extends=$(grep '^extends' "$manifest" 2>/dev/null | cut -d'"' -f2)
@@ -118,6 +124,8 @@ collect_stack_gitignore() {
   local target="$2"
   local -n _gi_missing=$3
   local -n _gi_present=$4
+
+  [ "$stack" = "${SKIP_STACK:-}" ] && return
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -174,6 +182,8 @@ collect_stack_scripts() {
   local -n _drifted_scripts=$3
   local -n _missing_scripts=$4
   local -n _matching_scripts=$5
+
+  [ "$stack" = "${SKIP_STACK:-}" ] && return
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -232,6 +242,8 @@ collect_stack_deps() {
   local target="$2"
   local -n _missing_deps=$3
   local -n _present_deps=$4
+
+  [ "$stack" = "${SKIP_STACK:-}" ] && return
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -317,6 +329,8 @@ collect_stack_references() {
   local target="$2"
   local -n _ref_pending=$3
   local -n _ref_matching=$4
+
+  [ "$stack" = "${SKIP_STACK:-}" ] && return
 
   local manifest="$PROJECT_ROOT/tooling/$stack/manifest.toml"
   [ ! -f "$manifest" ] && return
@@ -483,6 +497,14 @@ main() {
       INCLUDE_REFS="false"
       shift
       ;;
+    --skip)
+      SKIP_STACK="$2"
+      shift 2
+      ;;
+    --skip=*)
+      SKIP_STACK="${1#--skip=}"
+      shift
+      ;;
     *)
       if [ -z "$stack" ]; then
         stack="$1"
@@ -511,6 +533,15 @@ main() {
 
   if [ ! -d "$PROJECT_ROOT/tooling/$stack" ]; then
     log_error "Stack not found: $stack"
+  fi
+
+  if [ -n "$SKIP_STACK" ]; then
+    if [ "$SKIP_STACK" = "$stack" ]; then
+      log_error "Cannot --skip the stack being synced: $SKIP_STACK"
+    fi
+    if [ ! -d "$PROJECT_ROOT/tooling/$SKIP_STACK" ]; then
+      log_error "Stack to skip not found: $SKIP_STACK"
+    fi
   fi
 
   guard_root "$target"

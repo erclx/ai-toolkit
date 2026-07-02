@@ -44,6 +44,8 @@ inject_tooling_configs() {
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
 
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
+
   if [ ! -f "$manifest" ]; then
     log_warn "Manifest not found: $manifest"
     return
@@ -113,6 +115,8 @@ inject_tooling_seeds() {
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
 
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
+
   if [ ! -f "$manifest" ]; then
     return
   fi
@@ -142,6 +146,8 @@ inject_tooling_reference() {
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
 
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
+
   if [ ! -f "$manifest" ]; then
     return
   fi
@@ -168,6 +174,8 @@ merge_gitignore() {
   local target_path="${2:-.}"
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
 
   if [ ! -f "$manifest" ]; then
     return
@@ -252,6 +260,8 @@ prune_gitignore() {
   local -n _pruned=${3:-__prune_discard}
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
+
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
 
   if [ ! -f "$manifest" ]; then
     return
@@ -368,6 +378,8 @@ resolve_missing_deps() {
   local tooling_dir="$PROJECT_ROOT/tooling"
   local manifest="$tooling_dir/$stack_name/manifest.toml"
 
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
+
   [ ! -f "$manifest" ] && return
 
   local extends
@@ -440,6 +452,8 @@ apply_stack_scripts() {
   local stack_name="$1"
   local target_path="$2"
   local manifest="$PROJECT_ROOT/tooling/$stack_name/manifest.toml"
+
+  [ "$stack_name" = "${SKIP_STACK:-}" ] && return
 
   [ ! -f "$manifest" ] && return
 

@@ -132,7 +132,7 @@ prepare = "command to run after scaffold, before sync"
 
 Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, standards, snippets, and wiki in one command. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--skip wiki,standards`. Governance is skipped when `--stack` is absent. The `setup-init` skill resolves these from project detection and runs the chain in one shot.
 
-Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `.claude/tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop.
+Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `.claude/tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop. Pass `--skip <stack>` to drop a layer from the resolved chain, used for monorepo subtrees that already own `base` at the repo root (see the monorepo workflow below).
 
 Drop reference docs only: `aitk tooling ref vite-react ../my-app` copies `.claude/tooling/vite-react.md` without touching configs, seeds, or deps. Useful when the stack is already synced and only the reference needs refreshing.
 
@@ -140,7 +140,7 @@ Update CI and development context entries: the base tooling seeds `.claude/conte
 
 Scaffold a new stack: `aitk tooling create` generates the stub structure in `tooling/<name>/`.
 
-Set up a multi-language monorepo: each language lives in its own subfolder, and each subfolder is a separate project root. Sync once per root with the matching stack. For example, a repo with a React frontend and a Python backend runs `aitk tooling vite-react ./frontend` and `aitk tooling python ./backend`. Each root gets its own `package.json` or `pyproject.toml` and its own golden configs. Stacks do not compose horizontally, so single-root polyglot (two languages under one `package.json`) is not supported. Use the subfolder pattern instead.
+Set up a multi-language monorepo: the repo root owns the `base` layer (husky, prettier, cspell, commitlint, CI, editorconfig), and each language lives in its own subfolder. Run `aitk init` once at the root, then sync each subtree with its stack and `--skip base` so the shared layer is not re-dropped: `aitk tooling sync vite-react ./frontend --skip base` and `aitk tooling sync python ./backend --skip base`. Without `--skip base`, every subtree re-drops husky and the shared configs, and since git honors only one `core.hooksPath` the extra hook dirs silently break. `--skip <stack>` removes the named layer and its parents from the resolved chain across configs, seeds, deps, scripts, gitignore, and refs. It relies on the layer boundary holding: repo-root-once configs live in `base`, while per-root configs (eslint, vitest, tsconfig, vite) live in `web` and the framework adapters, so a subtree still gets its own language configs and its own `.claude/tooling/<stack>.md` audit docs. A future `base` reshuffle that moves a per-root config into `base` would break this split, so keep it intact. Stacks do not compose horizontally, so single-root polyglot (two languages under one `package.json`) is not supported. Use the subfolder pattern instead.
 
 ## Testing
 
