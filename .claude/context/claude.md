@@ -29,6 +29,7 @@ claude/
 │   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
 │   ├── claude-context-migrate/ ← classify docs/ content and propose `git mv` to .claude/context/
 │   ├── claude-standards-relocate/ ← propose `git mv` of root standards/ and snippets/ into .claude/
+│   ├── create-rule/         ← scaffold a project-local governance rule into .claude/rules/
 │   ├── create-skill/        ← create a new skill file in .claude/skills/
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
@@ -158,6 +159,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `claude-worktree`           | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch        |
 | `claude-autoship`           | Chain implement → verify → review → ship after a plan is approved                            |
 | `claude-context-migrate`    | Classify `docs/` content and propose `git mv` to `.claude/context/`                          |
+| `create-rule`               | Scaffold a project-local governance rule into .claude/rules/                                 |
 | `create-skill`              | Create a new skill file in .claude/skills/                                                   |
 | `create-snippet`            | Create a new snippet file in snippets/                                                       |
 | `docs-sync`                 | Rewrite stale README.md and docs/\*.md sections since main                                   |

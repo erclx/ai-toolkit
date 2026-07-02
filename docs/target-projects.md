@@ -57,6 +57,7 @@ Prompts are not part of `aitk init`. Install them with `aitk prompts` when a pro
 When a new need appears after scaffold, install the one domain without re-running `aitk init`.
 
 - Governance rule for a newly adopted library: invoke `toolkit:setup-gov`, or run `aitk gov install <stack> --add <rule> <path>`
+- Project-specific rule the toolkit does not ship: invoke `toolkit:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
 - Index.md system for a markdown-heavy folder that emerged: invoke `toolkit:setup-indexes`
 - A single snippet: `aitk snippets install <name> <path>`
 - A single standard: `aitk standards install <name> <path>`
