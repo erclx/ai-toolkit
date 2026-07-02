@@ -23,7 +23,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Usage:${NC} aitk tooling sync [stack] [target-path] [--no-ref]"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  Syncs configs, seeds, deps, scripts, gitignore entries, and reference docs."
-  echo -e "${GREY}│${NC}  Reference docs drop to target/tooling/<stack>.md across the extends chain."
+  echo -e "${GREY}│${NC}  Reference docs drop to target/.claude/tooling/<stack>.md across the extends chain."
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    stack         Name of the tooling stack (e.g., base, vite-react)"
@@ -331,7 +331,7 @@ collect_stack_references() {
   local reference_file="$PROJECT_ROOT/tooling/$stack/reference.md"
   [ ! -f "$reference_file" ] && return
 
-  local dest="$target/tooling/$stack.md"
+  local dest="$target/.claude/tooling/$stack.md"
 
   if [ -f "$dest" ] && diff -q "$reference_file" "$dest" >/dev/null 2>&1; then
     _ref_matching+=("$stack")
@@ -345,13 +345,15 @@ apply_stack_references() {
   shift
   local stacks=("$@")
 
-  mkdir -p "$target/tooling"
+  mkdir -p "$target/.claude/tooling"
 
   for stack in "${stacks[@]}"; do
     local src="$PROJECT_ROOT/tooling/$stack/reference.md"
-    cp "$src" "$target/tooling/$stack.md"
-    log_add "tooling/$stack.md"
+    cp "$src" "$target/.claude/tooling/$stack.md"
+    log_add ".claude/tooling/$stack.md"
+    rm -f "$target/tooling/$stack.md"
   done
+  rmdir "$target/tooling" 2>/dev/null || true
 }
 
 scan_configs() {
@@ -446,10 +448,10 @@ scan_configs() {
     collect_stack_references "$stack" "$target" REF_PENDING REF_MATCHING
 
     for s in "${REF_MATCHING[@]}"; do
-      log_info "tooling/$s.md"
+      log_info ".claude/tooling/$s.md"
     done
     for s in "${REF_PENDING[@]}"; do
-      log_add "tooling/$s.md"
+      log_add ".claude/tooling/$s.md"
     done
 
     REF_CHANGES=${#REF_PENDING[@]}

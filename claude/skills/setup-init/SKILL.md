@@ -87,7 +87,7 @@ Step 3: post-sync fixups. Golden configs arrive from sync, so no config generati
 
 - **ESLint version pin.** If `bun create vite` installed `eslint@^10` and the manifest pins `eslint@^9`, sync does not override a present dep. Run `bun add -d eslint@^9` if `bun run lint:fix` fails with `Class extends value undefined`.
 - **File naming.** `bun create vite`'s `App.tsx` violates the `KEBAB_CASE` rule. Rename to `app.tsx` and update the import in `main.tsx`.
-- **Docs.** Open `<target>/tooling/<tooling-stack>.md` and `<target>/tooling/web.md` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
+- **Docs.** Open `<target>/.claude/tooling/<tooling-stack>.md` and `<target>/.claude/tooling/web.md` for any stack-specific follow-ups (Chrome extension overrides, setup script details).
 
 Do not generate ESLint, Vitest, or Playwright configs. They ship as golden files. Generating from prose duplicates what sync already installed.
 

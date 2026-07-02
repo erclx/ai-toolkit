@@ -61,7 +61,7 @@ Configs are golden files and the source of truth. On sync they always overwrite 
 
 Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The `base` stack also seeds `cspell.json` and `.lintstagedrc` as copy-once root configs that projects extend, plus `.claude/context/development.md` and `.claude/context/ci.md` as short agent-facing context entries with `title` and `description` frontmatter so they slot into the project's `.claude/context/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
 
-References are `reference.md` files synced to `tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
+References are `reference.md` files synced to `.claude/tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
 
 Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `.claude/standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 
@@ -132,9 +132,9 @@ prepare = "command to run after scaffold, before sync"
 
 Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, standards, snippets, and wiki in one command. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--skip wiki,standards`. Governance is skipped when `--stack` is absent. The `setup-init` skill resolves these from project detection and runs the chain in one shot.
 
-Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop.
+Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `.claude/tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop.
 
-Drop reference docs only: `aitk tooling ref vite-react ../my-app` copies `tooling/vite-react.md` without touching configs, seeds, or deps. Useful when the stack is already synced and only the reference needs refreshing.
+Drop reference docs only: `aitk tooling ref vite-react ../my-app` copies `.claude/tooling/vite-react.md` without touching configs, seeds, or deps. Useful when the stack is already synced and only the reference needs refreshing.
 
 Update CI and development context entries: the base tooling seeds `.claude/context/ci.md` and `.claude/context/development.md` with the base-level checks and scripts. Stack `reference.md` files contain `## CI docs (extend)` and `## Development docs (extend)` sections that tell the agent which rows to append. Per-stack `ci.md` / `development.md` seeds are not shipped because seeds are user-owned and never overwritten.
 
