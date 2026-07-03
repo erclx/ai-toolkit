@@ -66,6 +66,8 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `toolkit:git-ship`
 - For full autonomy per worktree, invoke `toolkit:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
+To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `toolkit:claude-orchestrate`. It owns the roadmap via `toolkit:claude-roadmap`, plans each feature, and reviews each worker's PR with `toolkit:claude-pr-review`, while workers address the posted findings with `toolkit:claude-address-review`. The human launches workers and merges. See [operating model](../wiki/operating-model.md) for the full loop.
+
 `.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
 `.claude/TASKS.md` is gitignored and lives per worktree, so each session keeps its own task list with no cross-worktree merge.
@@ -104,9 +106,13 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | Skill                           | When to use                                                                                                            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `toolkit:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                              |
+| `toolkit:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                       |
+| `toolkit:claude-orchestrate`    | Assert the orchestrator role and dispatch the roadmap, feature, and review skills                                      |
 | `toolkit:claude-diagram`        | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code                                           |
 | `toolkit:claude-design-propose` | Day one on a UI project, draft `.claude/DESIGN.md` from requirements. Use `claude-design-extract` if UI already exists |
 | `toolkit:claude-review`         | In a fresh session, review all changes since main                                                                      |
+| `toolkit:claude-pr-review`      | Review an open PR from an independent session and post findings to it                                                  |
+| `toolkit:claude-address-review` | Address findings posted on a PR, then push a follow-up                                                                 |
 | `toolkit:claude-docs`           | When decisions diverged from plan, update `.claude/` docs                                                              |
 | `toolkit:claude-ui-test`        | After UI changes, generate and run e2e tests + visual checklist                                                        |
 | `toolkit:claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, inconsistencies                                             |
