@@ -41,6 +41,7 @@ scripts/
 | `prose.md`        | Voice, structure, formatting, and language                            |
 | `readme.md`       | Readme structure and content conventions                              |
 | `requirements.md` | Shape and content rules for `.claude/REQUIREMENTS.md`                 |
+| `roadmap.md`      | Shape and content rules for `.claude/ROADMAP.md`                      |
 | `skill.md`        | Claude skill structure and authoring rules                            |
 | `snippets.md`     | Snippet reference and authoring conventions                           |
 | `tasks.md`        | Shape and content rules for `.claude/TASKS.md`                        |
