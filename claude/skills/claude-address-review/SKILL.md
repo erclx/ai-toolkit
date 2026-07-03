@@ -40,7 +40,10 @@ Do not push a red follow-up.
 
 Write a summary reply to `.claude/.tmp/address-review/reply.md` mapping each
 finding to what changed, or to a one-line reason when it is a conscious-accept
-rather than a defect. Post it to the PR:
+rather than a defect. The reply is a rendered-for-human GitHub surface, so follow
+`.claude/standards/prose.md` for voice and keep each mapping to a line or two.
+Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
+reads as an independent machine pass, not a human sign-off. Post it to the PR:
 
 ```bash
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply.md

@@ -54,13 +54,34 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the findings to `.claude/.tmp/pr-review/body.md`, grouped by file, sorted by severity within each file, with a summary line at the top. Then post:
+Write the comment to `.claude/.tmp/pr-review/body.md`. The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice: cut editorializing, and keep every sentence load-bearing. Match this shape:
+
+```markdown
+X critical, Y should-fix, Z minor. Reviewed against project docs and roadmap.
+
+**`path/to/file.ext`**
+
+- **should-fix**: what breaks and the fix, in two or three sentences.
+- **minor**: finding.
+
+**What is right**
+
+- bounded confirmation.
+
+🤖 Reviewed by Claude Code
+```
+
+Budget the body. State each finding as the failure and the fix in two or three sentences, not a paragraph of reasoning. Omit files with no findings. Do not lecture on process. The integration and contract lenses stay, but as findings, not asides.
+
+The `What is right` section is optional, capped at three bullets, and included only when it changes the merge decision. Drop it otherwise and let the summary line carry the approval.
+
+Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
 ```bash
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body.md
 ```
 
-If there are no findings, post an approving comment body instead: `✅ No blocking findings. Reviewed against project docs and roadmap.`
+If there are no findings, post this body instead, footer included: `✅ No blocking findings. Reviewed against project docs and roadmap.` followed by the footer line.
 
 ## Step 5: output
 
