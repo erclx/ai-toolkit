@@ -1,5 +1,5 @@
 ---
-name: claude-context-migrate
+name: migration-context
 description: Classifies markdown files in a target project's `docs/` folder and proposes `git mv` commands to relocate agent-flavored content to `.claude/context/`. Use when asked to "migrate docs to context", "move docs to context", "split docs", or to align an existing project with the three-tier context model. Do NOT auto-execute moves or rewrite inbound links. Proposal only.
 ---
 

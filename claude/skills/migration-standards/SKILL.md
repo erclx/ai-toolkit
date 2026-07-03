@@ -1,5 +1,5 @@
 ---
-name: claude-standards-relocate
+name: migration-standards
 description: Proposes `git mv` commands to relocate a target project's root `standards/` and `snippets/` folders into `.claude/standards/` and `.claude/snippets/`, the install layout newer toolkit versions expect. Use when asked to "relocate standards", "move standards to .claude", "migrate snippets to .claude", or after a toolkit upgrade leaves rules pointing at `.claude/standards/` while the files sit at the root. Do NOT auto-execute moves or edit rule files. Proposal only.
 ---
 
