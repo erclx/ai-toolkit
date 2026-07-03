@@ -18,6 +18,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Prose reference](prose.md): Voice, structure, formatting, and language rules for reference markdown
 - [Readme reference](readme.md): Readme structure and content conventions
 - [Requirements reference](requirements.md): Shape and content rules for .claude/REQUIREMENTS.md
+- [Roadmap reference](roadmap.md): Shape and content rules for .claude/ROADMAP.md
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
 - [Snippet reference](snippets.md): Snippet reference and authoring conventions
 - [Tasks reference](tasks.md): Shape and content rules for .claude/TASKS.md

@@ -40,6 +40,10 @@ scripts/sandbox/
 ├── claude/
 │   ├── autoship.sh     ← approved plan on feature branch for testing /claude-autoship
 │   ├── review.sh       ← branch with known bugs for testing /claude-review
+│   ├── roadmap.sh      ← scenarios for /claude-roadmap (draft, update)
+│   ├── pr-review.sh    ← open PR on an anchor repo for testing /claude-pr-review
+│   ├── address-review.sh ← open PR with a seeded finding for testing /claude-address-review
+│   ├── orchestrate.sh  ← seeded roadmap, tasks, and a plan for testing /claude-orchestrate
 │   ├── screencast.sh   ← scenarios for /claude-screencast (with-context, bare)
 │   ├── feature.sh      ← scenarios for /claude-feature (full, small, multi-concern)
 │   ├── ux-audit.sh     ← UI project with seeded design drift for testing /claude-ux-audit
