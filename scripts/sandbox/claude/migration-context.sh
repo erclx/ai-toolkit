@@ -10,7 +10,7 @@ use_config() {
 stage_setup() {
   cat <<'EOF' >package.json
 {
-  "name": "sandbox-context-migrate",
+  "name": "sandbox-migration-context",
   "version": "1.0.0",
   "private": true,
   "type": "module"
@@ -174,7 +174,7 @@ EOF
   log_info "  docs/development.md   matches toolkit base seed shape"
   log_info "  docs/index.md     auto-regenerated, not migrated"
   log_info ""
-  log_info "Action:  /claude-context-migrate"
+  log_info "Action:  /migration-context"
   log_info "Expect:  proposal block with grouped sections:"
   log_info "         Move to .claude/context/: web.md, python.md"
   log_info "         Keep in docs/: contributing.md"
