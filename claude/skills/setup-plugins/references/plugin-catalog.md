@@ -40,14 +40,18 @@ path does not reach them. List them here with their real installer. Surface them
 the user during selection, but do not run their install through the marketplace
 step above. Run the installer command verbatim only when the user picks it.
 
-| Plugin       | Category | Installer                | Why                                                               |
-| ------------ | -------- | ------------------------ | ----------------------------------------------------------------- |
-| `impeccable` | design   | `npx impeccable install` | Curated anti-slop reference files, sharper than `frontend-design` |
+| Plugin       | Category | Installer                       | Why                                                               |
+| ------------ | -------- | ------------------------------- | ----------------------------------------------------------------- |
+| `impeccable` | design   | `npx impeccable skills install` | Curated anti-slop reference files, sharper than `frontend-design` |
 
-`npx impeccable install` detects Claude Code and installs into `.claude/`. It may
-prompt, so it is not fully non-interactive. After install, run `/impeccable init`
-and reload. Prefer the global copy for a per-machine setup: `cp -r
-dist/claude-code/.claude/* ~/.claude/`.
+`npx impeccable skills install` detects the Claude Code harness and installs into
+`.claude/`. It may prompt, so it is not fully non-interactive. After install, run
+`/impeccable init` and reload.
+
+Install per project, not per machine. The skill invokes its scripts through paths
+relative to the current project (`.claude/skills/impeccable/scripts/*.mjs`), so a
+copy under `~/.claude/` cannot locate them once the working directory is a
+different project. Re-run the installer in each project that wants impeccable.
 
 ## See also
 
