@@ -7,6 +7,8 @@ description: Notable third-party skills, official Anthropic plugins, and curated
 
 Notable Claude Code skills, plugins, and curated lists from outside this toolkit. Use as a reference for patterns worth adapting into `claude/skills/`. Figures and feature claims are a snapshot from 2026-04-15 and drift fast. Re-verify before copying.
 
+The `setup-plugins` skill installs the verified subset of these plugins user-scoped on the current machine. Its actionable install data lives in `claude/skills/setup-plugins/references/plugin-catalog.md`. This page stays the narrative catalog.
+
 ## Official Anthropic plugins
 
 The [anthropics/claude-code](https://github.com/anthropics/claude-code) repo ships first-party plugins under `plugins/`. Install with `/plugin install <name>@anthropics/claude-code`.
