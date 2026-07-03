@@ -46,6 +46,8 @@ ASCII and prose stay as source of truth. Add a visual render as a feedback surfa
 
 Same as tier 0 with two additions. `WIREFRAMES.md` opts into Excalidraw rendering via a top-of-file marker like `<!-- excalidraw: WIREFRAMES.excalidraw -->`. `DESIGN.md` stays human-maintained, and its content is what the toolkit provisions into Stitch via `create_design_system` when visual generation is needed.
 
+Impeccable, if installed, keeps its own root `DESIGN.md` and `PRODUCT.md` in the Stitch DESIGN.md spec format. These are separate files from the toolkit's `.claude/DESIGN.md` and are not synced with it. Treat impeccable's pair as its own source of truth for its commands, and the toolkit's `.claude/DESIGN.md` as the source other toolkit skills read.
+
 ### Tools
 
 - Stitch via MCP at `stitch.googleapis.com/mcp`. Default pick for agent-driven visual generation. Free tier of 400 daily credits. See [Stitch](stitch.md).
