@@ -46,6 +46,7 @@ claude/
 │   ├── setup-gov/           ← detect project stack and install matching governance rules
 │   ├── setup-indexes/       ← bootstrap the index.md system in a target project
 │   ├── setup-init/          ← detect project type and run one-shot `aitk init` with resolved flags
+│   ├── setup-plugins/       ← install curated community and official plugins user-scoped via the claude plugin CLI
 │   ├── setup-verify/        ← run package.json scripts after scaffold to catch config and wiring mistakes
 │   ├── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
 │   └── youtube-transcripts/ ← fetch a YouTube transcript with metadata frontmatter via aitk transcripts
@@ -174,6 +175,7 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 | `setup-gov`                 | Detect project stack from files and install matching governance rules                        |
 | `setup-indexes`             | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
 | `setup-init`                | Detect project type and run one-shot `aitk init` with resolved flags                         |
+| `setup-plugins`             | Install curated community and official plugins user-scoped via the `claude plugin` CLI       |
 | `git-ship`                  | Run the full post-feature workflow in one sequence                                           |
 | `session-resume`            | Resume from tracked work and relevant context at session start                               |
 | `systematic-debugging`      | Enforce root-cause investigation before fixes when a test fails or a bug surfaces            |

@@ -37,6 +37,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Front-load critical instructions
 - Keep `SKILL.md` under 5,000 words. Move detailed docs to `references/`.
 - Link to `references/` files explicitly so Claude knows to load them
+- Reference a bundled `references/` or `scripts/` file with `${CLAUDE_SKILL_DIR}/<path>`, never a bare relative path. A bare path resolves against the session cwd and fails when a plugin skill runs from another project. `${CLAUDE_SKILL_DIR}` expands to the skill's own directory at render time and resolves from any cwd.
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Use sentence case for all headings (H1, H2, H3)
 - When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
