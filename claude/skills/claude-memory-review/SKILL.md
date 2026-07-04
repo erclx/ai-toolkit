@@ -48,7 +48,7 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 - every `SKILL.md` under `.claude/skills/`: domain-scoped internal skill bodies
 - every `SKILL.md` under `claude/skills/`: plugin skill bodies
 - every `*.md` under `.claude/standards/`: authoring references
-- every `*.md` under `governance/rules/`: coding-standards rules
+- every `*.md` under `governance/rules/` in the toolkit repo, or `.claude/rules/` in a target project: coding-standards rules
 
 ### Step 3: classify each entry
 
@@ -59,7 +59,7 @@ For each in-scope entry (see Scope), pick one action:
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in `.claude/standards/<domain>.md`.
-- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Point the user at `aitk-governance` and `prompts/governance-rules.md` and stop at handoff.
+- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. In the toolkit repo, point the user at `aitk-governance` and `prompts/governance-rules.md`, which own the source-of-truth rules under `governance/rules/`. In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
 - **Delete**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative.
 
 When two or more memories collapse into one rule on the same target, propose them as a single merged edit under the matching promote category. The consolidate case is a variant of promote, not a separate action.
@@ -112,7 +112,7 @@ Reason: <one-line reason>
 Decision:
 ````
 
-For Hand off items, the body is a pointer to `aitk-governance` and `prompts/governance-rules.md` instead of a rewritten rule. For Delete items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
+For Hand off items, the body is a pointer to the governance target instead of a rewritten rule: `aitk-governance` and `prompts/governance-rules.md` in the toolkit repo, or the `create-rule` skill in a target project. For Delete items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
 
 Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping with "discuss" for question rounds or "apply" to commit.
 
