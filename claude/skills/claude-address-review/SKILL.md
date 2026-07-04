@@ -49,9 +49,13 @@ reads as an independent machine pass, not a human sign-off. Post it to the PR:
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply.md
 ```
 
-Then push the fixes as a follow-up commit on the same branch, syncing the open
-PR. The git follow-up flow handles the stage, commit, push, and sync. Do not
-reimplement it here.
+Then push the fixes as a follow-up commit on the same branch. The git follow-up
+flow handles the stage, commit, and push. Do not reimplement it here.
+
+When the follow-up adds or changes scope the PR body does not already describe
+(a new file or surface), refresh the body with the `git-pr` skill, which edits
+an open PR in place. For in-place fixes to files the body already covers, leave
+the body and let the reply comment carry the fix log.
 
 ## Step 5: output
 
