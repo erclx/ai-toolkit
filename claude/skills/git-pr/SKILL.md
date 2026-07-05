@@ -53,12 +53,20 @@ These bans come from `.claude/standards/prose.md` and apply to PR text on top of
 
 ### Final command
 
+Detect an existing PR and branch: edit it in place when one is open, create it otherwise. This keeps the body in sync on a follow-up push instead of erroring on `gh pr create`.
+
 ```bash
-mkdir -p .claude/.tmp/pr && (cat <<'BODY' > .claude/.tmp/pr/body.md
+mkdir -p .claude/.tmp/pr
+cat <<'BODY' > .claude/.tmp/pr/body.md
 <body content following pr.md template exactly>
 BODY
-) && git push -u origin HEAD && gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md \
-  && rm -rf .claude/.tmp/pr
+git push -u origin HEAD || exit 1
+if gh pr view --json number >/dev/null 2>&1; then
+  gh pr edit --title "<title>" --body-file .claude/.tmp/pr/body.md
+else
+  gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md
+fi
+rm -rf .claude/.tmp/pr
 ```
 
 ## After execution
