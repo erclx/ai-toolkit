@@ -112,7 +112,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `toolkit:claude-design-propose` | Day one on a UI project, draft `.claude/DESIGN.md` from requirements. Use `claude-design-extract` if UI already exists |
 | `toolkit:claude-review`         | In a fresh session, review all changes since main                                                                      |
 | `toolkit:claude-pr-review`      | Review an open PR from an independent session and post findings to it                                                  |
-| `toolkit:claude-address-review` | Address findings posted on a PR, then push a follow-up                                                                 |
+| `toolkit:claude-address-review` | Address PR findings and CI status, refresh stale docs, then push a follow-up                                           |
 | `toolkit:claude-docs`           | When decisions diverged from plan, update `.claude/` docs                                                              |
 | `toolkit:claude-ui-test`        | After UI changes, generate and run e2e tests + visual checklist                                                        |
 | `toolkit:claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, inconsistencies                                             |
