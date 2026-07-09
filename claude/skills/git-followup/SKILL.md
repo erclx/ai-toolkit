@@ -1,7 +1,6 @@
 ---
 name: git-followup
 description: Ships a small self-review edit on the current PR branch by staging, committing, pushing, and syncing the open PR. Use when asked to "ship a followup", "push the PR fix", "followup", or "commit and push this small change". Do NOT use when there is no open PR for the branch (use git-ship instead).
-disable-model-invocation: true
 ---
 
 # Git followup
