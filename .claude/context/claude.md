@@ -31,6 +31,7 @@ claude/
 │   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
 │   ├── claude-worktree/     ← enter a worktree at .claude/worktrees/<name>/ with name derived from plan or branch
 │   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
+│   ├── migration-claude-md/ ← classify CLAUDE.md sections and propose moves to rules or context
 │   ├── migration-context/   ← classify docs/ content and propose `git mv` to .claude/context/
 │   ├── migration-standards/ ← propose `git mv` of root standards/ and snippets/ into .claude/
 │   ├── create-rule/         ← scaffold a project-local governance rule into .claude/rules/
@@ -142,7 +143,7 @@ Phase labels stay inside TASKS. They never appear in PR titles, commit messages,
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
+Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-claude-md`, `migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
 
 | Skill                    | Description                                                                                  |
 | ------------------------ | -------------------------------------------------------------------------------------------- |
@@ -169,6 +170,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies               |
 | `claude-worktree`        | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch        |
 | `claude-autoship`        | Chain implement → verify → review → ship after a plan is approved                            |
+| `migration-claude-md`    | Classify `CLAUDE.md` sections and propose moves to path-scoped rules or context entries      |
 | `migration-context`      | Classify `docs/` content and propose `git mv` to `.claude/context/`                          |
 | `create-rule`            | Scaffold a project-local governance rule into .claude/rules/                                 |
 | `create-skill`           | Create a new skill file in .claude/skills/                                                   |
