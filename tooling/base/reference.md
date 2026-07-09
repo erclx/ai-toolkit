@@ -23,7 +23,8 @@
 ## CSpell
 
 - `cspell.json` is a user-owned seed at root. Sync drops it once on first install and never overwrites it. Projects extend it with extra `import` and `dictionaryDefinitions` entries.
-- The seeded baseline includes `version: "0.2"`, `language: "en"`, `useGitignore: true`, dictionary definitions for `project-terms` and `tech-stack`, and `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files. Both dictionary definitions set `addWords: true`.
+- The seeded baseline includes `version: "0.2"`, `language: "en"`, `useGitignore: true`, `gitignoreRoot: ["."]`, dictionary definitions for `project-terms` and `tech-stack`, and `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files. Both dictionary definitions set `addWords: true`.
+- `gitignoreRoot: ["."]` pins the `.gitignore` search to the project root. Without it, cspell run from inside a linked worktree under `.claude/worktrees/` walks up into the parent repo's `.gitignore`, resolves every worktree file as living under the ignored worktree path, and checks zero files. New words then pass locally and fail in CI. `gitignoreRoot` stops the walk at the root while the worktree's own `.gitignore` still excludes `node_modules` and build output.
 - Dictionary files in `.cspell/`: `project-terms.txt`, `tech-stack.txt`.
 - Include dotfolders in the spell glob: `cspell '**' '.*/**' '.*' ...`. The default `**` skips dot-prefixed folders, so `.claude/`, `.github/`, and `.husky/` go unchecked without explicit globs.
 - Keep dictionary entries sorted alphabetically, one word per line.
