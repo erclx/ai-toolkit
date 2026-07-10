@@ -23,6 +23,12 @@ These cover most entries. Add domain-specific headings as needed. Do not pad an 
 - `## Hidden contracts`: invariants the code does not self-document (shape constraints, skip rules, header semantics). Use when the reader needs the invariant itself. Use `## Decisions` when they need the reasoning behind picking it.
 - `## Gotchas`: workarounds, things tried and rejected, scar tissue worth preserving.
 
+## The development entry
+
+Only the `development` entry carries this section. It is not a general-purpose heading for other domains.
+
+- `## Scripts`: a table of run commands (command plus purpose). The single discoverable surface for how to run the project. Keep run commands here, not scattered across `CLAUDE.md`.
+
 ## What goes in
 
 - Per-domain narrative on how the code is structured and why
