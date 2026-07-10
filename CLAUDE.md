@@ -34,6 +34,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Prefer a single-path layout over dual-mode toggles or migration shims when one path works for both greenfield and grown projects. Skill complexity from branching read paths costs more than the extra folder or index file in the simple case.
 - When a fix could plausibly live in either a skill body or a seed, default to skill-local. Wait for a second concrete case before lifting the helper into shared infrastructure.
 - When encoding a fix into a skill, standard, or seed, lift the principle from target-project specifics. Strip reporter-named filenames, framework names, deploy targets, and project-specific label values. Keep canonical format specs and generic illustrations that teach the structure without overfitting.
+- When triaging a multi-topic request or scoping a rule, enumerate every concern or surface and account for each. Do not silently drop the non-obvious ones.
 - When planning an edit to `CLAUDE.md`, show the proposed change as a fenced `diff` block in chat first, then wait for approval before calling `Edit`
 
 ## Output
@@ -59,10 +60,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - When a folder has an `index.md`, check it before reading individual files in that folder.
 - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
-
-## Markdown
-
-- When editing any markdown file, follow `.claude/standards/prose.md`.
 
 ## Content ownership
 
@@ -114,11 +111,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Commands
 
-- `bun run check`: full verification, applies formatting and regenerates indexes before running the read-only checks
-- `bun run check:spell`, `check:format`, `check:shell`: individual read-only checks
-- `bun run check:install`: clones the repo to tmp, runs `aitk init` against a fresh project, and asserts the scaffold lands. Run after edits to `README.md` Quickstart, `package.json`, `src/cli.ts` init, or `.husky/` hooks.
-- `bun run format`: auto-fix formatting
-- The husky pre-push hook runs `bun run check` and may reformat files. After `git push`, run `git status`. If files are modified, commit the diff as `style(<scope>):` and push again. Do not skip the hook.
+- Run `bun run check` to verify and `bun run format` to auto-fix before committing. The pre-push hook runs `check` and may reformat files, so after `git push` run `git status` and commit any diff as `style(<scope>):`. Full script and hook reference in `.claude/context/development.md`.
 
 ## Spelling
 
