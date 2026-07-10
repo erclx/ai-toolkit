@@ -60,7 +60,7 @@ Otherwise invoke `toolkit:claude-review`.
 Skip this step if Step 5 was skipped (prose-only diff). Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
 
 - Any critical or should-fix count greater than zero, stop: `❌ Review found non-minor issues. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
-- Zero critical and zero should-fix, continue. Keep the minor findings to attach to the PR body.
+- Zero critical and zero should-fix, continue. The minor findings stay in the on-disk review receipt. Fold any a reviewer needs into the PR's `## Technical Context`. Do not add a separate review-notes section to the PR body.
 
 Do not auto-fix findings. The stop here is deliberate.
 
@@ -92,7 +92,7 @@ Respond with up to four lines:
 
 ```plaintext
 ✅ Autoshipped (draft): <PR url>
-<N minor findings attached to PR body>
+<N minor findings kept in .claude/review/review-<slug>.md>
 <N memories captured in .claude/memory/>
 <Memory proposal at .claude/review/memory-review-<slug>.md>
 ```
