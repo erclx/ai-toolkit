@@ -55,7 +55,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 ## Indexes
 
-- Before searching source in a domain or touching a UI surface, consult the relevant `index.md` (`.claude/context/`, `.claude/wireframes/`) and read the matching entry first. It orients faster than a blind grep.
+- Before searching source in a domain, consult `.claude/context/index.md` and read the matching entry first. It orients faster than a blind grep.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
 - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
