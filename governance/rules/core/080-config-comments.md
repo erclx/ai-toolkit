@@ -1,9 +1,15 @@
 ---
-description: Keep comments terse in env, gitignore, and config files
+description: Keep comments terse in dotfiles, config, and workflow files
 paths:
   - '**/.env*'
   - '**/.gitignore'
+  - '**/.dockerignore'
+  - '**/.editorconfig'
+  - '**/Dockerfile*'
   - '**/*.config.*'
+  - '**/*.json'
+  - '**/*.yml'
+  - '**/*.yaml'
 ---
 
 # CONFIG COMMENT STANDARDS
