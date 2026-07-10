@@ -56,7 +56,8 @@ rather than a defect. Note any `.claude/` docs refreshed as a result of the
 fixes. The reply is a rendered-for-human GitHub surface, so follow
 `.claude/standards/prose.md` for voice and keep each mapping to a line or two.
 Structure the body with no heading: open with a one-line summary sentence, then
-one bullet per finding. Do not add a section header such as `## Review response`.
+one bullet per finding, each opening with the bolded finding identifier. Do not
+add a section header such as `## Review response`.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
 reads as an independent machine pass, not a human sign-off. Post it to the PR:
 
