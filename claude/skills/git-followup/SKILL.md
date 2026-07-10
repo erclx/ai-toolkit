@@ -1,7 +1,6 @@
 ---
 name: git-followup
-description: Ships a small self-review edit on the current PR branch by staging, committing, pushing, and syncing the open PR. Use when asked to "ship a followup", "push the PR fix", "followup", or "commit and push this small change". Do NOT use when there is no open PR for the branch (use git-ship instead).
-disable-model-invocation: true
+description: Ships a small self-review edit on the current PR branch by staging, committing, pushing, and syncing the open PR, replying on the PR when it carries review comments. Use when asked to "ship a followup", "push the PR fix", "followup", or "commit and push this small change". Do NOT use when there is no open PR for the branch (use git-ship instead).
 ---
 
 # Git followup
@@ -21,7 +20,8 @@ Ship a small self-review edit on the current PR branch in one pass.
 2. Run `git add -A` to stage every change
 3. Invoke `toolkit:git-commit` to generate one conventional commit from the staged diff
 4. Run `git push` to the tracking branch
-5. Run `gh pr view --json url,title,body` and review whether the new commit changes scope. If it does, update the PR body with `gh pr edit --body` and update the title with `gh pr edit --title` if the scope shifted enough to make it inaccurate.
+5. Check for existing review comments: `gh api 'repos/{owner}/{repo}/pulls/<number>/comments' --jq 'length'`, resolving `<number>` from `gh pr view --json number`.
+6. If the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first scanning it for em dashes and semicolons and rewriting each since the hook does not see an inline comment body. If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
 
 ## After completion
 

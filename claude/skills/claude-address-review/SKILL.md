@@ -1,6 +1,6 @@
 ---
 name: claude-address-review
-description: Pulls review findings posted on the current branch's open PR, fixes each in the working tree, replies with a summary comment, and pushes a follow-up commit. The worker's return leg after `claude-pr-review`. Use when asked to "address the review", "fix the PR comments", "respond to review", or after an orchestrator posts findings. Do NOT use to write a review. That is `claude-pr-review`.
+description: Pulls review findings and CI status on the current branch's open PR, fixes each in the working tree, refreshes any stale `.claude/` docs, replies with a summary comment, and pushes a follow-up commit. The worker's return leg after `claude-pr-review`. Use when asked to "address the review", "fix the PR comments", "respond to review", or after an orchestrator posts findings. Do NOT use to write a review. That is `claude-pr-review`.
 ---
 
 # Claude address review
@@ -14,7 +14,7 @@ the PR from an independent session. This skill consumes them: fix, reply, push.
 - If the PR has no review comments or threads, stop: `✅ No review findings to address.`
 - Fix findings. Do not merge.
 
-## Step 1: pull the review findings
+## Step 1: pull the review findings and CI status
 
 Read the review comments and threads on the PR:
 
@@ -23,6 +23,14 @@ gh pr view --json number,reviews,comments
 ```
 
 For inline review comments, read them via `gh api` on the PR's review comments. Collect each finding with its file, location, and body.
+
+Also read the CI check status so the fixes cover failing checks, not only review comments:
+
+```bash
+gh pr checks <number>
+```
+
+Treat a failing check as a finding to resolve alongside the review comments. When no checks are configured, `gh pr checks` reports none and the flow continues on the review findings alone.
 
 ## Step 2: address each finding
 
@@ -36,14 +44,27 @@ block the others.
 Run the project check (`bun run check` or the project's documented equivalent).
 Do not push a red follow-up.
 
-## Step 4: reply and push
+## Step 4: refresh stale docs
+
+The fixes may have changed or added behavior that `.claude/` context entries, docs, or wireframes describe. Refresh them with the `claude-docs` skill, which maps the changed files to the entries that reference them and rewrites the stale sections. Do not reimplement that mapping here. When a fix adds a new capability with no existing entry, `claude-docs` flags it rather than creating one.
+
+## Step 5: reply and push
 
 Write a summary reply to `.claude/.tmp/address-review/reply.md` mapping each
 finding to what changed, or to a one-line reason when it is a conscious-accept
-rather than a defect. The reply is a rendered-for-human GitHub surface, so follow
+rather than a defect. Note any `.claude/` docs refreshed as a result of the
+fixes. The reply is a rendered-for-human GitHub surface, so follow
 `.claude/standards/prose.md` for voice and keep each mapping to a line or two.
+Structure the body with no heading: open with a one-line summary sentence, then
+one bullet per finding, each opening with the bolded finding identifier. Do not
+add a section header such as `## Review response`.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
-reads as an independent machine pass, not a human sign-off. Post it to the PR:
+reads as an independent machine pass, not a human sign-off.
+
+Before posting, scan the reply for em dashes and semicolons and rewrite each,
+splitting into two sentences or using a comma. The standards-audit hook skips
+`.claude/.tmp/`, so this scan is the only gate on the published reply. Post it to
+the PR:
 
 ```bash
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply.md
@@ -55,7 +76,7 @@ body when the follow-up changes scope. Do not reimplement that flow here. For
 in-place fixes to files the PR body already covers, `git-followup` leaves the
 body untouched and the reply comment carries the fix log.
 
-## Step 5: output
+## Step 6: output
 
 ```plaintext
 Addressed <N> findings on PR #<number>. Follow-up pushed.

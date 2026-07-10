@@ -15,7 +15,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "open-pr" "no-pr-guard" "main-guard"
+  select_or_route_scenario "Which scenario?" "open-pr" "review-comment" "no-pr-guard" "main-guard"
 
   configure_sandbox_git_identity
 
@@ -58,6 +58,44 @@ EOF
     log_info "Context: feat/utils-followup tracks origin, PR open, unstaged trim() addition"
     log_info "Action:  /git-followup"
     log_info "Expect:  stage -> commit -> push -> PR body updated to mention trim helper"
+    ;;
+  "review-comment")
+    git checkout -b feat/utils-followup -q
+
+    cat <<'EOF' >>utils.js
+
+export function lowercase(text) {
+  return text.toLowerCase();
+}
+EOF
+    git add utils.js && git commit -m "feat(utils): add lowercase helper" -q
+    git push -u origin feat/utils-followup -q
+
+    pr_number=$(gh pr create \
+      --title "feat(utils): add lowercase helper" \
+      --body "Adds lowercase helper to utils." \
+      --head feat/utils-followup \
+      --base main | grep -oE '[0-9]+$')
+
+    review_line=$(grep -n 'toLowerCase' utils.js | head -1 | cut -d: -f1)
+    gh api "repos/{owner}/{repo}/pulls/${pr_number}/comments" \
+      -f body="Guard against a null argument here." \
+      -f commit_id="$(git rev-parse HEAD)" \
+      -f path="utils.js" \
+      -F line="$review_line" \
+      -f side="RIGHT" >/dev/null
+
+    cat <<'EOF' >>utils.js
+
+export function lowercaseSafe(text) {
+  return text?.toLowerCase() ?? "";
+}
+EOF
+
+    log_step "Scenario ready: open PR with a review comment and an unstaged fix"
+    log_info "Context: feat/utils-followup tracks origin, PR open with one review comment, unstaged null-guard addition"
+    log_info "Action:  /git-followup"
+    log_info "Expect:  stage -> commit -> push -> reply comment posted on the PR"
     ;;
   "no-pr-guard")
     git checkout -b feat/utils-followup -q

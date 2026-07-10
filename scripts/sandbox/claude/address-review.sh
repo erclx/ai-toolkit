@@ -52,6 +52,18 @@ export function createTask(title: string) {
 }
 EOF
 
+  mkdir -p .claude/context
+  cat <<'EOF' >.claude/context/api.md
+---
+title: API
+description: Task creation endpoint and handlers in src/tasks.ts
+---
+
+# API
+
+Route handlers live in `src/tasks.ts`. `handleCreate` builds a task from the request body and returns it. No input validation runs before creation.
+EOF
+
   git add . && git commit --allow-empty -m "feat(api): task list endpoint" --no-verify -q
   git push --force origin HEAD:main
 
@@ -84,5 +96,6 @@ EOF
   log_info "Context: open PR on feat/create-endpoint with one should-fix review finding posted"
   log_info "Action:  /claude-address-review"
   log_info "Expect:  reads the finding, adds the empty-title guard, verify passes"
+  log_info "         refreshes the now-stale .claude/context/api.md validation line"
   log_info "         posts a summary reply comment, pushes a follow-up commit, does NOT merge"
 }

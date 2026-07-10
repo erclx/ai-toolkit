@@ -21,7 +21,7 @@ claude/
 │   ├── claude-memory-review/ ← review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete
 │   ├── claude-orchestrate/  ← assert the orchestrator role and dispatch the build loop
 │   ├── claude-pr-review/    ← review an open PR from an independent session and post findings
-│   ├── claude-address-review/ ← pull PR review findings, fix each, reply or resolve, push follow-up
+│   ├── claude-address-review/ ← pull PR findings and CI, fix each, refresh docs, reply, push follow-up
 │   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
 │   ├── claude-roadmap/      ← draft or update .claude/ROADMAP.md by sequencing MVP scope into versions
 │   ├── claude-screencast/   ← draft a stack-agnostic screencast script with pre-seeded beats and defaults
@@ -31,6 +31,7 @@ claude/
 │   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
 │   ├── claude-worktree/     ← enter a worktree at .claude/worktrees/<name>/ with name derived from plan or branch
 │   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
+│   ├── migration-claude-md/ ← classify CLAUDE.md sections and propose moves to rules or context
 │   ├── migration-context/   ← classify docs/ content and propose `git mv` to .claude/context/
 │   ├── migration-standards/ ← propose `git mv` of root standards/ and snippets/ into .claude/
 │   ├── create-rule/         ← scaffold a project-local governance rule into .claude/rules/
@@ -39,7 +40,7 @@ claude/
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
 │   ├── git-branch/          ← rename current branch to conventional format
 │   ├── git-commit/          ← generate conventional commit message from staged changes
-│   ├── git-followup/        ← stage, commit, push, and sync the open PR for a small followup edit
+│   ├── git-followup/        ← stage, commit, push, and sync the open PR, replying when it carries review comments
 │   ├── git-pr/              ← generate PR description and open or update pull request
 │   ├── git-ship/            ← run the full post-feature workflow in one sequence
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
@@ -142,7 +143,7 @@ Phase labels stay inside TASKS. They never appear in PR titles, commit messages,
 
 Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
+Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-claude-md`, `migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
 
 | Skill                    | Description                                                                                  |
 | ------------------------ | -------------------------------------------------------------------------------------------- |
@@ -157,7 +158,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
 | `claude-orchestrate`     | Assert the orchestrator role and dispatch the roadmap, feature, review, and worktree skills  |
 | `claude-pr-review`       | Review an open PR from an independent session and post findings as a PR comment              |
-| `claude-address-review`  | Pull PR review findings, fix each, reply or resolve threads, and push a follow-up            |
+| `claude-address-review`  | Pull PR findings and CI status, fix each, refresh stale docs, reply, and push a follow-up    |
 | `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                          |
 | `claude-roadmap`         | Draft or update `.claude/ROADMAP.md` by sequencing MVP scope into ordered versions           |
 | `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
@@ -169,6 +170,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies               |
 | `claude-worktree`        | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch        |
 | `claude-autoship`        | Chain implement → verify → review → ship after a plan is approved                            |
+| `migration-claude-md`    | Classify `CLAUDE.md` sections and propose moves to path-scoped rules or context entries      |
 | `migration-context`      | Classify `docs/` content and propose `git mv` to `.claude/context/`                          |
 | `create-rule`            | Scaffold a project-local governance rule into .claude/rules/                                 |
 | `create-skill`           | Create a new skill file in .claude/skills/                                                   |
@@ -176,7 +178,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                                   |
 | `git-branch`             | Rename current branch to match conventional format                                           |
 | `git-commit`             | Generate a conventional commit message from staged changes                                   |
-| `git-followup`           | Stage, commit, push, and sync the open PR for a small followup edit                          |
+| `git-followup`           | Stage, commit, push, and sync the open PR, replying when it carries review comments          |
 | `git-pr`                 | Generate a PR description and open or update a pull request                                  |
 | `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
 | `git-stage`              | Batch-commit staged files grouped by concern                                                 |
@@ -193,7 +195,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
 | `youtube-transcripts`    | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                  |
 
-Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-orchestrate`, `create-skill`, `git-followup`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `.claude/standards/skill.md` for authoring conventions.
+Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-orchestrate`, `create-skill`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `.claude/standards/skill.md` for authoring conventions.
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
 

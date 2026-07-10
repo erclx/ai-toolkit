@@ -46,7 +46,7 @@ Omit any section with nothing in it. Cap the ready-to-build handoffs you recomme
 
 ## The loop
 
-1. Own the roadmap. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from `.claude/REQUIREMENTS.md`.
+1. Own the roadmap. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from `.claude/REQUIREMENTS.md`. Capture a needed resequence in the plan or TASKS for a worker to apply in its branch, so the tracked edit ships in a PR rather than dirtying main.
 2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive.
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
@@ -58,6 +58,7 @@ Omit any section with nothing in it. Cap the ready-to-build handoffs you recomme
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
 - Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR.
+- Do not leave tracked board edits uncommitted in the main worktree. A `.claude/ROADMAP.md` resequence folds into the next worker's branch so it ships in that feature's PR. When no worker is in flight, commit it as a standalone docs commit.
 
 ## Parallelism
 
