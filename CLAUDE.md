@@ -60,10 +60,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
 
-## Markdown
-
-- When editing any markdown file, follow `.claude/standards/prose.md`.
-
 ## Content ownership
 
 Each rule or knowledge item lives in exactly one surface. Other surfaces point, never duplicate.
@@ -114,11 +110,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Commands
 
-- `bun run check`: full verification, applies formatting and regenerates indexes before running the read-only checks
-- `bun run check:spell`, `check:format`, `check:shell`: individual read-only checks
-- `bun run check:install`: clones the repo to tmp, runs `aitk init` against a fresh project, and asserts the scaffold lands. Run after edits to `README.md` Quickstart, `package.json`, `src/cli.ts` init, or `.husky/` hooks.
-- `bun run format`: auto-fix formatting
-- The husky pre-push hook runs `bun run check` and may reformat files. After `git push`, run `git status`. If files are modified, commit the diff as `style(<scope>):` and push again. Do not skip the hook.
+- Run `bun run check` before committing. The pre-push hook runs it and may reformat files, so after `git push` run `git status` and commit any diff as `style(<scope>):`. Full script and hook reference in `.claude/context/development.md`.
 
 ## Spelling
 
