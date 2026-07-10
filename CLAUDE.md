@@ -111,7 +111,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Commands
 
-- Run `bun run check` before committing. The pre-push hook runs it and may reformat files, so after `git push` run `git status` and commit any diff as `style(<scope>):`. Full script and hook reference in `.claude/context/development.md`.
+- Run `bun run check` to verify and `bun run format` to auto-fix before committing. The pre-push hook runs `check` and may reformat files, so after `git push` run `git status` and commit any diff as `style(<scope>):`. Full script and hook reference in `.claude/context/development.md`.
 
 ## Spelling
 
