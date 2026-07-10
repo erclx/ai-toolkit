@@ -42,6 +42,7 @@ scripts/
 | `readme.md`       | Readme structure and content conventions                              |
 | `requirements.md` | Shape and content rules for `.claude/REQUIREMENTS.md`                 |
 | `roadmap.md`      | Shape and content rules for `.claude/ROADMAP.md`                      |
+| `rule.md`         | Rule frontmatter, body shape, and voice for `.claude/rules` files     |
 | `skill.md`        | Claude skill structure and authoring rules                            |
 | `snippets.md`     | Snippet reference and authoring conventions                           |
 | `tasks.md`        | Shape and content rules for `.claude/TASKS.md`                        |
