@@ -40,7 +40,7 @@ claude/
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
 │   ├── git-branch/          ← rename current branch to conventional format
 │   ├── git-commit/          ← generate conventional commit message from staged changes
-│   ├── git-followup/        ← stage, commit, push, and sync the open PR for a small followup edit
+│   ├── git-followup/        ← stage, commit, push, and sync the open PR, replying when it carries review comments
 │   ├── git-pr/              ← generate PR description and open or update pull request
 │   ├── git-ship/            ← run the full post-feature workflow in one sequence
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
@@ -178,7 +178,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                                   |
 | `git-branch`             | Rename current branch to match conventional format                                           |
 | `git-commit`             | Generate a conventional commit message from staged changes                                   |
-| `git-followup`           | Stage, commit, push, and sync the open PR for a small followup edit                          |
+| `git-followup`           | Stage, commit, push, and sync the open PR, replying when it carries review comments          |
 | `git-pr`                 | Generate a PR description and open or update a pull request                                  |
 | `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
 | `git-stage`              | Batch-commit staged files grouped by concern                                                 |
