@@ -34,6 +34,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Prefer a single-path layout over dual-mode toggles or migration shims when one path works for both greenfield and grown projects. Skill complexity from branching read paths costs more than the extra folder or index file in the simple case.
 - When a fix could plausibly live in either a skill body or a seed, default to skill-local. Wait for a second concrete case before lifting the helper into shared infrastructure.
 - When encoding a fix into a skill, standard, or seed, lift the principle from target-project specifics. Strip reporter-named filenames, framework names, deploy targets, and project-specific label values. Keep canonical format specs and generic illustrations that teach the structure without overfitting.
+- When triaging a multi-topic request or scoping a rule, enumerate every concern or surface and account for each. Do not silently drop the non-obvious ones.
 - When planning an edit to `CLAUDE.md`, show the proposed change as a fenced `diff` block in chat first, then wait for approval before calling `Edit`
 
 ## Output
