@@ -79,6 +79,8 @@ The `What is right` section is optional, capped at three bullets, and included o
 
 Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
+Before posting, scan the body for em dashes and semicolons and rewrite each, splitting into two sentences or using a comma. The standards-audit hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment.
+
 ```bash
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body.md
 ```
