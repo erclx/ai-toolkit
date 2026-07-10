@@ -19,6 +19,7 @@ Your primary directive is to maintain long-term system health over short-term co
 - Implement only the functionality required for the immediate task (YAGNI).
 - Extract shared logic into single-purpose utilities. Never duplicate behavior across modules (DRY).
 - Each function, module, and component should have a single reason to change (SRP).
+- Apply SRP to directories: once a folder mixes distinct roles and grows past a handful of files, split it into subfolders by role.
 - Favor composition over inheritance.
 - Prioritize native platform capabilities over third-party libraries.
 
