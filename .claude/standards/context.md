@@ -19,7 +19,7 @@ Both fields feed `.claude/context/index.md` when regenerated.
 These cover most entries. Add domain-specific headings as needed. Do not pad an entry with empty sections.
 
 - `## Layer responsibilities`: which folders own what, how the domain is sliced. One line per item in owns-X form. Implementation detail moves to `## Decisions`, `## Hidden contracts`, or `## Gotchas`.
-- `## Scripts`: for the `development` entry, a table of run commands (command plus purpose). This is the single discoverable surface for how to run the project. Keep run commands here, not scattered across `CLAUDE.md`. When a project reaches five or more heterogeneous commands across a monorepo or multiple languages, graduate the table to a generated per-project CLI, lifting the pattern from `aitk`.
+- `## Scripts`: for the `development` entry, a table of run commands (command plus purpose). This is the single discoverable surface for how to run the project. Keep run commands here, not scattered across `CLAUDE.md`.
 - `## Decisions`: non-obvious technical choices that do not fit `.claude/ARCHITECTURE.md` and would otherwise need re-deriving from code.
 - `## Hidden contracts`: invariants the code does not self-document (shape constraints, skip rules, header semantics). Use when the reader needs the invariant itself. Use `## Decisions` when they need the reasoning behind picking it.
 - `## Gotchas`: workarounds, things tried and rejected, scar tissue worth preserving.
