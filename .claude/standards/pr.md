@@ -32,6 +32,7 @@ description: Pull request title and body conventions
 - Omit Testing for docs, config, or trivial sync changes
 - Use `- [ ]` checkboxes, never prose
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
+- These four are the only sections. Do not add ad-hoc sections such as `## Review notes`. A self-review trade-off worth surfacing goes in `## Technical Context`.
 
 ## Formatting
 
