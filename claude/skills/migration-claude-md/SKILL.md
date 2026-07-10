@@ -19,12 +19,13 @@ Run these in parallel from `pwd`:
 - Read `CLAUDE.md`
 - `ls .claude/rules/ 2>/dev/null`: existing rule subdirs and numbers for placement
 - `ls .claude/context/ 2>/dev/null`: existing context entries for conflict checks
+- `aitk claude seeds list --json 2>/dev/null`: the base seed set. Read the `CLAUDE.md` entry's `content` as the always-load baseline. Skip this input when `aitk` is not installed.
 
 ## Step 2: classify each section
 
 Split `CLAUDE.md` by `##` heading. Score each section against this order:
 
-1. **Always-load.** Stays in `CLAUDE.md`. Signals: cross-cutting behavior that applies every session, output and formatting rules, project-wide invariants, conventions with no file scope.
+1. **Always-load.** Stays in `CLAUDE.md`. Signals: cross-cutting behavior that applies every session, output and formatting rules, project-wide invariants, conventions with no file scope. A section that matches the seed baseline is always-load by definition. Keep it and propose no move.
 2. **Path-scoped.** Propose a rule. Signals: behavior that only applies when working in a folder (`frontend/`, `backend/`) or on a file type, framework-specific conventions, "when editing X do Y" phrasing. Derive the glob from the named scope.
 3. **Domain narrative.** Propose a context entry. Signals: prose describing how a system or domain is built, decisions, gotchas, structure. Not do-or-do-not rules.
 4. **Mixed.** Both rule and narrative in one section. Flag as "needs manual split". Do not propose a single target.
