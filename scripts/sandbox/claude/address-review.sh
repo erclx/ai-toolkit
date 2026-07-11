@@ -97,5 +97,5 @@ EOF
   log_info "Action:  /claude-address-review"
   log_info "Expect:  reads the finding, adds the empty-title guard, verify passes"
   log_info "         refreshes the now-stale .claude/context/api.md validation line"
-  log_info "         posts a summary reply comment, pushes a follow-up commit, does NOT merge"
+  log_info "         pushes a follow-up commit, then posts a summary reply comment, does NOT merge"
 }

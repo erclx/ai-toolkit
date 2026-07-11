@@ -48,9 +48,17 @@ Do not push a red follow-up.
 
 The fixes may have changed or added behavior that `.claude/` context entries, docs, or wireframes describe. Refresh them with the `claude-docs` skill, which maps the changed files to the entries that reference them and rewrites the stale sections. Do not reimplement that mapping here. When a fix adds a new capability with no existing entry, `claude-docs` flags it rather than creating one.
 
-## Step 5: reply and push
+## Step 5: push, then reply
 
-Write a summary reply to `.claude/.tmp/address-review/reply.md` mapping each
+Push the fixes before posting the reply so the comment never runs ahead of the
+code it describes. Ship the fixes as a follow-up commit on the same branch with
+the `git-followup` skill, invoked with `reply-owned` so it stages, commits,
+pushes, and refreshes the open PR body without posting its own comment. This
+skill owns the reply. Do not reimplement that flow here. For in-place fixes to
+files the PR body already covers, `git-followup` leaves the body untouched and
+the reply comment carries the fix log.
+
+Then write a summary reply to `.claude/.tmp/address-review/reply.md` mapping each
 finding to what changed, or to a one-line reason when it is a conscious-accept
 rather than a defect. Note any `.claude/` docs refreshed as a result of the
 fixes. The reply is a rendered-for-human GitHub surface, so follow
@@ -69,12 +77,6 @@ the PR:
 ```bash
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply.md
 ```
-
-Then ship the fixes as a follow-up commit on the same branch with the
-`git-followup` skill, which stages, commits, pushes, and refreshes the open PR
-body when the follow-up changes scope. Do not reimplement that flow here. For
-in-place fixes to files the PR body already covers, `git-followup` leaves the
-body untouched and the reply comment carries the fix log.
 
 ## Step 6: output
 

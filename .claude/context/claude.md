@@ -21,7 +21,7 @@ claude/
 │   ├── claude-memory-review/ ← review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete
 │   ├── claude-orchestrate/  ← assert the orchestrator role and dispatch the build loop
 │   ├── claude-pr-review/    ← review an open PR from an independent session and post findings
-│   ├── claude-address-review/ ← pull PR findings and CI, fix each, refresh docs, reply, push follow-up
+│   ├── claude-address-review/ ← pull PR findings and CI, fix each, refresh docs, push follow-up, reply
 │   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
 │   ├── claude-roadmap/      ← draft or update .claude/ROADMAP.md by sequencing MVP scope into versions
 │   ├── claude-screencast/   ← draft a stack-agnostic screencast script with pre-seeded beats and defaults
@@ -158,7 +158,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
 | `claude-orchestrate`     | Assert the orchestrator role and dispatch the roadmap, feature, review, and worktree skills  |
 | `claude-pr-review`       | Review an open PR from an independent session and post findings as a PR comment              |
-| `claude-address-review`  | Pull PR findings and CI status, fix each, refresh stale docs, reply, and push a follow-up    |
+| `claude-address-review`  | Pull PR findings and CI status, fix each, refresh stale docs, push a follow-up, and reply    |
 | `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                          |
 | `claude-roadmap`         | Draft or update `.claude/ROADMAP.md` by sequencing MVP scope into ordered versions           |
 | `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
