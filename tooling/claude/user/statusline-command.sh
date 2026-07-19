@@ -13,7 +13,7 @@ input=$(cat)
     .effort.level // "",
     .context_window.remaining_percentage // "",
     .context_window.used_percentage // "",
-    .context_window.context_window_size // ""'
+    .context_window.context_window_size // ""' | tr -d '\r'
 )"
 
 real_ctx="$ctx_size"
