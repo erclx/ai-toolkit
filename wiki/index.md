@@ -22,6 +22,7 @@ Reference pages for tools, workflows, and concepts. Written and maintained by ha
 - [Community MCP servers](community-mcp-servers.md): Curated list of MCP servers with rankings and install notes
 - [Community skills and plugins](community-skills.md): Notable third-party skills, official Anthropic plugins, and curated lists
 - [Operating model](operating-model.md): Orchestrator and worker roles for building across parallel sessions
+- [PowerShell profile for Claude Code](powershell-profile.md): Profile snippet for the clp function, the built-in alias collision, PATH self-heal, jq CRLF output, and execution policy
 - [Prose influences](prose-influences.md): Industry style guides behind prose.md and AI-specific additions
 - [Rule-writing vocabulary](rule-writing-vocabulary.md): Glossary of terms for writing rules, prompts, and standards
 - [Skills strategy](skills-strategy.md): Rules for categorizing, storing, and choosing Claude Code skills

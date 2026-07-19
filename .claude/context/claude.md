@@ -91,6 +91,17 @@ alias clps='clp --model sonnet'
 
 For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../../wiki/zshrc-aliases.md).
 
+On Windows, add the equivalent to `$PROFILE` instead. PowerShell ships a built-in `clp` alias for `Clear-ItemProperty`, which outranks a same-named function unless removed first:
+
+```powershell
+$env:TOOLKIT = "C:\path\to\toolkit"
+
+if (Get-Alias clp -ErrorAction SilentlyContinue) { Remove-Item Alias:clp -Force }
+function clp { claude --plugin-dir "$env:TOOLKIT\claude" @args }
+```
+
+For the PATH self-heal and execution-policy notes this collision requires, see [PowerShell profile for Claude Code](../../wiki/powershell-profile.md).
+
 ## Three-tier context model
 
 Target projects scale by splitting context across three loading tiers. Knowing which tier holds what keeps sessions fast and content discoverable.

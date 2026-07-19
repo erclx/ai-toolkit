@@ -29,8 +29,10 @@ glama
 gsub
 heredoc
 httpx
+jqlang
 kwargs
 labelledby
+localappdata
 lucide
 mermaid
 modelcontextprotocol
@@ -87,6 +89,7 @@ versinfo
 vite
 vitest
 webvtt
+winget
 withgoogle
 wslpath
 xoxb

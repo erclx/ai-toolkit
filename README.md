@@ -19,7 +19,7 @@ Three design choices shape the toolkit.
 - [Bun](https://bun.sh) for the CLI runtime and scripts
 - [Git](https://git-scm.com) with worktree support
 - [GitHub CLI](https://cli.github.com) (optional) for ship flows
-- Shell: `zsh` or bash 4+ (`brew install bash` on macOS).
+- Shell: `zsh` or bash 4+ (`brew install bash` on macOS), or Windows PowerShell 5.1+. See [PowerShell profile for Claude Code](wiki/powershell-profile.md) for the Windows setup.
 
 ## Quickstart
 
