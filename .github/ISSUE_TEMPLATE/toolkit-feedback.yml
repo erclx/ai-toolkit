@@ -1,0 +1,47 @@
+name: Toolkit feedback
+description: Report something broken, missing, or off in the toolkit
+title: 'feedback: '
+labels: ['feedback']
+body:
+  - type: input
+    id: project
+    attributes:
+      label: From project
+      description: The project name or path where you hit this
+    validations:
+      required: false
+  - type: input
+    id: surface
+    attributes:
+      label: Surface
+      description: Toolkit surface and its type, such as plugin skill, snippet, CLI, or seed
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed
+      description: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What you expected, or "unclear"
+    validations:
+      required: false
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro
+      description: Commands or steps that reproduce it, or "none"
+    validations:
+      required: false
+  - type: textarea
+    id: fix
+    attributes:
+      label: Proposed fix
+      description: One line if you have one, or "open"
+    validations:
+      required: false
