@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+input=$(cat)
+
+tool=$(printf '%s' "$input" | jq -r '.tool_name // empty')
+case "$tool" in
+Write | Edit) ;;
+*) exit 0 ;;
+esac
+
+file_path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // empty')
+[ -n "$file_path" ] || exit 0
+
+case "$file_path" in
+*/.claude/.tmp/*) exit 0 ;;
+esac
+
+case "$file_path" in
+*/tmp/* | *\\tmp\\* | */Temp/* | *\\Temp\\* | */var/folders/*) ;;
+*) exit 0 ;;
+esac
+
+session=$(printf '%s' "$input" | jq -r '.session_id // "none"')
+key=$(printf '%s' "$session" | tr -c 'A-Za-z0-9' '_')
+marker_dir="${CLAUDE_PROJECT_DIR:-.}/.claude/.tmp/scratch-guard"
+marker="$marker_dir/$key"
+[ -f "$marker" ] && exit 0
+mkdir -p "$marker_dir"
+: >"$marker"
+
+msg='Temporary file write outside .claude/.tmp/. Write temp files to .claude/.tmp/<slug>/ in the project root, not system temp. See the Scratch rule in CLAUDE.md.'
+jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PreToolUse",additionalContext:$msg}}'
