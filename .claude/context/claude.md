@@ -37,6 +37,7 @@ claude/
 │   ├── create-rule/         ← scaffold a project-local governance rule into .claude/rules/
 │   ├── create-skill/        ← create a new skill file in .claude/skills/
 │   ├── create-snippet/      ← create a new snippet file in the correct category folder
+│   ├── create-standard/     ← create a new standard file in standards/ following the meta-standard
 │   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
 │   ├── git-branch/          ← rename current branch to conventional format
 │   ├── git-commit/          ← generate conventional commit message from staged changes
@@ -177,6 +178,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `create-rule`            | Scaffold a project-local governance rule into .claude/rules/                                     |
 | `create-skill`           | Create a new skill file in .claude/skills/                                                       |
 | `create-snippet`         | Create a new snippet file in snippets/                                                           |
+| `create-standard`        | Create a new standard file in standards/ following the meta-standard                             |
 | `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                                       |
 | `git-branch`             | Rename current branch to match conventional format                                               |
 | `git-commit`             | Generate a conventional commit message from staged changes                                       |

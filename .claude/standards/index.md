@@ -22,6 +22,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Governance rule reference](rule.md): Rule frontmatter, body shape, and voice for .claude/rules files
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
 - [Snippet reference](snippets.md): Snippet reference and authoring conventions
+- [Standard reference](standard.md): Shape and content rules for authoring a standard
 - [Tasks reference](tasks.md): Shape and content rules for .claude/TASKS.md
 - [Versioning reference](versioning.md): Phase label vs semver discipline across TASKS, PRs, commits, and tags
 - [Wireframe reference](wireframes.md): Shape and content rules for .claude/wireframes/<surface>.md files
