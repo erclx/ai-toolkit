@@ -62,6 +62,14 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Use `#!/usr/bin/env bash` shebang
 - Always include `2>/dev/null || echo "FALLBACK"` guards on git and shell commands
 
+## Path resolution
+
+A skill reads from two roots. Know which one a file lives under before referencing it.
+
+- Bundled skill assets (`references/`, `scripts/`, `assets/`) resolve against the skill's own directory in the source clone. Reference them with `${CLAUDE_SKILL_DIR}/<path>`, never a bare relative path, so a plugin skill running from another project still finds them.
+- Installed shared docs (`.claude/standards/X.md`, `.claude/rules/`, `.claude/context/`) resolve against the target project cwd, where install placed them. Reference them by that path.
+- To lean on a standard, reference `.claude/standards/X.md` and rely on install. Do not bundle a copy into the skill. A bundled copy drifts from the source and resolves to the toolkit clone, not the target.
+
 ## Invocation
 
 - Skills auto-trigger when Claude matches the request against the description
