@@ -31,7 +31,7 @@ done
 
 [ -n "$index" ] || exit 0
 
-session=$(printf '%s' "$input" | jq -r '.session_id // "nosession"')
+session=$(printf '%s' "$input" | jq -r '.session_id // "none"')
 key=$(printf '%s__%s' "$session" "$index" | tr -c 'A-Za-z0-9' '_')
 marker_dir="${CLAUDE_PROJECT_DIR:-.}/.claude/.tmp/index-reminder"
 marker="$marker_dir/$key"
