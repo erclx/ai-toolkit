@@ -45,13 +45,14 @@ scripts/
 | `rule.md`         | Rule frontmatter, body shape, and voice for `.claude/rules` files     |
 | `skill.md`        | Claude skill structure and authoring rules                            |
 | `snippets.md`     | Snippet reference and authoring conventions                           |
+| `standard.md`     | Shape and content rules for authoring a standard                      |
 | `tasks.md`        | Shape and content rules for `.claude/TASKS.md`                        |
 | `versioning.md`   | Phase label vs semver discipline across TASKS, PRs, commits, and tags |
 | `wireframes.md`   | Shape and content rules for `.claude/wireframes/` surface files       |
 
 ## Authoring a new standard
 
-To author a new standard, use the `prompts/standards-reference.md` generator. It encodes the meta-standard: the `title` and `description` frontmatter contract, the single-topic and multi-topic body shapes, the `### Correct` and `### Incorrect` example format with inline reason comments, and a validation checklist. The generator is the single source for the standard shape, so the standards here do not restate it.
+Follow `.claude/standards/standard.md`. It is the meta-standard: the `title` and `description` frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It installs into target projects like every other standard, so it governs standards authored in the toolkit and in a target alike. The `prompts/standards-reference.md` generator produces the terse reference style for AI-assisted authoring inside the toolkit.
 
 ## CLI
 
