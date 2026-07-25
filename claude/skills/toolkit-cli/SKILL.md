@@ -9,19 +9,19 @@ What each `aitk` sync or install command does to existing files in a target proj
 
 ## Overwrite contract
 
-| Surface                                                     | Command                  | Effect on existing files                                          |
-| ----------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
-| Golden configs (eslint, prettier, vite, tsconfig, ruff)     | `aitk tooling sync`      | Always overwritten. Local edits are lost. Drift is intentional.  |
-| Dictionary seeds (`.cspell/*.txt`)                          | `aitk tooling sync`      | Merged and sorted. Existing terms preserved.                     |
-| Other seeds (`cspell.json`, `.lintstagedrc`, state docs)    | `aitk tooling sync`      | Copy-once. Dropped on first install, untouched after.            |
-| Standards                                                   | `aitk standards install` | All overwritten.                                                 |
-| Standards                                                   | `aitk standards sync`    | Only files already present are updated. None are added.          |
-| Seed docs and `CLAUDE.md`                                   | `aitk claude init`       | Skipped when present. Never overwritten.                         |
-| Seed docs                                                   | `aitk claude sync`       | Never touched.                                                   |
-| Role prompts                                                | `aitk claude sync`       | Synced only when already present.                                |
-| References (`.claude/tooling/<stack>.md`)                   | `aitk tooling ref`       | Overwritten.                                                     |
-| `.gitignore`, deps, scripts                                 | any sync                 | Additive. Existing entries preserved. Deps re-pin on major skew. |
-| Generated `index.md`                                        | any sync or regen        | Rewritten from target state. Hand edits are lost.                |
+| Surface                                                  | Command                  | Effect on existing files                                         |
+| -------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
+| Golden configs (eslint, prettier, vite, tsconfig, ruff)  | `aitk tooling sync`      | Always overwritten. Local edits are lost. Drift is intentional.  |
+| Dictionary seeds (`.cspell/*.txt`)                       | `aitk tooling sync`      | Merged and sorted. Existing terms preserved.                     |
+| Other seeds (`cspell.json`, `.lintstagedrc`, state docs) | `aitk tooling sync`      | Copy-once. Dropped on first install, untouched after.            |
+| Standards                                                | `aitk standards install` | All overwritten.                                                 |
+| Standards                                                | `aitk standards sync`    | Only files already present are updated. None are added.          |
+| Seed docs and `CLAUDE.md`                                | `aitk claude init`       | Skipped when present. Never overwritten.                         |
+| Seed docs                                                | `aitk claude sync`       | Never touched.                                                   |
+| Role prompts                                             | `aitk claude sync`       | Synced only when already present.                                |
+| References (`.claude/tooling/<stack>.md`)                | `aitk tooling ref`       | Overwritten.                                                     |
+| `.gitignore`, deps, scripts                              | any sync                 | Additive. Existing entries preserved. Deps re-pin on major skew. |
+| Generated `index.md`                                     | any sync or regen        | Rewritten from target state. Hand edits are lost.                |
 
 ## Rules
 
