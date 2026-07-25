@@ -117,7 +117,7 @@ EOF
     log_step "Scenario ready: feature planning (full mode)"
     log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and TASKS.md present"
     log_info "Action:  /claude-feature (reference the task in TASKS.md)"
-    log_info "Expect:  plan written to .claude/plans/feature-<slug>.md with files to touch, risks, and questions"
+    log_info "Expect:  plan written to .claude/plans/feature-<slug>.md with files to touch, risks, and questions, each question carrying a Suggested line and an Answer slot"
     ;;
   "small")
     cat <<'EOF' >CLAUDE.md

@@ -39,11 +39,19 @@ Construct the plan with these sections:
 - **Constraints:** durable rules the work must respect (patterns to reuse, surfaces not to touch, platform limits). Optional. Include when an orchestrator or prior context supplies them, omit the section otherwise.
 - **Files to touch:** each file with a one-line reason
 - **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
-- **Questions:** numbered list of things to resolve before starting. If none, use `None identified.`
+- **Questions:** numbered list of things to resolve before starting. Each carries a `- Suggested:` line and an `- Answer:` slot (see Suggestions below). If none, use `None identified.`
 
 Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
 
-When three or more questions remain, add an `- Answer:` slot under each in the plan file and keep chat output to the file pointer plus a short summary. Inline chat is fine when two or fewer remain.
+### Suggestions
+
+Attach a `- Suggested:` line to every question, then an empty `- Answer:` slot below it. A blank answer means accept the suggestion at execution time. This makes the plan decision-ready in one pass, with no separate decision-help round.
+
+- Apply senior judgment: pick the best option and state it in one line with its reason or main tradeoff. No padding, no alternatives unless they change the pick.
+- Suggest a real default when best practice, the codebase, or prior context points to one.
+- When the answer hinges on the user's preference or their intent is unclear, write `- Suggested: needs your call, <why>` rather than fabricating a technical default.
+
+When three or more questions remain, keep chat output to the file pointer plus a short summary. Inline chat is fine when two or fewer remain.
 
 ## Step 4: output
 
@@ -62,7 +70,17 @@ Output the plan to chat. Do not write a plan file.
 - `path/to/file`: reason
 ```
 
-If real questions exist, include a numbered `**Questions:**` section below. Omit empty sections. Do not print `None identified.` in chat.
+If real questions exist, include a numbered `**Questions:**` section below, each with a `- Suggested:` line and an `- Answer:` slot:
+
+```markdown
+**Questions:**
+
+1. <question>
+   - Suggested: <pick>, <reason or tradeoff>
+   - Answer:
+```
+
+Omit empty sections. Do not print `None identified.` in chat.
 
 ### Full mode
 
@@ -96,6 +114,8 @@ File format:
 **Questions:**
 
 1. <question>
+   - Suggested: <pick>, <reason or tradeoff>
+   - Answer:
 ```
 
 Then output in chat:
@@ -106,6 +126,7 @@ Then output in chat:
 **Questions:**
 
 1. <question>
+   - Suggested: <pick>, <reason or tradeoff>
 
 Next: /claude-worktree
 ```
