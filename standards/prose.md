@@ -11,12 +11,9 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 - Write for a developer who is scanning, not studying. Every sentence should be understandable on first read.
 - Use active voice. Default to present tense unless past or future tense is factually correct.
-- Prioritize direct verbs and nouns, using the minimum words necessary
-- Use common words over complex alternatives (`use` not `utilize`, `help` not `facilitate`)
-- Prefer `is`/`has` over inflated alternatives (`serves as`, `features`, `offers`, `provides`)
+- Prioritize direct verbs and plain words, using the minimum necessary. Write `use` not `utilize`, `help` not `facilitate`, `is` not `serves as`.
 - Vary sentence length and opening structure to break uniform cadence. Do not start consecutive sentences the same way.
-- Where flow matters, use substantive connectives to carry one idea into the next. Terse reference prose is fine and needs no padding.
-- Never add words solely for rhythm. Cut cadence that does not aid readability.
+- Use substantive connectives where flow matters, but never add words solely for rhythm. Terse reference prose needs no padding.
 - Be direct on established facts. Hedge on genuinely uncertain claims.
 - Assume developer-level technical knowledge. Skip hand-holding explanations.
 - Keep paragraphs to four sentences or fewer. Split longer blocks at the next logical boundary.
@@ -52,14 +49,11 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - Use American English spelling. Prefer `-ize` over `-ise`, `-or` over `-our`, `-er` over `-re` (`organize`, `analyze`, `summarize`, `recognize`, `behavior`, `color`, `center`)
 - Do not use marketing buzzwords (`seamless`, `robust`, `powerful`, `revolutionary`, `enhanced`, `allows`, `leverage`)
 - Do not use vague qualifiers (`simply`, `just`, `easily`, `quickly`, `very`, `really`)
-- Do not start sentences with filler (`Note that`, `Basically`, `Essentially`, `It should be noted`, `Overall`, `In summary`, `In conclusion`)
-- Do not use hollow connectives that add no information (`That being said`, `With that in mind`, `As mentioned earlier`, `It's worth noting`). Substantive transitions that carry a real relationship are fine.
+- Open a sentence with its subject and action, not filler (`Note that`, `Basically`), a hollow connective (`That being said`, `It's worth noting`), or a gerund windup (`Leveraging the API...`). Substantive transitions that carry a real relationship are fine.
 - Do not use the negative parallelism pattern (`It's not X, it's Y`, `not because X, but because Y`)
-- Do not open sentences with gerund phrases (`Leveraging the API...`, `Building on this...`, `Utilizing the config...`)
 - Do not pad verb phrases or delay the action. Write the shortest form (`in order to` → `to`, `ensure that X is set` → `set X`, `By doing X, you can Y` → state Y directly).
 - Do not address the reader as a participant (`Let's`, `Here's`, `Here are`). State the content directly.
-- Do not hedge in clusters (`It might be worth considering`, `You may want to think about`). Either recommend or state the tradeoff.
-- State recommendations directly. Do not use false balance (`While X is true, Y is also important`).
+- Commit to a position. Do not hedge in clusters (`It might be worth considering`) or use false balance (`While X is true, Y is also important`). Recommend, or state the tradeoff.
 
 ## Frontmatter descriptions
 
