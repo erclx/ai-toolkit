@@ -46,6 +46,7 @@ claude/
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
 │   ├── git-worktree/        ← list and clean up linked worktrees after shipping
+│   ├── toolkit-cli/         ← reference for what aitk sync and install commands overwrite or preserve
 │   ├── toolkit-operator/    ← front door: orient on toolkit docs, then run or route any operation
 │   ├── session-resume/      ← resume from tracked work and relevant context at session start
 │   ├── setup-gov/           ← detect project stack and install matching governance rules
@@ -183,6 +184,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
 | `git-stage`              | Batch-commit staged files grouped by concern                                                 |
 | `git-worktree`           | List and clean up linked worktrees after shipping                                            |
+| `toolkit-cli`            | Reference for what aitk sync and install commands overwrite, merge, or leave untouched       |
 | `toolkit-operator`       | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation |
 | `setup-gov`              | Detect project stack from files and install matching governance rules                        |
 | `setup-indexes`          | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
