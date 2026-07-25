@@ -43,8 +43,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
 - When referencing project files, include "from the project root" in the read instruction
 - Contain only behavioral rules (what to do, what not to do) and pointers to reference docs. Narrative descriptions of what files are or how the system works belong in `docs/`, not in the skill body.
-- State rules, not inventories. Reference docs for lists that change. Enumerating items in a skill body creates drift when items are added or removed.
-- When a rule could enumerate allowed options, phrase it as a ban on the forbidden shape so the rule stays stable as categories are added.
+- State rules, not inventories. Reference docs for lists that change, and phrase a rule as a ban on the forbidden shape rather than an enumeration of allowed options, so it stays stable as categories change.
 - Cut any rule that resists crisp one-line phrasing. Vague guidance is worse than none.
 - Avoid flags that dispatch between alternate flows. The model misreads them and runs the vanilla path. Dry-run-style toggles are fine. For alternate flows, prefer a separate skill or manual invocation of two skills in sequence.
 - When a skill should fire from multiple callers, rely on description matching with strong trigger phrases. Do not hardcode `Skill` calls in sibling skills that could trigger it naturally.
