@@ -37,78 +37,7 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Template
 
-```yaml
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  static:
-    name: '🛡️ Static Checks'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install --frozen-lockfile
-      - run: bun run check
-
-  unit:
-    name: '🧪 Unit Tests'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install --frozen-lockfile
-      - run: bun run test
-
-  build:
-    name: '📦 Build Check'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install --frozen-lockfile
-      - run: bun run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: dist/
-
-  e2e:
-    name: '🎭 E2E Tests'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install --frozen-lockfile
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: dist/
-      - run: bun run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: e2e-results
-          path: test-results/
-          retention-days: 7
-```
-
-Adapt the template to the project's stack, test commands, and build output. Add or remove jobs as needed while preserving the parallel and gated structure.
+Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed while preserving the parallel and gated structure.
 
 ## Validation
 
