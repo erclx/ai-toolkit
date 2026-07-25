@@ -37,7 +37,7 @@ Presets are virtual curated subsets defined in `snippets.toml`. Categories are a
 | -------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
 | Preset   | `essentials` | decision-help, compact-summary, step-by-step                                                               |
 | Category | `base`       | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research |
-| Category | `claude`     | claude/feature-recap, claude/figma-steps                                                                   |
+| Category | `claude`     | claude/decision-memo, claude/feature-recap, claude/figma-steps                                             |
 | Category | `aitk`       | aitk/format-edits, aitk/sandbox-worktree, aitk/vocab-capture (internal, not installable)                   |
 
 `essentials` is the default for `aitk init` when `--snippets` is omitted.
@@ -53,6 +53,7 @@ Presets are virtual curated subsets defined in `snippets.toml`. Categories are a
 | `session-notes`         | Capture session decisions                                                                                      |
 | `step-by-step`          | Request step-by-step instructions for any process                                                              |
 | `web-research`          | Search the web and synthesize findings into a decision-ready block                                             |
+| `claude/decision-memo`  | Produce a structured decision memo with per-decision recommendation, options, and suggested answers            |
 | `claude/feature-recap`  | Verify a finished implementation by listing deliverables, files touched, and tests                             |
 | `claude/figma-steps`    | Generate Figma instructions from a design spec                                                                 |
 | `aitk/format-edits`     | Format proposed edits as old → new pairs with file and section headers and `>` blockquotes                     |
