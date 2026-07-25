@@ -48,6 +48,7 @@ claude/
 │   ├── git-worktree/        ← list and clean up linked worktrees after shipping
 │   ├── toolkit-cli/         ← reference for what aitk sync and install commands overwrite or preserve
 │   ├── toolkit-operator/    ← front door: orient on toolkit docs, then run or route any operation
+│   ├── toolkit-triage/      ← triage open GitHub feedback issues: classify, route to a fix or plan, link for close-out
 │   ├── session-resume/      ← resume from tracked work and relevant context at session start
 │   ├── setup-gov/           ← detect project stack and install matching governance rules
 │   ├── setup-indexes/       ← bootstrap the index.md system in a target project
@@ -146,56 +147,57 @@ Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code 
 
 Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-claude-md`, `migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
 
-| Skill                    | Description                                                                                  |
-| ------------------------ | -------------------------------------------------------------------------------------------- |
-| `bash-script`            | Generate production bash scripts with a visual timeline UI and error handling                |
-| `ci-workflow`            | Generate GitHub Actions CI workflow files with parallel, gated jobs                          |
-| `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                          |
-| `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph        |
-| `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals         |
-| `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                                 |
-| `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                             |
-| `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                             |
-| `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete      |
-| `claude-orchestrate`     | Assert the orchestrator role and dispatch the roadmap, feature, review, and worktree skills  |
-| `claude-pr-review`       | Review an open PR from an independent session and post findings as a PR comment              |
-| `claude-address-review`  | Pull PR findings and CI status, fix each, refresh stale docs, push a follow-up, and reply    |
-| `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                          |
-| `claude-roadmap`         | Draft or update `.claude/ROADMAP.md` by sequencing MVP scope into ordered versions           |
-| `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                  |
-| `claude-seed-sync`       | Audit installed seed docs and standards against toolkit sources, write per-part proposals    |
-| `claude-slides-draft`    | Draft a `.claude/SLIDES.md` source and render it to PowerPoint via `aitk slides render`      |
-| `claude-standards-audit` | Audit changed markdown files against applicable authoring standards, reporting only          |
-| `migration-standards`    | Propose `git mv` of root standards/ and snippets/ into .claude/                              |
-| `claude-ui-test`         | Generate and run Playwright e2e tests, with manual checklist for visual-only items           |
-| `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies               |
-| `claude-worktree`        | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch        |
-| `claude-autoship`        | Chain implement → verify → review → ship after a plan is approved                            |
-| `migration-claude-md`    | Classify `CLAUDE.md` sections and propose moves to path-scoped rules or context entries      |
-| `migration-context`      | Classify `docs/` content and propose `git mv` to `.claude/context/`                          |
-| `create-rule`            | Scaffold a project-local governance rule into .claude/rules/                                 |
-| `create-skill`           | Create a new skill file in .claude/skills/                                                   |
-| `create-snippet`         | Create a new snippet file in snippets/                                                       |
-| `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                                   |
-| `git-branch`             | Rename current branch to match conventional format                                           |
-| `git-commit`             | Generate a conventional commit message from staged changes                                   |
-| `git-followup`           | Stage, commit, push, and sync the open PR, replying when it carries review comments          |
-| `git-pr`                 | Generate a PR description and open or update a pull request                                  |
-| `git-split`              | Split a mixed-commit branch into focused branches and open PRs                               |
-| `git-stage`              | Batch-commit staged files grouped by concern                                                 |
-| `git-worktree`           | List and clean up linked worktrees after shipping                                            |
-| `toolkit-cli`            | Reference for what aitk sync and install commands overwrite, merge, or leave untouched       |
-| `toolkit-operator`       | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation |
-| `setup-gov`              | Detect project stack from files and install matching governance rules                        |
-| `setup-indexes`          | Bootstrap the index.md system in a target project, drafting frontmatter per folder           |
-| `setup-init`             | Detect project type and run one-shot `aitk init` with resolved flags                         |
-| `setup-plugins`          | Install curated community and official plugins user-scoped via the `claude plugin` CLI       |
-| `git-ship`               | Run the full post-feature workflow in one sequence                                           |
-| `session-resume`         | Resume from tracked work and relevant context at session start                               |
-| `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces            |
-| `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback` |
-| `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                |
-| `youtube-transcripts`    | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                  |
+| Skill                    | Description                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| `bash-script`            | Generate production bash scripts with a visual timeline UI and error handling                    |
+| `ci-workflow`            | Generate GitHub Actions CI workflow files with parallel, gated jobs                              |
+| `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                              |
+| `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph            |
+| `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals             |
+| `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                                     |
+| `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                                 |
+| `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                                 |
+| `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete          |
+| `claude-orchestrate`     | Assert the orchestrator role and dispatch the roadmap, feature, review, and worktree skills      |
+| `claude-pr-review`       | Review an open PR from an independent session and post findings as a PR comment                  |
+| `claude-address-review`  | Pull PR findings and CI status, fix each, refresh stale docs, push a follow-up, and reply        |
+| `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                              |
+| `claude-roadmap`         | Draft or update `.claude/ROADMAP.md` by sequencing MVP scope into ordered versions               |
+| `claude-screencast`      | Draft a stack-agnostic screencast script with pre-seeded beats and defaults                      |
+| `claude-seed-sync`       | Audit installed seed docs and standards against toolkit sources, write per-part proposals        |
+| `claude-slides-draft`    | Draft a `.claude/SLIDES.md` source and render it to PowerPoint via `aitk slides render`          |
+| `claude-standards-audit` | Audit changed markdown files against applicable authoring standards, reporting only              |
+| `migration-standards`    | Propose `git mv` of root standards/ and snippets/ into .claude/                                  |
+| `claude-ui-test`         | Generate and run Playwright e2e tests, with manual checklist for visual-only items               |
+| `claude-ux-audit`        | Audit existing UI surfaces for missing states, edge cases, and inconsistencies                   |
+| `claude-worktree`        | Enter a worktree at `.claude/worktrees/<name>/` with name derived from plan or branch            |
+| `claude-autoship`        | Chain implement → verify → review → ship after a plan is approved                                |
+| `migration-claude-md`    | Classify `CLAUDE.md` sections and propose moves to path-scoped rules or context entries          |
+| `migration-context`      | Classify `docs/` content and propose `git mv` to `.claude/context/`                              |
+| `create-rule`            | Scaffold a project-local governance rule into .claude/rules/                                     |
+| `create-skill`           | Create a new skill file in .claude/skills/                                                       |
+| `create-snippet`         | Create a new snippet file in snippets/                                                           |
+| `docs-sync`              | Rewrite stale README.md and docs/\*.md sections since main                                       |
+| `git-branch`             | Rename current branch to match conventional format                                               |
+| `git-commit`             | Generate a conventional commit message from staged changes                                       |
+| `git-followup`           | Stage, commit, push, and sync the open PR, replying when it carries review comments              |
+| `git-pr`                 | Generate a PR description and open or update a pull request                                      |
+| `git-split`              | Split a mixed-commit branch into focused branches and open PRs                                   |
+| `git-stage`              | Batch-commit staged files grouped by concern                                                     |
+| `git-worktree`           | List and clean up linked worktrees after shipping                                                |
+| `toolkit-cli`            | Reference for what aitk sync and install commands overwrite, merge, or leave untouched           |
+| `toolkit-operator`       | Front door that orients on toolkit docs and live catalogs, then runs or routes any operation     |
+| `setup-gov`              | Detect project stack from files and install matching governance rules                            |
+| `setup-indexes`          | Bootstrap the index.md system in a target project, drafting frontmatter per folder               |
+| `setup-init`             | Detect project type and run one-shot `aitk init` with resolved flags                             |
+| `setup-plugins`          | Install curated community and official plugins user-scoped via the `claude plugin` CLI           |
+| `git-ship`               | Run the full post-feature workflow in one sequence                                               |
+| `session-resume`         | Resume from tracked work and relevant context at session start                                   |
+| `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces                |
+| `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback`     |
+| `toolkit-triage`         | Triage open GitHub feedback issues, classify each, and route to a direct fix or `claude-feature` |
+| `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                    |
+| `youtube-transcripts`    | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                      |
 
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-orchestrate`, `create-skill`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `.claude/standards/skill.md` for authoring conventions.
 
