@@ -60,6 +60,18 @@ EOF
 
 Report the printed path back to the user on its own line so the terminal makes it clickable.
 
+For a durable, cross-machine report instead of local scratch, add `--github`. The CLI opens a GitHub issue on the toolkit repo and prints the issue URL. It needs `gh` authenticated, and falls back to local scratch with a warning when `gh` is absent.
+
+```bash
+cat <<'EOF' | aitk feedback --github
+## Toolkit feedback
+
+...
+EOF
+```
+
+Default to local scratch for a quick note. Use `--github` for a report worth tracking across sessions and machines.
+
 If `aitk` is not on PATH, fall back: print the block in chat and tell the user `📋 Copy the block above into a toolkit-repo session.`
 
 ## Notes
