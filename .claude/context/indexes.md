@@ -125,6 +125,10 @@ When positional paths are passed inside a git repository, regen runs `git add` o
 
 A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers projects that prefer agent-driven regeneration. The hook runs the same command and benefits from the same auto-stage behavior. Either path is opt-in per project. The toolkit ships no default.
 
+## Enforcement
+
+The index system only pays off when sessions consult the catalogs instead of searching past them. The Claude seed ships a `PreToolUse` hook on `Grep` and `Glob` that walks up from the search path to the nearest `index.md` and reminds the agent to read it first. It fires once per folder per session and only where an index exists, so it self-scales to a project's index density. See `.claude/context/claude.md` for the seed settings block.
+
 ## Bootstrap
 
 Use the `setup-indexes` plugin skill to add the system to a project that does not have it yet. The skill scans for markdown-heavy folders, drafts `title` and `description` for each sibling from its first heading and paragraph, scaffolds `index.md` per chosen folder, and runs `aitk indexes regen --dry-run` to validate before writing.
