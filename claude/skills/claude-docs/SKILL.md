@@ -91,7 +91,15 @@ If `.claude/DIAGRAMS.md` exists at `pwd` and this session edited any source `cla
 
 Do not regenerate inline. The author decides when to re-run the diagram skill. Skip the step silently when `.claude/DIAGRAMS.md` does not exist.
 
-## Step 6: refresh context entries
+## Step 6: flag CLAUDE.md drift
+
+If this session established or changed a cross-cutting behavior rule that belongs in root `CLAUDE.md` (a new always-on convention, a revised workflow rule), surface a one-line warning:
+
+`⚠ CLAUDE.md may need a rule from this session. Review and edit by hand.`
+
+Do not edit `CLAUDE.md` inline. Every `CLAUDE.md` change goes through the show-diff-and-approve gate, so this step only flags. Skip silently when the session made no cross-cutting behavior decision.
+
+## Step 7: refresh context entries
 
 Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
 
@@ -108,7 +116,7 @@ Write each updated entry immediately. Output one line per file:
 
 The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
-## Step 7: sweep consumed scratch
+## Step 8: sweep consumed scratch
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
