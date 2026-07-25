@@ -89,6 +89,22 @@ aitk() {
 }
 ```
 
+## Headless skill testing
+
+`scripts/sandbox/run.sh` drives a skill through `claude -p` non-interactively, so a session can test a skill without a human opening an interactive sandbox. It provisions a scenario, invokes the skill from `.sandbox/`, and prints the run envelope as JSON on stdout with a framed summary on stderr.
+
+```bash
+scripts/sandbox/run.sh <cat:cmd> "<prompt>" [scenario]
+scripts/sandbox/run.sh git:commit "/toolkit:git-commit"
+scripts/sandbox/run.sh claude:feature "/toolkit:claude-feature add a widget" small
+```
+
+The prompt is the explicit skill invocation. Use the `/toolkit:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
+
+The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`. Assert on structural properties rather than exact wording, since model output varies. A run pins `--model sonnet` and `--permission-mode acceptEdits` for autonomy and cost control. Override the model, allowed tools, or turn cap with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, and `AITK_SKILL_TEST_MAX_TURNS`.
+
+Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope. On Windows, back-to-back runs can briefly fail to wipe `.sandbox` with a busy-lock. Re-run or `aitk sandbox clean` first. An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the whole catalog.
+
 ## Writing a sandbox
 
 Each sandbox is a `.sh` file with two optional hook functions and a required `stage_setup` function.
