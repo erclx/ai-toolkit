@@ -2,10 +2,6 @@
 set -e
 set -o pipefail
 
-# Headless skill-test harness. Provisions a sandbox scenario, then drives a
-# plugin skill through `claude -p` non-interactively and emits the run envelope
-# on stdout so a calling agent can judge the result without a human session.
-
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 export PROJECT_ROOT
@@ -13,7 +9,6 @@ export PROJECT_ROOT
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
-# Pinned for reproducibility and cost control. Override per run via env.
 MODEL="${AITK_SKILL_TEST_MODEL:-sonnet}"
 ALLOWED_TOOLS="${AITK_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
 MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-20}"
@@ -59,12 +54,9 @@ main() {
   [[ "$target" != *":"* ]] && log_error "Invalid target. Use <category>:<command>, e.g. git:commit."
   [ -z "$prompt" ] && log_error "Missing prompt. Pass the skill invocation, e.g. \"/toolkit:git-commit\"."
 
-  # Provision fresh. manage-sandbox wipes and re-seeds .sandbox on every run.
   log_step "Provisioning $target"
   bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2
 
-  # Drive the skill from the provisioned sandbox. --plugin-dir resolves any
-  # skill, changed on the branch or not. stdout carries the JSON envelope.
   log_step "Running $prompt on $MODEL"
   local out
   out="$(cd "$PROJECT_ROOT/.sandbox" && claude -p "$prompt" \
@@ -87,7 +79,6 @@ main() {
 
   trap - EXIT
   close_timeline
-  # Machine-readable envelope for the calling agent.
   printf '%s\n' "$out"
 }
 
