@@ -78,7 +78,22 @@ the PR:
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply.md
 ```
 
-## Step 6: output
+## Step 6: confirm resolution
+
+After the follow-up push, watch CI on the PR. Poll `gh pr checks <number>`
+until no check is pending, then read the final status. When every finding is
+addressed and all checks pass, post one closing comment so the thread has a
+clear terminal state:
+
+```bash
+gh pr comment <number> --body "✅ All review findings addressed, CI green."
+```
+
+If any check fails, do not post the closing comment. Report the failing check
+so it can be fixed first. This is a resolution signal, not a formal approval,
+since the PR author cannot approve their own PR.
+
+## Step 7: output
 
 ```plaintext
 Addressed <N> findings on PR #<number>. Follow-up pushed.
