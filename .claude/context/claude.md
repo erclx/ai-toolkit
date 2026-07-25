@@ -12,8 +12,9 @@ Claude Code plugin and skills for the Toolkit.
 ```plaintext
 claude/
 ├── skills/              ← plugin skills (auto-discovered by plugin)
-│   ├── bash-script/         ← generate production bash scripts with a visual timeline UI
+│   ├── bash-script/         ← generate interactive bash scripts with a visual timeline UI
 │   ├── ci-workflow/         ← generate GitHub Actions CI workflow files
+│   ├── cli-script/          ← generate non-interactive automation and CI bash scripts, functional style
 │   ├── claude-diagram/      ← draft .claude/DIAGRAMS.md with mermaid diagrams from architecture and code signals
 │   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
 │   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
@@ -149,8 +150,9 @@ Skills that perform a one-time structural move of an existing project into a new
 
 | Skill                    | Description                                                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------ |
-| `bash-script`            | Generate production bash scripts with a visual timeline UI and error handling                    |
+| `bash-script`            | Generate interactive bash scripts with a visual timeline UI and error handling                   |
 | `ci-workflow`            | Generate GitHub Actions CI workflow files with parallel, gated jobs                              |
+| `cli-script`             | Generate non-interactive automation and CI bash scripts in a lean functional style               |
 | `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                              |
 | `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph            |
 | `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals             |

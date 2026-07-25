@@ -1,0 +1,47 @@
+---
+name: cli-script
+description: Generates non-interactive Bash scripts for automation, CI, and agent-run tasks. Lean functional style with structured logging, strict error handling, and a clean stdout, no interactive UI. Use when asked for an automation script, a CI or cron script, a pipeline helper, or a non-interactive shell script. Do NOT use for a human-facing interactive tool with prompts or a visual timeline UI, that is `bash-script`.
+---
+
+# CLI script
+
+Generate non-interactive Bash scripts for automation, CI, and agent-run workflows. Optimize for robustness and composability, not visual polish. For a human-facing interactive tool with prompts and a timeline UI, use `bash-script` instead.
+
+Load `${CLAUDE_SKILL_DIR}/references/template.md` for the base skeleton. Copy it and keep only what the task needs.
+
+## Script setup
+
+- Start with `#!/usr/bin/env bash` and `set -euo pipefail`.
+- Implement `usage()` and handle `-h` and `--help` when the script takes arguments.
+- Do not rely on unset variables. Use `${VAR:-default}`.
+
+## Output contract
+
+- Write data to stdout. Write logs, progress, and errors to stderr.
+- Keep stdout clean so the script composes in a pipe.
+- Do not emit timeline frames, icons, or color. Those belong in `bash-script`.
+
+## Error handling
+
+- Define `die()` that prints an error to stderr and exits non-zero.
+- Include actionable context in error messages.
+- Guard commands that return non-zero on a valid empty result with `|| true`.
+- Set explicit exit codes. Reserve 0 for success.
+
+## Code style
+
+- Decompose by responsibility. Each function does one thing, `main()` orchestrates.
+- Name functions verb-first: `parse_args`, `fetch_data`, `validate_input`.
+- Quote variables in expansions and test brackets.
+- Do not include comments except the shebang line.
+- Use 2-space indentation.
+
+## Validation
+
+Before responding, verify:
+
+- File starts with `#!/usr/bin/env bash` and `set -euo pipefail`.
+- Data goes to stdout, logs and errors go to stderr.
+- No timeline frames, icons, or interactive prompts.
+- Errors exit non-zero with context through `die()`.
+- Functions are single-responsibility and `main()` delegates.
