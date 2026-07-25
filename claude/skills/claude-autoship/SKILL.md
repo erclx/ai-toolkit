@@ -81,6 +81,8 @@ After the PR is created, mark it as draft:
 gh pr ready --undo
 ```
 
+After marking draft, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop and report the failing check with its URL. Do not auto-fix.
+
 7. `toolkit:claude-memory-capture`: extract durable patterns from the session into `.claude/memory/`
 8. `toolkit:claude-memory-review`: if `claude-memory-capture` wrote or updated at least one entry this session, propose fixes scoped to those entries, writing the decision-ready receipt while session context is fresh. Skip when capture wrote nothing.
 
