@@ -6,7 +6,7 @@ paths:
   - '**/*_test.py'
 ---
 
-# PYTHON TESTING TOOLING
+# Python testing tooling
 
 ## Framework
 

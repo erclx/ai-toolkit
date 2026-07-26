@@ -7,7 +7,7 @@ paths:
   - 'src/content/**'
 ---
 
-# ASTRO STANDARDS
+# Astro standards
 
 ## Static first
 

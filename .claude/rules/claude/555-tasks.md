@@ -4,7 +4,7 @@ paths:
   - '.claude/TASKS.md'
 ---
 
-# TASKS STANDARDS
+# Tasks standards
 
 ## Authority
 

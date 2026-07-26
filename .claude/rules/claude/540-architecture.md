@@ -4,7 +4,7 @@ paths:
   - '.claude/ARCHITECTURE.md'
 ---
 
-# ARCHITECTURE STANDARDS
+# Architecture standards
 
 ## Authority
 

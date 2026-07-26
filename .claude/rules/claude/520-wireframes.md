@@ -4,7 +4,7 @@ paths:
   - '.claude/wireframes/**'
 ---
 
-# WIREFRAME STANDARDS
+# Wireframe standards
 
 ## Authority
 

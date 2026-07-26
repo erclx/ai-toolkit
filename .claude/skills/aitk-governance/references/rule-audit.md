@@ -15,7 +15,7 @@ For each bullet in the rule under audit, return `✅ keep`, `⚠️ revise`, or 
 4. **Uncontested.** If the community is split (`from __future__ import annotations` is the textbook case for Python), drop the bullet or pick a side with explicit rationale tied to the stack.
 5. **Scoped to observable patterns.** "Define a project exception hierarchy" is borderline because it cannot be grepped. Keep these sparse.
 6. **Frontmatter integrity.** `description` follows `.claude/standards/prose.md` § Frontmatter descriptions. Path-scoped rules carry a `paths:` list with one entry per glob. Always-on rules omit `paths:` entirely. Reject any source that still carries `globs:`, `alwaysApply:`, or `priority:`. Numeric prefix matches the domain range in `.claude/context/governance.md`.
-7. **Template precedent.** H1 ALL CAPS, H2 sentence case, period-terminated bullets. Match the existing rule shape under `governance/rules/`.
+7. **Template precedent.** H1 and H2 in sentence case, period-terminated bullets. Match the existing rule shape under `governance/rules/`.
 
 ## Output shape
 

@@ -4,7 +4,7 @@ paths:
   - '**/README.md'
 ---
 
-# README STANDARDS
+# README standards
 
 ## Authority
 

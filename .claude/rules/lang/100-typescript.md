@@ -5,7 +5,7 @@ paths:
   - '**/*.tsx'
 ---
 
-# TYPESCRIPT STANDARDS
+# TypeScript standards
 
 ## Casing conventions
 

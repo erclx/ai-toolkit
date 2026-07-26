@@ -5,7 +5,7 @@ paths:
   - '**/*.jsx'
 ---
 
-# SHADCN/UI STANDARDS
+# shadcn/ui standards
 
 ## Source files
 

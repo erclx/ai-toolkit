@@ -2,7 +2,7 @@
 description: Enforce consistent naming semantics across all code
 ---
 
-# NAMING STANDARDS
+# Naming standards
 
 ## Semantics
 

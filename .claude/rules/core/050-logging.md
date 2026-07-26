@@ -2,7 +2,7 @@
 description: Enforce structured logging and observability
 ---
 
-# LOGGING STANDARDS
+# Logging standards
 
 ## Log coverage
 

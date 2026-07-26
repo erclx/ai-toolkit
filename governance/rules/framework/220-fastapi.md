@@ -4,7 +4,7 @@ paths:
   - '**/*.py'
 ---
 
-# FASTAPI STANDARDS
+# FastAPI standards
 
 ## Project structure
 

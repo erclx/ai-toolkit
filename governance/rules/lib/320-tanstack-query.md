@@ -5,7 +5,7 @@ paths:
   - '**/*.tsx'
 ---
 
-# TANSTACK QUERY STANDARDS
+# TanStack Query standards
 
 ## Query conventions
 

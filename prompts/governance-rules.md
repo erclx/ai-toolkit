@@ -47,7 +47,7 @@ Optimize for token efficiency and developer experience.
 description: { { Specific_imperative_phrase } }
 ---
 
-# ROLE PERSONA
+# Role persona
 
 {{persona_definition}}
 
@@ -67,7 +67,7 @@ paths:
   - '{{glob_2}}'
 ---
 
-# {{MODULE}} STANDARDS
+# {{Module}} standards
 
 ## {{Concern group 1}}
 
@@ -90,7 +90,7 @@ paths:
   - '**/*.jsx'
 ---
 
-# REACT COMPONENT STANDARDS
+# React component standards
 
 ## Components
 
@@ -119,5 +119,5 @@ Before responding, verify:
 - Type A has no `paths` field. Type B has a `paths` list with one entry per glob.
 - No `globs`, `alwaysApply`, or `priority` keys appear anywhere.
 - `description` is sentence case (first letter capitalized) and mentions specific technologies or concerns for accurate routing.
-- H1 all-caps, H2 sentence case, grouped by domain concern. Do not use flat RULES/CONSTRAINTS.
+- H1 and H2 in sentence case, grouped by domain concern. Do not use flat RULES/CONSTRAINTS.
 - Total output around 40-50 lines.

@@ -12,7 +12,7 @@ paths:
   - '**/*.yaml'
 ---
 
-# CONFIG COMMENT STANDARDS
+# Config comment standards
 
 ## Comments
 

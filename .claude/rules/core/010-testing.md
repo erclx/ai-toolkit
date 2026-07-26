@@ -2,7 +2,7 @@
 description: Enforce universal testing standards and best practices
 ---
 
-# TESTING STANDARDS
+# Testing standards
 
 ## Test structure
 

@@ -7,7 +7,7 @@ paths:
   - '**/*.css'
 ---
 
-# TAILWIND CSS V4 STANDARDS
+# Tailwind CSS v4 standards
 
 ## Theme variables
 
