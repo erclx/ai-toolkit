@@ -77,7 +77,7 @@ cmd_install() {
     [ "$filename" = "index.md" ] && continue
     log_info ".claude/standards/$filename"
     files+=("$file")
-  done < <(find "$STANDARDS_SOURCE" -type f -name "*.md" | sort)
+  done < <(find "$STANDARDS_SOURCE" -maxdepth 1 -type f -name "*.md" | sort)
 
   local count=${#files[@]}
 
