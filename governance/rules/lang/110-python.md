@@ -4,7 +4,7 @@ paths:
   - '**/*.py'
 ---
 
-# PYTHON STANDARDS
+# Python standards
 
 ## Casing conventions
 

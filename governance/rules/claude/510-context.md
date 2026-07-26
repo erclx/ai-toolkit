@@ -4,7 +4,7 @@ paths:
   - '.claude/context/**'
 ---
 
-# CONTEXT ENTRY STANDARDS
+# Context entry standards
 
 ## Before editing
 

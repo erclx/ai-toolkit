@@ -4,7 +4,7 @@ paths:
   - '.claude/REQUIREMENTS.md'
 ---
 
-# REQUIREMENTS STANDARDS
+# Requirements standards
 
 ## Authority
 

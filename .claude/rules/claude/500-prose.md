@@ -4,7 +4,7 @@ paths:
   - '**/*.md'
 ---
 
-# MARKDOWN PROSE STANDARDS
+# Markdown prose standards
 
 ## Authority
 

@@ -4,7 +4,7 @@ paths:
   - '.claude/DIAGRAMS.md'
 ---
 
-# DIAGRAMS STANDARDS
+# Diagrams standards
 
 ## Authority
 

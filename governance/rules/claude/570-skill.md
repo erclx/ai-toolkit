@@ -4,7 +4,7 @@ paths:
   - '.claude/skills/**/SKILL.md'
 ---
 
-# SKILL STANDARDS
+# Skill standards
 
 ## Authority
 

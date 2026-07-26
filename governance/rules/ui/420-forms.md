@@ -5,7 +5,7 @@ paths:
   - '**/*.jsx'
 ---
 
-# FORM STANDARDS
+# Form standards
 
 ## Validation timing
 

@@ -5,7 +5,7 @@ paths:
   - '**/*.ts'
 ---
 
-# REACT ARCHITECTURE STANDARDS
+# React architecture standards
 
 ## Export conventions
 

@@ -2,7 +2,7 @@
 description: Enforce performance constraints and optimization patterns
 ---
 
-# PERFORMANCE STANDARDS
+# Performance standards
 
 ## Resource loading
 

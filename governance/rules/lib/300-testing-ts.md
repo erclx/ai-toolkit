@@ -7,7 +7,7 @@ paths:
   - '**/*.spec.tsx'
 ---
 
-# TYPESCRIPT/JAVASCRIPT TESTING TOOLING
+# TypeScript/JavaScript testing tooling
 
 ## Unit and integration
 

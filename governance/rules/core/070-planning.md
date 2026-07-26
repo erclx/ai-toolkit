@@ -2,7 +2,7 @@
 description: Enforce planning standards before implementation
 ---
 
-# PLANNING STANDARDS
+# Planning standards
 
 ## Planning
 

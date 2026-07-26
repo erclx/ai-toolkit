@@ -2,7 +2,7 @@
 description: Enforce consistent error handling patterns
 ---
 
-# ERROR HANDLING STANDARDS
+# Error handling standards
 
 ## Boundary validation
 

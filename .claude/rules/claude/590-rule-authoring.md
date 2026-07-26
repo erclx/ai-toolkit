@@ -4,7 +4,7 @@ paths:
   - '.claude/rules/**/*.md'
 ---
 
-# RULE AUTHORING STANDARDS
+# Rule authoring standards
 
 ## Authority
 

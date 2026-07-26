@@ -2,7 +2,7 @@
 description: Enforce safe concurrency and async operation patterns
 ---
 
-# CONCURRENCY STANDARDS
+# Concurrency standards
 
 ## Async lifecycle
 

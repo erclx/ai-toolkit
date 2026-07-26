@@ -33,7 +33,7 @@ paths:
 
 ## Body
 
-- Open with an H1 `# <TOPIC> STANDARDS` in caps, then group rules under H2 sections. Caps H1 is the rule-body convention and overrides the sentence-case heading rule for reference prose.
+- Open with an H1 `# <Topic> standards` in sentence case, then group rules under H2 sections. Proper nouns keep their casing (`# TypeScript standards`, `# Next.js standards`).
 - Use imperative voice for every rule (`Prefix booleans with is`, not `Booleans should be prefixed`)
 - State one rule per bullet as a single directive line
 - State what to do and what not to do. Do not explain the reasoning behind a rule.
@@ -53,7 +53,7 @@ paths:
   - '**/*.ts'
 ---
 
-# NAMING STANDARDS
+# Naming standards
 
 ## Semantics
 

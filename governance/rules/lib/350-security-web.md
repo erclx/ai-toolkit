@@ -6,7 +6,7 @@ paths:
   - '**/*.html'
 ---
 
-# WEB SECURITY STANDARDS
+# Web security standards
 
 ## Link safety
 

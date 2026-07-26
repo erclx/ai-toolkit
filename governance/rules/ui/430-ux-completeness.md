@@ -5,7 +5,7 @@ paths:
   - '**/*.jsx'
 ---
 
-# UX COMPLETENESS STANDARDS
+# UX completeness standards
 
 ## Mutation feedback
 

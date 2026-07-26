@@ -4,7 +4,7 @@ paths:
   - '**/*.py'
 ---
 
-# PYDANTIC STANDARDS
+# Pydantic standards
 
 ## Models
 

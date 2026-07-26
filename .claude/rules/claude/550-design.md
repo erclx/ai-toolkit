@@ -4,7 +4,7 @@ paths:
   - '.claude/DESIGN.md'
 ---
 
-# DESIGN STANDARDS
+# Design standards
 
 ## Authority
 

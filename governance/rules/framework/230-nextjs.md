@@ -5,7 +5,7 @@ paths:
   - '**/*.ts'
 ---
 
-# NEXT.JS STANDARDS
+# Next.js standards
 
 ## App Router structure
 
