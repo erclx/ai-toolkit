@@ -67,7 +67,7 @@ A skill reads from two roots. Know which one a file lives under before referenci
 
 - Bundled skill assets (`references/`, `scripts/`, `assets/`) resolve against the skill's own directory in the source clone. Reference them with `${CLAUDE_SKILL_DIR}/<path>`, never a bare relative path, so a plugin skill running from another project still finds them.
 - Installed shared docs (`.claude/standards/X.md`, `.claude/rules/`, `.claude/context/`) resolve against the target project cwd, where install placed them. Reference them by that path.
-- To lean on a standard, reference `.claude/standards/X.md` and rely on install. Do not bundle a copy into the skill. A bundled copy drifts from the source and resolves to the toolkit clone, not the target.
+- To lean on a standard, reference `.claude/standards/X.md` and rely on install. Do not hand-copy a standard into a skill. A hand-copied file drifts from its source and belongs to no owner. If a skill must carry its own copy, generate it from the single source and reference it through `${CLAUDE_SKILL_DIR}`, so one owner keeps every copy in sync.
 
 ## Invocation
 
