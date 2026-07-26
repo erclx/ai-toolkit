@@ -20,6 +20,7 @@ A standard is a target-facing authoring convention for one document type. It ins
 
 - Use sentence case for every heading.
 - Flat `##` rule groups for a single-topic standard. Group `##` headers by concern for a multi-topic one.
+- When one `##` section covers more than one sub-concern, split its bullets into `###` subgroups, one subgroup per sub-concern. A flat bullet list under an `##` covers a single sub-concern. Roughly seven bullets is a signal to split, not a hard cap.
 - Order groups from the most-used rule down to the edge case.
 
 ## Rules
