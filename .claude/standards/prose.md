@@ -20,9 +20,14 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 ## Structure
 
+### Headings
+
 - H1 for document title, H2 for main sections, H3 for subsections
 - Use sentence case for all headings (H1, H2, H3)
 - Proper nouns and product names retain their casing in headings
+
+### Paragraphs and lists
+
 - Front-load key information in each paragraph. Keep paragraphs concise and scannable.
 - Every sentence must provide new information. Cut redundant context.
 - Use prose by default. Reserve bullets for discrete, unrelated items.
@@ -30,17 +35,31 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 ## Formatting
 
+### Lists
+
 - Use dashes (`-`) not asterisks (`*`) for bulleted lists
 - Do not end single-sentence or fragment bullets with a period. Use periods when a bullet has two or more sentences.
+- For key path lists, use colon format: `- \`src/\`: description`. Never use an em dash.
+- Do not introduce a list with a "Here are the X:" or "The following X:" lead-in
+
+### Code and identifiers
+
 - Wrap commands, API names, file paths, and code identifiers in backticks
 - Use a language identifier on all fenced code blocks (`markdown`, `typescript`, `plaintext`). Never use a bare ` ``` `
 - In ASCII tree diagrams, use `←` for inline annotations. Never use `#`.
-- For key path lists, use colon format: `- \`src/\`: description`. Never use an em dash.
-- Do not introduce a list with a "Here are the X:" or "The following X:" lead-in
-- Do not over-format with excessive bold, italic, or header usage
-- Do not use horizontal rules or dividers (`---`) in body content. The `---` delimiters of a YAML frontmatter block at the top of the file are allowed.
+
+### Punctuation
+
 - Do not use em dashes (`—`) or semicolons (`;`). Rewrite or restructure the sentence to avoid them.
 - Do not use parenthetical asides in prose (`the config (which is optional) controls...`). Split into its own sentence or drop it. Parentheses in rule definitions for grouping examples are fine.
+
+### Emphasis and dividers
+
+- Do not over-format with excessive bold, italic, or header usage
+- Do not use horizontal rules or dividers (`---`) in body content. The `---` delimiters of a YAML frontmatter block at the top of the file are allowed.
+
+### Links and file references
+
 - Use descriptive anchor text for links. Avoid `click here` or `read more`.
 - Wrap file references in backticks by default. Use a labeled markdown link (`[label](path)`) only on rendered-for-human surfaces (`README.md`, `docs/`) for cross-folder navigation. Never repeat the path verbatim as the label.
 
