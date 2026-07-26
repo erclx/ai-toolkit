@@ -7,12 +7,12 @@ description: Generates pull request titles and descriptions from git diffs. Use 
 
 ## Context
 
-Read these files from the project root in parallel:
+Read these files in parallel:
 
-- `.claude/standards/branch.md`: branch format, valid types, and constraints
-- `.claude/standards/pr.md`: structure, rules, and banned phrases
-- `.claude/standards/prose.md`: prose conventions for all generated text
-- `.claude/standards/versioning.md`: phase label vs semver discipline
+- `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
+- `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
+- `.claude/standards/prose.md` from the project root: prose conventions for all generated text
+- `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
 
 Then run these commands in parallel to gather git context:
 
@@ -23,7 +23,7 @@ Then run these commands in parallel to gather git context:
 
 ## Guards
 
-- If branch name does not match `<type>/<description>` format (valid types are defined in `.claude/standards/branch.md`), stop and output:
+- If branch name does not match `<type>/<description>` format (valid types are defined in `${CLAUDE_SKILL_DIR}/references/branch.md`), stop and output:
   `❌ Branch name does not follow conventions. Run /git-branch to rename first.`
 - If no commits ahead of main, stop and output:
   `❌ No commits ahead of main. Nothing to PR.`
@@ -49,7 +49,7 @@ Before running the final command, scan the PR title and body for banned characte
 - `—` (em dash): split into two sentences or use a comma
 - `;` (semicolon): split into two sentences
 
-These bans come from `.claude/standards/prose.md` and apply to PR text on top of `.claude/standards/pr.md`. Reading `prose.md` is not enough. The scan is an explicit step.
+These bans come from `.claude/standards/prose.md` and apply to PR text on top of `${CLAUDE_SKILL_DIR}/references/pr.md`. Reading `prose.md` is not enough. The scan is an explicit step.
 
 ### Final command
 

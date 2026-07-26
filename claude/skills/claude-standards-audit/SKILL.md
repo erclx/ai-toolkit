@@ -27,8 +27,8 @@ For each changed markdown file, pick the applicable standards:
 - Any markdown with prose: `.claude/standards/prose.md`
 - `SKILL.md` under `.claude/skills/` or `claude/skills/`: also `.claude/standards/skill.md`
 - `README.md` at any level: also `.claude/standards/readme.md`
-- Branch names proposed in the session: `.claude/standards/branch.md`
-- PR titles or bodies drafted in the session: `.claude/standards/pr.md`
+- Branch names proposed in the session: `${CLAUDE_SKILL_DIR}/references/branch.md`
+- PR titles or bodies drafted in the session: `${CLAUDE_SKILL_DIR}/references/pr.md`
 
 Skip a file if none of the standards applies.
 
