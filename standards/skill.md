@@ -33,25 +33,42 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 
 ## Body
 
+### Voice and headings
+
 - Use imperative voice throughout
-- Front-load critical instructions
-- Keep `SKILL.md` under 5,000 words. Move detailed docs to `references/`.
-- Link to `references/` files explicitly so Claude knows to load them
-- Reference a bundled `references/` or `scripts/` file with `${CLAUDE_SKILL_DIR}/<path>`, never a bare relative path. A bare path resolves against the session cwd and fails when a plugin skill runs from another project. `${CLAUDE_SKILL_DIR}` expands to the skill's own directory at render time and resolves from any cwd.
-- Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Use sentence case for all headings (H1, H2, H3)
-- When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
-- When referencing project files, include "from the project root" in the read instruction
+
+### Rule content and scope
+
+- Front-load critical instructions
 - Contain only behavioral rules (what to do, what not to do) and pointers to reference docs. Narrative descriptions of what files are or how the system works belong in `docs/`, not in the skill body.
 - State rules, not inventories. Reference docs for lists that change, and phrase a rule as a ban on the forbidden shape rather than an enumeration of allowed options, so it stays stable as categories change.
 - Cut any rule that resists crisp one-line phrasing. Vague guidance is worse than none.
+
+### Progressive disclosure
+
+- Keep `SKILL.md` under 5,000 words. Move detailed docs to `references/`.
+- Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
+- Link to `references/` files explicitly so Claude knows to load them
+
+### Reading and running commands
+
+- Reference a bundled `references/` or `scripts/` file with `${CLAUDE_SKILL_DIR}/<path>`, never a bare relative path. A bare path resolves against the session cwd and fails when a plugin skill runs from another project. `${CLAUDE_SKILL_DIR}` expands to the skill's own directory at render time and resolves from any cwd.
+- When referencing project files, include "from the project root" in the read instruction
+- When executing multiple independent operations (file reads, shell commands), run them in parallel to reduce latency
+
+### Anti-patterns to avoid
+
 - Avoid flags that dispatch between alternate flows. The model misreads them and runs the vanilla path. Dry-run-style toggles are fine. For alternate flows, prefer a separate skill or manual invocation of two skills in sequence.
 - When a skill should fire from multiple callers, rely on description matching with strong trigger phrases. Do not hardcode `Skill` calls in sibling skills that could trigger it naturally.
 - Before collapsing a manual multi-step flow into a skill, ask what the manual pauses do. Pauses that carry external timing, error-surfacing, or judgment weight are the feature. Prefer a snippet over a skill, or require explicit per-step confirmation.
+
+### Output and tuning
+
 - Skill success lines emit the full relative path from the project root (`<dir>/<file>`) for any file written, updated, or deleted. Bare filenames are not clickable in the terminal.
 - Codify a skill's posted or generated output as a fenced template, and keep the body consistent with every capability the frontmatter description names.
-- Separate correctness axes (routing, sourcing, escalation, decline) from shape axes (line count, formatting, variant sprawl) when tuning a skill. Tighten only on correctness regressions. Do not convert soft caps to hard caps for aesthetic drift when correctness passes.
 - When a skill gathers user input or pre-seeds a template, attach a concrete proposed default to every question, derived from project context. Accept "use defaults" as a bulk-confirm.
+- Separate correctness axes (routing, sourcing, escalation, decline) from shape axes (line count, formatting, variant sprawl) when tuning a skill. Tighten only on correctness regressions. Do not convert soft caps to hard caps for aesthetic drift when correctness passes.
 
 ## Scripts
 
