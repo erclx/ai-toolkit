@@ -7,7 +7,7 @@ description: Reusable prompt snippets for Claude and Gemini
 
 ## Overview
 
-Snippets are small, reusable prompts stored as plain markdown files. Invoke them from Claude or Gemini chat via the Chrome extension, or directly in Claude Code. For authoring conventions and invocation details, see `.claude/standards/snippets.md`.
+Snippets are small, reusable prompts stored as plain markdown files. Invoke them from Claude or Gemini chat via the Chrome extension, or directly in Claude Code. For authoring conventions and invocation details, see `standards/bundled/snippets.md`.
 
 ## Structure
 
@@ -110,7 +110,7 @@ aitk snippets create
 
 ## Adding a snippet
 
-Use `aitk snippets create`. It handles the file and folder creation. For manual additions or authoring best practices, refer to `.claude/standards/snippets.md`. To add manually: create a `.md` file in the correct folder using a kebab-case name, following the path conventions above.
+Use `aitk snippets create`. It handles the file and folder creation. For manual additions or authoring best practices, refer to `standards/bundled/snippets.md`. To add manually: create a `.md` file in the correct folder using a kebab-case name, following the path conventions above.
 
 ## Adding a category
 

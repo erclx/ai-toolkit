@@ -1,6 +1,7 @@
 ---
 title: Roadmap reference
 description: Shape and content rules for .claude/ROADMAP.md
+consumers: claude-roadmap
 ---
 
 # Roadmap reference

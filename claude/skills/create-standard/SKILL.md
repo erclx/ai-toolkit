@@ -5,14 +5,13 @@ description: Creates a new standard file in `standards/`. Use when asked to crea
 
 # Create standard
 
-Read these files from the project root in parallel:
+Read these files in parallel:
 
-- `.claude/standards/standard.md`: the meta-standard for a standard's shape, frontmatter, and structure
-- `.claude/standards/prose.md`: prose conventions for all generated text
+- `${CLAUDE_SKILL_DIR}/references/standard.md`: the meta-standard for a standard's shape, frontmatter, and structure
+- `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 
 ## Guards
 
-- If `.claude/standards/standard.md` is not present, stop: `❌ .claude/standards/standard.md not found. Run aitk standards install first.`
 - If `standards/` does not exist, stop: `❌ No standards/ directory found.`
 
 ## Steps
