@@ -61,20 +61,21 @@ Full help: `aitk <command> --help`.
 
 ### Project-level
 
-| Command                  | Purpose                                                                                        |
-| ------------------------ | ---------------------------------------------------------------------------------------------- |
-| `aitk init [path]`       | Bootstrap a project with selected toolkit domains                                              |
-| `aitk sync [path]`       | Sync all installed domains in a target project                                                 |
-| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)                                                  |
-| `aitk sandbox reset`     | Reset sandbox to baseline                                                                      |
-| `aitk sandbox clean`     | Wipe the sandbox                                                                               |
-| `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                                           |
-| `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                                       |
-| `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                                              |
-| `aitk slides render`     | Render a `.claude/SLIDES.md` source into a PowerPoint deck                                     |
-| `aitk slides list`       | List the available slide layouts (`--json` for the catalog)                                    |
-| `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/`, or open a GitHub issue with `--github` |
-| `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                          |
+| Command                  | Purpose                                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------- |
+| `aitk init [path]`       | Bootstrap a project with selected toolkit domains                                               |
+| `aitk sync [path]`       | Sync all installed domains in a target project                                                  |
+| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)                                                   |
+| `aitk sandbox reset`     | Reset sandbox to baseline                                                                       |
+| `aitk sandbox clean`     | Wipe the sandbox                                                                                |
+| `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                                            |
+| `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                                        |
+| `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                                               |
+| `aitk slides render`     | Render a `.claude/SLIDES.md` source into a PowerPoint deck                                      |
+| `aitk slides list`       | List the available slide layouts (`--json` for the catalog)                                     |
+| `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/`, or open a GitHub issue with `--github`  |
+| `aitk issue create`      | Open a GitHub issue on the toolkit repo from `--title` and a stdin body (`--label`, repeatable) |
+| `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                           |
 
 ### Domain commands
 

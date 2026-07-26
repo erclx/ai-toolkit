@@ -12,6 +12,18 @@ export function outro(): void {
   process.stderr.write(`${GREY}└${NC}\n`)
 }
 
+export function frameError(message: string): void {
+  process.stderr.write(
+    `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,
+  )
+}
+
+export function frameSuccess(command: string, target: string): void {
+  process.stderr.write(
+    `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}${command}${NC}\n${GREY}│${NC}\n${GREY}│${NC} ${GREEN}✓${NC} ${target}\n${GREY}└${NC}\n`,
+  )
+}
+
 export async function select<Value>(opts: {
   message: string
   options: { value: Value; label: string; hint?: string }[]

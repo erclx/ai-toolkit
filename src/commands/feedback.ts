@@ -1,30 +1,13 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Command } from 'commander'
-import { execa } from 'execa'
 import { deriveSlug, deriveTitle } from '@/commands/feedback-format'
 import { PROJECT_ROOT } from '@/exec'
+import { createGithubIssue } from '@/github'
+import { frameError, frameSuccess } from '@/ui'
 
-const GREY = '\x1b[0;90m'
-const WHITE = '\x1b[1;37m'
-const RED = '\x1b[0;31m'
-const GREEN = '\x1b[0;32m'
 const YELLOW = '\x1b[0;33m'
 const NC = '\x1b[0m'
-
-const GH_TIMEOUT_MS = 30_000
-
-function frameError(message: string): void {
-  process.stderr.write(
-    `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,
-  )
-}
-
-function frameSuccess(target: string): void {
-  process.stderr.write(
-    `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}aitk feedback${NC}\n${GREY}│${NC}\n${GREY}│${NC} ${GREEN}✓${NC} ${target}\n${GREY}└${NC}\n`,
-  )
-}
 
 function readStdin(): Promise<string> {
   return new Promise((resolveStream, rejectStream) => {
@@ -49,22 +32,8 @@ function writeLocal(body: string): string {
   const filename = `feedback-${deriveSlug(body)}-${timestamp()}.md`
   const filePath = join(reviewDir, filename)
   writeFileSync(filePath, `${body}\n`, 'utf8')
-  frameSuccess(`.claude/review/${filename}`)
+  frameSuccess('aitk feedback', `.claude/review/${filename}`)
   return filePath
-}
-
-async function createIssue(body: string): Promise<string | null> {
-  if (Bun.which('gh') === null) return null
-  try {
-    const result = await execa(
-      'gh',
-      ['issue', 'create', '--title', deriveTitle(body), '--body', body],
-      { cwd: PROJECT_ROOT, timeout: GH_TIMEOUT_MS },
-    )
-    return result.stdout.trim() || null
-  } catch {
-    return null
-  }
 }
 
 export function register(program: Command): void {
@@ -91,9 +60,13 @@ export function register(program: Command): void {
       }
 
       if (opts.github) {
-        const url = await createIssue(body)
+        const url = await createGithubIssue({
+          title: deriveTitle(body),
+          body,
+          labels: ['feedback'],
+        })
         if (url) {
-          frameSuccess(url)
+          frameSuccess('aitk feedback', url)
           process.stdout.write(`${url}\n`)
           return
         }
