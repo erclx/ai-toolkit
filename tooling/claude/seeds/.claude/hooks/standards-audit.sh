@@ -3,7 +3,6 @@
 input=$(cat)
 file=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_response.filePath // empty')
 
-# Normalize Windows backslash paths so the forward-slash globs below match.
 file="${file//\\//}"
 
 case "$file" in
