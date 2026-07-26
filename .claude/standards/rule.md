@@ -14,7 +14,7 @@ Rules give Claude Code coding constraints scoped to file paths. Claude Code disc
 - Rules live at `.claude/rules/<subdirectory>/<n>-<slug>.md`
 - Subdirectories group by domain: `core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`
 - `<n>` is a number in the subdirectory's band and `<slug>` is a one-to-three-word kebab topic
-- Use `create-rule` to scaffold a rule with a number that collides with neither the project nor the toolkit catalog
+- Scaffold a rule with a number that collides with neither the project's rules nor any installed shared rule set
 
 ## Frontmatter
 
