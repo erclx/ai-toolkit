@@ -16,6 +16,7 @@ import { register as docs } from '@/commands/docs'
 import { register as design } from '@/commands/design'
 import { register as slides } from '@/commands/slides'
 import { register as feedback } from '@/commands/feedback'
+import { register as issue } from '@/commands/issue'
 import { register as transcripts } from '@/commands/transcripts'
 
 const GREY = '\x1b[0;90m'
@@ -43,6 +44,7 @@ function showHelp(): void {
     `${GREY}│${NC}    design [cmd]       ${GREY}# Design system commands (render)${NC}`,
     `${GREY}│${NC}    slides [cmd]       ${GREY}# Slide deck commands (render, list)${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/${NC}`,
+    `${GREY}│${NC}    issue [cmd]        ${GREY}# Open a GitHub issue on the toolkit repo (create)${NC}`,
     `${GREY}│${NC}    transcripts <url>  ${GREY}# Fetch a YouTube transcript with metadata frontmatter${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
@@ -73,6 +75,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk slides render`,
     `${GREY}│${NC}    aitk slides list --json`,
     `${GREY}│${NC}    pbpaste | aitk feedback`,
+    `${GREY}│${NC}    cat body.md | aitk issue create --title "Bug: X" --label bug`,
     `${GREY}│${NC}    aitk transcripts https://youtu.be/VIDEO_ID`,
     `${GREY}└${NC}`,
   ]
@@ -107,6 +110,7 @@ docs(program)
 design(program)
 slides(program)
 feedback(program)
+issue(program)
 transcripts(program)
 
 program.parse()
