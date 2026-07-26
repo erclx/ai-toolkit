@@ -24,7 +24,7 @@ Applies to `.claude/DESIGN.md`. Captures visual intent and the decisions behind 
 
 - Use tables for token systems, one row per token. Use short bullets for component rules, one decision per line.
 - Plain English over technical notation. If a section could be removed and the developer would still build correctly from wireframes and code alone, remove it.
-- `aitk design render` parses the token tables. Keep table headers and role names intact so the parser can find them.
+- Keep table headers and role names intact so the render tooling can parse the token tables.
 
 ## Sections
 
