@@ -40,4 +40,4 @@ When renaming a snippet:
 ## Reference
 
 - `.claude/context/snippets.md`: system overview, categories, CLI
-- `.claude/standards/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions
+- `standards/bundled/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions

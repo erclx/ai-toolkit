@@ -1,6 +1,7 @@
 ---
 title: Standard reference
 description: Shape and content rules for authoring a standard
+consumers: create-standard
 ---
 
 # Standard reference

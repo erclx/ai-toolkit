@@ -19,7 +19,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `.claude/TASKS.md`: what is in flight, to mark the active version
 - `.claude/ARCHITECTURE.md`: technical dependencies that constrain ordering
 
-Follow `.claude/standards/roadmap.md` for the doc shape, sections, and version format.
+Follow `${CLAUDE_SKILL_DIR}/references/roadmap.md` for the doc shape, sections, and version format.
 
 ## Step 2: sequence
 
@@ -34,7 +34,7 @@ When updating an existing roadmap, preserve rows that still hold. Resequence, ad
 
 ## Step 3: write
 
-Write the roadmap to `.claude/ROADMAP.md` at the project root, following `.claude/standards/roadmap.md`. Create the file when absent.
+Write the roadmap to `.claude/ROADMAP.md` at the project root, following `${CLAUDE_SKILL_DIR}/references/roadmap.md`. Create the file when absent.
 
 Unlike `.claude/plans/` and `.claude/TASKS.md`, `.claude/ROADMAP.md` is committed. Do not stage or commit it here. Leave staging to the git skills.
 

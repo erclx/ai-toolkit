@@ -1,6 +1,7 @@
 ---
 title: Snippet reference
 description: Snippet reference and authoring conventions
+consumers: create-snippet
 ---
 
 # Snippet reference
