@@ -5,10 +5,10 @@ description: Generates conventional commit messages from staged changes. Use for
 
 # Git Commit
 
-Before generating a commit message, read from the project root:
+Before generating a commit message, read:
 
-- `.claude/standards/commit.md`: format, types, scopes, and constraints
-- `.claude/standards/versioning.md`: phase label vs semver discipline
+- `${CLAUDE_SKILL_DIR}/references/commit.md`: format, types, scopes, and constraints
+- `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
 
 Follow them exactly.
 

@@ -10,7 +10,6 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Architecture reference](architecture.md): Shape and content rules for .claude/ARCHITECTURE.md
 - [Branch reference](branch.md): Branch naming format and type conventions
 - [Changelog reference](changelog.md): Changelog format and entry conventions
-- [Commit reference](commit.md): Commit message format and type conventions
 - [Context entry reference](context.md): Shape and content rules for .claude/context/<domain>.md entries
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
 - [Diagram reference](diagrams.md): Conventions for Mermaid diagrams in .claude/DIAGRAMS.md

@@ -5,10 +5,10 @@ description: Groups staged files by concern and generates one conventional commi
 
 # Git stage
 
-Read these files from the project root in parallel:
+Read these files in parallel:
 
-- `.claude/standards/commit.md`: format, types, scopes, and constraints
-- `.claude/standards/prose.md`: prose conventions for all generated text
+- `${CLAUDE_SKILL_DIR}/references/commit.md`: format, types, scopes, and constraints
+- `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 
 ## Context
 
