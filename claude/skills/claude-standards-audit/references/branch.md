@@ -1,6 +1,7 @@
 ---
 title: Branch reference
 description: Branch naming format and type conventions
+consumers: git-branch, git-split, git-pr, claude-standards-audit
 ---
 
 # Branch reference

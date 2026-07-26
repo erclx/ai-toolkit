@@ -37,12 +37,10 @@ A convention consumed by specific skills rather than authored by a target projec
 | File              | Covers                                                                |
 | ----------------- | --------------------------------------------------------------------- |
 | `architecture.md` | Shape and content rules for `.claude/ARCHITECTURE.md`                 |
-| `branch.md`       | Branch naming format and type conventions                             |
 | `changelog.md`    | Changelog format and entry conventions                                |
 | `context.md`      | Shape and content rules for `.claude/context/`                        |
 | `design.md`       | Shape and content rules for `.claude/DESIGN.md`                       |
 | `diagrams.md`     | Conventions for Mermaid in `.claude/DIAGRAMS.md`                      |
-| `pr.md`           | Pull request title and body conventions                               |
 | `prose.md`        | Voice, structure, formatting, and language                            |
 | `readme.md`       | Readme structure and content conventions                              |
 | `requirements.md` | Shape and content rules for `.claude/REQUIREMENTS.md`                 |

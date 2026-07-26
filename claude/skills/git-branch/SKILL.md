@@ -5,9 +5,9 @@ description: Generates and validates conventional branch names. Use for any bran
 
 # Git Branch
 
-Before generating a branch name, read from the project root:
+Before generating a branch name, read:
 
-- `.claude/standards/branch.md`: format, types, length limit, and constraints
+- `${CLAUDE_SKILL_DIR}/references/branch.md`: format, types, length limit, and constraints
 
 Follow it exactly.
 
