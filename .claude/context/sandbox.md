@@ -34,6 +34,7 @@ scripts/sandbox/
 │   ├── commit.sh      ← staged changes scenario for testing /git:commit
 │   ├── branch.sh      ← branch rename scenario for testing /git:branch
 │   ├── pr.sh          ← PR description scenario for testing /git:pr
+│   ├── issue.sh       ← file an issue on the anchor remote for testing /git:issue
 │   ├── stage.sh       ← staged changes scenario for testing /git:stage
 │   ├── split.sh       ← scenarios for /git:split (independent, stacked)
 │   └── ship.sh        ← scenarios for /git:ship (without-changelog, with-changelog)
