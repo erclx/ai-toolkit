@@ -44,13 +44,13 @@ claude/
 │   ├── git-commit/          ← generate conventional commit message from staged changes
 │   ├── git-followup/        ← stage, commit, push, and sync the open PR, replying when it carries review comments
 │   ├── git-pr/              ← generate PR description and open or update pull request
+│   ├── git-issue/           ← file a bug or task as a GitHub issue on the current repo via gh issue create
 │   ├── git-ship/            ← run the full post-feature workflow in one sequence
 │   ├── git-split/           ← split a mixed-commit branch into focused branches
 │   ├── git-stage/           ← batch-commit staged files grouped by concern
 │   ├── git-worktree/        ← list and clean up linked worktrees after shipping
 │   ├── toolkit-cli/         ← reference for what aitk sync and install commands overwrite or preserve
 │   ├── toolkit-operator/    ← front door: orient on toolkit docs, then run or route any operation
-│   ├── toolkit-issue/       ← file a bug or task as a GitHub issue on the toolkit repo via aitk issue create
 │   ├── toolkit-triage/      ← triage open GitHub feedback issues: classify, route to a fix or plan, link for close-out
 │   ├── session-resume/      ← resume from tracked work and relevant context at session start
 │   ├── setup-gov/           ← detect project stack and install matching governance rules
@@ -187,6 +187,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `git-commit`             | Generate a conventional commit message from staged changes                                       |
 | `git-followup`           | Stage, commit, push, and sync the open PR, replying when it carries review comments              |
 | `git-pr`                 | Generate a PR description and open or update a pull request                                      |
+| `git-issue`              | Format a session bug or task and file it on the current repo via `gh issue create`               |
 | `git-split`              | Split a mixed-commit branch into focused branches and open PRs                                   |
 | `git-stage`              | Batch-commit staged files grouped by concern                                                     |
 | `git-worktree`           | List and clean up linked worktrees after shipping                                                |
@@ -200,7 +201,6 @@ Skills that perform a one-time structural move of an existing project into a new
 | `session-resume`         | Resume from tracked work and relevant context at session start                                   |
 | `systematic-debugging`   | Enforce root-cause investigation before fixes when a test fails or a bug surfaces                |
 | `toolkit-feedback`       | Format a session-context feedback block and write it to the toolkit repo via `aitk feedback`     |
-| `toolkit-issue`          | Format a session bug or task and file it on the toolkit repo via `aitk issue create`             |
 | `toolkit-triage`         | Triage open GitHub feedback issues, classify each, and route to a direct fix or `claude-feature` |
 | `setup-verify`           | Run `package.json` scripts after scaffold to catch config and wiring mistakes                    |
 | `youtube-transcripts`    | Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`                      |
