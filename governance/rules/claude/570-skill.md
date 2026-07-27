@@ -1,7 +1,8 @@
 ---
-description: Route .claude/skills SKILL.md edits to the skill authoring standard for structure and frontmatter
+description: Route SKILL.md edits to the skill authoring standard for structure and frontmatter
 paths:
   - '.claude/skills/**/SKILL.md'
+  - 'claude/skills/**/SKILL.md'
 ---
 
 # Skill standards
