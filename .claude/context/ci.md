@@ -5,7 +5,13 @@ description: GitHub Actions workflow triggers and checks
 
 # CI
 
-GitHub Actions workflow for the toolkit.
+## Overview
+
+Owns the GitHub Actions verification that gates pull requests into `main`. The checks mirror `bun run check`, so CI asserts what a developer reproduces locally before pushing. `verify.yml` is the only workflow in the repo.
+
+## Layout
+
+- `.github/workflows/` owns the verify workflow and its job definitions
 
 ## Triggers
 

@@ -5,7 +5,21 @@ description: DESIGN.md token shape, extract skill, render command
 
 # Design
 
+## Overview
+
 `.claude/DESIGN.md` holds visual intent as prose and token tables. The toolkit treats it as the tool-agnostic source of truth for any project's design system. Two surfaces sit around it: a Claude Code skill drafts the file from existing project signals, and a CLI command renders a token preview for human inspection.
+
+## Layout
+
+- `src/design/` owns the DESIGN.md parser and the preview renderer
+- `claude/skills/claude-design-extract/` owns the skill that drafts from an existing codebase
+- `claude/skills/claude-design-propose/` owns the skill that drafts a greenfield project
+- `.claude/review/design/` owns the rendered preview, gitignored
+
+## Decisions
+
+- Propose and extract share one seed and one render pipeline. Switching later is a rewrite of `DESIGN.md`, not a migration.
+- Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
 
 ## Seed shape
 
@@ -39,7 +53,7 @@ Install in a target project via `aitk claude install` and invoke with `/toolkit:
 
 ### Choosing propose vs extract
 
-Pick `claude-design-propose` when no UI code, stylesheets, or theme config exists yet and the project has a written personality paragraph. Pick `claude-design-extract` when the project already has components, tokens, or a shell UI library that should define the system. The two skills share the same seed and render pipeline, so switching later is a rewrite of `DESIGN.md`, not a migration.
+Pick `claude-design-propose` when no UI code, stylesheets, or theme config exists yet and the project has a written personality paragraph. Pick `claude-design-extract` when the project already has components, tokens, or a shell UI library that should define the system.
 
 ## Render command
 
@@ -51,8 +65,6 @@ Flags:
 | ----------------- | ----------------------- | ------------------------ |
 | `--source <path>` | `.claude/DESIGN.md`     | Source markdown to parse |
 | `--out <path>`    | `.claude/review/design` | Output directory         |
-
-Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
 
 The output directory sits under `.claude/review/` which is gitignored by the seed CLAUDE.md. Do not stage the preview.
 

@@ -5,7 +5,9 @@ description: External browser and editor extensions
 
 # Extensions
 
-External browser and editor extensions used in the toolkit workflow.
+## Overview
+
+Covers external browser and editor extensions used alongside the toolkit workflow. Both install from their vendor marketplaces and carry no source in this repo, so nothing here installs, syncs, or ships. Each section records what the extension does and where it fits.
 
 ## AI Context Stacker (VS Code)
 

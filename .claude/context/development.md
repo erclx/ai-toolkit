@@ -5,7 +5,14 @@ description: Local dev workflow, scripts, and husky hooks
 
 # Development
 
-Local dev workflow for the toolkit.
+## Overview
+
+Owns the local development loop: toolchain setup, the run commands, and the git hooks that gate commits and pushes. The same checks run in CI, covered in `ci.md`. Domain behavior for what each script does lives in the entry for that domain.
+
+## Layout
+
+- `scripts/` owns every shell script in the repo, grouped into a folder per domain
+- `.husky/` owns the git hooks
 
 ## Setup
 
