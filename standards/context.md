@@ -26,7 +26,8 @@ Both fields feed `.claude/context/index.md` when regenerated.
 
 - `## Overview`: two to four lines. What the domain owns and where its boundary sits.
 - `## Layout`: one line per folder in owns-X form. Folders only, never files.
-- Write ``- `scripts/lib/` owns shared bash functions sourced by domain scripts``. Do not list every file under that folder with a description each.
+  - Form: ``- `scripts/lib/` owns shared bash functions sourced by domain scripts``. Do not list every file under that folder with a description each.
+  - Implementation detail moves to `## Decisions`, `## Hidden contracts`, or `## Gotchas`.
 
 ## Expected sections
 
@@ -73,8 +74,10 @@ Only the `development` entry carries this section. It is not a general-purpose h
 
 ## Length
 
-- Aim for one entry per domain, with a soft target of 120 lines.
-- Split into a folder (`.claude/context/<domain>/<sub-area>.md`) when a domain has three or more sub-areas that do not fit cleanly in one file. The folder split is the natural ceiling and the escape hatch for a genuine outlier.
+- Aim for one entry per domain. There is no hard cap. Length is a symptom, not the defect.
+- Past roughly 150 lines, check two things before adding more: whether the entry still covers a single domain, and whether it has filled with content `ls` or `--help` reproduces. Fix whichever is true rather than trimming to hit a number.
+- Never cut a `## Decisions` or `## Gotchas` entry to shorten a file. Cut a `## Layout` or `## CLI` section instead.
+- Split into a folder (`.claude/context/<domain>/<sub-area>.md`) when a domain has three or more sub-areas that do not fit cleanly in one file. That split is the natural ceiling.
 
 ## Examples
 
