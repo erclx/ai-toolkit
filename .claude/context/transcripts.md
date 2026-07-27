@@ -5,9 +5,19 @@ description: Fetch YouTube transcripts with metadata frontmatter into any repo
 
 # Transcripts
 
+## Overview
+
 `aitk transcripts <url>` fetches a YouTube video's captions and writes them as a markdown file with metadata frontmatter. It wraps `yt-dlp`, cleans the raw VTT captions into readable prose, and tags the output with the video's title, channel, duration, and publish date. The companion plugin skill drives the command from a chat request.
 
-The command is toolkit-native. It runs against the current working directory, so any repo with `aitk` and `yt-dlp` on PATH can pull transcripts without installing anything.
+## Layout
+
+- `src/transcripts/` owns the fetch wrapper, the VTT cleanup, and the metadata extraction
+- `claude/skills/youtube-transcripts/` owns the plugin skill that drives the command
+
+## Decisions
+
+- The command is toolkit-native. It runs against the current working directory, so any repo with `aitk` and `yt-dlp` on PATH can pull transcripts without installing anything.
+- When a video has no captions, the command still writes the frontmatter with `has_transcript: false` and a one-line note in place of the body, so a missing transcript is a recorded fact rather than a silent gap.
 
 ## External dependency
 
@@ -46,8 +56,6 @@ has_transcript: true
 ```
 
 The body is the value-add over a raw caption dump. YouTube auto-captions arrive as rolling VTT cues that repeat each line as the window slides. The parser strips the inline tags, removes the rolling overlap, and joins the result into paragraphs. With `--keep-timestamps`, it emits one `[mm:ss]` line per cue instead.
-
-When a video has no captions, the command still writes the frontmatter with `has_transcript: false` and a one-line note in place of the body, so a missing transcript is a recorded fact rather than a silent gap.
 
 ## Scope
 

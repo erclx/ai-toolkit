@@ -5,9 +5,21 @@ description: SLIDES.md source shape, layout catalog, render command, draft skill
 
 # Slides
 
-`.claude/SLIDES.md` holds a slide deck as markdown. The toolkit treats it as the source of truth and renders it to a PowerPoint deck on demand. Two surfaces sit around it: a Claude Code skill drafts the file from a topic and picks a layout per slide, and a CLI command renders the deck for inspection. The source is committed. The rendered `.pptx` lands in the gitignored `.claude/review/slides/` and can be regenerated at any time.
+## Overview
 
-The engine is a fresh general-purpose layer, not a port of any single project's deck modes. It ships one source format with a per-slide layout, so any repo writes its own `SLIDES.md` and renders with the same command.
+`.claude/SLIDES.md` holds a slide deck as markdown. The toolkit treats it as the source of truth and renders it to a PowerPoint deck on demand. Two surfaces sit around it: a Claude Code skill drafts the file from a topic and picks a layout per slide, and a CLI command renders the deck for inspection.
+
+## Layout
+
+- `src/slides/` owns the parser, the layout functions, the design tokens, and the render
+- `examples/slides/` owns the reference deck that exercises every layout
+- `.claude/review/slides/` owns rendered decks, gitignored
+
+## Decisions
+
+- The engine is a fresh general-purpose layer, not a port of any single project's deck modes. It ships one source format with a per-slide layout, so any repo writes its own `SLIDES.md` and renders with the same command.
+- The source is committed. The rendered `.pptx` lands in the gitignored `.claude/review/slides/` and can be regenerated at any time.
+- The palette is a paper background with a rust accent, deliberately not blue. Both variants share the same accent so a deck reads consistently either way.
 
 ## Source shape
 
@@ -28,7 +40,7 @@ A `toc` slide renders a clickable contents list. The render builds the navigatio
 
 ## Design tokens
 
-`src/slides/styles.ts` holds the design system: one warm palette of `background`, `surface`, `ink`, `muted`, and `accent` tokens, the safe font pair, the type scale, and the light and dark variant mapping. The palette is a paper background with a rust accent, deliberately not blue. A deck selects the light or dark variant through its frontmatter or a render flag. Both variants share the same accent so a deck reads consistently either way.
+`src/slides/styles.ts` holds the design system: one warm palette of `background`, `surface`, `ink`, `muted`, and `accent` tokens, the safe font pair, the type scale, and the light and dark variant mapping. A deck selects the light or dark variant through its frontmatter or a render flag.
 
 ## Render command
 
