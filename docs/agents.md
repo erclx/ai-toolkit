@@ -85,7 +85,6 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `tooling`   | `list`, `sync`, `ref`, `create`       |
 | `snippets`  | `list`, `install`, `sync`, `create`   |
 | `standards` | `list`, `install`, `sync`             |
-| `prompts`   | `list`, `install`, `sync`             |
 | `gov`       | `list`, `install`, `sync`, `build`    |
 | `claude`    | `init`, `sync`, `seeds list`, `setup` |
 | `wiki`      | `init`                                |
@@ -150,7 +149,6 @@ Use these to discover what's available instead of hardcoding names.
 | `aitk tooling list --json`      | Stacks, extends chain, dep and script counts |
 | `aitk snippets list --json`     | Presets and categories with their slugs      |
 | `aitk standards list --json`    | Standards docs                               |
-| `aitk prompts list --json`      | Prompts with descriptions                    |
 | `aitk gov list --json`          | Governance stacks and rule sets              |
 | `aitk claude seeds list --json` | Seed doc sources with content                |
 | `aitk docs list --json`         | Consumer docs plus per-domain context        |

@@ -10,7 +10,7 @@ Read `.claude/context/governance.md` for system overview, numbering scheme, and 
 ## Rules
 
 - Read `.claude/context/governance.md` for the numbering ranges before picking a number for a new rule.
-- Follow `prompts/governance-rules.md` for frontmatter, heading style, and bullet conventions when writing a new rule file.
+- Follow `.claude/standards/rule.md` for frontmatter, heading style, and bullet conventions when writing a new rule file.
 - `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. Do not duplicate.
 
 ## Install path
@@ -42,4 +42,4 @@ After writing or revising a rule, audit each bullet against the checklist. Trigg
 ## Reference
 
 - `.claude/context/governance.md`: system overview, numbering scheme, install vs sync vs build, stacks
-- `prompts/governance-rules.md`: conventions for writing rule files
+- `.claude/standards/rule.md`: conventions for writing rule files

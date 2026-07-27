@@ -101,7 +101,6 @@ The toolkit domains have different collision profiles. A worktree-based fan-out 
 **Safe to fan out.** Work confined to a single domain directory usually does not collide with work in another domain:
 
 - `snippets/`
-- `prompts/`
 - A new skill under `claude/skills/<new-name>/` or `.claude/skills/<new-name>/`
 - Independent fixes in different subtrees of `scripts/`
 

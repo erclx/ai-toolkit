@@ -49,4 +49,4 @@ After editing install or sync code (`manage-*.sh`, `lib/inject.sh`):
 - `.claude/context/scripts.md`: structure, file inventory, core scripts, lib responsibilities
 - `docs/agents.md`: output shape and stream contract for every CLI command
 - `.claude/context/sandbox.md`: sandbox system, hook pattern, provisioning flow, scenario catalog
-- `prompts/bash-script.md`: bash style rules
+- `claude/skills/bash-script/`: bash style rules and the interactive-script authoring contract

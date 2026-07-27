@@ -41,7 +41,7 @@ show_help() {
   echo -e "${GREY}│${NC}    aitk indexes regen"
   echo -e "${GREY}│${NC}    aitk indexes regen --dry-run"
   echo -e "${GREY}│${NC}    aitk indexes regen --json docs/"
-  echo -e "${GREY}│${NC}    aitk indexes regen wiki/foo.md prompts/bar.md"
+  echo -e "${GREY}│${NC}    aitk indexes regen wiki/foo.md standards/bar.md"
   echo -e "${GREY}└${NC}"
   exit 0
 }

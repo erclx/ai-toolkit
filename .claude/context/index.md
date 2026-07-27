@@ -14,7 +14,6 @@ Per-domain narrative loaded on demand
 - [Extensions](extensions.md): External browser and editor extensions
 - [Governance](governance.md): Path-scoped Claude rules, stacks, install and sync
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
-- [Prompts](prompts.md): System prompt templates for AI authoring
 - [Sandbox](sandbox.md): Sandbox scenarios for verifying domain flows
 - [Scripts](scripts.md): Bash scripts, lib functions, sandbox hooks
 - [Slides](slides.md): SLIDES.md source shape, layout catalog, render command, draft skill

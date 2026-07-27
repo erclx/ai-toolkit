@@ -59,7 +59,7 @@ Seeds are user-owned files that grow with the project. Dictionary files (`.cspel
 
 References are `reference.md` files synced to `.claude/tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
 
-Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `prompts/index.md` and `.claude/standards/index.md` use this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
+Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `.claude/standards/index.md` uses this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
 
 Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched. Group keys use single-word labels (`# VSCode`, `# Python`) so the comment headers stay terse and stable across renames.
 

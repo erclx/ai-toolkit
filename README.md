@@ -54,7 +54,6 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
 - [Standards](.claude/context/standards.md): shared authoring conventions, synced to projects
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
-- [Prompts](.claude/context/prompts.md): system prompt templates for AI authoring
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
 - [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill, render command
 - [Slides](.claude/context/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
