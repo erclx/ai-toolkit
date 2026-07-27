@@ -50,7 +50,7 @@ For the full outsider journey (scaffold, add a domain later, sync upstream drift
 
 Each domain has a canonical source in this repo and a thin install or sync CLI on the target side.
 
-- [Claude Code plugin](.claude/context/claude.md): skills for planning, review, docs sync, and the git ship chain
+- [Claude Code plugin](.claude/context/claude-plugin.md): skills for planning, review, docs sync, and the git ship chain
 - [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
 - [Standards](.claude/context/standards.md): shared authoring conventions, synced to projects
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat

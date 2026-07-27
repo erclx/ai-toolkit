@@ -37,7 +37,7 @@ tooling/
 │   ├── seeds/         ← cspell terms for Python tooling
 │   ├── manifest.toml  ← extends = "base", uv runtime, lint/typecheck/test scripts wrapping `uv run`
 │   └── reference.md   ← anti-patterns, sidecar config rationale, hybrid project shape
-└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see .claude/context/claude.md
+└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see .claude/context/claude-plugin.md
 ```
 
 Stack-specific configs override the extends chain. `collect_stack_configs` in `scripts/tooling/sync.sh` walks the current stack first. Files seen there block the same relative path from being copied from parent layers.

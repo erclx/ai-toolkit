@@ -131,5 +131,5 @@ aitk tooling sync python ./backend --skip base
 
 - [agents](agents.md): CLI flags, exit codes, and JSON output shapes
 - [AI workflow](ai-workflow.md): feature-development loop inside a toolkit-managed project
-- [tooling](../.claude/context/tooling.md), [governance](../.claude/context/governance.md), [claude](../.claude/context/claude.md), [indexes](../.claude/context/indexes.md), [snippets](../.claude/context/snippets.md), [standards](../.claude/context/standards.md): per-domain mechanics
+- [tooling](../.claude/context/tooling.md), [governance](../.claude/context/governance.md), [claude plugin](../.claude/context/claude-plugin.md), [indexes](../.claude/context/indexes.md), [snippets](../.claude/context/snippets.md), [standards](../.claude/context/standards.md): per-domain mechanics
 - [sandbox](../.claude/context/sandbox.md): scenario catalog for verifying domain flows

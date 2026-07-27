@@ -7,8 +7,6 @@ description: Bash scripts, lib functions, sandbox hooks
 
 ## Overview
 
-`src/` is the TypeScript CLI entry point. It uses commander to register subcommands and execa to dispatch each one to the corresponding `manage-*.sh` script in `scripts/`. All domain logic remains in bash. Use `@/` absolute imports (mapped to `src/` in `tsconfig.json`).
-
 `scripts/` contains core maintenance scripts, sandbox provisioning, domain entry points, and shared library functions. Lib functions are sourced, never executed directly. Each `manage-*.sh` dispatches to subcommands only: no domain logic lives in entry points directly.
 
 Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected.
@@ -16,21 +14,6 @@ Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source
 ## Structure
 
 ```plaintext
-src/
-├── cli.ts               ← aitk entry point (bun shebang, commander)
-├── exec.ts              ← shared helper: resolve PROJECT_ROOT, spawn bash via execa
-├── ui.ts                ← shared terminal UI: intro, outro, select, confirm (matches lib/ui.sh style)
-└── commands/
-    ├── sandbox.ts       ← interactive select prompts, then execs manage-sandbox.sh
-    ├── sync.ts          ← pass-through to manage-sync.sh
-    ├── gov.ts           ← pass-through to manage-gov.sh
-    ├── standards.ts     ← pass-through to manage-standards.sh
-    ├── snippets.ts      ← pass-through to manage-snippets.sh
-    ├── tooling.ts       ← pass-through to manage-tooling.sh
-    ├── claude.ts        ← pass-through to manage-claude.sh
-    ├── wiki.ts          ← pass-through to manage-wiki.sh
-    └── indexes.ts       ← pass-through to manage-indexes.sh
-
 scripts/
 ├── manage-sync.sh       ← aitk sync entry point
 ├── manage-gov.sh        ← aitk gov entry point

@@ -1,16 +1,16 @@
 ---
 name: aitk-claude
-description: Claude Code plugin and tooling. Use for adding or modifying plugin skills, the `CLAUDE.md` seed, `aitk claude` commands, or `.claude/context/claude.md`.
+description: Claude Code plugin and tooling. Use for adding or modifying plugin skills, the `CLAUDE.md` seed, `aitk claude` commands, or the Claude context entries.
 ---
 
 # Claude
 
-Read `.claude/context/claude.md` for plugin setup, skills inventory, and aitk claude CLI before editing.
+Read `.claude/context/claude-plugin.md` for the skills inventory and aitk claude CLI, and `.claude/context/claude-internal.md` for internal skills and plugin setup, before editing.
 
 ## Editing rules
 
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
-- Read `.claude/context/claude.md` before adding a skill. It lists all existing skills.
+- Read `.claude/context/claude-plugin.md` before adding a plugin skill and `.claude/context/claude-internal.md` before adding an internal one. Each lists its existing skills.
 - Follow `.claude/standards/skill.md` for skill structure and frontmatter conventions.
 - Audit skill bodies against both `.claude/standards/skill.md` and `.claude/standards/prose.md`. The first covers structure and frontmatter. The second covers the body.
 
@@ -26,7 +26,7 @@ Read `.claude/context/claude.md` for plugin setup, skills inventory, and aitk cl
 
 ## Couplings
 
-Before shipping any change to the seed, a plugin skill, a snippet, or a `.claude/` state doc, grep for the identifier you are changing. Check plugin skills for quoted seed section headings, workflows for snippet paths, and `.claude/context/claude.md` for skill descriptions.
+Before shipping any change to the seed, a plugin skill, a snippet, or a `.claude/` state doc, grep for the identifier you are changing. Check plugin skills for quoted seed section headings, workflows for snippet paths, and the Claude context entries for skill descriptions.
 
 When editing any file under `.claude/` in this repo, also check `tooling/claude/seeds/` for a mirror path and `tooling/claude/reference.md` for a description that needs updating.
 
@@ -35,20 +35,20 @@ When editing any file under `.claude/` in this repo, also check `tooling/claude/
 When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
-- Add the skill to the skills table in `.claude/context/claude.md`
+- Add the skill to the skills table in `.claude/context/claude-plugin.md`, or `.claude/context/claude-internal.md` for an internal skill
 - Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point. Exception: skills whose body explicitly forbids probing, listing, grepping, or reading project surfaces have nothing for a seeded sandbox to anchor against. Skip the scenario for these and do not list it as a follow-up.
 - Claude sandboxes provision fixture state only. The user runs `claude` from the scenario directory and invokes the skill manually. "Sandbox cannot drive Claude" is not a reason to skip one, because driving is not its job.
 
 When modifying a skill:
 
-- Update the skills table in `.claude/context/claude.md` if the description changed
+- Update the matching skills table in `.claude/context/claude-plugin.md` or `.claude/context/claude-internal.md` if the description changed
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
 - Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
 
 When modifying the CLAUDE.md seed:
 
 - Check the root `CLAUDE.md` for drift. Rules that govern both target projects and the toolkit itself should stay mirrored.
-- The seed's "Context" section defines the three-tier context model (always-loaded / path-scoped lazy / on-demand lookup at `.claude/context/`). Keep the section coherent with the same model in `.claude/context/claude.md`.
+- The seed's "Context" section defines the three-tier context model (always-loaded / path-scoped lazy / on-demand lookup at `.claude/context/`). Keep the section coherent with the same model in `.claude/context/context-model.md`.
 
 When modifying the root CLAUDE.md:
 
@@ -56,7 +56,9 @@ When modifying the root CLAUDE.md:
 
 ## Reference
 
-- `.claude/context/claude.md`: plugin setup, skills inventory, aitk claude CLI
+- `.claude/context/claude-plugin.md`: plugin skills inventory, aitk claude CLI, built-in feature overlap
+- `.claude/context/claude-internal.md`: internal skills, orchestration, plugin discovery
+- `.claude/context/context-model.md`: three-tier context model and how entries get populated
 - `.claude/context/snippets.md`: snippets catalog and invocation
 - `.claude/context/indexes.md`: index.md system rationale and contracts
 - `tooling/claude/reference.md`: seed layout and design notes
