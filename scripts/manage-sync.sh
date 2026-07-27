@@ -45,14 +45,14 @@ detect_domains() {
   local target="$1"
   local found=0
 
-  if [ -d "$target/standards" ]; then
+  if [ -d "$target/.claude/standards" ]; then
     log_info "standards"
     found=$((found + 1))
   else
     log_warn "standards (not installed, skipping)"
   fi
 
-  if [ -d "$target/snippets" ]; then
+  if [ -d "$target/.claude/snippets" ]; then
     log_info "snippets"
     found=$((found + 1))
   else
@@ -86,11 +86,11 @@ detect_domains() {
 run_syncs() {
   local target="$1"
 
-  if [ -d "$target/standards" ]; then
+  if [ -d "$target/.claude/standards" ]; then
     bash "$PROJECT_ROOT/scripts/manage-standards.sh" sync "$target"
   fi
 
-  if [ -d "$target/snippets" ]; then
+  if [ -d "$target/.claude/snippets" ]; then
     bash "$PROJECT_ROOT/scripts/manage-snippets.sh" sync "$target"
   fi
 
