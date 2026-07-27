@@ -53,6 +53,8 @@ A convention consumed by specific skills rather than authored by a target projec
 
 Follow `standards/bundled/standard.md`. It is the meta-standard: the `title` and `description` frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It is fanned into the `create-standard` skill's references, so that skill authors a standard without a target-side install. The `prompts/standards-reference.md` generator produces the terse reference style for AI-assisted authoring inside the toolkit.
 
+The `create-standard` skill resolves its write surface at either location: `standards/` at the root when present (the toolkit repo), otherwise `.claude/standards/` (a target project). A standard written to a target's `.claude/standards/` is project-local and survives `aitk standards sync`, which only touches filenames it recognizes from the toolkit source.
+
 ## CLI
 
 | Command                         | What it does                                                         |
