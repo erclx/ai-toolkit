@@ -3,7 +3,6 @@ set -e
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
-  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {
@@ -49,7 +48,7 @@ EOF
 
     log_step "Scenario ready: feature change"
     log_info "Context: port changed to 3000, new debug parameter on start()"
-    log_info "Action:  gemini docs:sync"
+    log_info "Action:  /toolkit:docs-sync"
     log_info "Expect:  README updated to reflect port 3000 and debug parameter"
     ;;
 
@@ -61,7 +60,7 @@ EOF
 
     log_step "Scenario ready: internal change"
     log_info "Context: console log message changed, no user-facing API impact"
-    log_info "Action:  gemini docs:sync"
+    log_info "Action:  /toolkit:docs-sync"
     log_info "Expect:  no documentation updates required"
     ;;
 
@@ -83,7 +82,7 @@ EOF
 
     log_step "Scenario ready: no-op"
     log_info "Context: test file added, no changes to public API or user-facing behavior"
-    log_info "Action:  gemini docs:sync"
+    log_info "Action:  /toolkit:docs-sync"
     log_info "Expect:  preview shows Files: None, no documentation updates required"
     ;;
   *)

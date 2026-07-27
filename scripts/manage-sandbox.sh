@@ -160,7 +160,6 @@ init_empty_sandbox() {
   mkdir -p "$SANDBOX"
 
   cat <<EOF >"$SANDBOX/.gitignore"
-.gemini/.tmp/
 .claude/.tmp/
 node_modules
 EOF
@@ -190,12 +189,6 @@ inject_documentation() {
   fi
 }
 
-inject_context() {
-  if [ -f "$PROJECT_ROOT/GEMINI.md" ]; then
-    cp "$PROJECT_ROOT/GEMINI.md" "$SANDBOX/GEMINI.md"
-  fi
-}
-
 inject_gov_rules() {
   local rules_source="$PROJECT_ROOT/governance/rules"
   [ ! -d "$rules_source" ] && return
@@ -220,17 +213,6 @@ inject_seeds() {
   fi
 }
 
-configure_agent_settings() {
-  mkdir -p "$SANDBOX/.gemini"
-  cat <<EOF >"$SANDBOX/.gemini/settings.json"
-{
-  "model": {
-    "name": "gemini-2.5-flash"
-  }
-}
-EOF
-}
-
 commit_environment_setup() {
   (
     cd "$SANDBOX"
@@ -244,9 +226,7 @@ commit_environment_setup() {
 setup_sandbox_assets() {
   [ -n "$SANDBOX_INJECT_SEEDS" ] && inject_seeds
   [ -n "$SANDBOX_INJECT_STANDARDS" ] && inject_documentation
-  [ -n "$SANDBOX_INJECT_CONTEXT" ] && inject_context
   [ -n "$SANDBOX_INJECT_GOV" ] && inject_gov_rules
-  [ -n "$SANDBOX_INJECT_GEMINI" ] && configure_agent_settings
   commit_environment_setup
 }
 

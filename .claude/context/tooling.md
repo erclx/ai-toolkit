@@ -37,10 +37,6 @@ tooling/
 │   ├── seeds/         ← cspell terms for Python tooling
 │   ├── manifest.toml  ← extends = "base", uv runtime, lint/typecheck/test scripts wrapping `uv run`
 │   └── reference.md   ← anti-patterns, sidecar config rationale, hybrid project shape
-├── gemini/
-│   ├── seeds/         ← .gemini/settings.json, user-owned, never overwritten
-│   ├── manifest.toml  ← gitignore only, no deps or scripts
-│   └── reference.md
 └── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see .claude/context/claude.md
 ```
 

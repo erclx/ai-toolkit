@@ -12,7 +12,6 @@ Per-domain narrative loaded on demand
 - [Design](design.md): DESIGN.md token shape, extract skill, render command
 - [Development](development.md): Local dev workflow, scripts, and husky hooks
 - [Extensions](extensions.md): External browser and editor extensions
-- [Gemini](gemini.md): Gemini CLI command definitions
 - [Governance](governance.md): Path-scoped Claude rules, stacks, install and sync
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
 - [Prompts](prompts.md): System prompt templates for AI authoring

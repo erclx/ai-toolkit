@@ -18,7 +18,6 @@ scripts/sandbox/
 ├── tooling/
 │   ├── base.sh        ← tests base golden configs
 │   ├── claude.sh      ← tests claude tooling stack configs against anchor repo
-│   ├── gemini.sh      ← tests gemini settings.json config injection
 │   ├── python.sh      ← scaffolds with uv, layers base + python configs, runs full check
 │   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
 ├── infra/
@@ -59,13 +58,10 @@ scripts/sandbox/
 │   ├── setup-verify.sh ← scaffolded project scenarios for testing /toolkit:setup-verify (pass, fail)
 │   └── worktree.sh       ← scenarios for /toolkit:claude-worktree (matched-plan, multi-plan, branch-only)
 ├── dev/
-│   ├── apply.sh       ← file changes scenario for testing /dev:apply
 │   ├── comment.sh     ← code comment scenario for testing /dev:comment
-│   └── review.sh      ← scenarios for /dev:review (args, branch-diff)
-├── docs/
-│   └── sync.sh        ← scenarios for /docs:sync (feature, chore, noop)
-└── release/
-    └── changelog.sh   ← commit history scenario for testing /release:changelog
+│   └── review.sh      ← branch with known bugs for testing /toolkit:claude-review
+└── docs/
+    └── sync.sh        ← scenarios for /toolkit:docs-sync (feature, chore, noop)
 ```
 
 All sandboxes provision into `.sandbox/` at the repo root. Git history initializes fresh each run. A `refs/sandbox/baseline` ref marks the post-setup state for `aitk reset`.
@@ -142,12 +138,10 @@ use_config() {
   export SANDBOX_INJECT_SEEDS="true"      # inject tooling/claude/seeds/ into sandbox root
   export SANDBOX_INJECT_STANDARDS="true"  # inject standards/ into sandbox
   export SANDBOX_INJECT_GOV="true"        # inject .claude/rules/ into sandbox
-  export SANDBOX_INJECT_CONTEXT="true"    # inject GEMINI.md into sandbox root
-  export SANDBOX_INJECT_GEMINI="true"     # inject .gemini/settings.json into sandbox
 }
 ```
 
-By default, sandboxes are minimal: no seeds, no standards, no gov rules, no Gemini settings, and auto-commit is on. Declare only the flags you need.
+By default, sandboxes are minimal: no seeds, no standards, no gov rules, and auto-commit is on. Declare only the flags you need.
 
 `SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs. Scenarios that add project narrative to any seeded file (`CLAUDE.md`, `.claude/TASKS.md`, `.claude/ARCHITECTURE.md`, etc.) should append (`>>file`) so the seed rules flow through and the project context layers on top. Overwriting (`>file`) clobbers the seed and breaks any test that depends on seed-driven behavior. Reserve `>file` for scenarios that intentionally model a clean state (test sentinels, "no toolkit installed" fixtures).
 

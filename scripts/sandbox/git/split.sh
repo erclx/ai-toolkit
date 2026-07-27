@@ -11,7 +11,6 @@ use_anchor() {
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
-  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {
@@ -56,7 +55,7 @@ EOF
 
     log_step "Scenario ready: 6 mixed independent commits on feat/user-auth"
     log_info "Context: 3 auth + 1 chore/scripts + 2 docs (no file overlap between groups)"
-    log_info "Action:  gemini git:split"
+    log_info "Action:  /toolkit:git-split"
     log_info "Expect:  Independent mode. One branch per concern. PRs based on main"
     ;;
   "stacked")
@@ -81,7 +80,7 @@ EOF
 
     log_step "Scenario ready: 3 stacked commits on feat/payments"
     log_info "Context: logger -> payments -> refactor-using-logger (refactor depends on both prior groups)"
-    log_info "Action:  gemini git:split"
+    log_info "Action:  /toolkit:git-split"
     log_info "Expect:  Stacked mode. 3 stacked branches/PRs. Merge-loop instructions in response"
     ;;
   *)

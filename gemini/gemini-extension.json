@@ -1,7 +1,0 @@
-{
-  "name": "toolkit",
-  "version": "0.1.0",
-  "description": "Automated governance, versioning, and discovery tools.",
-  "contextFileName": "GEMINI.md",
-  "commandsDir": "commands"
-}
