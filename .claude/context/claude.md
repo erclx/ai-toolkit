@@ -228,11 +228,8 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | Command                  | Description                                                  |
 | ------------------------ | ------------------------------------------------------------ |
 | `aitk claude init`       | Seed `.claude/` workflow docs and `CLAUDE.md` into a project |
-| `aitk claude roles`      | Install role prompts (planner, implementer, reviewer)        |
-| `aitk claude roles list` | List role prompt sources, plain text or `--json` for skills  |
 | `aitk claude seeds list` | List seed doc sources, plain text or `--json` for skills     |
-| `aitk claude sync`       | Diff managed files against source and apply updates          |
-| `aitk claude prompt`     | Generate master prompts from installed governance rules      |
+| `aitk claude sync`       | Reconcile `.gitignore` against the claude manifest           |
 | `aitk claude setup`      | Install user-level Claude config to `~/.claude/`             |
 
 ### init
@@ -245,33 +242,15 @@ The seed `settings.json` ships three hook blocks. A PostToolUse hook pairs with 
 
 User-level pieces (attribution, permission allows, and `.env` denies) live at `~/.claude/settings.json` and install once per machine via `aitk claude setup`. Project settings layer on top of user settings, so per-project files only need to carry what is genuinely project-specific.
 
-Pass `--roles` to also install role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`). Roles are optional and designed for AI chat workflows where you paste prompts with injected governance rules. Claude Code's agentic mode does not need them.
-
-### roles
-
-Installs role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) into `.claude/`. Use this for chat-based AI workflows where you generate master prompts via `aitk claude prompt`. Not needed for Claude Code's default agentic workflow.
-
-`aitk claude roles list [--json|--names]` enumerates the role prompt sources without installing them. Skills consume `--json` to read each role's `name`, `source`, `target`, and `content` for in-context audits.
-
 ### seeds
 
 `aitk claude seeds list [--json|--names]` enumerates the seed docs that `aitk claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content. Reconciliation is the skill's job (see `claude-seed-sync`).
 
 ### sync
 
-Checks seeded project docs and, if roles are installed, diffs them against the toolkit source and applies updates. Also reconciles `.gitignore` against the `[gitignore]` section of `tooling/claude/manifest.toml`: appends any missing entries and prunes entries inside the `# Claude` section that the manifest no longer declares. Removed entries are logged as `-` lines. Never touches seeded project docs. Offers a diff review before applying role drift. Only syncs roles when at least one role file is present in the target.
+Reports whether each seeded project doc is present, then reconciles `.gitignore` against the `[gitignore]` section of `tooling/claude/manifest.toml`: appends any missing entries and prunes entries inside the `# Claude` section that the manifest no longer declares. Removed entries are logged as `-` lines. Never touches seeded project docs, so `.gitignore` is the only file it writes.
 
-`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so role drift lands in the combined toolkit-sync PR alongside other domains. Seed audits are not automated. Run the `claude-seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `aitk sync` prints a tip reminder at the tail.
-
-### prompt
-
-Reads `PLANNER.md` and `IMPLEMENTER.md` from `.claude/`, injects context, and writes output to `.claude/.tmp/roles/`. Also copies `REVIEWER.md` to `.claude/.tmp/roles/`. Requires roles to be installed.
-
-For `PLANNER.md`: injects `standards/prose.md`, planner governance rules from the `planner` stack, and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, and the concatenated surface files under `.claude/wireframes/`).
-
-For `IMPLEMENTER.md`: injects all governance rules from `.claude/rules/` and context docs (`TASKS.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`).
-
-Prerequisites: run `aitk claude init --roles` first, then `aitk gov install` to install rules into `.claude/rules/` for the prompt builder.
+`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so gitignore reconciliation lands in the combined toolkit-sync PR alongside other domains. The changed-file tracking in `manage-sync.sh` watches `.gitignore` for this reason. Seed audits are not automated. Run the `claude-seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `aitk sync` prints a tip reminder at the tail.
 
 ### setup
 
@@ -311,9 +290,3 @@ Use both: run `claude-review` locally before pushing, then let Code Review catch
 | Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, and the relevant `.claude/wireframes/<surface>.md`. Coding rules in `.claude/rules/` auto-load |
 
 Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.
-
-### Roles vs agentic mode
-
-The toolkit originally shipped role prompts (`PLANNER.md`, `IMPLEMENTER.md`, `REVIEWER.md`) for chat-based AI workflows where you paste generated master prompts with injected governance rules. Claude Code's agentic mode makes this unnecessary. It reads `CLAUDE.md` and the `.claude/rules/` tree directly, skills handle orchestration, and plan mode handles the "think before you act" workflow natively.
-
-Roles are still available via `aitk claude roles` for teams that prefer chat-based workflows or use other AI tools that benefit from structured role prompts.

@@ -4,7 +4,7 @@ import { execScript } from '@/exec'
 export function register(program: Command): void {
   program
     .command('claude')
-    .description('Claude workflow (init, roles, sync, prompt, gov)')
+    .description('Claude workflow (init, seeds, sync, setup)')
     .allowUnknownOption()
     .allowExcessArguments(true)
     .passThroughOptions()

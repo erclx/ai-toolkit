@@ -74,8 +74,6 @@ scripts/
 │   ├── install.sh       ← copies prompts for a category into a target project
 │   ├── sync.sh          ← diffs and updates prompts already present in target
 │   └── list.sh          ← emits catalog of prompts with descriptions, supports --json
-├── claude/
-│   └── prompt.sh        ← generates master prompts from installed rules + context docs
 ├── wiki/
 │   └── init.sh          ← scaffolds wiki/ folder with stub index.md
 ├── indexes/
@@ -105,7 +103,7 @@ scripts/
 
 `aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
 
-Claude role sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. Role drift lands under a `claude/` domain line when any of `PLANNER.md`, `IMPLEMENTER.md`, or `REVIEWER.md` changed. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
+Claude sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. `aitk claude sync` writes only `.gitignore`, so the changed-file tracking watches that path and a gitignore-only change still reports under a `claude/` domain line. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
 Governance sync also removes any stale `.claude/GOV.md` left from earlier installs. The retired surface is no longer rebuilt.
 
@@ -152,7 +150,7 @@ Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key
 
 ### `gov.sh`
 
-Sourced by both `gov/build.sh` and `claude/prompt.sh`. Both consumers call the same function. Don't duplicate this logic if adding a third.
+Sourced by `gov/build.sh`. Don't duplicate this logic if adding a second consumer. The optional rule-name filter has no caller today, kept because the signature is shared surface.
 
 | Function              | What it does                                                                                                                                   |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |

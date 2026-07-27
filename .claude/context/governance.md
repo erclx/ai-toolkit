@@ -49,15 +49,14 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## Stacks
 
-| Stack            | Extends | Rules                                                                                                                                |
-| ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `base`           | -       | 000–080 core rules, 500–590 claude authoring (prose, context, wireframes, canonical docs, tasks, skills, readme, rule authoring)     |
-| `node`           | base    | 100-typescript                                                                                                                       |
-| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness     |
-| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                                   |
-| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                             |
-| `python-fastapi` | python  | 220-fastapi                                                                                                                          |
-| `planner`        | -       | 400-ui, 430-ux-completeness, 500–555 claude authoring, injected into PLANNER.md by `aitk claude prompt`. Not installed into projects |
+| Stack            | Extends | Rules                                                                                                                            |
+| ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `base`           | -       | 000–080 core rules, 500–590 claude authoring (prose, context, wireframes, canonical docs, tasks, skills, readme, rule authoring) |
+| `node`           | base    | 100-typescript                                                                                                                   |
+| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
+| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
+| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                         |
+| `python-fastapi` | python  | 220-fastapi                                                                                                                      |
 
 ## CLI
 
@@ -108,8 +107,6 @@ aitk gov list                       # formatted catalog
 aitk gov list --json                # machine-readable, for skills and scripts
 aitk gov list --stacks              # stacks only
 ```
-
-`aitk claude prompt` uses the same underlying logic from `scripts/lib/gov.sh` to inject rules into IMPLEMENTER.md.
 
 ## Frontmatter contract
 

@@ -225,11 +225,11 @@ run_git_workflow() {
   fi
 
   local -a cl_names
-  mapfile -t cl_names < <(get_changed_names "$target" ".claude/PLANNER.md" ".claude/IMPLEMENTER.md" ".claude/REVIEWER.md")
+  mapfile -t cl_names < <(get_changed_names "$target" ".gitignore")
   if [ "${#cl_names[@]}" -gt 0 ] && [ -n "${cl_names[0]}" ]; then
     changed_domains+=("claude")
     changed_files["claude"]="${cl_names[*]}"
-    domain_verbs["claude"]=$(get_domain_verb "$target" ".claude/PLANNER.md" ".claude/IMPLEMENTER.md" ".claude/REVIEWER.md")
+    domain_verbs["claude"]=$(get_domain_verb "$target" ".gitignore")
   fi
 
   if [ "${#changed_domains[@]}" -eq 0 ]; then

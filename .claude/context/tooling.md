@@ -42,7 +42,7 @@ tooling/
 
 Stack-specific configs override the extends chain. `collect_stack_configs` in `scripts/tooling/sync.sh` walks the current stack first. Files seen there block the same relative path from being copied from parent layers.
 
-`tooling/claude/` is an exception. It holds seeds, roles, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
+`tooling/claude/` is an exception. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
 
 ## Stack exclusions
 

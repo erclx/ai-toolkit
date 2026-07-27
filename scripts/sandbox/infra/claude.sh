@@ -24,29 +24,16 @@ EOF
 
   log_step "Claude sandbox"
   log_info "init        : seeds .claude/ project docs"
-  log_info "roles       : installs role prompts (planner, implementer, reviewer)"
-  log_info "roles-list  : lists role prompt sources as JSON"
   log_info "seeds-list  : lists seed doc sources as JSON"
-  log_info "sync        : diffs managed files against source and applies updates"
-  log_info "prompt      : generates master prompts from installed rules (requires roles)"
+  log_info "sync        : reconciles .gitignore against the claude manifest"
   log_info "setup       : installs user-level config to ~/.claude/"
 
-  select_or_route_scenario "Which scenario?" "init" "roles" "roles-list" "seeds-list" "sync" "prompt" "setup"
+  select_or_route_scenario "Which scenario?" "init" "seeds-list" "sync" "setup"
 
   case "$SELECTED_OPTION" in
   "init")
     log_step "Running: aitk claude init"
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" init .
-    ;;
-  "roles")
-    log_step "Running: aitk claude init"
-    "$PROJECT_ROOT/scripts/manage-claude.sh" init .
-    log_step "Running: aitk claude roles"
-    exec "$PROJECT_ROOT/scripts/manage-claude.sh" roles .
-    ;;
-  "roles-list")
-    log_step "Running: aitk claude roles list --json"
-    exec "$PROJECT_ROOT/scripts/manage-claude.sh" roles list --json
     ;;
   "seeds-list")
     log_step "Running: aitk claude seeds list --json"
@@ -55,12 +42,6 @@ EOF
   "sync")
     log_step "Running: aitk claude sync"
     exec "$PROJECT_ROOT/scripts/manage-claude.sh" sync .
-    ;;
-  "prompt")
-    log_step "Running: aitk claude init --roles"
-    "$PROJECT_ROOT/scripts/manage-claude.sh" init --roles .
-    log_step "Running: aitk claude prompt"
-    exec "$PROJECT_ROOT/scripts/claude/prompt.sh"
     ;;
   "setup")
     log_step "Running: aitk claude setup"

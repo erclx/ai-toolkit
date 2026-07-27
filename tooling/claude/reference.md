@@ -2,15 +2,12 @@
 
 ## Overview
 
-The claude stack installs the `.claude/` workflow directory into a project. Role prompts are managed configs that overwrite on sync. Drift is always wrong. State docs are seeds, written once and never overwritten by tooling. `CLAUDE.md` is a seed, filled in per project after init.
+The claude stack installs the `.claude/` workflow directory into a project. State docs are seeds, written once and never overwritten by tooling. `CLAUDE.md` is a seed, filled in per project after init.
 
 ## Structure
 
 ```plaintext
 .claude/
-├── PLANNER.md         ← managed. System prompt for planning sessions, auto-injected by aitk claude prompt
-├── REVIEWER.md        ← managed. System prompt for code review, invoked via code-review snippet in Claude Code
-├── IMPLEMENTER.md     ← managed. System prompt for code generation, read by aitk claude prompt
 ├── CLAUDE.md          ← seeded. Project context and rules, auto-loaded by Claude Code each session
 ├── TASKS.md           ← seeded then gitignored. Per-worktree task tracker, local scratch only
 ├── REQUIREMENTS.md    ← seeded. Project goals, non-goals, MVP scope
@@ -31,12 +28,11 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 
 ## CLI
 
-| Command              | What it does                                                                                                                |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `aitk claude init`   | Seeds `.claude/` workflow docs, updates `.gitignore`                                                                        |
-| `aitk claude sync`   | Diffs managed role prompts against configs and applies updates. Reports seeded file status.                                 |
-| `aitk claude prompt` | Injects context into `PLANNER.md` and `IMPLEMENTER.md`, copies `REVIEWER.md` to `.tmp/`, writes all to `.tmp/`              |
-| `aitk claude setup`  | Installs user-level config to `~/.claude/`: statusline, attribution, and permission allows or denies. Run once per machine. |
+| Command             | What it does                                                                                                                |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `aitk claude init`  | Seeds `.claude/` workflow docs, updates `.gitignore`                                                                        |
+| `aitk claude sync`  | Reconciles `.gitignore` against the manifest. Reports seeded file status.                                                   |
+| `aitk claude setup` | Installs user-level config to `~/.claude/`: statusline, attribution, and permission allows or denies. Run once per machine. |
 
 ## CLAUDE.md
 
@@ -48,10 +44,6 @@ The claude stack installs the `.claude/` workflow directory into a project. Role
 ## Seed docs
 
 - Seed docs ship with a guidelines preamble above the first H2. These are instructions Claude internalizes before filling in the sections below. They are not sections to populate.
-
-## Role prompts
-
-- Planner governance is injected inline by `aitk claude prompt` using the `planner` stack from the toolkit. No separate build step needed.
 
 ## settings.json
 
