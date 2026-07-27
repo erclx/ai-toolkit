@@ -24,7 +24,7 @@ scripts/
 └── core/regen-skill-references.sh ← fans bundled/ into consuming skills' references
 ```
 
-`standards/` at the root is the authoring source. The toolkit also consumes its own standards, so `bun run check` regenerates a committed copy under `.claude/standards/` and fails on drift. Rules, skills, and prompts reference `.claude/standards/X.md` so the path resolves identically in the toolkit and in every target install. This mirrors the `governance/rules/` to `.claude/rules/` split.
+`standards/` at the root is the authoring source. The toolkit also consumes its own standards, so `bun run check` regenerates a committed copy under `.claude/standards/` and fails on drift. Rules, skills, and seeds reference `.claude/standards/X.md` so the path resolves identically in the toolkit and in every target install. This mirrors the `governance/rules/` to `.claude/rules/` split.
 
 `index.md` is a generated file. `aitk standards install` and `aitk standards sync` rewrite it under `.claude/standards/` in the target based on which standards are present, reading each file's frontmatter for the link label and description. Do not hand-edit it in a target project.
 
@@ -34,24 +34,25 @@ A convention consumed by specific skills rather than authored by a target projec
 
 ## Standards
 
-| File              | Covers                                                                |
-| ----------------- | --------------------------------------------------------------------- |
-| `architecture.md` | Shape and content rules for `.claude/ARCHITECTURE.md`                 |
-| `context.md`      | Shape and content rules for `.claude/context/`                        |
-| `design.md`       | Shape and content rules for `.claude/DESIGN.md`                       |
-| `diagrams.md`     | Conventions for Mermaid in `.claude/DIAGRAMS.md`                      |
-| `prose.md`        | Voice, structure, formatting, and language                            |
-| `readme.md`       | Readme structure and content conventions                              |
-| `requirements.md` | Shape and content rules for `.claude/REQUIREMENTS.md`                 |
-| `rule.md`         | Rule frontmatter, body shape, and voice for `.claude/rules` files     |
-| `skill.md`        | Claude skill structure and authoring rules                            |
-| `tasks.md`        | Shape and content rules for `.claude/TASKS.md`                        |
-| `versioning.md`   | Phase label vs semver discipline across TASKS, PRs, commits, and tags |
-| `wireframes.md`   | Shape and content rules for `.claude/wireframes/` surface files       |
+| File                   | Covers                                                                |
+| ---------------------- | --------------------------------------------------------------------- |
+| `architecture.md`      | Shape and content rules for `.claude/ARCHITECTURE.md`                 |
+| `context.md`           | Shape and content rules for `.claude/context/`                        |
+| `design.md`            | Shape and content rules for `.claude/DESIGN.md`                       |
+| `diagrams.md`          | Conventions for Mermaid in `.claude/DIAGRAMS.md`                      |
+| `prose.md`             | Voice, structure, formatting, and language                            |
+| `readme.md`            | Readme structure and content conventions                              |
+| `requirements.md`      | Shape and content rules for `.claude/REQUIREMENTS.md`                 |
+| `rule.md`              | Rule frontmatter, body shape, and voice for `.claude/rules` files     |
+| `skill.md`             | Claude skill structure and authoring rules                            |
+| `tasks.md`             | Shape and content rules for `.claude/TASKS.md`                        |
+| `tooling-reference.md` | Shape and content rules for `tooling/<stack>/reference.md`            |
+| `versioning.md`        | Phase label vs semver discipline across TASKS, PRs, commits, and tags |
+| `wireframes.md`        | Shape and content rules for `.claude/wireframes/` surface files       |
 
 ## Authoring a new standard
 
-Follow `standards/bundled/standard.md`. It is the meta-standard: the `title` and `description` frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It is fanned into the `create-standard` skill's references, so that skill authors a standard without a target-side install. The `prompts/standards-reference.md` generator produces the terse reference style for AI-assisted authoring inside the toolkit.
+Follow `standards/bundled/standard.md`. It is the meta-standard: the `title` and `description` frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It is fanned into the `create-standard` skill's references, so that skill authors a standard without a target-side install.
 
 The `create-standard` skill resolves its write surface at either location: `standards/` at the root when present (the toolkit repo), otherwise `.claude/standards/` (a target project). A standard written to a target's `.claude/standards/` is project-local and survives `aitk standards sync`, which only touches filenames it recognizes from the toolkit source.
 

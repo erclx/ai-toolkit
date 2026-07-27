@@ -66,7 +66,6 @@ claude/
 .claude/skills/          ← internal skills (toolkit repo only)
 ├── aitk-claude/             ← Claude plugin and tooling domain
 ├── aitk-governance/         ← Cursor rules domain
-├── aitk-prompts/            ← system prompt templates domain
 ├── aitk-scripts/            ← bash scripts domain
 ├── aitk-snippets/           ← snippets domain
 ├── aitk-standards/          ← standards and docs domain
@@ -216,7 +215,6 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | -------------------- | ------------------------------------------------------------------------------------------------------ |
 | `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or `.claude/context/claude.md`                  |
 | `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                  |
-| `aitk-prompts`       | Load before editing system prompt templates                                                            |
 | `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                       |
 | `aitk-snippets`      | Load before editing snippets                                                                           |
 | `aitk-standards`     | Load before editing standards or docs                                                                  |

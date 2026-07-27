@@ -28,9 +28,11 @@ A standard is a target-facing authoring convention for one document type. It ins
 - Write rules as imperative bullets: one rule per bullet, one concern per group.
 - State the forbidden shape rather than enumerating allowed options, so a rule survives new categories.
 - Cut any rule that resists a crisp one-line phrasing.
+- Do not pad with filler prose. Every line earns its place as a usable reference entry.
 
 ## Examples
 
 - Include examples only where a rule is non-obvious. A self-evident rule needs none.
 - When shown, label them `### Correct` and `### Incorrect` with an inline `# reason` on each entry.
 - Keep to two or three entries. Show the pattern, not a catalog.
+- Keep each entry a short one-liner or command. Do not write multi-line correct and incorrect function blocks.

@@ -9,6 +9,51 @@ description: Claude skill structure and authoring rules
 
 Skills give Claude Code domain-specific constraints and rules inline, so it can act immediately without reading all docs. Each skill body contains actionable rules for its domain. Full reference docs are the fallback for edge cases and deeper context. Skills use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body.
 
+## Skill types
+
+Pick the type before writing. It decides the body shape.
+
+- Reference: conventions, patterns, and domain knowledge Claude applies inline. The body is rule bullets grouped by concern.
+- Task: step-by-step workflows Claude executes as actions. The body is numbered steps plus the rules constraining them.
+
+Reference template:
+
+```markdown
+---
+name: <skill-name>
+description: <what it does, when to use it, trigger phrases>
+---
+
+# <Topic>
+
+## <Concern group>
+
+- <actionable constraint>
+- <preference in X over Y form>
+```
+
+Task template:
+
+```markdown
+---
+name: <skill-name>
+description: <the action and when to use it>
+allowed-tools: <tools required>
+---
+
+# <Action name>
+
+## Steps
+
+1. <action>
+2. <action>
+
+## Rules
+
+- <constraint on how the steps run>
+- <constraint on output format>
+```
+
 ## Structure
 
 - Skill is a folder named in kebab-case containing `SKILL.md` (required), `scripts/` (optional), `references/` (optional), `assets/` (optional)
@@ -44,6 +89,10 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 - Contain only behavioral rules (what to do, what not to do) and pointers to reference docs. Narrative descriptions of what files are or how the system works belong in `docs/`, not in the skill body.
 - State rules, not inventories. Reference docs for lists that change, and phrase a rule as a ban on the forbidden shape rather than an enumeration of allowed options, so it stays stable as categories change.
 - Cut any rule that resists crisp one-line phrasing. Vague guidance is worse than none.
+- Group bullets under H2 headings by domain concern. Keep dos and don'ts together under the topic they belong to rather than splitting them into flat rules and constraints sections.
+- One actionable constraint per bullet. Prefer the `X over Y` form for preferences.
+- Do not include code examples unless a one to three line inline snippet captures a pattern the model cannot infer.
+- Do not duplicate general knowledge the model already has. Focus on project-specific conventions and preferences.
 
 ### Progressive disclosure
 

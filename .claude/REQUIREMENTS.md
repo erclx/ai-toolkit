@@ -41,7 +41,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 ## Non-goals
 
 - Replace human code review on risky changes. Agents augment the review loop. Humans still own the final call.
-- Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, prompts, and rules. Native `aitk` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
+- Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, snippets, and rules. Native `aitk` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
 - Ship first-class support for every AI coding tool. Claude Code is the platform the toolkit targets. Extending to another tool stays open (deferred), but no parallel surface is maintained without a concrete use case driving it.
 - Wrap framework scaffolding. Users run `bun init`, `npm create vite`, and similar themselves. The toolkit layers on top.
 - Provide a hosted service. Everything runs locally against local CLIs.
@@ -54,7 +54,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 4. Claude Code plugin with skills covering planning, review, architecture diagrams, UI tests, docs sync, memory review, and the git ship chain.
 5. Sandbox scenarios that provision representative project states for verifying each domain flow.
 6. Prose, commit, branch, PR, and skill authoring standards synced into every project.
-7. Snippets and prompt templates for recurring chat workflows.
+7. Snippets for recurring chat workflows.
 8. `aitk transcripts`: fetch a YouTube transcript with metadata frontmatter into the current repo.
 
 ## Tech stack

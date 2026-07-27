@@ -59,13 +59,6 @@ detect_domains() {
     log_warn "snippets (not installed, skipping)"
   fi
 
-  if [ -d "$target/prompts" ]; then
-    log_info "prompts"
-    found=$((found + 1))
-  else
-    log_warn "prompts (not installed, skipping)"
-  fi
-
   if [ -d "$target/.claude/rules" ]; then
     log_info "governance"
     found=$((found + 1))
@@ -92,10 +85,6 @@ run_syncs() {
 
   if [ -d "$target/.claude/snippets" ]; then
     bash "$PROJECT_ROOT/scripts/manage-snippets.sh" sync "$target"
-  fi
-
-  if [ -d "$target/prompts" ]; then
-    bash "$PROJECT_ROOT/scripts/manage-prompts.sh" sync "$target"
   fi
 
   if [ -d "$target/.claude/rules" ] || [ -f "$target/.claude/GOV.md" ]; then
@@ -206,14 +195,6 @@ run_git_workflow() {
     changed_domains+=("snippets")
     changed_files["snippets"]="${snp_names[*]}"
     domain_verbs["snippets"]=$(get_domain_verb "$target" ".claude/snippets/")
-  fi
-
-  local -a prm_names
-  mapfile -t prm_names < <(get_changed_names "$target" "prompts/")
-  if [ "${#prm_names[@]}" -gt 0 ] && [ -n "${prm_names[0]}" ]; then
-    changed_domains+=("prompts")
-    changed_files["prompts"]="${prm_names[*]}"
-    domain_verbs["prompts"]=$(get_domain_verb "$target" "prompts/")
   fi
 
   local -a gov_names

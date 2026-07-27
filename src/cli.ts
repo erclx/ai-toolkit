@@ -7,7 +7,6 @@ import { register as sync } from '@/commands/sync'
 import { register as gov } from '@/commands/gov'
 import { register as standards } from '@/commands/standards'
 import { register as snippets } from '@/commands/snippets'
-import { register as prompts } from '@/commands/prompts'
 import { register as tooling } from '@/commands/tooling'
 import { register as claude } from '@/commands/claude'
 import { register as wiki } from '@/commands/wiki'
@@ -34,9 +33,8 @@ function showHelp(): void {
     `${GREY}│${NC}    gov [command]      ${GREY}# Governance commands (install, sync)${NC}`,
     `${GREY}│${NC}    standards [cmd]    ${GREY}# Standards commands (install, sync)${NC}`,
     `${GREY}│${NC}    snippets [cmd]     ${GREY}# Snippets commands (install, sync)${NC}`,
-    `${GREY}│${NC}    prompts [cmd]      ${GREY}# Prompts commands (install, sync)${NC}`,
     `${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks (sync, ref, create)${NC}`,
-    `${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, prompt)${NC}`,
+    `${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, setup)${NC}`,
     `${GREY}│${NC}    wiki [cmd]         ${GREY}# Wiki commands (init)${NC}`,
     `${GREY}│${NC}    indexes [cmd]      ${GREY}# Regenerate index.md files (regen)${NC}`,
     `${GREY}│${NC}    docs [cmd|topic]   ${GREY}# Emit toolkit reference docs (list, <topic>)${NC}`,
@@ -59,8 +57,6 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk standards sync ../my-app`,
     `${GREY}│${NC}    aitk snippets install base ../my-app`,
     `${GREY}│${NC}    aitk snippets sync ../my-app`,
-    `${GREY}│${NC}    aitk prompts install scripting ../my-app`,
-    `${GREY}│${NC}    aitk prompts sync ../my-app`,
     `${GREY}│${NC}    aitk init ../my-app`,
     `${GREY}│${NC}    aitk tooling sync base`,
     `${GREY}│${NC}    aitk tooling create`,
@@ -98,7 +94,6 @@ sync(program)
 gov(program)
 standards(program)
 snippets(program)
-prompts(program)
 tooling(program)
 claude(program)
 wiki(program)

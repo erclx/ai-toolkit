@@ -50,8 +50,6 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 - `--skip standards`: leave standards out. Rare, since the governance rules and toolkit skills reference `.claude/standards/`.
 - `--skip wiki`: leave the wiki out.
 
-Prompts are not part of `aitk init`. Install them with `aitk prompts` when a project uses AI chat role prompts.
-
 ## Add a domain later
 
 When a new need appears after scaffold, install the one domain without re-running `aitk init`.

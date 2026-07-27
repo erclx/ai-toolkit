@@ -26,7 +26,6 @@ src/
     ├── gov.ts           ← pass-through to manage-gov.sh
     ├── standards.ts     ← pass-through to manage-standards.sh
     ├── snippets.ts      ← pass-through to manage-snippets.sh
-    ├── prompts.ts       ← pass-through to manage-prompts.sh
     ├── tooling.ts       ← pass-through to manage-tooling.sh
     ├── claude.ts        ← pass-through to manage-claude.sh
     ├── wiki.ts          ← pass-through to manage-wiki.sh
@@ -40,7 +39,6 @@ scripts/
 ├── manage-sandbox.sh    ← aitk sandbox entry point
 ├── manage-tooling.sh    ← aitk tooling entry point
 ├── manage-snippets.sh       ← aitk snippets entry point
-├── manage-prompts.sh        ← aitk prompts entry point
 ├── manage-wiki.sh           ← aitk wiki entry point
 ├── manage-indexes.sh        ← aitk indexes entry point
 ├── config.sh            ← shared project config (GITHUB_ORG with git remote fallback)
@@ -51,7 +49,7 @@ scripts/
 │   ├── update.sh        ← interactive dependency update + verify
 │   ├── clean.sh         ← wipes node_modules, clears cache, reinstalls
 │   ├── snapshot.sh      ← writes PROJECT-SNAPSHOT.md to .claude/.tmp/project/
-│   ├── regen-indexes.sh ← regenerates prompts/index.md and standards/index.md
+│   ├── regen-indexes.sh ← regenerates standards/index.md and sibling catalogs
 │   └── regen-claude-copies.sh ← mirrors standards/ and snippets/ into .claude/ consumed copies
 ├── gov/
 │   ├── install.sh       ← bootstraps rules for a stack into a target project, supports --add for extras
@@ -70,10 +68,6 @@ scripts/
 │   └── list.sh          ← emits catalog of categories and entries, supports --json
 ├── standards/
 │   └── list.sh          ← emits catalog of standards with descriptions, supports --json
-├── prompts/
-│   ├── install.sh       ← copies prompts for a category into a target project
-│   ├── sync.sh          ← diffs and updates prompts already present in target
-│   └── list.sh          ← emits catalog of prompts with descriptions, supports --json
 ├── wiki/
 │   └── init.sh          ← scaffolds wiki/ folder with stub index.md
 ├── indexes/
@@ -101,7 +95,7 @@ scripts/
 
 ## manage-sync.sh
 
-`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, prompts, governance, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
+`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, governance, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
 
 Claude sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. `aitk claude sync` writes only `.gitignore`, so the changed-file tracking watches that path and a gitignore-only change still reports under a `claude/` domain line. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
 
@@ -117,7 +111,7 @@ Every `manage-*.sh` dispatcher calls `open_timeline "aitk <domain>"` and `trap c
 - `scripts/tooling/{list,ref,sync,create}.sh` set their own EXIT trap and emit section headers via `log_step`, but never emit `┌`.
 - Prompts and `log_*` calls assume a frame is open. Opening the frame at the top of the manager prevents dangling `│` output on error paths.
 
-See `docs/agents.md` for the canonical output shape that this framing produces, and `prompts/bash-script.md` for the authoring contract when generating new domain scripts.
+See `docs/agents.md` for the canonical output shape that this framing produces, and the `bash-script` plugin skill for the authoring contract when generating new domain scripts.
 
 ## lib
 
@@ -168,7 +162,7 @@ Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name v
 
 ### `index.sh`
 
-Sourced by `scripts/prompts/{install,sync}.sh`, `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
+Sourced by `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
 
 | Function                 | What it does                                                                                                                                              |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |

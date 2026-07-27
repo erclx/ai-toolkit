@@ -29,4 +29,3 @@ When adding a standard:
 - `.claude/context/standards.md`: system overview, install vs sync, adding standards
 - `.claude/standards/prose.md`: full voice, structure, formatting, and language rules
 - `standards/bundled/standard.md`: the meta-standard for a standard's shape and frontmatter
-- `prompts/standards-reference.md`: generator for the terse reference style, used for AI-assisted authoring
