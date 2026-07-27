@@ -80,17 +80,17 @@ Full help: `aitk <command> --help`.
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain      | Subcommands                                                 |
-| ----------- | ----------------------------------------------------------- |
-| `tooling`   | `list`, `sync`, `ref`, `create`                             |
-| `snippets`  | `list`, `install`, `sync`, `create`                         |
-| `standards` | `list`, `install`, `sync`                                   |
-| `prompts`   | `list`, `install`, `sync`                                   |
-| `gov`       | `list`, `install`, `sync`, `build`                          |
-| `claude`    | `init`, `sync`, `seeds list`, `roles list`, `prompt`, `gov` |
-| `wiki`      | `init`                                                      |
-| `design`    | `render`                                                    |
-| `slides`    | `render`, `list`                                            |
+| Domain      | Subcommands                           |
+| ----------- | ------------------------------------- |
+| `tooling`   | `list`, `sync`, `ref`, `create`       |
+| `snippets`  | `list`, `install`, `sync`, `create`   |
+| `standards` | `list`, `install`, `sync`             |
+| `prompts`   | `list`, `install`, `sync`             |
+| `gov`       | `list`, `install`, `sync`, `build`    |
+| `claude`    | `init`, `sync`, `seeds list`, `setup` |
+| `wiki`      | `init`                                |
+| `design`    | `render`                              |
+| `slides`    | `render`, `list`                      |
 
 Common patterns:
 
@@ -153,7 +153,6 @@ Use these to discover what's available instead of hardcoding names.
 | `aitk prompts list --json`      | Prompts with descriptions                    |
 | `aitk gov list --json`          | Governance stacks and rule sets              |
 | `aitk claude seeds list --json` | Seed doc sources with content                |
-| `aitk claude roles list --json` | Role prompt sources with content             |
 | `aitk docs list --json`         | Consumer docs plus per-domain context        |
 
 ## Non-interactive examples

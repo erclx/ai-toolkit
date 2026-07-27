@@ -64,7 +64,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk init ../my-app`,
     `${GREY}│${NC}    aitk tooling sync base`,
     `${GREY}│${NC}    aitk tooling create`,
-    `${GREY}│${NC}    aitk claude prompt`,
+    `${GREY}│${NC}    aitk claude init`,
     `${GREY}│${NC}    aitk indexes regen`,
     `${GREY}│${NC}    aitk indexes regen --dry-run --json`,
     `${GREY}│${NC}    aitk docs list --json`,

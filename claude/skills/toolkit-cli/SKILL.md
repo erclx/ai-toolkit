@@ -17,8 +17,7 @@ What each `aitk` sync or install command does to existing files in a target proj
 | Standards                                                | `aitk standards install` | All overwritten.                                                 |
 | Standards                                                | `aitk standards sync`    | Only files already present are updated. None are added.          |
 | Seed docs and `CLAUDE.md`                                | `aitk claude init`       | Skipped when present. Never overwritten.                         |
-| Seed docs                                                | `aitk claude sync`       | Never touched.                                                   |
-| Role prompts                                             | `aitk claude sync`       | Synced only when already present.                                |
+| Seed docs                                                | `aitk claude sync`       | Never touched. Only `.gitignore` is written.                     |
 | References (`.claude/tooling/<stack>.md`)                | `aitk tooling ref`       | Overwritten.                                                     |
 | `.gitignore`, deps, scripts                              | any sync                 | Additive. Existing entries preserved. Deps re-pin on major skew. |
 | Generated `index.md`                                     | any sync or regen        | Rewritten from target state. Hand edits are lost.                |
