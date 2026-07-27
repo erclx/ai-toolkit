@@ -7,32 +7,21 @@ description: Path-scoped Claude rules, stacks, install and sync
 
 ## Overview
 
-Governance manages the rules that guide AI agents working in projects. Source rules live in the toolkit as `.md` files at `governance/rules/<subdir>/<rule>.md` and install to `.claude/rules/<subdir>/<rule>.md` for Claude Code.
+Owns the rules that steer AI agents working in a project. Source rules live here as `.md` files under `governance/rules/` and install to `.claude/rules/` in a target, where Claude Code reads them natively. Stacks group rules so one install command provisions a whole toolchain. The rules themselves are content, not code, so the domain is a catalog plus three commands rather than a system with runtime behavior.
 
-## Structure
+## Layout
 
-```plaintext
-governance/rules/      ← source rules (.md), organized by domain
-governance/stacks/     ← stack definitions (.toml), declare which rules belong to a stack
-scripts/
-├── gov/
-│   ├── install.sh      ← bootstraps rules for a stack into a target project
-│   ├── sync.sh         ← syncs existing rules and removes stale .claude/GOV.md
-│   └── build.sh        ← concatenates installed rules into .claude/.tmp/gov/rules.md
-├── lib/
-│   └── gov.sh          ← shared functions: strip_frontmatter, build_rules_payload, rule_subdir
-└── manage-gov.sh       ← entry point (aitk gov)
-```
+- `governance/rules/` owns the source rules, organized into one subfolder per numbering band
+- `governance/stacks/` owns stack definitions as toml, each declaring an optional extends chain and a flat rules list
+- `scripts/gov/` owns the install, sync, and build entry points
 
-## Install path
+## Decisions
 
-Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`). Source files carry the Claude shape directly, so install is a true passthrough copy. Claude Code reads these natively.
-
-## Key decisions
-
-Source rules live in subdirectories by domain (`core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`) under `governance/rules/`. Install preserves that layout under `.claude/rules/`.
-
-Rules follow a numbering scheme by domain. When adding a rule, pick a number in the appropriate range:
+- Source rules carry the Claude shape directly, so install is a passthrough copy rather than a transform. Nothing generates a rule, which keeps the source readable and the install trivial.
+- Rules live in subdirectories by domain and install preserves that layout. A flat folder would make the numbering bands the only grouping signal.
+- Install, sync, and build are separate concerns rather than flags on one command. Install bootstraps a stack and overwrites. Sync updates only what is already present and never adds. Build concatenates into a paste payload. Collapsing them would mean guessing intent from target state.
+- Install overwrites existing rules on purpose. Delete rules you do not want after install rather than adding optional or addon complexity to stack definitions.
+- Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
 | Range     | Domain                                                                                                             |
 | --------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -43,11 +32,21 @@ Rules follow a numbering scheme by domain. When adding a rule, pick a number in 
 | `400–499` | ui (UI copy, accessibility, forms, UX completeness)                                                                |
 | `500–599` | claude (markdown prose, .claude/ context, wireframe, canonical-doc, task-board, skill, readme, and rule authoring) |
 
-**Install vs sync vs build** are separate concerns. `aitk gov install` bootstraps a project with all rules for a given stack (it overwrites). `aitk gov sync` updates rules already present in the target and removes any stale `.claude/GOV.md` left from the retired build. It never adds new files. `aitk gov build` concatenates installed rules into a single clean file at `.claude/.tmp/gov/rules.md`, stripping frontmatter. Useful for pasting rules into any AI chat directly. Use install once to set up, sync to keep up to date, build to generate the paste payload.
+## Gotchas
 
-Stacks live in `governance/stacks/` as toml files. Each stack declares an optional `extends` chain and a flat `rules` list. The extends chain resolves recursively, so `react` → `node` → `base` and the full deduplicated rule set is installed.
+- `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
+- `aitk gov sync` refuses to run against the toolkit root, so this repo's own `.claude/rules/` copy is hand-maintained. Nothing checks it for drift against `governance/rules/`, unlike the standards and snippets consumed copies.
+- `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
+- `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern, defaulting to `*.md`.
+- Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
+
+## Install path
+
+Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories preserved (`core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`).
 
 ## Stacks
+
+Each stack declares an optional `extends` chain and a flat `rules` list. The chain resolves recursively, so `react` resolves through `node` to `base` and the full deduplicated set installs.
 
 | Stack            | Extends | Rules                                                                                                                            |
 | ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
@@ -60,14 +59,14 @@ Stacks live in `governance/stacks/` as toml files. Each stack declares an option
 
 ## CLI
 
-| Command                                         | What it does                                                      |
-| ----------------------------------------------- | ----------------------------------------------------------------- |
-| `aitk gov install [stack] [--add rules] [path]` | Bootstrap rules for a stack into `.claude/rules/`                 |
-| `aitk gov sync [path]`                          | Update installed rules in target, clean up stale `.claude/GOV.md` |
-| `aitk gov build [path]`                         | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
-| `aitk gov list [--stacks\|--rules] [--json]`    | Emit catalog of stacks and rules                                  |
+| Command            | What it does                                                      |
+| ------------------ | ----------------------------------------------------------------- |
+| `aitk gov install` | Bootstrap rules for a stack into `.claude/rules/`                 |
+| `aitk gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
+| `aitk gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
+| `aitk gov list`    | Emit catalog of stacks and rules                                  |
 
-`aitk gov` with no args shows an interactive picker for `install`, `sync`, `build`, or `list`. Commands that write files require confirmation before running.
+Flags, arguments, and JSON shapes live in `docs/agents.md`. `aitk gov` with no args shows an interactive picker. Commands that write files require confirmation before running.
 
 ## Workflow
 
@@ -98,14 +97,6 @@ To generate a concatenated paste-payload:
 aitk gov build
 # strips frontmatter, concatenates rules
 # writes .claude/.tmp/gov/rules.md, paste into any AI chat
-```
-
-To inspect available stacks and rules:
-
-```bash
-aitk gov list                       # formatted catalog
-aitk gov list --json                # machine-readable, for skills and scripts
-aitk gov list --stacks              # stacks only
 ```
 
 ## Frontmatter contract
@@ -142,11 +133,3 @@ Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent s
 extends = "node"
 rules = ["200-react", "250-tailwind"]
 ```
-
-## Notes
-
-- `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
-- Install overwrites existing rules intentionally. Delete rules you don't need after install rather than creating optional or addon complexity in stack definitions.
-- `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
-- `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern (defaults to `*.md`).
-- Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
