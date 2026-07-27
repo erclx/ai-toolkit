@@ -112,6 +112,8 @@ aitk snippets create
 
 Use `aitk snippets create`. It handles the file and folder creation. For manual additions or authoring best practices, refer to `standards/bundled/snippets.md`. To add manually: create a `.md` file in the correct folder using a kebab-case name, following the path conventions above.
 
+The `create-snippet` skill resolves its write surface at either location: `snippets/` at the root when present (the toolkit repo), otherwise `.claude/snippets/` (a target project). A snippet written to a target's `.claude/snippets/` is project-local and survives `aitk snippets sync`, which only touches filenames it recognizes from the toolkit source.
+
 ## Adding a category
 
 Use `aitk snippets create` and select `new category` when prompted. To add manually: create a new subfolder under `snippets/` with a kebab-case name and add your snippet files inside it.
