@@ -53,7 +53,7 @@ paths:
   - '<glob>'
 ---
 
-# <TOPIC> STANDARDS
+# <Topic> standards
 
 ## <Group>
 
@@ -61,13 +61,7 @@ paths:
 - <imperative rule>
 ```
 
-Rule anatomy:
-
-- Title is the topic in screaming case followed by `STANDARDS`.
-- Group bullets under `## <Group>` headings by sub-topic.
-- Each bullet is one imperative rule. State the rule, not the rationale.
-- Point at a sibling rule by path when one governs a shared concern (`per .claude/rules/<subdir>/<rule>.md`).
-- Follow `.claude/standards/prose.md` for all prose.
+Title casing is sentence case, with proper nouns keeping their own casing (`# TypeScript standards`). `.claude/standards/rule.md` owns the rest of the body shape.
 
 ## After writing
 
