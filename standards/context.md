@@ -28,6 +28,7 @@ Both fields feed `.claude/context/index.md` when regenerated.
 - `## Layout`: one line per folder in owns-X form. Folders only, never files.
   - Form: ``- `scripts/lib/` owns shared bash functions sourced by domain scripts``. Do not list every file under that folder with a description each.
   - Implementation detail moves to `## Decisions`, `## Hidden contracts`, or `## Gotchas`.
+  - Omit the section when the domain owns no paths in the repo, as with a domain covering external tools. Inventing a line to satisfy the heading is the padding banned below.
 
 ## Expected sections
 
