@@ -7,7 +7,7 @@ description: GitHub Actions workflow triggers and checks
 
 ## Overview
 
-Owns the GitHub Actions verification that gates pull requests into `main`. The checks mirror `bun run check`, so CI asserts what a developer reproduces locally before pushing. `verify.yml` is the only workflow in the repo.
+Owns the GitHub Actions verification that gates pull requests into `main`. CI runs a subset of `bun run check`: formatting, spelling, and shell. The index, consumed-copy, skill-reference, and test stages run only in the local pre-push hook. `verify.yml` is the only workflow in the repo.
 
 ## Layout
 
@@ -30,4 +30,4 @@ Defined in `.github/workflows/verify.yml`. All jobs must pass before merge.
 
 ## Running CI locally
 
-`bun run check` runs the same three asserts plus auto-formats first. If CI fails on format, run `bun run check` locally and commit the diff.
+`bun run check` runs these three plus index, consumed-copy, and skill-reference drift checks and the test suite, and auto-formats before asserting. Passing it locally is stricter than passing CI. If CI fails on format, run `bun run check` locally and commit the diff.
