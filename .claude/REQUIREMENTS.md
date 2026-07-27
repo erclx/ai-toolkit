@@ -28,7 +28,7 @@ What does not belong:
 
 ## Problem
 
-Every repository accumulates the same boilerplate: governance rules, prose standards, Claude Code skills, Gemini commands, snippet libraries, seed docs, sync scripts. Re-authoring these per project wastes time and drifts over time. Without a central source, rules diverge and agents cannot rely on consistent signals across projects.
+Every repository accumulates the same boilerplate: governance rules, prose standards, Claude Code skills, snippet libraries, seed docs, sync scripts. Re-authoring these per project wastes time and drifts over time. Without a central source, rules diverge and agents cannot rely on consistent signals across projects.
 
 ## Goals
 
@@ -42,7 +42,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 
 - Replace human code review on risky changes. Agents augment the review loop. Humans still own the final call.
 - Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, prompts, and rules. Native `aitk` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
-- Lock in a single AI tool. Claude Code is primary. Gemini CLI is a first-class alternative.
+- Ship first-class support for every AI coding tool. Claude Code is the platform the toolkit targets. Extending to another tool stays open (deferred), but no parallel surface is maintained without a concrete use case driving it.
 - Wrap framework scaffolding. Users run `bun init`, `npm create vite`, and similar themselves. The toolkit layers on top.
 - Provide a hosted service. Everything runs locally against local CLIs.
 

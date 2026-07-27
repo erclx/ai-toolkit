@@ -7,7 +7,6 @@ source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
-  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {
@@ -32,6 +31,6 @@ stage_setup() {
 
   log_step "Scenario ready: 6 staged changes across mixed concerns"
   log_info "Context: 2 auth files, 1 api file, 1 doc, 1 config change, 1 deletion, all staged"
-  log_info "Action:  gemini git:stage"
+  log_info "Action:  /toolkit:git-stage"
   log_info "Expect:  groups auth + api separately, docs solo, config solo. Uses git rm for deletion"
 }

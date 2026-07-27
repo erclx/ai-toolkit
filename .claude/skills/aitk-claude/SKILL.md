@@ -38,12 +38,10 @@ When adding a new skill:
 - Add the skill to the skills table in `.claude/context/claude.md`
 - Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point. Exception: skills whose body explicitly forbids probing, listing, grepping, or reading project surfaces have nothing for a seeded sandbox to anchor against. Skip the scenario for these and do not list it as a follow-up.
 - Claude sandboxes provision fixture state only. The user runs `claude` from the scenario directory and invokes the skill manually. "Sandbox cannot drive Claude" is not a reason to skip one, because driving is not its job.
-- Do not create a matching Gemini command unless explicitly requested. Parity only applies when an existing counterpart changes.
 
 When modifying a skill:
 
 - Update the skills table in `.claude/context/claude.md` if the description changed
-- Check if a corresponding gemini command exists in `gemini/commands/` and update it to match
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
 - Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
 

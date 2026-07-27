@@ -40,7 +40,6 @@ footgun
 footguns
 frontmatter
 gdev
-geminiignore
 gtest
 headerless
 heredocs

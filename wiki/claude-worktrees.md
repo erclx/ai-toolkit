@@ -27,8 +27,8 @@ By default the branch starts from `origin/HEAD`, the remote's default branch, so
 **Plain `git worktree`.** Use this when you want the worktree to live outside the repo, on an existing branch, or under your own naming scheme:
 
 ```bash
-git worktree add ../toolkit-feat-gemini feat/gemini-polish
-cd ../toolkit-feat-gemini
+git worktree add ../toolkit-feat-snippets feat/snippets-polish
+cd ../toolkit-feat-snippets
 claude
 ```
 
@@ -96,12 +96,11 @@ A fan-out of N worktrees produces N PRs. The order they merge in matters only wh
 
 ## Fan-out rules for this toolkit
 
-The seven toolkit domains have different collision profiles. A worktree-based fan-out is safe when the branches touch disjoint trees and do not both write to the shared hotspots listed below.
+The toolkit domains have different collision profiles. A worktree-based fan-out is safe when the branches touch disjoint trees and do not both write to the shared hotspots listed below.
 
 **Safe to fan out.** Work confined to a single domain directory usually does not collide with work in another domain:
 
 - `snippets/`
-- `gemini/commands/`
 - `prompts/`
 - A new skill under `claude/skills/<new-name>/` or `.claude/skills/<new-name>/`
 - Independent fixes in different subtrees of `scripts/`

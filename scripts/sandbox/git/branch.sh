@@ -4,7 +4,6 @@ set -e
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
-  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {
@@ -23,12 +22,12 @@ stage_setup() {
   log_step "Scenario ready: branch naming compliance"
 
   log_info "Test A (current branch): 'temp/wip-stuff'"
-  log_info "  Action: gemini git:branch"
+  log_info "  Action: /toolkit:git-branch"
   log_info "  Expect: Suggest rename to 'feat/wip-messy-work'"
 
   echo -e "${GREY}│${NC}" >&2
 
   log_info "Test B (toggle): 'git checkout feat/clean-feature'"
-  log_info "  Action: gemini git:branch"
+  log_info "  Action: /toolkit:git-branch"
   log_info "  Expect: '✅ Branch name already follows conventions'"
 }

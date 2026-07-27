@@ -4,7 +4,7 @@ _Agent-first toolkit for AI-assisted development._
 
 Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Across enough projects the copies drift, and agents stop getting consistent signals.
 
-`aitk` is one authoritative source for those assets and a CLI that installs and syncs them into any project. It ships a Claude Code plugin with skills for planning, review, docs sync, and the git ship chain, plus Gemini CLI commands, shared rules, snippet libraries, and seed docs.
+`aitk` is one authoritative source for those assets and a CLI that installs and syncs them into any project. It ships a Claude Code plugin with skills for planning, review, docs sync, and the git ship chain, plus shared rules, snippet libraries, and seed docs.
 
 ## Why
 
@@ -53,7 +53,6 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Claude Code plugin](.claude/context/claude.md): skills for planning, review, docs sync, and the git ship chain
 - [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
 - [Standards](.claude/context/standards.md): shared authoring conventions, synced to projects
-- [Gemini commands](.claude/context/gemini.md): slash commands for the Gemini CLI
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
 - [Prompts](.claude/context/prompts.md): system prompt templates for AI authoring
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework

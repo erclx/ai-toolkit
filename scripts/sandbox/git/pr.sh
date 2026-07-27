@@ -11,7 +11,6 @@ use_anchor() {
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
-  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {
@@ -40,7 +39,7 @@ EOF
 
     log_step "Scenario ready: feature branch"
     log_info "Context: branch 'feature/string-utils' with un-pushed commits"
-    log_info "Action:  gemini git:pr"
+    log_info "Action:  /toolkit:git-pr"
     log_info "Expect:  agent renames branch -> pushes -> opens PR"
     ;;
   "draft-guard")
@@ -52,7 +51,7 @@ EOF
 
     log_step "Scenario ready: draft/init guard"
     log_info "Context: user forgot to run /git:branch before /git:pr"
-    log_info "Action:  gemini git:pr"
+    log_info "Action:  /toolkit:git-pr"
     log_info "Expect:  guard warning. Branch looks unset, run /git:branch first"
     ;;
   *)

@@ -8,7 +8,7 @@ category: Agent surface
 
 A concise reference for when to reach for which tool, organized by what you're trying to do.
 
-> **Mental model:** Claude Code for everything: planning, implementation, review, docs, git, and release. Gemini CLI is available throughout, used as needed rather than at prescribed steps.
+> **Mental model:** Claude Code for everything: planning, implementation, review, docs, git, and release.
 
 ## Documents
 

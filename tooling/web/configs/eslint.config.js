@@ -16,7 +16,6 @@ export default defineConfig([
     'coverage',
     'release',
     '.claude',
-    '.gemini',
     '.vscode',
     '.husky',
     'test-results',

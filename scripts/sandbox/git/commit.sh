@@ -5,7 +5,6 @@ source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_STANDARDS="true"
-  export SANDBOX_INJECT_CONTEXT="true"
 }
 
 stage_setup() {
@@ -20,6 +19,6 @@ stage_setup() {
 
   log_step "Scenario ready: staged changes (config update)"
   log_info "Context: modified 'config.js' (MAX_CONNECTIONS string -> number)"
-  log_info "Action:  gemini git:commit \"update config limit\""
+  log_info "Action:  /toolkit:git-commit"
   log_info "Expect:  generates conventional commit message"
 }

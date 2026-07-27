@@ -65,7 +65,6 @@ claude/
 
 .claude/skills/          ← internal skills (toolkit repo only)
 ├── aitk-claude/             ← Claude plugin and tooling domain
-├── aitk-gemini/             ← Gemini commands domain
 ├── aitk-governance/         ← Cursor rules domain
 ├── aitk-prompts/            ← system prompt templates domain
 ├── aitk-scripts/            ← bash scripts domain
@@ -216,7 +215,6 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | Skill                | Description                                                                                            |
 | -------------------- | ------------------------------------------------------------------------------------------------------ |
 | `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or `.claude/context/claude.md`                  |
-| `aitk-gemini`        | Load before editing Gemini commands                                                                    |
 | `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                  |
 | `aitk-prompts`       | Load before editing system prompt templates                                                            |
 | `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                       |

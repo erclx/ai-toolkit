@@ -86,7 +86,6 @@ The toolkit has the following domains. Each maps to a skill. Load the skill befo
 | Modifying `governance/rules/`, `governance/stacks/`                    | `aitk-governance` |
 | Modifying `snippets/`                                                  | `aitk-snippets`   |
 | Modifying `prompts/`                                                   | `aitk-prompts`    |
-| Modifying `gemini/commands/`, `gemini/README.md`                       | `aitk-gemini`     |
 | Modifying `claude/skills/`, `claude/README.md`, `.claude/skills/`      | `aitk-claude`     |
 
 The per-domain context catalog is always loaded so the entries are discoverable without a lookup. Load each entry on demand.
@@ -98,7 +97,6 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 - `governance/rules/`: governance rules
 - `standards/`: reference docs synced to target projects
 - `tooling/`: golden configs (base), references, and manifests per stack
-- `gemini/commands/`: Gemini CLI command definitions
 - `claude/skills/`: plugin skills installable in target projects
 - `.claude/skills/`: internal skills, toolkit repo only
 - `.claude/context/`: per-domain internal narrative (how each domain is built, decisions, gotchas), indexed via `.claude/context/index.md`

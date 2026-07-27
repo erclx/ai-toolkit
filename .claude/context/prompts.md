@@ -46,7 +46,6 @@ What each prompt generates lives in its frontmatter `description`. Browse `promp
 | `ci-workflow.md`         | Yes        |
 | `claude-skill.md`        | Yes        |
 | `governance-rules.md`    | No         |
-| `gemini-cli.md`          | No         |
 | `meta-prompt.md`         | No         |
 | `standards-reference.md` | No         |
 | `tooling-reference.md`   | No         |
