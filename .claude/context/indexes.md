@@ -127,7 +127,7 @@ A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers
 
 ## Enforcement
 
-The index system only pays off when sessions consult the catalogs instead of searching past them. The Claude seed ships a `PreToolUse` hook on `Grep` and `Glob` that walks up from the search path to the nearest `index.md` and reminds the agent to read it first. It fires once per folder per session and only where an index exists, so it self-scales to a project's index density. See `.claude/context/claude.md` for the seed settings block.
+The index system only pays off when sessions consult the catalogs instead of searching past them. The Claude seed ships a `PreToolUse` hook on `Grep` and `Glob` that walks up from the search path to the nearest `index.md` and reminds the agent to read it first. It fires once per folder per session and only where an index exists, so it self-scales to a project's index density. See `.claude/context/claude-plugin.md` for the seed settings block.
 
 ## Bootstrap
 

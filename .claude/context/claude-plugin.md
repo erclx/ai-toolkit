@@ -1,146 +1,18 @@
 ---
-title: Claude
-description: Claude plugin skills and tooling
+title: Claude plugin
+description: Plugin skills shipped to target projects, the aitk claude CLI, and overlap with built-in Claude Code features
 ---
 
-# Claude tooling
+# Claude plugin
 
-Claude Code plugin and skills for the Toolkit.
+## Overview
 
-## Structure
+Owns everything the toolkit ships outward under the Claude domain: the plugin skills in `claude/skills/`, the plugin manifest, and the `aitk claude` CLI that seeds `.claude/` and `CLAUDE.md` into a target project. Internal skills that never leave this repo live in `.claude/context/claude-internal.md`.
 
-```plaintext
-claude/
-├── skills/              ← plugin skills (auto-discovered by plugin)
-│   ├── bash-script/         ← generate interactive bash scripts with a visual timeline UI
-│   ├── ci-workflow/         ← generate GitHub Actions CI workflow files
-│   ├── cli-script/          ← generate non-interactive automation and CI bash scripts, functional style
-│   ├── claude-diagram/      ← draft .claude/DIAGRAMS.md with mermaid diagrams from architecture and code signals
-│   ├── claude-docs/         ← update .claude/ planning docs to reflect mid-cycle decisions
-│   ├── claude-feature/      ← plan a feature by reading Claude setup and scanning source files
-│   ├── claude-memory-capture/ ← extract durable patterns from the session into `.claude/memory/`
-│   ├── claude-memory-review/ ← review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete
-│   ├── claude-orchestrate/  ← assert the orchestrator role and dispatch the build loop
-│   ├── claude-pr-review/    ← review an open PR from an independent session and post findings
-│   ├── claude-address-review/ ← pull PR findings and CI, fix each, refresh docs, push follow-up, reply
-│   ├── claude-review/       ← review all changes since main for bugs, edge cases, and logic flaws
-│   ├── claude-roadmap/      ← draft or update .claude/ROADMAP.md by sequencing MVP scope into versions
-│   ├── claude-screencast/   ← draft a stack-agnostic screencast script with pre-seeded beats and defaults
-│   ├── claude-slides-draft/ ← draft a .claude/SLIDES.md source and render it to PowerPoint via aitk slides render
-│   ├── claude-standards-audit/ ← audit changed markdown files against applicable authoring standards
-│   ├── claude-ui-test/      ← generate and run Playwright e2e tests for UI changes
-│   ├── claude-ux-audit/     ← audit existing UI surfaces for missing states, edge cases, and inconsistencies
-│   ├── claude-worktree/     ← enter a worktree at .claude/worktrees/<name>/ with name derived from plan or branch
-│   ├── claude-autoship/     ← chain implement → verify → review → ship after a plan is approved
-│   ├── migration-claude-md/ ← classify CLAUDE.md sections and propose moves to rules or context
-│   ├── migration-context/   ← classify docs/ content and propose `git mv` to .claude/context/
-│   ├── migration-standards/ ← propose `git mv` of root standards/ and snippets/ into .claude/
-│   ├── create-rule/         ← scaffold a project-local governance rule into .claude/rules/
-│   ├── create-skill/        ← create a new skill file in .claude/skills/
-│   ├── create-snippet/      ← create a new snippet file in the correct category folder
-│   ├── create-standard/     ← create a new standard file in standards/ following the meta-standard
-│   ├── docs-sync/           ← rewrite stale README.md and docs/*.md sections since main
-│   ├── git-branch/          ← rename current branch to conventional format
-│   ├── git-commit/          ← generate conventional commit message from staged changes
-│   ├── git-followup/        ← stage, commit, push, and sync the open PR, replying when it carries review comments
-│   ├── git-pr/              ← generate PR description and open or update pull request
-│   ├── git-issue/           ← file a bug or task as a GitHub issue on the current repo via gh issue create
-│   ├── git-ship/            ← run the full post-feature workflow in one sequence
-│   ├── git-split/           ← split a mixed-commit branch into focused branches
-│   ├── git-stage/           ← batch-commit staged files grouped by concern
-│   ├── git-worktree/        ← list and clean up linked worktrees after shipping
-│   ├── toolkit-cli/         ← reference for what aitk sync and install commands overwrite or preserve
-│   ├── toolkit-operator/    ← front door: orient on toolkit docs, then run or route any operation
-│   ├── toolkit-triage/      ← triage open GitHub feedback issues: classify, route to a fix or plan, link for close-out
-│   ├── session-resume/      ← resume from tracked work and relevant context at session start
-│   ├── setup-gov/           ← detect project stack and install matching governance rules
-│   ├── setup-indexes/       ← bootstrap the index.md system in a target project
-│   ├── setup-init/          ← detect project type and run one-shot `aitk init` with resolved flags
-│   ├── setup-plugins/       ← install curated community and official plugins user-scoped via the claude plugin CLI
-│   ├── setup-verify/        ← run package.json scripts after scaffold to catch config and wiring mistakes
-│   ├── systematic-debugging/ ← enforce root-cause investigation before fixes when a test fails or a bug surfaces
-│   └── youtube-transcripts/ ← fetch a YouTube transcript with metadata frontmatter via aitk transcripts
-└── .claude-plugin/
-    └── plugin.json      ← plugin manifest
+## Layout
 
-.claude/skills/          ← internal skills (toolkit repo only)
-├── aitk-claude/             ← Claude plugin and tooling domain
-├── aitk-governance/         ← Cursor rules domain
-├── aitk-scripts/            ← bash scripts domain
-├── aitk-snippets/           ← snippets domain
-├── aitk-standards/          ← standards and docs domain
-└── aitk-tooling/            ← tooling stacks domain
-```
-
-## Setup
-
-Inside the toolkit repository, Claude Code auto-discovers the plugin from `claude/.claude-plugin/plugin.json`. No flag needed.
-
-In other repositories, pass `--plugin-dir` explicitly:
-
-```bash
-claude --plugin-dir $TOOLKIT/claude
-```
-
-Add shell aliases to avoid typing the flag each time. Set `TOOLKIT` once in `~/.zshrc` and reference it in the `clp` alias:
-
-```zsh
-TOOLKIT=~/path/to/toolkit
-
-alias cl='claude'
-alias clp='claude --plugin-dir $TOOLKIT/claude'
-alias clps='clp --model sonnet'
-```
-
-For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../../wiki/zshrc-aliases.md).
-
-## Three-tier context model
-
-Target projects scale by splitting context across three loading tiers. Knowing which tier holds what keeps sessions fast and content discoverable.
-
-| Tier             | Surface                                                                | Load behavior                                        | Holds                                                                     |
-| ---------------- | ---------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
-| Always loaded    | Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md` | Eager at session start                               | Cross-cutting behavior, product scope, project-wide invariants            |
-| Path-scoped lazy | `.claude/rules/<scope>.md` with `paths:` frontmatter                   | Lazy by glob match when files are read               | Do/don't rules, naming and pattern conventions for a file scope           |
-| On-demand lookup | `.claude/context/<domain>.md`, `.claude/wireframes/<surface>.md`       | Read by Claude when the domain or surface is touched | Per-domain narrative and per-surface layout intent, indexed for discovery |
-
-`.claude/context/<domain>.md` is the new tier introduced for larger projects. It exists because nested `CLAUDE.md` files would auto-load along the cwd's ancestor chain and bloat context as a session walks the repo. The `index.md` lookup pattern keeps the cost on-demand.
-
-### What goes where
-
-For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `.claude/standards/context.md`. The conceptual placement decision is:
-
-- Per-domain narrative → `.claude/context/<domain>.md`
-- Path-scoped rules → `.claude/rules/<scope>.md` with `paths:` glob
-- Tutorials or human onboarding → `docs/` if a public audience exists
-- Function-level docs → read the code instead
-
-### Layout
-
-Flat by default: one `.md` per domain (`.claude/context/web.md`, `.claude/context/api.md`). Use a folder (`.claude/context/<domain>/<sub-area>.md`) only when a domain has 3+ sub-areas that don't fit cleanly in one file. The indexes system handles nested folders natively.
-
-`.claude/context/index.md` is regenerated by `aitk indexes regen` from each entry's `title` and `description` frontmatter. Same pattern as `wiki/index.md`. Do not hand-edit.
-
-### How entries get populated
-
-`claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing `.claude/context/<domain>.md` entries that reference those files, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
-
-New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `.claude/standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
-
-This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
-
-## Orchestration
-
-Larger projects use an orchestrator session that breaks work into TASKS entries and hands each entry to a worker session running in a linked worktree. The toolkit ships two artifacts to make this flow mechanical.
-
-| Artifact                          | Author                 | Holds                                                                                     | Lifecycle                                             |
-| --------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `.claude/TASKS.md`                | orchestrator           | One block per task with outcomes and a test strategy. Phase labels live here.             | Gitignored, shared across worktrees.                  |
-| `.claude/plans/feature-<slug>.md` | orchestrator or worker | Files to touch with reasons, optional constraints, risks, answered questions for one task | Gitignored, shared across worktrees, deleted on ship. |
-
-Drafting flow: orchestrator writes a TASKS block, runs `claude-feature` to produce a plan carrying the reading list and any constraints, then hands the worker a plan slug. Worker enters a linked worktree, reads the plan, and implements. `claude-docs` deletes the plan when the task ships.
-
-Phase labels stay inside TASKS. They never appear in PR titles, commit messages, or git tags. See `.claude/standards/versioning.md` for the rules and the why.
+- `claude/skills/` owns the plugin skills, auto-discovered when Claude Code loads with `--plugin-dir`
+- `claude/.claude-plugin/` owns `plugin.json`, the plugin manifest
 
 ## Plugin skills
 
@@ -206,20 +78,6 @@ Skills that perform a one-time structural move of an existing project into a new
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-orchestrate`, `create-skill`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `.claude/standards/skill.md` for authoring conventions.
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
-
-## Internal skills
-
-Internal skills live in `.claude/skills/` and are toolkit-only. They are not installed into target projects.
-
-| Skill                | Description                                                                                            |
-| -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or `.claude/context/claude.md`                  |
-| `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                  |
-| `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                       |
-| `aitk-snippets`      | Load before editing snippets                                                                           |
-| `aitk-standards`     | Load before editing standards or docs                                                                  |
-| `aitk-tooling`       | Load before editing tooling stacks or golden configs                                                   |
-| `aitk-sandbox-check` | Audit changed plugin skills for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check` |
 
 ## CLI
 
