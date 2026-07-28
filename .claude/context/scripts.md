@@ -13,13 +13,13 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 - `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
-- `scripts/<domain>/` owns the subcommands for that domain, one file per verb
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, and `claude` and `standards` keep only a list command there
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
 
-- Entry points dispatch only. No domain logic lives in a `manage-*.sh`, so a command's behavior is always one file down and the dispatcher stays readable.
+- Entry points are meant to dispatch only, and six of eleven do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
 - The timeline frame opens in the dispatcher rather than in each subcommand. Prompts and `log_*` assume a frame is already open, so opening it at the top prevents dangling output on error paths.
@@ -31,7 +31,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - Subcommand scripts never emit their own `┌`. The dispatcher already did, and a second one produces two frames per invocation.
 - The optional rule-name filter in `build_rules_payload` has no caller today. It is kept because the signature is shared surface.
 - `TOOLING_STACK_EXCLUDE` currently holds only `claude`. Excluded names print a redirect error pointing at the correct CLI and exit 1.
-- When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
+- When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`. `select_option` returns its first option under that flag, so the first option must be the one a headless caller should get. Listing a review or preview option first sends agents down an interactive branch, which is how three sync commands ended up opening a diff editor per drifted file.
 
 ## Core scripts
 
