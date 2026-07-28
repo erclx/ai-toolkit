@@ -42,6 +42,7 @@ namerefs
 nextjs
 noopener
 noreferrer
+nothrow
 nullglob
 numpy
 nvmrc

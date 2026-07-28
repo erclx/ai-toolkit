@@ -6,7 +6,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
-source "$PROJECT_ROOT/scripts/lib/index.sh"
 
 STANDARDS_SOURCE="$PROJECT_ROOT/standards"
 
@@ -99,7 +98,7 @@ cmd_install() {
   done
 
   cp "$STANDARDS_SOURCE/index.md" "$dest_dir/index.md"
-  write_index "$dest_dir"
+  bun "$PROJECT_ROOT/src/cli.ts" indexes regen --root "$dest_dir" --no-stage --json >/dev/null
   log_add ".claude/standards/index.md"
 
   trap - EXIT
@@ -157,7 +156,7 @@ cmd_sync() {
 
   if [ "$count" -eq 0 ]; then
     cp "$STANDARDS_SOURCE/index.md" "$target/.claude/standards/index.md"
-    write_index "$target/.claude/standards"
+    bun "$PROJECT_ROOT/src/cli.ts" indexes regen --root "$target/.claude/standards" --no-stage --json >/dev/null
     trap - EXIT
     echo -e "${GREY}└${NC}\n"
     echo -e "${GREEN}✓ Everything up to date${NC}"
@@ -196,7 +195,7 @@ cmd_sync() {
 
   apply_changes "$target"
   cp "$STANDARDS_SOURCE/index.md" "$target/.claude/standards/index.md"
-  write_index "$target/.claude/standards"
+  bun "$PROJECT_ROOT/src/cli.ts" indexes regen --root "$target/.claude/standards" --no-stage --json >/dev/null
   log_add ".claude/standards/index.md"
 
   trap - EXIT

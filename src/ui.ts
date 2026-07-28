@@ -1,11 +1,37 @@
 const GREEN = '\x1b[0;32m'
 const RED = '\x1b[0;31m'
+const YELLOW = '\x1b[0;33m'
 const WHITE = '\x1b[1;37m'
 const GREY = '\x1b[0;90m'
 const NC = '\x1b[0m'
 
 export function intro(title: string): void {
   process.stderr.write(`${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}${title}${NC}\n`)
+}
+
+/**
+ * Timeline log levels matching `scripts/lib/ui.sh`, so a migrated command
+ * prints the same frame as the bash it replaced. All output is stderr,
+ * leaving stdout clean for JSON and lists.
+ */
+export function logInfo(message: string): void {
+  process.stderr.write(`${GREY}│${NC} ${GREEN}✓${NC} ${message}\n`)
+}
+
+export function logWarn(message: string): void {
+  process.stderr.write(`${GREY}│${NC} ${YELLOW}!${NC} ${message}\n`)
+}
+
+export function logAdd(message: string): void {
+  process.stderr.write(`${GREY}│${NC} ${GREEN}+${NC} ${message}\n`)
+}
+
+export function logRemove(message: string): void {
+  process.stderr.write(`${GREY}│${NC} ${RED}-${NC} ${message}\n`)
+}
+
+export function logStep(message: string): void {
+  process.stderr.write(`${GREY}│${NC}\n${GREY}├${NC} ${WHITE}${message}${NC}\n`)
 }
 
 export function outro(): void {

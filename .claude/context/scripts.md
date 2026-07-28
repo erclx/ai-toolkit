@@ -19,7 +19,8 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 ## Decisions
 
-- Entry points are meant to dispatch only, and six of eleven do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- Entry points are meant to dispatch only, and five of ten do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
 - The timeline frame opens in the dispatcher rather than in each subcommand. Prompts and `log_*` assume a frame is already open, so opening it at the top prevents dangling output on error paths.
@@ -42,7 +43,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 | `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                |
 | `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                 |
 | `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                    |
-| `regen-indexes.sh` |             | Walks the repo and rewrites every `index.md` from each folder's frontmatter, skipping vendored and scratch paths  |
+| `regen-indexes.sh` |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                           |
 
 CI runs only the format, spell, and shell stages. The drift checks and the test suite are enforced by the pre-push hook alone. See `ci.md`.
 
@@ -109,17 +110,10 @@ Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name v
 | `list_tooling_stacks`       | Emit names of every directory under `tooling/`, minus excluded.  |
 | `is_tooling_stack_excluded` | Return 0 if the name is in `TOOLING_STACK_EXCLUDE`, 1 otherwise. |
 
-### `index.sh`
+### `frontmatter.sh`
 
-Sourced by `scripts/manage-standards.sh`, `scripts/standards/list.sh`, `scripts/core/regen-indexes.sh`, `scripts/core/verify.sh`, and `scripts/indexes/regen.sh`. An `index.md` with `auto: false` in its frontmatter is left alone. To exclude a folder, add it to `.gitignore`. Outside a git repo, only `.git` and `node_modules` are pruned.
+Sourced by `scripts/docs/list.sh`, `scripts/standards/list.sh`, and `scripts/core/regen-skill-references.sh`. The index engine that used to sit alongside this function is TypeScript now, in `src/indexes/`.
 
-| Function                 | What it does                                                                                                                                              |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `read_frontmatter_field` | Read a YAML field from a markdown file's frontmatter. Strips wrapping quotes.                                                                             |
-| `extract_frontmatter`    | Emit the frontmatter block verbatim.                                                                                                                      |
-| `list_indexes`           | Find every `index.md` under a root. Prunes `.git` and `node_modules` directly, defers to `git check-ignore --stdin` for the rest.                         |
-| `compute_index_to`       | Compute the intended `index.md` content into a target file. Links immediate child folders that carry an `index.md`. Fails on missing sibling frontmatter. |
-| `write_index`            | Wraps `compute_index_to` with `auto:false` opt-out. Skips the write when content is unchanged.                                                            |
-| `walk_and_write_indexes` | Run `write_index` across every folder `list_indexes` returns.                                                                                             |
-| `find_indexed_ancestor`  | Walk up from a path until an `index.md` is found, bounded by a root.                                                                                      |
-| `regen_one`              | CLI-facing. Dry-run aware, emits JSON records. Reports `written`, `would-write`, `unchanged`, `skipped`, `error`.                                         |
+| Function                 | What it does                                                                  |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `read_frontmatter_field` | Read a YAML field from a markdown file's frontmatter. Strips wrapping quotes. |

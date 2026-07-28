@@ -11,7 +11,8 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 
 ## Layout
 
-- `scripts/indexes/` owns the regen entry point
+- `src/indexes/` owns the engine: frontmatter parsing, the walker, the renderer, and regen orchestration
+- `src/commands/indexes.ts` owns the command surface
 - `claude/skills/setup-indexes/` owns the bootstrap skill
 
 ## Decisions
@@ -21,6 +22,8 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - The bootstrap skill is the only supported migration path. The CLI does not own it because authoring readable `description` text is judgment work, not a deterministic transformation.
 - Regen auto-stages rewritten `index.md` files when positional paths are passed inside a git repository. Without it, a commit that stages a sibling frontmatter change would land with a drifted `index.md`, because `lint-staged` re-stages only files that were in the original staged set.
 - Both integration points are opt-in per project and the toolkit ships no default. Git-driven projects want `lint-staged`, agent-driven ones want the hook, and picking one for them would be wrong half the time.
+- This was the first domain migrated off bash, chosen because nothing else depended on its walker. The engine reads frontmatter with `Bun.YAML` instead of the awk parser it replaced, and emits JSON with `JSON.stringify` instead of a hand-rolled escape that covered only backslash and double quote.
+- Frontmatter is re-emitted verbatim rather than re-serialized from the parsed object. Key order, comments, and the `auto: false` marker all survive a regeneration that way.
 
 ## Gotchas
 
@@ -154,5 +157,6 @@ See `agents.md` for the `aitk indexes regen` invocation contract: flags, exit co
 ## Related
 
 - `agents.md`: CLI flags, exit codes, JSON output
-- `scripts.md`: `lib/index.sh` function reference for regeneration logic
+- `cli.md`: the TypeScript layer and the migration boundary
+- `scripts.md`: `lib/frontmatter.sh`, the one bash reader that stayed
 - `claude/skills/setup-indexes/`: bootstrap skill source
