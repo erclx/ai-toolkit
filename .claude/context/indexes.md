@@ -7,9 +7,27 @@ description: Folder index.md system, frontmatter contract, when to adopt
 
 ## Overview
 
-Folders that an agent browses to pick a document carry an `index.md`. The CLI walks the project, reads each folder's frontmatter and its siblings' `title` and `description` fields, and rewrites `index.md` so the catalog stays in sync with the files. Agents read one file to know what every sibling does instead of opening each one.
+Owns the `index.md` catalog system. Folders that an agent browses to pick a document carry one. The CLI walks the project, reads each folder's frontmatter and its siblings' `title` and `description` fields, and rewrites `index.md` so the catalog stays in sync with the files. Agents read one file to know what every sibling does instead of opening each one.
 
-The system is opt-in per folder. A project that does not need browseable catalogs gets no value from adopting it.
+## Layout
+
+- `scripts/indexes/` owns the regen entry point
+- `claude/skills/setup-indexes/` owns the bootstrap skill
+
+## Decisions
+
+- The system is opt-in per folder. A project that does not need browseable catalogs gets no value from adopting it, so nothing is indexed by default.
+- The frontmatter contract is all-or-nothing per folder. A partial migration produces an `index.md` that hard-errors on the next regen, which surfaces the gap immediately instead of shipping a half-populated catalog.
+- The bootstrap skill is the only supported migration path. The CLI does not own it because authoring readable `description` text is judgment work, not a deterministic transformation.
+- Regen auto-stages rewritten `index.md` files when positional paths are passed inside a git repository. Without it, a commit that stages a sibling frontmatter change would land with a drifted `index.md`, because `lint-staged` re-stages only files that were in the original staged set.
+- Both integration points are opt-in per project and the toolkit ships no default. Git-driven projects want `lint-staged`, agent-driven ones want the hook, and picking one for them would be wrong half the time.
+
+## Gotchas
+
+- Hand-written content in an auto-managed `index.md` is overwritten on the next regen. Set `auto: false` to keep prose.
+- A child folder whose `index.md` is missing `title` or `subtitle` is skipped with a warning rather than failing the walk.
+- When a folder has both an overview file and a same-named subfolder, both entries appear.
+- Whole-repo walks with no positional paths never auto-stage.
 
 ## When to adopt
 
@@ -29,7 +47,7 @@ Concrete miss:
 
 ## Frontmatter contract
 
-Every `index.md` carries `title` and `subtitle` in its own frontmatter. Every sibling `*.md` carries `title` and `description`. The walker fails the folder when any sibling lacks either field. This is all-or-nothing per folder by design: a partial migration creates an `index.md` that hard-errors on the next regen.
+Every `index.md` carries `title` and `subtitle` in its own frontmatter. Every sibling `*.md` carries `title` and `description`. The walker fails the folder when any sibling lacks either field.
 
 Optional `category` on a sibling groups it under an H2 heading in the rendered index. When any sibling carries `category`, the walker switches to grouped mode for the whole folder.
 
@@ -80,7 +98,7 @@ One-line reference for each doc in this folder.
 
 ## Domain references
 
-- [Claude](claude.md): Claude plugin skills and tooling
+- [Claude plugin](claude-plugin.md): Plugin skills shipped to target projects
 - [Tooling](tooling.md): Stacks, configs, seeds, references, manifests
 ```
 
@@ -99,9 +117,7 @@ A folder that holds its own `index.md` is a child catalog. The parent links it s
 
 The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling file renders as `- [<title>](<filename>): <description>`. Each immediate subfolder that carries an `index.md` renders as `- [<child title>](<child>/index.md): <child subtitle>`, listed after the sibling files.
 
-In grouped mode those folder entries collect under a trailing `## Sub-catalogs` heading. A child whose `index.md` is missing `title` or `subtitle` is skipped with a warning. When a folder has both an overview file and a same-named subfolder, both entries appear.
-
-Hand-written content in an auto-managed `index.md` is overwritten on the next regen. To keep prose, set `auto: false` and follow this same format manually.
+In grouped mode those folder entries collect under a trailing `## Sub-catalogs` heading.
 
 ## Opt-out
 
@@ -119,11 +135,9 @@ Two integration points keep `index.md` files current after edits.
 }
 ```
 
-`lint-staged` appends changed paths as trailing arguments. The CLI walks up from each path to the nearest indexed ancestor and regenerates only affected folders.
+`lint-staged` appends changed paths as trailing arguments. The CLI walks up from each path to the nearest indexed ancestor and regenerates only affected folders. Pass `--no-stage` to opt out of auto-staging, for example when partial-staging with `git add -p` and deliberately excluding an index change.
 
-When positional paths are passed inside a git repository, regen runs `git add` on each `index.md` it rewrote. This is what keeps the documented `lint-staged` config above correct by default. Without it, a commit that stages a sibling frontmatter change would land with a drifted `index.md` in the working tree, because `lint-staged` re-stages only files that were in the original staged set. Pass `--no-stage` to opt out, for example when partial-staging with `git add -p` and deliberately excluding an index change. Whole-repo walks (no positional paths) never auto-stage.
-
-A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers projects that prefer agent-driven regeneration. The hook runs the same command and benefits from the same auto-stage behavior. Either path is opt-in per project. The toolkit ships no default.
+A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers projects that prefer agent-driven regeneration. The hook runs the same command and benefits from the same auto-stage behavior.
 
 ## Enforcement
 
@@ -132,8 +146,6 @@ The index system only pays off when sessions consult the catalogs instead of sea
 ## Bootstrap
 
 Use the `setup-indexes` plugin skill to add the system to a project that does not have it yet. The skill scans for markdown-heavy folders, drafts `title` and `description` for each sibling from its first heading and paragraph, scaffolds `index.md` per chosen folder, and runs `aitk indexes regen --dry-run` to validate before writing.
-
-The skill is the only supported migration path. The CLI does not own bootstrap because authoring readable `description` text is judgment work, not a deterministic transformation.
 
 ## Command surface
 
