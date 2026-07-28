@@ -169,7 +169,7 @@ main() {
   [ -s "$DRIFTED_FILE" ] && has_diffs=true
 
   if [ "$has_diffs" = true ]; then
-    select_option "Apply $count changes?" "Review diffs" "Apply all" "No"
+    select_option "Apply $count changes?" "Apply all" "Review diffs" "No"
   else
     select_option "Apply $count changes?" "Yes" "No"
   fi
