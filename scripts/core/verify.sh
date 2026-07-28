@@ -39,7 +39,6 @@ main() {
 
   log_step "Indexes"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-indexes.sh" "Index regen failed"
-  # regen only ever writes index.md, so the pathspec covers exactly what it touched.
   run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- '*index.md'" "Indexes drifted. Run bun run check and commit the updated index files."
   log_info "Indexes clean"
 

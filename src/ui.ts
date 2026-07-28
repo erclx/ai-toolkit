@@ -26,10 +26,6 @@ export function logAdd(message: string): void {
   process.stderr.write(`${GREY}│${NC} ${GREEN}+${NC} ${message}\n`)
 }
 
-export function logRemove(message: string): void {
-  process.stderr.write(`${GREY}│${NC} ${RED}-${NC} ${message}\n`)
-}
-
 export function logStep(message: string): void {
   process.stderr.write(`${GREY}│${NC}\n${GREY}├${NC} ${WHITE}${message}${NC}\n`)
 }

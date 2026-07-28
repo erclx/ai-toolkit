@@ -3,14 +3,22 @@ import { dirname, resolve } from 'node:path'
 import { $ } from 'bun'
 
 const INDEX_FILE = 'index.md'
-const PRUNED = ['**/node_modules/**', '**/.git/**']
+
+const PRUNED_SEGMENTS = ['node_modules', '.git']
+
+function isPruned(relativePath: string): boolean {
+  return relativePath
+    .split('/')
+    .some((segment) => PRUNED_SEGMENTS.includes(segment))
+}
 
 /**
- * Lists every folder index under `root`, newest git state respected.
+ * Lists every folder index under `root`.
  *
- * Ignored paths are dropped via `git check-ignore` rather than a hardcoded
- * list, so a project's own `.gitignore` governs what the walker sees. Outside
- * a git repo every candidate is kept.
+ * Vendored and git trees are pruned by path segment, since `Bun.Glob` has no
+ * exclude. Everything else is dropped via `git check-ignore`, so a project's
+ * own `.gitignore` governs what the walker sees. Outside a git repo the
+ * segment prune is the only filter that applies.
  */
 export async function listIndexes(root: string): Promise<string[]> {
   const glob = new Bun.Glob(`**/${INDEX_FILE}`)
@@ -21,6 +29,7 @@ export async function listIndexes(root: string): Promise<string[]> {
     onlyFiles: true,
     dot: true,
   })) {
+    if (isPruned(rel)) continue
     candidates.push(resolve(root, rel))
   }
   candidates.sort()
@@ -46,7 +55,6 @@ async function listIgnored(
 
   const stdin = Buffer.from(`${candidates.join('\n')}\n`)
 
-  // check-ignore exits 1 when nothing matches, which is not an error here.
   const result = await $`git -C ${root} check-ignore --stdin < ${stdin}`
     .quiet()
     .nothrow()
@@ -87,4 +95,4 @@ export function findIndexedAncestor(
   return undefined
 }
 
-export { INDEX_FILE, PRUNED }
+export { INDEX_FILE, PRUNED_SEGMENTS }

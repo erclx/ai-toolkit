@@ -14,8 +14,6 @@ interface RegenCommandOptions {
 }
 
 export function register(program: Command): void {
-  // The root program sets helpOption(false) for its own hand-rolled help, and
-  // subcommands inherit that. Re-enable it here so each level documents itself.
   const indexes = program
     .command('indexes')
     .description('Regenerate index.md files from sibling frontmatter')
@@ -50,7 +48,7 @@ export function register(program: Command): void {
       ].join('\n'),
     )
     .action(async (paths: string[], opts: RegenCommandOptions) => {
-      process.exit(await runRegen(paths, opts))
+      process.exitCode = await runRegen(paths, opts)
     })
 }
 
@@ -78,8 +76,6 @@ async function runRegen(
       ? collectFromPaths(paths, root)
       : (await listIndexes(root)).map(dirname)
 
-  // Whole-repo walks never auto-stage. Only an explicit path list does, so a
-  // hook regenerating one folder gets its index into the same commit.
   const shouldStage =
     paths.length > 0 && opts.stage !== false && !dryRun && !emitJson
 
@@ -93,6 +89,11 @@ async function runRegen(
   for (const dir of dirs) {
     const result = await regenOne(dir, { dryRun })
     results.push(result)
+
+    for (const message of result.errors ?? []) {
+      process.stderr.write(`ERROR: ${message}\n`)
+    }
+
     if (!emitJson) await reportResult(result, root, shouldStage)
   }
 
@@ -154,9 +155,6 @@ async function reportResult(
       logInfo(`${rel} skipped (auto:false)`)
       break
     case 'error':
-      for (const message of result.errors ?? []) {
-        process.stderr.write(`ERROR: ${message}\n`)
-      }
       logWarn(`${rel} error`)
       break
   }
