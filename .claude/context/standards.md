@@ -35,22 +35,7 @@ Owns the markdown docs defining developer workflow conventions. They install int
 
 ## Standards
 
-Run `aitk standards list` for the live catalog. The table below orients a reader and is not the source of truth.
-
-| File              | Covers                                                                |
-| ----------------- | --------------------------------------------------------------------- |
-| `architecture.md` | Shape and content rules for `.claude/ARCHITECTURE.md`                 |
-| `context.md`      | Shape and content rules for `.claude/context/`                        |
-| `design.md`       | Shape and content rules for `.claude/DESIGN.md`                       |
-| `diagrams.md`     | Conventions for Mermaid in `.claude/DIAGRAMS.md`                      |
-| `prose.md`        | Voice, structure, formatting, and language                            |
-| `readme.md`       | Readme structure and content conventions                              |
-| `requirements.md` | Shape and content rules for `.claude/REQUIREMENTS.md`                 |
-| `rule.md`         | Rule frontmatter, body shape, and voice for `.claude/rules` files     |
-| `skill.md`        | Claude skill structure and authoring rules                            |
-| `tasks.md`        | Shape and content rules for `.claude/TASKS.md`                        |
-| `versioning.md`   | Phase label vs semver discipline across TASKS, PRs, commits, and tags |
-| `wireframes.md`   | Shape and content rules for `.claude/wireframes/` surface files       |
+Run `aitk standards list` for the catalog of installable standards and their descriptions.
 
 `standards/aitk/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set.
 

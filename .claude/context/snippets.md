@@ -33,34 +33,9 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 
 ## Presets and categories
 
-Run `aitk snippets list` for the live catalog. The tables below orient a reader and are not the source of truth.
-
-| Kind     | Name         | Slugs                                                                                                      |
-| -------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| Preset   | `essentials` | decision-help, compact-summary, step-by-step                                                               |
-| Category | `base`       | compact-summary, create-snippet, decision-help, research-prompt, session-notes, step-by-step, web-research |
-| Category | `claude`     | claude/decision-memo, claude/feature-recap, claude/figma-steps                                             |
-| Category | `aitk`       | aitk/format-edits, aitk/sandbox-worktree, aitk/vocab-capture (internal, not installable)                   |
+Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Both are valid arguments to `aitk snippets install`. Run `aitk snippets list` for the catalog of both, and `--entries` for the slugs in each.
 
 `essentials` is the default for `aitk init` when `--snippets` is omitted.
-
-## Snippets
-
-| Path                    | Purpose                                                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `compact-summary`       | Summarize research or findings into a scannable block                                                          |
-| `create-snippet`        | Draft a new snippet (chat/Chrome extension)                                                                    |
-| `decision-help`         | Pick the best option from the discussion so far, one-line pick plus short reason                               |
-| `research-prompt`       | Generate a research prompt to paste into another AI chat                                                       |
-| `session-notes`         | Capture session decisions                                                                                      |
-| `step-by-step`          | Request step-by-step instructions for any process                                                              |
-| `web-research`          | Search the web and synthesize findings into a decision-ready block                                             |
-| `claude/decision-memo`  | Produce a structured decision memo with per-decision recommendation, options, and suggested answers            |
-| `claude/feature-recap`  | Verify a finished implementation by listing deliverables, files touched, and tests                             |
-| `claude/figma-steps`    | Generate Figma instructions from a design spec                                                                 |
-| `aitk/format-edits`     | Format proposed edits as old → new pairs with file and section headers and `>` blockquotes                     |
-| `aitk/sandbox-worktree` | Provision a sandbox scenario from the current tree and launch Claude against it with the worktree's plugin dir |
-| `aitk/vocab-capture`    | Append new rule-writing terms from the session to `wiki/rule-writing-vocabulary.md`                            |
 
 ## CLI
 
