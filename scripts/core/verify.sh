@@ -6,7 +6,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
-source "$PROJECT_ROOT/scripts/lib/index.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
 
@@ -40,9 +39,7 @@ main() {
 
   log_step "Indexes"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-indexes.sh" "Index regen failed"
-  local index_files
-  index_files=$(list_indexes "$PROJECT_ROOT" | tr '\n' ' ')
-  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- $index_files" "Indexes drifted. Run bun run check and commit the updated index files."
+  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- '*index.md'" "Indexes drifted. Run bun run check and commit the updated index files."
   log_info "Indexes clean"
 
   log_step "Consumed copies"

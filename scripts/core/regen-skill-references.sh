@@ -5,7 +5,7 @@ set -o pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
-source "$PROJECT_ROOT/scripts/lib/index.sh"
+source "$PROJECT_ROOT/scripts/lib/frontmatter.sh"
 
 BUNDLED_DIR="$PROJECT_ROOT/standards/bundled"
 SKILLS_DIR="$PROJECT_ROOT/claude/skills"

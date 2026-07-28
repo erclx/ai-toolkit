@@ -147,12 +147,12 @@ stage_setup() {
   "regen")
     seed_folder
     log_step "Running: aitk indexes regen"
-    exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen
+    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen
     ;;
   "nested")
     seed_nested_folder
     log_step "Running: aitk indexes regen"
-    "$PROJECT_ROOT/scripts/manage-indexes.sh" regen
+    bun "$PROJECT_ROOT/src/cli.ts" indexes regen
     log_step "Generated docs/index.md"
     pipe_output <docs/index.md
     log_info "Expect: docs/index.md links guides/index.md after the sibling files"
@@ -160,29 +160,29 @@ stage_setup() {
   "dry-run")
     seed_folder
     log_step "Running: aitk indexes regen --dry-run"
-    exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen --dry-run
+    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run
     ;;
   "json")
     seed_folder
     log_step "Running: aitk indexes regen --dry-run --json"
-    exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen --dry-run --json
+    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen --dry-run --json
     ;;
   "opt-out")
     seed_folder
     log_step "Setting auto: false on docs/index.md"
     sed -i '2i\auto: false' docs/index.md
     log_step "Running: aitk indexes regen"
-    exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen
+    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen
     ;;
   "path")
     seed_folder
     log_step "Running: aitk indexes regen docs/alpha.md"
-    exec "$PROJECT_ROOT/scripts/manage-indexes.sh" regen docs/alpha.md
+    exec bun "$PROJECT_ROOT/src/cli.ts" indexes regen docs/alpha.md
     ;;
   "lint-staged")
     seed_git_repo
     log_step "Running: aitk indexes regen docs/alpha.md"
-    "$PROJECT_ROOT/scripts/manage-indexes.sh" regen docs/alpha.md
+    bun "$PROJECT_ROOT/src/cli.ts" indexes regen docs/alpha.md
     log_step "git diff --cached --name-only"
     git diff --cached --name-only | pipe_output
     log_step "git status --short"
@@ -192,7 +192,7 @@ stage_setup() {
   "no-stage")
     seed_git_repo
     log_step "Running: aitk indexes regen --no-stage docs/alpha.md"
-    "$PROJECT_ROOT/scripts/manage-indexes.sh" regen --no-stage docs/alpha.md
+    bun "$PROJECT_ROOT/src/cli.ts" indexes regen --no-stage docs/alpha.md
     log_step "git diff --cached --name-only"
     git diff --cached --name-only | pipe_output
     log_step "git status --short"
