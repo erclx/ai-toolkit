@@ -26,6 +26,10 @@ export function logAdd(message: string): void {
   process.stderr.write(`${GREY}│${NC} ${GREEN}+${NC} ${message}\n`)
 }
 
+export function logRemove(message: string): void {
+  process.stderr.write(`${GREY}│${NC} ${RED}-${NC} ${message}\n`)
+}
+
 export function logStep(message: string): void {
   process.stderr.write(`${GREY}│${NC}\n${GREY}├${NC} ${WHITE}${message}${NC}\n`)
 }
@@ -46,13 +50,27 @@ export function frameSuccess(command: string, target: string): void {
   )
 }
 
+/**
+ * `nonInteractiveDefault` opts a prompt into the `select_option` behavior from
+ * `scripts/lib/ui.sh`, where `AITK_NON_INTERACTIVE=1` resolves to the first
+ * option instead of failing. Callers that would rather fail loudly than pick
+ * for the user leave it off.
+ */
 export async function select<Value>(opts: {
   message: string
   options: { value: Value; label: string; hint?: string }[]
+  nonInteractiveDefault?: boolean
 }): Promise<Value> {
   const { message, options } = opts
   const count = options.length
   let cursor = 0
+
+  if (opts.nonInteractiveDefault && process.env.AITK_NON_INTERACTIVE === '1') {
+    process.stderr.write(
+      `${GREY}│${NC}\n${GREY}◇${NC} ${message} ${WHITE}${options[0].label}${NC}\n`,
+    )
+    return options[0].value
+  }
 
   const render = (): void => {
     let out = `${GREY}│${NC}\n${GREEN}◆${NC} ${message}\n`

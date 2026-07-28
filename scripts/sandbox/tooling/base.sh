@@ -2,8 +2,6 @@
 set -e
 set -o pipefail
 
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
-
 stage_setup() {
   log_step "Initializing package"
   cat <<'EOF' >package.json
@@ -16,9 +14,7 @@ stage_setup() {
 EOF
   log_info "package.json created"
 
-  inject_tooling_configs "base" "."
-  inject_tooling_seeds "base" "."
-  inject_tooling_manifest "base" "."
+  bun "$PROJECT_ROOT/src/cli.ts" tooling inject base .
 
   log_step "Initializing Husky"
   bunx husky

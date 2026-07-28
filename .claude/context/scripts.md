@@ -59,7 +59,9 @@ The git workflow step is skipped if the target is not a git root (no `.git/`). W
 
 ## UI framing across exec boundaries
 
-`scripts/manage-tooling.sh` is the reference manager. It opens the frame unconditionally in `main()`, and `scripts/tooling/{list,ref,sync,create}.sh` set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
+`scripts/manage-gov.sh` is the reference manager. It opens the frame unconditionally in `main()`, and its verb scripts set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
+
+The tooling domain no longer has a dispatcher. `src/commands/tooling.ts` registers each verb directly, handling `sync`, `inject`, and `prune-gitignore` in TypeScript and shelling out to `scripts/tooling/{ref,create,list,verify}.sh` for the rest. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`.
 
 See `docs/agents.md` for the canonical output shape this framing produces, and the `bash-script` plugin skill for the authoring contract when generating new domain scripts.
 
@@ -78,19 +80,6 @@ Source this in any script that needs terminal output. When `AITK_NON_INTERACTIVE
 | `select_or_route_scenario`                                            | Sandbox-aware picker. Skips when `SANDBOX_SCENARIO` is set.                                |
 | `guard_root`                                                          | Rejects the toolkit root as a target.                                                      |
 | `require_project_root`                                                | Errors when run outside the repo or inside a sandbox.                                      |
-
-### `inject.sh`
-
-Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. `.txt` seeds are cspell word lists, so sync merges new lines and sorts the file. Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator.
-
-| Function                   | What it does                                                                               |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `inject_tooling_manifest`  | Orchestrator. Runs missing-dep install, script injection, and gitignore merge for a stack. |
-| `inject_tooling_configs`   | Apply stack configs to target. Always overwrites.                                          |
-| `inject_tooling_seeds`     | Apply stack seeds. `.txt` seeds merge and sort. Other seed types copy once, then skip.     |
-| `inject_tooling_reference` | Copy the stack's `reference.md` into the target's `tooling/` folder.                       |
-| `inject_governance`        | Copy governance rules into `.claude/rules/` and standards into `standards/`.               |
-| `inject_dependencies`      | Run `bun install` or `uv sync` based on the detected manifest.                             |
 
 ### `gov.sh`
 

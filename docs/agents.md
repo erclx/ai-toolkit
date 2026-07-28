@@ -80,16 +80,16 @@ Full help: `aitk <command> --help`.
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain      | Subcommands                           |
-| ----------- | ------------------------------------- |
-| `tooling`   | `list`, `sync`, `ref`, `create`       |
-| `snippets`  | `list`, `install`, `sync`, `create`   |
-| `standards` | `list`, `install`, `sync`             |
-| `gov`       | `list`, `install`, `sync`, `build`    |
-| `claude`    | `init`, `sync`, `seeds list`, `setup` |
-| `wiki`      | `init`                                |
-| `design`    | `render`                              |
-| `slides`    | `render`, `list`                      |
+| Domain      | Subcommands                                                            |
+| ----------- | ---------------------------------------------------------------------- |
+| `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore` |
+| `snippets`  | `list`, `install`, `sync`, `create`                                    |
+| `standards` | `list`, `install`, `sync`                                              |
+| `gov`       | `list`, `install`, `sync`, `build`                                     |
+| `claude`    | `init`, `sync`, `seeds list`, `setup`                                  |
+| `wiki`      | `init`                                                                 |
+| `design`    | `render`                                                               |
+| `slides`    | `render`, `list`                                                       |
 
 Common patterns:
 
@@ -167,6 +167,14 @@ AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react /path/to/repo/frontend --ski
 
 # Verify a stack end-to-end in a throwaway scaffold
 aitk tooling verify vite-react
+
+# Apply one stack without scanning or prompting, for scripted provisioning
+aitk tooling inject base /path/to/project
+aitk tooling inject base /path/to/project --configs --seeds
+
+# Drop managed gitignore entries a manifest no longer declares
+# Prints the number removed on stdout, diagnostics on stderr
+aitk tooling prune-gitignore base /path/to/project
 
 # Install a snippet preset
 AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project

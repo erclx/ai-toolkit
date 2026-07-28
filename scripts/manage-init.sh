@@ -192,7 +192,7 @@ main() {
   fi
 
   run_domain "Base tooling" \
-    bash "$PROJECT_ROOT/scripts/tooling/sync.sh" "base" "$target" </dev/null
+    bun "$PROJECT_ROOT/src/cli.ts" tooling sync base "$target" </dev/null
 
   run_domain "Claude workflow" \
     bash "$PROJECT_ROOT/scripts/manage-claude.sh" "init" "$target" </dev/null

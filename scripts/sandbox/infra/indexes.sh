@@ -2,7 +2,6 @@
 set -e
 set -o pipefail
 
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 seed_folder() {

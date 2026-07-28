@@ -2,8 +2,6 @@
 set -e
 set -o pipefail
 
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
-
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
 }
@@ -34,7 +32,7 @@ EOF
   case "$SELECTED_OPTION" in
   "sync")
     log_step "Running: aitk tooling sync"
-    exec "$PROJECT_ROOT/scripts/tooling/sync.sh" base .
+    exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
     ;;
   "sync-drift")
     mkdir -p docs
@@ -58,7 +56,7 @@ EOF
     log_step "Running: aitk tooling sync base"
     log_info "docs/development.md is pre-populated with a drifted copy."
     log_info "After sync, diff HEAD -- docs/development.md should be empty."
-    exec "$PROJECT_ROOT/scripts/tooling/sync.sh" base .
+    exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
     ;;
   "ref")
     log_step "Running: aitk tooling ref"
@@ -66,14 +64,14 @@ EOF
     ;;
   "monorepo")
     log_step "Staging base tooling at repo root"
-    AITK_NON_INTERACTIVE=1 bash "$PROJECT_ROOT/scripts/tooling/sync.sh" base .
+    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
     bunx husky
     mkdir -p frontend
 
     log_step "Running: aitk tooling sync vite-react ./frontend --skip base"
     log_info "Expected: frontend gets web and vite-react configs, no base configs."
     log_info "Expected: only the root .husky exists, no frontend/.husky."
-    exec "$PROJECT_ROOT/scripts/tooling/sync.sh" vite-react ./frontend --skip base
+    exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync vite-react ./frontend --skip base
     ;;
   "create")
     log_step "Running: aitk tooling create"

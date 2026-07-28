@@ -9,7 +9,7 @@ Read `.claude/context/tooling.md` for system overview, configs vs seeds vs refer
 
 ## Layer model
 
-Stack-specific configs override extends-chain configs at the same relative path. `collect_stack_configs` in `scripts/tooling/sync.sh` walks current-first. Refer to `.claude/context/tooling.md` for the layer inventory and what each one owns.
+Stack-specific configs override extends-chain configs at the same relative path. `scan` in `src/tooling/scan.ts` walks current-first. Refer to `.claude/context/tooling.md` for the layer inventory and what each one owns.
 
 ## Manifest rules
 
@@ -18,7 +18,7 @@ Stack-specific configs override extends-chain configs at the same relative path.
 - `[scripts]` entries add only when the key is missing in `package.json`. Scaffolds win for keys both sides define. Use `[scripts.override]` to force-replace a key, for anti-patterns the scaffold ships by default.
 - `tooling/claude/` is excluded from stack discovery. It is storage for `aitk claude` only. Do not route claude work through the `aitk tooling` CLI, and do not add new exclusions without updating `scripts/lib/tooling.sh`.
 - When a golden config under `tooling/<stack>/configs/` extends or references a package, install that package as a devDependency at toolkit root. The deps are IDE-only, for TypeScript server resolution against the workspace `tsconfig.json`. Do not suppress via `.vscode/settings.json`.
-- Manifest `[gitignore]` blocks must use single-line array syntax (`"# Group" = ["a/", "b/"]`). Multi-line arrays parse as empty in `scripts/lib/inject.sh:199`. List only paths the stack's tools generate beyond the scaffold's default `.gitignore`. Run the scaffold in `/tmp` first to confirm what it already writes.
+- Manifest `[gitignore]` blocks must use single-line array syntax (`"# Group" = ["a/", "b/"]`). Multi-line arrays parse as empty. List only paths the stack's tools generate beyond the scaffold's default `.gitignore`. Run the scaffold in `/tmp` first to confirm what it already writes.
 - `[gitignore]` group keys are single-word labels (`# VSCode`, `# Python`), not multi-word phrases. Keeps `.gitignore` comment headers terse and stable.
 - Manifests with `runtime != "bun"` must leave `[dependencies.dev]` empty until `inject_tooling_manifest` branches on `runtime`. Document a manual `<runtime> add` step in the stack's `reference.md` scaffold checklist.
 
@@ -47,7 +47,7 @@ When adding deps or scripts to `manifest.toml`:
 
 ## Verify command
 
-`aitk tooling verify <stack>` is the end-to-end validator. Scaffolds fresh, syncs, runs `lint:fix`, `check`, `test:e2e`, and `screenshot`, asserts screenshot artifacts, reports a results matrix. Use it after any change to `tooling/<stack>/`, `scripts/tooling/sync.sh`, or `scripts/lib/inject.sh`.
+`aitk tooling verify <stack>` is the end-to-end validator. Scaffolds fresh, syncs, runs `lint:fix`, `check`, `test:e2e`, and `screenshot`, asserts screenshot artifacts, reports a results matrix. Use it after any change to `tooling/<stack>/` or `src/tooling/`.
 
 - The `[verify] prepare` manifest field declares post-scaffold setup that runs before sync. Use for integrations that can not ship as golden configs (astro's `bunx astro add react`).
 - Tmp dir auto-removes on success. Keeps on failure. Use `--keep` to inspect after a green run.
@@ -59,7 +59,7 @@ When adding deps or scripts to `manifest.toml`:
 
 ## Cspell seeds
 
-Seed files merge across layers. Each stack contributes words to the target's `.cspell/tech-stack.txt` via `merge_seed_file` in `scripts/lib/inject.sh`. Do not duplicate terms across layers. Place each word in the narrowest layer that needs it (toolkit-ecosystem → `base`, web-universal → `web`, framework-specific → the adapter).
+Seed files merge across layers. Each stack contributes words to the target's `.cspell/tech-stack.txt` via the seed merge in `src/tooling/inject.ts`. Do not duplicate terms across layers. Place each word in the narrowest layer that needs it (toolkit-ecosystem → `base`, web-universal → `web`, framework-specific → the adapter).
 
 ## Reference
 
