@@ -7,85 +7,59 @@ description: Stacks, configs, seeds, references, manifests
 
 ## Overview
 
-The tooling system ships golden configs layered across a `base` → `web` → framework chain. Each layer owns a slice. `base` is universal (prettier, cspell, commitlint, husky, shell). `web` is web-universal (ESLint, Vitest, Playwright, Tailwind, CI, screenshots). Framework adapters (`vite-react`, `astro`) ship only the framework-specific deltas (vite.config, framework tsconfig, stack-specific vitest helpers). The `python` stack extends `base` directly without going through `web`, runs on `uv` instead of `bun`, and layers ruff/mypy/pytest/coverage sidecars on top. Sync auto-discovers new stacks, so adding one requires no infrastructure changes.
+Owns the golden configs a project inherits, layered across a `base` to `web` to framework chain where each layer ships only its own slice. A stack is a folder holding configs, seeds, a manifest, and a reference. Sync auto-discovers new stacks, so adding one requires no infrastructure change.
 
-## Structure
+## Layout
 
-```plaintext
-tooling/
-├── base/
-│   ├── configs/       ← authoritative, always overwrite on sync (prettier, commitlint, husky, shell)
-│   ├── seeds/         ← user-owned, preserved on sync (cspell, lint-staged, prettierignore, dictionary terms, dev/ci context entries)
-│   ├── manifest.toml  ← extends chain, deps, scripts, gitignore
-│   └── reference.md
-├── web/
-│   ├── configs/       ← web-universal golden configs (eslint.config.js, src/test/setup.ts, e2e/screenshot.ts, .vscode, CI, verify.sh)
-│   ├── seeds/         ← cspell terms for web tooling
-│   ├── manifest.toml  ← extends = "base", shared web deps and scripts
-│   └── reference.md   ← anti-patterns and opinions only
-├── vite-react/
-│   ├── configs/       ← framework glue (vite.config.ts, vitest.config.ts, playwright.config.ts, tsconfig.json)
-│   ├── seeds/         ← user-owned dictionary seeds
-│   ├── manifest.toml  ← extends = "web", vite deps and scripts
-│   └── reference.md   ← adapter delta: Chrome extension variant, setup script
-├── astro/
-│   ├── configs/       ← astro.config.mjs, getViteConfig vitest, astro tsconfig, astro-aware eslint
-│   ├── manifest.toml  ← extends = "web", astro deps and scripts
-│   └── reference.md   ← adapter delta: astro check, island scope, prettier-plugin-astro
-├── python/
-│   ├── configs/       ← ruff.toml, mypy.ini, pytest.ini, .coveragerc, .python-version, scripts/verify.sh
-│   ├── seeds/         ← cspell terms for Python tooling
-│   ├── manifest.toml  ← extends = "base", uv runtime, lint/typecheck/test scripts wrapping `uv run`
-│   └── reference.md   ← anti-patterns, sidecar config rationale, hybrid project shape
-└── claude/            ← storage for `aitk claude`, excluded from tooling discovery, see .claude/context/claude-plugin.md
-```
+- `tooling/<stack>/` owns one stack, always with a `manifest.toml` and a `reference.md`
+- `tooling/<stack>/configs/` owns golden files that always overwrite on sync
+- `tooling/<stack>/seeds/` owns user-owned files that sync preserves
+- `tooling/claude/` owns storage for `aitk claude`, excluded from stack discovery
+- `scripts/tooling/` owns the sync, ref, create, and list subcommands
 
-Stack-specific configs override the extends chain. `collect_stack_configs` in `scripts/tooling/sync.sh` walks the current stack first. Files seen there block the same relative path from being copied from parent layers.
+| Stack        | Extends | Ships                                                                   |
+| ------------ | ------- | ----------------------------------------------------------------------- |
+| `base`       | -       | Universal: prettier, cspell, commitlint, husky, shell                   |
+| `web`        | base    | Web-universal: ESLint, Vitest, Playwright, Tailwind, CI, screenshots    |
+| `vite-react` | web     | Framework glue: vite.config, vitest.config, playwright.config, tsconfig |
+| `astro`      | web     | Framework glue: astro.config, getViteConfig vitest, astro-aware eslint  |
+| `python`     | base    | `uv` runtime plus ruff, mypy, pytest, and coverage sidecars             |
 
-`tooling/claude/` is an exception. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI. Treat it as storage, not a stack.
+## Decisions
 
-## Stack exclusions
+- Configs always overwrite and seeds are preserved. The boundary is structural versus user-extensible: linters and formatters with no project-specific surface ship as configs, while files projects routinely extend (`cspell.json`, `.lintstagedrc`) ship as seeds.
+- Stack-specific configs override the extends chain. `collect_stack_configs` walks the current stack first, and a file seen there blocks the same relative path from every parent layer.
+- `python` extends `base` directly rather than going through `web`. It runs on `uv` instead of `bun`, so the web layer's assumptions do not apply.
+- Dictionary seeds merge rather than copy-once. `.cspell/*.txt` accumulates project terms over time, so sync appends new entries and sorts. Every other seed type copies once and is then left alone.
+- Gitignore merging is additive only and existing entries are never touched, so a project can reorder or annotate its own ignores without sync fighting it.
+- Scripts are never overwritten except through `[scripts.override]`, which exists for two cases: scaffolds that ship an anti-pattern by default, and toolkit-owned wrappers whose body must stay in lockstep with the shipped shell scripts.
+- References shrank to anti-patterns and opinions once golden configs landed. The config is the source, the reference carries only what a config cannot express.
+- Stacks do not compose horizontally. Single-root polyglot is unsupported, and a monorepo uses the subfolder pattern instead.
+- `tooling/claude/` is storage, not a stack. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI, so `TOOLING_STACK_EXCLUDE` keeps it out of discovery.
 
-`scripts/lib/tooling.sh` centralizes the exclusion list via `TOOLING_STACK_EXCLUDE` and exposes `list_tooling_stacks` and `is_tooling_stack_excluded`. The four tooling subcommands (`list`, `ref`, `sync`, `create`) consume the helper for discovery and name validation. Excluded names print a redirect error pointing at the correct CLI and exit 1.
+## Gotchas
 
-- `claude` is the current exclusion. Route claude work through `aitk claude` instead.
-- Any future folder under `tooling/` that is not a real stack routes through the same helper.
-
-## Configs, seeds, references, and generated files
-
-Configs are golden files and the source of truth. On sync they always overwrite the target. Drift is always wrong. `base`, `web`, `vite-react`, and `astro` all ship golden configs. Layer precedence: current stack overrides extends chain. So `vite-react/configs/eslint.config.js` would win over `web/configs/eslint.config.js` at the same relative path. The boundary is structural vs user-extensible: linters and formatters with no project-specific surface (prettier, commitlint, ruff, mypy, eslint, vite) ship as configs. Files projects routinely extend with extra imports, dictionaries, or pipeline steps (`cspell.json`, `.lintstagedrc`) ship as seeds instead.
-
-Seeds are user-owned files that grow with the project. Dictionary files (`.cspell/*.txt`) accumulate project-specific terms over time, so sync merges new entries and sorts the file. The base stack seeds two dictionaries. `tech-stack.txt` holds tool and library names, `project-terms.txt` holds project and domain nouns. A project that outgrows the split adds its own categorized dictionary under `.cspell/` and registers it in `cspell.json`, and the toolkit seeds only these two by default. The `base` stack also seeds `cspell.json` and `.lintstagedrc` as copy-once root configs that projects extend, plus `.claude/context/development.md` and `.claude/context/ci.md` as short agent-facing context entries with `title` and `description` frontmatter so they slot into the project's `.claude/context/index.md` walker if indexes are installed. For the `claude` stack, state documents (`REQUIREMENTS.md`, `ARCHITECTURE.md`, etc.) are seeds. The user creates them once and owns them from that point on. Non-`.txt` seeds are copy-once: sync drops them on first install and leaves them alone after that. To re-seed a structured file, delete it and re-sync.
-
-References are `reference.md` files synced to `.claude/tooling/<stack>.md` in target projects. They are AI audit context. Sync them with `aitk tooling ref`, which respects the extends chain. With golden configs in place, references shrink to anti-patterns, opinions, and framework-adapter notes. They carry the rationale the configs cannot express on their own.
-
-Generated files are derived from target state, not copied from a source. On install and sync the CLI rewrites them from what is present in the target. `.claude/standards/index.md` uses this pattern: each lists only the files actually installed. Hand edits are lost on the next sync.
-
-Gitignore entries are declared in `manifest.toml` under `[gitignore]` as named groups. They merge automatically on sync. The process is additive only. Existing entries are never touched. Group keys use single-word labels (`# VSCode`, `# Python`) so the comment headers stay terse and stable across renames.
-
-Dependencies and scripts declared in `manifest.toml` under `[dependencies.dev]` and `[scripts]` are injected into `package.json`. Missing entries are added. Existing scripts are never overwritten. Existing dependencies are preserved unless a manifest pin's major version does not match the installed major, in which case sync re-installs to enforce the pin.
-
-## Extends chain
-
-`manifest.toml` declares `extends = "base"`. The full chain resolves recursively: base applies first, the derived stack overlays second. This applies to configs, seeds, references, and gitignore equally.
+- Commit golden config changes with `--no-verify`. Lint-staged runs against the template files themselves, not project source.
+- In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped by the parser.
+- Each `[gitignore]` group must use single-line array syntax. Multi-line arrays parse as empty.
+- Injection runs `bun add -D`, so a manifest whose runtime is not `bun` must leave `[dependencies.dev]` empty and document a manual install step in its `reference.md`.
+- `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
+- Syncing a monorepo subtree without `--skip base` re-drops husky per subtree. Git honors only one `core.hooksPath`, so the extra hook dirs silently break.
+- `--skip base` relies on the layer boundary holding: repo-root-once configs live in `base`, per-root configs live in `web` and the adapters. Moving a per-root config into `base` would break the split.
+- Non-`.txt` seeds are copy-once. To re-seed a structured file, delete it and sync again.
+- Per-stack `ci.md` and `development.md` seeds are not shipped, because seeds are user-owned and never overwritten. Stack references carry `## CI docs (extend)` sections telling the agent which rows to append instead.
 
 ## Manifest authoring
 
-Each stack has a `manifest.toml` that controls what sync does. Below is the full structure with every supported block.
+Each stack has a `manifest.toml` that controls what sync does. `[stack]` is the only required block.
 
 ```toml
 [stack]
 name = "stack-name"     # must match the folder name under tooling/
 extends = "parent"      # parent stack to inherit from, empty string if none
 runtime = "runtime-name"      # reserved: package manager for this stack (not active yet)
-scaffold = "scaffold-command"  # bootstrap command, read today by sandbox/tooling/upstream.sh, not yet by aitk tooling sync
+scaffold = "scaffold-command"  # bootstrap command, read today by sandbox/tooling/upstream.sh
 ```
-
-`name` must match the folder name exactly. `extends` is the parent stack. Configs, seeds, scripts, deps, and gitignore all resolve through the chain. Leave empty if no parent.
-
-`runtime` is reserved and not yet read by any script. `scaffold` is partially active: `scripts/sandbox/tooling/upstream.sh` reads it today to provision raw upstream templates. It is not yet used by `aitk tooling sync`. Declare both fields now so the intent is captured. Use an empty string if not applicable.
-
-`[stack]` is the only required block. `[dependencies.dev]`, `[scripts]`, and `[gitignore]` are all optional. Omit any section the stack does not need.
 
 ```toml
 [dependencies.dev]
@@ -98,45 +72,43 @@ packages = []
 "# group-label" = ["pattern/", ".file"]
 ```
 
-`[dependencies.dev]` injects into `devDependencies` in the target `package.json`. Only missing packages are added. Include a version tag or use `@latest`. Injection runs `bun add -D`, so manifests whose `runtime` is not `bun` must leave this section empty and document a manual install step in their `reference.md`.
-
-`[scripts]` injects into the `scripts` block of the target `package.json`. Only missing keys are added. Both key and value must use double quotes. Unquoted keys are not parsed.
-
-`[scripts.override]` force-replaces existing keys on every sync. Use it for two cases: scaffolds that ship an anti-pattern by default (such as `vite-react` shipping `build = tsc -b && vite build` that the web reference bans), and toolkit-owned wrapper scripts (like `screenshot`) whose body changes across releases and must stay in lockstep with the shipped shell scripts.
-
-`[gitignore]` appends to the target `.gitignore`. The quoted header becomes a comment, each path is appended as its own line. Additive only. Each group must use single-line array syntax (`"# group" = ["a/", "b/"]`). Multi-line arrays parse as empty.
+`[dependencies.dev]` injects into `devDependencies`, adding only missing packages. `[scripts]` injects into the `scripts` block, adding only missing keys. `[gitignore]` appends each group as a comment header plus one line per path. Group keys use single-word labels (`# VSCode`, `# Python`) so headers stay stable across renames.
 
 ```toml
 [verify]
 prepare = "command to run after scaffold, before sync"
 ```
 
-`[verify] prepare` declares a post-scaffold, pre-sync setup command for `aitk tooling verify`. Use it for integrations that can not ship as golden configs, like astro's `bunx astro add react --yes`. Optional.
+`[verify] prepare` declares a post-scaffold, pre-sync setup command for `aitk tooling verify`. Use it for integrations that cannot ship as golden configs, such as astro's `bunx astro add react --yes`. Optional.
 
 ## CLI
 
-| Command                           | What it does                                                                        |
-| --------------------------------- | ----------------------------------------------------------------------------------- |
-| `aitk init [path] [flags]`        | Bootstrap a project with base tooling and toolkit domains                           |
-| `aitk tooling [stack] [path]`     | Full sync: configs, seeds, deps, gitignore, and reference docs (`--no-ref` to skip) |
-| `aitk tooling ref [stack] [path]` | Sync reference docs only (no configs, seeds, or deps)                               |
-| `aitk tooling create`             | Create a new stack folder with stub manifest and reference (requires confirmation)  |
-| `aitk tooling list [--json]`      | Emit catalog of stacks with extends chain and dep summary                           |
-| `aitk tooling verify <stack>`     | Scaffold into `.claude/.tmp/`, sync, then run `check`, `test:e2e`, and `screenshot` |
+| Command               | What it does                                                    |
+| --------------------- | --------------------------------------------------------------- |
+| `aitk init`           | Bootstrap a project with base tooling and toolkit domains       |
+| `aitk tooling`        | Full sync: configs, seeds, deps, gitignore, and reference docs  |
+| `aitk tooling ref`    | Sync reference docs only                                        |
+| `aitk tooling create` | Create a new stack folder with stub manifest and reference      |
+| `aitk tooling list`   | Emit catalog of stacks with extends chain and dep summary       |
+| `aitk tooling verify` | Scaffold into a temp dir, sync, then run the full project check |
+
+Flags and arguments live in `docs/agents.md`.
 
 ## Common workflows
 
-Bootstrap a new project: `aitk init` installs base configs, Claude workflow, governance, standards, snippets, and wiki in one command. Pass flags to run non-interactively: `--stack <name>`, `--add <rules>`, `--snippets <cat>`, `--skip wiki,standards`. Governance is skipped when `--stack` is absent. The `setup-init` skill resolves these from project detection and runs the chain in one shot.
+Bootstrap a new project with `aitk init`, which installs base configs, Claude workflow, governance, standards, snippets, and wiki in one command. Governance is skipped when `--stack` is absent. The `setup-init` skill resolves the flags from project detection and runs the chain in one shot.
 
-Sync tooling to a project: `aitk tooling` and pick stack and path. For the `vite-react` stack, this installs deps, scripts, gitignore entries, seeds, and drops `.claude/tooling/<stack>.md` across the extends chain for the agent to read. Pass `--no-ref` to skip the reference drop. Pass `--skip <stack>` to drop a layer from the resolved chain, used for monorepo subtrees that already own `base` at the repo root (see the monorepo workflow below).
+Sync tooling with `aitk tooling` and pick stack and path. Pass `--no-ref` to skip the reference drop, or `--skip <stack>` to drop a layer from the resolved chain.
 
-Drop reference docs only: `aitk tooling ref vite-react ../my-app` copies `.claude/tooling/vite-react.md` without touching configs, seeds, or deps. Useful when the stack is already synced and only the reference needs refreshing.
+Set up a multi-language monorepo by letting the repo root own the `base` layer and giving each language its own subfolder:
 
-Update CI and development context entries: the base tooling seeds `.claude/context/ci.md` and `.claude/context/development.md` with the base-level checks and scripts. Stack `reference.md` files contain `## CI docs (extend)` and `## Development docs (extend)` sections that tell the agent which rows to append. Per-stack `ci.md` / `development.md` seeds are not shipped because seeds are user-owned and never overwritten.
+```bash
+aitk init                                              # base at the root
+aitk tooling sync vite-react ./frontend --skip base
+aitk tooling sync python ./backend --skip base
+```
 
-Scaffold a new stack: `aitk tooling create` generates the stub structure in `tooling/<name>/`.
-
-Set up a multi-language monorepo: the repo root owns the `base` layer (husky, prettier, cspell, commitlint, CI, editorconfig), and each language lives in its own subfolder. Run `aitk init` once at the root, then sync each subtree with its stack and `--skip base` so the shared layer is not re-dropped: `aitk tooling sync vite-react ./frontend --skip base` and `aitk tooling sync python ./backend --skip base`. Without `--skip base`, every subtree re-drops husky and the shared configs, and since git honors only one `core.hooksPath` the extra hook dirs silently break. `--skip <stack>` removes the named layer and its parents from the resolved chain across configs, seeds, deps, scripts, gitignore, and refs. It relies on the layer boundary holding: repo-root-once configs live in `base`, while per-root configs (eslint, vitest, tsconfig, vite) live in `web` and the framework adapters, so a subtree still gets its own language configs and its own `.claude/tooling/<stack>.md` audit docs. A future `base` reshuffle that moves a per-root config into `base` would break this split, so keep it intact. Stacks do not compose horizontally, so single-root polyglot (two languages under one `package.json`) is not supported. Use the subfolder pattern instead.
+`--skip <stack>` removes the named layer and its parents across configs, seeds, deps, scripts, gitignore, and refs. Each subtree still gets its own language configs and its own `.claude/tooling/<stack>.md` audit doc.
 
 ## Testing
 
@@ -154,9 +126,3 @@ Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync l
 6. Run `aitk tooling verify <name>` to validate end-to-end
 
 Sync auto-discovers the new stack.
-
-## Notes
-
-- Commit golden config changes with `--no-verify`. Lint-staged runs on the template files themselves, not project source.
-- Tooling configs are concrete files and skip the governance build compilation step.
-- In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped by the parser.
