@@ -7,64 +7,50 @@ description: Sandbox scenarios for verifying domain flows
 
 ## Overview
 
-Sandboxes provision isolated project states for testing scripts, configs, and AI commands. Each sandbox defines a known starting state with clear instructions for what to run and what to expect.
+Owns the scenarios that provision isolated project states for testing scripts, configs, and skills. Each scenario defines a known starting state plus instructions for what to run and what to expect. The scripts live under `scripts/sandbox/` but the authoring contract is its own thing, which is why this entry is separate from `scripts.md`.
 
-The `aitk-sandbox-check` skill maps changed plugin skills and changed `scripts/` files on a feature branch to their matching scenarios, so an e2e gap on a script edit surfaces the same way it does on a skill edit.
+## Layout
 
-## Structure
+- `scripts/sandbox/` owns the scenario scripts, one folder per category
+- `scripts/sandbox/<category>/` owns one file per command, each holding one or more named scenarios
+- `.sandbox/` owns the provisioned project state at the repo root, recreated per run
 
-```plaintext
-scripts/sandbox/
-├── tooling/
-│   ├── base.sh        ← tests base golden configs
-│   ├── claude.sh      ← tests claude tooling stack configs against anchor repo
-│   ├── python.sh      ← scaffolds with uv, layers base + python configs, runs full check
-│   └── upstream.sh    ← provisions raw upstream templates before golden configs are applied
-├── infra/
-│   ├── init.sh           ← scenarios for aitk init (default, with-flags)
-│   ├── gov.sh            ← interactive tests for governance commands
-│   ├── standards.sh      ← interactive tests for standards commands
-│   ├── snippets.sh       ← interactive tests for snippets commands
-│   ├── claude.sh         ← interactive tests for claude workflow commands
-│   ├── tooling.sh        ← interactive tests for tooling commands
-│   ├── wiki.sh           ← interactive tests for wiki commands
-│   └── indexes.sh        ← scenarios for aitk indexes regen, including lint-staged auto-stage and --no-stage, plus a bootstrap seed for the setup-indexes skill
-├── git/
-│   ├── commit.sh      ← staged changes scenario for testing /git:commit
-│   ├── branch.sh      ← branch rename scenario for testing /git:branch
-│   ├── pr.sh          ← PR description scenario for testing /git:pr
-│   ├── issue.sh       ← file an issue on the anchor remote for testing /git:issue
-│   ├── stage.sh       ← staged changes scenario for testing /git:stage
-│   ├── split.sh       ← scenarios for /git:split (independent, stacked)
-│   └── ship.sh        ← scenarios for /git:ship (without-changelog, with-changelog)
-├── claude/
-│   ├── autoship.sh     ← approved plan on feature branch for testing /claude-autoship
-│   ├── review.sh       ← branch with known bugs for testing /claude-review
-│   ├── roadmap.sh      ← scenarios for /claude-roadmap (draft, update)
-│   ├── pr-review.sh    ← open PR on an anchor repo for testing /claude-pr-review
-│   ├── address-review.sh ← open PR with a seeded finding for testing /claude-address-review
-│   ├── orchestrate.sh  ← seeded roadmap, tasks, and a plan for testing /claude-orchestrate
-│   ├── screencast.sh   ← scenarios for /claude-screencast (with-context, bare)
-│   ├── feature.sh      ← scenarios for /claude-feature (full, small, multi-concern)
-│   ├── ux-audit.sh     ← UI project with seeded design drift for testing /claude-ux-audit
-│   ├── docs.sh         ← stale planning docs after a session pivot for testing /claude-docs
-│   ├── seed-sync.sh    ← drifted seeds for testing /claude-seed-sync
-│   ├── standards-audit.sh ← markdown branch with seeded prose and skill violations for testing /claude-standards-audit
-│   ├── setup-init.sh ← scenarios for /toolkit:setup-init (fresh, vite-react, astro)
-│   ├── design-extract.sh ← tokenized notes app for testing /toolkit:claude-design-extract and aitk design render
-│   ├── design-propose.sh ← greenfield project with personality paragraph for testing /toolkit:claude-design-propose
-│   ├── diagram.sh        ← multi-component project with layered ARCHITECTURE.md for testing /toolkit:claude-diagram
-│   ├── memory.sh         ← seeded .claude/memory/ mix for testing /toolkit:claude-memory-review
-│   ├── setup-verify.sh ← scaffolded project scenarios for testing /toolkit:setup-verify (pass, fail)
-│   └── worktree.sh       ← scenarios for /toolkit:claude-worktree (matched-plan, multi-plan, branch-only)
-├── dev/
-│   ├── comment.sh     ← code comment scenario for testing /dev:comment
-│   └── review.sh      ← branch with known bugs for testing /toolkit:claude-review
-└── docs/
-    └── sync.sh        ← scenarios for /toolkit:docs-sync (feature, chore, noop)
+| Category   | Covers                                                          |
+| ---------- | --------------------------------------------------------------- |
+| `tooling/` | Golden configs per stack, plus raw upstream templates           |
+| `infra/`   | Domain CLI commands: init, gov, standards, snippets, and others |
+| `git/`     | The `git-*` ship-chain skills                                   |
+| `claude/`  | The `claude-*` planning, review, and setup skills               |
+| `dev/`     | Code-level dev skills                                           |
+| `docs/`    | Docs sync scenarios                                             |
+
+Run `aitk sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added.
+
+## Decisions
+
+- Sandboxes are minimal by default: no seeds, no standards, no gov rules, and auto-commit on. A scenario declares only the flags it needs, so the fixture states exactly what it depends on.
+- `claude/` scenarios default to `SANDBOX_INJECT_SEEDS="true"` so each models a real post-`aitk init` project. Two documented exceptions: `setup-init.sh` tests `aitk init` itself, and `autoship.sh` wipes the anchor after injection.
+- The reset contract belongs to the scenario, not the framework. A scenario that touches a real remote closes its own PRs and force-pushes a fresh main, because only the scenario knows what it created.
+- Headless runs pin `--model sonnet` and `--permission-mode acceptEdits` for autonomy and cost control, and assert on structural properties rather than exact wording, since model output varies between runs.
+- Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `aitk sandbox reset` restores without provisioning again.
+
+## Gotchas
+
+- Skip `create` scenarios. They require user input with no default and loop on empty input.
+- Scenarios that add narrative to a seeded file must append with `>>`. Overwriting with `>` clobbers the seed and breaks any test depending on seed-driven behavior. Reserve `>` for fixtures that deliberately model a clean state.
+- Passing a scenario name that matches no option aborts with an `Unknown scenario` error.
+- After provisioning, your terminal cwd may need a refresh. Add a wrapper to `.zshrc` or `.bashrc`:
+
+```bash
+aitk() {
+  command aitk "$@"
+  cd .
+}
 ```
 
-All sandboxes provision into `.sandbox/` at the repo root. Git history initializes fresh each run. A `refs/sandbox/baseline` ref marks the post-setup state for `aitk reset`.
+- On Windows, back-to-back headless runs can briefly fail to wipe `.sandbox` with a busy-lock. Re-run or `aitk sandbox clean` first.
+- An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the catalog.
+- Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
 
 ## Running
 
@@ -75,16 +61,9 @@ aitk sandbox reset                  # restore sandbox to baseline
 aitk sandbox clean                  # wipe sandbox entirely
 ```
 
-When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Multi-scenario scripts call `select_or_route_scenario` from `lib/ui.sh`, which reads `SANDBOX_SCENARIO` and skips the picker when set. Passing a scenario name that does not match any option aborts with an `Unknown scenario` error. Skip `create` scenarios. They require user input with no default and loop on empty input.
+When a scenario argument is passed, `manage-sandbox.sh` sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE=1` automatically. Multi-scenario scripts call `select_or_route_scenario` from `lib/ui.sh`, which reads `SANDBOX_SCENARIO` and skips the picker when set.
 
-After provisioning, your terminal cwd may need a refresh. Add this to `.zshrc` or `.bashrc`:
-
-```bash
-aitk() {
-  command aitk "$@"
-  cd .
-}
-```
+The `aitk-sandbox-check` skill maps changed plugin skills and changed `scripts/` files on a feature branch to their matching scenarios, so an e2e gap on a script edit surfaces the same way it does on a skill edit.
 
 ## Headless skill testing
 
@@ -98,9 +77,7 @@ scripts/sandbox/run.sh claude:feature "/toolkit:claude-feature add a widget" sma
 
 The prompt is the explicit skill invocation. Use the `/toolkit:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
 
-The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`. Assert on structural properties rather than exact wording, since model output varies. A run pins `--model sonnet` and `--permission-mode acceptEdits` for autonomy and cost control. Override the model, allowed tools, or turn cap with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, and `AITK_SKILL_TEST_MAX_TURNS`.
-
-Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope. On Windows, back-to-back runs can briefly fail to wipe `.sandbox` with a busy-lock. Re-run or `aitk sandbox clean` first. An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the whole catalog.
+The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`. Override the model, allowed tools, or turn cap with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, and `AITK_SKILL_TEST_MAX_TURNS`.
 
 ## Writing a sandbox
 
@@ -120,7 +97,7 @@ stage_setup() {
 }
 ```
 
-Multi-scenario files list options before calling `select_or_route_scenario`. Use `: ` as the separator between option name and description, per `.claude/standards/prose.md`. No em dashes. Pad option names so the `:` separators align vertically across the list.
+Multi-scenario files list options before calling `select_or_route_scenario`. Use `: ` as the separator between option name and description, per `.claude/standards/prose.md`. Pad option names so the `:` separators align vertically across the list.
 
 ```bash
 log_info "install/ : clean target, no rules present"
@@ -141,14 +118,7 @@ use_config() {
 }
 ```
 
-By default, sandboxes are minimal: no seeds, no standards, no gov rules, and auto-commit is on. Declare only the flags you need.
-
-`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs. Scenarios that add project narrative to any seeded file (`CLAUDE.md`, `.claude/TASKS.md`, `.claude/ARCHITECTURE.md`, etc.) should append (`>>file`) so the seed rules flow through and the project context layers on top. Overwriting (`>file`) clobbers the seed and breaks any test that depends on seed-driven behavior. Reserve `>file` for scenarios that intentionally model a clean state (test sentinels, "no toolkit installed" fixtures).
-
-Rule for `claude/` scenarios: default to `SANDBOX_INJECT_SEEDS="true"` so each scenario models a real post-`aitk init` project state. Two documented exceptions:
-
-- `setup-init.sh`: tests `aitk init` itself, so pre-injecting seeds would invalidate the test.
-- `autoship.sh`: the anchor wipe in `stage_setup` runs after asset injection and would delete the seeded files.
+`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs.
 
 ### use_anchor
 
@@ -168,11 +138,11 @@ After `stage_setup` completes, `manage-sandbox.sh` unions the `claude/skills/**/
 
 Set `ANCHOR_REPO="toolkit-sandbox"` when a scenario needs a real GitHub remote for `gh` calls (open PRs, push branches, merge, edit PR bodies). The repo at `${GITHUB_ORG}/toolkit-sandbox` exists for this purpose and is treated as fully disposable. Any scenario for a `gh`-dependent skill should default to this pattern.
 
-The reset contract is the scenario's responsibility, not the framework's. Each scenario:
+Each scenario owns its own reset:
 
 1. Closes any open PRs it will recreate (`gh pr close <branch> 2>/dev/null || true`)
 2. Deletes any remote branches it will recreate (`git push origin --delete <branch> -q 2>/dev/null || true`)
 3. Force-pushes a fresh main (`git push --force origin HEAD:main`)
 4. Recreates branches and opens PRs
 
-Wrap each cleanup call with `2>/dev/null || true` so a missing branch or PR from the prior run does not abort the scenario. The remote starts empty for every run.
+Wrap each cleanup call with `2>/dev/null || true` so a missing branch or PR from the prior run does not abort the scenario.

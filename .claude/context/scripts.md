@@ -7,74 +7,44 @@ description: Bash scripts, lib functions, sandbox hooks
 
 ## Overview
 
-`scripts/` contains core maintenance scripts, sandbox provisioning, domain entry points, and shared library functions. Lib functions are sourced, never executed directly. Each `manage-*.sh` dispatches to subcommands only: no domain logic lives in entry points directly.
+Owns every bash script in the repo: the domain entry points behind each `aitk` command, repo maintenance, sandbox provisioning, and the shared library functions the rest source. The TypeScript side that parses arguments and dispatches here lives in `cli.md`.
 
-Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected.
+## Layout
 
-## Structure
+- `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain
+- `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb
+- `scripts/lib/` owns shared functions, sourced and never executed directly
+- `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
-```plaintext
-scripts/
-├── manage-sync.sh       ← aitk sync entry point
-├── manage-gov.sh        ← aitk gov entry point
-├── manage-standards.sh  ← aitk standards entry point
-├── manage-claude.sh     ← aitk claude entry point
-├── manage-sandbox.sh    ← aitk sandbox entry point
-├── manage-tooling.sh    ← aitk tooling entry point
-├── manage-snippets.sh       ← aitk snippets entry point
-├── manage-wiki.sh           ← aitk wiki entry point
-├── manage-indexes.sh        ← aitk indexes entry point
-├── config.sh            ← shared project config (GITHUB_ORG with git remote fallback)
-├── core/
-│   ├── bootstrap.sh     ← installs deps, links the CLI, appends Claude Code aliases to ~/.zshrc
-│   ├── verify.sh        ← runs all checks: format, spell, shell, index and consumed-copy drift
-│   ├── install-check.sh ← clones repo into tmp, runs aitk init, asserts scaffold lands
-│   ├── update.sh        ← interactive dependency update + verify
-│   ├── clean.sh         ← wipes node_modules, clears cache, reinstalls
-│   ├── snapshot.sh      ← writes PROJECT-SNAPSHOT.md to .claude/.tmp/project/
-│   ├── regen-indexes.sh ← regenerates standards/index.md and sibling catalogs
-│   └── regen-claude-copies.sh ← mirrors standards/ and snippets/ into .claude/ consumed copies
-├── gov/
-│   ├── install.sh       ← bootstraps rules for a stack into a target project, supports --add for extras
-│   ├── sync.sh          ← diffs and updates rules already present in target
-│   ├── build.sh         ← concatenates installed rules into .claude/.tmp/gov/rules.md
-│   └── list.sh          ← emits catalog of stacks and rules, supports --json for skills
-├── tooling/
-│   ├── sync.sh          ← full tooling sync: configs, seeds, deps, scripts, gitignore
-│   ├── ref.sh           ← drops reference docs only
-│   ├── create.sh        ← creates new stack stub
-│   └── list.sh          ← emits catalog of stacks with extends chain and dep summary, supports --json
-├── snippets/
-│   ├── install.sh       ← copies snippets for a category into a target project, preserving folder structure
-│   ├── sync.sh          ← diffs and updates snippets already present in target
-│   ├── create.sh        ← creates a new snippet file in the correct category folder
-│   └── list.sh          ← emits catalog of categories and entries, supports --json
-├── standards/
-│   └── list.sh          ← emits catalog of standards with descriptions, supports --json
-├── wiki/
-│   └── init.sh          ← scaffolds wiki/ folder with stub index.md
-├── indexes/
-│   └── regen.sh         ← regenerates index.md files, supports --dry-run, --json, positional paths, and auto-stage of rewritten indexes when run inside a git repo (--no-stage to opt out)
-├── sandbox/             ← scenario scripts, see .claude/context/sandbox.md
-└── lib/
-    ├── ui.sh            ← logging functions, color palette, select_option
-    ├── inject.sh        ← tooling injection helpers: configs, seeds, gitignore, deps
-    ├── gov.sh           ← strip_frontmatter, build_rules_payload, rule_subdir
-    ├── tooling.sh       ← list_tooling_stacks, is_tooling_stack_excluded
-    ├── index.sh         ← read_frontmatter_field, extract_frontmatter, list_indexes, write_index, walk_and_write_indexes
-    └── sandbox-git.sh   ← resolve_sandbox_git_identity, configure_sandbox_git_identity
-```
+## Decisions
+
+- Entry points dispatch only. No domain logic lives in a `manage-*.sh`, so a command's behavior is always one file down and the dispatcher stays readable.
+- `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
+- Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
+- The timeline frame opens in the dispatcher rather than in each subcommand. Prompts and `log_*` assume a frame is already open, so opening it at the top prevents dangling output on error paths.
+
+## Gotchas
+
+- Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected.
+- `exec` replaces the process and drops the parent trap, so every subcommand re-arms `trap close_timeline EXIT` itself before any early exit, including `--json` paths.
+- Subcommand scripts never emit their own `┌`. The dispatcher already did, and a second one produces two frames per invocation.
+- The optional rule-name filter in `build_rules_payload` has no caller today. It is kept because the signature is shared surface.
+- `TOOLING_STACK_EXCLUDE` currently holds only `claude`. Excluded names print a redirect error pointing at the correct CLI and exit 1.
+- When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
 
 ## Core scripts
 
 | Script             | `bun run`   | What it does                                                                                                      |
 | ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | `bootstrap.sh`     | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable |
-| `verify.sh`        | `check`     | Runs format, format check, spell check, shell check, and index drift check in sequence                            |
+| `verify.sh`        | `check`     | Runs format, format check, index drift, consumed-copy drift, skill-reference drift, spell, shell, and tests       |
 | `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                |
 | `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                 |
 | `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                    |
 | `regen-indexes.sh` |             | Walks the repo and rewrites every `index.md` from each folder's frontmatter, skipping vendored and scratch paths  |
+
+CI runs only the format, spell, and shell stages. The drift checks and the test suite are enforced by the pre-push hook alone. See `ci.md`.
 
 ## manage-sync.sh
 
@@ -88,19 +58,15 @@ The git workflow step is skipped if the target is not a git root (no `.git/`). W
 
 ## UI framing across exec boundaries
 
-Every `manage-*.sh` dispatcher calls `open_timeline "aitk <domain>"` and `trap close_timeline EXIT` at the top of `main()`, before any `exec`. Because `exec` replaces the process and drops the parent trap, each subcommand script under `scripts/<domain>/` re-arms `trap close_timeline EXIT` itself, before any early `exit` (including `--json` paths). Subcommand scripts do **not** open their own `┌`. The manager already did. This keeps exactly one frame per invocation on stderr.
+`scripts/manage-tooling.sh` is the reference manager. It opens the frame unconditionally in `main()`, and `scripts/tooling/{list,ref,sync,create}.sh` set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
 
-- `scripts/manage-tooling.sh` is the reference manager. It opens the frame unconditionally in `main()`.
-- `scripts/tooling/{list,ref,sync,create}.sh` set their own EXIT trap and emit section headers via `log_step`, but never emit `┌`.
-- Prompts and `log_*` calls assume a frame is open. Opening the frame at the top of the manager prevents dangling `│` output on error paths.
-
-See `docs/agents.md` for the canonical output shape that this framing produces, and the `bash-script` plugin skill for the authoring contract when generating new domain scripts.
+See `docs/agents.md` for the canonical output shape this framing produces, and the `bash-script` plugin skill for the authoring contract when generating new domain scripts.
 
 ## lib
 
 ### `ui.sh`
 
-Source this in any script that needs terminal output. `log_*` functions write to stderr so structured output on stdout pipes clean through wrappers. Use `printf` or `echo` without redirection for data meant to be consumed. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default value without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`. Also provides the color palette. When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`.
+Source this in any script that needs terminal output. When `AITK_NON_INTERACTIVE=1` is set, `select_option` auto-selects the first option and `ask` returns the default without blocking. `select_or_route_scenario` reads `SANDBOX_SCENARIO` and skips the picker when set, letting agents target a specific scenario via `aitk sandbox <cat>:<cmd> <scenario>`. Also provides the color palette.
 
 | Function                                                              | What it does                                                                               |
 | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -114,7 +80,7 @@ Source this in any script that needs terminal output. `log_*` functions write to
 
 ### `inject.sh`
 
-Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key distinction: configs always overwrite, seeds preserve user edits. `.txt` seeds are cspell word lists, so sync merges new lines and sorts the file. Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator. It ties together missing dep installation, script injection, and gitignore merging in one call.
+Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. `.txt` seeds are cspell word lists, so sync merges new lines and sorts the file. Other seed types copy on first install and skip on subsequent syncs. `inject_tooling_manifest` is the orchestrator.
 
 | Function                   | What it does                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------ |
@@ -127,7 +93,7 @@ Tooling injection helpers used by `tooling/sync.sh` and sandbox scripts. The key
 
 ### `gov.sh`
 
-Sourced by `gov/build.sh`. Don't duplicate this logic if adding a second consumer. The optional rule-name filter has no caller today, kept because the signature is shared surface.
+Sourced by `gov/build.sh`. Do not duplicate this logic if adding a second consumer.
 
 | Function              | What it does                                                                                                                                   |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -136,7 +102,7 @@ Sourced by `gov/build.sh`. Don't duplicate this logic if adding a second consume
 
 ### `tooling.sh`
 
-Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. `TOOLING_STACK_EXCLUDE` is the constant of names to skip (currently `claude`). Excluded names print a redirect error pointing at the correct CLI and exit 1. Any future folder under `tooling/` that is not a real stack routes through the same helper.
+Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Any future folder under `tooling/` that is not a real stack routes through the same helper.
 
 | Function                    | What it does                                                     |
 | --------------------------- | ---------------------------------------------------------------- |
