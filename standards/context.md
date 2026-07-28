@@ -67,7 +67,8 @@ Only the `development` entry carries this section. It is not a general-purpose h
 
 - Exhaustive file trees with a description per file. Name folders and their responsibility under `## Layout` instead.
 - Restated `--help` output, flag tables, or JSON shapes.
-- Function-level documentation. Read the code.
+- A catalog a `list` command already returns. Link the command instead, so the entry cannot drift from it.
+- Function-level documentation for implementation modules. Read the code. The exception is the public surface of a shared utility module, where the entry is how a session finds an existing helper instead of duplicating it.
 - Rules. Those go in `.claude/rules/<scope>.md` with a `paths:` glob.
 - Tutorials or human onboarding. Those go in `docs/` if a public audience exists.
 - Generated content (API references). Generate, do not write by hand.
