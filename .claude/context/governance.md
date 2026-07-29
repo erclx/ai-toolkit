@@ -15,7 +15,8 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - `governance/stacks/` owns stack definitions as toml, each declaring an optional extends chain and a flat rules list
 - `src/sync/engine.ts` owns the shared sync engine every domain runs on
 - `src/gov/` owns the gov half: the adapter that feeds the engine, and the rules payload builder behind `build`
-- `scripts/gov/` owns the install and list entry points, the two verbs still on bash
+- `scripts/gov/` owns the list entry point, the one verb still on bash
+- `src/gov/` owns the stack reader, the rule lookup, and the install copy
 
 ## Decisions
 
@@ -71,7 +72,7 @@ Each stack declares an optional `extends` chain and a flat `rules` list. The cha
 | `aitk gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
 | `aitk gov list`    | Emit catalog of stacks and rules                                  |
 
-Flags, arguments, and JSON shapes live in `docs/agents.md`. `sync` and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `install` and `list` still exec bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each prompt to its first option.
+Flags, arguments, and JSON shapes live in `docs/agents.md`. `install`, `sync`, and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `list` still execs bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there chose a whole stack for the caller.
 
 ## Workflow
 

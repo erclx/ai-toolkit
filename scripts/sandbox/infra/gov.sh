@@ -51,7 +51,7 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk gov install astro --add 200-react install/"
-    exec "$PROJECT_ROOT/scripts/gov/install.sh" astro --add 200-react install/
+    exec bun "$PROJECT_ROOT/src/cli.ts" gov install astro --add 200-react install/
     ;;
   "sync")
     log_step "Running: aitk gov sync"

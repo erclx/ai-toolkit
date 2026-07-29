@@ -79,7 +79,7 @@ EOF
     ;;
   "list")
     log_step "Running: aitk tooling list"
-    exec "$PROJECT_ROOT/scripts/tooling/list.sh"
+    exec bun "$PROJECT_ROOT/src/cli.ts" tooling list
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

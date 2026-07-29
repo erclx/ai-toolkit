@@ -103,6 +103,8 @@ User-level pieces (attribution, permission allows, and `.env` denies) live at `~
 
 `aitk claude seeds list [--json|--names]` enumerates the seed docs that `aitk claude init` would copy into a project. Skills consume `--json` to compare a target project's installed copies against the toolkit's current seed source and propose targeted edits. The CLI only emits content. Reconciliation is the skill's job (see `claude-seed-sync`).
 
+The listing reads `planSeeds`, the same function `init` applies, so the two cannot disagree about what a seed install contains. The bash it replaced re-globbed the seeds directory against its own hard-coded subdirectory list, which had drifted: `.claude/context/index.md` was installed by `init` and absent from every listing.
+
 ### sync
 
 Reports whether each seeded project doc is present, then reconciles `.gitignore` against the `[gitignore]` section of `tooling/claude/manifest.toml`: appends any missing entries and prunes entries inside the `# Claude` section that the manifest no longer declares. Removed entries are logged as `-` lines. Never touches seeded project docs, so `.gitignore` is the only file it writes.
