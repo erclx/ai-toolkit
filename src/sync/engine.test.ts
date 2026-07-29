@@ -15,6 +15,7 @@ import {
   applyChanges,
   listInstalled,
   planSync,
+  runDomainSync,
   type SyncAdapter,
 } from '@/sync/engine'
 
@@ -39,14 +40,23 @@ function createAdapter(overrides: Partial<SyncAdapter> = {}): SyncAdapter {
   }
 }
 
+let PREVIOUS_NON_INTERACTIVE: string | undefined
+
 beforeEach(() => {
   ROOT = mkdtempSync(join(tmpdir(), 'aitk-engine-'))
   SOURCE = join(ROOT, 'source')
   TARGET = join(ROOT, 'target')
+  PREVIOUS_NON_INTERACTIVE = process.env.AITK_NON_INTERACTIVE
+  process.env.AITK_NON_INTERACTIVE = '1'
 })
 
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
+  if (PREVIOUS_NON_INTERACTIVE === undefined) {
+    delete process.env.AITK_NON_INTERACTIVE
+  } else {
+    process.env.AITK_NON_INTERACTIVE = PREVIOUS_NON_INTERACTIVE
+  }
 })
 
 describe('listInstalled', () => {
@@ -129,6 +139,37 @@ describe('planSync', () => {
     )
 
     expect(plan.entries[0].state).toBe('orphaned')
+  })
+
+  it('should drop an excluded entry from the report entirely', () => {
+    writeFixture(join(SOURCE, 'index.md'), 'source\n')
+    writeFixture(join(TARGET, '.claude/rules/index.md'), 'stale\n')
+
+    const plan = planSync(
+      createAdapter({
+        isExcluded: (file) => file.relToRoot === 'index.md',
+      }),
+      TARGET,
+    )
+
+    expect(plan.entries).toEqual([])
+    expect(plan.changes).toEqual([])
+  })
+
+  it('should keep classifying entries the exclusion does not match', () => {
+    writeFixture(join(SOURCE, 'index.md'), 'source\n')
+    writeFixture(join(TARGET, '.claude/rules/index.md'), 'stale\n')
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    writeFixture(join(TARGET, '.claude/rules/core/000-const.md'), 'old\n')
+
+    const plan = planSync(
+      createAdapter({
+        isExcluded: (file) => file.relToRoot === 'index.md',
+      }),
+      TARGET,
+    )
+
+    expect(plan.entries.map((entry) => entry.state)).toEqual(['drifted'])
   })
 
   it('should queue a delete for each retired surface', () => {
@@ -247,5 +288,104 @@ describe('applyChanges', () => {
     await expect(
       applyChanges([{ kind: 'delete', dest: path, rel: 'x' }]),
     ).resolves.toBeUndefined()
+  })
+})
+
+describe('runDomainSync', () => {
+  const options = { protectedRoot: '/nowhere' }
+
+  it('should apply drift in a headless run when no policy is set', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    const dest = join(TARGET, '.claude/rules/core/000-const.md')
+    writeFixture(dest, 'old\n')
+
+    const code = await runDomainSync(createAdapter(), TARGET, options)
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('new\n')
+  })
+
+  it('should write nothing in a headless run when the policy refuses', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    const dest = join(TARGET, '.claude/rules/core/000-const.md')
+    writeFixture(dest, 'old\n')
+
+    const code = await runDomainSync(
+      createAdapter({
+        nonInteractive: { kind: 'refuse', message: 'refused', hint: 'run it' },
+      }),
+      TARGET,
+      options,
+    )
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('old\n')
+  })
+
+  it('should skip the completion hook when the policy refuses', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    writeFixture(join(TARGET, '.claude/rules/core/000-const.md'), 'old\n')
+    let fired = false
+
+    await runDomainSync(
+      createAdapter({
+        nonInteractive: { kind: 'refuse', message: 'refused', hint: 'run it' },
+        onComplete: async () => {
+          fired = true
+        },
+      }),
+      TARGET,
+      options,
+    )
+
+    expect(fired).toBe(false)
+  })
+
+  it('should run the completion hook when there are no changes', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, '.claude/rules/core/000-const.md'), 'same\n')
+    let fired = false
+
+    const code = await runDomainSync(
+      createAdapter({
+        onComplete: async () => {
+          fired = true
+        },
+      }),
+      TARGET,
+      options,
+    )
+
+    expect(code).toBe(0)
+    expect(fired).toBe(true)
+  })
+
+  it('should run the completion hook after applying changes', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    const dest = join(TARGET, '.claude/rules/core/000-const.md')
+    writeFixture(dest, 'old\n')
+    let contentAtHook = ''
+
+    await runDomainSync(
+      createAdapter({
+        onComplete: async () => {
+          contentAtHook = readFileSync(dest, 'utf8')
+        },
+      }),
+      TARGET,
+      options,
+    )
+
+    expect(contentAtHook).toBe('new\n')
+  })
+
+  it('should refuse to run against the protected root', async () => {
+    mkdirSync(TARGET, { recursive: true })
+
+    const code = await runDomainSync(createAdapter(), TARGET, {
+      protectedRoot: TARGET,
+    })
+
+    expect(code).toBe(1)
   })
 })

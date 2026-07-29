@@ -59,6 +59,10 @@ export function frameSuccess(command: string, target: string): void {
   )
 }
 
+export function isNonInteractive(): boolean {
+  return process.env.AITK_NON_INTERACTIVE === '1'
+}
+
 /**
  * `nonInteractiveDefault` opts a prompt into the `select_option` behavior from
  * `scripts/lib/ui.sh`, where `AITK_NON_INTERACTIVE=1` resolves to the first
@@ -74,7 +78,7 @@ export async function select<Value>(opts: {
   const count = options.length
   let cursor = 0
 
-  if (opts.nonInteractiveDefault && process.env.AITK_NON_INTERACTIVE === '1') {
+  if (opts.nonInteractiveDefault && isNonInteractive()) {
     process.stderr.write(
       `${GREY}│${NC}\n${GREY}◇${NC} ${message} ${WHITE}${options[0].label}${NC}\n`,
     )

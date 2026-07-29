@@ -4,6 +4,7 @@ import { relative, resolve } from 'node:path'
 import { copyPreservingMode } from '@/copy'
 import {
   intro,
+  isNonInteractive,
   logAdd,
   logError,
   logInfo,
@@ -56,10 +57,27 @@ export interface SyncPlan {
 }
 
 /**
+ * What a headless run does once the plan has changes. Domains whose files the
+ * toolkit owns apply them. Domains whose files a project is expected to edit
+ * refuse, because an unattended overwrite of a customized file is data loss
+ * with no prompt in front of it.
+ */
+export type NonInteractivePolicy =
+  | { readonly kind: 'apply' }
+  | {
+      readonly kind: 'refuse'
+      readonly message: string
+      readonly hint: string
+    }
+
+/**
  * The two holes every domain sync leaves open: where a destination file's
  * source lives, and what counts as a change beyond a plain content diff.
  * Everything else in a sync is identical across gov, snippets, and standards,
  * so it lives in the engine.
+ *
+ * The optional members exist because one adapter needed each of them. Leaving
+ * all three unset reproduces the behavior gov and snippets already had.
  */
 export interface SyncAdapter {
   readonly banner: string
@@ -72,6 +90,12 @@ export interface SyncAdapter {
   locateSource(file: InstalledFile): string | undefined
   /** Surfaces the file walk cannot see, such as a retired doc to delete. */
   collectRetired?(target: string): RetiredSurface[]
+  /** Entries dropped from the walk entirely, reported as neither state. */
+  isExcluded?(file: InstalledFile): boolean
+  /** Defaults to applying, which is what gov and snippets want. */
+  readonly nonInteractive?: NonInteractivePolicy
+  /** Runs after a sync completes, including one that found no changes. */
+  onComplete?(target: string): Promise<void>
 }
 
 /**
@@ -106,6 +130,8 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   const changes: SyncChange[] = []
 
   for (const file of listInstalled(adapter.installedRoot(target), target)) {
+    if (adapter.isExcluded?.(file) === true) continue
+
     const source = adapter.locateSource(file)
 
     if (source === undefined || !existsSync(source)) {
@@ -199,8 +225,17 @@ export async function runDomainSync(
 
   const count = plan.changes.length
   if (count === 0) {
+    await adapter.onComplete?.(resolved)
     outro()
     process.stderr.write(`${GREEN}✓ Everything up to date${NC}\n`)
+    return 0
+  }
+
+  const policy = adapter.nonInteractive ?? { kind: 'apply' }
+  if (policy.kind === 'refuse' && isNonInteractive()) {
+    logWarn(policy.message)
+    logInfo(policy.hint)
+    outro()
     return 0
   }
 
@@ -220,6 +255,7 @@ export async function runDomainSync(
   }
 
   await applyChanges(plan.changes)
+  await adapter.onComplete?.(resolved)
 
   outro()
   process.stderr.write(
