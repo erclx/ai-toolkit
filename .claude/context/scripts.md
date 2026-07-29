@@ -99,6 +99,8 @@ Narrowed to one function. The payload builder that used to live here is `src/gov
 
 The bash `strip_frontmatter` treated the first `---` on any line as the start of a frontmatter block, so a document whose body carried two horizontal rules lost everything between them. `stripFrontmatter` in `src/frontmatter.ts` anchors to the first line instead and leaves such a body intact. The docs migration took the TypeScript reading, which means `aitk docs <topic>` now emits sections the bash silently swallowed.
 
+The divergence is latent on the current corpus. All 22 documents under `docs/` and `.claude/context/` strip byte-identically under both, so the fix guards documents not yet written rather than repairing today's output. Three other inputs diverge and each favors the TypeScript: a file with no trailing newline, a block opening on line 2, and an unterminated block. The last two are the ones worth knowing, since the bash emitted nothing at all for an unterminated block and swallowed a mid-document block that was never frontmatter.
+
 ### `tooling.sh`
 
 Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Any future folder under `tooling/` that is not a real stack routes through the same helper.

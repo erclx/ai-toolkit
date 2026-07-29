@@ -34,4 +34,16 @@ describe('stripFrontmatter', () => {
   it('should drop a frontmatter block that carries no trailing newline', () => {
     expect(stripFrontmatter('---\ntitle: X\n---')).toBe('')
   })
+
+  it('should keep an unterminated block, which is a body rather than frontmatter', () => {
+    const source = '---\ntitle: X\n# Body\nmore\n'
+
+    expect(stripFrontmatter(source)).toBe(source)
+  })
+
+  it('should keep a block that opens on the second line', () => {
+    const source = '\n---\ntitle: X\n---\n# Body\n'
+
+    expect(stripFrontmatter(source)).toBe(source)
+  })
 })
