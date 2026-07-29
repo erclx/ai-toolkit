@@ -41,7 +41,7 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk standards install"
-    exec "$PROJECT_ROOT/scripts/manage-standards.sh" install install/
+    exec bun "$PROJECT_ROOT/src/cli.ts" standards install install/
     ;;
   "sync")
     log_step "Running: aitk standards sync"

@@ -90,11 +90,11 @@ export interface SyncAdapter {
   locateSource(file: InstalledFile): string | undefined
   /** Surfaces the file walk cannot see, such as a retired doc to delete. */
   collectRetired?(target: string): RetiredSurface[]
-  /** Entries dropped from the walk entirely, reported as neither state. */
+  /** Dropped from the walk, so neither matching nor orphaned. */
   isExcluded?(file: InstalledFile): boolean
-  /** Defaults to applying, which is what gov and snippets want. */
+  /** Defaults to applying. */
   readonly nonInteractive?: NonInteractivePolicy
-  /** Runs after a sync completes, including one that found no changes. */
+  /** Runs on a completed sync, including one with no changes. */
   onComplete?(target: string): Promise<void>
 }
 

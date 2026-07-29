@@ -35,7 +35,7 @@ Owns the markdown docs defining developer workflow conventions. They install int
 - A standard authored directly in a target's `.claude/standards/` is project-local and survives sync, which only touches filenames it recognizes from the toolkit source.
 - Do not hand-edit `index.md` in a target. Install and sync rewrite it from the frontmatter of whatever is present.
 - The catalog refresh runs on every completed sync, including one that found no drift, because a standard the toolkit stopped shipping goes stale in the catalog without changing any file the walk compares. It does not run when the headless refusal fires or the prompt is cancelled, since neither completed.
-- A standard missing `title` or `description` makes the regen fail. Sync reports it and finishes rather than aborting, so one malformed file cannot block the rest of the sync.
+- A standard missing `title` or `description` makes the regen fail. Sync reports it, finishes, and exits 0, so one malformed file cannot block the rest of the sync. The bash exited 1 here through `set -e`, after the file writes had already landed, so the tree was the same either way and only the exit code differed.
 - `bun run check` regenerates both the consumed copy and the skill-reference fan-out, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches.
 
 ## Standards
