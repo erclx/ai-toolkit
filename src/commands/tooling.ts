@@ -98,6 +98,7 @@ export function register(program: Command): void {
       .allowUnknownOption()
       .allowExcessArguments(true)
       .passThroughOptions()
+      .helpOption(false)
       .action(async (_opts: unknown, cmd: Command) => {
         await execScript(`tooling/${verb}.sh`, cmd.args)
       })

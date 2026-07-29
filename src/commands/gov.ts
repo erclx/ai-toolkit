@@ -2,7 +2,8 @@ import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, resolve } from 'node:path'
 import type { Command } from 'commander'
-import { execScript, PROJECT_ROOT } from '@/exec'
+import { registerPassThroughVerbs } from '@/commands/pass-through'
+import { PROJECT_ROOT } from '@/exec'
 import { createGovAdapter } from '@/gov/adapter'
 import { buildRulesPayload, listRuleFiles } from '@/gov/payload'
 import { runDomainSync } from '@/sync/engine'
@@ -53,29 +54,7 @@ export function register(program: Command): void {
       process.exitCode = await runBuild(target)
     })
 
-  for (const verb of PASS_THROUGH_VERBS) {
-    gov
-      .command(verb)
-      .description(`Run the gov ${verb} command`)
-      .allowUnknownOption()
-      .allowExcessArguments(true)
-      .passThroughOptions()
-      .helpOption(false)
-      .action(async (_opts: unknown, cmd: Command) => {
-        if (!isHelpRequest(cmd.args)) intro('aitk gov')
-        await execScript(`gov/${verb}.sh`, cmd.args)
-      })
-  }
-}
-
-/**
- * Commander resolves `--help` before an action runs, so a pass-through verb
- * that keeps the built-in help option prints a one-line stub instead of the
- * script's usage. Disabling it lets the flag reach the script, which owns the
- * real flag surface for `--add`, `--stacks`, `--rules`, and `--json`.
- */
-function isHelpRequest(args: readonly string[]): boolean {
-  return args.includes('-h') || args.includes('--help')
+  registerPassThroughVerbs(gov, 'gov', PASS_THROUGH_VERBS)
 }
 
 /**

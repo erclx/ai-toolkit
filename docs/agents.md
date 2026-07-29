@@ -103,6 +103,12 @@ never adds new ones. A rule the toolkit does not ship is left alone, which is
 how project-authored rules survive. It also removes a stale `.claude/GOV.md`
 from the retired build. Use `aitk gov install` to add rules.
 
+`aitk snippets sync` behaves the same way against `.claude/snippets/`. It
+matches by path relative to that directory, so a snippet the toolkit no longer
+ships, or one authored directly in the target, is reported and skipped rather
+than deleted. It is not preset-aware, so a project that installed `essentials`
+does not grow new snippets on a sync. Use `aitk snippets install` to add them.
+
 `aitk tooling inject` and `aitk tooling prune-gitignore` are the unguarded
 primitives beneath `sync`. They apply one stack with no scan and no prompt, and
 they deliberately skip the check that rejects `claude`, which is how `aitk
@@ -196,6 +202,9 @@ aitk tooling prune-gitignore base /path/to/project
 
 # Install a snippet preset
 AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project
+
+# Update snippets already installed, leaving project-authored ones alone
+AITK_NON_INTERACTIVE=1 aitk snippets sync /path/to/project
 
 # Run a sandbox scenario non-interactively
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling

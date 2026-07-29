@@ -16,11 +16,18 @@ stage_setup() {
   while IFS= read -r file; do
     local rel parent
     rel="${file#"$src_snippets/"}"
+    [ "${rel%%/*}" = "aitk" ] && continue
     parent=$(dirname "sync/.claude/snippets/$rel")
     mkdir -p "$parent"
     cp "$file" "sync/.claude/snippets/$rel"
-    echo "<!-- stale -->" >>"sync/.claude/snippets/$rel"
-  done < <(find "$src_snippets" -type f -name "*.md" | sort | head -n 2)
+  done < <(find "$src_snippets" -type f -name "*.md" | sort)
+
+  local root_snippet nested_snippet
+  root_snippet=$(find "$src_snippets" -maxdepth 1 -type f -name "*.md" | sort | head -n 1)
+  nested_snippet=$(find "$src_snippets" -mindepth 2 -type f -name "*.md" -not -path "$src_snippets/aitk/*" | sort | head -n 1)
+  echo "<!-- stale -->" >>"sync/.claude/snippets/${root_snippet#"$src_snippets/"}"
+  echo "<!-- stale -->" >>"sync/.claude/snippets/${nested_snippet#"$src_snippets/"}"
+  echo "# project local" >"sync/.claude/snippets/project-only.md"
 
   git add .
   git commit -m "chore(sandbox): scaffold snippets test directories" --no-verify -q
@@ -28,7 +35,7 @@ stage_setup() {
   log_step "Snippets sandbox"
   log_info "install/    : clean target, installs base category"
   log_info "essentials/ : clean target, installs essentials preset"
-  log_info "sync/       : stale .claude/snippets/ present"
+  log_info "sync/       : stale .claude/snippets/ present, plus one project-local snippet"
   log_info "create      : runs against toolkit source directly"
   log_info "list        : read-only catalog dump, no target needed"
 
@@ -46,7 +53,7 @@ stage_setup() {
     ;;
   "sync")
     log_step "Running: aitk snippets sync"
-    exec "$PROJECT_ROOT/scripts/snippets/sync.sh" sync/
+    exec bun "$PROJECT_ROOT/src/cli.ts" snippets sync sync/
     ;;
   "create")
     log_step "Running: aitk snippets create"
