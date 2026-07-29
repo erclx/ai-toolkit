@@ -54,7 +54,7 @@ Run `aitk standards list` for the catalog of installable standards and their des
 
 Flags and arguments live in `docs/agents.md`. `--json` emits `{standards: [{name, description, target, content}]}`, and drift-auditing skills consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`.
 
-`sync` is TypeScript. `list` forwards to `scripts/standards/list.sh`, and `install` still forwards into `scripts/manage-standards.sh`, which keeps that dispatcher alive until `install` gets a verb script of its own.
+`install` and `sync` are both TypeScript, and `list` forwards to `scripts/standards/list.sh`. The two write verbs are peers, so the `index.md` replace-then-regen they share sits in `src/standards/index-refresh.ts` rather than inside either one. `install` walks the flat `standards/` root only, which is the same set the sync adapter matches installed files against, so a standard in a source subfolder such as `bundled/` stays out of both.
 
 ## Workflow
 

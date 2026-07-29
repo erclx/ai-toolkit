@@ -23,12 +23,17 @@ stage_setup() {
 
   git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
+  local -a stale_standards=()
   while IFS= read -r file; do
     local filename
     filename=$(basename "$file")
+    [ -f ".claude/standards/$filename" ] || continue
     echo "<!-- stale -->" >>".claude/standards/$filename"
-  done < <(find "$src_standards" -type f -name "*.md" | sort | head -n 2)
+    stale_standards+=("$filename")
+    [ "${#stale_standards[@]}" -eq 2 ] && break
+  done < <(find "$src_standards" -maxdepth 1 -type f -name "*.md" ! -name "index.md" | sort)
 
+  local -a stale_rules=()
   while IFS= read -r file; do
     local rule
     rule=$(basename "$file" .md)
@@ -36,8 +41,11 @@ stage_setup() {
     subdir=$(rule_subdir "$file" "$src_rules")
     local dest=".claude/rules/${rule}.md"
     [ -n "$subdir" ] && dest=".claude/rules/$subdir/${rule}.md"
-    [ -f "$dest" ] && echo "# stale" >>"$dest"
-  done < <(find "$src_rules" -type f -name "*.md" | sort | head -n 2)
+    [ -f "$dest" ] || continue
+    echo "# stale" >>"$dest"
+    stale_rules+=("${dest#.claude/rules/}")
+    [ "${#stale_rules[@]}" -eq 2 ] && break
+  done < <(find "$src_rules" -type f -name "*.md" | sort)
 
   git add .
   git commit -m "chore(sandbox): make standards and governance stale" --no-verify -q
@@ -49,9 +57,10 @@ stage_setup() {
 
   log_step "Sync sandbox"
   log_info "Anchor: $ANCHOR_REPO"
-  log_info "Stale: .claude/standards/ (2 files), .claude/rules/ (2 files)"
+  log_info "Stale standards: ${stale_standards[*]}"
+  log_info "Stale rules: ${stale_rules[*]}"
   log_info "Remote: git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
 
   log_step "Running: aitk sync"
-  exec "$PROJECT_ROOT/scripts/manage-sync.sh" .
+  exec bun "$PROJECT_ROOT/src/cli.ts" sync .
 }

@@ -1,8 +1,21 @@
+import { join } from 'node:path'
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
-import { execScript, PROJECT_ROOT } from '@/exec'
-import { createStandardsAdapter } from '@/standards/adapter'
+import { PROJECT_ROOT } from '@/exec'
+import { createStandardsAdapter, standardsSourceDir } from '@/standards/adapter'
+import {
+  refreshIndex,
+  STANDARDS_REL,
+  standardsInstallDir,
+} from '@/standards/index-refresh'
+import { applyInstall, planInstall } from '@/standards/install'
 import { runDomainSync } from '@/sync/engine'
+import { resolveTarget } from '@/target'
+import { intro, logAdd, logInfo, logStep, logWarn, outro, select } from '@/ui'
+
+const GREEN = '\x1b[0;32m'
+const GREY = '\x1b[0;90m'
+const NC = '\x1b[0m'
 
 export function register(program: Command): void {
   const standards = program
@@ -25,25 +38,51 @@ export function register(program: Command): void {
 
   standards
     .command('install')
-    .description('Run the standards install command')
-    .allowUnknownOption()
-    .allowExcessArguments(true)
-    .passThroughOptions()
-    .helpOption(false)
-    .action(async (_opts: unknown, cmd: Command) => {
-      await execScript('manage-standards.sh', installArgs(cmd.args))
+    .description('Copy all standards into a project (overwrites)')
+    .argument('[target]', 'Target directory', '.')
+    .helpOption('-h, --help', 'Show this help message')
+    .action(async (target: string) => {
+      process.exitCode = await runInstall(target)
     })
 
   registerPassThroughVerbs(standards, 'standards', ['list'])
 }
 
-/**
- * `install` still lives inside the dispatcher rather than in a verb script, and
- * the dispatcher only answers `--help` as its first argument. Forwarding the
- * flag alone reaches the usage that documents install, which beats letting it
- * arrive as a target path and fail as a missing directory.
- */
-function installArgs(args: readonly string[]): string[] {
-  if (args.includes('-h') || args.includes('--help')) return ['--help']
-  return ['install', ...args]
+async function runInstall(target: string): Promise<number> {
+  intro('aitk standards')
+
+  const resolved = resolveTarget(target, PROJECT_ROOT)
+  if (typeof resolved === 'number') return resolved
+
+  const sourceDir = standardsSourceDir(PROJECT_ROOT)
+  const destDir = standardsInstallDir(resolved)
+
+  logStep('Scanning standards')
+  const files = planInstall(sourceDir)
+  for (const file of files) logInfo(join(STANDARDS_REL, file.name))
+
+  const shouldInstall = await select({
+    message: `Install ${files.length} standards to ${destDir}?`,
+    options: [
+      { value: true, label: 'Yes' },
+      { value: false, label: 'No' },
+    ],
+    nonInteractiveDefault: true,
+  })
+
+  if (!shouldInstall) {
+    logWarn('Cancelled')
+    outro()
+    return 0
+  }
+
+  logStep('Installing standards')
+  for (const label of await applyInstall(files, destDir)) logAdd(label)
+  await refreshIndex(sourceDir, resolved)
+
+  outro()
+  process.stderr.write(
+    `\n${GREEN}✓ Standards installed${NC} ${GREY}(${files.length} files)${NC}\n`,
+  )
+  return 0
 }

@@ -1,3 +1,4 @@
+Pushback
 aanerud
 affordances
 agentic
@@ -11,15 +12,16 @@ autoshipped
 autoshipping
 awwwards
 backlink
+basenames
 blockquote
 blockquotes
 bradlc
 bunx
 byok
-clpc
-clps
 changelog
 changelogithub
+clpc
+clps
 codegen
 codenames
 commitlint
@@ -36,12 +38,14 @@ erclx
 esac
 esbenp
 executeautomation
+failable
 footgun
 footguns
 frontmatter
 gdev
 gtest
 headerless
+headlessly
 heredocs
 hesreallyhim
 hookify
@@ -72,7 +76,6 @@ pipefail
 powerup
 promptname
 punkpeye
-Pushback
 rawfile
 recompiles
 regen
@@ -86,6 +89,7 @@ sandboxed
 sandboxing
 scannability
 scoutreport
+scriptable
 shadcn
 shellcheck
 shfmt
@@ -101,8 +105,8 @@ toolsets
 toplevel
 trailofbits
 triaging
-ultraplan
 uipro
+ultraplan
 unmatch
 unrequested
 upstreaming

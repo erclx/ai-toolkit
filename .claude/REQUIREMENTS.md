@@ -60,8 +60,8 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 ## Tech stack
 
 - Bun for CLI runtime, scripts, and the test runner
-- TypeScript with Commander for the CLI entry point and migrated domains
-- Bash 4+ for domain scripts not yet migrated, sandbox provisioning, and hook functions
+- TypeScript with Commander for the CLI entry point, every domain command surface, and the sync engine
+- Bash 4+ for sandbox provisioning, repo maintenance under `scripts/core/`, shared lib functions, hooks, and the domain verb scripts beneath the migrated commands. Sandbox provisioning stays bash by decision. The remaining verbs carry no such verdict, so `.claude/TASKS.md` tracks them as the migration's open question
 - Markdown for all authored content
 - Git and GitHub CLI for ship workflows
 

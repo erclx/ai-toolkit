@@ -1,4 +1,4 @@
-import { existsSync, statSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { chmod, readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -19,6 +19,7 @@ import {
 } from '@/claude/settings'
 import { copyPreservingMode } from '@/copy'
 import { execScript, PROJECT_ROOT } from '@/exec'
+import { isDirectory, resolveTarget } from '@/target'
 import { injectGitignore, pruneGitignore } from '@/tooling/inject'
 import {
   intro,
@@ -102,40 +103,6 @@ export function register(program: Command): void {
     })
 }
 
-/**
- * Stands in for `validate_target`, which called `guard_root`. That helper read
- * as a toolkit-root check, but its body was `cd "$target" && pwd`, so it also
- * rejected a target that does not exist. Porting the name alone would let a
- * typo'd path scaffold a whole new tree.
- */
-function resolveTarget(target: string): string | number {
-  const resolved = resolve(target)
-
-  if (!isDirectory(resolved)) {
-    logError(`Target directory not found: ${target}`)
-    outro()
-    return 1
-  }
-
-  if (resolved === PROJECT_ROOT) {
-    logError(
-      'Cannot run against toolkit root. Files here are the source of truth.',
-    )
-    outro()
-    return 1
-  }
-
-  return resolved
-}
-
-function isDirectory(path: string): boolean {
-  try {
-    return statSync(path).isDirectory()
-  } catch {
-    return false
-  }
-}
-
 function succeed(message: string): number {
   outro()
   process.stderr.write(`${GREEN}✓ ${message}${NC}\n`)
@@ -145,7 +112,7 @@ function succeed(message: string): number {
 async function runInit(target: string): Promise<number> {
   intro('aitk claude')
 
-  const resolved = resolveTarget(target)
+  const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
 
   logStep('Scanning .claude/')
@@ -202,7 +169,7 @@ function summarize(seeds: readonly Seed[], gitignoreCount: number): string {
 async function runSync(target: string): Promise<number> {
   intro('aitk claude')
 
-  const resolved = resolveTarget(target)
+  const resolved = resolveTarget(target, PROJECT_ROOT)
   if (typeof resolved === 'number') return resolved
 
   logStep('Seeded')

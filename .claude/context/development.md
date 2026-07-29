@@ -38,7 +38,7 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 ## Gotchas
 
 - `bun run check:install` runs `git clone` on the project root, so it verifies the last commit and never the working tree. An uncommitted fix, or an uncommitted regression, is invisible to it. Commit first or the result describes code you are not shipping.
-- That gate's assert loop is the only thing between a silently truncated install and a green run, because `run_domain` in `scripts/manage-init.sh` catches a failed domain and lets init exit 0 anyway. Every domain init installs needs at least one asserted path, or that domain can install nothing while the gate stays green.
+- That gate's assert loop is the only thing between a silently truncated install and a green run, because `runDomains` in `src/init/run.ts` catches a failed domain and lets init report the ones that worked. Every domain init installs needs at least one asserted path, or that domain can install nothing while the gate stays green.
 - The gate runs `aitk init --stack base` rather than a bare `init`. Governance only runs when `--stack` is passed, so without it no assertion could cover that domain. A domain that installs conditionally needs its condition met in the gate invocation, not just a path in the loop.
 - Nothing typechecked until `check:types` was added, so a dropped import shipped green through format, spell, shell, and the test suite. The suite catches one only where a test covers the caller, and the migration keeps adding untested call sites. Declare `typescript` in `devDependencies` rather than relying on it hoisting from an astro peer, or the gate resolves by accident.
 
