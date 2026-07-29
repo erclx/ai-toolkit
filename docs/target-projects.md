@@ -57,7 +57,7 @@ When a new need appears after scaffold, install the one domain without re-runnin
 - Governance rule for a newly adopted library: invoke `toolkit:setup-gov`, or run `aitk gov install <stack> --add <rule> <path>`
 - Project-specific rule the toolkit does not ship: invoke `toolkit:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
 - Index.md system for a markdown-heavy folder that emerged: invoke `toolkit:setup-indexes`
-- A single snippet: `aitk snippets install <name> <path>`
+- A snippet preset or category: `aitk snippets install <preset|category|all> <path>`. The argument is required, since the picker refuses headlessly rather than choosing for the caller
 - A single standard: `aitk standards install <name> <path>`
 
 Per-domain mechanics live in the corresponding `docs/<domain>.md`. The skill body in `claude/skills/<skill>/SKILL.md` covers detection and preview.

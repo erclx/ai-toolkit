@@ -24,12 +24,12 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - The `aitk` category is internal and filtered at every entry point: `install all`, the interactive picker, `list`, and an explicit `install aitk`. Enforcing it in code beats relocating the content, so internal runbooks stay next to their siblings.
 - Sync updates only what is already present and never adds. A project that installed `essentials` does not silently grow new snippets on the next sync.
 - Sync runs on the shared engine in `src/sync/engine.ts` via `src/snippets/adapter.ts`. The adapter locates a source by relative path where the gov adapter locates one by rule name, which is the only axis the two differ on. It sets no `collectRetired`, so snippets is the proof that hook is optional.
-- The internal-category list is a constant in the adapter rather than a shared surface. Three bash copies remain in `create.sh`, `install.sh`, and `list.sh` until those verbs migrate, and deduping into a `scripts/lib/snippets.sh` scheduled for deletion would add a file the migration then has to remove.
+- The internal-category list is a constant in `src/snippets/categories.ts`, which install, list, and the sync adapter all read. Preset expansion filters through it too, since a slug is a path relative to `snippets/` and a preset naming `aitk/<slug>` would otherwise reach an internal snippet. One bash copy remains in `create.sh`, a knowing duplication for as long as that verb stays bash.
 
 ## Gotchas
 
 - Sync is not category-aware. It diffs every `.md` already in the target against the toolkit source, regardless of which preset installed it.
-- Matching depends on install and sync agreeing on the destination layout. `derive_dest_rel_path` in `scripts/snippets/install.sh` keeps only the immediate parent, so a snippet nested two levels deep would install to a path sync cannot match. Nothing in the tree is that deep today.
+- Matching depends on install and sync agreeing on the destination layout. `deriveDestRelPath` in `src/snippets/install.ts` keeps only the immediate parent, so a snippet nested two levels deep would install to a path sync cannot match. Nothing in the tree is that deep today.
 - A snippet authored directly in a target's `.claude/snippets/` is project-local and survives sync, because sync only touches filenames it recognizes from the toolkit source.
 - The toolkit-feedback flow is now the `toolkit-feedback` plugin skill plus the `aitk feedback` CLI. It replaced the former `aitk/toolkit-feedback` snippet.
 - The memory review phases (challenge, discuss, apply, cleanup) used to be `claude/memory-*` snippets. They are folded into the `claude-memory-review` skill body. Re-ping the skill with the matching phase phrase.
@@ -51,7 +51,9 @@ Presets are virtual curated subsets defined in `snippets.toml`. Categories are a
 
 Flags and arguments live in `docs/agents.md`. `aitk snippets` with no args prints help, since each verb is registered by name rather than routed through a dispatcher.
 
-`sync` is TypeScript, built on the shared sync engine. `install`, `create`, and `list` are each registered by name and forward to `scripts/snippets/<verb>.sh`, keeping their own `--help`.
+`install`, `sync`, and `list` are TypeScript, with `sync` built on the shared sync engine. `create` is registered by name and forwards to `scripts/snippets/create.sh`, keeping its own `--help`.
+
+The one argument to `install` resolves three ways, in order: `all`, then a preset name, then a folder. A folder sharing a preset name resolves to the preset. The picker refuses headlessly rather than defaulting, since its first option was `all`.
 
 ## Workflow
 

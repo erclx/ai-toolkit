@@ -1,22 +1,7 @@
 import { existsSync } from 'node:fs'
-import { join, sep } from 'node:path'
+import { join } from 'node:path'
+import { isInternalCategory, snippetsSourceDir } from '@/snippets/categories'
 import type { InstalledFile, SyncAdapter } from '@/sync/engine'
-
-const INTERNAL_CATEGORIES = new Set(['aitk'])
-
-export function snippetsSourceDir(root: string): string {
-  return join(root, 'snippets')
-}
-
-/**
- * Reads the first path segment as a category. Snippets also live directly under
- * `snippets/`, where that segment is a filename rather than a category, so the
- * check has to tolerate a bare name instead of assuming every entry is nested.
- */
-export function isInternalCategory(relToRoot: string): boolean {
-  const [top] = relToRoot.split(sep)
-  return top !== undefined && INTERNAL_CATEGORIES.has(top)
-}
 
 /**
  * Matches installed snippets to sources by relative path, where gov matches by

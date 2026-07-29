@@ -44,12 +44,12 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "install")
     log_step "Running: aitk snippets install base"
-    exec "$PROJECT_ROOT/scripts/snippets/install.sh" base install/
+    exec bun "$PROJECT_ROOT/src/cli.ts" snippets install base install/
     ;;
   "essentials")
     mkdir -p essentials
     log_step "Running: aitk snippets install essentials"
-    exec "$PROJECT_ROOT/scripts/snippets/install.sh" essentials essentials/
+    exec bun "$PROJECT_ROOT/src/cli.ts" snippets install essentials essentials/
     ;;
   "sync")
     log_step "Running: aitk snippets sync"
@@ -61,7 +61,7 @@ stage_setup() {
     ;;
   "list")
     log_step "Running: aitk snippets list"
-    exec "$PROJECT_ROOT/scripts/snippets/list.sh"
+    exec bun "$PROJECT_ROOT/src/cli.ts" snippets list
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

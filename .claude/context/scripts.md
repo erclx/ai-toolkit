@@ -13,7 +13,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 - `scripts/` owns `manage-sandbox.sh`, the one remaining entry point. Every other domain dispatcher has been deleted
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
-- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards` keeps only a list command there, `claude` keeps only `seeds-list.sh`, and `docs` keeps only `list.sh` now that `get` is TypeScript
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards`, `gov`, and `docs` keep only a list command there, `claude` keeps nothing, and `snippets` and `tooling` keep only authoring helpers
 - `scripts/gov/`, `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
@@ -24,7 +24,9 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, `snippets/`, `standards/`, and `claude/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
 - A dispatcher holding domain logic migrates in one pull request per file rather than verb by verb. `sync`, `init`, and `standards` went together because they shared the two documents listing dispatchers, and splitting them would have collided there for no review benefit.
 - A dispatcher that grew domain logic migrates that logic out to `src/<domain>/` rather than into the command file. `manage-claude.sh` was the largest single script at 465 lines and held seed collection, gitignore scanning, and a settings merge, none of which a command file can unit-test because `src/exec.ts` throws under vitest.
-- Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
+- Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because `gov/list.sh`, `docs/list.sh`, and `standards/list.sh` call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
+- A recorded verdict is only as wide as its own reasoning. The frontmatter-loop cost above was applied to all six list verbs, and three of them never paid it: `snippets/list.sh` and `claude/seeds-list.sh` read with plain `read -r` loops and `tooling/list.sh` used `awk`. Those three migrated. Check a stated reason against each file before counting one as settled.
+- The four remaining verb scripts stay bash because of who calls them, not how large they are. `tooling/verify.sh`, `tooling/ref.sh`, `snippets/create.sh`, and `tooling/create.sh` are toolkit-internal authoring helpers a human runs at a terminal here. They write nothing into a target and no skill consumes them, so they carry none of the agent-path obligations that moved the other five.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
 - The timeline frame opens in the dispatcher rather than in each subcommand. Prompts and `log_*` assume a frame is already open, so opening it at the top prevents dangling output on error paths.
@@ -37,6 +39,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - Deleting a bash file needs a sweep by path (`source`, `exec`, `bash <path>`), not by function name. Twelve sandbox scripts sourced `lib/inject.sh` without calling any of its functions, and a sweep by function name missed every one of them along with five live `exec` sites.
 - `TOOLING_STACK_EXCLUDE` currently holds only `claude`. Excluded names print a redirect error pointing at the correct CLI and exit 1.
 - When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`. `select_option` returns its first option under that flag, so the first option must be the one a headless caller should get. Listing a review or preview option first sends agents down an interactive branch, which is how three sync commands ended up opening a diff editor per drifted file.
+- A picker that stands in for a required argument must refuse headlessly rather than default. The confirm-then-apply prompts keep `nonInteractiveDefault`, since the caller already named what to apply. `aitk gov install` and `aitk snippets install` return 1 with the valid names when the argument is missing, because defaulting there picked a whole stack or category for the caller.
 
 ## Core scripts
 
@@ -53,11 +56,13 @@ CI runs the format, spell, shell, and types stages. The drift checks and the tes
 
 ## UI framing across exec boundaries
 
-No domain has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`. `src/commands/standards.ts` handles `install` and `sync`, and shells out for `list` alone. `src/commands/claude.ts` handles `init`, `sync`, and `setup`, and shells out for `seeds list`. `sync` and `init` are TypeScript end to end and reach no verb script at all.
+No domain has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, `prune-gitignore`, and `list` in TypeScript and shells out for `ref`, `create`, and `verify`. `src/commands/gov.ts` handles `install`, `sync`, and `build`, and shells out for `list` alone. `src/commands/standards.ts` handles `install` and `sync`, and shells out for `list` alone. `src/commands/snippets.ts` handles `install`, `sync`, and `list`, and shells out for `create` alone. `src/commands/claude.ts` is TypeScript end to end, as are `sync` and `init`, which reach no verb script at all.
 
 `scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`, which is what lets the command layer above it own the frame.
 
-`claude seeds` is the one pass-through that registers by hand rather than through `registerPassThroughVerbs`, because its script is `scripts/claude/seeds-list.sh` and the helper builds `scripts/<domain>/<verb>.sh`. The hand-rolled routing also preserves the two error messages the bash `case` emitted for a missing or unknown subcommand.
+A migrated list verb has to open that frame itself, and the gap is easy to miss because it only shows through the CLI. The bash verb never emitted `┌`, so a baseline captured by running the script directly matches a frameless port exactly while `aitk snippets list` loses the header `registerPassThroughVerbs` used to print. Capture equivalence baselines at the boundary the user invokes, not at the script.
+
+`claude seeds list` is a real Commander subcommand rather than the hand-rolled routing it replaced. That routing existed only because the verb's script was `scripts/claude/seeds-list.sh` where `registerPassThroughVerbs` builds `scripts/<domain>/<verb>.sh`. The parent `seeds` command keeps an action handler so an unknown or missing subcommand still reports the two errors the bash `case` emitted, since Commander falls through to the parent when no subcommand name matches.
 
 Deleting a dispatcher moves the responsibility for opening the frame, because a bash verb script closes a frame it never opened. `src/commands/gov.ts` calls `intro('aitk gov')` before it execs a pass-through, taking over the job the dispatcher used to do. It skips the call when the args carry `-h` or `--help`, since a help screen prints its own frame.
 
@@ -91,7 +96,7 @@ Narrowed to one function. The payload builder that used to live here is `src/gov
 | ------------- | ------------------------------------------------------------------------------------------------------ | ---------------------- |
 | `rule_subdir` | Emit a source rule's subdirectory relative to the rules root, or empty when the rule sits at the root. | Stays bash permanently |
 
-`rule_subdir` has five callers and four are sandbox scripts, which stay bash by decision. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file.
+`rule_subdir` has three remaining callers and all are sandbox scripts, which stay bash by decision. `ruleSubdir` in `src/gov/install.ts` is the TypeScript copy the migrated installer uses. The two must agree, since a rule installed to the wrong subdirectory is one the sandbox scenarios then fail to find.
 
 The bash `strip_frontmatter` treated the first `---` on any line as the start of a frontmatter block, so a document whose body carried two horizontal rules lost everything between them. `stripFrontmatter` in `src/frontmatter.ts` anchors to the first line instead and leaves such a body intact. The docs migration took the TypeScript reading, which means `aitk docs <topic>` now emits sections the bash silently swallowed.
 
@@ -99,7 +104,7 @@ The divergence is latent on the current corpus. All 22 documents under `docs/` a
 
 ### `tooling.sh`
 
-Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Any future folder under `tooling/` that is not a real stack routes through the same helper.
+Consumed by `scripts/tooling/{ref,verify,create}.sh` for discovery and name validation. `listStacks` in `src/tooling/manifest.ts` is the TypeScript equivalent, and it discovers by `manifest.toml` rather than by directory.
 
 | Function                    | What it does                                                     |
 | --------------------------- | ---------------------------------------------------------------- |

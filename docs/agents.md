@@ -116,6 +116,19 @@ ships, or one authored directly in the target, is reported and skipped rather
 than deleted. It is not preset-aware, so a project that installed `essentials`
 does not grow new snippets on a sync. Use `aitk snippets install` to add them.
 
+`aitk gov install` and `aitk snippets install` require their first argument
+under `AITK_NON_INTERACTIVE=1`. Both used to fall back to an interactive picker
+that resolved to its first option headlessly, so `aitk gov install` with no
+stack installed whichever stack sorted first and `aitk snippets install` with no
+category installed every category. Each now reports the valid names on stderr
+and exits 1. Every documented agent path already passes the argument, including
+`aitk init`. The confirm-then-apply prompt after it still resolves to `Yes`
+headlessly, so a call that names its stack or category is unchanged.
+
+`aitk gov install` also refuses the toolkit root as a target, matching
+`aitk snippets install`. Both resolve the target before anything else, so a path
+that does not exist fails rather than being scaffolded.
+
 `aitk sync` runs every installed domain sync, then offers to commit the result
 and open a pull request. Under `AITK_NON_INTERACTIVE=1` it applies the domain
 syncs and then refuses the git workflow, reporting the branch and commit it
@@ -193,6 +206,15 @@ Use these to discover what's available instead of hardcoding names.
 | `aitk claude seeds list --json` | Seed doc sources with content                |
 | `aitk docs list --json`         | Consumer docs plus per-domain context        |
 
+Every catalog serializes through `JSON.stringify`, so a name carrying a quote
+emits valid JSON. `aitk tooling list` and `aitk snippets list` previously built
+their output with `printf` and no escaping.
+
+`aitk claude seeds list` reads the same plan `aitk claude init` applies, so the
+listing and the install cannot disagree. It now reports
+`.claude/context/index.md`, which `init` has always installed and the listing
+never named, and it emits the project-level `CLAUDE.md` last rather than first.
+
 ## Non-interactive examples
 
 ```bash
@@ -201,6 +223,9 @@ AITK_NON_INTERACTIVE=1 aitk tooling create astro
 
 # Sync a stack into a target project
 AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project
+
+# Install a governance stack (the stack argument is required headlessly)
+AITK_NON_INTERACTIVE=1 aitk gov install astro --add 260-shadcn /path/to/project
 
 # Update installed governance rules, dropping a retired .claude/GOV.md
 AITK_NON_INTERACTIVE=1 aitk gov sync /path/to/project

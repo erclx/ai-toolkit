@@ -16,7 +16,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - `tooling/<stack>/seeds/` owns user-owned files that sync preserves
 - `tooling/claude/` owns storage for `aitk claude`, excluded from stack discovery
 - `src/tooling/` owns the manifest walk, scan, and injection engine in TypeScript
-- `scripts/tooling/` owns the ref, create, list, and verify subcommands, still bash
+- `scripts/tooling/` owns the ref, create, and verify subcommands, still bash
 
 | Stack        | Extends | Ships                                                                   |
 | ------------ | ------- | ----------------------------------------------------------------------- |

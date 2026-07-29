@@ -9,6 +9,7 @@ import {
   injectSeeds,
   pruneGitignore,
 } from '@/tooling/inject'
+import { buildStackSummaries, describeStack } from '@/tooling/list'
 import {
   isStackExcluded,
   listStacks,
@@ -22,7 +23,7 @@ import { intro, logAdd, logInfo, logStep, logWarn, outro, select } from '@/ui'
 const GREEN = '\x1b[0;32m'
 const NC = '\x1b[0m'
 
-const PASS_THROUGH_VERBS = ['ref', 'create', 'list', 'verify'] as const
+const PASS_THROUGH_VERBS = ['ref', 'create', 'verify'] as const
 
 interface SyncOptions {
   readonly ref?: boolean
@@ -39,6 +40,10 @@ interface InjectOptions {
 
 interface PruneOptions {
   readonly nested?: boolean
+}
+
+interface ListOptions {
+  readonly json?: boolean
 }
 
 type Prepared =
@@ -91,6 +96,15 @@ export function register(program: Command): void {
       process.exitCode = await runPrune(stack, target, opts)
     })
 
+  tooling
+    .command('list')
+    .description('List installable tooling stacks')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit machine-readable JSON')
+    .action((opts: ListOptions) => {
+      process.exitCode = runList(opts)
+    })
+
   for (const verb of PASS_THROUGH_VERBS) {
     tooling
       .command(verb)
@@ -103,6 +117,30 @@ export function register(program: Command): void {
         await execScript(`tooling/${verb}.sh`, cmd.args)
       })
   }
+}
+
+/**
+ * `JSON.stringify` replaces a `printf` that interpolated manifest fields into a
+ * JSON string literal unescaped, so a stack name or description carrying a
+ * quote emitted output a consuming skill could not parse.
+ *
+ * The frame opens after the `--json` return. The bash emitted a closing `└`
+ * from its EXIT trap with no `┌` above it, because the hand-rolled
+ * pass-through loop below skips the `intro` the shared helper carries.
+ */
+function runList(opts: ListOptions): number {
+  const stacks = buildStackSummaries(PROJECT_ROOT)
+
+  if (opts.json) {
+    process.stdout.write(`${JSON.stringify({ stacks })}\n`)
+    return 0
+  }
+
+  intro('aitk tooling list')
+  logStep('Stacks')
+  for (const summary of stacks) logInfo(describeStack(summary))
+  outro()
+  return 0
 }
 
 /**

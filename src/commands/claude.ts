@@ -11,6 +11,7 @@ import {
   planSeeds,
   type Seed,
 } from '@/claude/seeds'
+import { listSeeds, readSeedContents } from '@/claude/seeds-list'
 import {
   planSettings,
   readSettings,
@@ -34,7 +35,13 @@ import {
 } from '@/ui'
 
 const GREEN = '\x1b[0;32m'
+const GREY = '\x1b[0;90m'
 const NC = '\x1b[0m'
+
+interface SeedsListOptions {
+  readonly json?: boolean
+  readonly names?: boolean
+}
 
 const SEEDED_FILES: readonly string[] = [
   'ARCHITECTURE.md',
@@ -90,16 +97,39 @@ export function register(program: Command): void {
       process.exitCode = await runSetup(dest)
     })
 
-  claude
+  const seeds = claude
     .command('seeds')
     .description('Seed doc sources (list)')
     .argument('[subcommand]', "Only 'list' is supported")
-    .allowUnknownOption()
-    .allowExcessArguments(true)
-    .passThroughOptions()
-    .helpOption(false)
-    .action(async (_subcommand: string | undefined, _opts, cmd: Command) => {
-      await runSeeds(cmd.args)
+    .helpOption('-h, --help', 'Show this help message')
+    .action((subcommand: string | undefined) => {
+      intro('aitk claude')
+      logError(
+        subcommand === undefined
+          ? "Missing subcommand. Use 'list'."
+          : `Unknown subcommand: ${subcommand}. Use 'list'.`,
+      )
+      outro()
+      process.exitCode = 1
+    })
+
+  seeds
+    .command('list')
+    .description('List toolkit seed docs as installed by aitk claude init')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit JSON with name, source, target, content')
+    .option('--names', 'Only list target paths, one per line')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Notes:',
+        '  JSON is intended for skills that audit drift in target projects.',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: SeedsListOptions) => {
+      process.exitCode = await runSeedsList(opts)
     })
 }
 
@@ -290,21 +320,31 @@ async function sameContent(src: string, dest: string): Promise<boolean> {
   return left === right
 }
 
-async function runSeeds(args: readonly string[]): Promise<void> {
-  const [subcommand, ...rest] = args
+/**
+ * `--json` and `--names` write to stdout so a skill can pipe them, while the
+ * human listing stays on the timeline. Only the human mode opens a frame.
+ */
+async function runSeedsList(opts: SeedsListOptions): Promise<number> {
+  const listings = listSeeds(PROJECT_ROOT)
 
-  if (subcommand !== undefined && subcommand === 'list') {
-    if (!rest.includes('-h') && !rest.includes('--help')) intro('aitk claude')
-    await execScript('claude/seeds-list.sh', [...rest])
-    return
+  if (opts.json) {
+    const withContent = await readSeedContents(listings)
+    process.stdout.write(`${JSON.stringify(withContent)}\n`)
+    return 0
+  }
+
+  if (opts.names) {
+    process.stdout.write(
+      listings.map((listing) => listing.target).join('\n') + '\n',
+    )
+    return 0
   }
 
   intro('aitk claude')
-  logError(
-    subcommand === undefined
-      ? "Missing subcommand. Use 'list'."
-      : `Unknown subcommand: ${subcommand}. Use 'list'.`,
-  )
+  logStep('Seed docs')
+  for (const listing of listings) {
+    logInfo(`${listing.target} ${GREY}← ${listing.source}${NC}`)
+  }
   outro()
-  process.exitCode = 1
+  return 0
 }
