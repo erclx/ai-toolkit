@@ -1,7 +1,6 @@
 ---
 title: Groundwork folder reference
 description: Reserved file numbers, required file contents, and anti-patterns for a .claude/.tmp/ groundwork folder
-consumers: claude-groundwork
 ---
 
 # Groundwork folder reference
