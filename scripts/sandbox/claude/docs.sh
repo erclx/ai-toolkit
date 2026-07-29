@@ -27,7 +27,7 @@ stage_setup() {
     log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
     log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
     log_info "  TASKS.md has 'Migrate storage to Postgres' open, but it shipped in HEAD"
-    log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be swept"
+    log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be archived"
     log_info "  .claude/plans/feature-some-old-plan.md has no task backlink and should survive"
     log_info ""
     log_info "Before invoking the skill, narrate the pivot to Claude in chat:"
@@ -38,7 +38,9 @@ stage_setup() {
     log_info "Expect:  ARCHITECTURE.md storage section updated to Postgres"
     log_info "         REQUIREMENTS.md non-goals updated, multi-user moved in-scope"
     log_info "         TASKS.md 'Migrate storage to Postgres' marked [x]"
-    log_info "         .claude/plans/feature-postgres-migration.md swept (linked from [x] task)"
+    log_info "         feature-postgres-migration.md archived: absent from .claude/plans/"
+    log_info "           and present at .claude/.tmp/plans-archive/, never deleted outright"
+    log_info "         TASKS.md Plan: line retargeted at the archive path, not dropped"
     log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
     ;;
   "context-entries")
