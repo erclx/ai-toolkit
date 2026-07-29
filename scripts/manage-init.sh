@@ -195,7 +195,7 @@ main() {
     bun "$PROJECT_ROOT/src/cli.ts" tooling sync base "$target" </dev/null
 
   run_domain "Claude workflow" \
-    bash "$PROJECT_ROOT/scripts/manage-claude.sh" "init" "$target" </dev/null
+    bun "$PROJECT_ROOT/src/cli.ts" claude init "$target" </dev/null
 
   if [ -n "$stack" ]; then
     local gov_args=("install" "$stack")

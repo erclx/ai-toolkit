@@ -33,6 +33,7 @@ kwargs
 labelledby
 lucide
 mermaid
+mktemp
 modelcontextprotocol
 modelfile
 monkeypatch

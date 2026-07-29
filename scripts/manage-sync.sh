@@ -92,7 +92,7 @@ run_syncs() {
   fi
 
   if [ -d "$target/.claude" ]; then
-    AITK_NON_INTERACTIVE=1 bash "$PROJECT_ROOT/scripts/manage-claude.sh" sync "$target"
+    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" claude sync "$target"
   fi
 }
 

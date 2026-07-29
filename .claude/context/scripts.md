@@ -13,15 +13,16 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 - `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain still on bash
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
-- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, `claude` and `standards` keep only a list command there, and `docs` keeps only `list.sh` now that `get` is TypeScript
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, `standards` keeps only a list command there, `claude` keeps only `seeds-list.sh`, and `docs` keeps only `list.sh` now that `get` is TypeScript
 - `scripts/gov/`, `scripts/snippets/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
 
-- Entry points are meant to dispatch only, and none of the five remaining do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
-- A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, and `snippets/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
+- Entry points are meant to dispatch only, and none of the four remaining do. `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, `snippets/`, and `claude/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
+- A dispatcher that grew domain logic migrates that logic out to `src/<domain>/` rather than into the command file. `manage-claude.sh` was the largest single script at 465 lines and held seed collection, gitignore scanning, and a settings merge, none of which a command file can unit-test because `src/exec.ts` throws under vitest.
 - Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
@@ -63,11 +64,15 @@ The git workflow step is skipped if the target is not a git root (no `.git/`). W
 
 `scripts/manage-standards.sh` is the last dispatcher a migrated domain still reaches into. It holds `install` alone now, opens the frame in `main()`, and `scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`.
 
-Neither `tooling` nor `gov` nor `snippets` has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`. `src/commands/standards.ts` handles `sync` and shells out for `install` and `list`.
+Neither `tooling` nor `gov` nor `snippets` nor `claude` has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`. `src/commands/standards.ts` handles `sync` and shells out for `install` and `list`. `src/commands/claude.ts` handles `init`, `sync`, and `setup`, and shells out for `seeds list` alone.
+
+`claude seeds` is the one pass-through that registers by hand rather than through `registerPassThroughVerbs`, because its script is `scripts/claude/seeds-list.sh` and the helper builds `scripts/<domain>/<verb>.sh`. The hand-rolled routing also preserves the two error messages the bash `case` emitted for a missing or unknown subcommand.
 
 Deleting a dispatcher moves the responsibility for opening the frame, because a bash verb script closes a frame it never opened. `src/commands/gov.ts` calls `intro('aitk gov')` before it execs a pass-through, taking over the job the dispatcher used to do. It skips the call when the args carry `-h` or `--help`, since a help screen prints its own frame.
 
-A TypeScript command that both bash and users invoke owns its frame and takes `--nested` to suppress it. `aitk tooling inject` frames itself so direct invocation does not emit dangling `│` lines, while `manage-claude.sh` and the tooling sandbox scenarios pass `--nested` because they have already opened one. This is the same split `VERIFY_NESTED` makes in `scripts/core/verify.sh`. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`.
+A TypeScript command that both bash and users invoke owns its frame and takes `--nested` to suppress it. `aitk tooling inject` frames itself so direct invocation does not emit dangling `│` lines, while the tooling sandbox scenarios pass `--nested` because they have already opened one. This is the same split `VERIFY_NESTED` makes in `scripts/core/verify.sh`. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`.
+
+Once both sides of a call are TypeScript the flag stops being needed at all. `aitk claude` used to shell into `aitk tooling inject --gitignore --nested`, and now calls `injectGitignore` directly inside the already-open frame, which drops a process per invocation.
 
 See `docs/agents.md` for the canonical output shape this framing produces, and the `bash-script` plugin skill for the authoring contract when generating new domain scripts.
 
