@@ -1,0 +1,4 @@
+export function ApiKeyGate() {
+  // BYOK or local-Ollama gate, persists choice to sessionStorage
+  return <div>gate with provider toggle</div>;
+}

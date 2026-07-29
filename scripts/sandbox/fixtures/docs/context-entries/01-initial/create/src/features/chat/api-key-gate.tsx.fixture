@@ -1,0 +1,3 @@
+export function ApiKeyGate() {
+  return <div>gate</div>;
+}

@@ -1,0 +1,18 @@
+
+# Tasks
+
+## Up next
+
+### Migrate storage to Postgres
+
+Plan: .claude/plans/feature-postgres-migration.md
+
+- [ ] Outcome: tasks persist in Postgres instead of SQLite
+- [ ] Outcome: connection config reads from environment
+
+> Test strategy: integration, run the API against a local Postgres and verify round-trip.
+
+### Add multi-user accounts
+
+- [ ] Outcome: users can sign up and log in
+- [ ] Outcome: tasks are scoped to the owning user

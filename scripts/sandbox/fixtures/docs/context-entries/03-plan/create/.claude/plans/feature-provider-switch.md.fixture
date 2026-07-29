@@ -1,0 +1,16 @@
+# Feature: provider switch at the gate
+
+Add provider selection (Anthropic BYOK vs local Ollama) to the api-key gate, persist the choice to sessionStorage, and forward it as a request header.
+
+**Files to touch:**
+
+- `src/features/chat/api-key-gate.tsx`: add provider toggle UI
+- `src/features/chat/screen.tsx`: read provider from sessionStorage and forward header
+
+**Risks:**
+
+None identified.
+
+**Questions:**
+
+None identified.
