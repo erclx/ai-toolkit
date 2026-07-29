@@ -86,7 +86,7 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 | `aitk claude init`       | Seed `.claude/` workflow docs and `CLAUDE.md` into a project |
 | `aitk claude seeds list` | List seed doc sources, plain text or `--json` for skills     |
 | `aitk claude sync`       | Reconcile `.gitignore` against the claude manifest           |
-| `aitk claude setup`      | Install user-level Claude config to `~/.claude/`             |
+| `aitk claude setup`      | Install user-level Claude config, `~/.claude/` by default    |
 
 ### init
 
@@ -111,6 +111,10 @@ Reports whether each seeded project doc is present, then reconciles `.gitignore`
 ### setup
 
 Installs user-level Claude Code config from `tooling/claude/user/` into `~/.claude/`. Run once per machine after cloning the toolkit. Idempotent. Re-runs skip blocks that already match.
+
+`aitk claude setup [dest]` accepts a destination and falls back to `$HOME/.claude`. This is the only toolkit verb that writes outside a target project, so the argument exists to make it testable and to keep the sandbox scenario off the operator's real config. It refuses the toolkit's own `.claude/`, which is tracked and would otherwise take a `statusLine` pointing into the toolkit checkout.
+
+It edits `settings.json` in place, restoring the file's mode and its existing indent width. Only the four keys the toolkit owns move, so a hand-maintained settings file comes back with the rest of its content and formatting untouched.
 
 Three things land:
 

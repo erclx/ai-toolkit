@@ -86,7 +86,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `snippets`  | `list`, `install`, `sync`, `create`                                    |
 | `standards` | `list`, `install`, `sync`                                              |
 | `gov`       | `list`, `install`, `sync`, `build`                                     |
-| `claude`    | `init`, `sync`, `seeds list`, `setup`                                  |
+| `claude`    | `init`, `sync`, `seeds list`, `setup [dest]`                           |
 | `wiki`      | `init`                                                                 |
 | `design`    | `render`                                                               |
 | `slides`    | `render`, `list`                                                       |
