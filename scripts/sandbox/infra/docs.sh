@@ -17,20 +17,20 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "list")
     log_step "Running: aitk docs list"
-    "$PROJECT_ROOT/scripts/docs/list.sh"
+    bun "$PROJECT_ROOT/src/cli.ts" docs list
     log_step "Running: aitk docs list --json | jq '.docs[0] | keys'"
-    "$PROJECT_ROOT/scripts/docs/list.sh" --json | jq '.docs[0] | keys'
+    bun "$PROJECT_ROOT/src/cli.ts" docs list --json | jq '.docs[0] | keys'
     log_info "Expect keys: category, description, name, target"
     log_info "Expect domain context topics: tooling, governance, standards"
     log_info "Expect no toolkit-internal topics: ci, development, extensions, sandbox"
     ;;
   "get")
     log_step "Running: aitk docs agents"
-    agents_doc=$("$PROJECT_ROOT/scripts/docs/get.sh" agents)
+    agents_doc=$(bun "$PROJECT_ROOT/src/cli.ts" docs agents)
     head -5 <<<"$agents_doc"
     log_info "Expect the agents doc body on stdout, frontmatter stripped"
     log_step "Running: aitk docs tooling"
-    tooling_doc=$("$PROJECT_ROOT/scripts/docs/get.sh" tooling)
+    tooling_doc=$(bun "$PROJECT_ROOT/src/cli.ts" docs tooling)
     head -5 <<<"$tooling_doc"
     log_info "Expect the tooling doc resolved from .claude/context/, not docs/"
     ;;

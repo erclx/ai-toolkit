@@ -1,14 +1,59 @@
 import type { Command } from 'commander'
-import { execScript } from '@/exec'
+import { registerPassThroughVerbs } from '@/commands/pass-through'
+import { listTopics, readTopic, resolveTopic } from '@/docs/read'
+import { execScript, PROJECT_ROOT } from '@/exec'
+import { intro, logError, logInfo, logStep, logWarn, outro } from '@/ui'
 
 export function register(program: Command): void {
-  program
+  const docs = program
     .command('docs')
     .description('Emit toolkit reference docs (list, <topic>)')
-    .allowUnknownOption()
-    .allowExcessArguments(true)
-    .passThroughOptions()
-    .action(async (_opts: unknown, cmd: Command) => {
-      await execScript('manage-docs.sh', cmd.args)
+    .argument('[topic]', 'Doc to print, by exact name')
+    .helpOption('-h, --help', 'Show this help message')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Examples:',
+        '  aitk docs list',
+        '  aitk docs list --json',
+        '  aitk docs agents',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string | undefined) => {
+      if (topic === undefined) {
+        intro('aitk docs')
+        await execScript('docs/list.sh', [])
+        return
+      }
+
+      process.exitCode = get(topic)
     })
+
+  registerPassThroughVerbs(docs, 'docs', ['list'])
+}
+
+/**
+ * Writes the document body to stdout and every frame line to stderr, so a
+ * caller capturing the output with `$(...)` receives the document alone.
+ */
+function get(topic: string): number {
+  intro('aitk docs')
+
+  const resolved = resolveTopic(PROJECT_ROOT, topic)
+
+  if (!resolved) {
+    logWarn(`Unknown topic: ${topic}`)
+    logStep('Available topics')
+    for (const name of listTopics(PROJECT_ROOT)) logInfo(name)
+    logError("Run 'aitk docs list' for descriptions.")
+    outro()
+    return 1
+  }
+
+  logStep(resolved.rel)
+  process.stdout.write(readTopic(resolved))
+  outro()
+  return 0
 }
