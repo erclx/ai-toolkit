@@ -33,3 +33,6 @@ jobs:
 
       - name: Check Shell
         run: bun run check:shell
+
+      - name: Check Types
+        run: bun run check:types

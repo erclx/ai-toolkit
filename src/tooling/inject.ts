@@ -1,5 +1,12 @@
 import { existsSync } from 'node:fs'
-import { mkdir, readFile, rm, rmdir, writeFile } from 'node:fs/promises'
+import {
+  copyFile,
+  mkdir,
+  readFile,
+  rm,
+  rmdir,
+  writeFile,
+} from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { $ } from 'bun'
 import { copyPreservingMode } from '@/copy'
