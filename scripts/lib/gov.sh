@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+#
+# What survives here and why. Both functions are called from inside a loop, so
+# routing them through the CLI would cost a process per file.
+#
+#   rule_subdir       stays permanently. Four of its five callers are sandbox
+#                     scripts, and the sandbox stays bash by decision.
+#   strip_frontmatter stays until the docs domain migrates. Its only caller is
+#                     scripts/docs/get.sh.
+#
+# The payload builder that used to live here is TypeScript now, in
+# src/gov/payload.ts.
 
 strip_frontmatter() {
   local file="$1"
@@ -35,43 +46,4 @@ rule_subdir() {
   subdir=$(dirname "$rel")
   [ "$subdir" = "." ] && subdir=""
   echo "$subdir"
-}
-
-build_rules_payload() {
-  local rules_dir="$1"
-  local filter="${2:-}"
-  local pattern="${3:-*.md}"
-  local payload_file
-  payload_file=$(mktemp)
-
-  local files=()
-  if [ -n "$filter" ]; then
-    for name in $filter; do
-      local f
-      f=$(find "$rules_dir" -type f -name "${name}.md" | head -n 1)
-      [ -n "$f" ] && files+=("$f")
-    done
-    mapfile -t files < <(printf '%s\n' "${files[@]}" | sort)
-  else
-    while IFS= read -r f; do
-      files+=("$f")
-    done < <(find "$rules_dir" -type f -name "$pattern" | sort)
-  fi
-
-  local last_file="${files[-1]:-}"
-
-  for file in "${files[@]}"; do
-    local filename
-    filename=$(basename "$file")
-    filename="${filename%.md}"
-
-    echo "<rule name=\"$filename\">" >>"$payload_file"
-    strip_frontmatter "$file" | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;ba' -e '}' >>"$payload_file"
-    echo "</rule>" >>"$payload_file"
-    [[ "$file" != "$last_file" ]] && echo "" >>"$payload_file"
-  done
-
-  sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$payload_file"
-
-  echo "$payload_file"
 }

@@ -55,11 +55,11 @@ stage_setup() {
     ;;
   "sync")
     log_step "Running: aitk gov sync"
-    exec "$PROJECT_ROOT/scripts/gov/sync.sh" sync/
+    exec bun "$PROJECT_ROOT/src/cli.ts" gov sync sync/
     ;;
   "build")
     log_step "Running: aitk gov build"
-    exec "$PROJECT_ROOT/scripts/gov/build.sh" build/
+    exec bun "$PROJECT_ROOT/src/cli.ts" gov build build/
     ;;
   "list")
     log_step "Running: aitk gov list"
