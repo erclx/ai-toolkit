@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+source "$PROJECT_ROOT/scripts/lib/sandbox-fixtures.sh"
+
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"
@@ -12,153 +14,13 @@ stage_setup() {
 
   case "$SELECTED_OPTION" in
   "drift")
-    cat <<'EOF' >package.json
-{
-  "name": "sandbox-docs",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module"
-}
-EOF
-
-    cat <<'EOF' >>CLAUDE.md
-
-# My App
-
-Task management API.
-
-## Commands
-
-- `bun run check`: lint and typecheck
-EOF
-
-    mkdir -p .claude
-    cat <<'EOF' >>.claude/ARCHITECTURE.md
-
-# Architecture
-
-## Storage
-
-SQLite via better-sqlite3. Single `src/db.ts` module owns the connection and exports typed query functions.
-
-## API layer
-
-Express routes in `src/routes/`. Each route file exports a router. `src/app.ts` mounts them.
-EOF
-
-    cat <<'EOF' >>.claude/REQUIREMENTS.md
-
-# Requirements
-
-- Users can create, list, and complete tasks
-- Tasks persist across restarts
-
-## Non-goals
-
-- No multi-user support
-- No task sharing between accounts
-EOF
-
-    cat <<'EOF' >>.claude/TASKS.md
-
-# Tasks
-
-## Up next
-
-### Migrate storage to Postgres
-
-Plan: .claude/plans/feature-postgres-migration.md
-
-- [ ] Outcome: tasks persist in Postgres instead of SQLite
-- [ ] Outcome: connection config reads from environment
-
-> Test strategy: integration, run the API against a local Postgres and verify round-trip.
-
-### Add multi-user accounts
-
-- [ ] Outcome: users can sign up and log in
-- [ ] Outcome: tasks are scoped to the owning user
-EOF
-
-    mkdir -p src src/routes
-    cat <<'EOF' >src/db.ts
-import Database from "better-sqlite3";
-
-const db = new Database("tasks.db");
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    done INTEGER DEFAULT 0
-  )
-`);
-
-export function getTasks() {
-  return db.prepare("SELECT * FROM tasks").all();
-}
-
-export function createTask(title: string) {
-  return db.prepare("INSERT INTO tasks (title) VALUES (?)").run(title);
-}
-EOF
-
-    cat <<'EOF' >src/routes/tasks.ts
-import { Router } from "express";
-import { getTasks, createTask } from "../db";
-
-const router = Router();
-
-router.get("/", (_req, res) => {
-  res.json(getTasks());
-});
-
-router.post("/", (req, res) => {
-  const { title } = req.body;
-  const result = createTask(title);
-  res.status(201).json({ id: result.lastInsertRowid });
-});
-
-export default router;
-EOF
-
+    stage_fixtures claude docs drift 01-initial
     git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
 
-    cat <<'EOF' >src/db.ts
-import { Pool } from "pg";
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export async function getTasks() {
-  const { rows } = await pool.query("SELECT * FROM tasks");
-  return rows;
-}
-
-export async function createTask(title: string, userId: string) {
-  const { rows } = await pool.query(
-    "INSERT INTO tasks (title, user_id) VALUES ($1, $2) RETURNING id",
-    [title, userId],
-  );
-  return rows[0];
-}
-EOF
-
+    stage_fixtures claude docs drift 02-postgres
     git add . && git commit -m "feat(api): migrate storage to Postgres and scope tasks to users" --no-verify -q
 
-    mkdir -p .claude/plans
-    cat <<'EOF' >.claude/plans/feature-postgres-migration.md
-# Feature: Postgres migration
-
-Plan linked from the "Migrate storage to Postgres" task block. The claude-docs skill should sweep this file after marking the task [x].
-EOF
-
-    cat <<'EOF' >.claude/plans/feature-some-old-plan.md
-# Feature: unlinked plan
-
-Decoy scratch with no task backlink. The claude-docs skill should NOT sweep this file.
-EOF
+    stage_fixtures claude docs drift 03-plans
 
     log_step "Scenario ready: docs drift after a session pivot"
     log_info "Context: planning docs are stale relative to HEAD"
@@ -180,100 +42,14 @@ EOF
     log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
     ;;
   "context-entries")
-    cat <<'EOF' >package.json
-{
-  "name": "sandbox-docs-context",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module"
-}
-EOF
-
-    cat <<'EOF' >CLAUDE.md
-# My App
-
-Mixed web and api project.
-
-## Context
-
-- Always loaded: this file, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`
-- On-demand lookup: `.claude/context/<domain>.md`. Check `.claude/context/index.md` first.
-
-## Commands
-
-- `bun run check`: lint and typecheck
-EOF
-
-    mkdir -p .claude/context .claude/plans
-    cat <<'EOF' >.claude/context/index.md
----
-title: Context
-subtitle: Per-domain narrative loaded on demand
----
-
-# Context
-
-- [Web](web.md): chat surface and provider switching
-EOF
-
-    cat <<'EOF' >.claude/context/web.md
----
-title: Web
-description: Chat surface and provider switching
----
-
-# Web
-
-## Layer responsibilities
-
-- `src/app/` owns routing
-- `src/features/chat/` owns the chat rail
-EOF
-
-    mkdir -p src/features/chat
-    cat <<'EOF' >src/features/chat/screen.tsx
-export function ChatScreen() {
-  return <div>chat</div>;
-}
-EOF
-
-    cat <<'EOF' >src/features/chat/api-key-gate.tsx
-export function ApiKeyGate() {
-  return <div>gate</div>;
-}
-EOF
-
+    stage_fixtures claude docs context-entries 01-initial
     git add . && git commit -m "feat(web): initial chat shell" --no-verify -q
 
     git checkout -b feat/provider-switch -q
-
-    cat <<'EOF' >src/features/chat/api-key-gate.tsx
-export function ApiKeyGate() {
-  // BYOK or local-Ollama gate, persists choice to sessionStorage
-  return <div>gate with provider toggle</div>;
-}
-EOF
-
+    stage_fixtures claude docs context-entries 02-provider-switch
     git add . && git commit -m "feat(web): provider switch at the gate" --no-verify -q
 
-    cat <<'EOF' >.claude/plans/feature-provider-switch.md
-# Feature: provider switch at the gate
-
-Add provider selection (Anthropic BYOK vs local Ollama) to the api-key gate, persist the choice to sessionStorage, and forward it as a request header.
-
-**Files to touch:**
-
-- `src/features/chat/api-key-gate.tsx`: add provider toggle UI
-- `src/features/chat/screen.tsx`: read provider from sessionStorage and forward header
-
-**Risks:**
-
-None identified.
-
-**Questions:**
-
-None identified.
-EOF
+    stage_fixtures claude docs context-entries 03-plan
 
     log_step "Scenario ready: docs refreshes context entry from diff"
     log_info "Context: feat/provider-switch branch with diff in src/features/chat/"
@@ -286,75 +62,12 @@ EOF
     log_info "         Outputs a reminder line to run aitk indexes regen"
     ;;
   "wireframe-coverage")
-    cat <<'EOF' >package.json
-{
-  "name": "sandbox-docs-wireframes",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module"
-}
-EOF
-
-    cat <<'EOF' >CLAUDE.md
-# My App
-
-Web client with a BYOK gate and a chat surface.
-EOF
-
-    mkdir -p .claude/wireframes src/features/chat src/features/mock
     rm -f .claude/wireframes/feature-name.md
-    cat <<'EOF' >.claude/wireframes/index.md
----
-title: Wireframes
-subtitle: Per-surface ASCII layouts loaded on demand
----
-
-# Wireframes
-EOF
-
-    cat <<'EOF' >.claude/wireframes/byok-gate.md
----
-title: BYOK gate
-description: Anthropic-only gate that asks the visitor to paste a key.
----
-
-# BYOK gate
-
-Gate shown to first-time visitors. Requires an Anthropic API key.
-
-```plaintext
-[ Paste your Anthropic key ]
-[ Continue ]
-```
-
-## Behavior
-
-- Anthropic is the only supported provider.
-EOF
-
-    cat <<'EOF' >src/features/chat/api-key-gate.tsx
-export function ApiKeyGate() {
-  return <div>BYOK gate</div>;
-}
-EOF
-
+    stage_fixtures claude docs wireframe-coverage 01-initial
     git add . && git commit -m "feat(web): initial BYOK gate" --no-verify -q
 
     git checkout -b feat/widen-and-mock -q
-
-    cat <<'EOF' >src/features/chat/api-key-gate.tsx
-export function ApiKeyGate() {
-  // Now supports Anthropic, OpenAI, and Gemini
-  return <div>Multi-provider gate</div>;
-}
-EOF
-
-    cat <<'EOF' >src/features/mock/MockDemoStrip.tsx
-export function MockDemoStrip() {
-  return <div>mock demo strip</div>;
-}
-EOF
-
+    stage_fixtures claude docs wireframe-coverage 02-widen
     git add . && git commit -m "feat(web): widen BYOK to three providers and add mock demo strip" --no-verify -q
 
     log_step "Scenario ready: docs wireframe coverage sweep"

@@ -1,0 +1,10 @@
+
+# Requirements
+
+- Users can create, list, and complete tasks
+- Tasks persist across restarts
+
+## Non-goals
+
+- No multi-user support
+- No task sharing between accounts

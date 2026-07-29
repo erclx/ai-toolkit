@@ -1,0 +1,3 @@
+export function ChatScreen() {
+  return <div>chat</div>;
+}

@@ -151,7 +151,7 @@ inside an already-open frame.
 
 ### Sandbox scenarios
 
-Scenarios live under `scripts/sandbox/`. Route non-interactively with `SANDBOX_SCENARIO`:
+Scenarios live under `scripts/sandbox/`, one folder per category. `scripts/sandbox/fixtures/` is the exception, holding file content that scenarios stage rather than scenarios of its own, so both pickers filter it out. Route non-interactively with `SANDBOX_SCENARIO`:
 
 ```bash
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling

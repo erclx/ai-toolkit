@@ -1,0 +1,12 @@
+# My App
+
+Mixed web and api project.
+
+## Context
+
+- Always loaded: this file, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`
+- On-demand lookup: `.claude/context/<domain>.md`. Check `.claude/context/index.md` first.
+
+## Commands
+
+- `bun run check`: lint and typecheck

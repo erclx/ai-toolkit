@@ -1,0 +1,11 @@
+---
+title: Web
+description: Chat surface and provider switching
+---
+
+# Web
+
+## Layer responsibilities
+
+- `src/app/` owns routing
+- `src/features/chat/` owns the chat rail

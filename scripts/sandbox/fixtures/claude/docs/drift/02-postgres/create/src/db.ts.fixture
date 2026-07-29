@@ -1,0 +1,18 @@
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export async function getTasks() {
+  const { rows } = await pool.query("SELECT * FROM tasks");
+  return rows;
+}
+
+export async function createTask(title: string, userId: string) {
+  const { rows } = await pool.query(
+    "INSERT INTO tasks (title, user_id) VALUES ($1, $2) RETURNING id",
+    [title, userId],
+  );
+  return rows[0];
+}

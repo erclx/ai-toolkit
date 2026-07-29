@@ -6,9 +6,15 @@ import { intro, select } from '@/ui'
 
 const SANDBOX_DIR = join(PROJECT_ROOT, 'scripts', 'sandbox')
 
+/**
+ * Holds fixture content for scenarios rather than scenarios of its own.
+ * Twin of the `-not -name fixtures` filter in `scripts/manage-sandbox.sh`.
+ */
+const FIXTURES_DIR = 'fixtures'
+
 function getCategories(): string[] {
   return readdirSync(SANDBOX_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
+    .filter((d) => d.isDirectory() && d.name !== FIXTURES_DIR)
     .map((d) => d.name)
     .sort()
 }

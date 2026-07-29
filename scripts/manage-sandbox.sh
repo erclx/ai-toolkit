@@ -73,7 +73,9 @@ setup_ssh() {
 select_sandbox_category() {
   local categories=()
   if ls -d "$SANDBOX_DIR"/*/ >/dev/null 2>&1; then
-    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
+    # Twin of FIXTURES_DIR in src/commands/sandbox.ts. The exec boundary rules out
+    # a shared constant, so a new exclusion has to land on both sides.
+    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -not -name fixtures -exec basename {} \; | sort)
   fi
 
   if [ ${#categories[@]} -eq 0 ]; then
