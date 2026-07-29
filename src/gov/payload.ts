@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
-
-const FRONTMATTER = /^---\n[\s\S]*?\n---\n?/
+import { stripFrontmatter } from '@/frontmatter'
 
 /**
  * Lists installed rules in the order the payload concatenates them. Sorting by
@@ -18,14 +17,6 @@ export function listRuleFiles(rulesDir: string): string[] {
   ]
     .sort()
     .map((path) => resolve(rulesDir, path))
-}
-
-/**
- * Drops a leading `---` block. Only a block starting on the first line counts,
- * so a horizontal rule further down the document is left in place.
- */
-export function stripFrontmatter(source: string): string {
-  return source.replace(FRONTMATTER, '')
 }
 
 /**

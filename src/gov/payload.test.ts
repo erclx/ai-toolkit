@@ -2,11 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import {
-  buildRulesPayload,
-  listRuleFiles,
-  stripFrontmatter,
-} from '@/gov/payload'
+import { buildRulesPayload, listRuleFiles } from '@/gov/payload'
 
 let ROOT: string
 let RULES: string
@@ -26,22 +22,6 @@ beforeEach(() => {
 
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
-})
-
-describe('stripFrontmatter', () => {
-  it('should drop a leading frontmatter block', () => {
-    expect(stripFrontmatter('---\ntitle: X\n---\n# Body\n')).toBe('# Body\n')
-  })
-
-  it('should leave a document without frontmatter unchanged', () => {
-    expect(stripFrontmatter('# Body\n')).toBe('# Body\n')
-  })
-
-  it('should keep a horizontal rule that appears below the first line', () => {
-    expect(stripFrontmatter('# Body\n\n---\n\nMore\n')).toBe(
-      '# Body\n\n---\n\nMore\n',
-    )
-  })
 })
 
 describe('listRuleFiles', () => {
