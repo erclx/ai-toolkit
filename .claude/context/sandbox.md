@@ -108,13 +108,15 @@ log_info "list     : read-only catalog dump, no target needed"
 
 ### Fixtures
 
-A scenario's file content lives under `scripts/sandbox/fixtures/<category>/<arm>/<stage>/`, and `stage_fixtures` from `lib/sandbox-fixtures.sh` copies one stage into the sandbox. The scenario keeps its own git operations between the calls, so the script holds logic and the tree holds content.
+A scenario's file content lives under `scripts/sandbox/fixtures/<category>/<scenario>/<arm>/<stage>/`, and `stage_fixtures` from `lib/sandbox-fixtures.sh` copies one stage into the sandbox. The scenario keeps its own git operations between the calls, so the script holds logic and the tree holds content.
 
 ```bash
-stage_fixtures docs drift 01-initial
+stage_fixtures claude docs drift 01-initial
 git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
-stage_fixtures docs drift 02-postgres
+stage_fixtures claude docs drift 02-postgres
 ```
+
+The first two segments mirror the scenario's own path at `scripts/sandbox/<category>/<scenario>.sh`. Both are needed, since four scenario basenames repeat across categories (`claude`, `docs`, `review`, and `sync`) and `docs` is a category as well.
 
 Each stage splits into two optional subfolders. `create/` copies files in, making parent directories and overwriting whatever is there. `append/` concatenates onto a file the anchor or the injected seeds already provide, and fails when the target is missing, because an absent target means the upstream shape changed and the scenario's assumption is stale.
 

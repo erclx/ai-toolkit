@@ -6,7 +6,10 @@ import { intro, select } from '@/ui'
 
 const SANDBOX_DIR = join(PROJECT_ROOT, 'scripts', 'sandbox')
 
-/** Holds fixture content for scenarios rather than scenarios of its own. */
+/**
+ * Holds fixture content for scenarios rather than scenarios of its own.
+ * Twin of the `-not -name fixtures` filter in `scripts/manage-sandbox.sh`.
+ */
 const FIXTURES_DIR = 'fixtures'
 
 function getCategories(): string[] {

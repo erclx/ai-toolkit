@@ -14,13 +14,13 @@ stage_setup() {
 
   case "$SELECTED_OPTION" in
   "drift")
-    stage_fixtures docs drift 01-initial
+    stage_fixtures claude docs drift 01-initial
     git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
 
-    stage_fixtures docs drift 02-postgres
+    stage_fixtures claude docs drift 02-postgres
     git add . && git commit -m "feat(api): migrate storage to Postgres and scope tasks to users" --no-verify -q
 
-    stage_fixtures docs drift 03-plans
+    stage_fixtures claude docs drift 03-plans
 
     log_step "Scenario ready: docs drift after a session pivot"
     log_info "Context: planning docs are stale relative to HEAD"
@@ -42,14 +42,14 @@ stage_setup() {
     log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
     ;;
   "context-entries")
-    stage_fixtures docs context-entries 01-initial
+    stage_fixtures claude docs context-entries 01-initial
     git add . && git commit -m "feat(web): initial chat shell" --no-verify -q
 
     git checkout -b feat/provider-switch -q
-    stage_fixtures docs context-entries 02-provider-switch
+    stage_fixtures claude docs context-entries 02-provider-switch
     git add . && git commit -m "feat(web): provider switch at the gate" --no-verify -q
 
-    stage_fixtures docs context-entries 03-plan
+    stage_fixtures claude docs context-entries 03-plan
 
     log_step "Scenario ready: docs refreshes context entry from diff"
     log_info "Context: feat/provider-switch branch with diff in src/features/chat/"
@@ -63,11 +63,11 @@ stage_setup() {
     ;;
   "wireframe-coverage")
     rm -f .claude/wireframes/feature-name.md
-    stage_fixtures docs wireframe-coverage 01-initial
+    stage_fixtures claude docs wireframe-coverage 01-initial
     git add . && git commit -m "feat(web): initial BYOK gate" --no-verify -q
 
     git checkout -b feat/widen-and-mock -q
-    stage_fixtures docs wireframe-coverage 02-widen
+    stage_fixtures claude docs wireframe-coverage 02-widen
     git add . && git commit -m "feat(web): widen BYOK to three providers and add mock demo strip" --no-verify -q
 
     log_step "Scenario ready: docs wireframe coverage sweep"

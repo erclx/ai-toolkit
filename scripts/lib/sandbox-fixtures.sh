@@ -5,11 +5,16 @@
 # shfmt, and shellcheck all skip it and the bytes reach the sandbox unmodified.
 FIXTURE_SUFFIX=".fixture"
 
+# The tree mirrors the scenario path, so `category` and `scenario` together match
+# `scripts/sandbox/<category>/<scenario>.sh`. Both segments are load-bearing:
+# four scenario basenames repeat across categories (`claude`, `docs`, `review`,
+# `sync`), and `docs` is also a category of its own.
 fixture_stage_dir() {
   local category="$1"
-  local arm="$2"
-  local stage="$3"
-  echo "$PROJECT_ROOT/scripts/sandbox/fixtures/$category/$arm/$stage"
+  local scenario="$2"
+  local arm="$3"
+  local stage="$4"
+  echo "$PROJECT_ROOT/scripts/sandbox/fixtures/$category/$scenario/$arm/$stage"
 }
 
 list_fixture_files() {
@@ -78,14 +83,15 @@ append_from_fixtures() {
 # the steps, where they are visible.
 stage_fixtures() {
   local category="$1"
-  local arm="$2"
-  local stage="$3"
+  local scenario="$2"
+  local arm="$3"
+  local stage="$4"
 
   local stage_dir
-  stage_dir="$(fixture_stage_dir "$category" "$arm" "$stage")"
+  stage_dir="$(fixture_stage_dir "$category" "$scenario" "$arm" "$stage")"
 
   if [ ! -d "$stage_dir" ]; then
-    log_error "Fixture stage not found: $category/$arm/$stage"
+    log_error "Fixture stage not found: $category/$scenario/$arm/$stage"
   fi
 
   assert_fixtures_suffixed "$stage_dir/create"
@@ -95,7 +101,7 @@ stage_fixtures() {
   staged=$(($(count_fixture_files "$stage_dir/create") + \
   $(count_fixture_files "$stage_dir/append")))
   if [ "$staged" -eq 0 ]; then
-    log_error "Fixture stage provisions nothing: $category/$arm/$stage"
+    log_error "Fixture stage provisions nothing: $category/$scenario/$arm/$stage"
   fi
 
   create_from_fixtures "$stage_dir/create"
