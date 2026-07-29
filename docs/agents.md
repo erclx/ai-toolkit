@@ -140,7 +140,9 @@ Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` s
 - `aitk docs list [--json]` lists the downstream catalog: the consumer-facing `docs/` surface plus per-domain narrative from `.claude/context/`. Toolkit-internal context entries (`ci`, `development`, `extensions`, `sandbox`) are dropped.
 - `aitk docs <topic>` prints one doc to stdout, resolved by exact name from `docs/` first, then `.claude/context/`. Any doc is reachable by name, including the toolkit-internal topics the list omits.
 
-Data prints to stdout and the frame to stderr, so `aitk docs <topic> > out.md` captures clean markdown.
+Data prints to stdout and the frame to stderr, so `aitk docs <topic> > out.md` captures clean markdown. With no topic and no verb, `aitk docs` runs `list`. An unknown topic names the available topics on stderr and exits 1.
+
+Only a `---` block opening on the first line counts as frontmatter, so a document body carrying horizontal rules emits whole.
 
 ## Indexes
 
@@ -215,6 +217,9 @@ AITK_NON_INTERACTIVE=1 aitk snippets sync /path/to/project
 
 # Report standards drift without applying it, which is what headless does here
 AITK_NON_INTERACTIVE=1 aitk standards sync /path/to/project
+
+# Scaffold wiki/ with a stub index. The target must already exist
+AITK_NON_INTERACTIVE=1 aitk wiki init /path/to/project
 
 # Run a sandbox scenario non-interactively
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling

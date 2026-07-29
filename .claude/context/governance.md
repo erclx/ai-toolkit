@@ -41,7 +41,7 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - `aitk gov sync` refuses to run against the toolkit root, so this repo's own `.claude/rules/` copy is hand-maintained. Nothing checks it for drift against `governance/rules/`, unlike the standards and snippets consumed copies.
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
-- `scripts/lib/gov.sh` is narrowed to `strip_frontmatter` and `rule_subdir`. Both are called inside loops, so routing them through the CLI would cost a process per file. `rule_subdir` stays permanently because four of its five callers are sandbox scripts. The payload builder moved to `src/gov/payload.ts`.
+- `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts. The payload builder moved to `src/gov/payload.ts` and frontmatter stripping to `src/frontmatter.ts`, which `docs` shares.
 - `aitk gov sync` and `aitk gov build` no longer offer a `Review diffs` branch. It was the last path that shelled out to `code --diff`, which hangs a headless agent, and the tooling sync dropped it one step earlier.
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
 

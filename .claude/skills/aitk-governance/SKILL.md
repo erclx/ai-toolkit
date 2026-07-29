@@ -11,7 +11,7 @@ Read `.claude/context/governance.md` for system overview, numbering scheme, and 
 
 - Read `.claude/context/governance.md` for the numbering ranges before picking a number for a new rule.
 - Follow `.claude/standards/rule.md` for frontmatter, heading style, and bullet conventions when writing a new rule file.
-- `strip_frontmatter` and `rule_subdir` live in `scripts/lib/gov.sh`. Do not duplicate.
+- `rule_subdir` is all that is left in `scripts/lib/gov.sh`. Frontmatter stripping is `src/frontmatter.ts`. Do not duplicate either.
 - `sync` and `build` are TypeScript. The sync engine is `src/sync/engine.ts`, the gov adapter is `src/gov/adapter.ts`, and the payload builder is `src/gov/payload.ts`. `install` and `list` are still bash under `scripts/gov/`.
 - Changing what counts as a change, or where a rule's source lives, belongs in the adapter. Changing the scan report, the prompt, or the apply loop belongs in the engine, where snippets and standards will inherit it.
 
