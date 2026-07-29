@@ -69,6 +69,7 @@ Written to survive a compaction that loses the conversation. It repeats facts he
 ## Conventions
 
 - Questions carry an open or answered marker, and open ones repeat at the end of the file they belong to. That gives `06-decision.md` its agenda for free.
+- Every open question carries a lean and what would overturn it, in the open question format in `SKILL.md`. A measurement question records that it needs measuring instead of guessing.
 - State a number with what it settles. The strongest sections are the ones where a measurement answers a named question and says so.
 - Send findings that would change an existing standard or rule to a backlog. Only a demonstrated failure changes one.
 - Let the file count follow the number of genuinely separable questions, not the importance of the topic. A large topic with one question is a small folder.
