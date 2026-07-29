@@ -1,6 +1,6 @@
 ---
 name: claude-groundwork
-description: Opens and runs a numbered groundwork folder under `.claude/.tmp/<slug>/` for a topic that has to be measured before it can be planned. Detects open, resume, and close from the folder itself. Use when asked to "research X", "dig into X", "work out what we should do about X", "measure this before we commit", or "open a groundwork folder". Do NOT use to write a feature plan or to implement. That is `claude-feature`.
+description: Opens and runs a numbered groundwork folder under `.claude/.tmp/groundwork/<slug>/` for a topic that has to be measured before it can be planned. Detects open, resume, and close from the folder itself. Use when asked to "research X", "dig into X", "work out what we should do about X", "measure this before we commit", or "open a groundwork folder". Do NOT use to write a feature plan or to implement. That is `claude-feature`.
 ---
 
 # Claude groundwork
@@ -17,16 +17,18 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 
 ## Write scope
 
-- Write only inside `.claude/.tmp/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
+- Write only inside `.claude/.tmp/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
 - One exception, at close only: leave one line in the project's task file.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
 
 ## Step 1: detect the mode
 
-List `.claude/.tmp/` from the project root and match the topic against the folders already there before deriving anything. A resume pass rarely phrases the topic the way the folder was named, so a fresh slug derived from the wording would miss a live folder and restart it.
+List `.claude/.tmp/groundwork/` from the project root and match the topic against the tracks already there before deriving anything. A resume pass rarely phrases the topic the way the folder was named, so a fresh slug derived from the wording would miss a live track and restart it.
 
-With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `ts-migration` over `migration-research`. Then route on `.claude/.tmp/<slug>/`:
+Never match against `.claude/.tmp/` itself. That directory is scratch shared with every other skill, so a topic matched there lands on a folder that was never a track.
+
+With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `ts-migration` over `migration-research`. Then route on `.claude/.tmp/groundwork/<slug>/`:
 
 - Folder absent: open
 - Folder present without `06-decision.md`: resume
@@ -49,7 +51,7 @@ Do not dispatch subagents. A groundwork track is a conversation, and fanning out
 
 ## Open mode
 
-1. Create `.claude/.tmp/<slug>/`.
+1. Create `.claude/.tmp/groundwork/<slug>/`.
 2. Write `README.md` first. Writing it first forces the question of what the track is for.
 3. Write `01-current-state.md` by measuring now. Never carry a figure from a previous session or from recall without re-measuring it. Measure only what an open question in the folder needs. A number with no question attached is how groundwork turns into the work.
 4. Write `00-scope.md` when the track is large enough to run away. Skip it on a small track.
@@ -79,12 +81,12 @@ Emit the full relative path from the project root for every file written or upda
 Open and resume:
 
 ```plaintext
-📂 Opened .claude/.tmp/<slug>/
+📂 Opened .claude/.tmp/groundwork/<slug>/
 
 **Written:**
 
-- `.claude/.tmp/<slug>/README.md`
-- `.claude/.tmp/<slug>/01-current-state.md`
+- `.claude/.tmp/groundwork/<slug>/README.md`
+- `.claude/.tmp/groundwork/<slug>/01-current-state.md`
 
 **Open questions:**
 
@@ -96,12 +98,12 @@ Use `📂 Resumed` in place of `📂 Opened` on a resume pass.
 Close:
 
 ```plaintext
-✅ Closed .claude/.tmp/<slug>/
+✅ Closed .claude/.tmp/groundwork/<slug>/
 
 **Written:**
 
-- `.claude/.tmp/<slug>/06-decision.md`
-- `.claude/.tmp/<slug>/07-next-session.md`
+- `.claude/.tmp/groundwork/<slug>/06-decision.md`
+- `.claude/.tmp/groundwork/<slug>/07-next-session.md`
 
 <the decision in one line>
 

@@ -1,11 +1,11 @@
 ---
 title: Groundwork folder reference
-description: Reserved file numbers, required file contents, and anti-patterns for a .claude/.tmp/ groundwork folder
+description: Reserved file numbers, required file contents, and anti-patterns for a .claude/.tmp/groundwork/ folder
 ---
 
 # Groundwork folder reference
 
-Applies to a groundwork folder at `.claude/.tmp/<slug>/`. The numbering is the table of contents: a reader opens the folder and knows where to start and what follows, with no index maintained inside each file. Protect that first, because the instinct when adding a file mid-track is to name it for its topic instead.
+Applies to a groundwork folder at `.claude/.tmp/groundwork/<slug>/`. The numbering is the table of contents: a reader opens the folder and knows where to start and what follows, with no index maintained inside each file. Protect that first, because the instinct when adding a file mid-track is to name it for its topic instead.
 
 The folder is gitignored and unbacked. It dies with the machine, which is why the handoff file has to be self-contained.
 
