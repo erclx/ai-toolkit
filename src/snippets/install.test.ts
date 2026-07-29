@@ -113,6 +113,15 @@ describe('resolveSnippets', () => {
       unknownCategory: 'ghost',
     })
   })
+
+  it('should reject a category naming a file beside the category folders', () => {
+    seedPresets('[essentials]\nnames = ["a"]\n')
+
+    expect(resolveSnippets(root, 'snippets.toml')).toEqual({
+      ok: false,
+      unknownCategory: 'snippets.toml',
+    })
+  })
 })
 
 describe('installableCategories', () => {

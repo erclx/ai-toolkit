@@ -43,9 +43,14 @@ export function lookupRules(
   const rulesRoot = rulesSourceDir(root)
   const byName = new Map<string, string>()
 
-  const relPaths = [
-    ...new Bun.Glob('**/*.md').scanSync({ cwd: rulesRoot, onlyFiles: true }),
-  ].sort()
+  const relPaths = existsSync(rulesRoot)
+    ? [
+        ...new Bun.Glob('**/*.md').scanSync({
+          cwd: rulesRoot,
+          onlyFiles: true,
+        }),
+      ].sort()
+    : []
 
   for (const rel of relPaths) {
     const name = rel.slice(rel.lastIndexOf('/') + 1, -'.md'.length)

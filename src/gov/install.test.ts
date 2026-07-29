@@ -75,6 +75,13 @@ describe('lookupRules', () => {
     expect(missing).toEqual(['999-ghost'])
   })
 
+  it('should report every rule as missing when no rules source exists', () => {
+    const { found, missing } = lookupRules(join(root, 'nowhere'), ['000-a'])
+
+    expect(found).toEqual([])
+    expect(missing).toEqual(['000-a'])
+  })
+
   it('should preserve the requested order rather than the source order', () => {
     seedRule(join('core', '000-a.md'), 'A')
     seedRule(join('core', '010-b.md'), 'B')

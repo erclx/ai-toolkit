@@ -1,5 +1,6 @@
-import { existsSync, readdirSync } from 'node:fs'
+import { readdirSync } from 'node:fs'
 import { join, sep } from 'node:path'
+import { isDirectory } from '@/target'
 
 const INTERNAL_CATEGORIES = new Set(['aitk'])
 
@@ -30,7 +31,7 @@ export function isInternalCategory(relToRoot: string): boolean {
  */
 export function listFolderCategories(root: string): string[] {
   const dir = snippetsSourceDir(root)
-  if (!existsSync(dir)) return []
+  if (!isDirectory(dir)) return []
 
   return readdirSync(dir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -48,8 +49,13 @@ export function categoryDir(root: string, category: string): string {
   return category === BASE_CATEGORY ? source : join(source, category)
 }
 
+/**
+ * Tests for a directory rather than mere existence. `snippets/` holds files
+ * alongside its category folders, so an argument naming one of them resolves
+ * to a real path that cannot be scanned as a category.
+ */
 export function categoryExists(root: string, category: string): boolean {
-  return existsSync(categoryDir(root, category))
+  return isDirectory(categoryDir(root, category))
 }
 
 /**
@@ -59,7 +65,7 @@ export function categoryExists(root: string, category: string): boolean {
  */
 export function listEntries(root: string, category: string): string[] {
   const dir = categoryDir(root, category)
-  if (!existsSync(dir)) return []
+  if (!isDirectory(dir)) return []
 
   return [...new Bun.Glob('*.md').scanSync({ cwd: dir, onlyFiles: true })]
     .map((name) => name.slice(0, -'.md'.length))

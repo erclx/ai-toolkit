@@ -110,4 +110,18 @@ describe('categoryExists', () => {
   it('should report a folder category that does not exist', () => {
     expect(categoryExists(root, 'ghost')).toBe(false)
   })
+
+  it('should not accept a file sitting beside the category folders', () => {
+    seedSnippet('snippets.toml')
+
+    expect(categoryExists(root, 'snippets.toml')).toBe(false)
+  })
+})
+
+describe('listEntries', () => {
+  it('should return an empty list when the category names a file', () => {
+    seedSnippet('snippets.toml')
+
+    expect(listEntries(root, 'snippets.toml')).toEqual([])
+  })
 })
