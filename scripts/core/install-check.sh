@@ -67,8 +67,6 @@ mkdir -p "$TARGET_DIR"
 log_info "Initialized git in $TARGET_DIR"
 
 log_step "Run aitk init"
-# --stack is what makes init run the governance domain. Without it that domain
-# is skipped by design, and no assertion below could cover it.
 (cd "$TARGET_DIR" && AITK_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "aitk init failed"
 log_info "aitk init completed"
 

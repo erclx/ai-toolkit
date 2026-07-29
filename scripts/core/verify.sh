@@ -60,8 +60,6 @@ main() {
   run_check "bun run check:shell" "Shell check failed"
   log_info "Shell check passed"
 
-  # Runs before the tests because a missing import is caught in a second here
-  # and only shows up in the suite where a test happens to cover the caller.
   log_step "Types"
   run_check "bun run check:types" "Typecheck failed"
   log_info "Typecheck passed"

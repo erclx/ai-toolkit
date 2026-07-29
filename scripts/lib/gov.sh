@@ -1,15 +1,4 @@
 #!/usr/bin/env bash
-#
-# What survives here and why. Both functions are called from inside a loop, so
-# routing them through the CLI would cost a process per file.
-#
-#   rule_subdir       stays permanently. Four of its five callers are sandbox
-#                     scripts, and the sandbox stays bash by decision.
-#   strip_frontmatter stays until the docs domain migrates. Its only caller is
-#                     scripts/docs/get.sh.
-#
-# The payload builder that used to live here is TypeScript now, in
-# src/gov/payload.ts.
 
 strip_frontmatter() {
   local file="$1"

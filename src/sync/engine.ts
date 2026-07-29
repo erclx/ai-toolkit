@@ -16,12 +16,14 @@ import {
 const GREEN = '\x1b[0;32m'
 const NC = '\x1b[0m'
 
+/**
+ * One installed file in three path flavours: absolute, relative to the
+ * domain's installed root, and relative to the target. Adapters match on
+ * `relToRoot` and every log line prints `rel`.
+ */
 export interface InstalledFile {
-  /** Absolute path of the file as installed in the target. */
   readonly path: string
-  /** Path relative to the domain's installed root, e.g. `core/000-x.md`. */
   readonly relToRoot: string
-  /** Path relative to the target, used for every log line. */
   readonly rel: string
 }
 
@@ -60,19 +62,15 @@ export interface SyncPlan {
  * so it lives in the engine.
  */
 export interface SyncAdapter {
-  /** Frame banner, e.g. `aitk gov sync`. */
   readonly banner: string
-  /** Scan section header, rendered as `Scanning <label>`. */
+  /** Rendered as `Scanning <label>`. */
   readonly label: string
-  /** Shown when the target has nothing installed for this domain. */
   readonly missingMessage: string
-  /** Noun for the completion line, e.g. `changes`. */
+  /** Noun for the completion count, e.g. `changes`. */
   readonly unit: string
-  /** Directory in the target holding installed files. */
   installedRoot(target: string): string
-  /** Resolves the toolkit source for one installed file. */
   locateSource(file: InstalledFile): string | undefined
-  /** Surfaces the walk cannot see, such as retired files scheduled for removal. */
+  /** Surfaces the file walk cannot see, such as a retired doc to delete. */
   collectRetired?(target: string): RetiredSurface[]
 }
 
