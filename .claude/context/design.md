@@ -78,7 +78,7 @@ Typical sequence in a new project:
 4. Open `.claude/review/design/index.html` in a browser
 5. Iterate on DESIGN.md until the preview matches intent
 
-The Stitch integration (`aitk design sync`, `generate`, `edit`, `variants`, `list`) sits on top of the same DESIGN.md file, consuming its tables via MCP. See `.claude/plans/feature-stitch-mcp-integration.md` for that surface.
+The Stitch integration (`aitk design sync`, `generate`, `edit`, `variants`, `list`) sits on top of the same DESIGN.md file, consuming its tables via MCP. See `wiki/stitch.md` for that surface.
 
 ## Related
 
