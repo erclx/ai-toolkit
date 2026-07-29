@@ -8,6 +8,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
+WRITE="${VERIFY_WRITE:-true}"
 
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
@@ -29,13 +30,15 @@ main() {
 
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
 
-  echo -e "${GREY}├${NC} ${WHITE}Formatting${NC}"
-  run_check "bun run format" "Format failed"
-  log_info "Format applied"
-
-  log_step "Format check"
-  run_check "bun run check:format" "Format check failed"
-  log_info "Format check passed"
+  if [ "$WRITE" = true ]; then
+    echo -e "${GREY}├${NC} ${WHITE}Formatting${NC}"
+    run_check "bun run format" "Format failed"
+    log_info "Format applied"
+  else
+    echo -e "${GREY}├${NC} ${WHITE}Format check${NC}"
+    run_check "bun run check:format" "Format check failed"
+    log_info "Format check passed"
+  fi
 
   log_step "Indexes"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-indexes.sh" "Index regen failed"
