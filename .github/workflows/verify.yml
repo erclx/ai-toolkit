@@ -25,14 +25,5 @@ jobs:
       - name: Install Shell Tools
         run: sudo apt-get install -y shfmt shellcheck
 
-      - name: Check Formatting
-        run: bun run check:format
-
-      - name: Check Spelling
-        run: bun run check:spell
-
-      - name: Check Shell
-        run: bun run check:shell
-
-      - name: Check Types
-        run: bun run check:types
+      - name: Verify
+        run: bun run check:ci
