@@ -113,12 +113,14 @@ log_info "list     : read-only catalog dump, no target needed"
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"  # skip auto-commit after stage_setup
   export SANDBOX_INJECT_SEEDS="true"      # inject tooling/claude/seeds/ into sandbox root
-  export SANDBOX_INJECT_STANDARDS="true"  # inject standards/ into sandbox
+  export SANDBOX_INJECT_STANDARDS="true"  # inject standards into .claude/standards/
   export SANDBOX_INJECT_GOV="true"        # inject .claude/rules/ into sandbox
 }
 ```
 
 `SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs.
+
+`SANDBOX_INJECT_STANDARDS` writes `.claude/standards/`, matching what `aitk standards install` produces. It copies the flat `standards/` root only, so `bundled/` and `aitk/` stay out, and omits `index.md`, which a real install rebuilds against the files that landed.
 
 ### use_anchor
 

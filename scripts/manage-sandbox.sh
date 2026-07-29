@@ -182,11 +182,18 @@ provision_sandbox() {
   fi
 }
 
+# Mirrors the shape `planInstall` selects in src/standards/install.ts: the flat
+# root only, so a source subfolder such as bundled/ or aitk/ stays out, and no
+# index.md, which a real install rebuilds against what landed.
 inject_documentation() {
-  if [ -d "$PROJECT_ROOT/standards" ]; then
-    mkdir -p "$SANDBOX/standards"
-    cp -r "$PROJECT_ROOT/standards/." "$SANDBOX/standards/"
-  fi
+  local standards_source="$PROJECT_ROOT/standards"
+  [ ! -d "$standards_source" ] && return
+
+  local dest_dir="$SANDBOX/.claude/standards"
+  mkdir -p "$dest_dir"
+  while IFS= read -r src; do
+    cp "$src" "$dest_dir/"
+  done < <(find "$standards_source" -maxdepth 1 -type f -name "*.md" ! -name "index.md" | sort)
 }
 
 inject_gov_rules() {
