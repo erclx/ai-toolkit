@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import { copyPreservingMode } from '@/copy'
+import { isDirectory } from '@/target'
 import {
   intro,
   isNonInteractive,
@@ -284,12 +285,4 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
 
 function sameContent(left: string, right: string): boolean {
   return readFileSync(left).equals(readFileSync(right))
-}
-
-function isDirectory(path: string): boolean {
-  try {
-    return statSync(path).isDirectory()
-  } catch {
-    return false
-  }
 }

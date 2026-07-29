@@ -47,6 +47,18 @@ export function outro(): void {
   process.stderr.write(`${GREY}└${NC}\n`)
 }
 
+/**
+ * Indents borrowed output inside an open frame, matching `pipe_output` in
+ * `scripts/lib/ui.sh`. Used for a document the command did not compose itself,
+ * such as a pull request body or the output of a git mutation.
+ */
+export function pipeOutput(text: string): void {
+  const lines = text.replace(/\n$/, '').split('\n')
+  process.stderr.write(
+    `${lines.map((line) => `${GREY}│${NC}  ${line}`).join('\n')}\n`,
+  )
+}
+
 export function frameError(message: string): void {
   process.stderr.write(
     `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,
