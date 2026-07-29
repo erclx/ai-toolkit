@@ -14,14 +14,14 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain still on bash
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
 - `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, and `claude` and `standards` keep only a list command there
-- `scripts/gov/` and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
+- `scripts/gov/`, `scripts/snippets/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
 
-- Entry points are meant to dispatch only, and three of the eight remaining do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
-- A migrated domain loses its dispatcher entirely. `tooling/` and `gov/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
+- Entry points are meant to dispatch only, and two of the seven remaining do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, and `snippets/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
 - Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
