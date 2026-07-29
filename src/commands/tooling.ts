@@ -34,6 +34,11 @@ interface InjectOptions {
   readonly seeds?: boolean
   readonly manifest?: boolean
   readonly gitignore?: boolean
+  readonly nested?: boolean
+}
+
+interface PruneOptions {
+  readonly nested?: boolean
 }
 
 type Prepared =
@@ -70,6 +75,7 @@ export function register(program: Command): void {
     .option('--seeds', 'Merge stack seeds')
     .option('--manifest', 'Install deps, apply scripts, merge gitignore')
     .option('--gitignore', 'Merge gitignore entries only')
+    .option('--nested', 'Suppress the frame when a caller already opened one')
     .action(async (stack: string, target: string, opts: InjectOptions) => {
       process.exitCode = await runInject(stack, target, opts)
     })
@@ -80,8 +86,9 @@ export function register(program: Command): void {
     .argument('<stack>', 'Tooling stack name')
     .argument('[target]', 'Target directory', '.')
     .helpOption('-h, --help', 'Show this help message')
-    .action(async (stack: string, target: string) => {
-      process.exitCode = await runPrune(stack, target)
+    .option('--nested', 'Suppress the frame when a caller already opened one')
+    .action(async (stack: string, target: string, opts: PruneOptions) => {
+      process.exitCode = await runPrune(stack, target, opts)
     })
 
   for (const verb of PASS_THROUGH_VERBS) {
@@ -219,9 +226,13 @@ async function runInject(
   target: string,
   opts: InjectOptions,
 ): Promise<number> {
+  const framed = opts.nested !== true
+  if (framed) intro('aitk tooling inject')
+
   const prepared = prepare(stack, target)
   if (!prepared.ok) {
-    process.stderr.write(`ERROR: ${prepared.error}\n`)
+    logWarn(prepared.error)
+    if (framed) outro()
     return 1
   }
 
@@ -240,6 +251,7 @@ async function runInject(
     await injectGitignore(prepared.chain, prepared.target)
   }
 
+  if (framed) outro()
   return 0
 }
 
@@ -247,14 +259,24 @@ async function runInject(
  * Emits the number of pruned entries on stdout so a caller can branch on it
  * without parsing the timeline, replacing the bash nameref return.
  */
-async function runPrune(stack: string, target: string): Promise<number> {
+async function runPrune(
+  stack: string,
+  target: string,
+  opts: PruneOptions,
+): Promise<number> {
+  const framed = opts.nested !== true
+  if (framed) intro('aitk tooling prune-gitignore')
+
   const prepared = prepare(stack, target)
   if (!prepared.ok) {
-    process.stderr.write(`ERROR: ${prepared.error}\n`)
+    logWarn(prepared.error)
+    if (framed) outro()
     return 1
   }
 
   const removed = await pruneGitignore(prepared.chain, prepared.target)
+  if (framed) outro()
+
   process.stdout.write(`${removed.length}\n`)
   return 0
 }

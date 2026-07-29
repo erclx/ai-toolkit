@@ -98,6 +98,13 @@ Common patterns:
 - `sync <path>` → reapply all installed entries in a target project.
 - `create [name]` → scaffold a new authoring entry in this repo.
 
+`aitk tooling inject` and `aitk tooling prune-gitignore` are the unguarded
+primitives beneath `sync`. They apply one stack with no scan and no prompt, and
+they deliberately skip the check that rejects `claude`, which is how `aitk
+claude` drives its own stack through them. Use `sync` unless you are scripting
+provisioning. Both frame their own output, so pass `--nested` when calling from
+inside an already-open frame.
+
 ### Sandbox scenarios
 
 Scenarios live under `scripts/sandbox/`. Route non-interactively with `SANDBOX_SCENARIO`:

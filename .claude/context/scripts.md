@@ -61,7 +61,9 @@ The git workflow step is skipped if the target is not a git root (no `.git/`). W
 
 `scripts/manage-gov.sh` is the reference manager. It opens the frame unconditionally in `main()`, and its verb scripts set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
 
-The tooling domain no longer has a dispatcher. `src/commands/tooling.ts` registers each verb directly, handling `sync`, `inject`, and `prune-gitignore` in TypeScript and shelling out to `scripts/tooling/{ref,create,list,verify}.sh` for the rest. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`.
+The tooling domain no longer has a dispatcher. `src/commands/tooling.ts` registers each verb directly, handling `sync`, `inject`, and `prune-gitignore` in TypeScript and shelling out to `scripts/tooling/{ref,create,list,verify}.sh` for the rest.
+
+A TypeScript command that both bash and users invoke owns its frame and takes `--nested` to suppress it. `aitk tooling inject` frames itself so direct invocation does not emit dangling `│` lines, while `manage-claude.sh` and the tooling sandbox scenarios pass `--nested` because they have already opened one. This is the same split `VERIFY_NESTED` makes in `scripts/core/verify.sh`. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`.
 
 See `docs/agents.md` for the canonical output shape this framing produces, and the `bash-script` plugin skill for the authoring contract when generating new domain scripts.
 

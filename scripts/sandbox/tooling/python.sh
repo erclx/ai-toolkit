@@ -16,7 +16,7 @@ stage_setup() {
   log_info "package.json created"
 
   log_step "Applying python stack (base + python via extends)"
-  bun "$PROJECT_ROOT/src/cli.ts" tooling inject python .
+  bun "$PROJECT_ROOT/src/cli.ts" tooling inject python . --nested
 
   log_step "Initializing Husky"
   bunx husky

@@ -14,7 +14,7 @@ stage_setup() {
 EOF
   log_info "package.json created"
 
-  bun "$PROJECT_ROOT/src/cli.ts" tooling inject base .
+  bun "$PROJECT_ROOT/src/cli.ts" tooling inject base . --nested
 
   log_step "Initializing Husky"
   bunx husky
