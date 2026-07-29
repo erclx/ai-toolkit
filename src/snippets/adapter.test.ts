@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createSnippetsAdapter, isInternalCategory } from '@/snippets/adapter'
+import { createSnippetsAdapter } from '@/snippets/adapter'
 import type { InstalledFile } from '@/sync/engine'
 
 let ROOT: string
@@ -27,24 +27,6 @@ beforeEach(() => {
 
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
-})
-
-describe('isInternalCategory', () => {
-  it('should flag a snippet under an internal category folder', () => {
-    expect(isInternalCategory(join('aitk', 'format-edits.md'))).toBe(true)
-  })
-
-  it('should not flag a snippet under a shipped category folder', () => {
-    expect(isInternalCategory(join('claude', 'decision-memo.md'))).toBe(false)
-  })
-
-  it('should not flag a root-level snippet whose name is its first segment', () => {
-    expect(isInternalCategory('compact-summary.md')).toBe(false)
-  })
-
-  it('should not flag an internal name nested below another category', () => {
-    expect(isInternalCategory(join('claude', 'aitk', 'nested.md'))).toBe(false)
-  })
 })
 
 describe('createSnippetsAdapter', () => {
