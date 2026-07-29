@@ -13,14 +13,14 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 - `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain still on bash
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
-- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, and `claude` and `standards` keep only a list command there
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, `claude` and `standards` keep only a list command there, and `docs` keeps only `list.sh` now that `get` is TypeScript
 - `scripts/gov/`, `scripts/snippets/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
 
-- Entry points are meant to dispatch only, and two of the seven remaining do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- Entry points are meant to dispatch only, and none of the five remaining do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
 - A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, and `snippets/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
 - Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
@@ -89,16 +89,17 @@ Source this in any script that needs terminal output. When `AITK_NON_INTERACTIVE
 
 ### `gov.sh`
 
-Narrowed to the two functions that are called inside loops. The payload builder that used to live here is `src/gov/payload.ts` now.
+Narrowed to one function. The payload builder that used to live here is `src/gov/payload.ts`, and `strip_frontmatter` is `src/frontmatter.ts`.
 
-| Function            | What it does                                                                                           | Fate                              |
-| ------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------- |
-| `rule_subdir`       | Emit a source rule's subdirectory relative to the rules root, or empty when the rule sits at the root. | Stays bash permanently            |
-| `strip_frontmatter` | Strip the YAML frontmatter block from a markdown file. Emit the rest to stdout.                        | Stays until the docs domain moves |
+| Function      | What it does                                                                                           | Fate                   |
+| ------------- | ------------------------------------------------------------------------------------------------------ | ---------------------- |
+| `rule_subdir` | Emit a source rule's subdirectory relative to the rules root, or empty when the rule sits at the root. | Stays bash permanently |
 
-`rule_subdir` has five callers and four are sandbox scripts, which stay bash by decision. `strip_frontmatter` has one, `scripts/docs/get.sh`.
+`rule_subdir` has five callers and four are sandbox scripts, which stay bash by decision. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file.
 
-The bash `strip_frontmatter` treats the first `---` on any line as the start of a frontmatter block, so a document whose body carries two horizontal rules loses everything between them. `stripFrontmatter` in `src/gov/payload.ts` anchors to the first line instead and leaves such a body intact. The TypeScript reading is the correct one. When the docs domain migrates, port those semantics rather than reproducing the bash.
+The bash `strip_frontmatter` treated the first `---` on any line as the start of a frontmatter block, so a document whose body carried two horizontal rules lost everything between them. `stripFrontmatter` in `src/frontmatter.ts` anchors to the first line instead and leaves such a body intact. The docs migration took the TypeScript reading, which means `aitk docs <topic>` now emits sections the bash silently swallowed.
+
+The divergence is latent on the current corpus. All 22 documents under `docs/` and `.claude/context/` strip byte-identically under both, so the fix guards documents not yet written rather than repairing today's output. Three other inputs diverge and each favors the TypeScript: a file with no trailing newline, a block opening on line 2, and an unterminated block. The last two are the ones worth knowing, since the bash emitted nothing at all for an unterminated block and swallowed a mid-document block that was never frontmatter.
 
 ### `tooling.sh`
 

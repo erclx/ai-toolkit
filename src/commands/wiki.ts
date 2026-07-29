@@ -1,14 +1,96 @@
+import { resolve } from 'node:path'
 import type { Command } from 'commander'
-import { execScript } from '@/exec'
+import { PROJECT_ROOT } from '@/exec'
+import {
+  intro,
+  logAdd,
+  logError,
+  logInfo,
+  logStep,
+  logWarn,
+  outro,
+  select,
+} from '@/ui'
+import {
+  applyWikiInit,
+  isWikiTarget,
+  planWikiInit,
+  WIKI_DIR_REL,
+  WIKI_INDEX_REL,
+} from '@/wiki/init'
+
+const GREEN = '\x1b[0;32m'
+const NC = '\x1b[0m'
 
 export function register(program: Command): void {
-  program
+  const wiki = program
     .command('wiki')
     .description('Wiki commands (init)')
-    .allowUnknownOption()
-    .allowExcessArguments(true)
-    .passThroughOptions()
-    .action(async (_opts: unknown, cmd: Command) => {
-      await execScript('manage-wiki.sh', cmd.args)
+    .helpOption('-h, --help', 'Show this help message')
+
+  wiki
+    .command('init')
+    .description('Scaffold wiki/ with a stub index.md')
+    .argument('[target]', 'Target directory', '.')
+    .helpOption('-h, --help', 'Show this help message')
+    .action(async (target: string) => {
+      process.exitCode = await runInit(target)
     })
+}
+
+async function runInit(target: string): Promise<number> {
+  intro('aitk wiki')
+
+  const resolved = resolve(target)
+
+  if (!isWikiTarget(resolved)) {
+    logError(`Target directory not found: ${target}`)
+    outro()
+    return 1
+  }
+
+  if (resolved === PROJECT_ROOT) {
+    logError(
+      'Cannot run against toolkit root. Files here are the source of truth.',
+    )
+    outro()
+    return 1
+  }
+
+  const plan = planWikiInit(resolved)
+
+  logStep('Scanning wiki/')
+  if (plan.changes.includes('dir')) logAdd(WIKI_DIR_REL)
+  if (plan.hasIndex) logInfo(WIKI_INDEX_REL)
+  else logAdd(WIKI_INDEX_REL)
+
+  const count = plan.changes.length
+  if (count === 0) {
+    outro()
+    process.stderr.write(`${GREEN}✓ Wiki already initialized${NC}\n`)
+    return 0
+  }
+
+  const shouldApply = await select({
+    message: `Apply ${count} change(s)?`,
+    options: [
+      { value: true, label: 'Apply all' },
+      { value: false, label: 'Cancel' },
+    ],
+    nonInteractiveDefault: true,
+  })
+
+  if (!shouldApply) {
+    logWarn('Cancelled')
+    outro()
+    return 0
+  }
+
+  logStep('Applying changes')
+  await applyWikiInit(resolved, plan)
+  if (plan.changes.includes('index')) logAdd(WIKI_INDEX_REL)
+
+  outro()
+  process.stderr.write(`${GREEN}✓ Wiki ready${NC}\n`)
+  return 0
 }

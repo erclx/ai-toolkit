@@ -220,7 +220,7 @@ main() {
 
   if [ -z "${skip_set[wiki]:-}" ]; then
     run_domain "Wiki" \
-      bash "$PROJECT_ROOT/scripts/manage-wiki.sh" "init" "$target" </dev/null
+      bun "$PROJECT_ROOT/src/cli.ts" wiki init "$target" </dev/null
   fi
 
   trap - EXIT
