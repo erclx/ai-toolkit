@@ -73,7 +73,7 @@ setup_ssh() {
 select_sandbox_category() {
   local categories=()
   if ls -d "$SANDBOX_DIR"/*/ >/dev/null 2>&1; then
-    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
+    mapfile -t categories < <(find "$SANDBOX_DIR" -mindepth 1 -maxdepth 1 -type d -not -name fixtures -exec basename {} \; | sort)
   fi
 
   if [ ${#categories[@]} -eq 0 ]; then
