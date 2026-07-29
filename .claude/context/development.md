@@ -38,6 +38,7 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 
 - `bun run check:install` runs `git clone` on the project root, so it verifies the last commit and never the working tree. An uncommitted fix, or an uncommitted regression, is invisible to it. Commit first or the result describes code you are not shipping.
 - That gate's assert loop is the only thing between a silently truncated install and a green run, because `run_domain` in `scripts/manage-init.sh` catches a failed domain and lets init exit 0 anyway. Every domain init installs needs at least one asserted path, or that domain can install nothing while the gate stays green.
+- The gate runs `aitk init --stack base` rather than a bare `init`. Governance only runs when `--stack` is passed, so without it no assertion could cover that domain. A domain that installs conditionally needs its condition met in the gate invocation, not just a path in the loop.
 
 ## Shell scripts
 

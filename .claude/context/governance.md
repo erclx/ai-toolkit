@@ -13,7 +13,9 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 
 - `governance/rules/` owns the source rules, organized into one subfolder per numbering band
 - `governance/stacks/` owns stack definitions as toml, each declaring an optional extends chain and a flat rules list
-- `scripts/gov/` owns the install, sync, and build entry points
+- `src/sync/engine.ts` owns the shared sync engine every domain runs on
+- `src/gov/` owns the gov half: the adapter that feeds the engine, and the rules payload builder behind `build`
+- `scripts/gov/` owns the install and list entry points, the two verbs still on bash
 
 ## Decisions
 
@@ -21,6 +23,8 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - Rules live in subdirectories by domain and install preserves that layout. A flat folder would make the numbering bands the only grouping signal.
 - Install, sync, and build are separate concerns rather than flags on one command. Install bootstraps a stack and overwrites. Sync updates only what is already present and never adds. Build concatenates into a paste payload. Collapsing them would mean guessing intent from target state.
 - Install overwrites existing rules on purpose. Delete rules you do not want after install rather than adding optional or addon complexity to stack definitions.
+- Gov is the first domain on the shared sync engine, and it went first because its source lookup is the thinnest of the four. The engine owns target validation, the scan report, the prompt, and the apply loop. The adapter supplies two things only: where a destination file's source lives, and what counts as a change beyond a content diff.
+- Sync matches an installed rule to its source by rule name rather than by relative path. A rule that moves between bands in the toolkit still syncs into the subdirectory the target already uses, so a reorganization here does not strand installed copies.
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
 | Range     | Domain                                                                                                             |
@@ -37,7 +41,8 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - `aitk gov sync` refuses to run against the toolkit root, so this repo's own `.claude/rules/` copy is hand-maintained. Nothing checks it for drift against `governance/rules/`, unlike the standards and snippets consumed copies.
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
-- `strip_frontmatter`, `build_rules_payload`, and `rule_subdir` live in `scripts/lib/gov.sh`. `build_rules_payload` accepts an optional space-separated filter of rule names and an extension pattern, defaulting to `*.md`.
+- `scripts/lib/gov.sh` is narrowed to `strip_frontmatter` and `rule_subdir`. Both are called inside loops, so routing them through the CLI would cost a process per file. `rule_subdir` stays permanently because four of its five callers are sandbox scripts. The payload builder moved to `src/gov/payload.ts`.
+- `aitk gov sync` and `aitk gov build` no longer offer a `Review diffs` branch. It was the last path that shelled out to `code --diff`, which hangs a headless agent, and the tooling sync dropped it one step earlier.
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
 
 ## Install path
@@ -66,7 +71,7 @@ Each stack declares an optional `extends` chain and a flat `rules` list. The cha
 | `aitk gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
 | `aitk gov list`    | Emit catalog of stacks and rules                                  |
 
-Flags, arguments, and JSON shapes live in `docs/agents.md`. `aitk gov` with no args shows an interactive picker. Commands that write files require confirmation before running.
+Flags, arguments, and JSON shapes live in `docs/agents.md`. `sync` and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `install` and `list` still exec bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each prompt to its first option.
 
 ## Workflow
 
@@ -123,7 +128,7 @@ Create a `.md` file anywhere under `governance/rules/` using the numbering conve
 
 ## Project-local rules
 
-Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, picking a free number in the band that collides with neither the project nor the toolkit catalog. These rules live only in the target. `aitk gov sync` skips any rule with no toolkit source match (`collect_claude_changes` in `scripts/gov/sync.sh`), so project-authored rules survive sync untouched. Numbering bands are shared with toolkit rules, so a project rule and a toolkit rule must not share a number within the same subdir.
+Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, picking a free number in the band that collides with neither the project nor the toolkit catalog. These rules live only in the target. `aitk gov sync` skips any rule with no toolkit source match, classified as `orphaned` by `planSync` in `src/sync/engine.ts`, so project-authored rules survive sync untouched. Numbering bands are shared with toolkit rules, so a project rule and a toolkit rule must not share a number within the same subdir.
 
 ## Adding a stack
 

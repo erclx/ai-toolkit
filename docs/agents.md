@@ -98,6 +98,11 @@ Common patterns:
 - `sync <path>` → reapply all installed entries in a target project.
 - `create [name]` → scaffold a new authoring entry in this repo.
 
+`aitk gov sync` updates only rules already present under `.claude/rules/` and
+never adds new ones. A rule the toolkit does not ship is left alone, which is
+how project-authored rules survive. It also removes a stale `.claude/GOV.md`
+from the retired build. Use `aitk gov install` to add rules.
+
 `aitk tooling inject` and `aitk tooling prune-gitignore` are the unguarded
 primitives beneath `sync`. They apply one stack with no scan and no prompt, and
 they deliberately skip the check that rejects `claude`, which is how `aitk
@@ -168,6 +173,12 @@ AITK_NON_INTERACTIVE=1 aitk tooling create astro
 
 # Sync a stack into a target project
 AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project
+
+# Update installed governance rules, dropping a retired .claude/GOV.md
+AITK_NON_INTERACTIVE=1 aitk gov sync /path/to/project
+
+# Concatenate installed rules into a paste payload
+AITK_NON_INTERACTIVE=1 aitk gov build /path/to/project
 
 # Sync a monorepo subtree, skipping the base layer the repo root already owns
 AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react /path/to/repo/frontend --skip base
