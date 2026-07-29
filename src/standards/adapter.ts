@@ -1,12 +1,11 @@
 import { existsSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { copyPreservingMode } from '@/copy'
-import { regenOne } from '@/indexes/regen'
+import {
+  INDEX_FILE,
+  refreshIndex,
+  standardsInstallDir,
+} from '@/standards/index-refresh'
 import type { InstalledFile, SyncAdapter } from '@/sync/engine'
-import { logAdd, logWarn } from '@/ui'
-
-const STANDARDS_REL = join('.claude', 'standards')
-const INDEX_FILE = 'index.md'
 
 export function standardsSourceDir(root: string): string {
   return join(root, 'standards')
@@ -31,7 +30,7 @@ export function createStandardsAdapter(root: string): SyncAdapter {
     missingMessage:
       "No .claude/standards/ found in target. Run 'aitk standards install' first.",
     unit: 'standards',
-    installedRoot: (target: string) => join(target, STANDARDS_REL),
+    installedRoot: standardsInstallDir,
     isExcluded: (file: InstalledFile) => basename(file.path) === INDEX_FILE,
     locateSource: (file: InstalledFile) =>
       locateSource(sourceDir, basename(file.path)),
@@ -48,30 +47,4 @@ export function createStandardsAdapter(root: string): SyncAdapter {
 function locateSource(sourceDir: string, name: string): string | undefined {
   const source = join(sourceDir, name)
   return existsSync(source) ? source : undefined
-}
-
-/**
- * Replaces the target's `index.md` from source and rebuilds it against what
- * actually landed. It runs on every completed sync, including one with no
- * changes, because the catalog can go stale from a file the toolkit stopped
- * shipping rather than from drift in a file it still does.
- */
-async function refreshIndex(sourceDir: string, target: string): Promise<void> {
-  const installedDir = join(target, STANDARDS_REL)
-  const source = join(sourceDir, INDEX_FILE)
-
-  if (!existsSync(source)) {
-    logWarn(`No ${INDEX_FILE} in toolkit standards, leaving the target catalog`)
-    return
-  }
-
-  await copyPreservingMode(source, join(installedDir, INDEX_FILE))
-  const result = await regenOne(installedDir, { dryRun: false })
-
-  if (result.action === 'error') {
-    logWarn(`${join(STANDARDS_REL, INDEX_FILE)} regen failed: ${result.reason}`)
-    return
-  }
-
-  logAdd(join(STANDARDS_REL, INDEX_FILE))
 }
