@@ -75,7 +75,7 @@ log_step "Assert scaffold"
 # no assertion can truncate silently: init still exits 0 because run_domain
 # catches a failed domain, and the gate stays green while the target is
 # missing everything that domain provides.
-for path in "CLAUDE.md" ".claude/snippets" ".claude/standards/prose.md" "wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" \
+for path in "CLAUDE.md" ".claude/snippets/compact-summary.md" ".claude/standards/prose.md" "wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" \
   ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
   ".claude/rules/core/000-constitution.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then

@@ -84,7 +84,7 @@ run_syncs() {
   fi
 
   if [ -d "$target/.claude/snippets" ]; then
-    bash "$PROJECT_ROOT/scripts/manage-snippets.sh" sync "$target"
+    bun "$PROJECT_ROOT/src/cli.ts" snippets sync "$target"
   fi
 
   if [ -d "$target/.claude/rules" ] || [ -f "$target/.claude/GOV.md" ]; then

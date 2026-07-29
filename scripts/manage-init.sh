@@ -216,7 +216,7 @@ main() {
   fi
 
   run_domain "Snippets" \
-    bash "$PROJECT_ROOT/scripts/manage-snippets.sh" "install" "$snippets_cat" "$target" </dev/null
+    bun "$PROJECT_ROOT/src/cli.ts" snippets install "$snippets_cat" "$target" </dev/null
 
   if [ -z "${skip_set[wiki]:-}" ]; then
     run_domain "Wiki" \
