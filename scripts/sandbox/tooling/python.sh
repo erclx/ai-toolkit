@@ -2,8 +2,6 @@
 set -e
 set -o pipefail
 
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
-
 stage_setup() {
   if ! command -v uv >/dev/null 2>&1; then
     log_error "uv is not installed. Install from https://docs.astral.sh/uv/"
@@ -17,17 +15,8 @@ stage_setup() {
   bun init -y >/dev/null 2>&1
   log_info "package.json created"
 
-  log_step "Applying base configs and seeds"
-  inject_tooling_configs "base" "."
-  inject_tooling_seeds "base" "."
-
-  log_step "Applying python configs and seeds"
-  inject_tooling_configs "python" "."
-  inject_tooling_seeds "python" "."
-
-  log_step "Injecting manifests (base + python)"
-  inject_tooling_manifest "base" "."
-  inject_tooling_manifest "python" "."
+  log_step "Applying python stack (base + python via extends)"
+  bun "$PROJECT_ROOT/src/cli.ts" tooling inject python . --nested
 
   log_step "Initializing Husky"
   bunx husky

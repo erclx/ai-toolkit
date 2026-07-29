@@ -2,8 +2,6 @@
 set -e
 set -o pipefail
 
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
-
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_GOV="true"

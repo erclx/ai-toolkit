@@ -15,7 +15,8 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - `tooling/<stack>/configs/` owns golden files that always overwrite on sync
 - `tooling/<stack>/seeds/` owns user-owned files that sync preserves
 - `tooling/claude/` owns storage for `aitk claude`, excluded from stack discovery
-- `scripts/tooling/` owns the sync, ref, create, and list subcommands
+- `src/tooling/` owns the manifest walk, scan, and injection engine in TypeScript
+- `scripts/tooling/` owns the ref, create, list, and verify subcommands, still bash
 
 | Stack        | Extends | Ships                                                                   |
 | ------------ | ------- | ----------------------------------------------------------------------- |
@@ -28,7 +29,10 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 ## Decisions
 
 - Configs always overwrite and seeds are preserved. The boundary is structural versus user-extensible: linters and formatters with no project-specific surface ship as configs, while files projects routinely extend (`cspell.json`, `.lintstagedrc`) ship as seeds.
-- Stack-specific configs override the extends chain. `collect_stack_configs` walks the current stack first, and a file seen there blocks the same relative path from every parent layer.
+- Stack-specific configs override the extends chain. `scan` in `src/tooling/scan.ts` walks the current stack first, and a file seen there blocks the same relative path from every parent layer.
+- Which stack wins a duplicate differs by category, and the split is inherited rather than designed. Configs, seeds, and scripts resolve nearest stack first. Dependencies, gitignore entries, and references resolve from the furthest ancestor inward. The TypeScript port preserved both directions rather than unifying them, because unifying would silently change what a target receives.
+- `sync` dropped the `Review diffs` prompt branch. It was the only path that shelled out to `code --diff`, which is the behavior PR #605 fixed for headless callers, so rebuilding it would reintroduce the defect the migration exists to remove. Compare with git after syncing instead.
+- Injection is reachable as `aitk tooling inject <stack>` so `aitk claude` and the sandbox can apply one stack without the scan and prompt. The excluded-stack guard sits on `sync` rather than in the shared path, which is what lets `aitk claude` drive the `claude` stack through it.
 - `python` extends `base` directly rather than going through `web`. It runs on `uv` instead of `bun`, so the web layer's assumptions do not apply.
 - Dictionary seeds merge rather than copy-once. `.cspell/*.txt` accumulates project terms over time, so sync appends new entries and sorts. Every other seed type copies once and is then left alone.
 - Gitignore merging is additive only and existing entries are never touched, so a project can reorder or annotate its own ignores without sync fighting it.
@@ -47,6 +51,8 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Syncing a monorepo subtree without `--skip base` re-drops husky per subtree. Git honors only one `core.hooksPath`, so the extra hook dirs silently break.
 - `--skip base` relies on the layer boundary holding: repo-root-once configs live in `base`, per-root configs live in `web` and the adapters. Moving a per-root config into `base` would break the split.
 - Non-`.txt` seeds are copy-once. To re-seed a structured file, delete it and sync again.
+- Config copies must preserve an existing destination's mode, not the source's. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy that applied the source mode would strip the executable bit on the `web` and `astro` chains. `cp` kept the destination mode and `src/tooling/inject.ts` reproduces that.
+- `Bun.Glob` skips dotfiles unless `dot: true` is set. Tooling configs are almost entirely dotfiles, so omitting it matches 4 of 14 files in `base` and fails silently.
 - Per-stack `ci.md` and `development.md` seeds are not shipped, because seeds are user-owned and never overwritten. Stack references carry `## CI docs (extend)` sections telling the agent which rows to append instead.
 
 ## Manifest authoring
@@ -114,7 +120,9 @@ aitk tooling sync python ./backend --skip base
 
 `aitk tooling verify <stack>` is the end-to-end validator. It scaffolds fresh into `.claude/.tmp/verify-<stack>/`, runs the optional `[verify] prepare` hook, invokes `aitk tooling sync <stack> .`, then executes `bun run lint:fix`, `bun run check`, `bun run test:e2e`, and `bun run screenshot`, asserts screenshot artifacts, and reports a pass/fail matrix. The tmp dir auto-removes on success. Use `--keep` to inspect a green run, or rely on the auto-preserve on failure.
 
-Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync logic in `scripts/tooling/sync.sh` and `scripts/lib/inject.sh`.
+Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync logic in `src/tooling/`.
+
+Unit tests cover the manifest walk, the gitignore transforms, the package.json comparisons, and the scan. Equivalence against the bash this replaced was established by syncing every stack into paired fixtures and diffing contents and file modes, which is the check to repeat when changing injection order or copy semantics.
 
 ## Adding a new stack
 

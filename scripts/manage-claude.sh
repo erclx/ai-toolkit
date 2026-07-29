@@ -6,7 +6,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
+
+# Gitignore merging and pruning live in the tooling CLI. Both wrappers shell
+# into it once per call, matching the bash functions they replaced.
+merge_gitignore() {
+  bun "$PROJECT_ROOT/src/cli.ts" tooling inject "$1" "$2" --gitignore --nested
+}
+
+prune_gitignore() {
+  local -n _pruned=$3
+  _pruned=$(bun "$PROJECT_ROOT/src/cli.ts" tooling prune-gitignore "$1" "$2" --nested)
+}
 
 CLAUDE_SEEDS_DIR="$PROJECT_ROOT/tooling/claude/seeds/.claude"
 CLAUDE_MANIFEST="$PROJECT_ROOT/tooling/claude/manifest.toml"

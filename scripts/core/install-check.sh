@@ -71,12 +71,22 @@ log_step "Run aitk init"
 log_info "aitk init completed"
 
 log_step "Assert scaffold"
-for path in "CLAUDE.md" ".claude/snippets" ".claude/standards/prose.md" "wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md"; do
+# Every domain aitk init installs needs at least one path here. A domain with
+# no assertion can truncate silently: init still exits 0 because run_domain
+# catches a failed domain, and the gate stays green while the target is
+# missing everything that domain provides.
+for path in "CLAUDE.md" ".claude/snippets" ".claude/standards/prose.md" "wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" \
+  ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then
     log_error "Missing after aitk init: $path"
   fi
   log_info "Found: $path"
 done
+
+if [ ! -x "$TARGET_DIR/scripts/verify.sh" ]; then
+  log_error "Not executable after aitk init: scripts/verify.sh"
+fi
+log_info "Executable: scripts/verify.sh"
 
 log_step "Verification passed"
 log_info "Manual check still needed: bun link and global aitk invocation"

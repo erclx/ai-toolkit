@@ -14,7 +14,7 @@ Configs ship as sidecar files (`ruff.toml`, `mypy.ini`, `pytest.ini`, `.coverage
 2. Seed `package.json` so the base layer's bun-side tools (husky, prettier, cspell, commitlint) have a target to install into: `bun init -y`. Without this `aitk tooling sync` drops base configs but skips the dep install, since `resolve_missing_deps` short-circuits when `package.json` is absent.
 3. Install base tooling: `aitk tooling sync base .`
 4. Install python tooling: `aitk tooling sync python .`
-5. Install Python tooling deps: `uv add --dev ruff mypy pytest pytest-cov`. v1 of this stack does not declare these in `[dependencies.dev]` because `inject_tooling_manifest` in `scripts/lib/inject.sh` hardcodes `bun add -D`, which can not install Python packages. Until the injector branches on `runtime`, this step is manual.
+5. Install Python tooling deps: `uv add --dev ruff mypy pytest pytest-cov`. v1 of this stack does not declare these in `[dependencies.dev]` because manifest injection hardcodes `bun add -D`, which can not install Python packages. Until the injector branches on `runtime`, this step is manual.
 6. Sync the lockfile and create the venv: `uv sync`.
 7. Annotate `main()` in the scaffold-generated `main.py` with `-> None`. `uv init --app` ships an unannotated `main()` that fails strict mypy on the first run.
 8. Run `bun run lint:fix` then `bun run check`.
@@ -36,7 +36,7 @@ A python project synced with this stack ends up with both `package.json` from ba
 
 ## Dependencies
 
-The manifest declares no `[dependencies.dev]`. The `inject_tooling_manifest` function in `scripts/lib/inject.sh` currently calls `bun add -D` for any declared deps, which would fail for Python packages. v1 sidesteps this by leaving the section empty. Framework adapters that need Python deps require the injector to branch on `runtime` or detect `pyproject.toml` and call `uv add --dev` instead.
+The manifest declares no `[dependencies.dev]`. Manifest injection currently calls `bun add -D` for any declared deps, which would fail for Python packages. v1 sidesteps this by leaving the section empty. Framework adapters that need Python deps require the injector to branch on `runtime` or detect `pyproject.toml` and call `uv add --dev` instead.
 
 ## Verify command
 

@@ -2,8 +2,6 @@
 set -e
 set -o pipefail
 
-source "$PROJECT_ROOT/scripts/lib/inject.sh"
-
 stage_setup() {
   log_step "Initializing package"
   cat <<'EOF' >package.json

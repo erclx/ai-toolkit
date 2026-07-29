@@ -80,16 +80,16 @@ Full help: `aitk <command> --help`.
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain      | Subcommands                           |
-| ----------- | ------------------------------------- |
-| `tooling`   | `list`, `sync`, `ref`, `create`       |
-| `snippets`  | `list`, `install`, `sync`, `create`   |
-| `standards` | `list`, `install`, `sync`             |
-| `gov`       | `list`, `install`, `sync`, `build`    |
-| `claude`    | `init`, `sync`, `seeds list`, `setup` |
-| `wiki`      | `init`                                |
-| `design`    | `render`                              |
-| `slides`    | `render`, `list`                      |
+| Domain      | Subcommands                                                            |
+| ----------- | ---------------------------------------------------------------------- |
+| `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore` |
+| `snippets`  | `list`, `install`, `sync`, `create`                                    |
+| `standards` | `list`, `install`, `sync`                                              |
+| `gov`       | `list`, `install`, `sync`, `build`                                     |
+| `claude`    | `init`, `sync`, `seeds list`, `setup`                                  |
+| `wiki`      | `init`                                                                 |
+| `design`    | `render`                                                               |
+| `slides`    | `render`, `list`                                                       |
 
 Common patterns:
 
@@ -97,6 +97,13 @@ Common patterns:
 - `install <name> <path>` → install a specific entry into a target project.
 - `sync <path>` → reapply all installed entries in a target project.
 - `create [name]` → scaffold a new authoring entry in this repo.
+
+`aitk tooling inject` and `aitk tooling prune-gitignore` are the unguarded
+primitives beneath `sync`. They apply one stack with no scan and no prompt, and
+they deliberately skip the check that rejects `claude`, which is how `aitk
+claude` drives its own stack through them. Use `sync` unless you are scripting
+provisioning. Both frame their own output, so pass `--nested` when calling from
+inside an already-open frame.
 
 ### Sandbox scenarios
 
@@ -167,6 +174,14 @@ AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react /path/to/repo/frontend --ski
 
 # Verify a stack end-to-end in a throwaway scaffold
 aitk tooling verify vite-react
+
+# Apply one stack without scanning or prompting, for scripted provisioning
+aitk tooling inject base /path/to/project
+aitk tooling inject base /path/to/project --configs --seeds
+
+# Drop managed gitignore entries a manifest no longer declares
+# Prints the number removed on stdout, diagnostics on stderr
+aitk tooling prune-gitignore base /path/to/project
 
 # Install a snippet preset
 AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project
