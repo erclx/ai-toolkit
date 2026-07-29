@@ -24,3 +24,4 @@ Per-domain narrative loaded on demand
 - [Standards](standards.md): Authoring conventions synced to projects
 - [Tooling](tooling.md): Stacks, configs, seeds, references, manifests
 - [Transcripts](transcripts.md): Fetch YouTube transcripts with metadata frontmatter into any repo
+- [Bogus](bogus.md): deliberately stale entry for the CI drift test
