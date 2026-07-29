@@ -13,6 +13,7 @@ Owns the scenarios that provision isolated project states for testing scripts, c
 
 - `scripts/sandbox/` owns the scenario scripts, one folder per category
 - `scripts/sandbox/<category>/` owns one file per command, each holding one or more named scenarios
+- `scripts/sandbox/fixtures/` owns file content staged into the sandbox, one tree per scenario arm
 - `.sandbox/` owns the provisioned project state at the repo root, recreated per run
 
 | Category   | Covers                                                          |
@@ -24,7 +25,7 @@ Owns the scenarios that provision isolated project states for testing scripts, c
 | `dev/`     | Code-level dev skills                                           |
 | `docs/`    | Docs sync scenarios                                             |
 
-Run `aitk sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added.
+Run `aitk sandbox` with no args for the live catalog. Categories and scenarios enumerate dynamically, so nothing here needs updating when one is added. `fixtures/` sits alongside the categories but holds no scenarios, so both pickers filter it out by name.
 
 ## Decisions
 
@@ -37,7 +38,7 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 ## Gotchas
 
 - Skip `create` scenarios. They require user input with no default and loop on empty input.
-- Scenarios that add narrative to a seeded file must append with `>>`. Overwriting with `>` clobbers the seed and breaks any test depending on seed-driven behavior. Reserve `>` for fixtures that deliberately model a clean state.
+- A scenario that adds narrative to a seeded file must append rather than overwrite. Overwriting clobbers the seed and breaks any test depending on seed-driven behavior. In a fixture tree that is the `create/` versus `append/` split. Written inline it is `>` versus `>>`.
 - Passing a scenario name that matches no option aborts with an `Unknown scenario` error.
 - After provisioning, your terminal cwd may need a refresh. Add a wrapper to `.zshrc` or `.bashrc`:
 
@@ -104,6 +105,22 @@ log_info "install/ : clean target, no rules present"
 log_info "sync/    : stale .claude/rules/ present"
 log_info "list     : read-only catalog dump, no target needed"
 ```
+
+### Fixtures
+
+A scenario's file content lives under `scripts/sandbox/fixtures/<category>/<arm>/<stage>/`, and `stage_fixtures` from `lib/sandbox-fixtures.sh` copies one stage into the sandbox. The scenario keeps its own git operations between the calls, so the script holds logic and the tree holds content.
+
+```bash
+stage_fixtures docs drift 01-initial
+git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
+stage_fixtures docs drift 02-postgres
+```
+
+Each stage splits into two optional subfolders. `create/` copies files in, making parent directories and overwriting whatever is there. `append/` concatenates onto a file the anchor or the injected seeds already provide, and fails when the target is missing, because an absent target means the upstream shape changed and the scenario's assumption is stale.
+
+Every stored file carries a `.fixture` suffix that the helper strips on copy. The suffix keeps the repository's own checks off the content, since an `index.md.fixture` is not an `index.md`. `aitk indexes regen` leaves it alone, and prettier, `shfmt`, and `shellcheck` skip it too. Without the suffix, a fixture that deliberately drifts from its sibling frontmatter gets normalized by `bun run check` and the state it models disappears.
+
+Stage numbering carries ordering, not identity. A stage exists because a commit or a branch switch has to happen before the next file lands.
 
 ### use_config
 
