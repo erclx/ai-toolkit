@@ -11,17 +11,18 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 ## Layout
 
-- `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain still on bash
+- `scripts/` owns `manage-sandbox.sh`, the one remaining entry point. Every other domain dispatcher has been deleted
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
-- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, `standards` keeps only a list command there, `claude` keeps only `seeds-list.sh`, and `docs` keeps only `list.sh` now that `get` is TypeScript
-- `scripts/gov/`, `scripts/snippets/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards` keeps only a list command there, `claude` keeps only `seeds-list.sh`, and `docs` keeps only `list.sh` now that `get` is TypeScript
+- `scripts/gov/`, `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
 
-- Entry points are meant to dispatch only, and none of the four remaining do. `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
-- A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, `snippets/`, and `claude/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
+- `manage-sandbox.sh` is the last entry point and stays bash permanently by decision. It holds its domain logic in the dispatcher rather than in a verb folder, so read it before assuming a scenario's behavior sits one file down.
+- A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, `snippets/`, `standards/`, and `claude/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
+- A dispatcher holding domain logic migrates in one pull request per file rather than verb by verb. `sync`, `init`, and `standards` went together because they shared the two documents listing dispatchers, and splitting them would have collided there for no review benefit.
 - A dispatcher that grew domain logic migrates that logic out to `src/<domain>/` rather than into the command file. `manage-claude.sh` was the largest single script at 465 lines and held seed collection, gitignore scanning, and a settings merge, none of which a command file can unit-test because `src/exec.ts` throws under vitest.
 - Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
@@ -50,21 +51,11 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 CI runs the format, spell, shell, and types stages. The drift checks and the test suite are enforced by the pre-push hook alone. See `ci.md`.
 
-## manage-sync.sh
-
-`aitk sync [target]` runs all installed domain syncs in sequence (standards, snippets, governance, claude), then runs a git workflow step. The git workflow detects which domains changed, shows a preview of the commit and PR body, then prompts with three options: "Commit and open PR" (creates `chore/toolkit-sync-YYYYMMDD-HHMM`, commits, pushes, opens a PR via `gh`), "Commit only" (commits onto the current branch when on a feature branch, or creates the timestamped branch first when on `main`/`master`), and "Cancel" (skips the workflow entirely). The PR body lists up to three changed filenames per domain, then a count for the rest.
-
-Claude sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not prompt. The combined PR preview is the single confirmation gate. `aitk claude sync` writes only `.gitignore`, so the changed-file tracking watches that path and a gitignore-only change still reports under a `claude/` domain line. Seed audits stay a manual step through the `claude-seed-sync` skill. `aitk sync` prints a tip pointing at the skill when `.claude/` is present.
-
-Governance sync also removes any stale `.claude/GOV.md` left from earlier installs. The retired surface is no longer rebuilt.
-
-The git workflow step is skipped if the target is not a git root (no `.git/`). When `gh` is not installed the PR option is hidden but Commit only still works. The timestamped branch name normally avoids collisions. If the chosen name already exists locally or on the remote the workflow stops with a warning.
-
 ## UI framing across exec boundaries
 
-`scripts/manage-standards.sh` is the last dispatcher a migrated domain still reaches into. It holds `install` alone now, opens the frame in `main()`, and `scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`.
+No domain has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`. `src/commands/standards.ts` handles `install` and `sync`, and shells out for `list` alone. `src/commands/claude.ts` handles `init`, `sync`, and `setup`, and shells out for `seeds list`. `sync` and `init` are TypeScript end to end and reach no verb script at all.
 
-Neither `tooling` nor `gov` nor `snippets` nor `claude` has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`. `src/commands/standards.ts` handles `sync` and shells out for `install` and `list`. `src/commands/claude.ts` handles `init`, `sync`, and `setup`, and shells out for `seeds list` alone.
+`scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`, which is what lets the command layer above it own the frame.
 
 `claude seeds` is the one pass-through that registers by hand rather than through `registerPassThroughVerbs`, because its script is `scripts/claude/seeds-list.sh` and the helper builds `scripts/<domain>/<verb>.sh`. The hand-rolled routing also preserves the two error messages the bash `case` emitted for a missing or unknown subcommand.
 

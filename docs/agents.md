@@ -116,6 +116,19 @@ ships, or one authored directly in the target, is reported and skipped rather
 than deleted. It is not preset-aware, so a project that installed `essentials`
 does not grow new snippets on a sync. Use `aitk snippets install` to add them.
 
+`aitk sync` runs every installed domain sync, then offers to commit the result
+and open a pull request. Under `AITK_NON_INTERACTIVE=1` it applies the domain
+syncs and then refuses the git workflow, reporting the branch and commit it
+would have created and exiting 0. Nothing is staged, committed, or pushed
+headlessly. Run it interactively to reach the commit and pull request options.
+It also refuses a target whose working tree is dirty, so commit or stash first.
+
+`aitk init` installs up to six core domains and reports each one independently. A
+domain that fails does not abort the run, so the command finishes the rest and
+exits 1 naming the failures. Passing any flag skips the confirmation prompt,
+which is what makes it scriptable. `--skip` takes `wiki` and `standards`, and
+warns without aborting on any other value.
+
 `aitk tooling inject` and `aitk tooling prune-gitignore` are the unguarded
 primitives beneath `sync`. They apply one stack with no scan and no prompt, and
 they deliberately skip the check that rejects `claude`, which is how `aitk
@@ -217,6 +230,15 @@ AITK_NON_INTERACTIVE=1 aitk snippets sync /path/to/project
 
 # Report standards drift without applying it, which is what headless does here
 AITK_NON_INTERACTIVE=1 aitk standards sync /path/to/project
+
+# Copy every standard into a target, overwriting what is there
+AITK_NON_INTERACTIVE=1 aitk standards install /path/to/project
+
+# Bootstrap a project. Any flag suppresses the confirmation prompt
+AITK_NON_INTERACTIVE=1 aitk init --stack astro --skip wiki /path/to/project
+
+# Run every domain sync. The git workflow is refused headlessly, so nothing is pushed
+AITK_NON_INTERACTIVE=1 aitk sync /path/to/project
 
 # Scaffold wiki/ with a stub index. The target must already exist
 AITK_NON_INTERACTIVE=1 aitk wiki init /path/to/project

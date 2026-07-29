@@ -130,6 +130,12 @@ aitk tooling sync python ./backend --skip base
 
 `--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite) and its own `.claude/tooling/<stack>.md` audit docs.
 
+## Running sync from an agent session
+
+`aitk sync .` applies every installed domain sync, then offers to commit the result and open a pull request. That last step needs a terminal. Under `AITK_NON_INTERACTIVE=1`, which is how an agent runs it, the domain syncs still apply and the git workflow is refused: the command reports the branch and commit it would have created, writes nothing to git, and exits 0. Review the working tree and commit it yourself, or rerun interactively to reach the commit and pull request options.
+
+Sync also refuses a target whose working tree is dirty, so commit or stash before running it.
+
 ## Related
 
 - [agents](agents.md): CLI flags, exit codes, and JSON output shapes
