@@ -80,7 +80,7 @@ run_syncs() {
   local target="$1"
 
   if [ -d "$target/.claude/standards" ]; then
-    bash "$PROJECT_ROOT/scripts/manage-standards.sh" sync "$target"
+    bun "$PROJECT_ROOT/src/cli.ts" standards sync "$target"
   fi
 
   if [ -d "$target/.claude/snippets" ]; then

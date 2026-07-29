@@ -212,7 +212,7 @@ main() {
 
   if [ -z "${skip_set[standards]:-}" ]; then
     run_domain "Standards" \
-      bash "$PROJECT_ROOT/scripts/manage-standards.sh" "install" "$target" </dev/null
+      bun "$PROJECT_ROOT/src/cli.ts" standards install "$target" </dev/null
   fi
 
   run_domain "Snippets" \
