@@ -28,12 +28,19 @@ const NC = '\x1b[0m'
 
 const PROTECTED_BRANCHES: readonly string[] = ['main', 'master']
 
+export type WorkflowChoice = 'pr' | 'commit' | 'cancel'
+
 export interface WorkflowDeps {
   readonly git: GitRunner
   /** Absent when `gh` is not installed, which hides the pull request option. */
   readonly pullRequests: PullRequestOpener | undefined
   readonly now: Date
   readonly nonInteractive: boolean
+  /**
+   * Defaults to the interactive prompt. A test injects it to reach the commit
+   * and pull request branches, which `select` otherwise gates behind a TTY.
+   */
+  readonly choose?: (canOpenPullRequest: boolean) => Promise<WorkflowChoice>
 }
 
 /**
@@ -135,16 +142,8 @@ export async function runGitWorkflow(
     )
   }
 
-  const choice = await select({
-    message: 'Review changes, then?',
-    options: [
-      ...(opener === undefined
-        ? []
-        : [{ value: 'pr' as const, label: 'Commit and open PR' }]),
-      { value: 'commit' as const, label: 'Commit only' },
-      { value: 'cancel' as const, label: 'Cancel' },
-    ],
-  })
+  const choose = deps.choose ?? promptChoice
+  const choice = await choose(opener !== undefined)
 
   if (choice === 'cancel') {
     logWarn('Skipped')
@@ -180,6 +179,19 @@ export async function runGitWorkflow(
     outro()
     return 1
   }
+}
+
+function promptChoice(canOpenPullRequest: boolean): Promise<WorkflowChoice> {
+  return select({
+    message: 'Review changes, then?',
+    options: [
+      ...(canOpenPullRequest
+        ? [{ value: 'pr' as const, label: 'Commit and open PR' }]
+        : []),
+      { value: 'commit' as const, label: 'Commit only' },
+      { value: 'cancel' as const, label: 'Cancel' },
+    ],
+  })
 }
 
 function succeed(message: string): number {

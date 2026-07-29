@@ -3,7 +3,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import type { GitRunner, PullRequestOpener } from '@/sync/git'
-import { collectChanges, runGitWorkflow } from '@/sync/workflow'
+import {
+  collectChanges,
+  runGitWorkflow,
+  type WorkflowChoice,
+  type WorkflowDeps,
+} from '@/sync/workflow'
 
 const NOW = new Date(2026, 6, 29, 12, 42, 0)
 
@@ -63,6 +68,16 @@ async function makeRepo(): Promise<string> {
 
 const DRIFTED_STANDARDS = {
   '.claude/standards/': ' M .claude/standards/prose.md\n',
+}
+
+const DRIFTED_TWO_DOMAINS = {
+  '.claude/standards/':
+    ' M .claude/standards/prose.md\n M .claude/standards/skill.md\n',
+  '.gitignore': ' M .gitignore\n',
+}
+
+function choosing(choice: WorkflowChoice): WorkflowDeps['choose'] {
+  return async () => choice
 }
 
 afterEach(async () => {
@@ -195,5 +210,174 @@ describe('runGitWorkflow', () => {
     })
 
     expect(prCalls).toEqual([])
+  })
+
+  it('should make no git call when the operator cancels', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS })
+
+    const code = await runGitWorkflow(target, {
+      git,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('cancel'),
+    })
+
+    expect(code).toBe(0)
+    expect(git.calls).toEqual([])
+  })
+})
+
+describe('runGitWorkflow staging', () => {
+  it('should stage only the paths the syncs changed', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_TWO_DOMAINS })
+
+    await runGitWorkflow(target, {
+      git,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(git.calls).toContain(
+      'stage .claude/standards/prose.md .claude/standards/skill.md .gitignore',
+    )
+  })
+
+  it('should not stage the whole working tree', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS })
+
+    await runGitWorkflow(target, {
+      git,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(git.calls).toContain('stage .claude/standards/prose.md')
+    expect(git.calls).not.toContain('stage -A')
+  })
+
+  it('should collapse a path two domains both report', async () => {
+    const target = await makeRepo()
+    const git = makeGit({
+      status: {
+        '.claude/rules/,.claude/GOV.md': ' D .claude/GOV.md\n',
+        '.gitignore': ' M .gitignore\n',
+      },
+    })
+
+    await runGitWorkflow(target, {
+      git,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(git.calls).toContain('stage .claude/GOV.md .gitignore')
+  })
+
+  it('should branch before committing when on a protected branch', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'main' })
+
+    await runGitWorkflow(target, {
+      git,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(git.calls).toEqual([
+      'createBranch chore/toolkit-sync-20260729-1242',
+      'stage .claude/standards/prose.md',
+      'commit chore(sync): update standards from toolkit',
+    ])
+  })
+
+  it('should commit onto the current branch without branching on a feature branch', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'feat/x' })
+
+    await runGitWorkflow(target, {
+      git,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(git.calls).toEqual([
+      'stage .claude/standards/prose.md',
+      'commit chore(sync): update standards from toolkit',
+    ])
+  })
+
+  it('should not push on the commit-only path', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const prCalls: string[] = []
+
+    await runGitWorkflow(target, {
+      git,
+      pullRequests: makeOpener(prCalls),
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(git.calls.some((call) => call.startsWith('push'))).toBe(false)
+    expect(prCalls).toEqual([])
+  })
+
+  it('should branch, stage, commit, push, then open the pull request', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS, branch: 'feat/x' })
+    const prCalls: string[] = []
+
+    const code = await runGitWorkflow(target, {
+      git,
+      pullRequests: makeOpener(prCalls),
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('pr'),
+    })
+
+    expect(code).toBe(0)
+    expect(git.calls).toEqual([
+      'createBranch chore/toolkit-sync-20260729-1242',
+      'stage .claude/standards/prose.md',
+      'commit chore(sync): update standards from toolkit',
+      'push chore/toolkit-sync-20260729-1242',
+    ])
+    expect(prCalls).toEqual(['pr chore(sync): update standards from toolkit'])
+  })
+
+  it('should report a failed git mutation rather than a completed sync', async () => {
+    const target = await makeRepo()
+    const git = makeGit({ status: DRIFTED_STANDARDS })
+    const failing: GitRunner = {
+      ...git,
+      commit: async () => {
+        throw new Error('git commit failed: nothing to commit')
+      },
+    }
+
+    const code = await runGitWorkflow(target, {
+      git: failing,
+      pullRequests: undefined,
+      now: NOW,
+      nonInteractive: false,
+      choose: choosing('commit'),
+    })
+
+    expect(code).toBe(1)
   })
 })
