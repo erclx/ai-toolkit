@@ -12,6 +12,7 @@
     "format": "prettier --write --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --write --indent 2 scripts/ tooling/",
     "check:format": "prettier --check --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --diff --indent 2 scripts/ tooling/",
     "check:shell": "find scripts tooling -name '*.sh' -exec shellcheck --severity=warning {} +",
+    "check:types": "tsc --noEmit",
     "check:install": "./scripts/core/install-check.sh",
     "test": "bun --bun vitest run",
     "prepare": "husky",
@@ -42,6 +43,7 @@
     "husky": "^9.1.7",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "typescript": "^5.9.3",
     "vitest": "^4.1.5"
   }
 }

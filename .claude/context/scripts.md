@@ -11,15 +11,17 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 ## Layout
 
-- `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain
+- `scripts/` owns the domain entry points, one `manage-<domain>.sh` per CLI domain still on bash
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
 - `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `sync` and `init` have no such folder, and `claude` and `standards` keep only a list command there
+- `scripts/gov/` and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/lib/` owns shared functions, sourced and never executed directly
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
 
-- Entry points are meant to dispatch only, and five of ten do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- Entry points are meant to dispatch only, and three of the eight remaining do. `claude`, `sandbox`, `sync`, `init`, and `standards` hold their domain logic in the dispatcher instead, because they never grew a verb folder. Read the dispatcher before assuming a command's behavior sits one file down.
+- A migrated domain loses its dispatcher entirely. `tooling/` and `gov/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
 - Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because the list commands call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
@@ -30,22 +32,22 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected.
 - `exec` replaces the process and drops the parent trap, so every subcommand re-arms `trap close_timeline EXIT` itself before any early exit, including `--json` paths.
 - Subcommand scripts never emit their own `┌`. The dispatcher already did, and a second one produces two frames per invocation.
-- The optional rule-name filter in `build_rules_payload` has no caller today. It is kept because the signature is shared surface.
+- Deleting a bash file needs a sweep by path (`source`, `exec`, `bash <path>`), not by function name. Twelve sandbox scripts sourced `lib/inject.sh` without calling any of its functions, and a sweep by function name missed every one of them along with five live `exec` sites.
 - `TOOLING_STACK_EXCLUDE` currently holds only `claude`. Excluded names print a redirect error pointing at the correct CLI and exit 1.
 - When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`. `select_option` returns its first option under that flag, so the first option must be the one a headless caller should get. Listing a review or preview option first sends agents down an interactive branch, which is how three sync commands ended up opening a diff editor per drifted file.
 
 ## Core scripts
 
-| Script             | `bun run`   | What it does                                                                                                      |
-| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------- |
-| `bootstrap.sh`     | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable |
-| `verify.sh`        | `check`     | Runs format, format check, index drift, consumed-copy drift, skill-reference drift, spell, shell, and tests       |
-| `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                |
-| `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                 |
-| `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                    |
-| `regen-indexes.sh` |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                           |
+| Script             | `bun run`   | What it does                                                                                                       |
+| ------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| `bootstrap.sh`     | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable  |
+| `verify.sh`        | `check`     | Runs format, format check, index drift, consumed-copy drift, skill-reference drift, spell, shell, types, and tests |
+| `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                 |
+| `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                  |
+| `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                     |
+| `regen-indexes.sh` |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                            |
 
-CI runs only the format, spell, and shell stages. The drift checks and the test suite are enforced by the pre-push hook alone. See `ci.md`.
+CI runs the format, spell, shell, and types stages. The drift checks and the test suite are enforced by the pre-push hook alone. See `ci.md`.
 
 ## manage-sync.sh
 
@@ -59,9 +61,11 @@ The git workflow step is skipped if the target is not a git root (no `.git/`). W
 
 ## UI framing across exec boundaries
 
-`scripts/manage-gov.sh` is the reference manager. It opens the frame unconditionally in `main()`, and its verb scripts set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
+`scripts/manage-standards.sh` is the reference manager for a domain still on bash. It opens the frame unconditionally in `main()`, and its verb scripts set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
 
-The tooling domain no longer has a dispatcher. `src/commands/tooling.ts` registers each verb directly, handling `sync`, `inject`, and `prune-gitignore` in TypeScript and shelling out to `scripts/tooling/{ref,create,list,verify}.sh` for the rest.
+Neither `tooling` nor `gov` has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`.
+
+Deleting a dispatcher moves the responsibility for opening the frame, because a bash verb script closes a frame it never opened. `src/commands/gov.ts` calls `intro('aitk gov')` before it execs a pass-through, taking over the job the dispatcher used to do. It skips the call when the args carry `-h` or `--help`, since a help screen prints its own frame.
 
 A TypeScript command that both bash and users invoke owns its frame and takes `--nested` to suppress it. `aitk tooling inject` frames itself so direct invocation does not emit dangling `│` lines, while `manage-claude.sh` and the tooling sandbox scenarios pass `--nested` because they have already opened one. This is the same split `VERIFY_NESTED` makes in `scripts/core/verify.sh`. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`.
 
@@ -85,12 +89,16 @@ Source this in any script that needs terminal output. When `AITK_NON_INTERACTIVE
 
 ### `gov.sh`
 
-Sourced by `gov/build.sh`. Do not duplicate this logic if adding a second consumer.
+Narrowed to the two functions that are called inside loops. The payload builder that used to live here is `src/gov/payload.ts` now.
 
-| Function              | What it does                                                                                                                                   |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `build_rules_payload` | Concatenate rule `.md` files into a temp file with frontmatter stripped. Optional space-separated filter narrows to named rules. Returns path. |
-| `strip_frontmatter`   | Strip the YAML frontmatter block from a markdown file. Emit the rest to stdout.                                                                |
+| Function            | What it does                                                                                           | Fate                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| `rule_subdir`       | Emit a source rule's subdirectory relative to the rules root, or empty when the rule sits at the root. | Stays bash permanently            |
+| `strip_frontmatter` | Strip the YAML frontmatter block from a markdown file. Emit the rest to stdout.                        | Stays until the docs domain moves |
+
+`rule_subdir` has five callers and four are sandbox scripts, which stay bash by decision. `strip_frontmatter` has one, `scripts/docs/get.sh`.
+
+The bash `strip_frontmatter` treats the first `---` on any line as the start of a frontmatter block, so a document whose body carries two horizontal rules loses everything between them. `stripFrontmatter` in `src/gov/payload.ts` anchors to the first line instead and leaves such a body intact. The TypeScript reading is the correct one. When the docs domain migrates, port those semantics rather than reproducing the bash.
 
 ### `tooling.sh`
 

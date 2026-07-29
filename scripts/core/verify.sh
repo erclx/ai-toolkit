@@ -60,6 +60,10 @@ main() {
   run_check "bun run check:shell" "Shell check failed"
   log_info "Shell check passed"
 
+  log_step "Types"
+  run_check "bun run check:types" "Typecheck failed"
+  log_info "Typecheck passed"
+
   log_step "Tests"
   run_check "bun run test" "Tests failed"
   log_info "Tests passed"

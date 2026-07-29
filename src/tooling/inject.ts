@@ -1,16 +1,15 @@
 import { existsSync } from 'node:fs'
 import {
-  chmod,
   copyFile,
   mkdir,
   readFile,
   rm,
   rmdir,
-  stat,
   writeFile,
 } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { $ } from 'bun'
+import { copyPreservingMode } from '@/copy'
 import { mergeSections, pruneSections } from '@/tooling/gitignore'
 import { ancestorsFirst, listFiles, type Manifest } from '@/tooling/manifest'
 import {
@@ -20,26 +19,6 @@ import {
   serializePackage,
 } from '@/tooling/package'
 import { logAdd, logRemove, logStep } from '@/ui'
-
-/**
- * Copies with `cp` semantics. Two behaviors matter and neither is the default
- * in the obvious alternatives. `Bun.write` drops the executable bit, which
- * would land husky hooks and `scripts/verify.sh` non-executable. Plain
- * `copyFile` imposes the source mode on an existing destination, so a later
- * stack shipping the same path at 644 would strip the executable bit a
- * earlier stack set. `cp` leaves an existing destination's mode alone.
- */
-async function copyPreservingMode(src: string, dest: string): Promise<void> {
-  await mkdir(dirname(dest), { recursive: true })
-
-  const existingMode = await stat(dest)
-    .then((info) => info.mode)
-    .catch(() => undefined)
-
-  await copyFile(src, dest)
-
-  if (existingMode !== undefined) await chmod(dest, existingMode)
-}
 
 export async function injectConfigs(
   chain: readonly Manifest[],

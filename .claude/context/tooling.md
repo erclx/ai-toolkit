@@ -51,7 +51,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Syncing a monorepo subtree without `--skip base` re-drops husky per subtree. Git honors only one `core.hooksPath`, so the extra hook dirs silently break.
 - `--skip base` relies on the layer boundary holding: repo-root-once configs live in `base`, per-root configs live in `web` and the adapters. Moving a per-root config into `base` would break the split.
 - Non-`.txt` seeds are copy-once. To re-seed a structured file, delete it and sync again.
-- Config copies must preserve an existing destination's mode, not the source's. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy that applied the source mode would strip the executable bit on the `web` and `astro` chains. `cp` kept the destination mode and `src/tooling/inject.ts` reproduces that.
+- Config copies must preserve an existing destination's mode, not the source's. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy that applied the source mode would strip the executable bit on the `web` and `astro` chains. `cp` kept the destination mode and `copyPreservingMode` in `src/copy.ts` reproduces that. It sits at the top level rather than in `src/tooling/` because the sync engine needs the same guarantee.
 - `Bun.Glob` skips dotfiles unless `dot: true` is set. Tooling configs are almost entirely dotfiles, so omitting it matches 4 of 14 files in `base` and fails silently.
 - Per-stack `ci.md` and `development.md` seeds are not shipped, because seeds are user-owned and never overwritten. Stack references carry `## CI docs (extend)` sections telling the agent which rows to append instead.
 

@@ -1,0 +1,48 @@
+import { readFileSync } from 'node:fs'
+import { basename, resolve } from 'node:path'
+
+const FRONTMATTER = /^---\n[\s\S]*?\n---\n?/
+
+/**
+ * Lists installed rules in the order the payload concatenates them. Sorting by
+ * path keeps the numeric filename prefixes ordered inside each subdirectory,
+ * which is how the rule bands are meant to read.
+ */
+export function listRuleFiles(rulesDir: string): string[] {
+  return [
+    ...new Bun.Glob('**/*.md').scanSync({
+      cwd: rulesDir,
+      onlyFiles: true,
+      dot: true,
+    }),
+  ]
+    .sort()
+    .map((path) => resolve(rulesDir, path))
+}
+
+/**
+ * Drops a leading `---` block. Only a block starting on the first line counts,
+ * so a horizontal rule further down the document is left in place.
+ */
+export function stripFrontmatter(source: string): string {
+  return source.replace(FRONTMATTER, '')
+}
+
+/**
+ * Wraps each rule in a named tag so a model reading the payload can tell the
+ * rules apart without the file boundaries. Bodies are trimmed of blank lines
+ * at both ends and separated by exactly one blank line.
+ */
+export function buildRulesPayload(files: readonly string[]): string {
+  const blocks = files.map((file) => {
+    const name = basename(file, '.md')
+    const body = trimBlankLines(stripFrontmatter(readFileSync(file, 'utf8')))
+    return `<rule name="${name}">\n${body}\n</rule>`
+  })
+
+  return `${blocks.join('\n\n')}\n`
+}
+
+function trimBlankLines(source: string): string {
+  return source.replace(/^(?:[ \t]*\n)+/, '').replace(/(?:\n[ \t]*)+$/, '')
+}

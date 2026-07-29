@@ -20,7 +20,7 @@ EOF
   log_info ".gitignore created"
 
   log_step "Injecting governance rules"
-  "$PROJECT_ROOT/scripts/manage-gov.sh" install base "."
+  bun "$PROJECT_ROOT/src/cli.ts" gov install base "."
   log_info "Base rules injected into .claude/rules/"
 
   log_step "Scenario ready: Claude workflow"

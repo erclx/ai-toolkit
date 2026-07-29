@@ -204,7 +204,7 @@ main() {
     fi
     gov_args+=("$target")
     run_domain "Governance" \
-      bash "$PROJECT_ROOT/scripts/manage-gov.sh" "${gov_args[@]}" </dev/null
+      bun "$PROJECT_ROOT/src/cli.ts" gov "${gov_args[@]}" </dev/null
   else
     log_step "Governance"
     log_warn "Skipped: no --stack provided. Run 'aitk gov install <stack> $target' to install rules."

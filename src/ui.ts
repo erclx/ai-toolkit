@@ -30,6 +30,15 @@ export function logRemove(message: string): void {
   process.stderr.write(`${GREY}│${NC} ${RED}-${NC} ${message}\n`)
 }
 
+/**
+ * Renders the `✗` shape `docs/agents.md` specifies for a failure inside an
+ * open frame. It does not exit, so the caller closes the frame and returns an
+ * exit code rather than terminating mid-write.
+ */
+export function logError(message: string): void {
+  process.stderr.write(`${GREY}│${NC} ${RED}✗${NC} ${message}\n`)
+}
+
 export function logStep(message: string): void {
   process.stderr.write(`${GREY}│${NC}\n${GREY}├${NC} ${WHITE}${message}${NC}\n`)
 }

@@ -67,7 +67,7 @@ mkdir -p "$TARGET_DIR"
 log_info "Initialized git in $TARGET_DIR"
 
 log_step "Run aitk init"
-(cd "$TARGET_DIR" && AITK_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init 2>&1 | pipe_output) || log_error "aitk init failed"
+(cd "$TARGET_DIR" && AITK_NON_INTERACTIVE=1 bun run "$CLONE_DIR/src/cli.ts" init --stack base 2>&1 | pipe_output) || log_error "aitk init failed"
 log_info "aitk init completed"
 
 log_step "Assert scaffold"
@@ -76,7 +76,8 @@ log_step "Assert scaffold"
 # catches a failed domain, and the gate stays green while the target is
 # missing everything that domain provides.
 for path in "CLAUDE.md" ".claude/snippets" ".claude/standards/prose.md" "wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" \
-  ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh"; do
+  ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
+  ".claude/rules/core/000-constitution.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then
     log_error "Missing after aitk init: $path"
   fi
