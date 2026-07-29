@@ -25,6 +25,13 @@ run_check() {
   echo "$output" | pipe_output
 }
 
+assert_no_drift() {
+  local paths=$1
+  local err_msg=$2
+  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- $paths" "$err_msg"
+  run_check "cd $PROJECT_ROOT && [ -z \"\$(git ls-files --others --exclude-standard -- $paths)\" ]" "$err_msg"
+}
+
 main() {
   check_dependencies
 
@@ -42,17 +49,17 @@ main() {
 
   log_step "Indexes"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-indexes.sh" "Index regen failed"
-  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- '*index.md'" "Indexes drifted. Run bun run check and commit the updated index files."
+  assert_no_drift "'*index.md'" "Indexes drifted. Run bun run check and commit the updated index files."
   log_info "Indexes clean"
 
   log_step "Consumed copies"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-claude-copies.sh" "Consumed-copy regen failed"
-  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- .claude/standards .claude/snippets" "Consumed copies drifted. Run bun run check and commit .claude/standards and .claude/snippets."
+  assert_no_drift ".claude/standards .claude/snippets" "Consumed copies drifted. Run bun run check and commit .claude/standards and .claude/snippets."
   log_info "Consumed copies clean"
 
   log_step "Skill references"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-skill-references.sh" "Skill-reference regen failed"
-  run_check "cd $PROJECT_ROOT && git diff --exit-code --quiet -- claude/skills/*/references" "Skill references drifted. Run bun run check and commit the updated reference files."
+  assert_no_drift "claude/skills/*/references" "Skill references drifted. Run bun run check and commit the updated reference files."
   log_info "Skill references clean"
 
   log_step "Spelling"

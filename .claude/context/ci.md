@@ -39,7 +39,7 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Stage            | Command                                  | What it asserts                                         |
 | ---------------- | ---------------------------------------- | ------------------------------------------------------- |
 | Format check     | `bun run check:format`                   | prettier and shfmt are clean                            |
-| Indexes          | `scripts/core/regen-indexes.sh`          | no `index.md` was committed stale                       |
+| Indexes          | `scripts/core/regen-indexes.sh`          | no `index.md` was committed stale or left untracked     |
 | Consumed copies  | `scripts/core/regen-claude-copies.sh`    | `.claude/standards` and `.claude/snippets` match source |
 | Skill references | `scripts/core/regen-skill-references.sh` | bundled standards match their consumers                 |
 | Spell            | `bun run check:spell`                    | cspell passes against dictionaries                      |
@@ -47,7 +47,9 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Types            | `bun run check:types`                    | `tsc --noEmit` passes against `src/`                    |
 | Tests            | `bun run test`                           | the vitest suite passes                                 |
 
-The three drift stages regenerate and then run `git diff --exit-code`. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
+The three drift stages regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
+
+Regeneration runs in both modes, so `check:ci` writes to the working tree even though it never formats. Only the format stage changes behavior between modes.
 
 ## Running CI locally
 

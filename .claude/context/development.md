@@ -22,19 +22,19 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 
 ## Scripts
 
-| Command                 | Purpose                                                                            |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| `bun run check`         | Full verification. Auto-formats, regenerates indexes, asserts clean.               |
-| `bun run check:ci`      | Same stages as `check` without writing. Asserts formatting instead of applying it. |
-| `bun run check:format`  | Read-only prettier and shfmt format check.                                         |
-| `bun run check:spell`   | Read-only cspell check against project dictionaries.                               |
-| `bun run check:shell`   | Read-only shellcheck against `scripts/` and `tooling/`.                            |
-| `bun run check:types`   | Read-only `tsc --noEmit` against `src/`.                                           |
-| `bun run check:install` | Clones the repo to tmp and asserts `aitk init` lands a fresh scaffold.             |
-| `bun run format`        | Auto-fix prettier and shfmt formatting.                                            |
-| `bun run clean`         | Wipe `node_modules/`, clear bun cache, reinstall.                                  |
-| `bun run update`        | Interactive `bun update` followed by verification.                                 |
-| `bun run snapshot`      | Snapshot project state for diffs.                                                  |
+| Command                 | Purpose                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `bun run check`         | Full verification. Auto-formats, regenerates indexes, asserts clean.                    |
+| `bun run check:ci`      | Same stages as `check`, asserting formatting instead of applying it. Still regenerates. |
+| `bun run check:format`  | Read-only prettier and shfmt format check.                                              |
+| `bun run check:spell`   | Read-only cspell check against project dictionaries.                                    |
+| `bun run check:shell`   | Read-only shellcheck against `scripts/` and `tooling/`.                                 |
+| `bun run check:types`   | Read-only `tsc --noEmit` against `src/`.                                                |
+| `bun run check:install` | Clones the repo to tmp and asserts `aitk init` lands a fresh scaffold.                  |
+| `bun run format`        | Auto-fix prettier and shfmt formatting.                                                 |
+| `bun run clean`         | Wipe `node_modules/`, clear bun cache, reinstall.                                       |
+| `bun run update`        | Interactive `bun update` followed by verification.                                      |
+| `bun run snapshot`      | Snapshot project state for diffs.                                                       |
 
 ## Gotchas
 
