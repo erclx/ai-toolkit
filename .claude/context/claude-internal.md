@@ -31,12 +31,12 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 Larger projects use an orchestrator session that breaks work into TASKS entries and hands each entry to a worker session running in a linked worktree. The toolkit ships two artifacts to make this flow mechanical.
 
-| Artifact                          | Author                 | Holds                                                                                     | Lifecycle                                             |
-| --------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `.claude/TASKS.md`                | orchestrator           | One block per task with outcomes and a test strategy. Phase labels live here.             | Gitignored, shared across worktrees.                  |
-| `.claude/plans/feature-<slug>.md` | orchestrator or worker | Files to touch with reasons, optional constraints, risks, answered questions for one task | Gitignored, shared across worktrees, deleted on ship. |
+| Artifact                          | Author                 | Holds                                                                                     | Lifecycle                                              |
+| --------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `.claude/TASKS.md`                | orchestrator           | One block per task with outcomes and a test strategy. Phase labels live here.             | Gitignored, shared across worktrees.                   |
+| `.claude/plans/feature-<slug>.md` | orchestrator or worker | Files to touch with reasons, optional constraints, risks, answered questions for one task | Gitignored, shared across worktrees, archived on ship. |
 
-Drafting flow: orchestrator writes a TASKS block, runs `claude-feature` to produce a plan carrying the reading list and any constraints, then hands the worker a plan slug. Worker enters a linked worktree, reads the plan, and implements. `claude-docs` deletes the plan when the task ships.
+Drafting flow: orchestrator writes a TASKS block, runs `claude-feature` to produce a plan carrying the reading list and any constraints, then hands the worker a plan slug. Worker enters a linked worktree, reads the plan, and implements. `claude-docs` moves the plan to `.claude/.tmp/plans-archive/` when the task ships and retargets the task block's `Plan:` line at it.
 
 Phase labels stay inside TASKS. They never appear in PR titles, commit messages, or git tags. See `.claude/standards/versioning.md` for the rules and the why.
 

@@ -52,3 +52,9 @@ All `.sh` files live under `scripts/`. Do not place shell scripts outside `scrip
 - `pre-commit` runs `lint-staged` (prettier, cspell, shfmt, shellcheck on staged files).
 - `commit-msg` runs `commitlint` against the conventional commit format.
 - `pre-push` runs `bun run check`. After pushing, run `git status`. If files changed, commit the diff as `style(<scope>):` and push again.
+
+## Session scratch
+
+`.claude/plans/`, `.claude/review/`, `.claude/memory/`, and `.claude/TASKS.md` are gitignored and live at the main worktree root. A linked worktree resolves them there rather than writing its own copy.
+
+A plan that ships moves to `.claude/.tmp/plans-archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.

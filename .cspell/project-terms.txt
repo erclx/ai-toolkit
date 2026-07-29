@@ -83,6 +83,7 @@ regen
 rescope
 resequence
 resequences
+retarget
 retargeted
 retargets
 ripgreprc

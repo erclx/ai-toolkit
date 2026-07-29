@@ -31,7 +31,7 @@ Prefix each block title with a `vX.Y:` phase label for ordering and dependencies
 - Fix: a problem statement describing what is wrong
 - Chore: an imperative describing what is being done
 
-Phase-label format and where labels may appear are governed by `standards/versioning.md`. Include the `Plan:` line only when `.claude/plans/feature-<slug>.md` exists.
+Phase-label format and where labels may appear are governed by `standards/versioning.md`. Include the `Plan:` line only when the plan file it names exists. An open task points at `.claude/plans/feature-<slug>.md`. Once the task ships and the plan is archived, the line points at `.claude/.tmp/plans-archive/feature-<slug>.md` instead. Retarget the line rather than dropping it, so a completed block still leads to the reasoning behind it.
 
 ```markdown
 ### vX.Y: Title

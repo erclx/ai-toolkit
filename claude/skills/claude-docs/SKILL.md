@@ -120,15 +120,20 @@ The base lint-staged config runs `aitk indexes regen` on every committed `*.md`,
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
-**Plans.** For each task block marked `[x]` in Step 3, check for a `Plan:` line directly under the title. Parse the path. If it points inside `.claude/plans/` and the file exists, delete it. If the path is outside `.claude/plans/`, warn and skip. Mirrors the `.claude/snippets/claude/tasks-done.md` pattern.
+**Plans.** For each task block marked `[x]` in Step 3, check for a `Plan:` line directly under the title and parse the path. Never delete a plan. `CLAUDE.md` owns why a shipped plan is archived rather than removed.
+
+- Path inside `.claude/plans/` and the file exists: create `.claude/.tmp/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the block's `Plan:` line to the archive path, so a completed block still leads to the reasoning behind it.
+- Path already inside `.claude/.tmp/plans-archive/`: skip silently. The plan was archived by an earlier pass and the block is already correct.
+- Any other path outside `.claude/plans/`: warn and skip.
 
 **Reviews.** Derive `<slug>` from the current branch name (replace `/` with `-`). If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 
 Do not sweep `ui-checklist-*.md` (pending human verification) or `ux-audit-*.md` (standalone deliverable).
 
-Output one line per file removed:
+Output one line per file swept:
 
-`🧹 Deleted: <path>`
+- `📦 Archived: <path>` for a plan moved into `.claude/.tmp/plans-archive/`
+- `🧹 Deleted: <path>` for a swept review
 
 If nothing qualifies, skip this step silently.
 

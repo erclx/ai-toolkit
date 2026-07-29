@@ -71,6 +71,8 @@ To run several worktrees as a coordinated flow rather than ad hoc, assert the or
 
 `.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
+A plan that ships is archived, never deleted. `toolkit:claude-docs` moves it to `.claude/.tmp/plans-archive/` and retargets the task block's `Plan:` line at the new location, so a completed task still leads to the reasoning behind it. Both folders are gitignored, which is why a deleted plan had no recovery path.
+
 `.claude/TASKS.md` is gitignored and lives per worktree, so each session keeps its own task list with no cross-worktree merge.
 
 ### Autonomous ship
