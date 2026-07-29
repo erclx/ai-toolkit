@@ -36,12 +36,12 @@ SCRIPT
   case "$SELECTED_OPTION" in
   "default")
     log_step "Running: aitk init ."
-    exec "$PROJECT_ROOT/scripts/manage-init.sh" .
+    exec bun "$PROJECT_ROOT/src/cli.ts" init .
     ;;
   "with-flags")
     log_step "Running: aitk init --stack base --skip wiki ."
     export AITK_NON_INTERACTIVE=1
-    exec "$PROJECT_ROOT/scripts/manage-init.sh" --stack base --skip wiki .
+    exec bun "$PROJECT_ROOT/src/cli.ts" init --stack base --skip wiki .
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
