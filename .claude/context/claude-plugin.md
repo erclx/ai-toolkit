@@ -30,6 +30,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals             |
 | `claude-docs`            | Update .claude/ planning docs to reflect mid-cycle decisions                                     |
 | `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                                 |
+| `claude-groundwork`      | Open, resume, and close a numbered groundwork folder under `.claude/.tmp/<slug>/`                |
 | `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                                 |
 | `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete          |
 | `claude-orchestrate`     | Assert the orchestrator role and dispatch the roadmap, feature, review, and worktree skills      |
@@ -150,3 +151,5 @@ Use both: run `claude-review` locally before pushing, then let Code Review catch
 | Context    | Whatever Claude reads during exploration         | Same, but on cloud infrastructure                       | Explicitly reads REQUIREMENTS, ARCHITECTURE, DESIGN, TASKS, and the relevant `.claude/wireframes/<surface>.md`. Coding rules in `.claude/rules/` auto-load |
 
 Plan mode is a permission mode that restricts Claude to read-only exploration. `claude-feature` is a structured prompt that forces a specific output format and reads specific project docs. They solve different problems and can be used together: enter plan mode, then invoke `claude-feature` for a scoped proposal grounded in your project docs.
+
+`claude-groundwork` sits ahead of all three. It runs before a topic is ready to plan, and its output is a scratch folder that can conclude in doing nothing. Reach for it when the current state is unmeasured and more than one approach is live, then run `claude-feature` on the decision it produces.

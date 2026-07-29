@@ -43,6 +43,7 @@ One session works for most features. Prefer splitting across two sessions only w
 
 Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
+- When the current state is unmeasured and more than one approach is live, invoke `toolkit:claude-groundwork` first. It opens a scratch folder under `.claude/.tmp/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
 - Invoke `toolkit:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
 - For UI changes, invoke `toolkit:claude-ui-test` to generate and run Playwright e2e tests
@@ -105,6 +106,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 
 | Skill                           | When to use                                                                                                            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `toolkit:claude-groundwork`     | Before a plan is warranted, measure an unknown in a scratch folder under `.claude/.tmp/`                               |
 | `toolkit:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                              |
 | `toolkit:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                       |
 | `toolkit:claude-orchestrate`    | Assert the orchestrator role and dispatch the roadmap, feature, and review skills                                      |
