@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, statSync } from 'node:fs'
-import { copyFile, mkdir, rm } from 'node:fs/promises'
-import { dirname, relative, resolve } from 'node:path'
+import { rm } from 'node:fs/promises'
+import { relative, resolve } from 'node:path'
+import { copyPreservingMode } from '@/copy'
 import {
   intro,
   logAdd,
@@ -143,8 +144,7 @@ export async function applyChanges(
 
   for (const change of changes) {
     if (change.kind === 'copy') {
-      await mkdir(dirname(change.dest), { recursive: true })
-      await copyFile(change.source, change.dest)
+      await copyPreservingMode(change.source, change.dest)
       logAdd(change.rel)
       continue
     }

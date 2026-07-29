@@ -1,9 +1,11 @@
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -206,6 +208,28 @@ describe('applyChanges', () => {
     ])
 
     expect(readFileSync(dest, 'utf8')).toBe('new\n')
+  })
+
+  it('should leave an existing destination mode alone', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    const dest = join(TARGET, '.claude/rules/core/000-const.md')
+    writeFixture(dest, 'old\n')
+    chmodSync(dest, 0o600)
+
+    await applyChanges(planSync(createAdapter(), TARGET).changes)
+
+    expect(statSync(dest).mode & 0o777).toBe(0o600)
+  })
+
+  it('should not strip an executable bit the destination carries', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
+    const dest = join(TARGET, '.claude/rules/core/000-const.md')
+    writeFixture(dest, 'old\n')
+    chmodSync(dest, 0o755)
+
+    await applyChanges(planSync(createAdapter(), TARGET).changes)
+
+    expect(statSync(dest).mode & 0o777).toBe(0o755)
   })
 
   it('should remove a retired surface', async () => {

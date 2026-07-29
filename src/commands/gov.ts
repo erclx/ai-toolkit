@@ -60,13 +60,22 @@ export function register(program: Command): void {
       .allowUnknownOption()
       .allowExcessArguments(true)
       .passThroughOptions()
+      .helpOption(false)
       .action(async (_opts: unknown, cmd: Command) => {
-        if (!cmd.args.includes('-h') && !cmd.args.includes('--help')) {
-          intro('aitk gov')
-        }
+        if (!isHelpRequest(cmd.args)) intro('aitk gov')
         await execScript(`gov/${verb}.sh`, cmd.args)
       })
   }
+}
+
+/**
+ * Commander resolves `--help` before an action runs, so a pass-through verb
+ * that keeps the built-in help option prints a one-line stub instead of the
+ * script's usage. Disabling it lets the flag reach the script, which owns the
+ * real flag surface for `--add`, `--stacks`, `--rules`, and `--json`.
+ */
+function isHelpRequest(args: readonly string[]): boolean {
+  return args.includes('-h') || args.includes('--help')
 }
 
 /**

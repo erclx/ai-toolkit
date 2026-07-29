@@ -98,6 +98,8 @@ Narrowed to the two functions that are called inside loops. The payload builder 
 
 `rule_subdir` has five callers and four are sandbox scripts, which stay bash by decision. `strip_frontmatter` has one, `scripts/docs/get.sh`.
 
+The bash `strip_frontmatter` treats the first `---` on any line as the start of a frontmatter block, so a document whose body carries two horizontal rules loses everything between them. `stripFrontmatter` in `src/gov/payload.ts` anchors to the first line instead and leaves such a body intact. The TypeScript reading is the correct one. When the docs domain migrates, port those semantics rather than reproducing the bash.
+
 ### `tooling.sh`
 
 Consumed by `scripts/tooling/{list,ref,sync,create}.sh` for discovery and name validation. Any future folder under `tooling/` that is not a real stack routes through the same helper.
