@@ -24,6 +24,9 @@ Owns the markdown docs defining developer workflow conventions. They install int
 - A convention consumed by a specific skill rather than authored by a project lives in `standards/bundled/`. Each carries a `consumers:` field, and the fan-out copies it into every listed skill's `references/`, so the skill works in a project that never ran `aitk standards install`.
 - Install overwrites all standards on purpose. Sync updates only what is already present and never adds, so a project chooses when to take a new standard.
 - `index.md` is generated from what is actually installed rather than copied, so a target's catalog never lists a standard it does not have.
+- Sync runs on the shared engine in `src/sync/engine.ts` via `src/standards/adapter.ts`. It is the third adapter and the first to need the engine widened, which is why the engine now carries a per-adapter non-interactive policy, a walk exclusion, and a completion hook.
+- The headless refusal is a per-adapter policy rather than a branch inside the engine. Gov rules and snippets are toolkit-owned and default to applying. Standards are seeds a project edits, so an unattended overwrite is data loss with no prompt in front of it.
+- Sync matches by filename against the flat `standards/` root. A standard that only exists in a source subfolder has no flat sibling, so it reads as project-authored and is left alone, which keeps install and sync agreeing on the same set.
 
 ## Gotchas
 
@@ -31,6 +34,8 @@ Owns the markdown docs defining developer workflow conventions. They install int
 - Under `AITK_NON_INTERACTIVE=1`, sync refuses to auto-apply when drifts are detected rather than silently overwriting.
 - A standard authored directly in a target's `.claude/standards/` is project-local and survives sync, which only touches filenames it recognizes from the toolkit source.
 - Do not hand-edit `index.md` in a target. Install and sync rewrite it from the frontmatter of whatever is present.
+- The catalog refresh runs on every completed sync, including one that found no drift, because a standard the toolkit stopped shipping goes stale in the catalog without changing any file the walk compares. It does not run when the headless refusal fires or the prompt is cancelled, since neither completed.
+- A standard missing `title` or `description` makes the regen fail. Sync reports it, finishes, and exits 0, so one malformed file cannot block the rest of the sync. The bash exited 1 here through `set -e`, after the file writes had already landed, so the tree was the same either way and only the exit code differed.
 - `bun run check` regenerates both the consumed copy and the skill-reference fan-out, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches.
 
 ## Standards
@@ -48,6 +53,8 @@ Run `aitk standards list` for the catalog of installable standards and their des
 | `aitk standards list`    | Emit catalog of standards with descriptions                          |
 
 Flags and arguments live in `docs/agents.md`. `--json` emits `{standards: [{name, description, target, content}]}`, and drift-auditing skills consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`.
+
+`sync` is TypeScript. `list` forwards to `scripts/standards/list.sh`, and `install` still forwards into `scripts/manage-standards.sh`, which keeps that dispatcher alive until `install` gets a verb script of its own.
 
 ## Workflow
 

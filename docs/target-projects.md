@@ -70,10 +70,13 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 `aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence. It never touches user-owned seed files. Governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
+Standards are the exception inside that run. A drifted standard is reported and left alone rather than overwritten, because standards are seeds a project edits. To take the upstream version, run `aitk standards sync <path>` interactively, or use `toolkit:claude-seed-sync` below to merge section by section.
+
 ### Targeted
 
 - Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`, plus installed standards under `.claude/standards/`: invoke `toolkit:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part across both surfaces and proposes per-part edits. User customizations are preserved.
 - Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules
+- Standards already installed: `aitk standards sync <path>` diffs and applies whole files, and refuses to apply without a prompt
 - Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
 - Reference docs for a stack: `aitk tooling ref <stack> <path>`
 - Index regeneration after markdown edits: `aitk indexes regen`

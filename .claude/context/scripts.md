@@ -61,9 +61,9 @@ The git workflow step is skipped if the target is not a git root (no `.git/`). W
 
 ## UI framing across exec boundaries
 
-`scripts/manage-standards.sh` is the reference manager for a domain still on bash. It opens the frame unconditionally in `main()`, and its verb scripts set their own EXIT trap and emit section headers via `log_step` without ever emitting `┌`.
+`scripts/manage-standards.sh` is the last dispatcher a migrated domain still reaches into. It holds `install` alone now, opens the frame in `main()`, and `scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`.
 
-Neither `tooling` nor `gov` has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`.
+Neither `tooling` nor `gov` nor `snippets` has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, and `prune-gitignore` in TypeScript and shells out for `ref`, `create`, `list`, and `verify`. `src/commands/gov.ts` handles `sync` and `build`, and shells out for `install` and `list`. `src/commands/standards.ts` handles `sync` and shells out for `install` and `list`.
 
 Deleting a dispatcher moves the responsibility for opening the frame, because a bash verb script closes a frame it never opened. `src/commands/gov.ts` calls `intro('aitk gov')` before it execs a pass-through, taking over the job the dispatcher used to do. It skips the call when the args carry `-h` or `--help`, since a help screen prints its own frame.
 
