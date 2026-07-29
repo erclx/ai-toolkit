@@ -103,6 +103,13 @@ never adds new ones. A rule the toolkit does not ship is left alone, which is
 how project-authored rules survive. It also removes a stale `.claude/GOV.md`
 from the retired build. Use `aitk gov install` to add rules.
 
+`aitk standards sync` matches by filename against `.claude/standards/` and
+regenerates that folder's `index.md` on every completed run. It is the one sync
+that refuses under `AITK_NON_INTERACTIVE=1` when drift exists, logging a warning
+and exiting 0 without writing, because standards are seeds a project edits. Run
+it interactively, or use the `claude-seed-sync` skill for a per-section audit
+that preserves customizations.
+
 `aitk snippets sync` behaves the same way against `.claude/snippets/`. It
 matches by path relative to that directory, so a snippet the toolkit no longer
 ships, or one authored directly in the target, is reported and skipped rather
@@ -205,6 +212,9 @@ AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project
 
 # Update snippets already installed, leaving project-authored ones alone
 AITK_NON_INTERACTIVE=1 aitk snippets sync /path/to/project
+
+# Report standards drift without applying it, which is what headless does here
+AITK_NON_INTERACTIVE=1 aitk standards sync /path/to/project
 
 # Run a sandbox scenario non-interactively
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
