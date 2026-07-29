@@ -24,7 +24,7 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - The `aitk` category is internal and filtered at every entry point: `install all`, the interactive picker, `list`, and an explicit `install aitk`. Enforcing it in code beats relocating the content, so internal runbooks stay next to their siblings.
 - Sync updates only what is already present and never adds. A project that installed `essentials` does not silently grow new snippets on the next sync.
 - Sync runs on the shared engine in `src/sync/engine.ts` via `src/snippets/adapter.ts`. The adapter locates a source by relative path where the gov adapter locates one by rule name, which is the only axis the two differ on. It sets no `collectRetired`, so snippets is the proof that hook is optional.
-- The internal-category list is a constant in `src/snippets/categories.ts`, which install, list, and the sync adapter all read. One bash copy remains in `create.sh`, a knowing duplication for as long as that verb stays bash.
+- The internal-category list is a constant in `src/snippets/categories.ts`, which install, list, and the sync adapter all read. Preset expansion filters through it too, since a slug is a path relative to `snippets/` and a preset naming `aitk/<slug>` would otherwise reach an internal snippet. One bash copy remains in `create.sh`, a knowing duplication for as long as that verb stays bash.
 
 ## Gotchas
 

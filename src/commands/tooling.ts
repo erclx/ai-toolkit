@@ -123,6 +123,10 @@ export function register(program: Command): void {
  * `JSON.stringify` replaces a `printf` that interpolated manifest fields into a
  * JSON string literal unescaped, so a stack name or description carrying a
  * quote emitted output a consuming skill could not parse.
+ *
+ * The frame opens after the `--json` return. The bash emitted a closing `└`
+ * from its EXIT trap with no `┌` above it, because the hand-rolled
+ * pass-through loop below skips the `intro` the shared helper carries.
  */
 function runList(opts: ListOptions): number {
   const stacks = buildStackSummaries(PROJECT_ROOT)
@@ -132,6 +136,7 @@ function runList(opts: ListOptions): number {
     return 0
   }
 
+  intro('aitk tooling list')
   logStep('Stacks')
   for (const summary of stacks) logInfo(describeStack(summary))
   outro()

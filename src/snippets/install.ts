@@ -5,6 +5,7 @@ import {
   BASE_CATEGORY,
   categoryDir,
   categoryExists,
+  isInternalCategory,
   listCategories,
   listEntries,
   snippetsSourceDir,
@@ -56,6 +57,10 @@ function filesInCategory(root: string, category: string): SnippetFile[] {
  * Resolves the one argument three ways. `all` wins, then a preset name, then a
  * folder, which is the bash precedence and matters because a folder sharing a
  * preset name resolves to the preset.
+ *
+ * Preset slugs pass the internal-category filter too. A slug is a path relative
+ * to `snippets/`, so a preset naming `aitk/<slug>` would otherwise reach an
+ * internal snippet through the one install path the filter did not cover.
  */
 export function resolveSnippets(
   root: string,
@@ -74,6 +79,7 @@ export function resolveSnippets(
     const missing: string[] = []
 
     for (const slug of preset.slugs) {
+      if (isInternalCategory(`${slug}.md`)) continue
       const src = join(snippetsSourceDir(root), `${slug}.md`)
       if (existsSync(src)) files.push({ src, relPath: `${slug}.md` })
       else missing.push(slug)

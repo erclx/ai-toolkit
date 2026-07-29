@@ -196,6 +196,9 @@ async function runInstall(
  * `JSON.stringify` replaces a `printf` template that interpolated names into a
  * JSON string literal unescaped, so a slug or category carrying a quote emitted
  * output no consuming skill could parse.
+ *
+ * The frame opens after the `--json` return, since the bash verb only ever
+ * emitted section headers and the pass-through above it owned the `┌`.
  */
 function runList(opts: ListOptions): number {
   const catalog = buildSnippetsCatalog(PROJECT_ROOT)
@@ -204,6 +207,8 @@ function runList(opts: ListOptions): number {
     process.stdout.write(`${JSON.stringify(catalog)}\n`)
     return 0
   }
+
+  intro('aitk snippets list')
 
   const showCategories = opts.entries !== true
   const showEntries = opts.categories !== true

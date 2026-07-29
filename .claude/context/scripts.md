@@ -60,6 +60,8 @@ No domain has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `
 
 `scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`, which is what lets the command layer above it own the frame.
 
+A migrated list verb has to open that frame itself, and the gap is easy to miss because it only shows through the CLI. The bash verb never emitted `┌`, so a baseline captured by running the script directly matches a frameless port exactly while `aitk snippets list` loses the header `registerPassThroughVerbs` used to print. Capture equivalence baselines at the boundary the user invokes, not at the script.
+
 `claude seeds list` is a real Commander subcommand rather than the hand-rolled routing it replaced. That routing existed only because the verb's script was `scripts/claude/seeds-list.sh` where `registerPassThroughVerbs` builds `scripts/<domain>/<verb>.sh`. The parent `seeds` command keeps an action handler so an unknown or missing subcommand still reports the two errors the bash `case` emitted, since Commander falls through to the parent when no subcommand name matches.
 
 Deleting a dispatcher moves the responsibility for opening the frame, because a bash verb script closes a frame it never opened. `src/commands/gov.ts` calls `intro('aitk gov')` before it execs a pass-through, taking over the job the dispatcher used to do. It skips the call when the args carry `-h` or `--help`, since a help screen prints its own frame.

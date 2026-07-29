@@ -83,6 +83,17 @@ describe('resolveSnippets', () => {
     expect(relPaths(resolution)).toEqual(['picked.md'])
   })
 
+  it('should skip a preset slug pointing into the internal category', () => {
+    seedSnippet('kept.md')
+    seedSnippet(join('aitk', 'internal.md'))
+    seedPresets('[essentials]\nnames = ["kept", "aitk/internal"]\n')
+
+    const resolution = resolveSnippets(root, 'essentials')
+
+    expect(relPaths(resolution)).toEqual(['kept.md'])
+    expect(resolution.ok && resolution.missing).toEqual([])
+  })
+
   it('should report a preset slug with no source file', () => {
     seedSnippet('present.md')
     seedPresets('[essentials]\nnames = ["present", "ghost"]\n')
