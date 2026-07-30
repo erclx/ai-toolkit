@@ -2,9 +2,11 @@
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
-# No `max_turns`, for the reason recorded in the missing arm's file. This arm
-# starts two services and so costs the most of the three, which makes a guessed
-# ceiling the most likely of the three to fail a correct run.
+# A clean run cost 7 turns on 2026-07-31. Set above that rather than at it. This
+# arm starts two services and reads each one's port back from a backgrounded
+# call, so it is the most expensive of the three and the one whose cost is most
+# likely to move.
+max_turns = 14
 
 # The arm's central assertion. Each service writes its sentinel at startup, so
 # both paths present is the only mechanical proof that the request resolved to

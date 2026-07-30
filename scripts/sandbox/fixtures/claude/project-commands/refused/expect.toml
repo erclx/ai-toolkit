@@ -2,8 +2,10 @@
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
-# No `max_turns`, for the reason recorded in the missing arm's file. The arm has
-# never run, so any ceiling here would be a guess that fails a correct run.
+# A clean run cost 4 turns on 2026-07-31. Set above that rather than at it. The
+# refusal fires after the entry is read and the command resolved, so this arm
+# costs more than the missing arm and still terminates early.
+max_turns = 10
 
 # The whole assertion. `deploy` in package.json touches this file, so its
 # presence proves the refusal did not hold. The arm exists because a refusal is
