@@ -1,0 +1,41 @@
+# What a correct `/claude-docs` run leaves behind on the drift arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# Compared against the envelope's `num_turns`, which is not the same unit as the
+# harness `--max-turns` cap: a run capped at 20 reported 21 num_turns on
+# 2026-07-30. Set above observed cost so the ceiling catches a blowup rather than
+# firing on every run, which would be a vacuous assertion pointing the other way.
+max_turns = 30
+
+# The plan is archived, not destroyed. This pair with `absent` below is the arm's
+# central expectation and the reason it is the pilot: an absence check alone
+# cannot tell a move from a delete, so asserting only the absence would report
+# green on a run that lost the file. Archive behavior landed in #619.
+paths = [
+  ".claude/.tmp/plans-archive/feature-postgres-migration.md",
+  ".claude/plans/feature-some-old-plan.md",
+]
+
+absent = [".claude/plans/feature-postgres-migration.md"]
+
+# The arm runs under `bypassPermissions`, because no permission mode both allows
+# writes under `.claude/` and scopes them. This is what replaces the denial count
+# the envelope can no longer supply.
+write_scope = [".claude/**"]
+
+# Prose the checker cannot assert. Kept beside the mechanical assertions rather
+# than left in the scenario's log lines, which is the only thing that stops them
+# rotting once the rest are machine-checked.
+manual = [
+  "ARCHITECTURE.md storage section rewritten from SQLite to Postgres",
+  "REQUIREMENTS.md non-goals updated, multi-user moved in-scope",
+]
+
+[[content]]
+path = ".claude/TASKS.md"
+pattern = '^- \[x\] Outcome: tasks persist in Postgres'
+
+[[content]]
+path = ".claude/TASKS.md"
+pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-postgres-migration\.md'
