@@ -197,7 +197,7 @@ Omitting `--writes` or `--envelope` does not silently drop the assertion kinds t
 
 Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a malformed target, or a sandbox that was never provisioned. A missing sandbox reports as an error rather than a failed verdict, because failing every path assertion would read as a skill that did nothing.
 
-`scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints.
+`scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints. It also writes that merged record to `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json` with a `writes` array appended, and logs the path on stderr. Both fields are what a later re-score needs, since `--envelope` and `--writes` read files the run deletes on exit. Stdout carries the same bytes it did before the record existed.
 
 ## Docs
 

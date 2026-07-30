@@ -104,6 +104,14 @@ The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd
 
 The envelope alone never decided anything. Two arms on 2026-07-29 returned `error=false` having written nothing and meeting none of their scenario's stated expectations, and a suite scoring on the envelope would have counted both as passes. `run.sh` now snapshots the tree before the session, diffs it after, and hands the result to `aitk sandbox check`, whose exit code becomes the run's outcome.
 
+Every run also lands at `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `aitk sandbox check` recovers the tree-based assertions from surviving `.sandbox/` state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
+
+The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. Nothing prunes the folder, which makes it a scratch-lifecycle question rather than an oversight. It belongs with the other scratch catalogs whenever that track settles when a folder's contents expire.
+
+The default turn cap is 30. It was 20 until 2026-07-30, when a clean `claude/docs` `drift` run took 29 turns and would have truncated. A truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, so the global default sits above observed cost.
+
+`AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates, and if its declared ceiling sits above the cap it passes that one assertion while failing the rest. Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
+
 ## Expectations
 
 An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `aitk sandbox check <category>:<command> [arm]` reads it, asserts against `.sandbox/`, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
@@ -164,6 +172,10 @@ Each stage splits into two optional subfolders. `create/` copies files in, makin
 Every stored file carries a `.fixture` suffix that the helper strips on copy. The suffix keeps the repository's own checks off the content, since an `index.md.fixture` is not an `index.md`. `aitk indexes regen` leaves it alone, and prettier, `shfmt`, and `shellcheck` skip it too. Without the suffix, a fixture that deliberately drifts from its sibling frontmatter gets normalized by `bun run check` and the state it models disappears.
 
 Stage numbering carries ordering, not identity. A stage exists because a commit or a branch switch has to happen before the next file lands.
+
+A stage must leave the tree coherent with what the scenario claims it staged. `02-postgres` on the `claude/docs` `drift` arm replaced `src/db.ts` alone, moving `createTask` to `(title, userId)` and returning `rows[0]`, while `src/routes/tasks.ts` stayed at its `01-initial` content calling `createTask(title)` and reading `result.lastInsertRowid`. The commit message said the migration shipped and the route did not compile against the module it imported.
+
+A skill reading that diff saw a half-migration, correctly declined to mark the outcome, and failed four assertions. A stage that changes a module's signature carries its callers, or the arm tests the fixture's incoherence rather than the skill.
 
 ### use_config
 
