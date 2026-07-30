@@ -21,7 +21,7 @@ stage_setup() {
 
   configure_sandbox_git_identity
 
-  git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
+  git remote add origin "$(sandbox_anchor_url)"
 
   local -a stale_standards=()
   while IFS= read -r file; do
@@ -59,7 +59,7 @@ stage_setup() {
   log_info "Anchor: $ANCHOR_REPO"
   log_info "Stale standards: ${stale_standards[*]}"
   log_info "Stale rules: ${stale_rules[*]}"
-  log_info "Remote: git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
+  log_info "Remote: $(sandbox_anchor_url)"
 
   log_step "Running: aitk sync"
   exec bun "$PROJECT_ROOT/src/cli.ts" sync .

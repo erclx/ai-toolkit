@@ -19,7 +19,7 @@ stage_setup() {
   configure_sandbox_git_identity
 
   git remote remove origin 2>/dev/null || true
-  git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
+  git remote add origin "$(sandbox_anchor_url)"
   git branch -M main
 
   git push --force origin HEAD:main -q
