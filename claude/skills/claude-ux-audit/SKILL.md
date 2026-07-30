@@ -20,7 +20,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 ## Step 2: identify surfaces
 
-List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `.claude/TASKS.md` as in-progress.
+List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `.claude/tasks/` as in-progress.
 
 ## Step 3: audit each surface
 

@@ -1,6 +1,6 @@
 ---
 name: claude-docs
-description: Updates `.claude/` planning docs to reflect decisions made during the session. Use when design or requirements changed mid-cycle, after discussing a pivot, or before shipping when the session diverged from the original plan. Do NOT use for task promotion or archiving. Edit `.claude/TASKS.md` directly for that.
+description: Updates `.claude/` planning docs to reflect decisions made during the session. Use when design or requirements changed mid-cycle, after discussing a pivot, or before shipping when the session diverged from the original plan. Do NOT use for task promotion or archiving. Edit `.claude/tasks/` directly for that.
 ---
 
 # Claude docs
@@ -14,11 +14,14 @@ description: Updates `.claude/` planning docs to reflect decisions made during t
 
 Read these in parallel from the current worktree root (`pwd`), not the main worktree root. These are tracked files and edits must commit with the branch. Skip any that do not exist:
 
-- `.claude/TASKS.md`
 - `.claude/REQUIREMENTS.md`
 - `.claude/ARCHITECTURE.md`
 - `.claude/DESIGN.md`
 - `.claude/wireframes/index.md` and every `.claude/wireframes/<surface>.md`
+
+Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
+
+- `.claude/tasks/index.md` first, then only the task files this session touched
 
 ## Step 2: identify what changed
 
@@ -33,11 +36,12 @@ Review the session for decisions that diverged from the original plan:
 
 For each doc with relevant changes, apply updates following these rules:
 
-**TASKS.md**
+**`.claude/tasks/`**
 
-- Mark completed tasks `[x]` in place within "Up next". Do not move them to Done.
-- Add newly identified tasks to "Up next".
-- Do not reorder, reformat, or touch tasks that did not change.
+- Mark completed outcomes `[x]` in place in the task's own file. Do not move or archive the file.
+- Write a newly identified task as its own file, following `.claude/standards/tasks.md` for the filename and frontmatter.
+- Do not touch task files this session did not change.
+- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it.
 
 **REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, `.claude/wireframes/<surface>.md`**
 
@@ -120,7 +124,7 @@ The base lint-staged config runs `aitk indexes regen` on every committed `*.md`,
 
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
-**Plans.** For each task block marked `[x]` in Step 3, check for a `Plan:` line directly under the title and parse the path. Never delete a plan. `CLAUDE.md` owns why a shipped plan is archived rather than removed.
+**Plans.** For each task file marked `[x]` in Step 3, check for a `Plan:` line directly under the title and parse the path. Never delete a plan. `CLAUDE.md` owns why a shipped plan is archived rather than removed.
 
 - Path inside `.claude/plans/` and the file exists: create `.claude/.tmp/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the block's `Plan:` line to the archive path, so a completed block still leads to the reasoning behind it.
 - Path already inside `.claude/.tmp/plans-archive/`: skip silently. The plan was archived by an earlier pass and the block is already correct.

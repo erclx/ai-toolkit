@@ -18,7 +18,7 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 ## Write scope
 
 - Write only inside `.claude/.tmp/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
-- One exception, at close only: leave one line in the project's task file.
+- One exception, at close only: write one task file recording what the track concluded.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
 
@@ -43,7 +43,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: behavior rules, conventions, commands
 - `.claude/REQUIREMENTS.md`: scope and non-goals
 - `.claude/ARCHITECTURE.md`: decisions already made
-- `.claude/TASKS.md`: what is already tracked, and what a prior track concluded
+- `.claude/tasks/index.md`: what is already tracked, and what a prior track concluded. Open a task file only when its entry looks related.
 
 Then read only what a live question needs. Do not read entire directories speculatively. Where a folder carries an `index.md`, read it first and load only the files it points at.
 
@@ -84,7 +84,7 @@ Every open question carries a lean, wherever it appears: inside a topic file, in
 1. Write `06-decision.md`. It states the problem once, names the goal, lists what to do, and lists what was considered and dropped.
 2. Write `07-next-session.md` self-contained, so it survives a compaction that loses the conversation.
 3. Update the file map in `README.md`.
-4. Leave one line in the project's task file recording what the track concluded, even when the conclusion is to do nothing. This is the only write permitted outside the folder.
+4. Write one task file in `.claude/tasks/` recording what the track concluded, even when the conclusion is to do nothing. Follow `.claude/standards/tasks.md` for the filename and frontmatter. This is the only write permitted outside the folder.
 
 Do not close while an open question quietly fails an outcome. Resolve it, or record it in `06-decision.md` as knowingly accepted.
 

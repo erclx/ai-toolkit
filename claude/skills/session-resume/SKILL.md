@@ -7,13 +7,15 @@ description: Resumes a previous session by reading tracked work and relevant con
 
 ## Step 1: read tracked work
 
-Resolve `.claude/plans/`, `.claude/memory/`, and `.claude/TASKS.md` at the main worktree root per Worktrees in `CLAUDE.md`.
+Resolve `.claude/plans/`, `.claude/memory/`, and `.claude/tasks/` at the main worktree root per Worktrees in `CLAUDE.md`.
 
 Read these in parallel, skipping any that do not exist:
 
-- `.claude/TASKS.md`: the backlog
+- `.claude/tasks/index.md`: the backlog, one line per task. Read this before any individual task file.
 - `.claude/plans/*.md`: execution detail for in-progress tasks
 - `.claude/memory/MEMORY.md` and any memory files relevant to the top backlog item
+
+Then read only the task files the summary needs, typically the top one. Do not read the whole folder.
 
 If all three surfaces are absent or empty, stop: `✅ No tracked work found. Start a new task.`
 
@@ -21,9 +23,9 @@ If all three surfaces are absent or empty, stop: `✅ No tracked work found. Sta
 
 Output three sections:
 
-**Up next:** one line per task in `.claude/TASKS.md` under "Up next", preserving order.
+**Up next:** one line per entry in `.claude/tasks/index.md`, preserving order.
 
-**Active plans:** one line per file in `.claude/plans/`, linking each to its task in `.claude/TASKS.md`. Say "None" if empty.
+**Active plans:** one line per file in `.claude/plans/`, linking each to its task file in `.claude/tasks/`. Say "None" if empty.
 
 **Relevant context:** two or three memory entries that inform the top backlog item. Skip if none apply.
 
@@ -31,4 +33,4 @@ Output three sections:
 
 End with one line: `Start with: <first Up next item>` and note whether it has a linked plan.
 
-Do not offer to remove entries. Completed blocks are removed from `.claude/TASKS.md` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume.
+Do not offer to remove entries. A completed task is archived out of `.claude/tasks/` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume.
