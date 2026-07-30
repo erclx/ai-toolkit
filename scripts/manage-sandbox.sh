@@ -10,6 +10,11 @@ source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
+# Without this, git falls back to a terminal prompt when no helper supplies a
+# credential, and an unauthenticated run blocks on /dev/tty instead of failing.
+# The harness must never require a TTY.
+export GIT_TERMINAL_PROMPT=0
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} aitk sandbox [cat:cmd]"
@@ -47,8 +52,10 @@ clone_anchor() {
   fi
 
   # The clone predates the sandbox repo, so the helper cannot come from its
-  # local config the way every later push does.
-  git -c credential.helper="$SANDBOX_GIT_CREDENTIAL_HELPER" clone --depth 1 "$repo_url" "$SANDBOX"
+  # local config the way every later push does. The empty value first resets any
+  # helper inherited from global config, which would otherwise be tried ahead.
+  git -c credential.helper= -c credential.helper="$SANDBOX_GIT_CREDENTIAL_HELPER" \
+    clone --depth 1 "$repo_url" "$SANDBOX"
   rm -rf "$SANDBOX/.git"
   (
     cd "$SANDBOX"

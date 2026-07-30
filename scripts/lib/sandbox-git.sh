@@ -25,8 +25,13 @@ sandbox_anchor_url() {
   printf 'https://github.com/%s/%s.git\n' "$GITHUB_ORG" "$repo_name"
 }
 
+# credential.helper is multi-valued and git concatenates it across system, global,
+# and local, trying each in order until one returns a credential. A plain set
+# leaves an operator's existing helper ahead of this one, so a stale token wins
+# and gh never runs. The empty value resets the inherited list first.
 configure_sandbox_git_credentials() {
-  git config credential.helper "$SANDBOX_GIT_CREDENTIAL_HELPER"
+  git config credential.helper ""
+  git config --add credential.helper "$SANDBOX_GIT_CREDENTIAL_HELPER"
 }
 
 resolve_sandbox_git_identity() {
