@@ -9,7 +9,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Stat
 ```plaintext
 .claude/
 ├── CLAUDE.md          ← seeded. Project context and rules, auto-loaded by Claude Code each session
-├── TASKS.md           ← seeded then gitignored. Per-worktree task tracker, local scratch only
+├── tasks/             ← seeded then gitignored. One file per task plus a generated index.md, local scratch only
 ├── REQUIREMENTS.md    ← seeded. Project goals, non-goals, MVP scope
 ├── ARCHITECTURE.md    ← seeded. Technical design decisions and open questions
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it
@@ -24,7 +24,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Stat
 
 ## Gitignore
 
-- `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`, `.claude/TASKS.md`
+- `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`, `.claude/tasks/`
 
 ## CLI
 

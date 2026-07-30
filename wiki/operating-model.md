@@ -76,7 +76,7 @@ coordination costs more than the change it was too small.
 Three tiers hold work at different altitudes.
 
 - Roadmap (`.claude/ROADMAP.md`): versions as themes, sequenced. Committed, low churn. Shape governed by `standards/bundled/roadmap.md`.
-- Tasks (`.claude/TASKS.md`): the active few pulled into the current turn. Gitignored, high churn.
+- Tasks (`.claude/tasks/`): the active few pulled into the current turn, one file each. Gitignored, high churn. Shape governed by `standards/tasks.md`.
 - Edits: a few lines, done immediately with no ceremony.
 
 Pre-MVP the roadmap is the backlog, because the scope is finite and known.

@@ -120,11 +120,12 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Tasks
 
-- `.claude/TASKS.md` is gitignored local session scratch. Edit freely. No staging or revert before commits.
-- Only create a task in `.claude/TASKS.md` for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
+- `.claude/tasks/` is gitignored local session scratch, one file per task. Edit freely. No staging or revert before commits.
+- Only create a task in `.claude/tasks/` for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
-- When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. Move the plan to `.claude/.tmp/plans-archive/` when the task ships. Never delete it.
-- Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
+- When a task needs execution detail beyond its own file, create a plan in `.claude/plans/` and link to it from the task's intro paragraph. Move the plan to `.claude/.tmp/plans-archive/` when the task ships. Never delete it.
+- Write the plan in the same session as the task file. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
+- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.
 
 ## Memory
 
@@ -142,8 +143,8 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 - Independent feature tracks can run concurrently in git worktrees. See `wiki/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
 - Implementation work runs in a linked worktree. From the main worktree, enter one with `/claude-worktree` before editing tracked files for a feature.
-- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) resolves to the main worktree root.
+- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
+- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) resolves to the main worktree root.
 
 ## Wiki
 
