@@ -54,7 +54,7 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the comment to `.claude/.tmp/pr-review/body.md`. The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice: cut editorializing, and keep every sentence load-bearing. Match this shape:
+Write the comment to `.claude/.tmp/pr-review/body-<number>.md`. Key the filename on the PR number so two sessions reviewing different pull requests never overwrite each other between the write and the post. The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice: cut editorializing, and keep every sentence load-bearing. Match this shape:
 
 ```markdown
 ## Review
@@ -82,7 +82,7 @@ Close the body with `🤖 Reviewed by Claude Code` on its own line so the review
 Before posting, scan the body for em dashes and semicolons and rewrite each, splitting into two sentences or using a comma. The standards-audit hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment.
 
 ```bash
-gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body.md
+gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>.md
 ```
 
 If there are no findings, post this body instead, under the same `## Review` heading and with the footer included: `✅ No blocking findings. Reviewed against project docs and roadmap.` followed by the footer line.
