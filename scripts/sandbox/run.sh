@@ -15,7 +15,11 @@ export GIT_TERMINAL_PROMPT=0
 
 MODEL="${AITK_SKILL_TEST_MODEL:-sonnet}"
 ALLOWED_TOOLS="${AITK_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
-MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-20}"
+# Raised from 20 on 2026-07-30. The `claude/docs` `drift` arm used 29 turns on a
+# clean run, so the old default truncated a correct session into a failure
+# indistinguishable from a reasoning miss. Arms declare their own ceiling in
+# `expect.toml`, which is where a per-arm budget belongs.
+MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-30}"
 
 # Probed on 2026-07-30: `acceptEdits` denies writes under `.claude/`, and neither
 # an `--allowedTools` glob nor a `permissions.allow` rule in settings.json lifts
@@ -53,6 +57,40 @@ writes_between() {
     awk '{ $1=""; sub(/^ /, ""); print }' | sort -u
 }
 
+# A verdict printed to a terminal is gone once the terminal scrolls. Re-scoring
+# later with `aitk sandbox check` recovers the tree-based assertions from the
+# surviving `.sandbox/` state, but `max_turns` reads the envelope and
+# `write_scope` reads the writes list, and both were deleted with the temp files.
+# The record carries both so a run can be scored again after the fact.
+#
+# Writes to stderr and to disk only. `docs/agents.md` makes stdout the data
+# contract, so a failure here warns and leaves the verdict to print regardless.
+record_run() {
+  local target="$1"
+  local scenario="$2"
+  local merged="$3"
+  local writes="$4"
+
+  local runs_dir record stamp
+  runs_dir="$PROJECT_ROOT/.claude/.tmp/sandbox-runs"
+  stamp="$(date +%Y%m%dT%H%M%S)"
+  record="$runs_dir/$(printf '%s' "${target}${scenario:+-$scenario}" | tr ':' '-')-$stamp.json"
+
+  if ! mkdir -p "$runs_dir" 2>/dev/null; then
+    log_warn "Could not create $runs_dir. The run was not recorded."
+    return 0
+  fi
+
+  if printf '%s' "$merged" |
+    jq --argjson writes "$(jq -R -s 'split("\n") | map(select(length > 0))' "$writes")" \
+      '. + {writes: $writes}' >"$record" 2>/dev/null; then
+    log_info "Run recorded at ${record#"$PROJECT_ROOT"/}"
+  else
+    rm -f "$record"
+    log_warn "Could not record the run at $record."
+  fi
+}
+
 show_help() {
   echo -e "${GREY}┌${NC}"
   echo -e "${GREY}├${NC} ${WHITE}Usage:${NC} run.sh <cat:cmd> <prompt> [scenario]"
@@ -65,7 +103,7 @@ show_help() {
   echo -e "${GREY}│${NC}  ${WHITE}Env overrides:${NC}"
   echo -e "${GREY}│${NC}    AITK_SKILL_TEST_MODEL      ${GREY}# default sonnet${NC}"
   echo -e "${GREY}│${NC}    AITK_SKILL_TEST_TOOLS      ${GREY}# default Bash,Read,Glob,Grep,Edit,Write${NC}"
-  echo -e "${GREY}│${NC}    AITK_SKILL_TEST_MAX_TURNS  ${GREY}# default 20${NC}"
+  echo -e "${GREY}│${NC}    AITK_SKILL_TEST_MAX_TURNS  ${GREY}# default 30${NC}"
   echo -e "${GREY}│${NC}    AITK_SKILL_TEST_PERMISSION_MODE ${GREY}# default bypassPermissions${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
@@ -136,21 +174,26 @@ main() {
   verdict_json="$(bun "$PROJECT_ROOT/src/cli.ts" sandbox check "$target" "$scenario" \
     --envelope "$envelope" --writes "$writes" --json)" || verdict_code=$?
 
-  rm -f "$before" "$after" "$envelope" "$writes"
-
-  trap - EXIT
-  close_timeline
-
   # The envelope stays on stdout so existing readers keep working, with the
   # verdict merged in. An agent reads the verdict here rather than parsing the
   # framed stderr, per the stream contract in `docs/agents.md`. A run that
   # returned output that does not parse still emits its verdict rather than both
   # to a jq error, since a silent stdout would read as a run that never happened.
-  if ! printf '%s' "$out" | jq --argjson verdict "${verdict_json:-null}" '. + {verdict: $verdict}' 2>/dev/null; then
+  local merged
+  if ! merged="$(printf '%s' "$out" |
+    jq --argjson verdict "${verdict_json:-null}" '. + {verdict: $verdict}' 2>/dev/null)"; then
     log_warn "Envelope was not valid JSON. Emitting the verdict alone."
-    printf '{"is_error":true,"verdict":%s}\n' "${verdict_json:-null}"
+    merged="$(printf '{"is_error":true,"verdict":%s}' "${verdict_json:-null}")"
     verdict_code=1
   fi
+
+  record_run "$target" "$scenario" "$merged" "$writes"
+  rm -f "$before" "$after" "$envelope" "$writes"
+
+  trap - EXIT
+  close_timeline
+
+  printf '%s\n' "$merged"
 
   return "$verdict_code"
 }
