@@ -106,9 +106,11 @@ The envelope alone never decided anything. Two arms on 2026-07-29 returned `erro
 
 Every run also lands at `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `aitk sandbox check` recovers the tree-based assertions from surviving `.sandbox/` state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
 
-The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway.
+The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. Nothing prunes the folder, which makes it a scratch-lifecycle question rather than an oversight. It belongs with the other scratch catalogs whenever that track settles when a folder's contents expire.
 
-The default turn cap is 30. It was 20 until 2026-07-30, when a clean `claude/docs` `drift` run took 29 turns and would have truncated. A truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, which is the argument for setting the global default above observed cost and leaving per-arm ceilings to `expect.toml`.
+The default turn cap is 30. It was 20 until 2026-07-30, when a clean `claude/docs` `drift` run took 29 turns and would have truncated. A truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, so the global default sits above observed cost.
+
+`AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates, and if its declared ceiling sits above the cap it passes that one assertion while failing the rest. Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
 
 ## Expectations
 

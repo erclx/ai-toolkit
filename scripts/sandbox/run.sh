@@ -17,8 +17,13 @@ MODEL="${AITK_SKILL_TEST_MODEL:-sonnet}"
 ALLOWED_TOOLS="${AITK_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
 # Raised from 20 on 2026-07-30. The `claude/docs` `drift` arm used 29 turns on a
 # clean run, so the old default truncated a correct session into a failure
-# indistinguishable from a reasoning miss. Arms declare their own ceiling in
-# `expect.toml`, which is where a per-arm budget belongs.
+# indistinguishable from a reasoning miss.
+#
+# This is the only budget. `max_turns` in an arm's `expect.toml` is a ceiling
+# asserted after the run, not a cap enforced during it, and nothing here reads
+# that file. An arm needing more than this truncates whatever it declares, and a
+# declared ceiling above the cap then passes while every other assertion fails.
+# Raise the budget here, or per run with the variable below.
 MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-30}"
 
 # Probed on 2026-07-30: `acceptEdits` denies writes under `.claude/`, and neither
