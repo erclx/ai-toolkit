@@ -1,6 +1,6 @@
 ---
 name: claude-docs
-description: Updates `.claude/` planning docs to reflect decisions made during the session, marks outcomes the diff shipped `[x]`, and archives the plans those tasks cite. Use when design or requirements changed mid-cycle, after discussing a pivot, or before shipping. Do NOT use to promote a task file or move it out of the live folder. Edit `.claude/tasks/` directly for that.
+description: Updates `.claude/` planning docs to reflect decisions made during the session, marks outcomes the diff shipped `[x]`, and archives the plans those tasks cite. Use when design or requirements changed mid-cycle, after discussing a pivot, or before shipping. Do NOT use to create a task file or move one out of the live folder. That is `claude-tasks`.
 ---
 
 # Claude docs
