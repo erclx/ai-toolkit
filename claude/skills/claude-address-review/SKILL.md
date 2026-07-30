@@ -58,14 +58,17 @@ skill owns the reply. Do not reimplement that flow here. For in-place fixes to
 files the PR body already covers, `git-followup` leaves the body untouched and
 the reply comment carries the fix log.
 
-Then write a summary reply to `.claude/.tmp/address-review/reply.md` mapping each
-finding to what changed, or to a one-line reason when it is a conscious-accept
-rather than a defect. Note any `.claude/` docs refreshed as a result of the
+Then write a summary reply to `.claude/.tmp/address-review/reply-<number>.md`
+mapping each finding to what changed, or to a one-line reason when it is a
+conscious-accept rather than a defect. Key the filename on the PR number so two
+sessions addressing different pull requests never overwrite each other between
+the write and the post. Note any `.claude/` docs refreshed as a result of the
 fixes. The reply is a rendered-for-human GitHub surface, so follow
 `.claude/standards/prose.md` for voice and keep each mapping to a line or two.
-Structure the body with no heading: open with a one-line summary sentence, then
-one bullet per finding, each opening with the bolded finding identifier. Do not
-add a section header such as `## Review response`.
+Open the body with the `## Review response` heading so it anchors as a section
+distinct from human threads and stays subordinate to the `## Review` heading the
+review itself carries. Follow it with a one-line summary sentence, then one
+bullet per finding, each opening with the bolded finding identifier.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
 reads as an independent machine pass, not a human sign-off.
 
@@ -75,7 +78,7 @@ splitting into two sentences or using a comma. The standards-audit hook skips
 the PR:
 
 ```bash
-gh pr comment <number> --body-file .claude/.tmp/address-review/reply.md
+gh pr comment <number> --body-file .claude/.tmp/address-review/reply-<number>.md
 ```
 
 ## Step 6: confirm resolution
