@@ -34,16 +34,6 @@ Owns the local development loop for the sandbox project.
 | `bun run check`     | Format, lint, and test in one pass. Exits when done.           |
 EOF
 
-    cat <<'EOF' >.claude/ARCHITECTURE.md
-# Architecture
-
-## Modes
-
-The app runs against fixtures by default. Live-API mode swaps the fixture
-adapter for the upstream client and is what "with the live API" or "everything
-enabled" refers to. `serve:api` selects it. `serve` does not.
-EOF
-
     cat <<'EOF' >package.json
 {
   "name": "sandbox-project-commands",
@@ -61,9 +51,9 @@ EOF
     git add . && git commit -m "chore(sandbox): project with a documented dev loop" --no-verify -q
 
     log_step "Scenario ready: project-commands happy path"
-    log_info "Context: development.md documents serve, serve:api, and check. ARCHITECTURE.md defines live-API mode."
+    log_info "Context: development.md documents serve, serve:api, and check, each with its purpose"
     log_info "Action:  /toolkit:project-commands start the app with the live API"
-    log_info "Expect:  resolves serve:api over serve, backgrounds it, reports port 4174, then stops"
+    log_info "Expect:  resolves serve:api over serve off the purpose column, backgrounds it, reports port 4174, then stops"
     log_info "Watch:   any log reading, browser use, or second check after the first is a failure"
     log_info "Note:    leaves a listener on 4174. Stop it when done."
     ;;

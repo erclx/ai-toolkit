@@ -189,7 +189,7 @@ Plan mode is a permission mode that restricts Claude to read-only exploration. `
 | Aspect   | `run` (built-in)                                             | `project-commands` skill                                                                                       |
 | -------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
 | What     | Launches the app and drives it to confirm a change works     | Runs a command the project documents, then stops                                                               |
-| Sources  | Falls back through built-in patterns per project type        | Reads `.claude/context/development.md`, plus `ARCHITECTURE.md` for a named mode, with no fallback beyond those |
+| Sources  | Falls back through built-in patterns per project type        | Reads `.claude/context/development.md` and nothing else       |
 | Ends at  | A verified app: logs read, browser driven, screenshots taken | The launch: the port or exit status, and nothing after it                                                      |
 | Best for | Confirming a change behaves in the real app                  | Starting something to use, or running a check                                                                  |
 

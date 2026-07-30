@@ -11,22 +11,17 @@ The value is the stop. A launch that continues into log inspection, browser chec
 
 ## Guards
 
-- Check that `.claude/context/development.md` exists before anything else. If it does not, stop: `❌ No .claude/context/development.md. This project has no documented dev loop.` Do not fall back to `package.json`, a `Makefile`, or a README. A guess is worse than a stop, because the user cannot see it was a guess.
-- On a toolkit-scaffolded project the entry is installed by base tooling and extended per stack, so its absence means either a project that never ran `aitk init` or one that deleted the entry. Say which file is missing and let the user decide, rather than reconstructing it.
+- Check that `.claude/context/development.md` exists before anything else. If it does not, stop: `❌ No .claude/context/development.md. This project has no documented dev loop.` Name the missing file and let the user decide. Do not read another file to reconstruct it, because a guess is worse than a stop when the user cannot see it was a guess.
 - If the entry documents no command matching the request, stop and list what it does document. Do not infer a command from a filename or a framework.
 - If the resolved command has an effect that outlives the process and stopping it does not undo, print it for the user to run and stop. Deploying, publishing, releasing, migrating, and resetting are the common shapes, and the test is the effect rather than the name. A script called `infra:apply` or `promote` qualifies.
 
 ## Step 1: read the entry
 
-Read `.claude/context/development.md` from the project root. Read the whole entry rather than a named section, since a ship-time docs pass rewrites these files and a required heading would break silently.
-
-Read `.claude/ARCHITECTURE.md` as well when the request names a mode rather than a command ("everything enabled", "with real models", "against staging"). Modes are described there, not in the command table.
-
-Those two files and no others. A third file is a discovery chain, and this skill has none.
+Read `.claude/context/development.md` from the project root, the whole entry rather than a named section. That file and no others. A second file is a discovery chain, and this skill has none.
 
 ## Step 2: resolve the command
 
-Match the request against what the entry documents. Prefer the entry's own wording over a guess at a conventional name, since a project that documents `dev:real` alongside `dev` means the distinction.
+Match the request against what the entry documents, reading the stated purpose and not only the command name. A project that documents two similar commands separately means the distinction, and the purpose column is where it says which is which.
 
 State the resolved command before running it. One line, no rationale.
 
