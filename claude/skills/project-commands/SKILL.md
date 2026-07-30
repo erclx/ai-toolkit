@@ -11,7 +11,8 @@ The value is the stop. A launch that continues into log inspection, browser chec
 
 ## Guards
 
-- If `.claude/context/development.md` does not exist, stop: `❌ No .claude/context/development.md. This project has no documented dev loop.` Do not fall back to `package.json`, a `Makefile`, or a README. A guess is worse than a stop, because the user cannot see it was a guess.
+- Check that `.claude/context/development.md` exists before anything else. If it does not, stop: `❌ No .claude/context/development.md. This project has no documented dev loop.` Do not fall back to `package.json`, a `Makefile`, or a README. A guess is worse than a stop, because the user cannot see it was a guess.
+- On a toolkit-scaffolded project the entry is installed by base tooling and extended per stack, so its absence means either a project that never ran `aitk init` or one that deleted the entry. Say which file is missing and let the user decide, rather than reconstructing it.
 - If the entry documents no command matching the request, stop and list what it does document. Do not infer a command from a filename or a framework.
 - If the resolved command deploys, publishes, releases, migrates, or resets, print it for the user to run and stop. These are not made safe by confirming them.
 

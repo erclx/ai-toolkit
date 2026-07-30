@@ -40,6 +40,6 @@ For prescriptive rules on entry shape (frontmatter, encouraged sections, what go
 
 New entries are not created automatically. Auto-creation risks padding the catalog with low-signal entries that get refreshed every PR. Create a new entry by hand following `.claude/standards/context.md`, then `claude-docs` keeps it current on subsequent ships.
 
-The `development` entry is the one exception, seeded by `aitk claude init` as an empty template. It is exempt because it is a fixed skeleton rather than content generated from a diff, so it cannot pad the catalog with anything a session did not write itself. Two surfaces already assume it exists: the seeded `CLAUDE.md` has pointed at it under `## Commands` since it was written, and `project-commands` reads its `## Scripts` table as its only input. Seeding it is what makes both resolve on day one. Do not extend the exception to a second entry without the same pair of standing consumers.
+The rule governs `claude-docs` and the Claude seeds. It does not reach the tooling stacks, which ship `development.md` and `ci.md` as user-owned seeds under `tooling/base/seeds/.claude/context/`. Those arrive filled rather than generated, so they do not pad the catalog, and `tooling/base/reference.md` owns that decision. Check both seed sources before concluding an entry is absent from a scaffolded project.
 
 This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
