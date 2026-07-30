@@ -13,7 +13,7 @@ The bail on a session that changed nothing lives at the end of Step 2, because i
 
 ## Diff baseline
 
-Steps 2, 4, and 7 read the same diff. Resolve the base ref once and reuse it:
+Steps 2, 4, and 7 share one diff on the usable path. An unusable baseline splits them, per the rule below. Resolve the base ref once and reuse it:
 
 ```bash
 git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
@@ -28,11 +28,11 @@ The baseline is unusable in two cases:
 - No merge base resolves against either ref.
 - The base came from local `main` and equals HEAD. Nothing is pushed to compare against, so a narrow read reports no changes rather than admitting it cannot see them.
 
-An unusable baseline splits the reading step from the writing steps.
+An unusable baseline costs only the committed half. `git diff <base> HEAD` is empty by definition once the base equals HEAD, while `git diff HEAD` and `git ls-files --others --exclude-standard` still report uncommitted and untracked work at correct scope.
 
-**Step 2 reads the commits directly.** Both `git diff <base> HEAD` and `git diff HEAD` are empty exactly when this fires, so a widened file list supplies names and no content, and Step 2 decides on behavior rather than names. Read `git log -p -1`, widening to `git log -p -<n>` when the session spans several commits, and read the candidate task files against the working tree. A fresh `git init` on `main` with no remote is the ordinary shape of a scaffolded project, so this path carries the evidence rather than covering an edge case.
+**Step 2 recovers the committed half.** Read `git log -p -1`, widening to `git log -p -<n>` when the session spans several commits, and read the candidate task files against the working tree. That yields names and content both, which is what lets Step 2 decide on behavior rather than on filenames. A fresh `git init` on `main` with no remote is the ordinary shape of a scaffolded project, so this path carries the evidence rather than covering an edge case.
 
-**Steps 4 and 7 skip.** Report `⚠ No usable diff baseline. Skipped the wireframe sweep and context refresh.` Both steps write, and treating the whole tree as changed would stub a wireframe for every uncovered surface in the repository and rewrite every context entry that tree touches.
+**Steps 4 and 7 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, reporting `⚠ No diff to scope against. Skipped the wireframe sweep and context refresh.` Never substitute the whole tree for a missing baseline. Both steps write, so a set that is too wide stubs a wireframe for every uncovered surface in the repository and rewrites every context entry that tree touches.
 
 Widening what a step reads is safe. Widening what a step writes is not.
 
@@ -91,7 +91,7 @@ Write each updated file immediately. Claude Code's tool permission dialog is the
 
 ## Step 4: wireframe coverage sweep
 
-Skip this step silently when `.claude/wireframes/` does not exist or has no surface files. Skip it with the reported warning when the baseline is unusable, per the rule above.
+Skip this step silently when `.claude/wireframes/` does not exist or has no surface files. When the baseline is unusable, scope it to the working tree and untracked files, and skip it with the reported warning only when that set is empty, per the rule above.
 
 Reuse the diff from the baseline above and filter for UI-affecting paths. UI-affecting paths are framework-dependent. Default heuristic: any file under a `components/`, `features/`, `pages/`, `app/`, `routes/`, or `screens/` folder, plus any `*.tsx`, `*.jsx`, `*.vue`, or `*.svelte` file anywhere in the diff.
 
@@ -143,7 +143,7 @@ Do not edit `CLAUDE.md` inline. Every `CLAUDE.md` change goes through the show-d
 
 ## Step 7: refresh context entries
 
-Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries. Skip it with the reported warning when the baseline is unusable, per the rule above.
+Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries. When the baseline is unusable, scope it to the working tree and untracked files, and skip it with the reported warning only when that set is empty, per the rule above.
 
 Reuse the diff from the baseline above, names and content both. For each existing `.claude/context/<domain>.md`:
 
