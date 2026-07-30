@@ -1,8 +1,9 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { $ } from 'bun'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { listIndexes } from '@/indexes/walk'
+import { isIgnored, listIndexes } from '@/indexes/walk'
 
 let root: string
 
@@ -58,5 +59,32 @@ describe('listIndexes', () => {
       join(root, 'alpha', 'index.md'),
       join(root, 'zebra', 'index.md'),
     ])
+  })
+})
+
+describe('isIgnored', () => {
+  async function initRepo(ignoreBody: string): Promise<void> {
+    await $`git -C ${root} init --quiet`.quiet()
+    writeFileSync(join(root, '.gitignore'), ignoreBody)
+  }
+
+  it('should report an ignored folder as ignored', async () => {
+    await initRepo('board/\n')
+    seedIndex('board')
+
+    expect(await isIgnored(root, join(root, 'board', 'index.md'))).toBe(true)
+  })
+
+  it('should report a tracked folder as not ignored', async () => {
+    await initRepo('board/\n')
+    seedIndex('docs')
+
+    expect(await isIgnored(root, join(root, 'docs', 'index.md'))).toBe(false)
+  })
+
+  it('should report nothing as ignored outside a git repository', async () => {
+    seedIndex('board')
+
+    expect(await isIgnored(root, join(root, 'board', 'index.md'))).toBe(false)
   })
 })
