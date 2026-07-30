@@ -52,13 +52,16 @@ Read the task file. Every outcome should be `[x]`. When one is unchecked, name i
 
 ### Step 2: count the citations on the plan
 
-Parse the `Plan:` line. Before moving anything, scan every other `.claude/tasks/*.md` file for a `Plan:` line naming the same path, excluding the task being archived. A plan can serve more than one task, and archiving on the first task to close strands every other pointer at a path that has moved. `.claude/plans/` is gitignored, so the retarget would be the only record.
+Parse the `Plan:` line and route on where it points.
 
-- Path inside `.claude/plans/`, the file exists, and no other task cites it: leave the plan to `claude-docs`, which owns the plans sweep. Report that it is now unreferenced.
-- Path inside `.claude/plans/` and at least one other task cites it: leave it and report the shared citation.
-- Path already inside `.claude/.tmp/plans-archive/`: nothing to do.
+- No `Plan:` line, or the path is already inside `.claude/.tmp/plans-archive/`: continue to Step 3.
+- Path still inside `.claude/plans/`: stop. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
 
-Do not move a plan from this skill. `claude-docs` Step 8 owns that move and states the same citation rule. Two skills relocating the same file drift into relocating it differently.
+The guard enforces an ordering rather than a preference. `claude-docs` Step 8 sweeps plans by scanning `.claude/tasks/*.md`, so it can only reach a task that is still in the folder. Archiving the task first puts it beyond that scan permanently, leaving the plan in `.claude/plans/` with no live task citing it and an archived task pointing at a path nothing will ever retarget. Both folders are gitignored, so nothing recovers the pointer afterward.
+
+Stopping also covers the plan another live task still cites, since `claude-docs` leaves that plan in place until the last citation closes. The guard fires on the path alone, so no citation count is needed here.
+
+Do not move a plan from this skill. `claude-docs` Step 8 owns that move and the last-live-citation rule that governs it. Two skills relocating the same file drift into relocating it differently.
 
 ### Step 3: move the task file
 
