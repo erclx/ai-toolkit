@@ -32,7 +32,9 @@ An unusable baseline costs only the committed half. `git diff <base> HEAD` is em
 
 **Step 2 recovers the committed half.** Read `git log -p -1`, widening to `git log -p -<n>` when the session spans several commits, and read the candidate task files against the working tree. That yields names and content both, which is what lets Step 2 decide on behavior rather than on filenames. A fresh `git init` on `main` with no remote is the ordinary shape of a scaffolded project, so this path carries the evidence rather than covering an edge case.
 
-**Steps 4 and 7 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, reporting `⚠ No diff to scope against. Skipped the wireframe sweep and context refresh.` Never substitute the whole tree for a missing baseline. Both steps write, so a set that is too wide stubs a wireframe for every uncovered surface in the repository and rewrites every context entry that tree touches.
+**Steps 4 and 7 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, each reporting the warning its own step names.
+
+Never substitute the whole tree for a missing baseline, and do not reuse Step 2's commit read in these two for consistency. On a fresh `git init` project the last commit is the scaffold commit, so `git log -p -1` is the whole tree by another route. Step 2 tolerates that because it only reads, and it matches conservatively against outcomes already on the board. These two write, so the same set stubs a wireframe for every uncovered surface in the repository and rewrites every context entry that tree touches.
 
 Widening what a step reads is safe. Widening what a step writes is not.
 
@@ -91,7 +93,7 @@ Write each updated file immediately. Claude Code's tool permission dialog is the
 
 ## Step 4: wireframe coverage sweep
 
-Skip this step silently when `.claude/wireframes/` does not exist or has no surface files. When the baseline is unusable, scope it to the working tree and untracked files, and skip it with the reported warning only when that set is empty, per the rule above.
+Skip this step silently when `.claude/wireframes/` does not exist or has no surface files. When the baseline is unusable, scope it to the working tree and untracked files, and skip it only when that set is empty, reporting `⚠ No diff to scope against. Skipped the wireframe sweep.`
 
 Reuse the diff from the baseline above and filter for UI-affecting paths. UI-affecting paths are framework-dependent. Default heuristic: any file under a `components/`, `features/`, `pages/`, `app/`, `routes/`, or `screens/` folder, plus any `*.tsx`, `*.jsx`, `*.vue`, or `*.svelte` file anywhere in the diff.
 
@@ -143,7 +145,7 @@ Do not edit `CLAUDE.md` inline. Every `CLAUDE.md` change goes through the show-d
 
 ## Step 7: refresh context entries
 
-Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries. When the baseline is unusable, scope it to the working tree and untracked files, and skip it with the reported warning only when that set is empty, per the rule above.
+Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries. When the baseline is unusable, scope it to the working tree and untracked files, and skip it only when that set is empty, reporting `⚠ No diff to scope against. Skipped the context refresh.`
 
 Reuse the diff from the baseline above, names and content both. For each existing `.claude/context/<domain>.md`:
 
