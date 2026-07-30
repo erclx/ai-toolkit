@@ -23,20 +23,24 @@ Read `.claude/context/development.md` from the project root, the whole entry rat
 
 Match the request against what the entry documents, reading the stated purpose and not only the command name. A project that documents two similar commands separately means the distinction, and the purpose column is where it says which is which.
 
+When the request maps to more than one documented command, resolve all of them. A project that starts as a frontend and a backend has two rows in the table and one request covering both, and running one of the two reports success on half an app.
+
 State the resolved command before running it. One line, no rationale.
 
 ## Step 3: run it
 
-Run the command from the project root. A command that terminates runs in the foreground. A command that stays up runs in the background, by setting the Bash tool's `run_in_background` parameter on the call. Nothing backgrounds a process on its own, and a foreground dev server blocks until the tool timeout kills it, which reports as a command that never came up and leaves nothing running.
+Run each resolved command as the entry writes it, from the project root. When a command only works from a subdirectory, the entry has to say so, since the table gives the skill nothing else to go on.
+
+A command that terminates runs in the foreground. A command that stays up runs in the background, by setting the Bash tool's `run_in_background` parameter on the call. Nothing backgrounds a process on its own, and a foreground dev server blocks until the tool timeout kills it, which reports as a command that never came up and leaves nothing running.
 
 Decide from what the entry says the command does, not from its name. When the entry does not say, treat a server, watcher, or preview as staying up.
 
-- Report the port or URL the command prints, and the log location when one exists
+- Report the port or URL each command prints, and the log location when one exists
 - Confirm a service came up with one check against what it reports listening on
 - Leave a process the skill did not start alone. Never stop, restart, or reconfigure one.
 - Do not tear down what the skill started. A session that starts a server and stops it has not done what was asked.
 
-If the command fails or never comes up, report the failure and the last output. Do not retry with a different command.
+If a command fails or never comes up, report the failure and the last output. Do not retry with a different command, and do not abandon the others.
 
 ## Step 4: stop
 
@@ -56,6 +60,8 @@ Those belong to a verification request, which is a different ask. When one of th
 
 <what it reported: port, URL, or exit status>
 ```
+
+One block per command when the request resolved to more than one.
 
 For a request with no command to run, list what the entry documents instead:
 

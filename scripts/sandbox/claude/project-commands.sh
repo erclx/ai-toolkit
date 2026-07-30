@@ -27,11 +27,13 @@ Owns the local development loop for the sandbox project.
 
 ## Scripts
 
-| Command             | Purpose                                                        |
-| ------------------- | -------------------------------------------------------------- |
-| `bun run serve`     | Start the app on port 4173. Stays up until stopped.            |
-| `bun run serve:api` | Start the app on port 4174 in live-API mode. Stays up.         |
-| `bun run check`     | Format, lint, and test in one pass. Exits when done.           |
+Starting the app means running both `web` and `api`. Neither serves the other.
+
+| Command          | Purpose                                                    |
+| ---------------- | ---------------------------------------------------------- |
+| `bun run web`    | Start the frontend on port 4173. Stays up until stopped.   |
+| `bun run api`    | Start the backend on port 4174. Stays up until stopped.    |
+| `bun run check`  | Format, lint, and test in one pass. Exits when done.       |
 EOF
 
     cat <<'EOF' >package.json
@@ -41,21 +43,22 @@ EOF
   "private": true,
   "type": "module",
   "scripts": {
-    "serve": "bun --eval 'Bun.serve({ port: 4173, fetch: () => new Response(\"fixtures\") }); console.log(\"listening on http://localhost:4173\")'",
-    "serve:api": "bun --eval 'Bun.serve({ port: 4174, fetch: () => new Response(\"live\") }); console.log(\"listening on http://localhost:4174 with live API\")'",
+    "web": "bun --eval 'Bun.serve({ port: 4173, fetch: () => new Response(\"web\") }); console.log(\"listening on http://localhost:4173\")'",
+    "api": "bun --eval 'Bun.serve({ port: 4174, fetch: () => new Response(\"api\") }); console.log(\"listening on http://localhost:4174\")'",
     "check": "echo check ok"
   }
 }
 EOF
 
-    git add . && git commit -m "chore(sandbox): project with a documented dev loop" --no-verify -q
+    git add . && git commit -m "chore(sandbox): two-part project with a documented dev loop" --no-verify -q
 
     log_step "Scenario ready: project-commands happy path"
-    log_info "Context: development.md documents serve, serve:api, and check, each with its purpose"
-    log_info "Action:  /toolkit:project-commands start the app with the live API"
-    log_info "Expect:  resolves serve:api over serve off the purpose column, backgrounds it, reports port 4174, then stops"
-    log_info "Watch:   any log reading, browser use, or second check after the first is a failure"
-    log_info "Note:    leaves a listener on 4174. Stop it when done."
+    log_info "Context: development.md documents web, api, and check. Starting the app means both web and api."
+    log_info "Action:  /toolkit:project-commands start the app"
+    log_info "Expect:  resolves both web and api, backgrounds each, reports 4173 and 4174, then stops"
+    log_info "Watch:   running only one of the two is the failure this arm exists for"
+    log_info "Watch:   any log reading, browser use, or second check after the first is also a failure"
+    log_info "Note:    leaves listeners on 4173 and 4174. Stop them when done."
     ;;
   "missing")
     cat <<'EOF' >package.json
