@@ -70,7 +70,7 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 `aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next. A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `toolkit:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `toolkit:migration-standards` handles.
 
-That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes recording the toolkit commit and a hash per installed file. A project that has never synced under a toolkit new enough to write one reports every difference as `drifted`, the unattributed verdict. Running any sync stamps it.
+That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes recording a hash per installed file. Each domain holds its own toolkit commit, so syncing governance today does not move the revision standards measures against, and each domain reports the upstream commits touching its own source path. A project that has never synced under a toolkit new enough to write a stamp reports every difference as `drifted`, the unattributed verdict. Running any sync stamps that domain, and the report names the ones still unstamped.
 
 Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code.
 

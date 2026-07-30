@@ -147,6 +147,12 @@ files are excluded from that exit code, since a project-authored rule never
 converges. Attribution needs `.claude/aitk.json`, which every install and sync
 writes. Without it, every difference reports as `drifted`.
 
+Each domain carries its own toolkit anchor in that file, so syncing one domain
+never advances the revision another measures from, and each reports the upstream
+commits touching its own source path. The `covers` field names the domains a
+target has actually stamped, so a domain that was never stamped is legible
+rather than reading as a clean one.
+
 `aitk init` installs up to six core domains and reports each one independently. A
 domain that fails does not abort the run, so the command finishes the rest and
 exits 1 naming the failures. Passing any flag skips the confirmation prompt,

@@ -7,17 +7,22 @@ import {
   readStamp,
   STAMP_DOMAINS,
   type Stamp,
+  stampedCommit,
   type StampDomain,
 } from '@/sync/stamp'
 import { createStandardsAdapter } from '@/standards/adapter'
 import { isDirectory } from '@/target'
 
 /**
- * Toolkit paths whose commits can change what a target holds. `claude/skills/`
+ * The toolkit path whose commits change what each domain holds. `claude/skills/`
  * is deliberately absent: skills load live from the plugin directory, so they
  * never go stale and belong in the read-only section instead.
  */
-const SYNCED_SOURCES = ['standards/', 'governance/rules/', 'snippets/']
+const SYNCED_SOURCES: Record<StampDomain, string> = {
+  standards: 'standards/',
+  snippets: 'snippets/',
+  governance: 'governance/rules/',
+}
 
 const ADAPTERS: Record<StampDomain, (root: string) => SyncAdapter> = {
   standards: createStandardsAdapter,
@@ -43,8 +48,12 @@ export interface StateCounts {
 export interface DomainReport {
   readonly domain: StampDomain
   readonly stamped: boolean
+  /** This domain's own anchor, not the target's most recent sync. */
+  readonly commit?: string
+  readonly syncedAt?: string
   readonly counts: StateCounts
   readonly entries: readonly ScanEntry[]
+  readonly upstream: readonly UpstreamCommit[]
 }
 
 export interface UpstreamCommit {
@@ -53,11 +62,8 @@ export interface UpstreamCommit {
 }
 
 export interface CheckReport {
-  readonly commit?: string
-  readonly syncedAt?: string
   readonly covers: readonly StampDomain[]
   readonly domains: readonly DomainReport[]
-  readonly upstream: readonly UpstreamCommit[]
   readonly newSkills: readonly string[]
 }
 
@@ -94,58 +100,55 @@ export function hasDrift(report: CheckReport): boolean {
   )
 }
 
-export function scanDomains(
-  toolkitRoot: string,
-  target: string,
-  stamp: Stamp | undefined,
-): DomainReport[] {
-  return installedStampDomains(target).map((domain) => {
-    const plan = planSync(ADAPTERS[domain](toolkitRoot), target)
-
-    return {
-      domain,
-      stamped: stamp?.domains[domain] !== undefined,
-      counts: countStates(plan.entries),
-      entries: plan.entries,
-    }
-  })
-}
-
 /**
- * Bounds the upstream read by the stamped revision, so the range is exactly
- * what has landed since the last sync and never the whole log. An unstamped
- * target skips it rather than guessing a window.
+ * Bounds each domain's upstream read by that domain's own anchor and its own
+ * source path. A shared anchor would let a gov sync advance the revision
+ * standards measures from, silently dropping a standards change out of the read.
  */
 export async function buildCheckReport(
   toolkitRoot: string,
   target: string,
 ): Promise<CheckReport> {
   const stamp = readStamp(target)
-  const domains = scanDomains(toolkitRoot, target, stamp)
-  const since = stamp?.commit
 
-  if (since === undefined) {
-    return {
-      syncedAt: stamp?.syncedAt,
-      covers: stamp?.covers ?? [],
-      domains,
-      upstream: [],
-      newSkills: [],
-    }
-  }
+  const domains = await Promise.all(
+    installedStampDomains(target).map((domain) =>
+      buildDomainReport(toolkitRoot, target, stamp, domain),
+    ),
+  )
 
-  const [upstream, newSkills] = await Promise.all([
-    readUpstream(toolkitRoot, since),
-    readNewSkills(toolkitRoot, since),
-  ])
+  const anchors = domains
+    .map((domain) => domain.commit)
+    .filter((commit): commit is string => commit !== undefined)
 
   return {
-    commit: since,
-    syncedAt: stamp?.syncedAt,
     covers: stamp?.covers ?? [],
     domains,
-    upstream,
-    newSkills,
+    newSkills: await readNewSkills(toolkitRoot, anchors),
+  }
+}
+
+async function buildDomainReport(
+  toolkitRoot: string,
+  target: string,
+  stamp: Stamp | undefined,
+  domain: StampDomain,
+): Promise<DomainReport> {
+  const plan = planSync(ADAPTERS[domain](toolkitRoot), target)
+  const record = stamp?.domains[domain]
+  const since = stampedCommit(stamp, domain)
+
+  return {
+    domain,
+    stamped: record !== undefined,
+    commit: since,
+    syncedAt: record?.syncedAt,
+    counts: countStates(plan.entries),
+    entries: plan.entries,
+    upstream:
+      since === undefined
+        ? []
+        : await readUpstream(toolkitRoot, since, SYNCED_SOURCES[domain]),
   }
 }
 
@@ -183,6 +186,7 @@ export function parseNewSkills(paths: string): string[] {
 async function readUpstream(
   root: string,
   since: string,
+  sourcePath: string,
 ): Promise<UpstreamCommit[]> {
   const log = await read(root, [
     'log',
@@ -190,13 +194,24 @@ async function readUpstream(
     '--no-decorate',
     `${since}..HEAD`,
     '--',
-    ...SYNCED_SOURCES,
+    sourcePath,
   ])
 
   return parseUpstream(log)
 }
 
-async function readNewSkills(root: string, since: string): Promise<string[]> {
+/**
+ * Skills are not domain-scoped, so the read runs from the oldest anchor across
+ * domains. Over-reporting a skill costs a line, while measuring from the newest
+ * would hide one that arrived before the most recent domain sync.
+ */
+async function readNewSkills(
+  root: string,
+  anchors: readonly string[],
+): Promise<string[]> {
+  const since = await oldestAnchor(root, anchors)
+  if (since === undefined) return []
+
   const paths = await read(root, [
     'diff',
     '--name-only',
@@ -207,6 +222,34 @@ async function readNewSkills(root: string, since: string): Promise<string[]> {
   ])
 
   return parseNewSkills(paths)
+}
+
+async function oldestAnchor(
+  root: string,
+  anchors: readonly string[],
+): Promise<string | undefined> {
+  const unique = [...new Set(anchors)]
+  let oldest = unique[0]
+
+  for (const candidate of unique.slice(1)) {
+    if (await isAncestor(root, candidate, oldest)) oldest = candidate
+  }
+
+  return oldest
+}
+
+async function isAncestor(
+  root: string,
+  candidate: string,
+  reference: string,
+): Promise<boolean> {
+  const result = await execa(
+    'git',
+    ['-C', root, 'merge-base', '--is-ancestor', candidate, reference],
+    { reject: false },
+  )
+
+  return result.exitCode === 0
 }
 
 /**

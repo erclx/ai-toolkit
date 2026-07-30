@@ -5,6 +5,7 @@ import { cliPath, cliRun } from '@/cli-run'
 import { PROJECT_ROOT } from '@/exec'
 import { buildCheckReport, type CheckReport, hasDrift } from '@/sync/check'
 import { createGitRunner, createPullRequestOpener, hasGh } from '@/sync/git'
+import { STAMP_DOMAINS } from '@/sync/stamp'
 import {
   detectDomains,
   installedDomains,
@@ -94,16 +95,14 @@ async function runCheck(target: string, options: SyncOptions): Promise<number> {
 function renderCheck(report: CheckReport): void {
   intro('aitk sync --check')
 
-  logStep('Stamp')
-  if (report.commit === undefined) {
-    logWarn('No toolkit revision recorded. Drift is reported unattributed.')
-    logInfo('Run a sync to write .claude/aitk.json and enable attribution.')
-  } else {
-    logInfo(`Synced from ${report.commit} on ${report.syncedAt}`)
-  }
-
   for (const domain of report.domains) {
     logStep(domain.domain)
+
+    if (domain.commit === undefined) {
+      logWarn('Not stamped. Drift below is reported unattributed.')
+    } else {
+      logInfo(`Synced from ${domain.commit} on ${domain.syncedAt}`)
+    }
 
     for (const entry of domain.entries) {
       if (entry.state === 'matching' || entry.state === 'orphaned') continue
@@ -114,11 +113,8 @@ function renderCheck(report: CheckReport): void {
     if (stale + customized + drifted + stranded === 0) {
       logInfo(orphaned === 0 ? 'up to date' : `up to date (${orphaned} local)`)
     }
-  }
 
-  if (report.upstream.length > 0) {
-    logStep('Upstream since last sync')
-    for (const commit of report.upstream) {
+    for (const commit of domain.upstream) {
       logInfo(`${commit.sha} ${commit.subject}`)
     }
   }
@@ -129,10 +125,13 @@ function renderCheck(report: CheckReport): void {
   }
 
   outro()
-  const covered =
-    report.covers.length === 0 ? '' : `Covered: ${report.covers.join(', ')}. `
+  const uncovered = STAMP_DOMAINS.filter(
+    (domain) => !report.covers.includes(domain),
+  )
+  const unstamped =
+    uncovered.length === 0 ? '' : `Unstamped: ${uncovered.join(', ')}. `
   process.stderr.write(
-    `${GREY}${covered}Tooling is not stamped, run \`aitk tooling\` to reconcile configs.${NC}\n`,
+    `${GREY}${unstamped}Tooling is never stamped, run \`aitk tooling\` to reconcile configs.${NC}\n`,
   )
 }
 

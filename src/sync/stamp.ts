@@ -6,8 +6,7 @@ import { execa } from 'execa'
 
 /**
  * Domains the stamp can attribute. Tooling runs its own inject and manifest
- * machinery rather than the sync engine, so it is absent by design and a
- * reader can tell an uncovered domain from a clean one.
+ * machinery rather than the sync engine, so it is absent by design.
  */
 export const STAMP_DOMAINS = ['standards', 'snippets', 'governance'] as const
 
@@ -22,12 +21,22 @@ export interface StampSource {
 /** Target-relative posix path to content hash, for one domain. */
 export type DomainHashes = Readonly<Record<string, string>>
 
-export interface Stamp {
-  /** Toolkit revision the last sync ran from. Absent outside a git clone. */
+/**
+ * One domain's record. The anchor sits here rather than at the top level
+ * because domains sync independently, and a shared anchor would let a gov sync
+ * advance the revision standards measures its upstream range from.
+ */
+export interface DomainStamp {
+  /** Toolkit revision this domain last synced from. Absent outside a git clone. */
   readonly commit?: string
   readonly syncedAt: string
+  readonly files: DomainHashes
+}
+
+export interface Stamp {
+  /** Domains actually stamped in this target, so an unstamped one is legible. */
   readonly covers: readonly StampDomain[]
-  readonly domains: Readonly<Partial<Record<StampDomain, DomainHashes>>>
+  readonly domains: Readonly<Partial<Record<StampDomain, DomainStamp>>>
 }
 
 export function stampPath(target: string): string {
@@ -66,16 +75,24 @@ export function readStamp(target: string): Stamp | undefined {
   }
 }
 
+/** The revision this domain last synced from, which bounds its upstream range. */
+export function stampedCommit(
+  stamp: Stamp | undefined,
+  domain: StampDomain,
+): string | undefined {
+  return stamp?.domains[domain]?.commit
+}
+
 export function stampedHashes(
   stamp: Stamp | undefined,
   domain: StampDomain | undefined,
 ): DomainHashes {
   if (stamp === undefined || domain === undefined) return {}
-  return stamp.domains[domain] ?? {}
+  return stamp.domains[domain]?.files ?? {}
 }
 
 /**
- * Replaces one domain's hashes and leaves the others untouched, because domains
+ * Replaces one domain's record and leaves the others untouched, because domains
  * install and sync independently but share the one file.
  */
 export async function writeStamp(
@@ -87,14 +104,20 @@ export async function writeStamp(
   const previous = readStamp(target)
   const commit = await toolkitCommit(source.toolkitRoot)
 
-  const stamp: Stamp = {
+  const record: DomainStamp = {
     ...(commit === undefined ? {} : { commit }),
     syncedAt: now.toISOString(),
-    covers: [...STAMP_DOMAINS],
-    domains: sortDomains({
-      ...previous?.domains,
-      [source.domain]: sortKeys(hashes),
-    }),
+    files: sortKeys(hashes),
+  }
+
+  const domains = sortDomains({
+    ...previous?.domains,
+    [source.domain]: record,
+  })
+
+  const stamp: Stamp = {
+    covers: STAMP_DOMAINS.filter((domain) => domains[domain] !== undefined),
+    domains,
   }
 
   const path = stampPath(target)
@@ -138,24 +161,42 @@ function sortKeys(hashes: DomainHashes): DomainHashes {
 }
 
 function sortDomains(
-  domains: Partial<Record<StampDomain, DomainHashes>>,
-): Partial<Record<StampDomain, DomainHashes>> {
-  const sorted: Partial<Record<StampDomain, DomainHashes>> = {}
+  domains: Partial<Record<StampDomain, DomainStamp>>,
+): Partial<Record<StampDomain, DomainStamp>> {
+  const sorted: Partial<Record<StampDomain, DomainStamp>> = {}
   for (const domain of STAMP_DOMAINS) {
-    const hashes = domains[domain]
-    if (hashes !== undefined) sorted[domain] = hashes
+    const record = domains[domain]
+    if (record !== undefined) sorted[domain] = record
   }
 
   return sorted
 }
 
+/**
+ * Validates every domain record rather than only the container. A stamp whose
+ * domain value is the wrong shape would otherwise reach `attribute`, where a
+ * bad hash lookup silently reads as a customization.
+ */
 function isStamp(value: unknown): value is Stamp {
-  if (typeof value !== 'object' || value === null) return false
+  if (!isRecord(value) || !isRecord(value.domains)) return false
 
-  const candidate = value as Record<string, unknown>
-  return (
-    typeof candidate.syncedAt === 'string' &&
-    typeof candidate.domains === 'object' &&
-    candidate.domains !== null
+  return Object.entries(value.domains).every(
+    ([domain, record]) =>
+      (STAMP_DOMAINS as readonly string[]).includes(domain) &&
+      isDomainStamp(record),
   )
+}
+
+function isDomainStamp(value: unknown): value is DomainStamp {
+  if (!isRecord(value) || !isRecord(value.files)) return false
+  if (typeof value.syncedAt !== 'string') return false
+  if (value.commit !== undefined && typeof value.commit !== 'string') {
+    return false
+  }
+
+  return Object.values(value.files).every((hash) => typeof hash === 'string')
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }

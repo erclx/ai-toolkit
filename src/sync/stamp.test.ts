@@ -13,6 +13,7 @@ import {
   hashFile,
   readStamp,
   type StampSource,
+  stampedCommit,
   stampedHashes,
   stampPath,
   toStampKey,
@@ -82,10 +83,47 @@ describe('readStamp', () => {
     expect(readStamp(TARGET)).toBeUndefined()
   })
 
+  it('should return undefined when a domain record is the wrong shape', () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({ covers: [], domains: { standards: 'not-a-record' } }),
+    )
+
+    expect(readStamp(TARGET)).toBeUndefined()
+  })
+
+  it('should return undefined when a file hash is not a string', () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: [],
+        domains: {
+          standards: { syncedAt: 'now', files: { 'a.md': 42 } },
+        },
+      }),
+    )
+
+    expect(readStamp(TARGET)).toBeUndefined()
+  })
+
+  it('should return undefined for an unknown domain key', () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: [],
+        domains: { tooling: { syncedAt: 'now', files: {} } },
+      }),
+    )
+
+    expect(readStamp(TARGET)).toBeUndefined()
+  })
+
   it('should read back a stamp that was written', async () => {
     await writeStamp(TARGET, STANDARDS, { 'a.md': 'sha256:aa' }, NOW)
 
-    expect(readStamp(TARGET)?.syncedAt).toBe(NOW.toISOString())
+    expect(readStamp(TARGET)?.domains.standards?.syncedAt).toBe(
+      NOW.toISOString(),
+    )
   })
 })
 
@@ -93,7 +131,7 @@ describe('writeStamp', () => {
   it('should record the hashes under the domain key', async () => {
     await writeStamp(TARGET, STANDARDS, { 'a.md': 'sha256:aa' }, NOW)
 
-    expect(readStamp(TARGET)?.domains.standards).toEqual({
+    expect(readStamp(TARGET)?.domains.standards?.files).toEqual({
       'a.md': 'sha256:aa',
     })
   })
@@ -104,15 +142,15 @@ describe('writeStamp', () => {
 
     const stamp = readStamp(TARGET)
 
-    expect(stamp?.domains.standards).toEqual({ 'a.md': 'sha256:aa' })
-    expect(stamp?.domains.snippets).toEqual({ 'b.md': 'sha256:bb' })
+    expect(stamp?.domains.standards?.files).toEqual({ 'a.md': 'sha256:aa' })
+    expect(stamp?.domains.snippets?.files).toEqual({ 'b.md': 'sha256:bb' })
   })
 
   it('should replace a domain rather than merge into it', async () => {
     await writeStamp(TARGET, STANDARDS, { 'old.md': 'sha256:aa' }, NOW)
     await writeStamp(TARGET, STANDARDS, { 'new.md': 'sha256:bb' }, NOW)
 
-    expect(readStamp(TARGET)?.domains.standards).toEqual({
+    expect(readStamp(TARGET)?.domains.standards?.files).toEqual({
       'new.md': 'sha256:bb',
     })
   })
@@ -127,26 +165,69 @@ describe('writeStamp', () => {
 
     const domains = readRaw(TARGET).domains as Record<
       string,
-      Record<string, string>
+      { files: Record<string, string> }
     >
 
-    expect(Object.keys(domains.standards)).toEqual(['a.md', 'z.md'])
+    expect(Object.keys(domains.standards.files)).toEqual(['a.md', 'z.md'])
   })
 
-  it('should declare the domains the stamp can attribute', async () => {
+  it('should name only the domains actually stamped', async () => {
     await writeStamp(TARGET, STANDARDS, {}, NOW)
 
-    expect(readStamp(TARGET)?.covers).toEqual([
-      'standards',
-      'snippets',
-      'governance',
-    ])
+    expect(readStamp(TARGET)?.covers).toEqual(['standards'])
+  })
+
+  it('should grow covers as each domain is stamped', async () => {
+    await writeStamp(TARGET, STANDARDS, {}, NOW)
+    await writeStamp(TARGET, SNIPPETS, {}, NOW)
+
+    expect(readStamp(TARGET)?.covers).toEqual(['standards', 'snippets'])
   })
 
   it('should end the file with a newline', async () => {
     await writeStamp(TARGET, STANDARDS, {}, NOW)
 
     expect(readFileSync(stampPath(TARGET), 'utf8').endsWith('}\n')).toBe(true)
+  })
+})
+
+describe('stampedCommit', () => {
+  it('should keep each domain anchor independent of the others', () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['standards', 'governance'],
+        domains: {
+          standards: { commit: 'old1111', syncedAt: 'then', files: {} },
+          governance: { commit: 'new2222', syncedAt: 'now', files: {} },
+        },
+      }),
+    )
+
+    const stamp = readStamp(TARGET)
+
+    expect(stampedCommit(stamp, 'standards')).toBe('old1111')
+    expect(stampedCommit(stamp, 'governance')).toBe('new2222')
+  })
+
+  it('should not advance one domain anchor when another is rewritten', async () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['standards'],
+        domains: {
+          standards: { commit: 'old1111', syncedAt: 'then', files: {} },
+        },
+      }),
+    )
+
+    await writeStamp(TARGET, SNIPPETS, {}, NOW)
+
+    expect(stampedCommit(readStamp(TARGET), 'standards')).toBe('old1111')
+  })
+
+  it('should return undefined for an unstamped domain', () => {
+    expect(stampedCommit(undefined, 'standards')).toBeUndefined()
   })
 })
 

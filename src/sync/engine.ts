@@ -398,8 +398,8 @@ export async function recordStamp(
   target: string,
   now: Date,
 ): Promise<void> {
-  const source = adapter.stamp
-  if (source === undefined) return
+  const stampSource = adapter.stamp
+  if (stampSource === undefined) return
 
   const hashes: Record<string, string> = {}
 
@@ -412,5 +412,5 @@ export async function recordStamp(
     hashes[toStampKey(file.rel)] = hashFile(file.path)
   }
 
-  await writeStamp(target, source, hashes, now)
+  await writeStamp(target, stampSource, hashes, now)
 }

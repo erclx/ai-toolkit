@@ -48,10 +48,14 @@ function writeStampFixture(
   writeFixture(
     join(TARGET, '.claude/aitk.json'),
     JSON.stringify({
-      commit: 'abc1234',
-      syncedAt: '2026-07-30T12:00:00.000Z',
-      covers: ['standards', 'snippets', 'governance'],
-      domains: { [domain]: hashes },
+      covers: [domain],
+      domains: {
+        [domain]: {
+          commit: 'abc1234',
+          syncedAt: '2026-07-30T12:00:00.000Z',
+          files: hashes,
+        },
+      },
     }),
   )
 }
@@ -608,7 +612,7 @@ describe('runDomainSync', () => {
       options,
     )
 
-    expect(readStamp(TARGET)?.domains.governance).toEqual({
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
       [STAMPED_RULE]: hashContent('upstream\n'),
     })
   })
@@ -623,7 +627,7 @@ describe('runDomainSync', () => {
       options,
     )
 
-    expect(readStamp(TARGET)?.domains.governance).toEqual({
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
       [STAMPED_RULE]: hashContent('same\n'),
     })
   })
@@ -639,7 +643,7 @@ describe('runDomainSync', () => {
       options,
     )
 
-    expect(readStamp(TARGET)?.domains.governance).toEqual({
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
       [STAMPED_RULE]: hashContent('same\n'),
     })
   })

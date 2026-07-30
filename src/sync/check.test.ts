@@ -16,16 +16,16 @@ let TARGET: string
 
 function buildReport(entries: readonly ScanEntry[]): CheckReport {
   return {
-    covers: ['standards', 'snippets', 'governance'],
+    covers: ['standards'],
     domains: [
       {
         domain: 'standards',
         stamped: true,
         counts: countStates(entries),
         entries,
+        upstream: [],
       },
     ],
-    upstream: [],
     newSkills: [],
   }
 }
