@@ -47,7 +47,7 @@ Review the diff and files for the same axes as `claude-review` (bugs, edge cases
 
 - Integration: does this fit the roadmap sequence, the shared wiring seam, and any sibling PR in flight?
 - Contract: does a contract downstream features depend on land correctly, and should the plan itself be questioned?
-- Consumers: when the change touches a resource several steps consume, enumerate every consumer and check the rule against each. A rule written for the consumer the change targets can be wrong for a sibling that writes.
+- Consumers: when the change touches a resource with more than one consumer, enumerate them and check the rule against each. A rule written for the consumer the change targets can be wrong for a sibling that writes.
 
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
