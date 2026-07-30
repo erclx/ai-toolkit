@@ -43,10 +43,11 @@ Read each changed file. Skip deleted files. Run reads in parallel.
 
 ## Step 3: review
 
-Review the diff and files for the same axes as `claude-review` (bugs, edge cases, error handling, logic flaws, security, rule violations), then add the two lenses a self-review structurally cannot apply:
+Review the diff and files for the same axes as `claude-review` (bugs, edge cases, error handling, logic flaws, security, rule violations), then add the three lenses a self-review structurally cannot apply:
 
 - Integration: does this fit the roadmap sequence, the shared wiring seam, and any sibling PR in flight?
 - Contract: does a contract downstream features depend on land correctly, and should the plan itself be questioned?
+- Consumers: when the change touches a resource several steps consume, enumerate every consumer and check the rule against each. A rule written for the consumer the change targets can be wrong for a sibling that writes.
 
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
@@ -73,7 +74,7 @@ X critical, Y should-fix, Z minor. Reviewed against project docs and roadmap.
 🤖 Reviewed by Claude Code
 ```
 
-Open every comment with the `## Review` heading so it anchors as a section distinct from human threads. Do not append the PR number, which GitHub already renders above the comment. Budget the body. State each finding as the failure and the fix in two or three sentences, not a paragraph of reasoning. Omit files with no findings. Do not lecture on process. The integration and contract lenses stay, but as findings, not asides.
+Open every comment with the `## Review` heading so it anchors as a section distinct from human threads. Do not append the PR number, which GitHub already renders above the comment. Budget the body. State each finding as the failure and the fix in two or three sentences, not a paragraph of reasoning. Omit files with no findings. Do not lecture on process. The integration, contract, and consumer lenses stay, but as findings, not asides.
 
 The `What is right` section is optional, capped at three bullets, and included only when it changes the merge decision. Drop it otherwise and let the summary line carry the approval.
 

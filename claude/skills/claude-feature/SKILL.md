@@ -38,7 +38,7 @@ Construct the plan with these sections:
 - **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
 - **Constraints:** durable rules the work must respect (patterns to reuse, surfaces not to touch, platform limits). Optional. Include when an orchestrator or prior context supplies them, omit the section otherwise.
 - **Files to touch:** each file with a one-line reason
-- **Risks:** conflicts, coupling, or tricky spots. If none, use `None identified.`
+- **Risks:** conflicts, coupling, or tricky spots. When the plan establishes a resource that several steps consume, list every consumer and mark each read or write, because a policy stated over that resource has to hold for the writers and not just the consumer that prompted it. If none, use `None identified.`
 - **Questions:** numbered list of things to resolve before starting. Each carries a `- Suggested:` line and an `- Answer:` slot (see Suggestions below). If none, use `None identified.`
 
 Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
@@ -59,6 +59,8 @@ Decide the mode based on what Step 3 produced:
 
 - **Small** when the plan touches 2 files or fewer, has no architectural or cross-cutting choices, and both Risks and Questions come out `None identified.`
 - **Full** otherwise
+
+Establishing a resource that several steps consume, where at least one of them writes, is a cross-cutting choice. Such a plan is Full even at two files, so the consumer list has a `Risks` section to land in.
 
 ### Small mode
 
