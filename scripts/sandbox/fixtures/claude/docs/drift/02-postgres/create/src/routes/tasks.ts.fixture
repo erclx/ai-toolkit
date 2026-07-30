@@ -1,0 +1,16 @@
+import { Router } from "express";
+import { getTasks, createTask } from "../db";
+
+const router = Router();
+
+router.get("/", async (_req, res) => {
+  res.json(await getTasks());
+});
+
+router.post("/", async (req, res) => {
+  const { title, userId } = req.body;
+  const task = await createTask(title, userId);
+  res.status(201).json({ id: task.id });
+});
+
+export default router;
