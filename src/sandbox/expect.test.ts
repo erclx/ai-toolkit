@@ -262,6 +262,87 @@ describe('checkExpectation', () => {
   })
 })
 
+/**
+ * The declaration counts what it declares and the verdict counts what ran. Those
+ * diverge on `write_scope`, which yields one result per write rather than one per
+ * glob, so a pass with zero assertions has to be unreachable.
+ */
+describe('checkExpectation with no assertion able to run', () => {
+  const scopeOnly: Expectation = {
+    paths: [],
+    absent: [],
+    content: [],
+    writeScope: ['.claude/**'],
+    manual: [],
+    maxTurns: undefined,
+  }
+
+  it('should fail when a write-scope-only arm saw no writes', () => {
+    const verdict = checkExpectation(scopeOnly, {
+      sandboxDir: sandbox,
+      writes: [],
+    })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.asserted).toBe(0)
+  })
+
+  it('should never report pass with zero assertions', () => {
+    const verdict = checkExpectation(scopeOnly, {
+      sandboxDir: sandbox,
+      writes: [],
+    })
+
+    expect(verdict.state === 'pass' && verdict.asserted === 0).toBe(false)
+  })
+})
+
+describe('checkExpectation with data the caller did not supply', () => {
+  it('should skip write scope rather than drop it when writes are absent', () => {
+    seedCorrectTree()
+
+    const verdict = checkExpectation(driftExpectation(), {
+      sandboxDir: sandbox,
+      envelope: CLEAN_ENVELOPE,
+    })
+
+    expect(verdict.skipped).toContain(
+      'write scope: no write data supplied, pass --writes',
+    )
+    expect(verdict.unchecked).toBe(3)
+  })
+
+  it('should skip the turn ceiling rather than pass it when no envelope is given', () => {
+    seedCorrectTree()
+
+    const verdict = checkExpectation(driftExpectation(), {
+      sandboxDir: sandbox,
+      writes: [TASKS],
+    })
+
+    expect(verdict.skipped).toContain(
+      'turn ceiling: no envelope supplied, pass --envelope',
+    )
+  })
+
+  it('should distinguish an absent write list from an empty one', () => {
+    seedCorrectTree()
+
+    const absent = checkExpectation(driftExpectation(), {
+      sandboxDir: sandbox,
+      envelope: CLEAN_ENVELOPE,
+    })
+    const empty = checkExpectation(driftExpectation(), {
+      sandboxDir: sandbox,
+      writes: [],
+      envelope: CLEAN_ENVELOPE,
+    })
+
+    expect(absent.skipped).toHaveLength(1)
+    expect(empty.skipped).toHaveLength(0)
+  })
+})
+
 describe('resolveVerdict', () => {
   it('should report unchecked when no declaration exists', () => {
     const verdict = resolveVerdict(join(sandbox, 'expect.toml'), checkInput())
@@ -285,6 +366,16 @@ describe('resolveVerdict', () => {
     writeFileSync(file, '')
 
     expect(resolveVerdict(file, checkInput()).state).toBe('fail')
+  })
+
+  it('should fail a declaration that does not parse rather than throwing', () => {
+    const file = join(sandbox, 'expect.toml')
+    writeFileSync(file, 'paths = [unquoted\n')
+
+    const verdict = resolveVerdict(file, checkInput())
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.results[0]?.message).toContain('does not parse')
   })
 
   it('should check a declaration carrying one mechanical assertion', () => {

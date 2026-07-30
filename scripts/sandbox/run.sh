@@ -32,12 +32,20 @@ snapshot_tree() {
     sed "s|\./||" | sort -k2 >"$manifest"
 }
 
+# Reports both sides of a change, so a deletion is a write. Emitting only the
+# after side would let a file removed outside the declared scope produce no
+# assertion at all, which is the one way this check stayed weaker than the
+# permission scoping it replaced. A modified file appears on both sides and
+# collapses to one path once the hash field is stripped.
+#
 # `diff` exits 1 when the manifests differ, which is the normal case, so the
 # pipeline swallows it or `set -e` kills the run before the verdict prints.
 writes_between() {
   local before="$1"
   local after="$2"
-  { diff --changed-group-format="%>" --unchanged-group-format="" "$before" "$after" || true; } |
+  { diff --unchanged-group-format="" --old-group-format="%<" \
+    --new-group-format="%>" --changed-group-format="%<%>" \
+    "$before" "$after" || true; } |
     awk '{ $1=""; sub(/^ /, ""); print }' | sort -u
 }
 

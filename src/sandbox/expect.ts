@@ -41,13 +41,26 @@ export interface Verdict {
   readonly unchecked: number
   readonly results: readonly AssertionResult[]
   readonly manual: readonly string[]
+  readonly skipped: readonly string[]
   readonly note?: string
 }
 
+/**
+ * `writes` and `envelope` are absent when the caller supplied no data for them,
+ * which is not the same as a run that wrote nothing or reported nothing. The
+ * assertion kinds that depend on them report as skipped rather than silently
+ * dropping out of the count, so the cheap standalone path cannot claim more
+ * coverage than it had.
+ */
 export interface CheckInput {
   readonly sandboxDir: string
-  readonly writes: readonly string[]
-  readonly envelope: RunEnvelope
+  readonly writes?: readonly string[]
+  readonly envelope?: RunEnvelope
+}
+
+interface KindOutcome {
+  readonly results: AssertionResult[]
+  readonly skipped: string[]
 }
 
 const EXIT_CODE: Record<VerdictState, number> = {
@@ -127,6 +140,11 @@ function contentArray(value: unknown): ContentAssertion[] {
   return assertions
 }
 
+/**
+ * Throws on malformed TOML. `resolveVerdict` turns that into a failed verdict, so
+ * a typo in a declaration reads the same way a pattern that does not compile
+ * does, rather than surfacing as a stack trace.
+ */
 export function parseExpectation(source: string): Expectation {
   const parsed = Bun.TOML.parse(source) as Record<string, unknown>
 
@@ -216,17 +234,27 @@ function checkContent(
  */
 function checkWriteScope(
   expectation: Expectation,
-  writes: readonly string[],
-): AssertionResult[] {
-  if (expectation.writeScope.length === 0) return []
+  writes: readonly string[] | undefined,
+): KindOutcome {
+  if (expectation.writeScope.length === 0) return { results: [], skipped: [] }
+
+  if (writes === undefined) {
+    return {
+      results: [],
+      skipped: ['write scope: no write data supplied, pass --writes'],
+    }
+  }
 
   const globs = expectation.writeScope.map((glob) => new Bun.Glob(glob))
 
-  return writes.map((path) =>
-    globs.some((glob) => glob.match(path))
-      ? { ok: true, message: `in scope: ${path}` }
-      : { ok: false, message: `wrote outside declared scope: ${path}` },
-  )
+  return {
+    results: writes.map((path) =>
+      globs.some((glob) => glob.match(path))
+        ? { ok: true, message: `in scope: ${path}` }
+        : { ok: false, message: `wrote outside declared scope: ${path}` },
+    ),
+    skipped: [],
+  }
 }
 
 /**
@@ -236,8 +264,17 @@ function checkWriteScope(
  */
 function checkEnvelope(
   expectation: Expectation,
-  envelope: RunEnvelope,
-): AssertionResult[] {
+  envelope: RunEnvelope | undefined,
+): KindOutcome {
+  if (envelope === undefined) {
+    const skipped =
+      expectation.maxTurns === undefined
+        ? []
+        : ['turn ceiling: no envelope supplied, pass --envelope']
+
+    return { results: [], skipped }
+  }
+
   const results: AssertionResult[] = []
 
   if (envelope.isError) {
@@ -259,30 +296,56 @@ function checkEnvelope(
     })
   }
 
-  return results
+  return { results, skipped: [] }
 }
 
 export function checkExpectation(
   expectation: Expectation,
   input: CheckInput,
 ): Verdict {
+  const scope = checkWriteScope(expectation, input.writes)
+  const envelope = checkEnvelope(expectation, input.envelope)
+
   const results = [
     ...checkPaths(expectation, input.sandboxDir),
     ...checkAbsent(expectation, input.sandboxDir),
     ...checkContent(expectation, input.sandboxDir),
-    ...checkWriteScope(expectation, input.writes),
-    ...checkEnvelope(expectation, input.envelope),
+    ...scope.results,
+    ...envelope.results,
   ]
+  const skipped = [...scope.skipped, ...envelope.skipped]
 
   const failed = results.filter((result) => !result.ok).length
+
+  // A declaration counts what it declares, this counts what ran, and the two
+  // diverge on `write_scope`, which produces one result per write rather than one
+  // per glob. An arm declaring only a write scope against a run that wrote
+  // nothing would otherwise report pass having asserted nothing, which is the
+  // vacuous pass the whole feature exists to remove.
+  if (results.length === 0) {
+    return {
+      state: 'fail',
+      asserted: 0,
+      failed: 1,
+      unchecked: expectation.manual.length + skipped.length,
+      results: [
+        { ok: false, message: 'no assertion ran against this sandbox' },
+        ...results,
+      ],
+      manual: expectation.manual,
+      skipped,
+      note: 'The declaration asserts something, but nothing was checkable here. A pass with zero assertions is not a pass.',
+    }
+  }
 
   return {
     state: failed > 0 ? 'fail' : 'pass',
     asserted: results.length,
     failed,
-    unchecked: expectation.manual.length,
+    unchecked: expectation.manual.length + skipped.length,
     results,
     manual: expectation.manual,
+    skipped,
   }
 }
 
@@ -300,11 +363,30 @@ export function resolveVerdict(expectFile: string, input: CheckInput): Verdict {
       unchecked: 0,
       results: [],
       manual: [],
+      skipped: [],
       note: `No expect.toml at ${expectFile}. Nothing was asserted.`,
     }
   }
 
-  const expectation = parseExpectation(readFileSync(expectFile, 'utf8'))
+  let expectation: Expectation
+  try {
+    expectation = parseExpectation(readFileSync(expectFile, 'utf8'))
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+
+    return {
+      state: 'fail',
+      asserted: 0,
+      failed: 1,
+      unchecked: 0,
+      results: [
+        { ok: false, message: `expect.toml does not parse: ${reason}` },
+      ],
+      manual: [],
+      skipped: [],
+      note: `Fix the declaration at ${expectFile}.`,
+    }
+  }
 
   if (countMechanicalAssertions(expectation) === 0) {
     return {
@@ -319,6 +401,7 @@ export function resolveVerdict(expectFile: string, input: CheckInput): Verdict {
         },
       ],
       manual: expectation.manual,
+      skipped: [],
       note: 'An expectation file that asserts nothing passes every run. Declare one or delete the file.',
     }
   }

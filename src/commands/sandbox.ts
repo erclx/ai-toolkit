@@ -71,12 +71,14 @@ async function interactivePicker(): Promise<string> {
 }
 
 /**
- * Reads the `claude -p --output-format json` envelope. Decision 8 lets the
- * envelope fail a run but never pass one, so an unreadable file falls back to
- * clean rather than manufacturing a failure the expectations did not find.
+ * Reads the `claude -p --output-format json` envelope. Returns undefined when no
+ * file was given, so the turn ceiling reports as skipped rather than passing on a
+ * fabricated zero. A file that exists but does not parse falls back to clean,
+ * since decision 8 lets the envelope fail a run but never pass one.
  */
-function readEnvelope(path: string | undefined): RunEnvelope {
-  if (path === undefined || !existsSync(path)) return CLEAN_ENVELOPE
+function readEnvelope(path: string | undefined): RunEnvelope | undefined {
+  if (path === undefined) return undefined
+  if (!existsSync(path)) return CLEAN_ENVELOPE
 
   try {
     const parsed = JSON.parse(readFileSync(path, 'utf8')) as Record<
@@ -95,8 +97,14 @@ function readEnvelope(path: string | undefined): RunEnvelope {
   }
 }
 
-function readWrites(path: string | undefined): string[] {
-  if (path === undefined || !existsSync(path)) return []
+/**
+ * Undefined when no file was given, which is not the same as a run that wrote
+ * nothing. The write-scope assertion needs that distinction: an empty list is a
+ * finding, an absent list is a gap in what the caller supplied.
+ */
+function readWrites(path: string | undefined): string[] | undefined {
+  if (path === undefined) return undefined
+  if (!existsSync(path)) return []
 
   return readFileSync(path, 'utf8')
     .split('\n')
@@ -121,6 +129,11 @@ function reportVerdict(verdict: Verdict): void {
   if (verdict.manual.length > 0) {
     logStep('Not checked (needs a reader)')
     for (const line of verdict.manual) logWarn(line)
+  }
+
+  if (verdict.skipped.length > 0) {
+    logStep('Not checked (no data supplied)')
+    for (const line of verdict.skipped) logWarn(line)
   }
 
   logStep(`Verdict: ${verdict.state.toUpperCase()}`)

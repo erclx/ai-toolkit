@@ -176,6 +176,8 @@ aitk sandbox check claude:docs drift --json
 
 The verdict `state` is `pass`, `fail`, or `unchecked`. An arm with no `expect.toml` is `unchecked` and exits 0, so the harness stays usable while expectations roll out. A declaration that exists but asserts nothing is a failure, since an expectation file that asserts nothing passes every run.
 
+Omitting `--writes` or `--envelope` does not silently drop the assertion kinds that need them. Write scope and the turn ceiling report as unchecked and appear in the count, so the standalone command cannot claim more coverage than it had. A verdict never reports `pass` with zero assertions.
+
 Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a malformed target, or a sandbox that was never provisioned. A missing sandbox reports as an error rather than a failed verdict, because failing every path assertion would read as a skill that did nothing.
 
 `scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints.
