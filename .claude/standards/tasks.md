@@ -118,3 +118,5 @@ One destination rather than a per-project choice is what lets the move happen wi
 Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. Remove the task's row from `priority.md` in the same pass, since a shipped task left in the ordering reads as ready to hand a worker.
 
 Sweep the plan before archiving the task. The sweep finds its work by scanning the live folder, so a task archived first is beyond its reach for good, and the plan is left with no live task citing it and an archived task pointing at a path nothing will retarget.
+
+A task with an open outcome stays on the board. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. The sweep is gated on the same condition, so archiving around an open outcome also leaves the plan behind.

@@ -48,18 +48,23 @@ Report rather than prompt. A track can be opened long after its task would have 
 
 ### Step 1: check the outcomes
 
-Read the task file. Every outcome should be `[x]`. When one is unchecked, name it and ask before continuing. An outcome deliberately left open is a real case, and `claude-docs` marks outcomes from the diff rather than from the conversation, so an unchecked box may only mean nothing has run yet.
+Read the task file. Continue only when every outcome is `[x]`. When one is unchecked, name it and stop: `❌ <n> outcome(s) still open. Close them or cut them from the task, then archive.`
 
-### Step 2: count the citations on the plan
+An unchecked box means one of two things and neither is a reason to archive around it. The outcome shipped and nothing marked it, since `claude-docs` marks from the diff rather than from the conversation, in which case run `claude-docs` and archive after. Or the outcome is genuinely open, in which case the task belongs on the board. A task being abandoned rather than finished is the third case, and it cuts its outcomes first, so the board records what was dropped rather than leaving a reader to infer it from an archived file.
+
+Stopping here is what lets Step 2 route to `claude-docs` and mean it. That sweep only reaches tasks whose outcomes are all `[x]`, so admitting an open outcome past this point would send the caller to a skill that provably declines, and returning from it would fire the same guard again.
+
+### Step 2: check the plan pointer
 
 Parse the `Plan:` line and route on where it points.
 
 - No `Plan:` line, or the path is already inside `.claude/.tmp/plans-archive/`: continue to Step 3.
-- Path still inside `.claude/plans/`: stop. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
+- Path inside `.claude/plans/` and no other task file cites it: stop. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
+- Path inside `.claude/plans/` and another task file cites it: stop, naming that task. `❌ Plan shared with <task>. One plan per task, so resolve the citation before archiving.`
 
 The guard enforces an ordering rather than a preference. `claude-docs` Step 8 sweeps plans by scanning `.claude/tasks/*.md`, so it can only reach a task that is still in the folder. Archiving the task first puts it beyond that scan permanently, leaving the plan in `.claude/plans/` with no live task citing it and an archived task pointing at a path nothing will ever retarget. Both folders are gitignored, so nothing recovers the pointer afterward.
 
-Stopping also covers the plan another live task still cites, since `claude-docs` leaves that plan in place until the last citation closes. The guard fires on the path alone, so no citation count is needed here.
+The two stops differ only in where they send the caller, and that is the whole reason to count. `claude-docs` sweeps an unshared plan and declines a shared one, so routing both there would send half the callers to a skill that provably returns without moving anything, and they would come back to the same guard. A shared plan is the misfile `.claude/standards/tasks.md` names, so it is resolved by hand rather than by a sweep.
 
 Do not move a plan from this skill. `claude-docs` Step 8 owns that move and the last-live-citation rule that governs it. Two skills relocating the same file drift into relocating it differently.
 
