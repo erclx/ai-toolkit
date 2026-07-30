@@ -43,16 +43,16 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 ## Core scripts
 
-| Script             | `bun run`   | What it does                                                                                                       |
-| ------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `bootstrap.sh`     | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable  |
-| `verify.sh`        | `check`     | Runs format, format check, index drift, consumed-copy drift, skill-reference drift, spell, shell, types, and tests |
-| `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                 |
-| `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                  |
-| `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                     |
-| `regen-indexes.sh` |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                            |
+| Script             | `bun run`   | What it does                                                                                                      |
+| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `bootstrap.sh`     | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable |
+| `verify.sh`        | `check`     | Format, three drift stages, and spell always run. Shell, types, and tests gate on changed files unless `--all`    |
+| `update.sh`        | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                |
+| `clean.sh`         | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                 |
+| `snapshot.sh`      | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                    |
+| `regen-indexes.sh` |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                           |
 
-CI runs the format, spell, shell, and types stages. The drift checks and the test suite are enforced by the pre-push hook alone. See `ci.md`.
+CI runs every stage through `bun run check:ci`, which passes `--all`. The local run scopes shell, types, and tests to the changed-file set, so it is the weaker of the two. See `ci.md`.
 
 ## UI framing across exec boundaries
 
