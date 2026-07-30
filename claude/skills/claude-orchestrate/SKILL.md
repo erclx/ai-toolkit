@@ -31,8 +31,14 @@ Then output the state of play so the human knows what to launch, review, and mer
 Orchestrator ready. Active: vX.Y, <the Now row's outcome>.
 
 Ready to build (hand each to its own worker):
-- <feature>, plan .claude/plans/feature-<slug>.md → /claude-worktree then /claude-autoship
-- <feature>, no plan yet → /claude-feature here first
+
+<feature>
+  plan: .claude/plans/feature-<slug>.md
+  → /claude-autoship
+
+<feature>
+  no plan yet. A handoff without a plan has no scope
+  → /claude-feature here first
 
 In review (your turn):
 - PR #<n> <title> → /claude-pr-review
@@ -58,7 +64,7 @@ Omit any section with nothing in it. Cap the ready-to-build handoffs you recomme
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
 - Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR.
-- Do not leave tracked board edits uncommitted in the main worktree. A `.claude/ROADMAP.md` resequence folds into the next worker's branch so it ships in that feature's PR. When no worker is in flight, commit it as a standalone docs commit.
+- Do not leave tracked board edits uncommitted in the main worktree. A `.claude/ROADMAP.md` resequence folds into the next worker's branch so it ships in that feature's PR. When no worker is in flight, record it on the task that owns it and let it ship from that task's branch.
 
 ## Parallelism
 
