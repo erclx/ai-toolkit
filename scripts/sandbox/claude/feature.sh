@@ -99,11 +99,27 @@ router.post("/", (req, res) => {
 export default router;
 EOF
 
-    cat <<'EOF' >>.claude/TASKS.md
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
 
 # Tasks
 
-### Add due dates and priority to tasks
+One file per task, ordered by phase label
+
+- [v01.0: Add due dates and priority to tasks](v01.0-due-dates.md): Persist and expose a due date and a priority on every task
+EOF
+
+    cat <<'EOF' >.claude/tasks/v01.0-due-dates.md
+---
+title: 'v01.0: Add due dates and priority to tasks'
+description: Persist and expose a due date and a priority on every task
+---
+
+# v01.0: Add due dates and priority to tasks
 
 Add a `due` (ISO date string, nullable) and `priority` (enum: low, medium, high, default medium) column to the tasks table. Expose both fields in the create and list endpoints. Validate with Zod.
 
@@ -115,8 +131,8 @@ EOF
     git add . && git commit -m "feat(api): initial task endpoints" --no-verify -q
 
     log_step "Scenario ready: feature planning (full mode)"
-    log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and TASKS.md present"
-    log_info "Action:  /claude-feature (reference the task in TASKS.md)"
+    log_info "Context: task API with SQLite, Express routes, CLAUDE.md, ARCHITECTURE.md, and .claude/tasks/ present"
+    log_info "Action:  /claude-feature (reference the task in .claude/tasks/)"
     log_info "Expect:  plan written to .claude/plans/feature-<slug>.md with files to touch, risks, and questions, each question carrying a Suggested line and an Answer slot"
     ;;
   "small")
@@ -162,10 +178,27 @@ description: Sentinel surface that should not be read for prose-only changes.
 SENTINEL: this file should NOT be read for prose-only changes.
 EOF
 
-    cat <<'EOF' >.claude/TASKS.md
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
+
 # Tasks
 
-### Tighten the README intro paragraph
+One file per task, ordered by phase label
+
+- [v01.0: Tighten the README intro paragraph](v01.0-readme-intro.md): Break the run-on opening paragraph into shorter sentences
+EOF
+
+    cat <<'EOF' >.claude/tasks/v01.0-readme-intro.md
+---
+title: 'v01.0: Tighten the README intro paragraph'
+description: Break the run-on opening paragraph into shorter sentences
+---
+
+# v01.0: Tighten the README intro paragraph
 
 The opening paragraph in `README.md` is one long run-on sentence. Break it into two or three shorter sentences with clearer structure.
 
@@ -176,7 +209,7 @@ EOF
 
     log_step "Scenario ready: feature planning (small mode)"
     log_info "Context: prose-only repo, single README task, decoy DESIGN and wireframes/ with sentinel text"
-    log_info "Action:  /claude-feature (reference the task in TASKS.md)"
+    log_info "Action:  /claude-feature (reference the task in .claude/tasks/)"
     log_info "Expect:  chat-only output, NO .claude/plans/ file written, decoys NOT surfaced"
     ;;
   "multi-concern")
@@ -200,16 +233,40 @@ EOF
 Welcome to the project. This intro paragraph reads dry and dense, with one long run-on thought that does not break for the reader and keeps stacking clauses without giving the eye a place to rest.
 EOF
 
-    mkdir -p .claude
-    cat <<'EOF' >.claude/TASKS.md
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
+
 # Tasks
 
-### Add pagination to GET /users
+One file per task, ordered by phase label
+
+- [v01.0: Add pagination to GET /users](v01.0-users-pagination.md): Page the user list with limit and offset query params
+- [v02.0: Tighten the docs intro paragraph](v02.0-docs-intro.md): Break the run-on docs opening into two short paragraphs
+EOF
+
+    cat <<'EOF' >.claude/tasks/v01.0-users-pagination.md
+---
+title: 'v01.0: Add pagination to GET /users'
+description: Page the user list with limit and offset query params
+---
+
+# v01.0: Add pagination to GET /users
 
 - [ ] Outcome: GET /users supports limit and offset query params
 - [ ] Outcome: defaults applied when params omitted
+EOF
 
-### Tighten the docs intro paragraph
+    cat <<'EOF' >.claude/tasks/v02.0-docs-intro.md
+---
+title: 'v02.0: Tighten the docs intro paragraph'
+description: Break the run-on docs opening into two short paragraphs
+---
+
+# v02.0: Tighten the docs intro paragraph
 
 - [ ] Outcome: intro reads as two short paragraphs instead of one run-on
 EOF
@@ -217,7 +274,7 @@ EOF
     git add . && git commit -m "chore(sandbox): initial state" --no-verify -q
 
     log_step "Scenario ready: feature planning (multi-concern)"
-    log_info "Context: two unrelated tasks in TASKS.md, one API change and one prose edit"
+    log_info "Context: two unrelated tasks in .claude/tasks/, one API change and one prose edit"
     log_info "Action:  /claude-feature 'add pagination to /users and tighten the docs intro'"
     log_info "Expect:  two plan files in .claude/plans/, one per concern, not a single bundled slug"
     ;;

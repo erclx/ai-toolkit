@@ -252,11 +252,27 @@ export function AddTaskModal({ onClose }: { onClose: () => void }) {
 }
 EOF
 
-  cat <<'EOF' >>.claude/TASKS.md
+  mkdir -p .claude/tasks
+  cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
 
 # Tasks
 
-### Polish task list before review
+One file per task, ordered by phase label
+
+- [v01.0: Polish task list before review](v01.0-task-list-polish.md): Tidy the task list and add modal ahead of review
+EOF
+
+  cat <<'EOF' >.claude/tasks/v01.0-task-list-polish.md
+---
+title: 'v01.0: Polish task list before review'
+description: Tidy the task list and add modal ahead of review
+---
+
+# v01.0: Polish task list before review
 
 - [x] Initial task list and add modal landed
 EOF

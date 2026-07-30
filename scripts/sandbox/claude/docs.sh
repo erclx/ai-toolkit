@@ -26,7 +26,7 @@ stage_setup() {
     log_info "Context: planning docs are stale relative to HEAD"
     log_info "  ARCHITECTURE.md still says SQLite, but src/db.ts now uses Postgres"
     log_info "  REQUIREMENTS.md lists 'no multi-user support' as a non-goal, but createTask now takes userId"
-    log_info "  TASKS.md has 'Migrate storage to Postgres' open, but it shipped in HEAD"
+    log_info "  .claude/tasks/ has 'Migrate storage to Postgres' open, but it shipped in HEAD"
     log_info "  .claude/plans/feature-postgres-migration.md is linked from that task and should be archived"
     log_info "  .claude/plans/feature-some-old-plan.md has no task backlink and should survive"
     log_info ""

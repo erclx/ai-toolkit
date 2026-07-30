@@ -102,7 +102,7 @@ stage_setup() {
   log_step "Groundwork sandbox"
   log_info "open    : drifted workspace, no .claude/.tmp/groundwork/ folder yet"
   log_info "resume  : live folder with README.md and 01-current-state.md, no decision"
-  log_info "decline : one-file change already decided in TASKS.md"
+  log_info "decline : one-file change already decided in .claude/tasks/"
   log_info ""
   log_info "Invoke the prefixed form. The dev-skill injection copies SKILL.md alone,"
   log_info "so the unprefixed copy cannot resolve references/folder-format.md."
@@ -128,11 +128,27 @@ Three independent packages under `packages/`. Each was scaffolded separately and
 No shared preset exists. Config drift between packages has never been measured.
 EOF
 
-    cat <<'EOF' >>.claude/TASKS.md
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
 
 # Tasks
 
-### Decide what to do about tooling config drift
+One file per task, ordered by phase label
+
+- [v01.0: Decide what to do about tooling config drift](v01.0-config-drift.md): Settle whether the three packages share tooling config
+EOF
+
+    cat <<'EOF' >.claude/tasks/v01.0-config-drift.md
+---
+title: 'v01.0: Decide what to do about tooling config drift'
+description: Settle whether the three packages share tooling config
+---
+
+# v01.0: Decide what to do about tooling config drift
 
 The three packages each carry their own lint and TypeScript config. Nobody knows how far apart they are. Candidate approaches: extract a shared preset package, adopt a single root config with per-package overrides, or leave them independent.
 
@@ -241,11 +257,27 @@ export function run(args: string[]) {
 }
 EOF
 
-    cat <<'EOF' >>.claude/TASKS.md
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
 
 # Tasks
 
-### Add a --help flag to the CLI
+One file per task, ordered by phase label
+
+- [v01.0: Add a --help flag to the CLI](v01.0-help-flag.md): Print the usage line explicitly behind a --help flag
+EOF
+
+    cat <<'EOF' >.claude/tasks/v01.0-help-flag.md
+---
+title: 'v01.0: Add a --help flag to the CLI'
+description: Print the usage line explicitly behind a --help flag
+---
+
+# v01.0: Add a --help flag to the CLI
 
 The CLI already prints a usage line for unknown input. Add a `--help` flag that prints the same usage line explicitly. Decided: mirror the existing `--version` branch in `src/cli.ts`.
 
@@ -255,7 +287,7 @@ EOF
     git add . && git commit -m "feat(cli): version flag and usage line" --no-verify -q
 
     log_step "Scenario ready: groundwork qualifying test declines"
-    log_info "Context: one-file change, current state known, approach already decided in TASKS.md"
+    log_info "Context: one-file change, current state known, approach already decided in .claude/tasks/"
     log_info "         Only one of the three qualifying tests can hold"
     log_info "Action:  /toolkit:claude-groundwork adding a --help flag"
     log_info "Expect:  skill declines and points at /claude-feature"

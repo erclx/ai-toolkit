@@ -33,10 +33,27 @@ Power users evaluating note-taking tools.
 - Keyboard nav across the note list
 EOF
 
-    cat <<'EOF' >.claude/TASKS.md
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
+
 # Tasks
 
-### Record v2 launch screencast
+One file per task, ordered by phase label
+
+- [v02.0: Record v2 launch screencast](v02.0-launch-screencast.md): Walk the inline edit flow end to end for the v2 launch
+EOF
+
+    cat <<'EOF' >.claude/tasks/v02.0-launch-screencast.md
+---
+title: 'v02.0: Record v2 launch screencast'
+description: Walk the inline edit flow end to end for the v2 launch
+---
+
+# v02.0: Record v2 launch screencast
 
 Walk through the inline edit flow end to end. The hero moment is save-on-blur with the indicator updating in place under 400ms.
 
@@ -47,7 +64,7 @@ EOF
     git add . && git commit -m "feat(notes): v2 scope notes" --no-verify -q
 
     log_step "Scenario ready: screencast draft (with project context)"
-    log_info "Context: notes app v2 launch with REQUIREMENTS, TASKS, and CLAUDE.md present"
+    log_info "Context: notes app v2 launch with REQUIREMENTS, .claude/tasks/, and CLAUDE.md present"
     log_info "Action:  /claude-screencast 'v2 inline edit launch'"
     log_info "Expect:  4 discovery questions with seeded defaults, then draft to .claude/.tmp/screencast/<slug>.md with 8 sections and 5 pre-seeded beats"
     ;;
@@ -61,7 +78,7 @@ EOF
     git add . && git commit -m "chore: initial state" --no-verify -q
 
     log_step "Scenario ready: screencast draft (no project context)"
-    log_info "Context: bare repo, no CLAUDE.md or TASKS.md"
+    log_info "Context: bare repo, no CLAUDE.md or .claude/tasks/"
     log_info "Action:  /claude-screencast 'cli onboarding walkthrough'"
     log_info "Expect:  discovery falls back to generic defaults, draft still written, no software or font names appear"
     ;;
