@@ -29,7 +29,7 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 | `bun run check:ci`      | Every stage via `--all`, asserting formatting instead of applying it. Still regenerates. |
 | `bun run check:format`  | Read-only prettier and shfmt format check.                                               |
 | `bun run check:spell`   | Read-only cspell check against project dictionaries.                                     |
-| `bun run check:shell`   | Read-only shellcheck against `scripts/` and `tooling/`.                                  |
+| `bun run check:shell`   | Read-only shellcheck against `scripts/`, `tooling/`, and `.claude/hooks/`.               |
 | `bun run check:types`   | Read-only `tsc --noEmit` against `src/`.                                                 |
 | `bun run check:install` | Clones the repo to tmp and asserts `aitk init` lands a fresh scaffold.                   |
 | `bun run format`        | Auto-fix prettier and shfmt formatting.                                                  |
@@ -68,7 +68,7 @@ All `.sh` files live under `scripts/`, except Claude Code hooks, which live in `
 
 The filter, the match, and the session id come out of one `jq` pass, so the hot path costs a single process and the second `jq` runs only when the hook actually fires. Splitting the fields through `@tsv` instead looks equivalent and is not: `@tsv` escapes a newline to a literal `\n`, which puts a backslash where the matcher expects whitespace or end of string, and every multi-line command stops matching. A run with no `session_id` exits rather than sharing one marker file, since per-session dedupe needs a real id.
 
-`check:shell` lints `scripts/` and `tooling/` only, so these hooks get no shellcheck coverage. Run shellcheck by hand after editing one.
+`check:shell` lints `.claude/hooks/` alongside `scripts/` and `tooling/`. It has to, because the shell stage is gated on any `.sh` change. Linting a narrower set than the gate keys on produces a stage that fires on a hook edit, inspects other directories, and reports a pass that says nothing about the file that triggered it. Keep the glob and the gate pattern in step whenever either moves.
 
 ## Husky hooks
 
