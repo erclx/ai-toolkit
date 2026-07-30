@@ -46,10 +46,9 @@ interface SeedsListOptions {
 const SEEDED_FILES: readonly string[] = [
   'ARCHITECTURE.md',
   'REQUIREMENTS.md',
-  'TASKS.md',
   'DESIGN.md',
 ]
-const SEEDED_DIRS: readonly string[] = ['wireframes']
+const SEEDED_DIRS: readonly string[] = ['tasks', 'wireframes']
 const USER_DIR = join('tooling', 'claude', 'user')
 const STATUSLINE = 'statusline-command.sh'
 

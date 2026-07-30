@@ -9,7 +9,7 @@ name = "claude"
 extends = ""
 
 [gitignore]
-"# Claude" = [".claude/.tmp/", ".claude/plans/", ".claude/TASKS.md"]
+"# Claude" = [".claude/.tmp/", ".claude/plans/", ".claude/tasks/"]
 `
 
 const dirs: string[] = []
@@ -53,7 +53,7 @@ describe('planGitignore', () => {
     expect(entries).toEqual([
       { entry: '.claude/.tmp/', present: false },
       { entry: '.claude/plans/', present: false },
-      { entry: '.claude/TASKS.md', present: false },
+      { entry: '.claude/tasks/', present: false },
     ])
   })
 
@@ -66,7 +66,7 @@ describe('planGitignore', () => {
 
     expect(pendingEntries(entries).map((entry) => entry.entry)).toEqual([
       '.claude/.tmp/',
-      '.claude/TASKS.md',
+      '.claude/tasks/',
     ])
   })
 
@@ -116,7 +116,7 @@ describe('planGitignore', () => {
     expect(entries.map((entry) => entry.entry)).toEqual([
       '.claude/.tmp/',
       '.claude/plans/',
-      '.claude/TASKS.md',
+      '.claude/tasks/',
     ])
   })
 })
