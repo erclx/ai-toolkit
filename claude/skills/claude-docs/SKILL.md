@@ -23,12 +23,18 @@ Take the union of `git diff --name-only <base> HEAD`, `git diff --name-only HEAD
 
 Prefer `origin/main` over local `main`. On `main` itself the local ref resolves to HEAD, so every committed change drops out of the set and the skill goes blind to the work it is meant to read.
 
-Widen the set whenever the baseline is weak. Both of these cases mean there is no usable baseline, so treat every tracked file as changed:
+The baseline is unusable in two cases:
 
 - No merge base resolves against either ref.
-- The base came from local `main` and equals HEAD. Nothing is pushed to compare against, and a narrow read here reports no changes instead of admitting it cannot see them.
+- The base came from local `main` and equals HEAD. Nothing is pushed to compare against, so a narrow read reports no changes rather than admitting it cannot see them.
 
-Every fallback widens rather than narrows. A set that is too wide costs a longer pass. A set that is too narrow leaves the board wrong and emits no signal that it happened.
+An unusable baseline splits the reading step from the writing steps.
+
+**Step 2 reads the commits directly.** Both `git diff <base> HEAD` and `git diff HEAD` are empty exactly when this fires, so a widened file list supplies names and no content, and Step 2 decides on behavior rather than names. Read `git log -p -1`, widening to `git log -p -<n>` when the session spans several commits, and read the candidate task files against the working tree. A fresh `git init` on `main` with no remote is the ordinary shape of a scaffolded project, so this path carries the evidence rather than covering an edge case.
+
+**Steps 4 and 7 skip.** Report `⚠ No usable diff baseline. Skipped the wireframe sweep and context refresh.` Both steps write, and treating the whole tree as changed would stub a wireframe for every uncovered surface in the repository and rewrite every context entry that tree touches.
+
+Widening what a step reads is safe. Widening what a step writes is not.
 
 ## Step 1: read current docs
 
@@ -54,12 +60,12 @@ Review the session for decisions that diverged from the original plan:
 - Design or UX decisions that differ from DESIGN.md or any `.claude/wireframes/<surface>.md`
 - Tasks blocked or newly identified
 
-Then resolve the diff baseline and match the diff against the board. From `.claude/tasks/index.md`, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped. For each unchecked outcome, decide whether the diff shipped the behavior that outcome names. Completion is the one judgment here that is a fact about the repository rather than a fact about the conversation, so the diff decides it and the session does not. Requirements, architecture, and design stay session-sourced.
+Then resolve the diff baseline and match it against the board. From `.claude/tasks/index.md` at the main worktree root, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped. Path matching only chooses which files to open. Behavior decides each outcome. For each unchecked outcome, decide whether the diff shipped the behavior that outcome names. Completion is the one judgment here that is a fact about the repository rather than a fact about the conversation, so the diff decides it and the session does not. Requirements, architecture, and design stay session-sourced.
 
 Keep the match conservative:
 
 - Mark only outcomes already written on the board. Never infer a new task from the diff.
-- Match on the behavior an outcome describes, not on filenames or commit subjects.
+- Match on the behavior an outcome describes, not on filenames or commit subjects. The path match above only narrowed which task files to open.
 - Leave an outcome `[ ]` when the diff is ambiguous. An unmarked shipped outcome costs one manual edit, while a wrongly marked one hides work that never happened.
 
 Stop here when the session shows no divergence **and** the diff matches no queued outcome: `✅ No doc updates needed. Session matched the original plan.` Both conditions have to hold. Shipping a queued task exactly as planned is the ordinary case and it reads as no divergence, so a session-only bail would stop the skill before it reaches the marking step.
@@ -85,7 +91,7 @@ Write each updated file immediately. Claude Code's tool permission dialog is the
 
 ## Step 4: wireframe coverage sweep
 
-Skip this step silently when `.claude/wireframes/` does not exist or has no surface files.
+Skip this step silently when `.claude/wireframes/` does not exist or has no surface files. Skip it with the reported warning when the baseline is unusable, per the rule above.
 
 Reuse the diff from the baseline above and filter for UI-affecting paths. UI-affecting paths are framework-dependent. Default heuristic: any file under a `components/`, `features/`, `pages/`, `app/`, `routes/`, or `screens/` folder, plus any `*.tsx`, `*.jsx`, `*.vue`, or `*.svelte` file anywhere in the diff.
 
@@ -137,7 +143,7 @@ Do not edit `CLAUDE.md` inline. Every `CLAUDE.md` change goes through the show-d
 
 ## Step 7: refresh context entries
 
-Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
+Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries. Skip it with the reported warning when the baseline is unusable, per the rule above.
 
 Reuse the diff from the baseline above, names and content both. For each existing `.claude/context/<domain>.md`:
 
@@ -157,6 +163,8 @@ The base lint-staged config runs `aitk indexes regen` on every committed `*.md`,
 Sweep only scratch that was actually consumed this session. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
 **Plans.** For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the path. Never delete a plan. `CLAUDE.md` owns why a shipped plan is archived rather than removed.
+
+The archive is deliberately not session-scoped, which is the one place this sweep reaches past Step 3's rule against touching task files the session did not change. A board carrying a task that closed while an earlier run missed its archive is the defect this exists to clear, and skipping those tasks would preserve it. Reaching them is safe because the archive moves the plan and points the task at the new path, so a task from unrelated work ends up with a working pointer rather than a broken one.
 
 Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same path. Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
