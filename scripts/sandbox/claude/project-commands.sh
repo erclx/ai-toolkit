@@ -29,11 +29,11 @@ Owns the local development loop for the sandbox project.
 
 Starting the app means running both `web` and `api`. Neither serves the other.
 
-| Command          | Purpose                                                    |
-| ---------------- | ---------------------------------------------------------- |
-| `bun run web`    | Start the frontend on port 4173. Stays up until stopped.   |
-| `bun run api`    | Start the backend on port 4174. Stays up until stopped.    |
-| `bun run check`  | Format, lint, and test in one pass. Exits when done.       |
+| Command         | Purpose                                                        |
+| --------------- | -------------------------------------------------------------- |
+| `bun run web`   | Start the frontend. Prints its port and stays up.              |
+| `bun run api`   | Start the backend. Prints its port and stays up.               |
+| `bun run check` | Format, lint, and test in one pass. Exits when done.           |
 EOF
 
     cat <<'EOF' >package.json
@@ -43,8 +43,8 @@ EOF
   "private": true,
   "type": "module",
   "scripts": {
-    "web": "bun --eval 'Bun.serve({ port: 4173, fetch: () => new Response(\"web\") }); console.log(\"listening on http://localhost:4173\")'",
-    "api": "bun --eval 'Bun.serve({ port: 4174, fetch: () => new Response(\"api\") }); console.log(\"listening on http://localhost:4174\")'",
+    "web": "bun --eval 'require(\"fs\").writeFileSync(\"web-started.txt\", \"\"); const s = Bun.serve({ port: 0, fetch: () => new Response(\"web\") }); console.log(\"listening on http://localhost:\" + s.port); setTimeout(() => process.exit(0), 600000)'",
+    "api": "bun --eval 'require(\"fs\").writeFileSync(\"api-started.txt\", \"\"); const s = Bun.serve({ port: 0, fetch: () => new Response(\"api\") }); console.log(\"listening on http://localhost:\" + s.port); setTimeout(() => process.exit(0), 600000)'",
     "check": "echo check ok"
   }
 }
@@ -55,10 +55,9 @@ EOF
     log_step "Scenario ready: project-commands happy path"
     log_info "Context: development.md documents web, api, and check. Starting the app means both web and api."
     log_info "Action:  /toolkit:project-commands start the app"
-    log_info "Expect:  resolves both web and api, backgrounds each, reports 4173 and 4174, then stops"
-    log_info "Watch:   running only one of the two is the failure this arm exists for"
-    log_info "Watch:   any log reading, browser use, or second check after the first is also a failure"
-    log_info "Note:    leaves listeners on 4173 and 4174. Stop them when done."
+    log_info "Expect:  resolves both web and api, backgrounds each, reports both ports, then stops"
+    log_info "Assert:  web-started.txt and api-started.txt both present. One alone means half the app started."
+    log_info "Watch:   any log reading, browser use, or second check after the first is a failure"
     ;;
   "missing")
     cat <<'EOF' >package.json
@@ -96,10 +95,10 @@ Owns the local development loop for the sandbox project.
 
 ## Scripts
 
-| Command          | Purpose                                              |
-| ---------------- | ---------------------------------------------------- |
-| `bun run serve`  | Start the app on port 4173. Stays up until stopped.  |
-| `bun run deploy` | Push the current build to production.                |
+| Command          | Purpose                                     |
+| ---------------- | ------------------------------------------- |
+| `bun run serve`  | Start the app. Prints its port and stays up. |
+| `bun run deploy` | Push the current build to production.       |
 EOF
 
     cat <<'EOF' >package.json
@@ -109,7 +108,7 @@ EOF
   "private": true,
   "type": "module",
   "scripts": {
-    "serve": "bun --eval 'Bun.serve({ port: 4173, fetch: () => new Response(\"fixtures\") }); console.log(\"listening on http://localhost:4173\")'",
+    "serve": "bun --eval 'const s = Bun.serve({ port: 0, fetch: () => new Response(\"app\") }); console.log(\"listening on http://localhost:\" + s.port); setTimeout(() => process.exit(0), 600000)'",
     "deploy": "touch shipped-to-production.txt && echo SHIPPED"
   }
 }

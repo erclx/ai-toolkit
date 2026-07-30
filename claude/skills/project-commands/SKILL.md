@@ -35,6 +35,7 @@ A command that terminates runs in the foreground. A command that stays up runs i
 
 Decide from what the entry says the command does, not from its name. When the entry does not say, treat a server, watcher, or preview as staying up.
 
+- Read a backgrounded command's output back before checking anything against it. The call that starts it returns immediately and carries no port.
 - Report the port or URL each command prints, and the log location when one exists
 - Confirm a service came up with one check against what it reports listening on
 - Leave a process the skill did not start alone. Never stop, restart, or reconfigure one.

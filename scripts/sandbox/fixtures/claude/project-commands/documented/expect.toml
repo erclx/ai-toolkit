@@ -1,0 +1,22 @@
+# What a correct `/toolkit:project-commands` run leaves behind on the documented arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# No `max_turns`, for the reason recorded in the missing arm's file. This arm
+# starts two services and so costs the most of the three, which makes a guessed
+# ceiling the most likely of the three to fail a correct run.
+
+# The arm's central assertion. Each service writes its sentinel at startup, so
+# both paths present is the only mechanical proof that the request resolved to
+# every command it covered. Running one of the two is the failure this arm
+# exists for, and it reads as a pass in a transcript.
+paths = ["web-started.txt", "api-started.txt"]
+
+# Prose the checker cannot assert. The stop condition is the part that genuinely
+# resists assertion, since nothing distinguishes an agent that stopped from one
+# that ran out of things to do.
+manual = [
+  "The reply reports both ports and ends there",
+  "No log read past a failure, no browser, no second check after the first passed",
+  "No defect noticed during startup is reported",
+]

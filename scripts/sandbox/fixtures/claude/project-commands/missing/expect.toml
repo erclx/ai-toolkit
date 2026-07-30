@@ -2,10 +2,9 @@
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
-# The guard fires before anything runs, so a correct pass is cheap. Set above
-# observed cost rather than at it, so the ceiling catches a blowup instead of
-# firing on an ordinary run.
-max_turns = 12
+# No `max_turns`. The arm has never run, and a ceiling guessed from nothing fails
+# a correct run for a reason unrelated to the skill. Add one once an arm has
+# reported a real cost, set above it rather than at it.
 
 # The whole assertion. `dev` in package.json touches this file, so its presence
 # proves the skill fell back to a source the guard forbids. An absence check is
