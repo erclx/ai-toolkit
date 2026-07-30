@@ -17,7 +17,7 @@
     "test": "bun --bun vitest run",
     "prepare": "husky",
     "check": "./scripts/core/verify.sh",
-    "check:ci": "VERIFY_WRITE=false ./scripts/core/verify.sh",
+    "check:ci": "VERIFY_WRITE=false ./scripts/core/verify.sh --all",
     "update": "./scripts/core/update.sh",
     "clean": "./scripts/core/clean.sh",
     "snapshot": "./scripts/core/snapshot.sh",
