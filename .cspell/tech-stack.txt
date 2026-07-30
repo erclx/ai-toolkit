@@ -3,6 +3,7 @@ argjson
 asciinema
 asyncio
 axios
+backgrounded
 bierner
 calibri
 cambria
