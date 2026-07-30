@@ -67,7 +67,6 @@ Omit any section with nothing in it. Cap the ready-to-build handoffs you recomme
 - Do not merge. Recommend merge or changes. The human merges.
 - Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR.
 - Do not edit tracked files from this session. Record a change identified while orchestrating against the task that owns it, so it ships from that task's branch and lands in a pull request.
-- Do not leave tracked board edits uncommitted in the main worktree. A `.claude/ROADMAP.md` resequence folds into the next worker's branch so it ships in that feature's PR.
 - Do not hand a worker anything but a plan, since scope lives there. A plan carries exact diffs only when they are already known, otherwise it states the scope and the open questions and lets the worker write the diff.
 
 ## Parallelism
