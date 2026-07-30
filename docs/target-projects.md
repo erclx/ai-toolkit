@@ -66,11 +66,21 @@ Per-domain mechanics live in the corresponding `docs/<domain>.md`. The skill bod
 
 When the toolkit updates, target projects pull changes per domain. There is one catch-all and several targeted entry points.
 
+### Check first
+
+`aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next. A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `toolkit:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `toolkit:migration-standards` handles.
+
+That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes recording the toolkit commit and a hash per installed file. A project that has never synced under a toolkit new enough to write one reports every difference as `drifted`, the unattributed verdict. Running any sync stamps it.
+
+Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code.
+
+Tooling is not covered by the stamp. Reconcile those configs with `aitk tooling <stack> <path>`.
+
 ### Catch-all
 
 `aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence. It never touches user-owned seed files. Governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
-Standards are the exception inside that run. A drifted standard is reported and left alone rather than overwritten, because standards are seeds a project edits. To take the upstream version, run `aitk standards sync <path>` interactively, or use `toolkit:claude-seed-sync` below to merge section by section.
+Standards are the exception inside that run, and the stamp narrows it. A standard the project customized is reported and left alone rather than overwritten. A standard still matching what was installed carries no local edits to lose, so a headless run updates it. On an unstamped project the old blanket rule holds and every drifted standard is left alone. To take the upstream version of a customized file, run `aitk standards sync <path>` interactively, or use `toolkit:claude-seed-sync` below to merge section by section.
 
 ### Targeted
 
@@ -100,7 +110,7 @@ claude --plugin-dir <toolkit>/claude
 
 In the session, invoke `toolkit:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
 
-Ongoing: invoke `toolkit:claude-seed-sync` for seed drift, or run `aitk sync .` for a catch-all refresh.
+Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `toolkit:claude-seed-sync` for seed drift or `aitk sync .` for a catch-all refresh.
 
 ### Web application
 
@@ -113,6 +123,7 @@ Invoke `toolkit:setup-init`. The skill reads `package.json` and the Vite config,
 
 Ongoing maintenance:
 
+- What has drifted: `aitk sync --check .`
 - Seed drift: invoke `toolkit:claude-seed-sync`
 - Catch-all sync: `aitk sync .`
 - Governance rule refresh only: `aitk gov sync .`
@@ -134,7 +145,7 @@ aitk tooling sync python ./backend --skip base
 
 `aitk sync .` applies every installed domain sync, then offers to commit the result and open a pull request. That last step needs a terminal. Under `AITK_NON_INTERACTIVE=1`, which is how an agent runs it, the domain syncs still apply and the git workflow is refused: the command reports the branch and commit it would have created, writes nothing to git, and exits 0. Review the working tree and commit it yourself, or rerun interactively to reach the commit and pull request options.
 
-Sync also refuses a target whose working tree is dirty, so commit or stash before running it.
+Sync also refuses a target whose working tree is dirty, so commit or stash before running it. `aitk sync --check .` has neither restriction, since it writes nothing.
 
 ## Related
 

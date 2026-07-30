@@ -18,7 +18,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/design/`, `src/slides/`, `src/transcripts/` own the domains built TS-first, documented as feature entries in `.claude/context/design.md`, `.claude/context/slides.md`, and `.claude/context/transcripts.md`
 - `src/indexes/` owns the index engine, the first domain migrated off bash, documented in `.claude/context/indexes.md`
 - `src/tooling/` owns the tooling inject and scan engine, documented in `.claude/context/tooling.md`
-- `src/sync/` owns the domain sync engine shared across gov, snippets, and standards, with the per-domain adapters in `src/gov/`, `src/snippets/`, and `src/standards/`. It also owns the `aitk sync` git workflow in `target.ts`, `git.ts`, and `workflow.ts`
+- `src/sync/` owns the domain sync engine shared across gov, snippets, and standards, with the per-domain adapters in `src/gov/`, `src/snippets/`, and `src/standards/`. It also owns the `aitk sync` git workflow in `target.ts`, `git.ts`, and `workflow.ts`, the install stamp in `stamp.ts`, and the drift report in `check.ts`
 - `src/init/` owns the `aitk init` flag plan and the partial-failure domain runner
 - `src/docs/` and `src/wiki/` own the two read-only domains, which reach for no shared engine because neither syncs into a target
 - `src/claude/` owns seed planning, the gitignore preview, and the user settings merge, the three pieces the `claude` dispatcher held before it was deleted
@@ -41,6 +41,13 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - An adapter supplies only a source lookup and, optionally, surfaces the file walk cannot see. Snippets landed against the engine with no change to it, which is the evidence that `SyncAdapter` generalizes rather than describing gov. Treat a required engine change in a later adapter as a finding, and prefer widening the adapter interface over branching inside the engine.
 - Standards is the adapter that needed the engine widened, and it took three optional fields rather than a branch on the domain name: `nonInteractive`, `isExcluded`, and `onComplete`. Each defaults to the behavior gov and snippets already had, so a widening cannot silently change an existing adapter.
 - The non-interactive policy is a discriminated union rather than a boolean. A headless run applies for a toolkit-owned domain and refuses for one whose files a project edits, and the refusing variant carries its own message and hint so the engine never holds domain copy.
+- The refusal is now per-file rather than per-domain. `refuse` stood in for a fact nobody could compute, so standards went unattended-hostile because one file among twelve might be customized. With a stamp the engine refuses only when a file it cannot prove untouched would be overwritten, and a purely mechanical update applies headlessly.
+- A content hash answers whether a file changed. Only a record written at install time answers who changed it, and those two need opposite actions. That is the whole reason `.claude/aitk.json` exists rather than recomputing against the source, which is what `planSync` already did.
+- The stamp's path list is a second input to the walk, not a lookup keyed by the current path. A relocated file is never walked, so a lookup would never consult its entry and the stamp would buy nothing a recomputed hash does not. Folding stamped paths into the walk is what makes a move visible.
+- `orphaned` and `stranded` are separate states because they need opposite treatment. A project-authored rule is orphaned and never converges, so counting it as drift left `--exit-code` failing forever with no remedy. A stamped file at a root the toolkit abandoned is stranded, which is a relocation waiting on a decision.
+- The stamp writes after the copies land, so a partial apply that throws leaves the previous stamp rather than a claim the target does not meet. A stamp that lies is worse than no stamp, because the next report calls updated files stale.
+- A missing or corrupt stamp degrades to the unattributed report rather than failing. Every existing target is unstamped, so that path is the only path on day one and stays the common one for a while.
+- Tooling is outside the stamp and says so through a `covers` field rather than by omission, so a reader can tell an uncovered domain from a clean one. `src/tooling/` runs its own inject and manifest machinery and never calls `planSync`.
 - The root program sets `helpOption(false)` for its own hand-rolled help, and subcommands inherit it. A migrated command re-enables help explicitly at each level or `--help` returns an unknown-option error.
 - Tests run under `bun --bun vitest` rather than plain vitest. Migrated code uses `Bun.YAML`, `Bun.Glob`, and `Bun.$`, which do not exist in the Node runtime vitest defaults to.
 - Bash that still needs a migrated capability shells into the CLI by path (`bun "$PROJECT_ROOT/src/cli.ts" ...`) rather than via the global `aitk`, so a linked worktree exercises its own code.
@@ -72,6 +79,16 @@ Claude sync runs under `AITK_NON_INTERACTIVE=1` so the embedded call does not pr
 Governance is the one domain whose sync condition differs from its detection condition. It reports as absent without `.claude/rules/`, yet still syncs when only the retired `.claude/GOV.md` remains, so that the sync can delete it.
 
 The workflow is skipped when the target is not a git root. When `gh` is missing the pull request option is hidden and "Commit only" still works. The timestamped branch name normally avoids collisions, and the workflow stops with a warning when the name already exists locally or on the remote. Two runs inside one minute collide by design.
+
+## Freshness
+
+`aitk sync --check` reports drift and writes nothing. It reads the same `planSync` a sync would apply, so the report cannot disagree with the action it predicts. Drift between syncs is normal, so the check exits 0 by default and CI opts into failing with `--exit-code`.
+
+Every install and sync writes `.claude/aitk.json`, recording the toolkit commit, a timestamp, the domains covered, and a content hash per installed file. The hash is what splits a difference by cause: matching the stamp means the file is untouched since install and the toolkit moved, so the update is mechanical. Anything else is a local edit and a decision. A file no stamp covers stays `drifted`, which is the unattributed verdict every target had before the stamp existed.
+
+The report bounds its upstream read by the stamped commit, so the range is exactly what landed since the last sync and never the whole log. A target synced yesterday reads a few commits and one untouched for months reads many, once. Plugin skills under `claude/` are never copied into a target and load live, so they cannot go stale. New ones appear in a separate read-only section, since nothing about them shows up in a file comparison.
+
+Tooling is not stamped. It runs its own inject and manifest machinery rather than the sync engine, so the stamp names the domains it covers rather than implying it covers everything the toolkit placed.
 
 ## CLI
 
