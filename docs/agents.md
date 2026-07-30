@@ -68,6 +68,7 @@ Full help: `aitk <command> --help`.
 | `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)                                                  |
 | `aitk sandbox reset`     | Reset sandbox to baseline                                                                      |
 | `aitk sandbox clean`     | Wipe the sandbox                                                                               |
+| `aitk sandbox check`     | Score a provisioned sandbox against a scenario expectation (`--json` for the verdict)          |
 | `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                                           |
 | `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                                       |
 | `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                                              |
@@ -158,6 +159,26 @@ SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
 ```
 
 Scenario categories: `infra:*` (domain flows), `git:*`, `scaffold:*`. `create` scenarios require interactive input and loop on empty input, so skip them in automated runs.
+
+### Scenario expectations
+
+`aitk sandbox check <category>:<command> [arm]` scores a provisioned sandbox against the arm's `expect.toml`, printing a verdict on stderr and, with `--json`, the same verdict as a record on stdout.
+
+```bash
+aitk sandbox check claude:docs drift --json
+```
+
+| Flag                | Effect                                                     |
+| ------------------- | ---------------------------------------------------------- |
+| `--envelope <file>` | Read `is_error`, `num_turns`, and denials from a run       |
+| `--writes <file>`   | Newline-delimited paths the session wrote, for write scope |
+| `--json`            | Emit the verdict record on stdout                          |
+
+The verdict `state` is `pass`, `fail`, or `unchecked`. An arm with no `expect.toml` is `unchecked` and exits 0, so the harness stays usable while expectations roll out. A declaration that exists but asserts nothing is a failure, since an expectation file that asserts nothing passes every run.
+
+Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a malformed target, or a sandbox that was never provisioned. A missing sandbox reports as an error rather than a failed verdict, because failing every path assertion would read as a skill that did nothing.
+
+`scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints.
 
 ## Docs
 
