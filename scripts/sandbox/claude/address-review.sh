@@ -17,7 +17,7 @@ stage_setup() {
 
   configure_sandbox_git_identity
 
-  git remote add origin "git@github.com:${GITHUB_ORG}/${ANCHOR_REPO}.git"
+  git remote add origin "$(sandbox_anchor_url)"
 
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 

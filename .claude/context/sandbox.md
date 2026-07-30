@@ -40,6 +40,12 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 - A run reports pass, fail, or unchecked. Absence of a declaration is `unchecked` rather than a pass, since a scenario that asserts nothing cannot pass, and rather than a failure, since failing every undeclared arm would make the harness unusable while expectations roll out. Only a failure exits non-zero.
 - A declaration that exists and declares no mechanical assertion fails. That is the silent-truncation failure `scripts/core/install-check.sh` documents in its own comment, where a domain with no assertion stays green while its output shrinks to nothing. Prose in `manual` does not count towards the total, or an arm could carry five lines a checker cannot read and still report green.
 - Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `aitk sandbox reset` restores without provisioning again.
+- The anchor URL is built once by `sandbox_anchor_url` in `lib/sandbox-git.sh` and reaches GitHub over HTTPS. Eleven call sites hardcoded an SSH URL before, so no anchor scenario could run on a machine carrying only `gh` credentials. `setup_ssh` went with them, since an agent cannot answer a passphrase prompt and nothing authenticates over SSH now.
+- The harness sets `credential.helper` to `!gh auth git-credential` on the sandbox repo rather than expecting the operator to run `gh auth setup-git`. `gh auth login` authenticates the CLI and leaves git without a credential, so an authenticated machine still failed at clone. Scoping the helper to the throwaway repo keeps the operator's global config unwritten and covers the pushes the agent makes itself once it is running inside the sandbox.
+- Setting that helper resets the list first, with an empty value ahead of the real one. `credential.helper` is multi-valued and git concatenates it across system, global, and local, trying each until one returns a credential. A plain set leaves an operator's own helper ahead of the harness's, so a `store` entry or a stale `gh auth setup-git` token answers first and gh never runs. The failure is a 403 on push, on exactly the machines this change exists to serve, and it is invisible on a machine carrying no global helper.
+- `GIT_TERMINAL_PROMPT=0` is exported by `manage-sandbox.sh` and again by `run.sh`. Git falls back to a terminal prompt when no helper supplies a credential, so an unauthenticated run would block on `/dev/tty` rather than fail, which breaks the rule that no command may require a TTY. `run.sh` needs its own export because the agent pushes from a session it spawns, which does not inherit the provisioning environment.
+- `clone_anchor` passes the helper with `git -c` instead of reading it from config. The clone creates the sandbox repo, so no local config exists yet at that point.
+- `require_sandbox_anchor_config` runs in the main shell before provisioning, because `sandbox_anchor_url` is called inside command substitutions where `log_error` exits only the subshell. Without the separate guard an empty `GITHUB_ORG` produced `git remote add origin ""`, which succeeds, leaving the run to fail later somewhere unrelated with exit code 0.
 
 ## Gotchas
 
@@ -58,6 +64,16 @@ aitk() {
 - On Windows, back-to-back headless runs can briefly fail to wipe `.sandbox` with a busy-lock. Re-run or `aitk sandbox clean` first.
 - An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the catalog.
 - Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
+
+## Prerequisites
+
+Nine scenarios clone and push a real GitHub remote. They need an authenticated `gh` and membership in the org that owns `toolkit-sandbox`, which is private. Everything else runs offline against an empty sandbox.
+
+```bash
+gh auth login   # required for any scenario declaring use_anchor
+```
+
+No precondition checks `gh auth status`, so a missing credential surfaces as an immediate clone failure naming the host rather than as a named precondition error. `GIT_TERMINAL_PROMPT=0` is what keeps that immediate instead of a blocked prompt. Org membership is a real requirement and not an accident of the setup: HTTPS fixes transport, not authorization, so a contributor outside the org still cannot run the anchor scenarios.
 
 ## Running
 

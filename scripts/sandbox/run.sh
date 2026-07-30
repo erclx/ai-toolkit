@@ -9,6 +9,10 @@ export PROJECT_ROOT
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
+# The agent pushes from inside the sandbox on its own, in a session this script
+# spawns, so the guard has to reach that environment and not only provisioning.
+export GIT_TERMINAL_PROMPT=0
+
 MODEL="${AITK_SKILL_TEST_MODEL:-sonnet}"
 ALLOWED_TOOLS="${AITK_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
 MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-20}"

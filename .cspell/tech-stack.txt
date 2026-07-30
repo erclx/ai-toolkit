@@ -72,6 +72,7 @@ soffice
 statusline
 streamable
 subgraph
+subshell
 tabindex
 tanstack
 tavily

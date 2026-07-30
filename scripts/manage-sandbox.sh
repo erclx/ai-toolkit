@@ -8,6 +8,12 @@ export PROJECT_ROOT
 
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
+
+# Without this, git falls back to a terminal prompt when no helper supplies a
+# credential, and an unauthenticated run blocks on /dev/tty instead of failing.
+# The harness must never require a TTY.
+export GIT_TERMINAL_PROMPT=0
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -34,7 +40,10 @@ show_help() {
 
 clone_anchor() {
   local repo_name=${ANCHOR_REPO:-"vite-react-template"}
-  local repo_url="git@github.com:${GITHUB_ORG}/$repo_name.git"
+  local repo_url
+
+  require_sandbox_anchor_config
+  repo_url=$(sandbox_anchor_url "$repo_name")
 
   log_step "Cloning anchor repository ($repo_name)"
 
@@ -42,7 +51,11 @@ clone_anchor() {
     rm -rf "$SANDBOX"
   fi
 
-  git clone --depth 1 "$repo_url" "$SANDBOX"
+  # The clone predates the sandbox repo, so the helper cannot come from its
+  # local config the way every later push does. The empty value first resets any
+  # helper inherited from global config, which would otherwise be tried ahead.
+  git -c credential.helper= -c credential.helper="$SANDBOX_GIT_CREDENTIAL_HELPER" \
+    clone --depth 1 "$repo_url" "$SANDBOX"
   rm -rf "$SANDBOX/.git"
   (
     cd "$SANDBOX"
@@ -51,23 +64,6 @@ clone_anchor() {
     git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify >/dev/null
   )
   log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
-}
-
-setup_ssh() {
-  log_step "Security authentication"
-
-  if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval "$(ssh-agent -s)" >/dev/null
-    local key
-    for key in "${SSH_KEY:-}" ~/.ssh/id_ed25519 ~/.ssh/id_rsa; do
-      if [ -n "$key" ] && [ -f "$key" ]; then
-        ssh-add "$key" && break
-      fi
-    done
-    log_info "SSH Agent initialized"
-  else
-    log_info "SSH Agent active"
-  fi
 }
 
 select_sandbox_category() {
@@ -149,10 +145,6 @@ load_sandbox_script() {
 
   # shellcheck source=/dev/null
   source "$sandbox_file"
-
-  if [ "$current_category" == "git" ] && [ "$current_command" == "pr" ]; then
-    setup_ssh
-  fi
 }
 
 init_empty_sandbox() {
@@ -182,6 +174,11 @@ provision_sandbox() {
   else
     init_empty_sandbox
   fi
+
+  # Scoped to the throwaway sandbox repo so the operator's global git config is
+  # never written. Covers both the scenario pushes and the ones the agent makes
+  # itself once it is running inside the sandbox.
+  (cd "$SANDBOX" && configure_sandbox_git_credentials)
 }
 
 # Mirrors the shape `planInstall` selects in src/standards/install.ts: the flat
