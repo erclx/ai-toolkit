@@ -26,7 +26,14 @@ case "$file_path" in
 */.claude/tasks/index.md) exit 0 ;;
 esac
 
-command -v aitk >/dev/null 2>&1 || exit 0
+# Report a missing CLI rather than exiting quietly. The path guard above already
+# scopes this to a task-file edit, so the message only fires where the stale
+# index it warns about is the actual outcome.
+if ! command -v aitk >/dev/null 2>&1; then
+  jq -nc --arg msg 'aitk is not on PATH, so .claude/tasks/index.md was not regenerated and is now stale. Install the toolkit CLI or run aitk indexes regen by hand.' \
+    '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'
+  exit 0
+fi
 
 # The walk-up boundary has to come from the path, not from the session. Shared
 # scratch resolves at the main worktree root, so a session inside a linked

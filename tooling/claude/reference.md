@@ -22,6 +22,16 @@ The claude stack installs the `.claude/` workflow directory into a project. Stat
 └── memory/            ← session memory files, gitignored
 ```
 
+## Upgrading from a single-file board
+
+A project installed before the board became a folder still holds `.claude/TASKS.md`. Nothing migrates it. `aitk claude init` seeds an empty `.claude/tasks/index.md` beside it and leaves the old file untouched, so every skill reads the empty catalog while the real board sits unreferenced.
+
+Convert by hand, once per project:
+
+1. Split each `###` block into `.claude/tasks/vXX.Y-<slug>.md`, adding the `title` and `description` frontmatter that `.claude/standards/tasks.md` requires. Compare each new file against the block it came from rather than checking that every block landed somewhere.
+2. Run `aitk indexes regen --no-stage --root . .claude/tasks/<any-task>.md` to build the catalog.
+3. Delete `.claude/TASKS.md`, and swap its `.gitignore` entry for `.claude/tasks/`.
+
 ## Gitignore
 
 - `# Claude`: `.claude/.tmp/`, `.claude/memory/`, `.claude/plans/`, `.claude/review/`, `.claude/worktrees/`, `.claude/tasks/`

@@ -126,8 +126,8 @@ Sweep only scratch that was actually consumed this session. Resolve all paths at
 
 **Plans.** For each task file marked `[x]` in Step 3, check for a `Plan:` line directly under the title and parse the path. Never delete a plan. `CLAUDE.md` owns why a shipped plan is archived rather than removed.
 
-- Path inside `.claude/plans/` and the file exists: create `.claude/.tmp/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the block's `Plan:` line to the archive path, so a completed block still leads to the reasoning behind it.
-- Path already inside `.claude/.tmp/plans-archive/`: skip silently. The plan was archived by an earlier pass and the block is already correct.
+- Path inside `.claude/plans/` and the file exists: create `.claude/.tmp/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
+- Path already inside `.claude/.tmp/plans-archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
 - Any other path outside `.claude/plans/`: warn and skip.
 
 **Reviews.** Derive `<slug>` from the current branch name (replace `/` with `-`). If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.

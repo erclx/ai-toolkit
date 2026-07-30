@@ -87,4 +87,6 @@ Why this task exists and what it depends on.
 
 ## Archiving
 
-A shipped task moves to `.claude/.tmp/task-archive/` under its own name, and the live index regenerates without it. Never delete a task file.
+Never delete a task file. A shipped task moves out of the folder under its own name, and the live index regenerates without it.
+
+No skill owns the move yet, so it is a manual step. `claude-docs` marks a shipped outcome `[x]` in place and deliberately does not archive. Pick the destination per project and keep it outside the live folder. This repository uses `.claude/.tmp/task-archive/`.
