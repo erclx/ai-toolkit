@@ -13,7 +13,7 @@ import {
   mergeExtraRules,
   resolveRules,
 } from '@/gov/stacks'
-import { runDomainSync } from '@/sync/engine'
+import { recordStamp, runDomainSync } from '@/sync/engine'
 import { resolveTarget } from '@/target'
 import {
   intro,
@@ -203,6 +203,7 @@ async function runInstall(
 
   logStep('Installing rules')
   for (const rel of await installRules(found, resolved)) logAdd(rel)
+  await recordStamp(createGovAdapter(PROJECT_ROOT), resolved, new Date())
 
   if (!hasStandards(resolved)) {
     logWarn(

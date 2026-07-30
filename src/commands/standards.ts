@@ -9,7 +9,7 @@ import {
   standardsInstallDir,
 } from '@/standards/index-refresh'
 import { applyInstall, planInstall } from '@/standards/install'
-import { runDomainSync } from '@/sync/engine'
+import { recordStamp, runDomainSync } from '@/sync/engine'
 import { resolveTarget } from '@/target'
 import { intro, logAdd, logInfo, logStep, logWarn, outro, select } from '@/ui'
 
@@ -79,6 +79,7 @@ async function runInstall(target: string): Promise<number> {
   logStep('Installing standards')
   for (const label of await applyInstall(files, destDir)) logAdd(label)
   await refreshIndex(sourceDir, resolved)
+  await recordStamp(createStandardsAdapter(PROJECT_ROOT), resolved, new Date())
 
   outro()
   process.stderr.write(

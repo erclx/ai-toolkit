@@ -18,6 +18,7 @@ import {
   runDomainSync,
   type SyncAdapter,
 } from '@/sync/engine'
+import { hashContent, readStamp, type StampDomain } from '@/sync/stamp'
 
 let ROOT: string
 let SOURCE: string
@@ -39,6 +40,27 @@ function createAdapter(overrides: Partial<SyncAdapter> = {}): SyncAdapter {
     ...overrides,
   }
 }
+
+function writeStampFixture(
+  domain: StampDomain,
+  hashes: Record<string, string>,
+): void {
+  writeFixture(
+    join(TARGET, '.claude/aitk.json'),
+    JSON.stringify({
+      covers: [domain],
+      domains: {
+        [domain]: {
+          commit: 'abc1234',
+          syncedAt: '2026-07-30T12:00:00.000Z',
+          files: hashes,
+        },
+      },
+    }),
+  )
+}
+
+const STAMPED_RULE = '.claude/rules/core/000-const.md'
 
 let PREVIOUS_NON_INTERACTIVE: string | undefined
 
@@ -222,6 +244,155 @@ describe('planSync', () => {
   })
 })
 
+describe('planSync attribution', () => {
+  const stamped = (): SyncAdapter =>
+    createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } })
+
+  it('should classify a difference matching the stamp as stale', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+    writeStampFixture('governance', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries[0].state).toBe('stale')
+  })
+
+  it('should classify a difference from the stamp as customized', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'edited by the project\n')
+    writeStampFixture('governance', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries[0].state).toBe('customized')
+  })
+
+  it('should queue a copy for a stale file the same as an unattributed one', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+    writeStampFixture('governance', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.changes.map((change) => change.kind)).toEqual(['copy'])
+  })
+
+  it('should fall back to drifted for a file the stamp does not cover', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+    writeStampFixture('governance', {})
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries[0].state).toBe('drifted')
+  })
+
+  it('should ignore a stamp written for another domain', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+    writeStampFixture('standards', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries[0].state).toBe('drifted')
+  })
+
+  it('should report a stamped file outside the install root as stranded', () => {
+    writeFixture(join(TARGET, 'rules/core/000-const.md'), 'installed\n')
+    writeStampFixture('governance', {
+      'rules/core/000-const.md': hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries).toEqual([
+      { state: 'stranded', rel: join('rules', 'core', '000-const.md') },
+    ])
+  })
+
+  it('should keep a project-authored file orphaned rather than stranded', () => {
+    writeFixture(join(TARGET, '.claude/rules/core/900-local.md'), 'mine\n')
+    writeStampFixture('governance', {})
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries).toEqual([
+      {
+        state: 'orphaned',
+        rel: join('.claude', 'rules', 'core', '900-local.md'),
+      },
+    ])
+  })
+
+  it('should drop a stamped key that escapes the target', () => {
+    writeFixture(join(ROOT, 'outside.md'), 'elsewhere\n')
+    writeStampFixture('governance', {
+      '../outside.md': hashContent('elsewhere\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries).toEqual([])
+  })
+
+  it('should leave a relocated file alone rather than queueing a delete', () => {
+    writeFixture(join(TARGET, 'rules/core/000-const.md'), 'installed\n')
+    writeStampFixture('governance', {
+      'rules/core/000-const.md': hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.changes).toEqual([])
+  })
+
+  it('should skip a stamped path the project has deleted', () => {
+    writeStampFixture('governance', {
+      'rules/core/000-const.md': hashContent('installed\n'),
+    })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries).toEqual([])
+  })
+
+  it('should not report a stamped path twice when the walk already saw it', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+    writeStampFixture('governance', { [STAMPED_RULE]: hashContent('same\n') })
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries).toEqual([
+      {
+        state: 'matching',
+        rel: join('.claude', 'rules', 'core', '000-const.md'),
+      },
+    ])
+  })
+
+  it('should stay unattributed when the adapter declares no stamp domain', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+    writeStampFixture('governance', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const plan = planSync(createAdapter(), TARGET)
+
+    expect(plan.entries[0].state).toBe('drifted')
+  })
+})
+
 describe('applyChanges', () => {
   it('should overwrite a drifted destination with its source', async () => {
     writeFixture(join(SOURCE, 'core/000-const.md'), 'new\n')
@@ -387,5 +558,102 @@ describe('runDomainSync', () => {
     })
 
     expect(code).toBe(1)
+  })
+
+  it('should apply stale drift headlessly even when the policy refuses', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    const dest = join(TARGET, STAMPED_RULE)
+    writeFixture(dest, 'installed\n')
+    writeStampFixture('governance', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const code = await runDomainSync(
+      createAdapter({
+        stamp: { domain: 'governance', toolkitRoot: ROOT },
+        nonInteractive: { kind: 'refuse', message: 'refused', hint: 'run it' },
+      }),
+      TARGET,
+      options,
+    )
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('upstream\n')
+  })
+
+  it('should still refuse headlessly when a file is customized', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    const dest = join(TARGET, STAMPED_RULE)
+    writeFixture(dest, 'edited by the project\n')
+    writeStampFixture('governance', {
+      [STAMPED_RULE]: hashContent('installed\n'),
+    })
+
+    const code = await runDomainSync(
+      createAdapter({
+        stamp: { domain: 'governance', toolkitRoot: ROOT },
+        nonInteractive: { kind: 'refuse', message: 'refused', hint: 'run it' },
+      }),
+      TARGET,
+      options,
+    )
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('edited by the project\n')
+  })
+
+  it('should stamp what it installed after applying changes', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'old\n')
+
+    await runDomainSync(
+      createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } }),
+      TARGET,
+      options,
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
+      [STAMPED_RULE]: hashContent('upstream\n'),
+    })
+  })
+
+  it('should stamp on a run that found nothing to change', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+
+    await runDomainSync(
+      createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } }),
+      TARGET,
+      options,
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
+      [STAMPED_RULE]: hashContent('same\n'),
+    })
+  })
+
+  it('should keep project-authored files out of the stamp', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+    writeFixture(join(TARGET, '.claude/rules/core/900-local.md'), 'mine\n')
+
+    await runDomainSync(
+      createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } }),
+      TARGET,
+      options,
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
+      [STAMPED_RULE]: hashContent('same\n'),
+    })
+  })
+
+  it('should write no stamp when the adapter declares no stamp domain', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+
+    await runDomainSync(createAdapter(), TARGET, options)
+
+    expect(readStamp(TARGET)).toBeUndefined()
   })
 })

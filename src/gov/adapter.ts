@@ -54,6 +54,7 @@ export function createGovAdapter(root: string): SyncAdapter {
     locateSource: (file: InstalledFile) =>
       index.get(basename(file.path, '.md')),
     collectRetired: (target: string) => collectRetiredGov(target),
+    stamp: { domain: 'governance', toolkitRoot: root },
   }
 }
 

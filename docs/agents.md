@@ -65,6 +65,7 @@ Full help: `aitk <command> --help`.
 | ------------------------ | ---------------------------------------------------------------------------------------------- |
 | `aitk init [path]`       | Bootstrap a project with selected toolkit domains                                              |
 | `aitk sync [path]`       | Sync all installed domains in a target project                                                 |
+| `aitk sync --check`      | Report toolkit drift without writing (`--json`, `--exit-code`)                                 |
 | `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)                                                  |
 | `aitk sandbox reset`     | Reset sandbox to baseline                                                                      |
 | `aitk sandbox clean`     | Wipe the sandbox                                                                               |
@@ -136,6 +137,22 @@ syncs and then refuses the git workflow, reporting the branch and commit it
 would have created and exiting 0. Nothing is staged, committed, or pushed
 headlessly. Run it interactively to reach the commit and pull request options.
 It also refuses a target whose working tree is dirty, so commit or stash first.
+
+`aitk sync --check` reports drift and writes nothing, so it needs no clean tree
+and is safe to run at any time. Each file is classified as `stale` when it still
+matches what the toolkit installed, `customized` when the project edited it,
+`stranded` when it sits at a path the toolkit no longer installs to, `orphaned`
+when the project authored it, or `drifted` when no stamp covers it. Use `--json`
+for the machine-readable report and `--exit-code` to fail a CI job. Orphaned
+files are excluded from that exit code, since a project-authored rule never
+converges. Attribution needs `.claude/aitk.json`, which every install and sync
+writes. Without it, every difference reports as `drifted`.
+
+Each domain carries its own toolkit anchor in that file, so syncing one domain
+never advances the revision another measures from, and each reports the upstream
+commits touching its own source path. The `covers` field names the domains a
+target has actually stamped, so a domain that was never stamped is legible
+rather than reading as a clean one.
 
 `aitk init` installs up to six core domains and reports each one independently. A
 domain that fails does not abort the run, so the command finishes the rest and
