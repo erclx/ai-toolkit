@@ -1,0 +1,19 @@
+# What a correct `/toolkit:project-commands` run leaves behind on the missing arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# The guard fires before anything runs, so a correct pass is cheap. Set above
+# observed cost rather than at it, so the ceiling catches a blowup instead of
+# firing on an ordinary run.
+max_turns = 12
+
+# The whole assertion. `dev` in package.json touches this file, so its presence
+# proves the skill fell back to a source the guard forbids. An absence check is
+# the right shape here because the correct behavior is that nothing ran.
+absent = ["fell-back.txt"]
+
+# Prose the checker cannot assert.
+manual = [
+  "The reply names .claude/context/development.md as the missing file",
+  "The reply does not suggest a command reconstructed from package.json",
+]

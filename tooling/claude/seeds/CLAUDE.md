@@ -41,7 +41,6 @@ The project uses a three-tier context model. Know which tier holds what before r
 ## Commands
 
 - Run `bun run check` before committing. Full script reference in `.claude/context/development.md`.
-- Keep every run command in that entry's `## Scripts` table. `project-commands` reads it to start the app or run a check on request, and a command documented nowhere cannot be run that way.
 
 ## Output
 

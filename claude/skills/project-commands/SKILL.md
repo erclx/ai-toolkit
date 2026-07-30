@@ -14,7 +14,7 @@ The value is the stop. A launch that continues into log inspection, browser chec
 - Check that `.claude/context/development.md` exists before anything else. If it does not, stop: `❌ No .claude/context/development.md. This project has no documented dev loop.` Do not fall back to `package.json`, a `Makefile`, or a README. A guess is worse than a stop, because the user cannot see it was a guess.
 - On a toolkit-scaffolded project the entry is installed by base tooling and extended per stack, so its absence means either a project that never ran `aitk init` or one that deleted the entry. Say which file is missing and let the user decide, rather than reconstructing it.
 - If the entry documents no command matching the request, stop and list what it does document. Do not infer a command from a filename or a framework.
-- If the resolved command deploys, publishes, releases, migrates, or resets, print it for the user to run and stop. These are not made safe by confirming them.
+- If the resolved command has an effect that outlives the process and stopping it does not undo, print it for the user to run and stop. Deploying, publishing, releasing, migrating, and resetting are the common shapes, and the test is the effect rather than the name. A script called `infra:apply` or `promote` qualifies.
 
 ## Step 1: read the entry
 
@@ -32,7 +32,9 @@ State the resolved command before running it. One line, no rationale.
 
 ## Step 3: run it
 
-Run the command from the project root. Let the harness background a long-running process rather than managing it in the skill.
+Run the command from the project root. A command that terminates runs in the foreground. A command that stays up runs in the background, by setting the Bash tool's `run_in_background` parameter on the call. Nothing backgrounds a process on its own, and a foreground dev server blocks until the tool timeout kills it, which reports as a command that never came up and leaves nothing running.
+
+Decide from what the entry says the command does, not from its name. When the entry does not say, treat a server, watcher, or preview as staying up.
 
 - Report the port or URL the command prints, and the log location when one exists
 - Confirm a service came up with one check against what it reports listening on

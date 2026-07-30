@@ -186,12 +186,12 @@ Plan mode is a permission mode that restricts Claude to read-only exploration. `
 
 ### Running the app
 
-| Aspect   | `run` (built-in)                                             | `project-commands` skill                                      |
-| -------- | ------------------------------------------------------------ | ------------------------------------------------------------- |
-| What     | Launches the app and drives it to confirm a change works     | Runs a command the project documents, then stops              |
-| Sources  | Falls back through built-in patterns per project type        | Reads `.claude/context/development.md` only, with no fallback |
-| Ends at  | A verified app: logs read, browser driven, screenshots taken | The launch: the port or exit status, and nothing after it     |
-| Best for | Confirming a change behaves in the real app                  | Starting something to use, or running a check                 |
+| Aspect   | `run` (built-in)                                             | `project-commands` skill                                                                                       |
+| -------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| What     | Launches the app and drives it to confirm a change works     | Runs a command the project documents, then stops                                                               |
+| Sources  | Falls back through built-in patterns per project type        | Reads `.claude/context/development.md`, plus `ARCHITECTURE.md` for a named mode, with no fallback beyond those |
+| Ends at  | A verified app: logs read, browser driven, screenshots taken | The launch: the port or exit status, and nothing after it                                                      |
+| Best for | Confirming a change behaves in the real app                  | Starting something to use, or running a check                                                                  |
 
 The built-in delegates to a project skill when it finds one, so the two compose rather than compete. The split is the stop condition. `run` continues past a passing health check by design, because its job is confirming a change. That is the wrong shape for "start the server so I can use it", which is the request `project-commands` answers.
 
