@@ -21,7 +21,9 @@ The job name stays `🛡️ Static Checks` even though the job now runs the test
 
 Mode selection goes through `VERIFY_WRITE` rather than a flag, matching the existing `VERIFY_NESTED` pattern, and CI names the `check:ci` script rather than setting the variable inline. Each mode runs exactly one format stage. The local run formats in place, so the check pass that used to follow it verified prettier and shfmt converged on their own output rather than verifying the repository.
 
-Scope selection goes through an `--all` argument rather than a third environment variable, because it describes what to run rather than which mode to run in, and an unknown argument exits 1 instead of being ignored. CI is what makes a scoped local gate safe. A wrong scoping decision costs a red pull request rather than a regression that reaches `main`, which is the whole reason the local run may skip a stage at all.
+Scope selection goes through an `--all` argument rather than a third environment variable, because it describes what to run rather than which mode to run in. An unknown argument exits 1 and `--help` prints the argument list, so the surface stays discoverable without reading the script.
+
+CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request` and `workflow_dispatch` and never on push, so the backstop covers the pull request path alone. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Work lands on `main` through a squash merge of a reviewed pull request, which is why the uncovered direct-push path is theoretical rather than routine. Scoping still baselines on `origin/main` so that path is gated too.
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
 

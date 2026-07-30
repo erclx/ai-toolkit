@@ -45,7 +45,7 @@ The changed set unions the branch diff against the merge base with `origin/main`
 
 The baseline is `origin/main` and not local `main` for a reason. On `main` itself the local ref is HEAD, so the merge base resolves to HEAD and every commit not yet pushed drops out of the changed set. `pre-push` would then skip the scoped stages on a direct push to `main`, which `.github/workflows/verify.yml` does not catch either, because it triggers on `pull_request` and `workflow_dispatch` and never on push. Comparing against the remote ref keeps committed work visible. When `origin/main` does not resolve, which happens transiently during a concurrent `fetch --prune`, the fallback to local `main` treats a merge base equal to HEAD as a signal to run every stage.
 
-Pass `--all` to force the full suite. `bun run check:ci` does exactly that, so CI stays the backstop for a wrong local scoping decision.
+Pass `--all` to force the full suite, and `--help` to print the argument list. `bun run check:ci` passes `--all`, so CI stays the backstop for a wrong local scoping decision on the pull request path.
 
 Measure CPU seconds and not wall clock when judging a stage's cost. The suite fans 415 tests across every core, so it is the most expensive stage and among the fastest, and ranking by wall time hides it. Test-count growth is invisible in wall time and linear in CPU.
 
@@ -65,6 +65,8 @@ All `.sh` files live under `scripts/`, except Claude Code hooks, which live in `
 `.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Three carry the same names and behavior as the hooks `aitk claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `claude-plugin.md`.
 
 `dev-command-reminder.sh` is toolkit-only and has no seed counterpart. It fires once per session when a `Bash` command runs `check`, `format`, or `check:install`, and points the agent at this entry. The matcher tests the command string rather than the tool name, because `Bash` is the highest-frequency tool in a session and a loose matcher would add latency to every shell call. It stays silent on `check:types` and `test`, which need no reminder.
+
+The filter, the match, and the session id come out of one `jq` pass, so the hot path costs a single process and the second `jq` runs only when the hook actually fires. Splitting the fields through `@tsv` instead looks equivalent and is not: `@tsv` escapes a newline to a literal `\n`, which puts a backslash where the matcher expects whitespace or end of string, and every multi-line command stops matching. A run with no `session_id` exits rather than sharing one marker file, since per-session dedupe needs a real id.
 
 `check:shell` lints `scripts/` and `tooling/` only, so these hooks get no shellcheck coverage. Run shellcheck by hand after editing one.
 

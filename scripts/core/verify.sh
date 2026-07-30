@@ -16,11 +16,21 @@ check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
 }
 
+print_usage() {
+  echo "Usage: bun run check [--all]"
+  echo "  --all   Run every stage instead of scoping shell, types, and tests to changed files"
+  echo "  --help  Print this message"
+}
+
 parse_args() {
   local arg
   for arg in "$@"; do
     case "$arg" in
     --all) SCOPED=false ;;
+    -h | --help)
+      print_usage
+      exit 0
+      ;;
     *) log_error "Unknown argument: $arg" ;;
     esac
   done
