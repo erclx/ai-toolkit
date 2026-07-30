@@ -53,6 +53,10 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 ## Conventions
 
 - For any git operation (commits, PRs, branch naming), use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
+- When filing a GitHub issue, label it from the title prefix: a `bug:` title gets `bug`, a `task:` title gets `enhancement`
+- Never edit tracked files in the main worktree. A change identified while orchestrating gets recorded against the task that owns it and ships from that task's branch.
+- A task is legitimate with only an issue or groundwork link behind it. It needs no plan to be queued.
+- Handing work to a worker requires a plan, because scope lives in the plan. Write exact diffs into it only when they are already known, otherwise state the scope and open questions and let the worker write the diff.
 
 ## Indexes
 
