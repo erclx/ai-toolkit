@@ -26,7 +26,7 @@ Task API used as the fixture for /toolkit:claude-memory-review.
 
 ## Tasks
 
-- Track work in `.claude/TASKS.md`.
+- Track work in `.claude/tasks/`, one file per task.
 EOF
 
   mkdir -p .claude/skills/aitk-sample

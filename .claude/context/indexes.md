@@ -31,6 +31,7 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - A child folder whose `index.md` is missing `title` or `subtitle` is skipped with a warning rather than failing the walk.
 - When a folder has both an overview file and a same-named subfolder, both entries appear.
 - Whole-repo walks with no positional paths never auto-stage.
+- A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` depends on that asymmetry: `bun run check` cannot regenerate it, so a `PostToolUse` hook passes the changed path instead. Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit.
 
 ## When to adopt
 

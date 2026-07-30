@@ -1,6 +1,6 @@
 ---
 title: Versioning reference
-description: Phase label vs semver discipline across TASKS, PRs, commits, and tags
+description: Phase label vs semver discipline across tasks, PRs, commits, and tags
 ---
 
 # Versioning reference
@@ -9,7 +9,7 @@ Two namespaces, kept separate.
 
 ## Phase labels
 
-Internal coordination vocabulary used in TASKS and chat.
+Internal coordination vocabulary used in the task board and chat.
 
 - Format is project-specific.
 - Used to order work and disambiguate streams during planning.
@@ -28,7 +28,7 @@ External release identity used in git tags and release notes. Independent of pha
 
 | Surface                   | Phase labels | Semver tags                         |
 | ------------------------- | ------------ | ----------------------------------- |
-| `.claude/TASKS.md`        | yes          | no                                  |
+| `.claude/tasks/`          | yes          | no                                  |
 | Chat with the operator    | yes          | no                                  |
 | PR titles                 | no           | only when the PR cuts a release     |
 | Commit messages           | no           | only when the commit cuts a release |
@@ -44,4 +44,4 @@ External release identity used in git tags and release notes. Independent of pha
 
 ## Why
 
-Phase labels keep planning conversations efficient. They make `git log`, PR titles, and the tag list unreadable when they leak in. A future reader cannot reconstruct what an internal label meant without the matching TASKS entry, which is gitignored. Semver tags carry meaning independent of conversation state and survive in git history. Keeping the two namespaces apart preserves both.
+Phase labels keep planning conversations efficient. They make `git log`, PR titles, and the tag list unreadable when they leak in. A future reader cannot reconstruct what an internal label meant without the matching task file, which is gitignored. Semver tags carry meaning independent of conversation state and survive in git history. Keeping the two namespaces apart preserves both.

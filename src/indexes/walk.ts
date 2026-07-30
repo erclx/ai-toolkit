@@ -71,6 +71,19 @@ async function listIgnored(
 }
 
 /**
+ * Reports whether git ignores `path`.
+ *
+ * Positional regen reaches an ignored folder, because `findIndexedAncestor`
+ * walks the filesystem and never consults git. Staging what it writes there
+ * always fails, so the caller checks this first and skips the attempt rather
+ * than warning on a no-op.
+ */
+export async function isIgnored(root: string, path: string): Promise<boolean> {
+  const ignored = await listIgnored(root, [resolve(path)])
+  return ignored.has(resolve(path))
+}
+
+/**
  * Walks up from `path` to the nearest folder holding an index, stopping at
  * `root`. Returns undefined when the path escapes the boundary or nothing
  * indexed is found.

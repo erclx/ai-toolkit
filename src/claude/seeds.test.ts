@@ -29,14 +29,15 @@ async function makeRoot(): Promise<string> {
 
   await mkdir(join(claude, 'hooks'), { recursive: true })
   await mkdir(join(claude, 'context'), { recursive: true })
+  await mkdir(join(claude, 'tasks'), { recursive: true })
   await mkdir(join(claude, 'wireframes'), { recursive: true })
 
   await writeFile(join(seeds, 'CLAUDE.md'), '# Project\n')
-  await writeFile(join(claude, 'TASKS.md'), '# Tasks\n')
   await writeFile(join(claude, 'ARCHITECTURE.md'), '# Architecture\n')
   await writeFile(join(claude, 'settings.json'), '{}\n')
   await writeFile(join(claude, 'hooks', 'guard.sh'), '#!/bin/sh\n')
   await writeFile(join(claude, 'context', 'index.md'), '# Context\n')
+  await writeFile(join(claude, 'tasks', 'index.md'), '# Tasks\n')
   await writeFile(join(claude, 'wireframes', 'index.md'), '# Wireframes\n')
 
   return root
@@ -57,10 +58,10 @@ describe('planSeeds', () => {
 
     expect(labels).toEqual([
       'ARCHITECTURE.md',
-      'TASKS.md',
       'settings.json',
       'hooks/guard.sh',
       'context/index.md',
+      'tasks/index.md',
       'wireframes/index.md',
       'CLAUDE.md',
     ])
@@ -79,13 +80,13 @@ describe('planSeeds', () => {
     const root = await makeRoot()
     const target = await makeDir()
     await mkdir(join(target, '.claude'), { recursive: true })
-    await writeFile(join(target, '.claude', 'TASKS.md'), '# Mine\n')
+    await writeFile(join(target, '.claude', 'ARCHITECTURE.md'), '# Mine\n')
 
     const entries = planSeeds(root, target)
 
-    expect(entries.find((e) => e.seed.scanLabel === 'TASKS.md')?.present).toBe(
-      true,
-    )
+    expect(
+      entries.find((e) => e.seed.scanLabel === 'ARCHITECTURE.md')?.present,
+    ).toBe(true)
   })
 
   it('should place CLAUDE.md at the project root rather than under .claude', async () => {
@@ -140,10 +141,10 @@ describe('applySeeds', () => {
 
     expect(applied).toEqual([
       '.claude/ARCHITECTURE.md',
-      '.claude/TASKS.md',
       '.claude/settings.json',
       '.claude/hooks/guard.sh',
       '.claude/context/index.md',
+      '.claude/tasks/index.md',
       '.claude/wireframes/index.md',
       'CLAUDE.md',
     ])
@@ -172,10 +173,10 @@ describe('applySeeds', () => {
     const root = await makeRoot()
     const target = await makeDir()
     await mkdir(join(target, '.claude'), { recursive: true })
-    await writeFile(join(target, '.claude', 'TASKS.md'), '# Mine\n')
+    await writeFile(join(target, '.claude', 'ARCHITECTURE.md'), '# Mine\n')
 
     const applied = await applySeeds(pendingSeeds(planSeeds(root, target)))
 
-    expect(applied).not.toContain('.claude/TASKS.md')
+    expect(applied).not.toContain('.claude/ARCHITECTURE.md')
   })
 })

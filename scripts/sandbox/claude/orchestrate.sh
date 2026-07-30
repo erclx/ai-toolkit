@@ -37,12 +37,27 @@ EOF
 | v0.2 | Next | See completion trends over time | Trend chart | v0.1, for the logged entries |
 EOF
 
-  cat <<'EOF' >.claude/TASKS.md
+  mkdir -p .claude/tasks
+  cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
+
 # Tasks
 
-## Up next
+One file per task, ordered by phase label
 
-### v0.1: Log a habit with one tap
+- [v00.1: Log a habit with one tap](v00.1-log-entry.md): Mark a habit done for today with a single tap
+EOF
+
+  cat <<'EOF' >.claude/tasks/v00.1-log-entry.md
+---
+title: 'v00.1: Log a habit with one tap'
+description: Mark a habit done for today with a single tap
+---
+
+# v00.1: Log a habit with one tap
 
 - [ ] Outcome: tapping a habit marks it done for today
 - [ ] Outcome: a second tap the same day is a no-op

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# Regenerates .claude/tasks/index.md after a task file changes.
+#
+# The task folder is gitignored, so the whole-repo walk in `bun run check`
+# drops it and never regenerates this index. A positional path bypasses that
+# filter, which makes this hook the only trigger that reaches the folder.
+
+input=$(cat)
+
+tool=$(printf '%s' "$input" | jq -r '.tool_name // empty')
+case "$tool" in
+Write | Edit | MultiEdit) ;;
+*) exit 0 ;;
+esac
+
+file_path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // empty')
+[ -n "$file_path" ] || exit 0
+
+case "$file_path" in
+*/.claude/tasks/*.md) ;;
+*) exit 0 ;;
+esac
+
+case "$file_path" in
+*/.claude/tasks/index.md) exit 0 ;;
+esac
+
+# Report a missing CLI rather than exiting quietly. The path guard above already
+# scopes this to a task-file edit, so the message only fires where the stale
+# index it warns about is the actual outcome.
+if ! command -v aitk >/dev/null 2>&1; then
+  jq -nc --arg msg 'aitk is not on PATH, so .claude/tasks/index.md was not regenerated and is now stale. Install the toolkit CLI or run aitk indexes regen by hand.' \
+    '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'
+  exit 0
+fi
+
+# The walk-up boundary has to come from the path, not from the session. Shared
+# scratch resolves at the main worktree root, so a session inside a linked
+# worktree passes a path that sits outside its own project directory and the
+# default boundary would reject it.
+root="${file_path%/.claude/tasks/*}"
+[ -n "$root" ] || exit 0
+
+# `--no-stage` because a hook has no business touching the index. On a project
+# whose board is not gitignored, the default auto-stage would silently add task
+# files to whatever commit is being assembled.
+output=$(aitk indexes regen --no-stage --root "$root" "$file_path" 2>&1) && exit 0
+
+# Regen failed, which on this folder means a task file is missing `title` or
+# `description`. Report it. Nothing else can: the folder is gitignored, so the
+# whole-repo walk never reaches it and no gate stage will ever fail on a stale
+# index. Staying quiet here is what makes the drift permanent.
+errors=$(printf '%s\n' "$output" | grep '^ERROR: ' | head -5)
+[ -n "$errors" ] || errors="$output"
+
+msg="Task index regen failed, so .claude/tasks/index.md is now stale. Fix the frontmatter and save again. $errors"
+jq -nc --arg msg "$msg" \
+  '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'
+exit 0

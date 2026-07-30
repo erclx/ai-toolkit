@@ -25,7 +25,7 @@ import {
 const ARCHIVE = '.claude/.tmp/plans-archive/feature-postgres-migration.md'
 const PLANS_LIVE = '.claude/plans/feature-postgres-migration.md'
 const PLANS_DECOY = '.claude/plans/feature-some-old-plan.md'
-const TASKS = '.claude/TASKS.md'
+const TASKS = '.claude/tasks/v01.0-postgres.md'
 
 const CLEAN_ENVELOPE: RunEnvelope = { isError: false, turns: 12, denials: 0 }
 

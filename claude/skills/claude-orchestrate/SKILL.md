@@ -19,7 +19,7 @@ in the loop below is an existing skill.
 Read the board in parallel, resolving the paths at the main worktree root per Worktrees in `CLAUDE.md`:
 
 - `.claude/ROADMAP.md`: the active version and what it groups
-- `.claude/TASKS.md`: what is queued
+- `.claude/tasks/index.md`: what is queued
 - `.claude/plans/*.md`: features already planned and ready to hand off
 - open PRs via `gh pr list --json number,title,headRefName,isDraft`
 
@@ -46,7 +46,7 @@ Omit any section with nothing in it. Cap the ready-to-build handoffs you recomme
 
 ## The loop
 
-1. Own the roadmap. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from `.claude/REQUIREMENTS.md`. Capture a needed resequence in the plan or TASKS for a worker to apply in its branch, so the tracked edit ships in a PR rather than dirtying main.
+1. Own the roadmap. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from `.claude/REQUIREMENTS.md`. Capture a needed resequence in the plan or a task file for a worker to apply in its branch, so the tracked edit ships in a PR rather than dirtying main.
 2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive.
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.

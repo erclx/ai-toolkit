@@ -22,14 +22,27 @@ afterEach(() => {
 
 describe('listSeeds', () => {
   it('should map each seed to its name, source, and install target', () => {
-    seedFile(join('.claude', 'TASKS.md'), 'Tasks')
+    seedFile(join('.claude', 'ARCHITECTURE.md'), 'Architecture')
 
     expect(listSeeds(root)).toEqual([
       {
-        name: 'TASKS.md',
-        source: join('tooling', 'claude', 'seeds', '.claude', 'TASKS.md'),
-        target: join('.claude', 'TASKS.md'),
-        src: join(root, 'tooling', 'claude', 'seeds', '.claude', 'TASKS.md'),
+        name: 'ARCHITECTURE.md',
+        source: join(
+          'tooling',
+          'claude',
+          'seeds',
+          '.claude',
+          'ARCHITECTURE.md',
+        ),
+        target: join('.claude', 'ARCHITECTURE.md'),
+        src: join(
+          root,
+          'tooling',
+          'claude',
+          'seeds',
+          '.claude',
+          'ARCHITECTURE.md',
+        ),
       },
     ])
   })
@@ -42,24 +55,26 @@ describe('listSeeds', () => {
     ])
   })
 
-  it('should list hooks and wireframes alongside the claude root level', () => {
+  it('should list hooks, tasks, and wireframes alongside the claude root level', () => {
     seedFile(join('.claude', 'settings.json'), '{}')
     seedFile(join('.claude', 'hooks', 'scratch-guard.sh'), 'Hook')
+    seedFile(join('.claude', 'tasks', 'index.md'), 'Tasks')
     seedFile(join('.claude', 'wireframes', 'index.md'), 'Wireframes')
 
     expect(listSeeds(root).map((entry) => entry.name)).toEqual([
       'settings.json',
       'hooks/scratch-guard.sh',
+      'tasks/index.md',
       'wireframes/index.md',
     ])
   })
 
   it('should place the project-level CLAUDE.md last', () => {
-    seedFile(join('.claude', 'TASKS.md'), 'Tasks')
+    seedFile(join('.claude', 'ARCHITECTURE.md'), 'Architecture')
     seedFile('CLAUDE.md', 'Project')
 
     expect(listSeeds(root).map((entry) => entry.target)).toEqual([
-      join('.claude', 'TASKS.md'),
+      join('.claude', 'ARCHITECTURE.md'),
       'CLAUDE.md',
     ])
   })
@@ -71,13 +86,20 @@ describe('listSeeds', () => {
 
 describe('readSeedContents', () => {
   it('should attach each seed body and drop the absolute source path', async () => {
-    seedFile(join('.claude', 'TASKS.md'), 'Tasks body')
+    seedFile(join('.claude', 'tasks', 'index.md'), 'Tasks body')
 
     expect(await readSeedContents(listSeeds(root))).toEqual([
       {
-        name: 'TASKS.md',
-        source: join('tooling', 'claude', 'seeds', '.claude', 'TASKS.md'),
-        target: join('.claude', 'TASKS.md'),
+        name: 'tasks/index.md',
+        source: join(
+          'tooling',
+          'claude',
+          'seeds',
+          '.claude',
+          'tasks',
+          'index.md',
+        ),
+        target: join('.claude', 'tasks', 'index.md'),
         content: 'Tasks body',
       },
     ])

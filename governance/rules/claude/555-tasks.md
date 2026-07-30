@@ -1,11 +1,12 @@
 ---
-description: Route .claude/TASKS.md edits to the tasks standard for board sections and block format
+description: Route .claude/tasks/ edits to the tasks standard for filenames, frontmatter, and task file format
 paths:
-  - '.claude/TASKS.md'
+  - '.claude/tasks/**'
 ---
 
 # Tasks standards
 
 ## Authority
 
-- Follow `.claude/standards/tasks.md` for board sections, what belongs, and the task block format. It is the single source.
+- Follow `.claude/standards/tasks.md` for filenames, frontmatter, what belongs, and the task file format. It is the single source.
+- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.

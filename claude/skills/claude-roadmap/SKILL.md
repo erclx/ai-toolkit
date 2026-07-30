@@ -1,6 +1,6 @@
 ---
 name: claude-roadmap
-description: Drafts or updates `.claude/ROADMAP.md` by sequencing the MVP scope from `.claude/REQUIREMENTS.md` into ordered versions, each a usable increment. Use when asked to "draft a roadmap", "build the roadmap", "sequence the versions", "plan the roadmap", or "update the roadmap". Do NOT break versions into task-level steps. That is `claude-feature` and `.claude/TASKS.md`.
+description: Drafts or updates `.claude/ROADMAP.md` by sequencing the MVP scope from `.claude/REQUIREMENTS.md` into ordered versions, each a usable increment. Use when asked to "draft a roadmap", "build the roadmap", "sequence the versions", "plan the roadmap", or "update the roadmap". Do NOT break versions into task-level steps. That is `claude-feature` and `.claude/tasks/`.
 ---
 
 # Claude roadmap
@@ -16,7 +16,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 - `.claude/REQUIREMENTS.md`: the MVP feature scope to sequence
 - `.claude/ROADMAP.md`: the existing roadmap, when updating rather than drafting
-- `.claude/TASKS.md`: what is in flight, to mark the active version
+- `.claude/tasks/index.md`: what is in flight, to mark the active version
 - `.claude/ARCHITECTURE.md`: technical dependencies that constrain ordering
 
 Follow `${CLAUDE_SKILL_DIR}/references/roadmap.md` for the doc shape, sections, and version format.
@@ -36,7 +36,7 @@ When updating an existing roadmap, preserve rows that still hold. Resequence, ad
 
 Write the roadmap to `.claude/ROADMAP.md` at the project root, following `${CLAUDE_SKILL_DIR}/references/roadmap.md`. Create the file when absent.
 
-Unlike `.claude/plans/` and `.claude/TASKS.md`, `.claude/ROADMAP.md` is committed. Do not stage or commit it here. Leave staging to the git skills.
+Unlike `.claude/plans/` and `.claude/tasks/`, `.claude/ROADMAP.md` is committed. Do not stage or commit it here. Leave staging to the git skills.
 
 ## Step 4: output
 
