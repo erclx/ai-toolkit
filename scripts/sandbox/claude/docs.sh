@@ -35,13 +35,9 @@ stage_setup() {
     log_info "  'and promoted multi-user support from non-goal to in-scope.'"
     log_info ""
     log_info "Action:  /claude-docs"
-    log_info "Expect:  ARCHITECTURE.md storage section updated to Postgres"
-    log_info "         REQUIREMENTS.md non-goals updated, multi-user moved in-scope"
-    log_info "         TASKS.md 'Migrate storage to Postgres' marked [x]"
-    log_info "         feature-postgres-migration.md archived: absent from .claude/plans/"
-    log_info "           and present at .claude/.tmp/plans-archive/, never deleted outright"
-    log_info "         TASKS.md Plan: line retargeted at the archive path, not dropped"
-    log_info "         .claude/plans/feature-some-old-plan.md NOT swept (no backlink)"
+    log_info "Expect:  declared in fixtures/claude/docs/drift/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:docs drift"
+    log_info "         Two prose expectations need a reader and report as unchecked."
     ;;
   "context-entries")
     stage_fixtures claude docs context-entries 01-initial

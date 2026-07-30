@@ -32,7 +32,13 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 - Sandboxes are minimal by default: no seeds, no standards, no gov rules, and auto-commit on. A scenario declares only the flags it needs, so the fixture states exactly what it depends on.
 - `claude/` scenarios default to `SANDBOX_INJECT_SEEDS="true"` so each models a real post-`aitk init` project. Two documented exceptions: `setup-init.sh` tests `aitk init` itself, and `autoship.sh` wipes the anchor after injection.
 - The reset contract belongs to the scenario, not the framework. A scenario that touches a real remote closes its own PRs and force-pushes a fresh main, because only the scenario knows what it created.
-- Headless runs pin `--model sonnet` and `--permission-mode acceptEdits` for autonomy and cost control, and assert on structural properties rather than exact wording, since model output varies between runs.
+- Headless runs pin `--model sonnet` for cost control and assert on structural properties rather than exact wording, since model output varies between runs.
+- Headless runs use `--permission-mode bypassPermissions`. Probing on 2026-07-30 found that `acceptEdits` denies writes under `.claude/`, and neither an `--allowedTools` glob nor a `permissions.allow` rule in `settings.json` lifts it. Arms that write planning docs could not run at all under the old mode. The scoping the permission layer used to supply now comes from `write_scope`, asserted after the run instead of enforced during it.
+- `write_scope` is a report, not a block. It names where a run reached after the fact, so a skill that writes somewhere it should not still wrote there. The manifest diff covers creates, modifications, and deletions, which is what makes it comparable to the permission check rather than a subset of it. What it cannot do is prevent the write.
+- An assertion kind whose input the caller did not supply reports as unchecked rather than dropping out of the count. Omitting `--writes` would otherwise let write scope vanish silently from the cheap standalone path, which is the path most likely to be trusted. A verdict never reports `pass` having asserted nothing, since the declaration counts globs while the verdict counts writes and the two diverge at zero.
+- The checker is TypeScript while provisioning stays bash. The harness was closed as bash on the grounds that what remains is `git` and `gh` orchestration plus copying trees, which is true of provisioning and does not describe a component that parses a declaration, aggregates partial failures, and emits counts. Its stated failure mode is asserting nothing while reporting green, which is invisible at runtime, so it has to be the unit-testable part.
+- A run reports pass, fail, or unchecked. Absence of a declaration is `unchecked` rather than a pass, since a scenario that asserts nothing cannot pass, and rather than a failure, since failing every undeclared arm would make the harness unusable while expectations roll out. Only a failure exits non-zero.
+- A declaration that exists and declares no mechanical assertion fails. That is the silent-truncation failure `scripts/core/install-check.sh` documents in its own comment, where a domain with no assertion stays green while its output shrinks to nothing. Prose in `manual` does not count towards the total, or an arm could carry five lines a checker cannot read and still report green.
 - Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `aitk sandbox reset` restores without provisioning again.
 
 ## Gotchas
@@ -78,7 +84,26 @@ scripts/sandbox/run.sh claude:feature "/toolkit:claude-feature add a widget" sma
 
 The prompt is the explicit skill invocation. Use the `/toolkit:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
 
-The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`. Override the model, allowed tools, or turn cap with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, and `AITK_SKILL_TEST_MAX_TURNS`.
+The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`, plus a `verdict` object holding `state`, `asserted`, `failed`, and `unchecked`. Override the model, allowed tools, turn cap, or permission mode with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, `AITK_SKILL_TEST_MAX_TURNS`, and `AITK_SKILL_TEST_PERMISSION_MODE`.
+
+The envelope alone never decided anything. Two arms on 2026-07-29 returned `error=false` having written nothing and meeting none of their scenario's stated expectations, and a suite scoring on the envelope would have counted both as passes. `run.sh` now snapshots the tree before the session, diffs it after, and hands the result to `aitk sandbox check`, whose exit code becomes the run's outcome.
+
+## Expectations
+
+An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `aitk sandbox check <category>:<command> [arm]` reads it, asserts against `.sandbox/`, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
+
+| Key           | Asserts                                                      |
+| ------------- | ------------------------------------------------------------ |
+| `paths`       | Files that must exist after the run                          |
+| `absent`      | Files that must not exist                                    |
+| `content`     | Array of tables, each a `path` and a `pattern` it must match |
+| `write_scope` | Globs bounding where the session may write                   |
+| `manual`      | Prose the checker cannot assert, reported as unchecked       |
+| `max_turns`   | Turn ceiling, above which the run fails                      |
+
+Patterns use TOML literal strings (`'^- \[x\] done'`) so a regex needs no backslash escaping. The split between mechanical and human-judged is per expectation, not per skill: the `claude/docs` `drift` arm produces both kinds in one run, three the checker asserts and two needing a reader.
+
+`src/sandbox/expect.test.ts` builds a tree per assertion kind that violates it and requires a red verdict. A checker exercised only against a correct tree cannot distinguish asserting correctly from asserting nothing, so the negative trees are the point rather than extra coverage.
 
 ## Writing a sandbox
 
