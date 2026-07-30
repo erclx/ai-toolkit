@@ -11,7 +11,8 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 
 ## Layout
 
-- `scripts/` owns every shell script in the repo, grouped into a folder per domain
+- `scripts/` owns every shell script except the Claude Code hooks, grouped into a folder per domain
+- `.claude/hooks/` owns the Claude Code hooks
 - `.husky/` owns the git hooks
 
 ## Setup
@@ -22,19 +23,31 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 
 ## Scripts
 
-| Command                 | Purpose                                                                                 |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| `bun run check`         | Full verification. Auto-formats, regenerates indexes, asserts clean.                    |
-| `bun run check:ci`      | Same stages as `check`, asserting formatting instead of applying it. Still regenerates. |
-| `bun run check:format`  | Read-only prettier and shfmt format check.                                              |
-| `bun run check:spell`   | Read-only cspell check against project dictionaries.                                    |
-| `bun run check:shell`   | Read-only shellcheck against `scripts/` and `tooling/`.                                 |
-| `bun run check:types`   | Read-only `tsc --noEmit` against `src/`.                                                |
-| `bun run check:install` | Clones the repo to tmp and asserts `aitk init` lands a fresh scaffold.                  |
-| `bun run format`        | Auto-fix prettier and shfmt formatting.                                                 |
-| `bun run clean`         | Wipe `node_modules/`, clear bun cache, reinstall.                                       |
-| `bun run update`        | Interactive `bun update` followed by verification.                                      |
-| `bun run snapshot`      | Snapshot project state for diffs.                                                       |
+| Command                 | Purpose                                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------------------- |
+| `bun run check`         | Verification scoped to changed files. Auto-formats, regenerates indexes, asserts clean.  |
+| `bun run check:ci`      | Every stage via `--all`, asserting formatting instead of applying it. Still regenerates. |
+| `bun run check:format`  | Read-only prettier and shfmt format check.                                               |
+| `bun run check:spell`   | Read-only cspell check against project dictionaries.                                     |
+| `bun run check:shell`   | Read-only shellcheck against `scripts/`, `tooling/`, and `.claude/hooks/`.               |
+| `bun run check:types`   | Read-only `tsc --noEmit` against `src/`.                                                 |
+| `bun run check:install` | Clones the repo to tmp and asserts `aitk init` lands a fresh scaffold.                   |
+| `bun run format`        | Auto-fix prettier and shfmt formatting.                                                  |
+| `bun run clean`         | Wipe `node_modules/`, clear bun cache, reinstall.                                        |
+| `bun run update`        | Interactive `bun update` followed by verification.                                       |
+| `bun run snapshot`      | Snapshot project state for diffs.                                                        |
+
+## Scoped verification
+
+`bun run check` gates three stages on the changed-file set. Shell runs on any `.sh` change, types and tests on any `src/` change. Format, spelling, and the three regeneration stages always run, because their inputs are diffuse. Skipping tests, types, and shell on a markdown-only edit drops roughly 16 of the 31 CPU-seconds measured across the gate, and the test suite alone accounts for most of that.
+
+The changed set unions the branch diff against the merge base with `origin/main`, the working tree, and untracked files, which matches what a pull request will contain. Every fallback widens rather than narrows. A missing merge base runs every stage.
+
+The baseline is `origin/main` and not local `main` for a reason. On `main` itself the local ref is HEAD, so the merge base resolves to HEAD and every commit not yet pushed drops out of the changed set. `pre-push` would then skip the scoped stages on a direct push to `main`, which `.github/workflows/verify.yml` does not catch either, because it triggers on `pull_request` and `workflow_dispatch` and never on push. Comparing against the remote ref keeps committed work visible. When `origin/main` does not resolve, which happens transiently during a concurrent `fetch --prune`, the fallback to local `main` treats a merge base equal to HEAD as a signal to run every stage.
+
+Pass `--all` to force the full suite, and `--help` to print the argument list. `bun run check:ci` passes `--all`, so CI stays the backstop for a wrong local scoping decision on the pull request path.
+
+Measure CPU seconds and not wall clock when judging a stage's cost. The suite fans 415 tests across every core, so it is the most expensive stage and among the fastest, and ranking by wall time hides it. Test-count growth is invisible in wall time and linear in CPU.
 
 ## Gotchas
 
@@ -45,7 +58,17 @@ Owns the local development loop: toolchain setup, the run commands, and the git 
 
 ## Shell scripts
 
-All `.sh` files live under `scripts/`. Do not place shell scripts outside `scripts/`.
+All `.sh` files live under `scripts/`, except Claude Code hooks, which live in `.claude/hooks/`. Do not place shell scripts anywhere else.
+
+## Claude hooks
+
+`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Three carry the same names and behavior as the hooks `aitk claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `claude-plugin.md`.
+
+`dev-command-reminder.sh` is toolkit-only and has no seed counterpart. It fires once per session when a `Bash` command runs `check`, `format`, or `check:install`, and points the agent at this entry. The matcher tests the command string rather than the tool name, because `Bash` is the highest-frequency tool in a session and a loose matcher would add latency to every shell call. It stays silent on `check:types` and `test`, which need no reminder.
+
+The filter, the match, and the session id come out of one `jq` pass, so the hot path costs a single process and the second `jq` runs only when the hook actually fires. Splitting the fields through `@tsv` instead looks equivalent and is not: `@tsv` escapes a newline to a literal `\n`, which puts a backslash where the matcher expects whitespace or end of string, and every multi-line command stops matching. A run with no `session_id` exits rather than sharing one marker file, since per-session dedupe needs a real id.
+
+`check:shell` lints `.claude/hooks/` alongside `scripts/` and `tooling/`. It has to, because the shell stage is gated on any `.sh` change. Linting a narrower set than the gate keys on produces a stage that fires on a hook edit, inspects other directories, and reports a pass that says nothing about the file that triggered it. Keep the glob and the gate pattern in step whenever either moves.
 
 ## Husky hooks
 

@@ -9,9 +9,72 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
 WRITE="${VERIFY_WRITE:-true}"
+SCOPED=true
+CHANGED_FILES=""
 
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
+}
+
+print_usage() {
+  echo "Usage: bun run check [--all]"
+  echo "  --all   Run every stage instead of scoping shell, types, and tests to changed files"
+  echo "  --help  Print this message"
+}
+
+parse_args() {
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+    --all) SCOPED=false ;;
+    -h | --help)
+      print_usage
+      exit 0
+      ;;
+    *) log_error "Unknown argument: $arg" ;;
+    esac
+  done
+}
+
+# Union of the branch's committed diff, the working tree, and untracked files.
+# A wider set only means running more stages, so every fallback widens.
+collect_changed_files() {
+  [ "$SCOPED" = true ] || return 0
+
+  local base head local_baseline=false
+  # origin/main, not local main. On main itself the local ref is HEAD, so a commit
+  # not yet pushed would drop out of the changed set and skip the scoped stages.
+  base=$(git -C "$PROJECT_ROOT" merge-base HEAD origin/main 2>/dev/null) || base=""
+  if [ -z "$base" ]; then
+    local_baseline=true
+    base=$(git -C "$PROJECT_ROOT" merge-base HEAD main 2>/dev/null) || base=""
+  fi
+  if [ -z "$base" ]; then
+    SCOPED=false
+    log_warn "No merge base with main. Running every stage."
+    return 0
+  fi
+
+  # Without a remote baseline, a merge base equal to HEAD hides committed work.
+  if [ "$local_baseline" = true ]; then
+    head=$(git -C "$PROJECT_ROOT" rev-parse HEAD 2>/dev/null) || head=""
+    if [ -z "$head" ] || [ "$base" = "$head" ]; then
+      SCOPED=false
+      log_warn "No pushed baseline to compare against. Running every stage."
+      return 0
+    fi
+  fi
+
+  CHANGED_FILES=$({
+    git -C "$PROJECT_ROOT" diff --name-only "$base" HEAD
+    git -C "$PROJECT_ROOT" diff --name-only HEAD
+    git -C "$PROJECT_ROOT" ls-files --others --exclude-standard
+  } | sort -u)
+}
+
+has_changed() {
+  [ "$SCOPED" = true ] || return 0
+  printf '%s\n' "$CHANGED_FILES" | grep -qE "$1"
 }
 
 run_check() {
@@ -34,8 +97,11 @@ assert_no_drift() {
 
 main() {
   check_dependencies
+  parse_args "$@"
 
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
+
+  collect_changed_files
 
   if [ "$WRITE" = true ]; then
     echo -e "${GREY}├${NC} ${WHITE}Formatting${NC}"
@@ -67,16 +133,28 @@ main() {
   log_info "Spell check passed"
 
   log_step "Shell"
-  run_check "bun run check:shell" "Shell check failed"
-  log_info "Shell check passed"
+  if has_changed '\.sh$|^package\.json$'; then
+    run_check "bun run check:shell" "Shell check failed"
+    log_info "Shell check passed"
+  else
+    log_info "Skipped, no shell changes"
+  fi
 
   log_step "Types"
-  run_check "bun run check:types" "Typecheck failed"
-  log_info "Typecheck passed"
+  if has_changed '^src/|^tsconfig\.json$|^package\.json$'; then
+    run_check "bun run check:types" "Typecheck failed"
+    log_info "Typecheck passed"
+  else
+    log_info "Skipped, no TypeScript changes"
+  fi
 
   log_step "Tests"
-  run_check "bun run test" "Tests failed"
-  log_info "Tests passed"
+  if has_changed '^src/|^vitest\.config\.ts$|^tsconfig\.json$|^package\.json$'; then
+    run_check "bun run test" "Tests failed"
+    log_info "Tests passed"
+  else
+    log_info "Skipped, no TypeScript changes"
+  fi
 
   if [ "$NESTED" = false ]; then
     echo -e "${GREY}└${NC}\n"
