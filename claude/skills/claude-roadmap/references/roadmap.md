@@ -6,9 +6,9 @@ consumers: claude-roadmap
 
 # Roadmap reference
 
-Applies to `.claude/ROADMAP.md`. Sequences the scope from `.claude/REQUIREMENTS.md` into ordered versions, each a usable increment. Update when the sequence changes or a version ships. The roadmap is committed because the sequence and its rationale are shared strategic truth a fresh session needs, unlike `.claude/TASKS.md`, which is ephemeral scratch.
+Applies to `.claude/ROADMAP.md`. Sequences the scope from `.claude/REQUIREMENTS.md` into ordered versions, each a usable increment. Update when the sequence changes or a version ships. The roadmap is committed because the sequence and its rationale are shared strategic truth a fresh session needs, unlike `.claude/tasks/`, which is ephemeral scratch.
 
-The roadmap is one scannable table, not a stack of blocks. That is what keeps it distinct from `.claude/TASKS.md`: the roadmap is an overview read at a glance, while tasks are worked one block at a time.
+The roadmap is one scannable table. That is what keeps it distinct from `.claude/tasks/`: the roadmap is an overview read at a glance, while tasks are worked one file at a time.
 
 ## What goes in
 
@@ -20,7 +20,7 @@ The roadmap is one scannable table, not a stack of blocks. That is what keeps it
 
 ## What does not go in
 
-- Task breakdown, checkboxes, or per-feature file lists. Those live in `.claude/TASKS.md` and `.claude/plans/`.
+- Task breakdown, checkboxes, or per-feature file lists. Those live in `.claude/tasks/` and `.claude/plans/`.
 - Implementation detail, API names, or component references
 - Rationale for tech choices. That belongs in `.claude/ARCHITECTURE.md`.
 - Sentence-long cells. Keep each cell terse so the table stays scannable.
