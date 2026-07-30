@@ -10,7 +10,7 @@ import {
   resolveSnippets,
 } from '@/snippets/install'
 import { buildSnippetsCatalog } from '@/snippets/list'
-import { runDomainSync } from '@/sync/engine'
+import { recordStamp, runDomainSync } from '@/sync/engine'
 import { resolveTarget } from '@/target'
 import {
   intro,
@@ -186,6 +186,7 @@ async function runInstall(
   for (const rel of await installSnippets(resolution.files, resolved)) {
     logAdd(rel)
   }
+  await recordStamp(createSnippetsAdapter(PROJECT_ROOT), resolved, new Date())
 
   outro()
   process.stderr.write(`${GREEN}✓ Snippets installed${NC}\n`)

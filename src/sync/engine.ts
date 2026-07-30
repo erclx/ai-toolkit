@@ -1,7 +1,16 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { rm } from 'node:fs/promises'
-import { relative, resolve } from 'node:path'
+import { isAbsolute, relative, resolve } from 'node:path'
 import { copyPreservingMode } from '@/copy'
+import {
+  type DomainHashes,
+  hashFile,
+  readStamp,
+  type StampSource,
+  stampedHashes,
+  toStampKey,
+  writeStamp,
+} from '@/sync/stamp'
 import { isDirectory } from '@/target'
 import {
   intro,
@@ -44,7 +53,23 @@ export type SyncChange =
     }
   | { readonly kind: 'delete'; readonly dest: string; readonly rel: string }
 
-export type EntryState = 'matching' | 'drifted' | 'orphaned'
+/**
+ * How an installed file compares to its toolkit source, and when it differs,
+ * who moved it. `stale` and `customized` need the stamp to tell apart, so
+ * `drifted` stays the verdict for a difference no stamp covers.
+ *
+ * `orphaned` and `stranded` both mean the walk found no source, and they are
+ * separate because they need opposite treatment. A project-authored file is
+ * orphaned and stays that way forever. A stamped file the toolkit no longer
+ * installs to is stranded, which is a relocation waiting on a decision.
+ */
+export type EntryState =
+  | 'matching'
+  | 'stale'
+  | 'customized'
+  | 'drifted'
+  | 'orphaned'
+  | 'stranded'
 
 export interface ScanEntry {
   readonly state: EntryState
@@ -97,6 +122,8 @@ export interface SyncAdapter {
   readonly nonInteractive?: NonInteractivePolicy
   /** Runs on a completed sync, including one with no changes. */
   onComplete?(target: string): Promise<void>
+  /** Where this domain's hashes are stamped. Unset domains go unstamped. */
+  readonly stamp?: StampSource
 }
 
 /**
@@ -130,8 +157,12 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   const entries: ScanEntry[] = []
   const changes: SyncChange[] = []
 
+  const hashes = stampedHashes(readStamp(target), adapter.stamp?.domain)
+  const walked = new Set<string>()
+
   for (const file of listInstalled(adapter.installedRoot(target), target)) {
     if (adapter.isExcluded?.(file) === true) continue
+    walked.add(toStampKey(file.rel))
 
     const source = adapter.locateSource(file)
 
@@ -145,7 +176,7 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
       continue
     }
 
-    entries.push({ state: 'drifted', rel: file.rel })
+    entries.push({ state: attribute(hashes, file), rel: file.rel })
     changes.push({
       kind: 'copy',
       source,
@@ -153,6 +184,8 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
       rel: file.rel,
     })
   }
+
+  entries.push(...strandedByRelocation(target, hashes, walked))
 
   const retired = adapter.collectRetired?.(target) ?? []
   for (const surface of retired) {
@@ -227,13 +260,18 @@ export async function runDomainSync(
   const count = plan.changes.length
   if (count === 0) {
     await adapter.onComplete?.(resolved)
+    await recordStamp(adapter, resolved, new Date())
     outro()
     process.stderr.write(`${GREEN}✓ Everything up to date${NC}\n`)
     return 0
   }
 
   const policy = adapter.nonInteractive ?? { kind: 'apply' }
-  if (policy.kind === 'refuse' && isNonInteractive()) {
+  if (
+    policy.kind === 'refuse' &&
+    isNonInteractive() &&
+    hasUnattributedDrift(plan)
+  ) {
     logWarn(policy.message)
     logInfo(policy.hint)
     outro()
@@ -257,6 +295,7 @@ export async function runDomainSync(
 
   await applyChanges(plan.changes)
   await adapter.onComplete?.(resolved)
+  await recordStamp(adapter, resolved, new Date())
 
   outro()
   process.stderr.write(
@@ -275,6 +314,11 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
   for (const entry of plan.entries) {
     if (entry.state === 'matching') logInfo(entry.rel)
     else if (entry.state === 'drifted') logWarn(entry.rel)
+    else if (entry.state === 'stale') logWarn(`${entry.rel} (toolkit updated)`)
+    else if (entry.state === 'customized')
+      logWarn(`${entry.rel} (locally customized)`)
+    else if (entry.state === 'stranded')
+      logWarn(`${entry.rel} (installed here by an older toolkit, now moved)`)
     else logWarn(`${entry.rel} (not in toolkit source, skipping)`)
   }
 
@@ -285,4 +329,88 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
 
 function sameContent(left: string, right: string): boolean {
   return readFileSync(left).equals(readFileSync(right))
+}
+
+/**
+ * Splits a difference by cause. Matching the stamp means the file is untouched
+ * since install and the toolkit is what moved, so the update is mechanical.
+ * Anything else is a local edit, and an uncovered file stays unattributed.
+ */
+function attribute(hashes: DomainHashes, file: InstalledFile): EntryState {
+  const stamped = hashes[toStampKey(file.rel)]
+  if (stamped === undefined) return 'drifted'
+
+  return stamped === hashFile(file.path) ? 'stale' : 'customized'
+}
+
+/**
+ * Stamped paths the walk never reached, because the toolkit installs to a root
+ * it no longer uses. Reporting them is what makes a relocation visible instead
+ * of silent. They are left alone, and queue no change.
+ *
+ * A key escaping the target is dropped rather than reported, so a hand-edited
+ * stamp cannot make the report name paths outside the project.
+ */
+function strandedByRelocation(
+  target: string,
+  hashes: DomainHashes,
+  walked: ReadonlySet<string>,
+): ScanEntry[] {
+  const entries: ScanEntry[] = []
+
+  for (const key of Object.keys(hashes).sort()) {
+    if (walked.has(key)) continue
+
+    const path = resolve(target, key)
+    if (!isInside(target, path) || !existsSync(path)) continue
+
+    entries.push({ state: 'stranded', rel: relative(target, path) })
+  }
+
+  return entries
+}
+
+function isInside(target: string, path: string): boolean {
+  const rel = relative(target, path)
+  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel)
+}
+
+/**
+ * Drift a refusing domain must not touch unattended. A file proven to match
+ * what was installed carries no local edit to lose, so it does not count.
+ */
+function hasUnattributedDrift(plan: SyncPlan): boolean {
+  return plan.entries.some(
+    (entry) => entry.state === 'customized' || entry.state === 'drifted',
+  )
+}
+
+/**
+ * Records what the toolkit placed, after the copies land, so a partial apply
+ * that throws leaves the previous stamp rather than a claim the target does not
+ * meet. Files with no source are project-authored and stay out.
+ *
+ * Reads the installed tree rather than the caller's file list, so a partial
+ * install still stamps the domain's whole installed set.
+ */
+export async function recordStamp(
+  adapter: SyncAdapter,
+  target: string,
+  now: Date,
+): Promise<void> {
+  const source = adapter.stamp
+  if (source === undefined) return
+
+  const hashes: Record<string, string> = {}
+
+  for (const file of listInstalled(adapter.installedRoot(target), target)) {
+    if (adapter.isExcluded?.(file) === true) continue
+
+    const source = adapter.locateSource(file)
+    if (source === undefined || !existsSync(source)) continue
+
+    hashes[toStampKey(file.rel)] = hashFile(file.path)
+  }
+
+  await writeStamp(target, source, hashes, now)
 }

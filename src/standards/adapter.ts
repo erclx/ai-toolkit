@@ -41,6 +41,7 @@ export function createStandardsAdapter(root: string): SyncAdapter {
       hint: 'Run interactively, or use /claude-seed-sync for per-section audit that preserves customizations.',
     },
     onComplete: (target: string) => refreshIndex(sourceDir, target),
+    stamp: { domain: 'standards', toolkitRoot: root },
   }
 }
 
