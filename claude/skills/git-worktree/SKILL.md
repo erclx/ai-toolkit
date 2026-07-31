@@ -5,7 +5,13 @@ description: Lists linked worktrees with PR state and cleans up merged ones. Use
 
 # Git worktree
 
-See `wiki/claude-worktrees.md` for worktree semantics and the "Shipping from worktrees" workflow. For entry, use `claude-worktree`.
+List linked worktrees with their PR state and remove the merged ones. For entry, use `claude-worktree`.
+
+## Shipping order
+
+- Merge the branch with the smallest shared-file footprint first. A branch touching `CLAUDE.md`, a Claude context entry, or a regenerated `index.md` merges last.
+- Rebase each sibling worktree on `origin/main` after a PR merges and before the next one merges. Never merge a stale branch.
+- Run `cleanup` once a PR merges, so the worktree and its local branch go together
 
 ## Mode selection
 

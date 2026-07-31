@@ -73,5 +73,7 @@ Omit any section with nothing in it. Cap the ready-to-build handoffs you recomme
 
 Cap at two or three worker tracks. Split them across the stack so they do not
 collide on shared files. Serialize any track that touches a shared wiring seam
-with another in flight. See `wiki/operating-model.md` for the full model and
-`wiki/claude-worktrees.md` for the merge-order and port-collision mechanics.
+with another in flight. Merge the branch with the smallest shared-file footprint
+first, then have every sibling rebase on the new `main` before the next merge.
+Assign a distinct port per track when two workers run a server, since each
+session spawns its own process.
