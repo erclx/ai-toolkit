@@ -6,9 +6,8 @@ description: Curated community and official Claude Code plugins that setup-plugi
 # Plugin catalog
 
 Curated domain-knowledge plugins the `setup-plugins` skill installs user-scoped.
-Each row is verified to install through the `claude plugin` CLI. The narrative
-companion, with figures and trade-offs, is `wiki/community-skills.md`. This file
-holds only the actionable install data.
+Each row is verified to install through the `claude plugin` CLI. This file holds
+only the actionable install data.
 
 ## Install data
 
@@ -52,8 +51,3 @@ Install per project, not per machine. The skill invokes its scripts through path
 relative to the current project (`.claude/skills/impeccable/scripts/*.mjs`), so a
 copy under `~/.claude/` cannot locate them once the working directory is a
 different project. Re-run the installer in each project that wants impeccable.
-
-## See also
-
-- `wiki/community-skills.md`: full narrative catalog, curated lists, and integrations
-- `wiki/skills-strategy.md`: when to install a plugin versus write a toolkit skill

@@ -5,7 +5,7 @@ description: Enters a Claude Code worktree at `.claude/worktrees/<name>/` with a
 
 # Claude worktree
 
-See `wiki/claude-worktrees.md` for `EnterWorktree` and `ExitWorktree` semantics. This skill wraps the entry path with name derivation so the user does not pick a name by hand.
+Wrap the `EnterWorktree` entry path with name derivation so the user does not pick a name by hand.
 
 ## Guards
 

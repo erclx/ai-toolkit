@@ -128,6 +128,10 @@ main() {
   assert_no_drift "claude/skills/*/references" "Skill references drifted. Run bun run check and commit the updated reference files."
   log_info "Skill references clean"
 
+  log_step "Skill paths"
+  run_check "bash $PROJECT_ROOT/scripts/core/check-skill-paths.sh" "Shipped skills reference a repo-local path."
+  log_info "Skill paths clean"
+
   log_step "Spelling"
   run_check "bun run check:spell" "Spell check failed"
   log_info "Spell check passed"

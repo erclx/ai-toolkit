@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+SKILLS_DIR="$PROJECT_ROOT/claude/skills"
+
+# A shipped skill runs from a target project, where the toolkit's own wiki/ does
+# not exist. Anchoring on a non-path character keeps a target's .claude/wiki/ legal.
+BANNED_PATH_PATTERN='(^|[^[:alnum:]._/-])wiki/'
+
+[ -d "$SKILLS_DIR" ] || exit 0
+
+matches=$(grep -rnE "$BANNED_PATH_PATTERN" "$SKILLS_DIR" || true)
+
+[ -z "$matches" ] && exit 0
+
+echo "Shipped skills reference a repo-local path that does not exist in a target project:"
+echo "$matches" | sed "s|^$PROJECT_ROOT/||"
+echo
+echo "Reach supporting prose through an aitk docs command, a bundled reference, or inlined text."
+echo "A match inside a references/ folder is a generated copy. Fix the source under standards/bundled/."
+exit 1
