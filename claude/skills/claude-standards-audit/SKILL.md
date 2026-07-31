@@ -36,10 +36,10 @@ Skip a file if none of the standards applies.
 
 Read each applicable standard once. For each changed file, audit against every rule:
 
-- **Pattern rules**: grep the file for banned tokens called out by the standard. Grep is authoritative. Reading alone misses occurrences.
-- **Judgment rules**: check each rule in context. Apply "ban the shape not instances", "crisp one-line phrasing", and "imperative voice" from `.claude/standards/skill.md` where relevant.
+- **Pattern rules**: grep the file for every token the standard bans. Grep is authoritative. Reading alone misses occurrences.
+- **Judgment rules**: check each rule in context against the standard that states it.
 
-For prose specifically, grep every changed markdown file for `—` and `;`. Both are banned in prose.
+Every changed markdown file gets the prose pattern pass, since `.claude/standards/prose.md` applies to all of them. Take the banned tokens from that standard at read time rather than from a list held here.
 
 ## Step 4: report
 

@@ -201,6 +201,4 @@ Output one line per action taken in the most recent phase:
 - `✅ Handed off: .claude/memory/<memory-file> → governance`
 - `🗑  Deleted: .claude/memory/<memory-file>`
 
-End Apply runs with a bucket summary: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Omit empty buckets.
-
 If the user accepted nothing, output: `✅ No changes applied.`
