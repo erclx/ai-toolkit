@@ -40,7 +40,9 @@ After outputting the preview, execute the final command immediately. Claude Code
 
 ### Testing checkboxes
 
-In the generated `## Testing` section, mark items Claude executed this session as `- [x]`. Leave items that need human verification (visual UX, reviewer sanity checks) as `- [ ]`. Never pre-check based on intent or past sessions.
+Follow Testing discipline in `${CLAUDE_SKILL_DIR}/references/pr.md`. Run each check before writing its line, then tick the box and state the result the run reported. Never pre-check based on intent or past sessions.
+
+Leave a box unchecked only for the human-only cases the reference defines, and name which human and why on the same line. A request for the reviewer is not a test result, so it belongs under `## For the reviewer` rather than in the Testing list.
 
 ### Pre-publish scan
 
