@@ -11,7 +11,9 @@ scripts/standards/authoring-test/run.sh context      # standards/context.md
 scripts/standards/authoring-test/run.sh wireframes   # standards/wireframes.md
 ```
 
-Each run spawns one headless `claude -p` session and costs roughly $0.60 over about two minutes. The artifact prints to stdout and the cost line to stderr, so redirecting stdout captures the artifact alone.
+Each run spawns one headless `claude -p` session. Measured cost is $0.59 for the context arm and $0.74 for the wireframes arm, both around 15 to 20 turns. Budget roughly a dollar per arm. The artifact prints to stdout and the cost line to stderr, so redirecting stdout captures the artifact alone.
+
+The runner passes `--dangerously-skip-permissions`. That is safe here and nowhere else: the fixture is synthetic, extracted to `mktemp -d` outside the repo, and deleted on exit, so the grant reaches nothing that outlives the run. Do not copy the flag into a script that touches real project files. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.
 
 The runner copies the live `standards/<name>.md` in at run time rather than using a pinned copy, so the test always exercises the current standard.
 
@@ -29,10 +31,16 @@ Three decisions are planted in the context arm and three layout intents in the w
 
 ## Known harness behavior
 
-The write is blocked. `--permission-mode acceptEdits` still treats paths under `.claude/` as sensitive, and a non-interactive session cannot get approval, so the artifact comes back in the final message instead of landing on disk. That is a harness constraint rather than a standard failure. Judge stdout, and do not read a missing file as a fail.
+`--permission-mode acceptEdits` is not enough. It treats paths under `.claude/` as sensitive and a non-interactive session cannot get approval, so the run either returns the artifact in its final message, routes around the block and writes somewhere unexpected, or gives up and writes nothing. All three happened across three runs before this was diagnosed.
+
+Fixture-local settings do not fix it. An untrusted workspace makes Claude Code ignore `permissions.allow` outright, and a `mktemp` path is never trusted. Skipping permissions is what remains.
+
+The runner also snapshots the fixture before the run and recovers any markdown created during it, so an artifact written to an unexpected path still survives. Recovered artifacts print first, followed by an HTML comment marking where the run's own commentary begins.
+
+A missing file at the requested path is a harness result, never a standard failure. Judge the artifact.
 
 ## Results on file
 
-`result-context.md` is the 2026-07-31 run against `standards/context.md`, the run that first exercised the success criterion. It passed all five criteria and recovered all three planted decisions unprompted.
+`result-context.md` is the 2026-07-31 run against `standards/context.md`, the run that first exercised the success criterion. Passed all five criteria and recovered all three planted decisions unprompted.
 
-The wireframes arm has not been run. It is the likelier failure, since that standard has never been exercised by anyone other than its author.
+`result-wireframes.md` is the 2026-07-31 run against `standards/wireframes.md`. Passed all five criteria. It correctly withheld the rejected-modal rationale that the standard routes to `.claude/context/`, which is the rule most likely to be ignored, and named what it was withholding. Its Harness history section records the two inconclusive attempts that preceded it and the fixes each one forced.

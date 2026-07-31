@@ -27,6 +27,7 @@ commitlint
 conventionals
 crystaldba
 cspell
+daringfireball
 dbaeumer
 deprioritized
 dogfooded
@@ -123,6 +124,7 @@ wshobson
 xclip
 xhigh
 xsel
+ycombinator
 yctimlin
 yolo
 zechner

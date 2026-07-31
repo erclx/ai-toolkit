@@ -9,6 +9,16 @@ Applies to per-surface entries under `.claude/wireframes/`. Skip for `index.md`,
 
 A wireframe file captures the spatial layout and interaction intent of one UI surface. It is not an implementation log. The test for any line: would it still be true if the surface were rebuilt in a different framework? If not, it belongs in `.claude/context/`.
 
+## What a working wireframe looks like
+
+A wireframe works when someone can rebuild the surface from it without opening the components:
+
+- What is on screen, and where does it sit relative to everything else?
+- Which states can a visitor reach, and what does each one look like?
+- What does it say, word for word?
+
+A wireframe that fails these is non-conforming regardless of whether it satisfies every section rule below. The fences are the means. These three questions are the test.
+
 ## Frontmatter
 
 - `title` (required): sentence case, names the surface (`Header`, `Section nav`, `Footer`).
