@@ -3,7 +3,7 @@ name: git-commit
 description: Generates conventional commit messages from staged changes. Use for any git commit.
 ---
 
-# Git Commit
+# Git commit
 
 Before generating a commit message, read:
 

@@ -43,6 +43,7 @@ When adding a new skill:
 
 When modifying a skill:
 
+- Read the skill's sibling `REQUIREMENT.md` first when one exists. If the change closes no gap it states, change the requirement first or drop the change.
 - Update the matching skills table in `.claude/context/claude-plugin.md` or `.claude/context/claude-internal.md` if the description changed
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
 - Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit

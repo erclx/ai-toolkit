@@ -56,10 +56,52 @@ allowed-tools: <tools required>
 
 ## Structure
 
-- Skill is a folder named in kebab-case containing `SKILL.md` (required), `scripts/` (optional), `references/` (optional), `assets/` (optional)
+- Skill is a folder named in kebab-case containing `SKILL.md` (required), `REQUIREMENT.md` (optional), `scripts/` (optional), `references/` (optional), `assets/` (optional)
 - `SKILL.md` must start with YAML frontmatter between `---` delimiters
 - No `README.md` inside the skill folder
 - No spaces, capitals, or underscores in folder or skill name
+
+## Requirement
+
+`REQUIREMENT.md` states what a skill is for, so a proposed change can be argued against something. This standard governs shape across the corpus and the requirement governs scope for one skill. Claude Code loads `SKILL.md` as the entry and ignores the sibling, so the file costs a target session nothing.
+
+Read it before editing the skill. When a change closes no gap the requirement states, change the requirement first or drop the change.
+
+Write the gaps from what the skill is for, then compare the body against them. Deriving the requirement from the body is circular, because a requirement reverse-engineered from an overfitted skill records the overfitting as the requirement.
+
+- State each gap as an observed failure, not an intent. "Without this skill a session invents its own filename" can be shown wrong. "This skill helps manage tasks" cannot fail, so it constrains nothing.
+- Trace everything under `## Must` to a stated gap. A `Must` with no gap behind it is the padding the file exists to prevent.
+- Keep it high level. A requirement that outgrows one file has stopped being a requirement, and `references/` already holds detail.
+- Use `name` and `description` frontmatter, matching `SKILL.md` so the pair is consistent.
+
+```markdown
+---
+name: <skill-name>
+description: <one line, distinct from the SKILL.md description>
+---
+
+# <Skill name> requirement
+
+## Gap
+
+Without this skill, a session <observed failure>, <observed failure>.
+
+## Must
+
+- <behavior that closes a named gap>
+
+## Must not
+
+- <behavior that would be wrong even though it closes a gap>
+
+## Guards
+
+- <the refusal condition and its message>
+
+## Out of scope
+
+- <the adjacent thing this deliberately does not cover, and what covers it>
+```
 
 ## Frontmatter
 
