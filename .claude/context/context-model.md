@@ -27,7 +27,9 @@ Flat by default: one `.md` per domain (`.claude/context/web.md`, `.claude/contex
 
 ## What goes where
 
-For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `.claude/standards/context.md`. The conceptual placement decision is:
+For prescriptive rules on entry shape (frontmatter, encouraged sections, what goes / what does not go), see `.claude/standards/context.md`. Its `## What a working entry looks like` section is the criterion the shape rules serve: an entry works when a session can read it and answer where things live, why they are that way, and how to add one more, without opening source. An entry that fails those three is non-conforming even when it satisfies every shape rule.
+
+The conceptual placement decision is:
 
 - Per-domain narrative → `.claude/context/<domain>.md`
 - Path-scoped rules → `.claude/rules/<scope>.md` with `paths:` glob

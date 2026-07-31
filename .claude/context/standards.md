@@ -39,6 +39,16 @@ Owns the markdown docs defining developer workflow conventions. They install int
 - A standard missing `title` or `description` makes the regen fail. Sync reports it, finishes, and exits 0, so one malformed file cannot block the rest of the sync. The bash exited 1 here through `set -e`, after the file writes had already landed, so the tree was the same either way and only the exit code differed.
 - `bun run check` regenerates both the consumed copy and the skill-reference fan-out, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches.
 
+## Changing a standard
+
+`standards/bundled/standard.md` carries two rules that govern the standards themselves rather than the docs they produce.
+
+A standard states a success criterion, near the top and above the shape rules. Specifying structure exhaustively and success nowhere leaves nothing to argue a proposed change against, so the standard gets edited on whichever input arrived most recently. `standards/context.md` was the first to gain one, as `## What a working entry looks like`.
+
+A standard then changes on a failure rather than on a finding. A finding is that the vendor docs say X or a paper suggests Y, and it goes to the task board as a hypothesis. A failure is an artifact that satisfied every shape rule and still missed the criterion, and it edits the standard. The change cites the failing artifact.
+
+`scripts/standards/authoring-test/` is how a failure gets produced on demand. It extracts a synthetic fixture outside the repo, copies the live standard in, and asks a headless session to author against it. Running outside the repo is the load-bearing part: a fixture under the repo loads this project's `CLAUDE.md` through the ancestor chain, and the session under test arrives already knowing what the test is trying to measure. Writes under `.claude/` stay blocked even with `--permission-mode acceptEdits`, so the artifact comes back in the final message and stdout is what gets judged.
+
 ## Standards
 
 Run `aitk standards list` for the catalog of installable standards and their descriptions.
