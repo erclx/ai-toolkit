@@ -1,0 +1,53 @@
+# What a correct `/claude-docs` run leaves behind on the board-sweep arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# The arm asserts the plans sweep is board-wide. `drift` already asserts a plan
+# archived for the task the prompt names, so folding the two would make one
+# failure ambiguous between "the sweep runs" and "the sweep reaches past the
+# session". Keep them separate.
+
+# Run this arm with AITK_SKILL_TEST_MAX_TURNS=50. The default cap is 30 and a
+# clean `drift` run already costs 29, while this arm does strictly more: two
+# outcomes marked, two `Plan:` lines retargeted, two plans moved. `run.sh` never
+# reads this file, so a ceiling declared above the cap cannot raise it. Left at
+# the default the run truncates at 30, this one assertion passes because 30 is
+# under the ceiling, and every tree assertion below fails with nothing to
+# separate truncation from a reasoning miss.
+#
+# 45 is headroom rather than a measurement, since no run of this arm has been
+# observed. Tighten it, and the variable with it, once one reports a cost.
+max_turns = 45
+
+# Both plans move. `feature-pagination.md` belongs to the task this session's
+# diff closes, and `feature-rate-limit.md` belongs to a task that closed in an
+# earlier session and that nothing in the prompt mentions. The second path is
+# the whole point of the arm: a session-scoped sweep archives the first and
+# strands the second.
+paths = [
+  ".claude/.tmp/plans-archive/feature-pagination.md",
+  ".claude/.tmp/plans-archive/feature-rate-limit.md",
+]
+
+absent = [
+  ".claude/plans/feature-pagination.md",
+  ".claude/plans/feature-rate-limit.md",
+]
+
+write_scope = [".claude/**"]
+
+[[content]]
+path = ".claude/tasks/v02.0-pagination.md"
+pattern = '^- \[x\] Outcome: a list request accepts a page size and an offset'
+
+[[content]]
+path = ".claude/tasks/v02.0-pagination.md"
+pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-pagination\.md'
+
+# The retarget matters more here than on the closing task. This task was already
+# `[x]` before the run, so a sweep that moved the plan without rewriting the line
+# would leave the only pointer to it aimed at a path that no longer resolves, and
+# `.claude/plans/` is gitignored so nothing recovers it.
+[[content]]
+path = ".claude/tasks/v01.0-rate-limit.md"
+pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-rate-limit\.md'

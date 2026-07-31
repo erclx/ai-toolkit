@@ -1,0 +1,16 @@
+const WINDOW_MS = 60_000
+const MAX_REQUESTS = 100
+
+const hits = new Map<string, number[]>()
+
+export function isRateLimited(clientId: string): boolean {
+  const now = Date.now()
+  const recent = (hits.get(clientId) ?? []).filter(
+    (stamp) => now - stamp < WINDOW_MS,
+  )
+
+  recent.push(now)
+  hits.set(clientId, recent)
+
+  return recent.length > MAX_REQUESTS
+}
