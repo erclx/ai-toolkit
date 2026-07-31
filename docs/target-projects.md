@@ -37,7 +37,7 @@ Scaffold installs tooling and seeds. It does not fill the planning docs or the d
 
 ### Stack decision
 
-The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, governance core rules, snippets, and wiki. Most projects need nothing more.
+The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, governance core rules, and snippets, and scaffolds an empty `.claude/wiki/`. Most projects need nothing more.
 
 Escalate only for real web apps. The `setup-init` skill reads `package.json` and root configs, then picks the matching tooling stack (`vite-react` today) and the matching governance stack (`react`, `astro`, `node`).
 
@@ -47,10 +47,10 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 ### Core domains and skips
 
-`aitk init` installs base tooling, Claude workflow, governance, standards, snippets, and wiki by default. `standards` and `wiki` are skippable:
+`aitk init` installs base tooling, Claude workflow, governance, standards, and snippets by default, and scaffolds `.claude/wiki/`. `standards` and `wiki` are skippable:
 
 - `--skip standards`: leave standards out. Rare, since the governance rules and toolkit skills reference `.claude/standards/`.
-- `--skip wiki`: leave the wiki out.
+- `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
 ## Add a domain later
 

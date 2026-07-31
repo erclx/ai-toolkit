@@ -80,7 +80,7 @@ describe('planInit', () => {
     const plan = planInit(flags({ stack: 'base', skip: parseSkip('wiki') }))
 
     expect(plan.total).toBe(5)
-    expect(texts(plan)).not.toContain('wiki (index and reference pages)')
+    expect(texts(plan)).not.toContain('wiki (.claude/wiki/ with a stub index)')
   })
 
   it('should subtract both skips and the missing stack from the count', () => {

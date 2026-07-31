@@ -14,6 +14,7 @@ import {
 import {
   applyWikiInit,
   isWikiTarget,
+  LEGACY_WIKI_DIR_REL,
   planWikiInit,
   WIKI_DIR_REL,
   WIKI_INDEX_REL,
@@ -30,7 +31,7 @@ export function register(program: Command): void {
 
   wiki
     .command('init')
-    .description('Scaffold wiki/ with a stub index.md')
+    .description('Scaffold .claude/wiki/ with a stub index.md')
     .argument('[target]', 'Target directory', '.')
     .helpOption('-h, --help', 'Show this help message')
     .action(async (target: string) => {
@@ -59,10 +60,14 @@ async function runInit(target: string): Promise<number> {
 
   const plan = planWikiInit(resolved)
 
-  logStep('Scanning wiki/')
+  logStep(`Scanning ${WIKI_DIR_REL}`)
   if (plan.changes.includes('dir')) logAdd(WIKI_DIR_REL)
   if (plan.hasIndex) logInfo(WIKI_INDEX_REL)
   else logAdd(WIKI_INDEX_REL)
+
+  if (plan.hasLegacyWiki) {
+    logWarn(`${LEGACY_WIKI_DIR_REL} found at the target root, not migrated`)
+  }
 
   const count = plan.changes.length
   if (count === 0) {
