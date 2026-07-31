@@ -38,6 +38,7 @@ esac
 esbenp
 executeautomation
 failable
+feedwatch
 footgun
 footguns
 frameless
