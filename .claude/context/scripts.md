@@ -40,6 +40,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - `TOOLING_STACK_EXCLUDE` currently holds only `claude`. Excluded names print a redirect error pointing at the correct CLI and exit 1.
 - When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`. `select_option` returns its first option under that flag, so the first option must be the one a headless caller should get. Listing a review or preview option first sends agents down an interactive branch, which is how three sync commands ended up opening a diff editor per drifted file.
 - A picker that stands in for a required argument must refuse headlessly rather than default. The confirm-then-apply prompts keep `nonInteractiveDefault`, since the caller already named what to apply. `aitk gov install` and `aitk snippets install` return 1 with the valid names when the argument is missing, because defaulting there picked a whole stack or category for the caller.
+- `check-skill-paths.sh` scans `claude/skills/**` after `regen-skill-references.sh` has written into it, so a `wiki/` reference added to a `standards/bundled/*.md` file fails the stage against a generated copy the author cannot edit in place. The failure message names `standards/bundled/` for that reason. The same shape reaches `assert_no_drift`, which is scoped by folder glob and so flags a hand-authored file such as `claude/skills/setup-plugins/references/plugin-catalog.md` with a message about regenerated files.
 
 ## Core scripts
 

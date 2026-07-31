@@ -21,4 +21,5 @@ echo "Shipped skills reference a repo-local path that does not exist in a target
 echo "$matches" | sed "s|^$PROJECT_ROOT/||"
 echo
 echo "Reach supporting prose through an aitk docs command, a bundled reference, or inlined text."
+echo "A match inside a references/ folder is a generated copy. Fix the source under standards/bundled/."
 exit 1
