@@ -307,7 +307,7 @@ AITK_NON_INTERACTIVE=1 aitk init --stack astro --skip wiki /path/to/project
 # Run every domain sync. The git workflow is refused headlessly, so nothing is pushed
 AITK_NON_INTERACTIVE=1 aitk sync /path/to/project
 
-# Scaffold wiki/ with a stub index. The target must already exist
+# Scaffold .claude/wiki/ with a stub index. The target must already exist
 AITK_NON_INTERACTIVE=1 aitk wiki init /path/to/project
 
 # Run a sandbox scenario non-interactively

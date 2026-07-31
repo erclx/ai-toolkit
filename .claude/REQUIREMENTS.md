@@ -48,7 +48,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 
 ## MVP features
 
-1. `aitk init`: one-shot bootstrap that layers base tooling, Claude seeds, governance, snippets, and wiki into a project.
+1. `aitk init`: one-shot bootstrap that layers base tooling, Claude seeds, governance, and snippets into a project, and scaffolds an empty `.claude/wiki/` for the project's own authoring.
 2. Per-domain `list`, `install`, and `sync` subcommands so skills can read catalogs and apply updates.
 3. Governance stacks and rules installed as path-scoped files in `.claude/rules/`.
 4. Claude Code plugin with skills covering planning, review, architecture diagrams, UI tests, docs sync, memory review, and the git ship chain.

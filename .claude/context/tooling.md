@@ -102,7 +102,7 @@ Flags and arguments live in `docs/agents.md`.
 
 ## Common workflows
 
-Bootstrap a new project with `aitk init`, which installs base configs, Claude workflow, governance, standards, snippets, and wiki in one command. Governance is skipped when `--stack` is absent. The `setup-init` skill resolves the flags from project detection and runs the chain in one shot.
+Bootstrap a new project with `aitk init`, which installs base configs, Claude workflow, governance, standards, and snippets in one command, and scaffolds an empty `.claude/wiki/`. Governance is skipped when `--stack` is absent. The `setup-init` skill resolves the flags from project detection and runs the chain in one shot.
 
 Sync tooling with `aitk tooling` and pick stack and path. Pass `--no-ref` to skip the reference drop, or `--skip <stack>` to drop a layer from the resolved chain.
 

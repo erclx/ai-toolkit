@@ -11,11 +11,11 @@ Cross-domain design doc for how a project splits agent context across loading ti
 
 Target projects scale by splitting context across three loading tiers. Knowing which tier holds what keeps sessions fast and content discoverable.
 
-| Tier             | Surface                                                                | Load behavior                                        | Holds                                                                     |
-| ---------------- | ---------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
-| Always loaded    | Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md` | Eager at session start                               | Cross-cutting behavior, product scope, project-wide invariants            |
-| Path-scoped lazy | `.claude/rules/<scope>.md` with `paths:` frontmatter                   | Lazy by glob match when files are read               | Do/don't rules, naming and pattern conventions for a file scope           |
-| On-demand lookup | `.claude/context/<domain>.md`, `.claude/wireframes/<surface>.md`       | Read by Claude when the domain or surface is touched | Per-domain narrative and per-surface layout intent, indexed for discovery |
+| Tier             | Surface                                                                                    | Load behavior                                        | Holds                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Always loaded    | Root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`                     | Eager at session start                               | Cross-cutting behavior, product scope, project-wide invariants                                            |
+| Path-scoped lazy | `.claude/rules/<scope>.md` with `paths:` frontmatter                                       | Lazy by glob match when files are read               | Do/don't rules, naming and pattern conventions for a file scope                                           |
+| On-demand lookup | `.claude/context/<domain>.md`, `.claude/wireframes/<surface>.md`, `.claude/wiki/<page>.md` | Read by Claude when the domain or surface is touched | Per-domain narrative, per-surface layout intent, and tooling or workflow reference, indexed for discovery |
 
 `.claude/context/<domain>.md` is the new tier introduced for larger projects. It exists because nested `CLAUDE.md` files would auto-load along the cwd's ancestor chain and bloat context as a session walks the repo. The `index.md` lookup pattern keeps the cost on-demand.
 
