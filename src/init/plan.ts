@@ -78,7 +78,10 @@ export function planInit(flags: InitFlags): InitPlan {
   preview.push({ level: 'info', text: `snippets (${flags.snippets})` })
 
   if (!flags.skip.skipped.has('wiki')) {
-    preview.push({ level: 'info', text: 'wiki (index and reference pages)' })
+    preview.push({
+      level: 'info',
+      text: 'wiki (.claude/wiki/ with a stub index)',
+    })
   }
 
   const total = preview.filter((line) => line.level === 'info').length

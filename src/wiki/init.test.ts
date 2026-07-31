@@ -9,12 +9,24 @@ import {
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { applyWikiInit, isWikiTarget, planWikiInit, wikiDir } from '@/wiki/init'
+import {
+  applyWikiInit,
+  isWikiTarget,
+  legacyWikiDir,
+  planWikiInit,
+  wikiDir,
+} from '@/wiki/init'
 
 let TARGET: string
 
 function seedWiki(): string {
   const dir = wikiDir(TARGET)
+  mkdirSync(dir, { recursive: true })
+  return dir
+}
+
+function seedLegacyWiki(): string {
+  const dir = legacyWikiDir(TARGET)
   mkdirSync(dir, { recursive: true })
   return dir
 }
@@ -32,6 +44,7 @@ describe('planWikiInit', () => {
     expect(planWikiInit(TARGET)).toEqual({
       changes: ['dir', 'index'],
       hasIndex: false,
+      hasLegacyWiki: false,
     })
   })
 
@@ -41,13 +54,34 @@ describe('planWikiInit', () => {
     expect(planWikiInit(TARGET)).toEqual({
       changes: ['index'],
       hasIndex: false,
+      hasLegacyWiki: false,
     })
   })
 
   it('should plan nothing when the index is already present', () => {
     writeFileSync(join(seedWiki(), 'index.md'), 'existing\n')
 
-    expect(planWikiInit(TARGET)).toEqual({ changes: [], hasIndex: true })
+    expect(planWikiInit(TARGET)).toEqual({
+      changes: [],
+      hasIndex: true,
+      hasLegacyWiki: false,
+    })
+  })
+
+  it('should report a root wiki without planning a migration', () => {
+    seedLegacyWiki()
+
+    expect(planWikiInit(TARGET)).toEqual({
+      changes: ['dir', 'index'],
+      hasIndex: false,
+      hasLegacyWiki: true,
+    })
+  })
+})
+
+describe('wikiDir', () => {
+  it('should resolve under the target .claude folder', () => {
+    expect(wikiDir(TARGET)).toBe(join(TARGET, '.claude', 'wiki'))
   })
 })
 
@@ -81,6 +115,15 @@ describe('applyWikiInit', () => {
     await applyWikiInit(TARGET, planWikiInit(TARGET))
 
     expect(statSync(wikiDir(TARGET)).isDirectory()).toBe(true)
+  })
+
+  it('should leave a root wiki in place', async () => {
+    const page = join(seedLegacyWiki(), 'setup.md')
+    writeFileSync(page, 'authored\n')
+
+    await applyWikiInit(TARGET, planWikiInit(TARGET))
+
+    expect(readFileSync(page, 'utf8')).toBe('authored\n')
   })
 
   it('should leave an existing index untouched', async () => {

@@ -2,11 +2,13 @@ import { existsSync, statSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const WIKI_DIR = 'wiki'
+const WIKI_DIR = join('.claude', 'wiki')
+const LEGACY_WIKI_DIR = 'wiki'
 const INDEX_FILE = 'index.md'
 
 export const WIKI_DIR_REL = `${WIKI_DIR}/`
 export const WIKI_INDEX_REL = join(WIKI_DIR, INDEX_FILE)
+export const LEGACY_WIKI_DIR_REL = `${LEGACY_WIKI_DIR}/`
 
 const INDEX_SEED = `---
 title: Wiki
@@ -23,10 +25,20 @@ export type WikiChange = 'dir' | 'index'
 export interface WikiPlan {
   readonly changes: readonly WikiChange[]
   readonly hasIndex: boolean
+  readonly hasLegacyWiki: boolean
 }
 
 export function wikiDir(target: string): string {
   return join(target, WIKI_DIR)
+}
+
+/**
+ * A target scaffolded before the wiki moved under `.claude/` keeps its pages at
+ * the root. The verb reports that folder rather than moving it, because a move
+ * is a migration and the `migration-*` skills own those.
+ */
+export function legacyWikiDir(target: string): string {
+  return join(target, LEGACY_WIKI_DIR)
 }
 
 /**
@@ -57,7 +69,7 @@ export function planWikiInit(target: string): WikiPlan {
   const hasIndex = existsSync(index)
   if (!hasIndex) changes.push('index')
 
-  return { changes, hasIndex }
+  return { changes, hasIndex, hasLegacyWiki: existsSync(legacyWikiDir(target)) }
 }
 
 export async function applyWikiInit(
