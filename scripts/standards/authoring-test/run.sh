@@ -15,13 +15,13 @@ context)
   standard="context.md"
   dest=".claude/context/feedwatch.md"
   surface="one entry for this codebase"
-  armdir="ctx-arm"
+  arm_dir="ctx-arm"
   ;;
 wireframes)
   standard="wireframes.md"
   dest=".claude/wireframes/feed-list.md"
   surface="one entry for the feed list surface"
-  armdir="wf-arm"
+  arm_dir="wf-arm"
   ;;
 *)
   echo "usage: run.sh [context|wireframes]" >&2
@@ -35,7 +35,7 @@ workdir="$(mktemp -d "${TMPDIR:-/tmp}/authoring-test-XXXXXX")"
 trap 'rm -rf "$workdir"' EXIT
 
 tar -xzf "$SCRIPT_DIR/fixture.tar.gz" -C "$workdir"
-fixture="$workdir/$armdir/feedwatch"
+fixture="$workdir/$arm_dir/feedwatch"
 
 mkdir -p "$fixture/.claude/standards" "$fixture/$(dirname "$dest")"
 cp "$REPO_ROOT/standards/$standard" "$fixture/.claude/standards/$standard"
