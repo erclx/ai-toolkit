@@ -30,8 +30,6 @@ For each changed markdown file, pick the applicable standards:
 - Branch names proposed in the session: `${CLAUDE_SKILL_DIR}/references/branch.md`
 - PR titles or bodies drafted in the session: `${CLAUDE_SKILL_DIR}/references/pr.md`
 
-Skip a file if none of the standards applies.
-
 ## Step 3: read standards and audit
 
 Read each applicable standard once. For each changed file, audit against every rule:
