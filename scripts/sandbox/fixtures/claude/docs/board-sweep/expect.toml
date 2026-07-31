@@ -7,21 +7,16 @@
 # failure ambiguous between "the sweep runs" and "the sweep reaches past the
 # session". Keep them separate.
 
-# Run this arm with AITK_SKILL_TEST_MAX_TURNS=50. The default cap is 30 and a
-# clean `drift` run already costs 29, while this arm does strictly more: two
-# outcomes marked, two `Plan:` lines retargeted, two plans moved. `run.sh` never
-# reads this file, so a ceiling declared above the cap cannot raise it. Left at
-# the default the run truncates at 30, this one assertion passes because 30 is
-# under the ceiling, and every tree assertion below fails with nothing to
-# separate truncation from a reasoning miss.
+# The arm runs under the default cap. A clean run on 2026-07-31 cost 28 turns,
+# just under `drift`'s 29, so the ceiling matches the default 30 the way `drift`
+# already does. The extra work this arm carries over `drift`, one more task
+# marked and one more plan moved, is a handful of edits against a board both arms
+# read and reason about once, which is where the turns actually go.
 #
-# The ceiling matches the budget rather than sitting under it, which is the
-# relationship `drift` already carries at 30 against the default 30. A truncated
-# run reports one turn past its cap, so an equal ceiling catches truncation while
-# a lower one fails legitimate runs between the two numbers. 50 is headroom
-# rather than a measurement, since no run of this arm has been observed. Tighten
-# both together once one reports a cost.
-max_turns = 50
+# The ceiling equals the cap rather than sitting under it. A truncated run
+# reports one turn past its cap, so an equal ceiling still catches truncation,
+# while a lower one fails legitimate runs landing between the two numbers.
+max_turns = 30
 
 # Both plans move. `feature-pagination.md` belongs to the task this session's
 # diff closes, and `feature-rate-limit.md` belongs to a task that closed in an

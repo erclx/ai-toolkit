@@ -105,9 +105,7 @@ stage_setup() {
     log_info "Expect:  declared in fixtures/claude/docs/board-sweep/expect.toml"
     log_info "         Check it with: aitk sandbox check claude:docs board-sweep"
     log_info "         Two plans archived, two Plan: lines retargeted, the control untouched"
-    log_info ""
-    log_info "Run this arm with AITK_SKILL_TEST_MAX_TURNS=50. The default cap is 30,"
-    log_info "a clean drift run already costs 29, and this arm does more than drift."
+    log_info "         Runs under the default turn cap. A clean run cost 28 on 2026-07-31."
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
