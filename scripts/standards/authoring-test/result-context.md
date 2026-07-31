@@ -1,3 +1,7 @@
+> Verbatim run record, 2026-07-31, `standards/context.md`. First-person voice below is the run's own output.
+> Do not edit or rewrite this file. It is the evidence the change-control rule cites, so a prose pass over it
+> destroys what it is for. Prose standards do not apply here.
+
 The file content is ready, but the write was blocked: the harness flagged `.claude/context/feedwatch.md` as a sensitive path and this session is non-interactive, so I can't get approval. I'm not going to route around that with a shell write. To land it, either approve the path or re-run interactively.
 
 Here is the entry, ready to paste to `.claude/context/feedwatch.md`:

@@ -36,11 +36,12 @@ A standard is a target-facing authoring convention for one document type. It ins
 - Write the criterion as a small set of questions the artifact must answer, or a task a reader must be able to complete from it. Keep it checkable by a person in one sitting.
 - Place it near the top, above the shape rules it governs. The shape rules are the means and the criterion is the test.
 - Say that an artifact failing the criterion is non-conforming even when it satisfies every shape rule. Without that line the criterion reads as advice.
+- Add a criterion to an existing standard when that standard is next exercised, not in a sweep. A criterion written without a failure to point at is the taste-based edit this section exists to prevent, so a standard with no criterion yet is a known gap rather than a violation.
 
 ## Changing a standard
 
 - Change a standard on a failure, not on a finding. A finding is that the docs say X or a paper suggests Y. A failure is a conforming artifact that satisfied every shape rule and still missed the success criterion.
-- Route findings to the project's task board. They are hypotheses to test, not instructions to apply.
+- Park findings wherever the project tracks pending work, or in the standard's own backlog section when it tracks none. They are hypotheses to test, not instructions to apply.
 - Cite the failing artifact in the change that fixes it, so the next reader can tell which rules were paid for by evidence.
 
 ## Examples

@@ -40,6 +40,14 @@ Verbatim from `05-experiment-design.md:21`. Applied to the context arm as writte
 - Records at least one real decision with its reasoning
 - Needs no follow-up question to get there
 
+## Reading the fifth criterion against a blocked write
+
+"Needs no follow-up question to get there" is ambiguous when the harness blocks the write, and every run hits the same ambiguity. The judgment, fixed here so it does not get re-decided per run.
+
+A run that ends by asking the operator to approve the path or re-run interactively passes this criterion. That is a request for operator action on a harness constraint, not a question about the authoring task, and the artifact is already complete in the same message. Score the artifact, not the delivery.
+
+A run fails this criterion when it asks something it needed answered to write the entry, such as which domain the entry covers or which sections apply. That is the standard failing to be self-sufficient, which is what the criterion measures.
+
 ## Standing rule for this run
 
 The outcome text accepts failure as a result. Do not iterate either standard against these results inside this task. A fix ships as its own change with the failure cited, per the change-control rule this task adopts.

@@ -51,9 +51,5 @@ and author $surface at $dest, following that standard. Write the file."
 # returns the artifact in its final message instead of on disk. Judge stdout.
 result="$(cd "$fixture" && claude -p "$prompt" --output-format json --permission-mode acceptEdits)"
 
-python3 -c "
-import json, sys
-d = json.loads(sys.stdin.read())
-print('cost_usd:', d.get('total_cost_usd'), '| turns:', d.get('num_turns'), file=sys.stderr)
-print(d.get('result') or '')
-" <<<"$result"
+jq -r '"cost_usd: \(.total_cost_usd) | turns: \(.num_turns)"' <<<"$result" >&2
+jq -r '.result // ""' <<<"$result"
