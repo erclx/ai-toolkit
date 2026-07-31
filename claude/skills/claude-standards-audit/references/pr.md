@@ -31,8 +31,18 @@ consumers: git-split, git-pr, claude-standards-audit
 - Use bullet points for multiple reasons, one sentence for a single reason
 - `## Testing` (optional): specify exact commands or test cases run
 - Omit Testing for docs, config, or trivial sync changes
-- Use `- [ ]` checkboxes, never prose
+- Use checkboxes, never prose. See Testing discipline for which box gets ticked.
+- `## For the reviewer` (optional): what the reviewer should confirm, one bullet per request
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
+
+## Testing discipline
+
+- Run the check before writing its line. A `- [ ]` reports a check that has not run rather than one that is planned.
+- Tick the box and state the observed result. `- [x] npm test passes, 42 tests` beats `- [ ] run npm test`.
+- Quote the count or output the run reported, never a figure carried from elsewhere.
+- Leave a box unchecked only when a human is required, and name which human and why on the same line.
+- Human-only covers visual or aesthetic judgment, anything needing credentials or a live third-party service, anything needing a second machine or a fresh OS, and judgment about whether a boundary or an abstraction reads correctly. The agent runs everything else.
+- Put a request for the reviewer under `## For the reviewer`. It is a request rather than unfinished testing, so it never appears as an unchecked Testing box.
 
 ## Formatting
 
@@ -58,8 +68,13 @@ consumers: git-split, git-pr, claude-standards-audit
 
 ## Testing
 
-- [ ] <Specific command or test case>
-- [ ] <Edge case verified>
+- [x] <Command run> <observed result>
+- [x] <Edge case verified> <what was observed>
+- [ ] <Human-only check> (<which human, why>)
+
+## For the reviewer
+
+- <What the reviewer should confirm>
 ```
 
 ### Correct
@@ -80,8 +95,13 @@ Update auth middleware to enforce jwt expiration checks. # imperative + direct o
 
 ## Testing
 
-- [ ] `npm run test:auth` # exact command
-- [ ] Verified expired token rejection in staging. # edge case
+- [x] `npm run test:auth` passes, 42 tests. # command run + observed result
+- [x] Expired token rejected with a 401 against a local server. # edge case + what happened
+- [ ] Staging smoke test (release owner, needs staging credentials). # unchecked + which human + why
+
+## For the reviewer
+
+- Confirm the 401 and 403 split reads correctly for the public API. # a request, not a test result
 ```
 
 ### Incorrect
@@ -99,4 +119,6 @@ This PR updates the authentication system to be more robust. # "This PR" opener 
 ## Testing
 
 - Tested manually # no specific command or case
+- [ ] `npm run test:auth` # unchecked box for a check the agent can run
+- [ ] Reviewer confirms the error split reads correctly # a reviewer request filed as a test box
 ```
