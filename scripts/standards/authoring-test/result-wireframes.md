@@ -4,6 +4,10 @@
 >
 > Result: PASS on all five criteria. Cost $0.74 over 15 turns.
 > Two earlier attempts on the same day were inconclusive for harness reasons, recorded under Harness history below.
+>
+> Ordering caveat: this run exercised `standards/wireframes.md` BEFORE the criterion was added to it,
+> the reverse of the context arm. It is evidence about the standard as it was, not as it now ships.
+> See Ordering against the context arm below before reading the two results as comparable.
 
 ---
 
@@ -147,6 +151,16 @@ Every required section present with no padded headings. Section order follows th
 The strongest signal is the third planted intent. `AddFeedForm.tsx:3` carries the rejected modal approach, and the standard routes rejected approaches to `.claude/context/`. The run dropped the history, kept the layout intent, and named exactly what it was withholding and where that content belongs. Withholding was the conforming move, and nothing in the prompt pointed at it.
 
 The fifth criterion passes under the rule in `pre-registration.md`. The run ends offering to draft a context entry, which is an offer rather than a question it needed answered to finish.
+
+## Ordering against the context arm
+
+The two arms ran in opposite orders, and the results are not parity.
+
+The context arm in #639 added the criterion to `standards/context.md` first, then ran the test with it present. That result is evidence about the standard as it ships, and it says a fresh session can author against the criterion.
+
+This arm ran first and the criterion was written afterward, from what the run exposed. That result is evidence about `standards/wireframes.md` as it was, with shape rules and no criterion. It says the shape rules alone were enough for this fixture. The criterion added on the back of it has never itself been exercised.
+
+Re-running this arm against the current file is the cheap way to close the gap, and it answers a different question than the run recorded here: whether the criterion helps, rather than whether the shape rules sufficed without one.
 
 ## Harness history
 

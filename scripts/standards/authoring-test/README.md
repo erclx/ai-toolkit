@@ -13,7 +13,7 @@ scripts/standards/authoring-test/run.sh wireframes   # standards/wireframes.md
 
 Each run spawns one headless `claude -p` session. Measured cost is $0.59 for the context arm and $0.74 for the wireframes arm, both around 15 to 20 turns. Budget roughly a dollar per arm. The artifact prints to stdout and the cost line to stderr, so redirecting stdout captures the artifact alone.
 
-The runner passes `--dangerously-skip-permissions`. That is safe here and nowhere else: the fixture is synthetic, extracted to `mktemp -d` outside the repo, and deleted on exit, so the grant reaches nothing that outlives the run. Do not copy the flag into a script that touches real project files. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.
+The runner passes `--dangerously-skip-permissions`. The flag grants tool use across the filesystem rather than within a directory, so the disposable fixture is not what makes it acceptable. What makes it acceptable is the task: the cwd is the fixture, the prompt names one file to write, and no credential or repo path is in reach of the instruction. Copy the flag only where the same three hold. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.
 
 The runner copies the live `standards/<name>.md` in at run time rather than using a pinned copy, so the test always exercises the current standard.
 
@@ -44,3 +44,7 @@ A missing file at the requested path is a harness result, never a standard failu
 `result-context.md` is the 2026-07-31 run against `standards/context.md`, the run that first exercised the success criterion. Passed all five criteria and recovered all three planted decisions unprompted.
 
 `result-wireframes.md` is the 2026-07-31 run against `standards/wireframes.md`. Passed all five criteria. It correctly withheld the rejected-modal rationale that the standard routes to `.claude/context/`, which is the rule most likely to be ignored, and named what it was withholding. Its Harness history section records the two inconclusive attempts that preceded it and the fixes each one forced.
+
+The two results are not parity, and the record says so. The context arm ran with its criterion already present, so it measures the standard as it ships. The wireframes arm ran before its criterion existed, so it measures the shape rules alone and the criterion written from it has never been exercised.
+
+Both standards passed, which is a finding about the harness rather than about either standard. A test that has confirmed twice and discriminated zero times has not yet shown it can fail anything. Treat a pass as weak evidence until one arm fails.
