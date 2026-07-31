@@ -15,6 +15,16 @@ Weight the entry toward what cannot be re-derived from the repo. That single rul
 - Command surfaces are re-derivable with `--help` and already live in the CLI reference under `docs/`. Duplicating flag lists creates a second source of truth that drifts.
 - Decisions and gotchas cannot be re-derived at any price. They are the reason the folder exists.
 
+## What a working entry looks like
+
+An entry works when a session can read it and answer three questions without opening source:
+
+- Where do things live in this domain?
+- Why are they that way?
+- How do I add one more of what this domain holds?
+
+An entry that fails these is non-conforming regardless of whether it satisfies every section and ordering rule below. Shape is the means. These three questions are the test.
+
 ## Frontmatter
 
 - `title` (required): sentence case, names the domain (`Web`, `API`, `Agents`).
