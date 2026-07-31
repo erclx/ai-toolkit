@@ -110,6 +110,10 @@ The record is gitignored scratch with no rotation, one file per run. Writing it 
 
 The default turn cap is 30. It was 20 until 2026-07-30, when a clean `claude/docs` `drift` run took 29 turns and would have truncated. A truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, so the global default sits above observed cost.
 
+Set an arm's ceiling equal to the cap rather than under it, which is the relationship `drift` carries at 30 against the default 30. A truncated run reports one turn past its cap, so an equal ceiling still catches truncation, while a lower one fails legitimate runs that land in the gap between the two numbers.
+
+Estimate an arm's cost from what it reads rather than from what it writes. `board-sweep` was projected to need a raised cap because it marks one more outcome and moves one more plan than `drift`, and it came in at 28 against `drift`'s 29. The extra mutations are a few edits, while the turns go to reading the board and reasoning about it, which both arms do once. A projected budget is worth nothing next to one real run, so declare the ceiling at the default and correct it from the first observation.
+
 `AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates, and if its declared ceiling sits above the cap it passes that one assertion while failing the rest. Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
 
 ## Expectations

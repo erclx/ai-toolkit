@@ -10,7 +10,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage"
+  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "board-sweep"
 
   case "$SELECTED_OPTION" in
   "drift")
@@ -80,6 +80,32 @@ stage_setup() {
     log_info "Expect:  Step 4 reports drift in .claude/wireframes/byok-gate.md (Anthropic-only contradicted)"
     log_info "         Step 4 stubs .claude/wireframes/mock-demo-strip.md with a TODO"
     log_info "         Operator resolves drift manually; auto-rewrite of prose is out of scope"
+    ;;
+  "board-sweep")
+    stage_fixtures claude docs board-sweep 01-initial
+    git add . && git commit -m "feat(api): rate limit the task endpoints" --no-verify -q
+
+    stage_fixtures claude docs board-sweep 02-pagination
+    git add . && git commit -m "feat(api): paginate the task list" --no-verify -q
+
+    stage_fixtures claude docs board-sweep 03-plans
+
+    log_step "Scenario ready: plans sweep reaches a task the session never touched"
+    log_info "Context: three tasks on the board, each citing a plan in .claude/plans/"
+    log_info "  v02.0-pagination.md has open outcomes that HEAD ships, so this run closes it"
+    log_info "  v01.0-rate-limit.md is already all [x], closed by an earlier session"
+    log_info "  That earlier run never swept its plan, which is the defect this arm reproduces"
+    log_info "  v03.0-search.md is the control. Its outcomes stay open and its plan must survive."
+    log_info ""
+    log_info "Narrate nothing about rate limiting. The arm fails if the sweep only"
+    log_info "reaches the task the session or the prompt put in front of it, and it"
+    log_info "fails the other way if the sweep archives the control's plan too."
+    log_info ""
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  declared in fixtures/claude/docs/board-sweep/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:docs board-sweep"
+    log_info "         Two plans archived, two Plan: lines retargeted, the control untouched"
+    log_info "         Runs under the default turn cap. A clean run cost 28 on 2026-07-31."
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

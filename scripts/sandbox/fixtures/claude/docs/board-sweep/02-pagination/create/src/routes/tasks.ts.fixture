@@ -1,0 +1,18 @@
+import { isRateLimited } from '../rate-limit'
+
+type Task = { id: string; title: string }
+type Page = { items: Task[]; total: number }
+
+const tasks: Task[] = []
+
+export function listTasks(
+  clientId: string,
+  limit = 25,
+  offset = 0,
+): Page {
+  if (isRateLimited(clientId)) {
+    throw new Error('Too many requests')
+  }
+
+  return { items: tasks.slice(offset, offset + limit), total: tasks.length }
+}

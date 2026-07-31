@@ -23,7 +23,9 @@ One file per task is what keeps the board safe under parallel sessions. Two sess
 
 `index.md` is generated from sibling frontmatter. The folder is gitignored, so the whole-repo index walk skips it and a hook passing the changed path regenerates it instead. Never hand-edit it.
 
-`priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Group tasks by readiness rather than by status, one row per task, with a stated column for what each is blocked on. Keep it to links and blockers. Why the order is what it is belongs in `.claude/ROADMAP.md`, which is committed because that rationale has no substitute record.
+`priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Why the order is what it is belongs in `.claude/ROADMAP.md`, which is committed because that rationale has no substitute record.
+
+Group tasks by readiness rather than by status, one row per task, with a stated column for what each is blocked on. Keep it to links and blockers: tables, plus at most one sentence per section. A paragraph in `priority.md` is a defect whatever it says. Stating the shape this way is what lets a single diff fail, since a size cap only trips after the fact and every addition looks defensible on its own.
 
 The `claude-tasks` skill creates and archives task files. `claude-docs` marks outcomes `[x]` in an existing file and sweeps the plans those tasks cite. Neither does the other's job.
 
@@ -78,7 +80,7 @@ Why this task exists and what it depends on.
 
 ## Findings
 
-- What was learned while the task was open, dated where it matters.
+- What constrains the task, dated where it matters.
 
 > Test strategy: <unit | component | e2e | visual | manual>, what is being verified
 ```
@@ -99,13 +101,14 @@ Phase-label format and where labels may appear are governed by `standards/versio
 
 - Task entries describing observable behavior, one outcome per line
 - A test strategy line naming the mechanism and what it verifies
-- Findings recording what the task learned while it was open, including blockers and dependencies
+- Findings stating what constrains the task, including blockers and dependencies
 
 ## What does not go in
 
 - Class names, file paths, function names, or prop names in any entry or title
 - Code-level steps or implementation detail. Behavioral specifics are fine.
 - Architectural reasoning that outlives the task. A finding explains why this task is shaped as it is. A decision the system keeps after the task closes belongs in `.claude/ARCHITECTURE.md`.
+- Narrative of the session that produced the task. A finding states what constrains the task, so what was probed, what it cost, and who decided belongs in the groundwork folder the `Groundwork:` line names. A task with no groundwork folder cuts the narrative rather than relocating it, since the board is not the fallback destination for it.
 - "In progress" or "Blocked" headings. Note status inline on the outcome instead.
 - Sequencing rationale or which version is active. Those belong in `.claude/ROADMAP.md`, which is committed because that reasoning has no substitute record.
 
