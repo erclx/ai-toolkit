@@ -108,7 +108,7 @@ Phase-label format and where labels may appear are governed by `standards/versio
 - Class names, file paths, function names, or prop names in any entry or title
 - Code-level steps or implementation detail. Behavioral specifics are fine.
 - Architectural reasoning that outlives the task. A finding explains why this task is shaped as it is. A decision the system keeps after the task closes belongs in `.claude/ARCHITECTURE.md`.
-- Narrative of the session that produced the task. A finding states what constrains the task, so what was probed, what it cost, and who decided belongs in the groundwork folder the `Groundwork:` line names.
+- Narrative of the session that produced the task. A finding states what constrains the task, so what was probed, what it cost, and who decided belongs in the groundwork folder the `Groundwork:` line names. A task with no groundwork folder cuts the narrative rather than relocating it, since the board is not the fallback destination for it.
 - "In progress" or "Blocked" headings. Note status inline on the outcome instead.
 - Sequencing rationale or which version is active. Those belong in `.claude/ROADMAP.md`, which is committed because that reasoning has no substitute record.
 

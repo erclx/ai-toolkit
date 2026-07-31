@@ -112,6 +112,8 @@ The default turn cap is 30. It was 20 until 2026-07-30, when a clean `claude/doc
 
 `claude/docs` `board-sweep` is the first arm that does not fit the default. It marks two outcomes, retargets two `Plan:` lines, and moves two plans, all of which `drift` does once each at a cost of 29. Its declaration and its scenario output both name `AITK_SKILL_TEST_MAX_TURNS=50`, since a ceiling in `expect.toml` cannot raise the cap it runs under.
 
+Set an arm's ceiling equal to its budget rather than under it, which is the relationship `drift` already carries at 30 against the default 30. A truncated run reports one turn past its cap, so an equal ceiling still catches truncation, while a lower one fails legitimate runs that land in the gap between the two numbers.
+
 `AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates, and if its declared ceiling sits above the cap it passes that one assertion while failing the rest. Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
 
 ## Expectations

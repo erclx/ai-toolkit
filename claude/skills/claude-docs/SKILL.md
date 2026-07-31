@@ -49,7 +49,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 
 Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
 
-- `.claude/tasks/index.md` first, then only the task files this session touched
+- `.claude/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. Step 8 reads every file in the folder for its plans sweep and states that where it gives the instruction.
 
 ## Step 2: identify what changed
 

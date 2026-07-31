@@ -15,23 +15,34 @@
 # under the ceiling, and every tree assertion below fails with nothing to
 # separate truncation from a reasoning miss.
 #
-# 45 is headroom rather than a measurement, since no run of this arm has been
-# observed. Tighten it, and the variable with it, once one reports a cost.
-max_turns = 45
+# The ceiling matches the budget rather than sitting under it, which is the
+# relationship `drift` already carries at 30 against the default 30. A truncated
+# run reports one turn past its cap, so an equal ceiling catches truncation while
+# a lower one fails legitimate runs between the two numbers. 50 is headroom
+# rather than a measurement, since no run of this arm has been observed. Tighten
+# both together once one reports a cost.
+max_turns = 50
 
 # Both plans move. `feature-pagination.md` belongs to the task this session's
 # diff closes, and `feature-rate-limit.md` belongs to a task that closed in an
 # earlier session and that nothing in the prompt mentions. The second path is
 # the whole point of the arm: a session-scoped sweep archives the first and
 # strands the second.
+# `feature-search.md` is the control. Its task still carries open outcomes and
+# nothing in HEAD ships search, so a correct sweep leaves it where it is. Without
+# it the arm cannot tell a board-wide sweep from one that dropped the outcome
+# gate too, since every other fixture task ends the run all `[x]` and would be
+# archived either way.
 paths = [
   ".claude/.tmp/plans-archive/feature-pagination.md",
   ".claude/.tmp/plans-archive/feature-rate-limit.md",
+  ".claude/plans/feature-search.md",
 ]
 
 absent = [
   ".claude/plans/feature-pagination.md",
   ".claude/plans/feature-rate-limit.md",
+  ".claude/.tmp/plans-archive/feature-search.md",
 ]
 
 write_scope = [".claude/**"]
@@ -51,3 +62,16 @@ pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-pagination\.md'
 [[content]]
 path = ".claude/tasks/v01.0-rate-limit.md"
 pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-rate-limit\.md'
+
+# The control's pointer stays put. Asserting the plan's location alone would pass
+# on a run that retargeted the line anyway, leaving the task aimed at an archive
+# path holding no file.
+[[content]]
+path = ".claude/tasks/v03.0-search.md"
+pattern = '^Plan: \.claude/plans/feature-search\.md'
+
+# Its outcomes stay open. HEAD ships no search, so a run marking either one has
+# matched on the board rather than on the diff.
+[[content]]
+path = ".claude/tasks/v03.0-search.md"
+pattern = '^- \[ \] Outcome: a query matches against task titles'
