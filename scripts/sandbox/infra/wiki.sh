@@ -21,16 +21,16 @@ stage_setup() {
   case "$SELECTED_OPTION" in
   "init")
     log_step "Running: aitk wiki init"
-    exec bun "$PROJECT_ROOT/src/cli.ts" wiki init .
+    bun "$PROJECT_ROOT/src/cli.ts" wiki init .
+    log_info "Assert:  aitk sandbox check infra:wiki init"
     ;;
   "legacy")
     seed_legacy_wiki
     log_step "Seeded a root wiki/ with an authored page"
     log_step "Running: aitk wiki init"
     bun "$PROJECT_ROOT/src/cli.ts" wiki init .
-    log_step "find wiki .claude/wiki -type f"
-    find wiki .claude/wiki -type f | pipe_output
-    log_info "Expect: wiki/setup.md still present, .claude/wiki/index.md added"
+    log_info "Expect:  wiki/setup.md still present, .claude/wiki/index.md added"
+    log_info "Assert:  aitk sandbox check infra:wiki legacy"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
