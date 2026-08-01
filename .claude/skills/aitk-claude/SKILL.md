@@ -16,6 +16,9 @@ Read `.claude/context/claude-plugin.md` for the skills inventory and aitk claude
 
 ## Authoring conventions
 
+- Write a new skill only when it encodes workflow specific to this toolkit or a convention the author consistently applies. The test: would this same skill be invoked on every target project the author owns?
+- Install a community skill rather than writing one when the need is domain expertise the toolkit does not maintain, such as frontend design, security audits, or stack-specific patterns. Reference it in per-tier install recommendations rather than absorbing it.
+- Do not fork a community skill. Propose a thin toolkit wrapper that composes the upstream one, and fork only when upstream diverges hard from a stated need and the maintenance cost is accepted explicitly. See Skill strategy in `.claude/context/claude-plugin.md` for the reasoning and the redundancy audit.
 - Task skills with preview+execute patterns must execute commands immediately after the preview. Do not add a "confirm before running" step or pause for user input. Claude Code's tool permission dialog is the confirmation gate. The user hits Enter to approve or Escape to interrupt and revise.
 - When a skill persists output to `.claude/` (plans, review, audits), derive a slug from the current git branch: run `git branch --show-current` and replace `/` with `-`. Fall back to `latest` on empty output (detached HEAD). Include the slug in the filename (`feature-<slug>.md`, `review-<slug>.md`, `ui-checklist-<slug>.md`, `ux-audit-<slug>.md`). This prevents collisions across parallel worktrees.
 - Never reference a repo-local path such as `wiki/` from a file under `claude/skills/`. It resolves to nothing in a target project, and the Skill paths stage of `bun run check` fails on it.
