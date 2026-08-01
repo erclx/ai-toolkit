@@ -5,7 +5,7 @@ description: Tooling research for a visual companion to the ASCII wireframe seed
 
 # Visual wireframes
 
-The toolkit's `WIREFRAMES.md` seed is ASCII only. That works for structure but blocks visual feedback. Claude cannot critique its own layouts because it only sees the grid it typed, and a human reviewer cannot judge color, hierarchy, or proportion from ASCII. This page records the tooling research for an opt-in visual companion that would sit alongside the ASCII file.
+The toolkit's `WIREFRAMES.md` seed is ASCII only. That works for structure but blocks visual feedback. Claude cannot critique its own layouts because it only sees the grid it typed, and a human reviewer cannot judge color, hierarchy, or proportion from ASCII. This page records the tooling research for an opt-in visual companion that would sit alongside the ASCII file. Source: the maintainers of each evaluated tool, none of them this repo.
 
 ## Status
 

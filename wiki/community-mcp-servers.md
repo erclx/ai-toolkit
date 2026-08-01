@@ -5,7 +5,7 @@ description: Curated list of MCP servers with rankings and install notes
 
 # Community MCP servers
 
-Notable MCP servers worth installing with Claude Code. For the protocol itself, transports, scopes, and setup, see [Claude Code MCP](claude-mcp.md). Figures and maintenance notes are a snapshot from 2026-04-16 and drift fast. Re-verify before adding to a production config.
+Notable MCP servers worth installing with Claude Code. For the protocol itself, transports, scopes, and setup, see [Claude Code MCP](claude-mcp.md). Figures and maintenance notes are a snapshot from 2026-04-16 and drift fast. Re-verify before adding to a production config. Source: the maintainers of each listed server, none of them this repo.
 
 ## At a glance
 
@@ -30,7 +30,7 @@ CLI beats MCP for some tasks. Microsoft's own Playwright MCP README recommends t
 
 ### Playwright (Microsoft)
 
-[`microsoft/playwright-mcp`](https://github.com/microsoft/playwright-mcp) controls a real browser via the accessibility tree rather than screenshots, which is token-efficient and deterministic. Thirty-four tools cover navigation, clicks, form fills, screenshots, network inspection, and codegen across Chromium, Firefox, WebKit, and Edge. Apache-2.0, stdio or HTTP, very active. Must-have for any UI work.
+[`microsoft/playwright-mcp`](https://github.com/microsoft/playwright-mcp) controls a real browser via the accessibility tree rather than screenshots, which is token-efficient and deterministic. Thirty-four tools cover navigation, clicks, form fills, screenshots, network inspection, and codegen across Chromium, Firefox, WebKit, and Edge. Apache-2.0, stdio or HTTP, actively maintained. Must-have for any UI work.
 
 Install with `claude mcp add playwright npx @playwright/mcp@latest`.
 
@@ -44,7 +44,7 @@ Install with `claude mcp add chrome-devtools npx chrome-devtools-mcp@latest`. Op
 
 ### Context7 (Upstash)
 
-[`upstash/context7`](https://github.com/upstash/context7) fetches version-specific library docs into context on demand, which hedges against stale model knowledge. Two tools, `resolve-library-id` and `get-library-docs`, with filters for topic and version. Hosted at `https://mcp.context7.com/mcp` with a generous free tier. MIT, HTTP or stdio, very active. Must-have for any project that uses mainstream libraries.
+[`upstash/context7`](https://github.com/upstash/context7) fetches version-specific library docs into context on demand, which hedges against stale model knowledge. Two tools, `resolve-library-id` and `get-library-docs`, with filters for topic and version. Hosted at `https://mcp.context7.com/mcp` with a generous free tier. MIT, HTTP or stdio, actively maintained. Must-have for any project that uses mainstream libraries.
 
 Install with `claude mcp add --transport http context7 https://mcp.context7.com/mcp`. Trigger it by adding `use context7` to a prompt, or instruct `CLAUDE.md` to reach for it when library docs are needed. For libraries Context7 indexes poorly, an alternative is a subagent that clones the dependency repo and generates a task-specific manual ([Mario Zechner](https://mariozechner.at/posts/2025-08-15-mcp-vs-cli/)).
 
@@ -95,7 +95,7 @@ Microsoft also ships a free cloud-hosted [Microsoft Learn Docs MCP](https://lear
 
 ### Slack (korotovsky)
 
-[`korotovsky/slack-mcp-server`](https://github.com/korotovsky/slack-mcp-server) is the recommended community option among several that replaced the archived Anthropic reference. Fifteen tools including message search. Supports both bot tokens prefixed `xoxb-` and browser session tokens prefixed `xoxc` or `xoxd`, so usage does not require workspace admin approval. Writes are disabled by default, opt in with `SLACK_MCP_ADD_MESSAGE_TOOL`. MIT, stdio or SSE, very active. Nice-to-have.
+[`korotovsky/slack-mcp-server`](https://github.com/korotovsky/slack-mcp-server) is the recommended community option among several that replaced the archived Anthropic reference. Fifteen tools including message search. Supports both bot tokens prefixed `xoxb-` and browser session tokens prefixed `xoxc` or `xoxd`, so usage does not require workspace admin approval. Writes are disabled by default, opt in with `SLACK_MCP_ADD_MESSAGE_TOOL`. MIT, stdio or SSE, actively maintained. Nice-to-have.
 
 [`zencoderai/slack-mcp-server`](https://github.com/zencoderai/slack-mcp-server) inherits Anthropic's reference with eight tools and writes enabled by default. Use only for bot-style access in a trusted workspace.
 

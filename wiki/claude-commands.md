@@ -5,7 +5,7 @@ description: Full built-in slash command reference
 
 # Claude Code commands
 
-Built-in slash commands available in every Claude Code session. Some commands depend on your plan, platform, or environment and may not appear for all users.
+Built-in slash commands available in every Claude Code session. Some commands depend on your plan, platform, or environment and may not appear for all users. Source: Anthropic, in the [Claude Code docs](https://code.claude.com/docs).
 
 ## Session management
 

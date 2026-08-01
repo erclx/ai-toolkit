@@ -5,7 +5,7 @@ description: CLI flags, CLAUDE.md, hooks, memory, and MCP
 
 # Claude Code
 
-Claude Code is Anthropic's official CLI for Claude. It runs as an interactive agent in the terminal, reads your project via `CLAUDE.md`, and executes tasks using built-in tools.
+Claude Code is Anthropic's official CLI for Claude. It runs as an interactive agent in the terminal, reads your project via `CLAUDE.md`, and executes tasks using built-in tools. Source: Anthropic, in the [Claude Code docs](https://code.claude.com/docs).
 
 ## CLI flags
 

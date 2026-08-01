@@ -5,7 +5,7 @@ description: Notable third-party skills, official Anthropic plugins, and curated
 
 # Community skills and plugins
 
-Notable Claude Code skills, plugins, and curated lists from outside this toolkit. Use as a reference for patterns worth adapting into `claude/skills/`. Figures and feature claims are a snapshot from 2026-04-15 and drift fast. Re-verify before copying.
+Notable Claude Code skills, plugins, and curated lists from outside this toolkit. Use as a reference for patterns worth adapting into `claude/skills/`. Figures and feature claims are a snapshot from 2026-04-15 and drift fast. Re-verify before copying. Source: the authors of each listed skill and plugin, none of them this repo.
 
 The `setup-plugins` skill installs the verified subset of these plugins user-scoped on the current machine. Its actionable install data lives in `claude/skills/setup-plugins/references/plugin-catalog.md`. This page stays the narrative catalog.
 
@@ -41,7 +41,7 @@ Three community skills extend or replace the Anthropic `frontend-design` plugin.
 
 ### pbakaus/impeccable
 
-[`pbakaus/impeccable`](https://github.com/pbakaus/impeccable) bundles 18 steering commands around seven reference files covering typography, color and contrast, spatial design, motion, interaction, responsive layout, and UX writing. 20k stars, Apache-2.0, very active. Distinctive for curated anti-patterns. The reference files enumerate specific AI-slop patterns by name, which is a sharper steer than the generic "avoid slop" framing in `frontend-design`. Bundles ship for Claude Code, Cursor, OpenCode, and Gemini CLI at impeccable.style. A standalone `npx impeccable` CLI audits 24 design issues against a codebase or URL without any AI harness attached.
+[`pbakaus/impeccable`](https://github.com/pbakaus/impeccable) bundles 18 steering commands around seven reference files covering typography, color and contrast, spatial design, motion, interaction, responsive layout, and UX writing. 20k stars, Apache-2.0, actively maintained. Distinctive for curated anti-patterns. The reference files enumerate specific AI-slop patterns by name, which is a sharper steer than the generic "avoid slop" framing in `frontend-design`. Bundles ship for Claude Code, Cursor, OpenCode, and Gemini CLI at impeccable.style. A standalone `npx impeccable` CLI audits 24 design issues against a codebase or URL without any AI harness attached.
 
 Install with `npx impeccable skills install`, per project. The bundled scripts run from paths relative to the current project, so a copy under `~/.claude/` cannot locate them in a different project. Its `init`/`document` commands write their own root `DESIGN.md` and `PRODUCT.md` in the Stitch DESIGN.md spec, a separate file pair from the toolkit's `.claude/DESIGN.md`. `aitk:claude-ux-audit` and impeccable's `/audit`/`/critique` compose rather than compete, see the redundancy audit under Skill strategy in `.claude/context/claude-plugin.md`.
 

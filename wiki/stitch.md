@@ -5,7 +5,7 @@ description: Google's Gemini-powered design product, its MCP server, and how it 
 
 # Stitch
 
-[Stitch](https://stitch.withgoogle.com) is Google's AI design product, powered by Gemini 3 Flash and Gemini 3.1 Pro Thinking. It generates web and mobile UI from text prompts, with a remote MCP server for agent-driven design.
+[Stitch](https://stitch.withgoogle.com) is Google's AI design product, powered by Gemini 3 Flash and Gemini 3.1 Pro Thinking. It generates web and mobile UI from text prompts, with a remote MCP server for agent-driven design. Source: Google, which builds and hosts the product.
 
 Stitch is the toolkit's default tier 1 pick because the MCP server makes it agent-addressable at no per-call quota cost. For where it sits in the broader framework, see [visual design workflow](../docs/visual-design-workflow.md).
 

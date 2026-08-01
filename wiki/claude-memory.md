@@ -5,7 +5,7 @@ description: CLAUDE.md hierarchy, auto-memory, and rules files
 
 # Claude Code memory
 
-Claude Code carries knowledge across sessions through two mechanisms: `CLAUDE.md` files you write, and auto-memory notes Claude writes itself.
+Claude Code carries knowledge across sessions through two mechanisms: `CLAUDE.md` files you write, and auto-memory notes Claude writes itself. Source: Anthropic, in the [Claude Code docs](https://code.claude.com/docs).
 
 ## CLAUDE.md hierarchy
 
