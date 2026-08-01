@@ -75,7 +75,11 @@ describe('runDomains', () => {
     const order: string[] = []
 
     const failed = await runDomains([
-      { kind: 'skip', label: 'Governance', notice: 'Skipped: no --stack' },
+      {
+        kind: 'skip',
+        label: 'Governance',
+        notice: 'Skipped: --skip governance',
+      },
       passing('Snippets', order),
     ])
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type InitFlags, parseSkip, planInit } from '@/init/plan'
+import { type InitFlags, parseSkip, planInit, resolveStack } from '@/init/plan'
 
 function flags(overrides: Partial<InitFlags> = {}): InitFlags {
   return {
@@ -42,6 +42,13 @@ describe('parseSkip', () => {
     expect(plan.unknown).toEqual(['gov'])
   })
 
+  it('should accept governance as a skippable domain', () => {
+    const plan = parseSkip('governance')
+
+    expect([...plan.skipped]).toEqual(['governance'])
+    expect(plan.unknown).toEqual([])
+  })
+
   it('should ignore empty entries from a trailing comma', () => {
     const plan = parseSkip('wiki,')
 
@@ -51,20 +58,58 @@ describe('parseSkip', () => {
 })
 
 describe('planInit', () => {
-  it('should count five domains when no stack is given', () => {
-    expect(planInit(flags()).total).toBe(5)
+  it('should count six domains when no flags are given', () => {
+    expect(planInit(flags()).total).toBe(6)
   })
 
-  it('should count six domains once a stack is given', () => {
-    expect(planInit(flags({ stack: 'base' })).total).toBe(6)
+  it('should install the default stack when none is named', () => {
+    expect(texts(planInit(flags()))).toContain('governance (stack: base)')
   })
 
-  it('should warn about governance rather than counting it without a stack', () => {
-    const plan = planInit(flags())
+  it('should install the named stack over the default', () => {
+    expect(texts(planInit(flags({ stack: 'astro' })))).toContain(
+      'governance (stack: astro)',
+    )
+  })
+
+  it('should warn about governance rather than counting it when skipped', () => {
+    const plan = planInit(flags({ skip: parseSkip('governance') }))
+
+    expect(plan.total).toBe(5)
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'governance (skipped, standards land without the rules that route to them)',
+    })
+  })
+
+  it('should drop the standards consequence when standards is skipped too', () => {
+    const plan = planInit(flags({ skip: parseSkip('governance,standards') }))
 
     expect(plan.preview).toContainEqual({
       level: 'warn',
-      text: 'governance (skipped: no --stack)',
+      text: 'governance (skipped)',
+    })
+  })
+
+  it('should report extra rules the governance skip drops', () => {
+    const plan = planInit(
+      flags({ add: '260-shadcn', skip: parseSkip('governance') }),
+    )
+
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'governance (skipped, --add 260-shadcn not installed, standards land without the rules that route to them)',
+    })
+  })
+
+  it('should report dropped extra rules with no other consequence to name', () => {
+    const plan = planInit(
+      flags({ add: '260-shadcn', skip: parseSkip('governance,standards') }),
+    )
+
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'governance (skipped, --add 260-shadcn not installed)',
     })
   })
 
@@ -83,8 +128,10 @@ describe('planInit', () => {
     expect(texts(plan)).not.toContain('wiki (.claude/wiki/ with a stub index)')
   })
 
-  it('should subtract both skips and the missing stack from the count', () => {
-    const plan = planInit(flags({ skip: parseSkip('wiki,standards') }))
+  it('should subtract every skip from the count', () => {
+    const plan = planInit(
+      flags({ skip: parseSkip('wiki,standards,governance') }),
+    )
 
     expect(plan.total).toBe(3)
   })
@@ -105,7 +152,23 @@ describe('planInit', () => {
     )
   })
 
-  it('should treat an empty stack the same as no stack', () => {
-    expect(planInit(flags({ stack: '' })).total).toBe(5)
+  it('should treat an empty stack as unnamed rather than as a way to decline', () => {
+    expect(texts(planInit(flags({ stack: '' })))).toContain(
+      'governance (stack: base)',
+    )
+  })
+})
+
+describe('resolveStack', () => {
+  it('should fall back to the default when the flag is absent', () => {
+    expect(resolveStack(undefined)).toBe('base')
+  })
+
+  it('should fall back to the default when the flag is empty', () => {
+    expect(resolveStack('')).toBe('base')
+  })
+
+  it('should keep a named stack', () => {
+    expect(resolveStack('astro')).toBe('astro')
   })
 })
