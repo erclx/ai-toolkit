@@ -33,7 +33,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `cli-script`             | Generate non-interactive automation and CI bash scripts in a lean functional style               |
 | `claude-design-extract`  | Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces                              |
 | `claude-design-propose`  | Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph            |
-| `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code signals             |
+| `claude-diagram`         | Draft `.claude/DIAGRAMS.md` with mermaid from architecture and code, then verify the render      |
 | `claude-docs`            | Update .claude/ planning docs and mark outcomes the diff shipped                                 |
 | `claude-feature`         | Plan a feature by reading Claude setup and scanning source files                                 |
 | `claude-groundwork`      | Open, resume, and close a numbered groundwork folder under `.claude/.tmp/groundwork/<slug>/`     |
