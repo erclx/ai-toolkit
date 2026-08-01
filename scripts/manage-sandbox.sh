@@ -189,35 +189,42 @@ provision_sandbox() {
   (cd "$SANDBOX" && configure_sandbox_git_credentials)
 }
 
-# Mirrors the shape `planInstall` selects in src/standards/install.ts: the flat
-# root only, so a source subfolder such as bundled/ or aitk/ stays out, and no
-# index.md, which a real install rebuilds against what landed.
-inject_documentation() {
-  local standards_source="$PROJECT_ROOT/standards"
-  [ ! -d "$standards_source" ] && return
+# Runs the real installer rather than copying the source tree. The two copies
+# these replaced each reimplemented an installer's selection rules, so a change
+# to what install produces left the sandbox provisioning the old shape and no
+# scenario could observe the difference.
+run_sandbox_install() {
+  local label="$1"
+  shift
 
-  local dest_dir="$SANDBOX/.claude/standards"
-  mkdir -p "$dest_dir"
-  while IFS= read -r src; do
-    cp "$src" "$dest_dir/"
-  done < <(find "$standards_source" -maxdepth 1 -type f -name "*.md" ! -name "index.md" | sort)
+  local install_log
+  install_log="$(mktemp)"
+
+  # The installer's own frame would bury the provisioning timeline, so it stays
+  # captured unless it fails, where it is the only thing naming the cause.
+  if ! AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" "$@" \
+    >/dev/null 2>"$install_log"; then
+    cat "$install_log" >&2
+    rm -f "$install_log"
+    log_error "Could not install $label into the sandbox."
+  fi
+
+  rm -f "$install_log"
 }
 
-inject_gov_rules() {
-  local rules_source="$PROJECT_ROOT/governance/rules"
-  [ ! -d "$rules_source" ] && return
+inject_documentation() {
+  [ ! -d "$PROJECT_ROOT/standards" ] && return
 
-  source "$PROJECT_ROOT/scripts/lib/gov.sh"
-  while IFS= read -r src; do
-    local subdir
-    subdir=$(rule_subdir "$src" "$rules_source")
-    local rule
-    rule=$(basename "$src" .md)
-    local dest_dir="$SANDBOX/.claude/rules"
-    [ -n "$subdir" ] && dest_dir="$SANDBOX/.claude/rules/$subdir"
-    mkdir -p "$dest_dir"
-    cp "$src" "$dest_dir/${rule}.md"
-  done < <(find "$rules_source" -type f -name "*.md" | sort)
+  run_sandbox_install "standards" standards install "$SANDBOX"
+}
+
+# The stack decides which rules land. `base` carries the language-agnostic core,
+# which is what a scenario asserting on rule behavior reads. A scenario needing a
+# framework's rules overrides the variable in `use_config`.
+inject_gov_rules() {
+  [ ! -d "$PROJECT_ROOT/governance/rules" ] && return
+
+  run_sandbox_install "gov rules" gov install "${SANDBOX_GOV_STACK:-base}" "$SANDBOX"
 }
 
 inject_seeds() {
