@@ -36,6 +36,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - When encoding a fix into a skill, standard, or seed, lift the principle from target-project specifics. Strip reporter-named filenames, framework names, deploy targets, and project-specific label values. Keep canonical format specs and generic illustrations that teach the structure without overfitting.
 - When triaging a multi-topic request or scoping a rule, enumerate every concern or surface and account for each. Do not silently drop the non-obvious ones.
 - When planning an edit to `CLAUDE.md`, show the proposed change as a fenced `diff` block in chat first, then wait for approval before calling `Edit`
+- Edit an existing file with the file-editing tool, never a shell stream editor. An unescaped `&` in a `sed` replacement expands to the whole match and silently rewrites the line it anchored to, and `sed -i` exits zero when its pattern matches nothing, so a `||` fallback never fires. `awk -i inplace` and `perl -pi` share both. The file-editing tool errors on a non-match and has no replacement metacharacters. This governs edits you make, not stream editors written into a script under `scripts/`.
 
 ## Output
 

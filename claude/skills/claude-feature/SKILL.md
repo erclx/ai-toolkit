@@ -31,6 +31,8 @@ Coding standards live in `.claude/rules/`. Claude Code loads them automatically.
 
 Based on the feature description, identify and read source files that are directly relevant. Do not read entire directories speculatively.
 
+Measure against the tree rather than recall. Grep for each construct the plan will name and count the sites, so the plan carries the count the tree holds today. Confirm any work the plan sequences behind is still open, so it does not lead with an item that already shipped. Open each file before describing what is in it. A count or a claim carried from an earlier session, a summary, or another document is the most common way a plan ships the wrong scope.
+
 ## Step 3: build the plan
 
 Construct the plan with these sections:
