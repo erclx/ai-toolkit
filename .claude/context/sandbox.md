@@ -44,8 +44,8 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 - The harness sets `credential.helper` to `!gh auth git-credential` on the sandbox repo rather than expecting the operator to run `gh auth setup-git`. `gh auth login` authenticates the CLI and leaves git without a credential, so an authenticated machine still failed at clone. Scoping the helper to the throwaway repo keeps the operator's global config unwritten and covers the pushes the agent makes itself once it is running inside the sandbox.
 - Setting that helper resets the list first, with an empty value ahead of the real one. `credential.helper` is multi-valued and git concatenates it across system, global, and local, trying each until one returns a credential. A plain set leaves an operator's own helper ahead of the harness's, so a `store` entry or a stale `gh auth setup-git` token answers first and gh never runs. The failure is a 403 on push, on exactly the machines this change exists to serve, and it is invisible on a machine carrying no global helper.
 - `GIT_TERMINAL_PROMPT=0` is exported by `manage-sandbox.sh` and again by `run.sh`. Git falls back to a terminal prompt when no helper supplies a credential, so an unauthenticated run would block on `/dev/tty` rather than fail, which breaks the rule that no command may require a TTY. `run.sh` needs its own export because the agent pushes from a session it spawns, which does not inherit the provisioning environment.
-- `clone_anchor` passes the helper with `git -c` instead of reading it from config. The clone creates the sandbox repo, so no local config exists yet at that point.
-- `require_sandbox_anchor_config` runs in the main shell before provisioning, because `sandbox_anchor_url` is called inside command substitutions where `log_error` exits only the subshell. Without the separate guard an empty `GITHUB_ORG` produced `git remote add origin ""`, which succeeds, leaving the run to fail later somewhere unrelated with exit code 0.
+- `stage_anchor_tree` splits where an anchor scenario's tree comes from away from where its remote points. The tree is copied from `scripts/sandbox/fixtures/anchor/create/` through the same `create_from_fixtures` helper every other fixture uses, and the remote stays real because these nine push to it and drive `gh` against it. Cloning the anchor to obtain a starting tree was a file transfer wearing a git costume, since the old path deleted `.git` and re-initialized two lines later.
+- `require_sandbox_anchor_config` still runs from `stage_anchor_tree`, in the main shell before provisioning, because `sandbox_anchor_url` is called inside command substitutions where `log_error` exits only the subshell. Without the separate guard an empty `GITHUB_ORG` produced `git remote add origin ""`, which succeeds, leaving the run to fail later somewhere unrelated with exit code 0. The fixture needs no network, so the guard now fires for the remote each scenario configures rather than for the provisioning step itself.
 - Identity and remote setup collapse into `configure_sandbox_anchor_remote`, which the nine anchor scenarios call in place of three repeated lines. `configure_sandbox_git_identity` stays callable on its own, since a scenario that never reaches a remote must not acquire one as a side effect. The baseline push stays with each scenario rather than moving into the helper, because five of the nine push after staging their fixture and publishing the anchor content early would change what lands on `origin/main`.
 
 ## Gotchas
@@ -65,17 +65,17 @@ aitk() {
 - On Windows, back-to-back headless runs can briefly fail to wipe `.sandbox` with a busy-lock. Re-run or `aitk sandbox clean` first.
 - An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the catalog.
 - Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
-- Anchor scenarios are order-dependent, because each clones `toolkit-sandbox` main and several force-push to it, so one arm provisions from whatever the previous arm published. Two identical sweeps of the sixteen arms disagreed on eleven of them, and `git:ship with-changelog` aborts outright once the anchor already carries the files it commits. Any before-and-after comparison has to restore the anchor to a fixed commit between arms, otherwise the noise reads as a regression. The `claude/` arms are immune, since they wipe the tree before staging.
+- Anchor scenarios used to be order-dependent, because each cloned `toolkit-sandbox` main while several force-push to it, so one arm provisioned from whatever the previous arm published. Two identical sweeps of the sixteen arms disagreed on eleven of them, and `git:ship with-changelog` aborted outright once the anchor already carried the files it commits. Taking the tree from a fixture closes that, since the starting tree no longer depends on the remote's current state. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
 
 ## Prerequisites
 
-Nine scenarios clone and push a real GitHub remote. They need an authenticated `gh` and membership in the org that owns `toolkit-sandbox`, which is private. Everything else runs offline against an empty sandbox.
+Nine scenarios push to a real GitHub remote. They need an authenticated `gh` and membership in the org that owns `toolkit-sandbox`, which is private. Everything else runs offline against an empty sandbox.
 
 ```bash
 gh auth login   # required for any scenario declaring use_anchor
 ```
 
-No precondition checks `gh auth status`, so a missing credential surfaces as an immediate clone failure naming the host rather than as a named precondition error. `GIT_TERMINAL_PROMPT=0` is what keeps that immediate instead of a blocked prompt. Org membership is a real requirement and not an accident of the setup: HTTPS fixes transport, not authorization, so a contributor outside the org still cannot run the anchor scenarios.
+Provisioning itself is offline now that the starting tree comes from a fixture, so the first network call is the scenario's own `configure_sandbox_anchor_remote` and the push that follows. No precondition checks `gh auth status`, so a missing credential surfaces as a push failure naming the host rather than as a named precondition error. `GIT_TERMINAL_PROMPT=0` is what keeps that immediate instead of a blocked prompt. Org membership is a real requirement and not an accident of the setup, since HTTPS fixes transport rather than authorization and a contributor outside the org still cannot run the anchor scenarios.
 
 ## Running
 
@@ -181,6 +181,8 @@ Every stored file carries a `.fixture` suffix that the helper strips on copy. Th
 
 Stage numbering carries ordering, not identity. A stage exists because a commit or a branch switch has to happen before the next file lands.
 
+`scripts/sandbox/fixtures/anchor/create/` is the one tree outside the four-segment layout. It belongs to no single scenario, since all nine anchor scenarios provision from it, so `stage_anchor_tree` calls `create_from_fixtures` directly rather than going through `stage_fixtures`. It holds the minimum a scenario reads: `utils.js`, which `git/{pr,issue,followup}.sh` append to, plus a `.gitignore` matching what `init_empty_sandbox` writes. Three of the nine wipe the tree before staging their own and two overwrite what they need, so growing this fixture is warranted only when a scenario reads a file that is missing.
+
 A stage must leave the tree coherent with what the scenario claims it staged. `02-postgres` on the `claude/docs` `drift` arm replaced `src/db.ts` alone, moving `createTask` to `(title, userId)` and returning `rows[0]`, while `src/routes/tasks.ts` stayed at its `01-initial` content calling `createTask(title)` and reading `result.lastInsertRowid`. The commit message said the migration shipped and the route did not compile against the module it imported.
 
 A skill reading that diff saw a half-migration, correctly declined to mark the outcome, and failed four assertions. A stage that changes a module's signature carries its callers, or the arm tests the fixture's incoherence rather than the skill.
@@ -204,15 +206,9 @@ use_config() {
 
 ### use_anchor
 
-`use_anchor` clones a remote repo as the sandbox base instead of starting empty.
+`use_anchor` marks a scenario as one that needs a real remote. Declaring it stages the sandbox from the anchor fixture instead of starting empty, and names the repository the scenario will push to.
 
-```bash
-use_anchor() {
-  export ANCHOR_REPO="vite-react-template"
-}
-```
-
-Nine scenarios want the disposable `toolkit-sandbox` remote instead, so they delegate to `use_sandbox_anchor` in `lib/sandbox-git.sh` and the repository name lives in one place:
+All nine declare it the same way, delegating to `use_sandbox_anchor` in `lib/sandbox-git.sh` so the repository name lives in one place:
 
 ```bash
 use_anchor() {
@@ -220,7 +216,9 @@ use_anchor() {
 }
 ```
 
-The library exports `use_sandbox_anchor` rather than declaring `use_anchor` itself. `manage-sandbox.sh` keys off `type -t use_anchor` to decide between cloning and starting empty, so a hook declared at source time would hand an anchor to `git/commit.sh`, `git/stage.sh`, and `infra/indexes.sh`, which source the file for the identity helpers alone.
+`ANCHOR_REPO` carried a `vite-react-template` default until 2026-08-01. Nothing reached it, since every declaring scenario calls `use_sandbox_anchor` with no argument and resolves to `toolkit-sandbox`, so it was removed rather than kept as a fallback.
+
+The library exports `use_sandbox_anchor` rather than declaring `use_anchor` itself. `manage-sandbox.sh` keys off `type -t use_anchor` to decide between staging the anchor fixture and starting empty, so a hook declared at source time would hand an anchor to `git/commit.sh`, `git/stage.sh`, and `infra/indexes.sh`, which source the file for the identity helpers alone.
 
 `manage-sandbox.sh` handles provisioning, asset injection, skill injection, git setup, and baseline tagging. The hook functions configure behavior before that pipeline runs.
 
