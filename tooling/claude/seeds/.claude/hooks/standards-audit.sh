@@ -16,11 +16,42 @@ esac
 
 [ -f "$file" ] || exit 0
 
-hits=$(awk '
+# Read the closed-set word bans from the standard so the hook never carries a
+# second copy. Every "Do not use ... (`a`, `b`)" bullet contributes its
+# single-word backticked terms, which skips the multi-word and punctuation bans.
+standard="${CLAUDE_PROJECT_DIR:-.}/.claude/standards/prose.md"
+words=""
+if [ -f "$standard" ]; then
+  words=$(grep '^- Do not use ' "$standard" |
+    grep -o '`[^`]*`' |
+    tr -d '`' |
+    grep -x '[a-z][a-z]*' |
+    sort -u |
+    paste -sd '|' -)
+fi
+
+hits=$(awk -v words="$words" '
+  BEGIN { if (words != "") banned = "(^|[^a-z])(" words ")([^a-z]|$)" }
   /^```/ { in_code = !in_code; next }
   in_code { next }
   /—/ { print NR ": em-dash: " $0 }
   /;/  { print NR ": semicolon: " $0 }
+  banned != "" {
+    prose = tolower($0)
+    gsub(/`[^`]*`/, "", prose)
+    found = ""
+    delete seen
+    while (match(prose, banned)) {
+      word = substr(prose, RSTART, RLENGTH)
+      gsub(/[^a-z]/, "", word)
+      if (word != "" && !(word in seen)) {
+        seen[word] = 1
+        found = found (found == "" ? "" : ", ") word
+      }
+      prose = substr(prose, RSTART + RLENGTH)
+    }
+    if (found != "") print NR ": banned word (" found "): " $0
+  }
 ' "$file")
 
 [ -z "$hits" ] && exit 0

@@ -11,6 +11,7 @@ autoshipped
 autoshipping
 awwwards
 backlink
+backticked
 basenames
 blockquote
 blockquotes
@@ -115,10 +116,12 @@ ultraplan
 uncited
 unmatch
 unrequested
+unrouted
 upstreaming
 vitejs
 wireframes
 wordlist
+wordlists
 worktree
 worktrees
 wshobson

@@ -53,7 +53,7 @@ A standard then changes on a failure rather than on a finding. A finding is that
 
 Run `aitk standards list` for the catalog of installable standards and their descriptions.
 
-`standards/aitk/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set.
+`standards/aitk/tooling-reference.md` governs `tooling/<stack>/reference.md` and is not in the installed set. The toolkit-local rule `.claude/rules/claude/595-tooling-reference.md` routes edits to it.
 
 ## CLI
 
