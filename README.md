@@ -84,7 +84,7 @@ For the full outsider journey (scaffold, add a domain later, sync upstream drift
 
 ## Contributing
 
-Portfolio project. Issues are welcome. Pull requests are accepted by invitation only.
+Portfolio project. Issues are welcome. Pull requests are accepted by invitation only. See the [contributing guidelines](CONTRIBUTING.md) for the local loop, the authoring split, and the commit convention.
 
 ## License
 
