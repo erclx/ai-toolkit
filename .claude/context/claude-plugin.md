@@ -137,6 +137,8 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 
 Its `version` is written by `release-please` through the `extra-files` wiring in `release-please-config.json`, never by hand. The manifest overrides the enclosing marketplace entry for both name and version, so a shape declared at one version installs at another when the two disagree, and `claude plugin tag` refuses to tag in that state. Parity that depends on someone remembering breaks on the first release nobody is watching, which is why the tool owns the field rather than a convention. The mechanics of the release itself live in `ci.md`.
 
+Owning the field means owning the file's serialization. `release-please` rewrites the whole manifest on each bump and expands `keywords` to one string per line, while prettier collapses any array that fits the print width, so the two disagree at every release rather than once. `.prettierignore` excludes `claude/.claude-plugin/plugin.json` to settle it, which leaves the release tool as the file's only formatter. `claude plugin validate --strict` still gates the schema, so the exclusion drops formatting alone.
+
 Version parity is a three-file problem that currently looks like two. `package.json` and `plugin.json` are wired today. The marketplace entry joins the set when it exists, and the validation stage in `bun run check` already discovers manifests rather than naming them, so it covers that file the day it lands.
 
 ## CLI
