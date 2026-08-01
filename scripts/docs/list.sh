@@ -50,14 +50,17 @@ list_text() {
     log_info "$name : $description"
   done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 
-  log_step "Domain context"
-  while IFS= read -r file; do
-    name=$(basename "$file" .md)
-    [ "$name" = "index" ] && continue
-    is_internal_topic "$name" && continue
-    description=$(read_frontmatter_field "$file" "description")
-    log_info "$name : $description"
-  done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  # Absent in a registry install, which ships docs/ without .claude/
+  if [ -d "$CONTEXT_DIR" ]; then
+    log_step "Domain context"
+    while IFS= read -r file; do
+      name=$(basename "$file" .md)
+      [ "$name" = "index" ] && continue
+      is_internal_topic "$name" && continue
+      description=$(read_frontmatter_field "$file" "description")
+      log_info "$name : $description"
+    done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  fi
 }
 
 emit_json_entry() {
@@ -85,13 +88,15 @@ list_json() {
     emit_json_entry "$name" "$description" "$category" "docs/$(basename "$file")"
   done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 
-  while IFS= read -r file; do
-    name=$(basename "$file" .md)
-    [ "$name" = "index" ] && continue
-    is_internal_topic "$name" && continue
-    description=$(read_frontmatter_field "$file" "description")
-    emit_json_entry "$name" "$description" "" ".claude/context/$(basename "$file")"
-  done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  if [ -d "$CONTEXT_DIR" ]; then
+    while IFS= read -r file; do
+      name=$(basename "$file" .md)
+      [ "$name" = "index" ] && continue
+      is_internal_topic "$name" && continue
+      description=$(read_frontmatter_field "$file" "description")
+      emit_json_entry "$name" "$description" "" ".claude/context/$(basename "$file")"
+    done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  fi
   printf ']'
 }
 
