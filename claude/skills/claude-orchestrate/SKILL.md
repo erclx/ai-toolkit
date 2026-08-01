@@ -1,6 +1,6 @@
 ---
 name: claude-orchestrate
-description: Asserts the orchestrator role for the current session, holds the build loop and the queue-refill sweep, and dispatches to the roadmap, feature, review, and worktree skills. Use when asked to "be the orchestrator", "run the orchestrator", "orchestrate this project", "refill the ready queue", or to set up the control session for parallel feature builds. Do NOT build features or merge PRs in this session.
+description: Asserts the orchestrator role for the current session, holds the build loop and the queue-refill sweep, and dispatches to the roadmap, feature, review, and worktree skills. Use when asked to "be the orchestrator", "run the orchestrator", "orchestrate this project", or to set up the control session for parallel feature builds. Do NOT build features or merge PRs in this session.
 disable-model-invocation: true
 ---
 
@@ -78,7 +78,7 @@ Keep enough planned, non-conflicting tasks available that a free worker never wa
 
 1. Run `gh pr list --state open` and `git log --oneline -8`. Report any pull request whose review has not been posted and stop for that one first.
 2. For each pull request merged since the last sweep, place every finding it produced. Route a finding that changes a rule to the standard or rule that states it, one that changes another task to that task's Findings, and one that overturns a groundwork lean to that folder marked answered. Never leave a finding in a pull request thread alone.
-3. Archive what closed. A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive. A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so encode the policy where it is enforced, cut the outcomes with the reason recorded, and archive.
+3. Archive what closed. A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive. A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
 4. Read `.claude/tasks/priority.md` and count entries under `Now` that carry a written plan. Keep one in reserve beyond what is running.
 5. Promote by whether a task establishes functionality rather than by age. Prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
 6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint.
