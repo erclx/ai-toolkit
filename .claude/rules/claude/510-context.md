@@ -9,6 +9,7 @@ paths:
 ## Before editing
 
 - Before non-trivial work in a domain, read its `.claude/context/<domain>.md` entry. Use `.claude/context/index.md` to find it.
+- Leave the entry conforming when work in its domain changes what it describes.
 
 ## Authority
 
