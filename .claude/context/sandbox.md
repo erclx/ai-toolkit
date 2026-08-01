@@ -46,6 +46,7 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 - `GIT_TERMINAL_PROMPT=0` is exported by `manage-sandbox.sh` and again by `run.sh`. Git falls back to a terminal prompt when no helper supplies a credential, so an unauthenticated run would block on `/dev/tty` rather than fail, which breaks the rule that no command may require a TTY. `run.sh` needs its own export because the agent pushes from a session it spawns, which does not inherit the provisioning environment.
 - `clone_anchor` passes the helper with `git -c` instead of reading it from config. The clone creates the sandbox repo, so no local config exists yet at that point.
 - `require_sandbox_anchor_config` runs in the main shell before provisioning, because `sandbox_anchor_url` is called inside command substitutions where `log_error` exits only the subshell. Without the separate guard an empty `GITHUB_ORG` produced `git remote add origin ""`, which succeeds, leaving the run to fail later somewhere unrelated with exit code 0.
+- Identity and remote setup collapse into `configure_sandbox_anchor_remote`, which the nine anchor scenarios call in place of three repeated lines. `configure_sandbox_git_identity` stays callable on its own, since a scenario that never reaches a remote must not acquire one as a side effect. The baseline push stays with each scenario rather than moving into the helper, because five of the nine push after staging their fixture and publishing the anchor content early would change what lands on `origin/main`.
 
 ## Gotchas
 
@@ -64,6 +65,7 @@ aitk() {
 - On Windows, back-to-back headless runs can briefly fail to wipe `.sandbox` with a busy-lock. Re-run or `aitk sandbox clean` first.
 - An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the catalog.
 - Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
+- Anchor scenarios are order-dependent, because each clones `toolkit-sandbox` main and several force-push to it, so one arm provisions from whatever the previous arm published. Two identical sweeps of the sixteen arms disagreed on eleven of them, and `git:ship with-changelog` aborts outright once the anchor already carries the files it commits. Any before-and-after comparison has to restore the anchor to a fixed commit between arms, otherwise the noise reads as a regression. The `claude/` arms are immune, since they wipe the tree before staging.
 
 ## Prerequisites
 
@@ -209,6 +211,16 @@ use_anchor() {
   export ANCHOR_REPO="vite-react-template"
 }
 ```
+
+Nine scenarios want the disposable `toolkit-sandbox` remote instead, so they delegate to `use_sandbox_anchor` in `lib/sandbox-git.sh` and the repository name lives in one place:
+
+```bash
+use_anchor() {
+  use_sandbox_anchor
+}
+```
+
+The library exports `use_sandbox_anchor` rather than declaring `use_anchor` itself. `manage-sandbox.sh` keys off `type -t use_anchor` to decide between cloning and starting empty, so a hook declared at source time would hand an anchor to `git/commit.sh`, `git/stage.sh`, and `infra/indexes.sh`, which source the file for the identity helpers alone.
 
 `manage-sandbox.sh` handles provisioning, asset injection, skill injection, git setup, and baseline tagging. The hook functions configure behavior before that pipeline runs.
 
