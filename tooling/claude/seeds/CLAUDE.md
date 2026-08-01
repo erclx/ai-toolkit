@@ -30,12 +30,6 @@
 - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
 - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
 
-## Markdown
-
-- When editing any markdown file, follow `.claude/standards/prose.md`. Read it before a substantial prose edit. Do not work the bans from memory.
-- When writing or updating `.claude/context/<domain>.md`, also follow `.claude/standards/context.md`
-- When writing or updating `.claude/wireframes/<surface>.md`, also follow `.claude/standards/wireframes.md`
-
 ## Commands
 
 - Run `bun run check` before committing. Full script reference in `.claude/context/development.md`.

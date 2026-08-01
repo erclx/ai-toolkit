@@ -1,6 +1,13 @@
-export const SKIPPABLE_DOMAINS = ['wiki', 'standards'] as const
+export const SKIPPABLE_DOMAINS = ['wiki', 'standards', 'governance'] as const
 
 export type SkippableDomain = (typeof SKIPPABLE_DOMAINS)[number]
+
+/**
+ * The stack a caller gets without asking. Governance installs on every init so
+ * the standards that install alongside it arrive with the rules that route to
+ * them, and `--skip governance` is the one spelling for declining.
+ */
+export const DEFAULT_STACK = 'base'
 
 export interface SkipPlan {
   readonly skipped: ReadonlySet<SkippableDomain>
@@ -28,6 +35,15 @@ export interface InitFlags {
 }
 
 /**
+ * Resolves the stack the run will install. An empty `--stack` reads as absent
+ * rather than as a way to decline, so the flag carries a real name or nothing
+ * and `--skip governance` stays the only spelling for opting out.
+ */
+export function resolveStack(stack: string | undefined): string {
+  return stack === undefined || stack === '' ? DEFAULT_STACK : stack
+}
+
+/**
  * Reads the `--skip` list. An unrecognized value is reported and dropped rather
  * than aborting, because the flag names optional domains and a typo should not
  * cost the operator the whole init.
@@ -51,8 +67,12 @@ export function parseSkip(csv: string | undefined): SkipPlan {
  * Builds the preview and the count from one pass, so the two cannot disagree.
  * Every `info` line is a domain that will run, which is what makes the count a
  * filter rather than a second tally kept in step by hand. A skipped domain
- * prints nothing at all and governance without a stack prints a warning, so
- * neither reaches the total.
+ * prints nothing at all and declined governance prints a warning, so neither
+ * reaches the total.
+ *
+ * Governance is the one skip that costs another domain something, so its
+ * warning names the consequence rather than only the action. Declining
+ * standards too removes that consequence, and the warning drops it.
  */
 export function planInit(flags: InitFlags): InitPlan {
   const preview: PreviewLine[] = [
@@ -60,14 +80,19 @@ export function planInit(flags: InitFlags): InitPlan {
     { level: 'info', text: 'claude (workflow docs, settings)' },
   ]
 
-  if (flags.stack === undefined || flags.stack === '') {
-    preview.push({ level: 'warn', text: 'governance (skipped: no --stack)' })
+  const stack = resolveStack(flags.stack)
+
+  if (flags.skip.skipped.has('governance')) {
+    const consequence = flags.skip.skipped.has('standards')
+      ? ''
+      : ', standards land without the rules that route to them'
+    preview.push({ level: 'warn', text: `governance (skipped${consequence})` })
   } else if (flags.add === undefined || flags.add === '') {
-    preview.push({ level: 'info', text: `governance (stack: ${flags.stack})` })
+    preview.push({ level: 'info', text: `governance (stack: ${stack})` })
   } else {
     preview.push({
       level: 'info',
-      text: `governance (stack: ${flags.stack}, extras: ${flags.add})`,
+      text: `governance (stack: ${stack}, extras: ${flags.add})`,
     })
   }
 

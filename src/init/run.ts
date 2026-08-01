@@ -1,9 +1,9 @@
 import { logInfo, logStep, logWarn } from '@/ui'
 
 /**
- * A domain either runs or announces why it did not. Governance without a
- * `--stack` is the second kind: it reports in sequence so the timeline still
- * accounts for every core domain, without counting as a failure.
+ * A domain either runs or announces why it did not. Governance under
+ * `--skip governance` is the second kind: it reports in sequence so the
+ * timeline still accounts for every core domain, without counting as a failure.
  */
 export type DomainStep =
   | { readonly kind: 'run'; readonly label: string; run(): Promise<boolean> }
