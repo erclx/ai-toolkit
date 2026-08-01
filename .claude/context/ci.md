@@ -43,8 +43,6 @@ The plugin manifest version is written through `extra-files` rather than by hand
 
 The workflow authenticates with the default `GITHUB_TOKEN`, so the release pull request it opens does not trigger `verify.yml`. That is acceptable while the release commit only touches generated version and changelog files. Swap in a personal access token if the release pull request ever needs the gate.
 
-The Plugin manifests stage is guarded on the plugin CLI being present and CI does not install it, so that stage is a no-op on a runner and an author-side gate in practice.
-
 ## Triggers
 
 - `verify.yml` on pull requests targeting `main`, and on `workflow_dispatch`
@@ -52,7 +50,7 @@ The Plugin manifests stage is guarded on the plugin CLI being present and CI doe
 
 ## Checks
 
-Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched.
+Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched. One stage is the exception, and the table marks it.
 
 | Stage            | Command                                  | What it asserts                                         |
 | ---------------- | ---------------------------------------- | ------------------------------------------------------- |
@@ -60,11 +58,13 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Indexes          | `scripts/core/regen-indexes.sh`          | no `index.md` was committed stale or left untracked     |
 | Consumed copies  | `scripts/core/regen-claude-copies.sh`    | `.claude/standards` and `.claude/snippets` match source |
 | Skill references | `scripts/core/regen-skill-references.sh` | bundled standards match their consumers                 |
-| Plugin manifests | `claude plugin validate --strict`        | every plugin and marketplace manifest is well-formed    |
+| Plugin manifests | `claude plugin validate --strict`        | every manifest is well-formed, author-side only         |
 | Spell            | `bun run check:spell`                    | cspell passes against dictionaries                      |
 | Shell            | `bun run check:shell`                    | shellcheck passes at warning level                      |
 | Types            | `bun run check:types`                    | `tsc --noEmit` passes against `src/`                    |
 | Tests            | `bun run test`                           | the vitest suite passes                                 |
+
+Plugin manifests is the one row CI does not enforce. It guards on the plugin CLI resolving on `PATH`, and the runner installs the JavaScript runtime and two shell tools and nothing else, so it reports a skip there and gates on the author's machine alone. Without the qualifier the table reads as the merge gate and credits CI with a check it never runs.
 
 The three drift stages regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
 
