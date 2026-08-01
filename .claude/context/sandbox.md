@@ -163,6 +163,8 @@ aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 
 Scenarios and arms count separately. Seven arms across three scenarios out of fifty-two is 5 percent of scenarios, not the 13 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
 
+The twelve scenarios declaring `SANDBOX_INJECT_STANDARDS` or `SANDBOX_INJECT_GOV` are the first candidates for arming. Moving to the real installers narrowed what they receive from all 38 source rules to the 20 in `base`, and none of the twelve declares expectations, so nothing in the harness would detect a scenario that depended on a rule outside `base`. The overlap against the seven armed arms is empty, so no existing assertion is affected, but the residual is invisible by exactly the measure this section exists to report.
+
 A scenario enumerates from its script under `scripts/sandbox/<category>/`, not from the fixture tree. An unarmed scenario has no fixture directory to find, so counting fixtures would hide exactly the arms the report exists to surface. A declaration sitting at the command root belongs to the unnamed arm and reports as `(default)`.
 
 `aitk sandbox check` takes `--strict` as well, which turns a single `unchecked` verdict into a non-zero exit. Both flags stay opt-in so the undeclared majority keeps running.
