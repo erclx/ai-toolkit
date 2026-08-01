@@ -1,4 +1,4 @@
 .claude/GOV.md
 
-# release-please rewrites this file on every release and serializes it its own way
-claude/.claude-plugin/plugin.json
+# release-please rewrites these on every release and serializes them its own way
+**/.claude-plugin/*.json
