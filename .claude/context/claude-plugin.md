@@ -13,7 +13,7 @@ Owns everything the toolkit ships outward under the Claude domain: the plugin sk
 
 - `claude/skills/` owns the plugin skills, auto-discovered when Claude Code loads with `--plugin-dir`
 - `claude/skills/<skill>/REQUIREMENT.md`: optional sibling of `SKILL.md` holding the skill's gap statement, inert at load time
-- `claude/.claude-plugin/` owns `plugin.json`, the plugin manifest. Its `name` field is `aitk`, which is what namespaces every invocation as `/aitk:<skill>`
+- `claude/.claude-plugin/` owns `plugin.json`, the plugin manifest. Its `name` field is `aitk`, which is what namespaces every invocation as `/aitk:<skill>`, and its `version` is written by the release automation rather than by hand
 
 ## Plugin skills
 
@@ -130,6 +130,14 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 `scripts/core/verify.sh` carries the same repair as a second line of defense, sourced from `scripts/lib/worktree.sh` and run ahead of every stage because the flag breaks the git reads that scope the run. Nothing forces worktree entry through the skill, and one occurrence hit an operator whose session never entered a worktree at all. A git hook cannot serve here, because the corrupted command aborts before any hook runs. Both call sites confirm the repository's common dir is named `.git` before writing, which separates the defect from a genuinely bare repository that keeps its objects at the root and would be broken by the repair. The skill states the upstream issue inline rather than pointing at `wiki/claude-worktrees.md`, since a shipped skill runs where no `wiki/` path resolves and `check-skill-paths.sh` fails the build on one.
 
 `setup-plugins` bundles `references/plugin-catalog.md`, which holds install data alone. `wiki/community-skills.md` is its narrative companion and `wiki/skills-strategy.md` argues the install-versus-author decision, and neither is reachable from the shipped file by design. A `references/` file is read by a session running in a target project, where no `wiki/` path resolves, so the two pointers the catalog used to carry were already dead for the only consumer that reads it. They are recorded here instead, on a surface that never ships, for the maintainer editing the catalog. `community-skills.md` stays in `wiki/` rather than moving to `docs/` because its subject is the community plugin authors, which is the test that decides what `wiki/` holds.
+
+## Release
+
+`plugin.json` carries `author`, `homepage`, `repository`, `license`, and `keywords` alongside the three fields it started with. None of them change how the plugin loads. They exist because `claude plugin validate --strict` treats missing attribution as a failure, and because a manifest reaching an installer is the first thing a stranger reads about the project.
+
+Its `version` is written by `release-please` through the `extra-files` wiring in `release-please-config.json`, never by hand. The manifest overrides the enclosing marketplace entry for both name and version, so a shape declared at one version installs at another when the two disagree, and `claude plugin tag` refuses to tag in that state. Parity that depends on someone remembering breaks on the first release nobody is watching, which is why the tool owns the field rather than a convention. The mechanics of the release itself live in `ci.md`.
+
+Version parity is a three-file problem that currently looks like two. `package.json` and `plugin.json` are wired today. The marketplace entry joins the set when it exists, and the validation stage in `bun run check` already discovers manifests rather than naming them, so it covers that file the day it lands.
 
 ## CLI
 

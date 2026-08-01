@@ -7,11 +7,11 @@ description: GitHub Actions workflow triggers and checks
 
 ## Overview
 
-Owns the GitHub Actions verification that gates pull requests into `main`. CI runs every stage through one entry point, `bun run check:ci`. Two things differ from the local gate. Formatting is the first: the local run writes, CI asserts. Scope is the second: the local run gates shell, types, and tests on the changed-file set, while CI passes `--all` and runs them unconditionally. `verify.yml` is the only workflow in the repo.
+Owns the GitHub Actions verification that gates pull requests into `main`, and the release automation that runs after one merges. CI runs every stage through one entry point, `bun run check:ci`. Two things differ from the local gate. Formatting is the first: the local run writes, CI asserts. Scope is the second: the local run gates shell, types, and tests on the changed-file set, while CI passes `--all` and runs them unconditionally. Two workflows exist, `verify.yml` and `release-please.yml`.
 
 ## Layout
 
-- `.github/workflows/` owns the verify workflow and its job definitions
+- `.github/workflows/` owns both workflows and their job definitions
 
 ## Decisions
 
@@ -31,14 +31,26 @@ The types stage runs in CI rather than only in the pre-push hook because a missi
 
 `typescript` is a declared devDependency rather than a hoisted peer of `@astrojs/check`. It is pinned to the v5 line those peers expect, so a `bun add -D typescript` that selects v7 would be a compiler upgrade, not a dependency fix.
 
+## Releases
+
+`release-please.yml` runs on every push to `main` and keeps a release pull request open, rewriting it as commits land. Merging that pull request is what cuts a tag and writes `CHANGELOG.md`, so a release is a merge rather than a hand-run command. `standards/versioning.md` specified both surfaces long before either existed.
+
+Two files configure it. `release-please-config.json` holds the release type and the extra-files wiring, and `.release-please-manifest.json` holds the current version and is the file the tool rewrites. Tags read `v<major>.<minor>.<patch>` because `include-component-in-tag` is false, which matches what the versioning standard specifies. The default would prefix the package name.
+
+The plugin manifest version is written through `extra-files` rather than by hand. `plugin.json` overrides the enclosing marketplace entry for both name and version, and `claude plugin tag` refuses to tag when the two disagree, so a version the release tool does not own is a version that goes stale on the first release nobody is watching.
+
+`bootstrap-sha` pins the starting commit to the head this work branched from, and the manifest anchors at `0.1.0` to match what `package.json` already claimed. Without both, a first run computes a version from 633 untagged commits and picks one nobody chose.
+
+The workflow authenticates with the default `GITHUB_TOKEN`, so the release pull request it opens does not trigger `verify.yml`. That is acceptable while the release commit only touches generated version and changelog files. Swap in a personal access token if the release pull request ever needs the gate.
+
 ## Triggers
 
-- Pull requests targeting `main`
-- `workflow_dispatch` (manual run from the Actions tab)
+- `verify.yml` on pull requests targeting `main`, and on `workflow_dispatch`
+- `release-please.yml` on pushes to `main`, and on `workflow_dispatch`
 
 ## Checks
 
-Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched.
+Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched. One stage is the exception, and the table marks it.
 
 | Stage            | Command                                  | What it asserts                                         |
 | ---------------- | ---------------------------------------- | ------------------------------------------------------- |
@@ -46,10 +58,13 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Indexes          | `scripts/core/regen-indexes.sh`          | no `index.md` was committed stale or left untracked     |
 | Consumed copies  | `scripts/core/regen-claude-copies.sh`    | `.claude/standards` and `.claude/snippets` match source |
 | Skill references | `scripts/core/regen-skill-references.sh` | bundled standards match their consumers                 |
+| Plugin manifests | `claude plugin validate --strict`        | every manifest is well-formed, author-side only         |
 | Spell            | `bun run check:spell`                    | cspell passes against dictionaries                      |
 | Shell            | `bun run check:shell`                    | shellcheck passes at warning level                      |
 | Types            | `bun run check:types`                    | `tsc --noEmit` passes against `src/`                    |
 | Tests            | `bun run test`                           | the vitest suite passes                                 |
+
+Plugin manifests is the one row CI does not enforce. It guards on the plugin CLI resolving on `PATH`, and the runner installs the JavaScript runtime and two shell tools and nothing else, so it reports a skip there and gates on the author's machine alone. Without the qualifier the table reads as the merge gate and credits CI with a check it never runs.
 
 The three drift stages regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
 

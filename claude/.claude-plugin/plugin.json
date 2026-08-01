@@ -1,5 +1,13 @@
 {
   "name": "aitk",
   "description": "Automated governance, versioning, and discovery tools for Claude Code.",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "author": {
+    "name": "Eric Le",
+    "url": "https://github.com/erclx"
+  },
+  "homepage": "https://github.com/erclx/aitk",
+  "repository": "https://github.com/erclx/aitk",
+  "license": "MIT",
+  "keywords": ["governance", "standards", "skills", "workflow", "tooling"]
 }
