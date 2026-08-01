@@ -1,8 +1,13 @@
 <!doctype html>
 <!--
   Source for install.png. Every line of terminal text below came from a real run
-  of the three commands against a scratch CLAUDE_CONFIG_DIR, elided only for
-  length. Re-run them before changing the text, never hand-edit the output.
+  of the three commands against a scratch CLAUDE_CONFIG_DIR. Re-run them before
+  changing the text, never hand-edit the output.
+
+  Two elisions, both deliberate. Progress lines are dropped for length, and the
+  version row of `claude plugin list` is dropped because a version rendered into
+  a committed binary is wrong from the next release onward and nothing checks it.
+  The enabled row proves the install landed without dating the frame.
 
   Render with headless Chromium, capturing the .window element at
   deviceScaleFactor 2 with omitBackground. Superseded by `aitk capture` once
@@ -108,7 +113,6 @@
 Installed plugins:
 <span class="blank"></span>
   <span class="key">❯</span> aitk@aitk
-    Version: 0.2.0
     Scope: user
     Status: <span class="ok">✔</span> enabled</pre>
     </div>

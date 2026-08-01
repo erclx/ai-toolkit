@@ -17,9 +17,19 @@ The skills are then available as `/aitk:<name>`. Run `/reload-plugins` to pick t
 
 Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin does not put it on your path. Follow [development](#development) to link it until it ships to a package registry.
 
+## Why
+
+Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Across enough projects the copies drift, and agents stop getting consistent signals.
+
+Three design choices shape the toolkit.
+
+- Agent-first: every command has a non-interactive path and a JSON catalog. If a Claude Code skill or any other agent cannot drive the CLI without prompts, the design is wrong.
+- Text-native: conventions, rules, and prompts are authored as markdown that humans and agents read the same way. No hidden behavior, no compiled state.
+- One source, many consumers: this repo is the authoritative copy. Target projects install and sync on demand, never author in place.
+
 ## What is inside
 
-Each domain has a canonical source in this repo and a thin install or sync CLI on the target side.
+Each domain has a canonical source in this repo and a thin install or sync CLI on the target side. The links run to internal narrative, written for someone maintaining the toolkit rather than installing it.
 
 - [Claude Code plugin](.claude/context/claude-plugin.md): skills for planning, review, docs sync, and the git ship chain
 - [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
@@ -30,16 +40,6 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Slides](.claude/context/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
 - [Transcripts](.claude/context/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
 - [Sandbox](.claude/context/sandbox.md): scenario-based scaffolds for verifying each domain flow
-
-## Why
-
-Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Across enough projects the copies drift, and agents stop getting consistent signals.
-
-Three design choices shape the toolkit.
-
-- Agent-first: every command has a non-interactive path and a JSON catalog. If a Claude Code skill or any other agent cannot drive the CLI without prompts, the design is wrong.
-- Text-native: conventions, rules, and prompts are authored as markdown that humans and agents read the same way. No hidden behavior, no compiled state.
-- One source, many consumers: this repo is the authoritative copy. Target projects install and sync on demand, never author in place.
 
 ## Documentation
 
@@ -52,7 +52,7 @@ Three design choices shape the toolkit.
 
 Working on the toolkit, or running the CLI in your own terminal, starts from a clone.
 
-**Prerequisites:**
+### Prerequisites
 
 - [Bun](https://bun.sh) for the CLI runtime and scripts
 - [Git](https://git-scm.com) with worktree support
