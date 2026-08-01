@@ -71,7 +71,6 @@ Each rule or knowledge item lives in exactly one surface. Other surfaces point, 
 - Per-domain internal narrative about domain X (structure, decisions, gotchas): `.claude/context/<X>.md`
 - Consumer-facing reference (AI workflow, target-project integration): `docs/`
 - CLI command surface or invocation contract: `docs/agents.md`
-- Skill authoring strategy and redundancy notes: `.claude/context/claude-plugin.md`, with the rules it produces in `.claude/skills/aitk-claude/SKILL.md`
 
 When adding new content, place it in the canonical owner. If another surface needs awareness, add a one-line pointer.
 
