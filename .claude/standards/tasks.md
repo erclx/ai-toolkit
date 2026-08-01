@@ -53,6 +53,8 @@ description: Record what a target installed and report the delta against the too
 
 Two headings, `## Outcomes` and `## Findings`. Outcomes are future and checkable, findings are past and factual, and as flat bullets at the same indent they are visually identical. A heading separates them at no cost. Add no third heading. Status stays inline on an outcome rather than becoming an "In progress" section.
 
+Size the outcomes so one pull request closes all of them. A task whose outcomes span two pull requests ships the first half and leaves the rest open, with nothing recording which outcomes the merged work covered, so the board reads as in-progress work that no branch is carrying. Split the task before handing it off rather than after. This is what `## Archiving` below depends on, since a task closes whole or not at all.
+
 Prefix the H1 with the `vX.Y:` phase label, then a short title whose form depends on the task type:
 
 - Feature: an outcome describing what the user can now do
