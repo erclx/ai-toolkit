@@ -1,6 +1,6 @@
 ---
 name: toolkit-feedback
-description: Format a paste-back report about something broken, missing, or off in the ai/toolkit and write it directly to the toolkit's `.claude/review/` folder via `aitk feedback`. Use when asked to "send this to the toolkit", "report this to ai/toolkit", "file toolkit feedback", or "give the toolkit feedback about X". Do NOT use for general complaints about other tooling, IDE issues, or in-project bugs that do not implicate ai/toolkit surfaces.
+description: Format a paste-back report about something broken, missing, or off in aitk and write it directly to the toolkit's `.claude/review/` folder via `aitk feedback`. Use when asked to "send this to the toolkit", "report this to aitk", "file toolkit feedback", or "give the toolkit feedback about X". Do NOT use for general complaints about other tooling, IDE issues, or in-project bugs that do not implicate aitk surfaces.
 ---
 
 # Toolkit feedback
