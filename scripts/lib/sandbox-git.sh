@@ -49,3 +49,25 @@ configure_sandbox_git_identity() {
   git config user.name "$SANDBOX_GIT_NAME"
   git config user.email "$SANDBOX_GIT_EMAIL"
 }
+
+# Every scenario that needs a remote points at the same throwaway repository, so
+# the name lives here rather than in each one.
+SANDBOX_ANCHOR_REPO="toolkit-sandbox"
+
+# A scenario calls this from its own use_anchor hook rather than this file
+# defining the hook. manage-sandbox.sh keys off `type -t use_anchor`, so
+# declaring it here would hand an anchor to the scenarios that source this file
+# for the identity helpers alone.
+use_sandbox_anchor() {
+  export ANCHOR_REPO="${1:-$SANDBOX_ANCHOR_REPO}"
+}
+
+# A remote is useless without an author, so the scenarios that reach one always
+# configure both. configure_sandbox_git_identity stays callable on its own for
+# the scenarios that never push. The remove keeps this idempotent against a
+# sandbox tree that already carries an origin.
+configure_sandbox_anchor_remote() {
+  configure_sandbox_git_identity
+  git remote remove origin 2>/dev/null || true
+  git remote add origin "$(sandbox_anchor_url "$@")"
+}
