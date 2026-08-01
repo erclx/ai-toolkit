@@ -119,6 +119,20 @@ describe('buildSteps', () => {
     })
   })
 
+  it('should carry the extra rules into the skip recovery command', () => {
+    const governance = steps({
+      stack: 'astro',
+      add: '260-shadcn',
+      skip: parseSkip('governance'),
+    }).find((step) => step.label === 'Governance')
+
+    expect(governance).toMatchObject({
+      kind: 'skip',
+      notice:
+        "Skipped: --skip governance. Run 'aitk gov install astro --add 260-shadcn ../app' to install rules.",
+    })
+  })
+
   it('should not spawn a governance install when it is skipped', () => {
     const { calls, child } = recorder()
 

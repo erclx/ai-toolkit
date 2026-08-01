@@ -73,6 +73,11 @@ export function parseSkip(csv: string | undefined): SkipPlan {
  * Governance is the one skip that costs another domain something, so its
  * warning names the consequence rather than only the action. Declining
  * standards too removes that consequence, and the warning drops it.
+ *
+ * The skip also drops `--add`, which names rules the caller asked for. Input
+ * that goes nowhere is reported for the same reason `parseSkip` reports an
+ * unrecognized value, so the warning names the flag rather than dropping it
+ * without a word.
  */
 export function planInit(flags: InitFlags): InitPlan {
   const preview: PreviewLine[] = [
@@ -83,10 +88,14 @@ export function planInit(flags: InitFlags): InitPlan {
   const stack = resolveStack(flags.stack)
 
   if (flags.skip.skipped.has('governance')) {
-    const consequence = flags.skip.skipped.has('standards')
-      ? ''
-      : ', standards land without the rules that route to them'
-    preview.push({ level: 'warn', text: `governance (skipped${consequence})` })
+    const notes: string[] = []
+    if (flags.add !== undefined && flags.add !== '')
+      notes.push(`--add ${flags.add} not installed`)
+    if (!flags.skip.skipped.has('standards'))
+      notes.push('standards land without the rules that route to them')
+
+    const detail = notes.length === 0 ? '' : `, ${notes.join(', ')}`
+    preview.push({ level: 'warn', text: `governance (skipped${detail})` })
   } else if (flags.add === undefined || flags.add === '') {
     preview.push({ level: 'info', text: `governance (stack: ${stack})` })
   } else {

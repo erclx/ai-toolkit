@@ -91,6 +91,28 @@ describe('planInit', () => {
     })
   })
 
+  it('should report extra rules the governance skip drops', () => {
+    const plan = planInit(
+      flags({ add: '260-shadcn', skip: parseSkip('governance') }),
+    )
+
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'governance (skipped, --add 260-shadcn not installed, standards land without the rules that route to them)',
+    })
+  })
+
+  it('should report dropped extra rules with no other consequence to name', () => {
+    const plan = planInit(
+      flags({ add: '260-shadcn', skip: parseSkip('governance,standards') }),
+    )
+
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'governance (skipped, --add 260-shadcn not installed)',
+    })
+  })
+
   it('should name the extra rules alongside the stack', () => {
     const plan = planInit(flags({ stack: 'astro', add: '260-shadcn' }))
 

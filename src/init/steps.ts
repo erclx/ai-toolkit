@@ -34,18 +34,18 @@ export function buildSteps(
   const stack = resolveStack(flags.stack)
 
   if (flags.skip.skipped.has('governance')) {
+    const recovery = govArgs(stack, flags.add, target).join(' ')
     steps.push({
       kind: 'skip',
       label: 'Governance',
-      notice: `Skipped: --skip governance. Run 'aitk gov install ${stack} ${target}' to install rules.`,
+      notice: `Skipped: --skip governance. Run 'aitk ${recovery}' to install rules.`,
     })
   } else {
-    const args = ['gov', 'install', stack]
-    if (flags.add !== undefined && flags.add !== '')
-      args.push('--add', flags.add)
-    args.push(resolved)
-
-    steps.push({ kind: 'run', label: 'Governance', run: child(args) })
+    steps.push({
+      kind: 'run',
+      label: 'Governance',
+      run: child(govArgs(stack, flags.add, resolved)),
+    })
   }
 
   if (!flags.skip.skipped.has('standards')) {
@@ -71,4 +71,21 @@ export function buildSteps(
   }
 
   return steps
+}
+
+/**
+ * Builds the `gov install` argv. The run and the recovery command a skip prints
+ * come from here both, so the command a caller is told to paste installs what
+ * the run would have.
+ */
+function govArgs(
+  stack: string,
+  add: string | undefined,
+  path: string,
+): string[] {
+  const args = ['gov', 'install', stack]
+  if (add !== undefined && add !== '') args.push('--add', add)
+  args.push(path)
+
+  return args
 }

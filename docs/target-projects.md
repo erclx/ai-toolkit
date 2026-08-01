@@ -70,7 +70,7 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 `governance`, `standards`, and `wiki` are skippable:
 
-- `--skip governance`: leave `.claude/rules/` empty. Standards still install, so `.claude/standards/prose.md` lands with nothing pointing at it and no coding standard loads on a file match. The run prints the `aitk gov install base <path>` command to add rules afterward.
+- `--skip governance`: leave `.claude/rules/` empty. Standards still install, so `.claude/standards/prose.md` lands with nothing pointing at it and no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
 - `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
