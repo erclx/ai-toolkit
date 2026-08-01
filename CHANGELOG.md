@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0](https://github.com/erclx/aitk/compare/v0.6.0...v0.7.0) (2026-08-01)
+
+
+### Features
+
+* **diagram:** verify each diagram against its rendered image ([#680](https://github.com/erclx/aitk/issues/680)) ([2cf6387](https://github.com/erclx/aitk/commit/2cf638714c491b4415601aaddc56b6e1159ebe3a))
+* **init:** install governance by default and keep the opt-out ([#681](https://github.com/erclx/aitk/issues/681)) ([9fe6f2c](https://github.com/erclx/aitk/commit/9fe6f2cb07845b16f040261f89d35d2866c2d25b))
+* **review:** add a close-out pass to the PR review skill ([#682](https://github.com/erclx/aitk/issues/682)) ([accabff](https://github.com/erclx/aitk/commit/accabff9c2dfb5f598b6ed8b0650d0b2ad720da3))
+
 ## [0.6.0](https://github.com/erclx/aitk/compare/v0.5.0...v0.6.0) (2026-08-01)
 
 
