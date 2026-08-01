@@ -16,7 +16,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards`, `gov`, and `docs` keep only a list command there, `claude` keeps nothing, and `snippets` and `tooling` keep only authoring helpers
 - `scripts/gov/`, `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
 - `scripts/standards/authoring-test/` owns the standards authoring harness. It is not a verb and nothing dispatches to it, so it is invoked by path and never through `aitk`
-- `scripts/lib/` owns shared functions, sourced and never executed directly
+- `scripts/lib/` owns shared functions, sourced and never executed directly. `worktree.sh` is the one under test, via `src/worktree-repair.test.ts`
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
 ## Decisions
@@ -59,6 +59,8 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 CI runs every stage through `bun run check:ci`, which passes `--all`. The local run scopes shell, types, and tests to the changed-file set, so it is the weaker of the two. See `ci.md`.
 
 `repair_bare_flag` runs ahead of every stage rather than as one of them, because Claude Code's worktree entry leaves `core.bare` set in the shared config and that flag breaks the git reads that scope the run. It writes only when the flag is set and the repository's common dir is named `.git`, which spares a genuinely bare repository that keeps its objects at the root. `claude-worktree` carries the same repair at entry, and this copy covers the entries that never go through the skill. See `claude-plugin.md` for the split and `wiki/claude-worktrees.md` for the upstream issue.
+
+It lives in `scripts/lib/worktree.sh` rather than inline in `verify.sh` so `src/worktree-repair.test.ts` can source it, which is the one bash function in the repo under test. The function takes its target root as an argument defaulting to `PROJECT_ROOT`, since a test cannot set that for a sourced function without leaking it across cases. The test builds six repository shapes and the `basename` guard is what it exists to pin: deleting that line leaves five cases passing and fails only the genuinely-bare one, which is the case where an unguarded repair does damage. Tests gate on `^src/` locally, so an edit to the lib alone runs them only under `check:ci`, which passes `--all`.
 
 ## UI framing across exec boundaries
 
