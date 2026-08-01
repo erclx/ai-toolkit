@@ -11,13 +11,16 @@ Owns everything the toolkit ships outward under the Claude domain: the plugin sk
 
 ## Layout
 
-- `claude/skills/` owns the plugin skills, auto-discovered when Claude Code loads with `--plugin-dir`
+- `claude/` is the plugin root, the directory a marketplace entry sources
+- `claude/skills/` owns the plugin skills, auto-discovered from the plugin root
 - `claude/skills/<skill>/REQUIREMENT.md`: optional sibling of `SKILL.md` holding the skill's gap statement, inert at load time
 - `claude/.claude-plugin/` owns `plugin.json`, the plugin manifest. Its `name` field is `aitk`, which is what namespaces every invocation as `/aitk:<skill>`, and its `version` is written by the release automation rather than by hand
+- `.claude-plugin/` at the repository root owns `marketplace.json`, the catalog an installer adds
+- `claude/standards` and `claude/snippets` are symlinks to the root authoring sources, present so the files ship with an install
 
 ## Plugin skills
 
-Plugin skills live in `claude/skills/` and are auto-discovered when Claude Code loads with `--plugin-dir`. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
+Plugin skills live in `claude/skills/` and are auto-discovered from the plugin root, whether that root is a marketplace install or a `--plugin-dir` pointed at a checkout. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
 A skill folder may also carry `REQUIREMENT.md` beside `SKILL.md`, stating the gaps that skill exists to close so a proposed change has something to be argued against. It is authoring context for whoever maintains the skill. Claude Code loads `SKILL.md` as the entry and never reads the sibling, and `src/sync/check.ts` leaves `claude/skills/` out of the synced sources because skills load live from the plugin directory rather than being copied, so the file reaches no target session and costs no tokens there. `governance/rules/claude/570-skill.md` fires on both filenames and carries the consult-first bullet. Thirteen skills have one as of the second `v16.0` sitting, which covered the whole `git-*` family and confirmed the unit is the skill rather than the family.
 
@@ -131,15 +134,41 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 
 `setup-plugins` bundles `references/plugin-catalog.md`, which holds install data alone. `wiki/community-skills.md` is its narrative companion and `wiki/skills-strategy.md` argues the install-versus-author decision, and neither is reachable from the shipped file by design. A `references/` file is read by a session running in a target project, where no `wiki/` path resolves, so the two pointers the catalog used to carry were already dead for the only consumer that reads it. They are recorded here instead, on a surface that never ships, for the maintainer editing the catalog. `community-skills.md` stays in `wiki/` rather than moving to `docs/` because its subject is the community plugin authors, which is the test that decides what `wiki/` holds.
 
+## Distribution
+
+`.claude-plugin/marketplace.json` at the repository root holds one entry whose `source` is `./claude`. The marketplace root is the directory holding `.claude-plugin/`, and an entry's source resolves against that root rather than against the manifest file. Adding the marketplace and installing the one plugin is the whole install path. The `--plugin-dir` alias survives as the development path, where a local edit overrides the installed copy for that session.
+
+Sourcing the repository root instead is the trap this shape exists to avoid, and it was measured rather than reasoned about. Skills are discovered only at `<plugin-root>/skills/` and this repository keeps them a level down, so a root-sourced entry exposes zero skills. It also costs 312M, because Claude Code runs a dependency install on any plugin carrying a package manifest and copies `.claude/` and the internal skills into the cache. The closest comparable project sources its root, which works only because its skills sit there.
+
+`claude/standards` and `claude/snippets` are symlinks to the root authoring sources. A symlink inside a plugin that resolves elsewhere within the marketplace is dereferenced at install and its content copied, so the files arrive as real directories in the cache. The measured install is 964K with 55 skills, against 760K for the same shape without the symlinks.
+
+The entry carries no version on purpose. `plugin.json` overrides the enclosing entry for both name and version, so a version on the entry would drift on every release with nothing reporting it, and the release config writes only the plugin manifest.
+
+The check pipeline does not follow the two symlinks. The index walker's glob, the spell checker, and the formatter were each tested against a symlinked directory in isolation, so `standards/` is not double-walked and the links produce no drift failures.
+
+## Distribution gotchas
+
+Validation proves the manifest parses and nothing about whether it works. `claude plugin validate --strict` passes a manifest whose `source` points at a directory that does not exist, so it would have accepted the zero-skill root-sourced shape. An install is the only check that proves a shape, which is why `bun run check` covering this file does not retire the manual install.
+
+The standards that travel are not the standards a skill reads. Twenty-nine shipped skills cite `.claude/standards/X.md`, a path that resolves against the target project. Measured against a project with no standards installed, an installed skill resolved the citation to the project root, found nothing, and never looked in its own plugin root. The cache copies are inert until a skill is told to fall back to them. A skill's bundled `references/` file resolves in the same run, because that path is relative to the skill folder rather than to the project. Delivering the files and reaching them are separate problems, and only the first is solved.
+
+The internal `aitk` category ships to installers, and the leak grows on its own. `standards/aitk/` and `snippets/aitk/` are filtered out at every CLI entry point, and a symlink is the first entry point where the boundary is not enforced in code. Four internal files land in every plugin cache today, and `snippets/aitk/` is where every toolkit-internal snippet is authored, so each one added ships from then on with nothing reporting it. The fix is the `standards/` restructure, tracked on the task board rather than here.
+
+A native Windows checkout without symlink support materializes both links as plain text files holding the paths `../standards` and `../snippets`. The plugin then ships two junk files and no standards, and no stage notices, because every catalog command reads the real directories at the repository root. `.claude/context/sandbox.md` treats Windows as a supported development environment, so this is a limitation to state rather than a case the pipeline can catch.
+
+A marketplace name is one global slot per user. Adding a second marketplace under the same name replaces the first, and a local-path marketplace pointing at a worktree breaks when that worktree is removed.
+
 ## Release
 
 `plugin.json` carries `author`, `homepage`, `repository`, `license`, and `keywords` alongside the three fields it started with. None of them change how the plugin loads. They exist because `claude plugin validate --strict` treats missing attribution as a failure, and because a manifest reaching an installer is the first thing a stranger reads about the project.
 
 Its `version` is written by `release-please` through the `extra-files` wiring in `release-please-config.json`, never by hand. The manifest overrides the enclosing marketplace entry for both name and version, so a shape declared at one version installs at another when the two disagree, and `claude plugin tag` refuses to tag in that state. Parity that depends on someone remembering breaks on the first release nobody is watching, which is why the tool owns the field rather than a convention. The mechanics of the release itself live in `ci.md`.
 
-Owning the field means owning the file's serialization. `release-please` rewrites the whole manifest on each bump and expands `keywords` to one string per line, while prettier collapses any array that fits the print width, so the two disagree at every release rather than once. `.prettierignore` excludes `**/.claude-plugin/*.json` to settle it, which leaves the release tool as the only formatter of every manifest in that folder. The pattern covers the class rather than the one file, because the marketplace entry meets the same disagreement the day `release-please` starts writing it. The `**/` prefix is load-bearing, since a pattern carrying an interior slash anchors to the ignore file's directory and `.claude-plugin/*.json` would match nothing under `claude/`. `claude plugin validate --strict` still gates the schema, though that stage is author-side only, so CI checks neither the format nor the schema of these files.
+Owning the field means owning the file's serialization. `release-please` rewrites the whole manifest on each bump and expands `keywords` to one string per line, while prettier collapses any array that fits the print width, so the two disagree at every release rather than once. `.prettierignore` excludes `**/.claude-plugin/*.json` to settle it, which leaves the release tool as the only formatter of the manifests it writes. The `**/` prefix is load-bearing, since a pattern carrying an interior slash anchors to the ignore file's directory and `.claude-plugin/*.json` would match nothing under `claude/`. `claude plugin validate --strict` still gates the schema, though that stage is author-side only, so CI checks neither the format nor the schema of these files.
 
-Version parity is a three-file problem that currently looks like two. `package.json` and `plugin.json` are wired today. The marketplace entry joins the set when it exists, and the validation stage in `bun run check` already discovers manifests rather than naming them, so it covers that file the day it lands.
+The class pattern overreaches by one file, so a `!.claude-plugin/marketplace.json` negation follows it. The exclusion earns its place for a file a release tool rewrites, and the marketplace entry is hand-authored, carries no version, and is written by nothing. Without the negation it would sit outside the formatter and outside CI at once, since the validation stage runs author-side only. The negation has to come after the pattern it undoes, because the last matching line wins.
+
+Version parity stays a two-file problem now that the marketplace entry exists. `package.json` and `plugin.json` are wired through `release-please`, and the entry carries no version to disagree with them. The validation stage in `bun run check` discovers manifests rather than naming them, so it picked up `marketplace.json` the day it landed.
 
 ## CLI
 

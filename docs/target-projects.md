@@ -10,6 +10,23 @@ How a project outside this repo consumes the toolkit across its lifecycle. Three
 
 This doc stays at the narrative layer. For command flags and JSON shapes, see [agents](agents.md). For per-domain mechanics, see each `.claude/context/<domain>.md`.
 
+## Getting the skills
+
+The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and a push reaches the machine on the next refresh.
+
+```bash
+claude plugin marketplace add erclx/aitk
+claude plugin install aitk@aitk
+```
+
+The `aitk` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so a project that leans on those skills still wants the CLI linked from a clone. See the [readme](../README.md) for that path.
+
+Pointing Claude Code at a checkout stays the development path, where a local skill edit overrides the installed copy for that session.
+
+```bash
+claude --plugin-dir <toolkit>/claude
+```
+
 ## Scaffold
 
 Two steps, in order:
@@ -103,11 +120,9 @@ Before running a sync against a real project, run the relevant sandbox scenario.
 
 ### Markdown-heavy project
 
-Replace `<toolkit>` with the path where you cloned the toolkit.
-
 ```bash
 cd <your-project>
-claude --plugin-dir <toolkit>/claude
+claude
 ```
 
 In the session, invoke `aitk:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
@@ -118,7 +133,7 @@ Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `aitk:cl
 
 ```bash
 bun create vite my-app && cd my-app
-claude --plugin-dir <toolkit>/claude
+claude
 ```
 
 Invoke `aitk:setup-init`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.
