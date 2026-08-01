@@ -67,7 +67,9 @@ If all UI changes are covered by e2e tests, continue.
 
 Classify the diff first. Take the union of `git diff --name-only <base>` and `git ls-files --others --exclude-standard`, resolving `<base>` per Diff baseline. The classifier reads names only.
 
-An empty list stops the chain: `❌ No changed files to classify. The plan produced nothing, or its output is entirely gitignored. Check git status, then re-run autoship.` An empty list satisfies the prose-only test vacuously, so reading it as prose-only routes the branch past review instead of through it.
+An empty list stops the chain: `❌ No changed files to classify. Re-run when the plan has yet to produce its output. When the output is gitignored by design, autoship cannot ship it, so take the work out of the chain.` An empty list satisfies the prose-only test vacuously, so reading it as prose-only routes the branch past review instead of through it.
+
+The two causes want different responses. A plan that has yet to produce its output is a re-run once it has. A plan whose output is gitignored by design, such as a read pass writing to `.claude/.tmp/`, is work the chain cannot carry at all, since `git-stage` finds nothing to commit six steps later. Never advise removing the output from `.gitignore`, which trades a stopped run for scratch committed into the repository.
 
 If every changed file matches `*.md` or `*.txt`, skip review entirely and continue to Step 7. Prose-only changes are already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on them burns tokens with no signal.
 
@@ -127,7 +129,7 @@ Every stop point leaves recoverable state. The user resumes manually from the ap
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | No plan                            | Run `/claude-feature` to create one                                                                                                            |
 | No diff baseline                   | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
-| Empty changed-file list            | Read `git status`. Untrack the plan's output when it is gitignored, then re-run autoship.                                                      |
+| Empty changed-file list            | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
 | Branch collision on worktree entry | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
 | Verify fails                       | Read logs, fix manually, run `/git-ship`                                                                                                       |
 | UI checklist                       | Verify visually, run `/git-ship`                                                                                                               |
