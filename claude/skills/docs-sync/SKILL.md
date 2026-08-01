@@ -10,17 +10,34 @@ Read these files from the project root in parallel:
 - `.claude/standards/prose.md`: prose conventions for all generated text
 - `.claude/standards/readme.md`: README structure, required sections, and content rules
 
+## Diff baseline
+
+Resolve the base ref once and reuse it in Context and in Guards:
+
+```bash
+git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
+```
+
+Prefer `origin/main` over local `main`. On `main` itself the local ref resolves to HEAD, so every committed change drops out of the set and the skill reports nothing to sync rather than admitting it cannot see the work.
+
+The baseline is unusable in two cases:
+
+- No merge base resolves against either ref.
+- The base equals HEAD, whichever ref resolved it. Nothing is committed ahead of the base to compare against. This is the ordinary shape on `main`, and on a feature branch before its first commit.
+
+An unusable baseline costs only the committed half. `git diff --cached <base>` degrades to the staged set and `git status --short` still reports the working tree, so both reads stay at this skill's own scope. Say so in the preview with `⚠ Baseline unusable. Synced against the uncommitted set only.` The base ref is the only thing this change touches, and the `--cached` scope stays.
+
 ## Context
 
 Run these commands in parallel:
 
-- `git diff --cached main -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
-- `git diff --cached --name-only main 2>/dev/null || echo "NO_FILES"`
+- `git diff --cached <base> -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
+- `git diff --cached --name-only <base> 2>/dev/null || echo "NO_FILES"`
 - `git status --short 2>/dev/null || echo "NO_STATUS"`
 
 ## Guards
 
-- If `git diff --cached main` output is empty and `git status --short` output is empty, stop: `❌ No changes since main. Nothing to sync.`
+- If `git diff --cached <base>` output is empty and `git status --short` output is empty, stop: `❌ No changes since main. Nothing to sync.` Resolve the base ref first. A guard reading bare local `main` stops the skill on `main` before it reaches the corrected read.
 
 ## Discovery
 

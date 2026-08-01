@@ -7,15 +7,32 @@ description: Audits changed markdown files against applicable authoring standard
 
 ## Guards
 
-- Run `git diff main --name-only`. If no markdown files changed, stop: `✅ No markdown changes to audit.`
+- Resolve the base ref first, per Diff baseline below, then scope the file list exactly as Step 1 does, fallback included. If no markdown files changed, stop: `✅ No markdown changes to audit.` A guard that reads bare local `main`, or that skips the unusable-baseline fallback, passes the skill clean on a branch it never read.
 - If `.claude/standards/` does not exist, stop: `❌ No .claude/standards/ directory. Install toolkit standards first.`
+
+## Diff baseline
+
+Resolve the base ref once and reuse it in the guard and in Step 1:
+
+```bash
+git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
+```
+
+Prefer `origin/main` over local `main`. On `main` itself the local ref resolves to HEAD, so every committed change drops out of the set and the audit passes clean rather than admitting it cannot see the files.
+
+The baseline is unusable in two cases:
+
+- No merge base resolves against either ref.
+- The base equals HEAD, whichever ref resolved it. Nothing is committed ahead of the base to compare against. This is the ordinary shape on `main`, and on a feature branch before its first commit.
+
+An unusable baseline costs only the committed half. Audit `git diff HEAD --name-only` instead and lead the report with `⚠ Baseline unusable. Audited the uncommitted set only.`, so a clean result is never read as a clean branch.
 
 ## Step 1: scope the audit
 
-Get the changed file list:
+Get the changed file list, substituting `git diff HEAD --name-only` when the baseline is unusable:
 
 ```bash
-git diff main --name-only
+git diff <base> HEAD --name-only
 ```
 
 Filter to markdown (`.md`). Drop generated files the project does not hand-author (`index.md` when `auto: false` is absent, any file in a gitignored directory).

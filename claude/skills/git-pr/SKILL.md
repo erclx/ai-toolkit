@@ -18,8 +18,24 @@ Then run these commands in parallel to gather git context:
 
 - `git remote get-url origin 2>/dev/null || echo "NO_REMOTE"`
 - `git branch --show-current 2>/dev/null || echo "unknown"`
+- `git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null`
 - `git log main..HEAD --oneline 2>/dev/null || echo "NO_COMMITS"`
-- `git diff main..HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
+- `git diff <base> HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
+
+## Diff baseline
+
+The `git merge-base` command above resolves `<base>`, and the diff line consumes it. Prefer `origin/main` over local `main`.
+
+`git diff main..HEAD` is the form this replaces. A two-dot range compares tips and resolves no merge base, so once local `main` advances past the branch point it reports main's newer commits as reversed changes and the description describes work the branch never did. On `main` itself the local ref resolves to HEAD and every committed change drops out instead.
+
+The baseline is unusable in two cases:
+
+- No merge base resolves against either ref.
+- The base equals HEAD, whichever ref resolved it. Nothing is committed ahead of the base to compare against.
+
+Either case leaves the diff empty. The no-commits guard below catches it whenever local `main` is current, and misses it when local `main` trails `origin/main`, since the guard reads the local ref while the base prefers the remote one. Stop on an empty diff rather than composing a description from it.
+
+`git log main..HEAD` keeps its two-dot range. A commit-range exclusion is already the set of commits reachable from HEAD and not from main, so it carries no merge-base defect.
 
 ## Guards
 
