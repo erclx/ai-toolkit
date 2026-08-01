@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/erclx/aitk/compare/v0.3.1...v0.4.0) (2026-08-01)
+
+
+### Features
+
+* **eval:** add a seed arm and trim the seed it measured ([#668](https://github.com/erclx/aitk/issues/668)) ([55312d9](https://github.com/erclx/aitk/commit/55312d9d3f1b99f116bcf9f006b279eeb6799ac1))
+* **orchestrate:** move orchestration policy into enforcing surfaces ([#666](https://github.com/erclx/aitk/issues/666)) ([b9f538b](https://github.com/erclx/aitk/commit/b9f538bcf0755501eafd48f1d93757f8c98d1f96))
+* **sandbox:** report which scenarios declare expectations ([#667](https://github.com/erclx/aitk/issues/667)) ([7136da1](https://github.com/erclx/aitk/commit/7136da1b8a6bebf4a3188ad91eef31fa7a2a4f65))
+
+
+### Bug Fixes
+
+* **skills:** gate autoship review on a merge base and non-empty diff ([#665](https://github.com/erclx/aitk/issues/665)) ([564d2fb](https://github.com/erclx/aitk/commit/564d2fbae37ed50effaa80e6f6fc9b142ec6a75c))
+
 ## [0.3.1](https://github.com/erclx/aitk/compare/v0.3.0...v0.3.1) (2026-08-01)
 
 
