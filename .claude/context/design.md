@@ -37,19 +37,19 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 ## Extract skill
 
-`toolkit:claude-design-extract` drafts `.claude/DESIGN.md` from a project's existing prose and CLI UI surfaces. The skill reads `CLAUDE.md`, `.claude/standards/prose.md`, CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh`, and any stylesheet or theme config it finds. It fills the seed template from those signals and marks any inferred cell with a trailing `? verify` tag.
+`aitk:claude-design-extract` drafts `.claude/DESIGN.md` from a project's existing prose and CLI UI surfaces. The skill reads `CLAUDE.md`, `.claude/standards/prose.md`, CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh`, and any stylesheet or theme config it finds. It fills the seed template from those signals and marks any inferred cell with a trailing `? verify` tag.
 
 The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
 
-Install in a target project via `aitk claude install` and invoke with `/toolkit:claude-design-extract`.
+Install in a target project via `aitk claude install` and invoke with `/aitk:claude-design-extract`.
 
 ## Propose skill
 
-`toolkit:claude-design-propose` drafts `.claude/DESIGN.md` on day one of a project, before any UI code exists. The skill reads `.claude/REQUIREMENTS.md` for a required `## Personality` paragraph, plus `.claude/ARCHITECTURE.md` for platform signals, and proposes token values from those inputs. Every proposed cell carries a trailing `? verify` tag because the values are speculative until code or a designer anchors them.
+`aitk:claude-design-propose` drafts `.claude/DESIGN.md` on day one of a project, before any UI code exists. The skill reads `.claude/REQUIREMENTS.md` for a required `## Personality` paragraph, plus `.claude/ARCHITECTURE.md` for platform signals, and proposes token values from those inputs. Every proposed cell carries a trailing `? verify` tag because the values are speculative until code or a designer anchors them.
 
 This skill replaces the Claude Design onboarding quota cost for greenfield projects. The output is a starting point, not a final system. Expect the first render to shift several tokens after review.
 
-Install in a target project via `aitk claude install` and invoke with `/toolkit:claude-design-propose`.
+Install in a target project via `aitk claude install` and invoke with `/aitk:claude-design-propose`.
 
 ### Choosing propose vs extract
 

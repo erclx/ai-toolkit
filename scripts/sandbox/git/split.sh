@@ -53,7 +53,7 @@ EOF
 
     log_step "Scenario ready: 6 mixed independent commits on feat/user-auth"
     log_info "Context: 3 auth + 1 chore/scripts + 2 docs (no file overlap between groups)"
-    log_info "Action:  /toolkit:git-split"
+    log_info "Action:  /aitk:git-split"
     log_info "Expect:  Independent mode. One branch per concern. PRs based on main"
     ;;
   "stacked")
@@ -78,7 +78,7 @@ EOF
 
     log_step "Scenario ready: 3 stacked commits on feat/payments"
     log_info "Context: logger -> payments -> refactor-using-logger (refactor depends on both prior groups)"
-    log_info "Action:  /toolkit:git-split"
+    log_info "Action:  /aitk:git-split"
     log_info "Expect:  Stacked mode. 3 stacked branches/PRs. Merge-loop instructions in response"
     ;;
   *)

@@ -12,7 +12,7 @@ stage_setup() {
 
 # Sample Project
 
-Task API used as the fixture for /toolkit:claude-memory-review.
+Task API used as the fixture for /aitk:claude-memory-review.
 
 ## Behavior
 
@@ -168,7 +168,7 @@ EOF
   log_info "  memory-location               : already absorbed in CLAUDE.md Memory, should delete"
   log_info "  be-careful                    : crisp-fail, should delete"
   log_info ""
-  log_info "Action:  /toolkit:claude-memory-review"
+  log_info "Action:  /aitk:claude-memory-review"
   log_info "Expect:  review file at .claude/review/memory-review-<slug>.md with 5 numbered items"
   log_info "         respond 'all' to exercise the apply path"
   log_info "         after apply, review file is deleted and MEMORY.md rows for handled entries are gone"

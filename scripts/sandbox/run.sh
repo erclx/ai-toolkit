@@ -102,7 +102,7 @@ show_help() {
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Arguments:${NC}"
   echo -e "${GREY}│${NC}    cat:cmd   ${GREY}# Scenario to provision (e.g. git:commit)${NC}"
-  echo -e "${GREY}│${NC}    prompt    ${GREY}# Skill invocation (e.g. \"/toolkit:git-commit\")${NC}"
+  echo -e "${GREY}│${NC}    prompt    ${GREY}# Skill invocation (e.g. \"/aitk:git-commit\")${NC}"
   echo -e "${GREY}│${NC}    scenario  ${GREY}# Optional named scenario arm${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Env overrides:${NC}"
@@ -112,8 +112,8 @@ show_help() {
   echo -e "${GREY}│${NC}    AITK_SKILL_TEST_PERMISSION_MODE ${GREY}# default bypassPermissions${NC}"
   echo -e "${GREY}│${NC}"
   echo -e "${GREY}│${NC}  ${WHITE}Examples:${NC}"
-  echo -e "${GREY}│${NC}    run.sh git:commit \"/toolkit:git-commit\""
-  echo -e "${GREY}│${NC}    run.sh claude:feature \"/toolkit:claude-feature add a widget\" small"
+  echo -e "${GREY}│${NC}    run.sh git:commit \"/aitk:git-commit\""
+  echo -e "${GREY}│${NC}    run.sh claude:feature \"/aitk:claude-feature add a widget\" small"
   echo -e "${GREY}└${NC}"
   exit 0
 }
@@ -136,7 +136,7 @@ main() {
   local scenario="${3:-}"
 
   [[ "$target" != *":"* ]] && log_error "Invalid target. Use <category>:<command>, e.g. git:commit."
-  [ -z "$prompt" ] && log_error "Missing prompt. Pass the skill invocation, e.g. \"/toolkit:git-commit\"."
+  [ -z "$prompt" ] && log_error "Missing prompt. Pass the skill invocation, e.g. \"/aitk:git-commit\"."
 
   log_step "Provisioning $target"
   bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2

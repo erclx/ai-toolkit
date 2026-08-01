@@ -14,15 +14,15 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 
 ## Sequence
 
-1. Invoke `toolkit:claude-docs` to sync internal planning docs against session decisions
-2. Invoke `toolkit:docs-sync` to sync public docs against changes since main
+1. Invoke `aitk:claude-docs` to sync internal planning docs against session decisions
+2. Invoke `aitk:docs-sync` to sync public docs against changes since main
 3. Run `git add -A` to stage any files the sync skills wrote
-4. Invoke `toolkit:git-stage` to group staged changes and commit by concern
-5. Invoke `toolkit:git-branch` to rename branch to match conventional format
-6. Invoke `toolkit:git-pr` to push branch and open pull request
+4. Invoke `aitk:git-stage` to group staged changes and commit by concern
+5. Invoke `aitk:git-branch` to rename branch to match conventional format
+6. Invoke `aitk:git-pr` to push branch and open pull request
 7. After the PR opens, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
-8. Invoke `toolkit:claude-memory-capture` to extract durable patterns from the session into `.claude/memory/`
-9. If `claude-memory-capture` wrote or updated at least one entry this session, invoke `toolkit:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If capture wrote nothing, skip this step.
+8. Invoke `aitk:claude-memory-capture` to extract durable patterns from the session into `.claude/memory/`
+9. If `claude-memory-capture` wrote or updated at least one entry this session, invoke `aitk:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If capture wrote nothing, skip this step.
 
 Stop at the Propose phase. Do not run Apply. Promoting an entry to `CLAUDE.md` or a skill body ships as its own change, separate from this feature.
 

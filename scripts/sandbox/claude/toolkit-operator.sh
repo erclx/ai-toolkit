@@ -23,7 +23,7 @@ EOF
 
     log_step "Scenario ready: toolkit-operator skill on an empty repo"
     log_info "Context: package.json only, toolkit not yet installed"
-    log_info "Action:  /toolkit:toolkit-operator then 'help me set up this project'"
+    log_info "Action:  /aitk:toolkit-operator then 'help me set up this project'"
     log_info "Expect:  orients via aitk docs, routes first-time scaffold to setup-init"
     ;;
   "installed")
@@ -41,7 +41,7 @@ EOF
 
     log_step "Scenario ready: toolkit-operator skill on a project with installed standards"
     log_info "Context: .claude/standards/ present with two stale files"
-    log_info "Action:  /toolkit:toolkit-operator then 'sync my standards'"
+    log_info "Action:  /aitk:toolkit-operator then 'sync my standards'"
     log_info "Expect:  orients via aitk docs, reads catalogs, routes to aitk standards sync"
     ;;
   *)

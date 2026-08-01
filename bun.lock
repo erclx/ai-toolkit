@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "toolkit",
+      "name": "aitk",
       "dependencies": {
         "commander": "^13.1.0",
         "execa": "^9.5.2",

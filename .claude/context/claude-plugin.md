@@ -13,7 +13,7 @@ Owns everything the toolkit ships outward under the Claude domain: the plugin sk
 
 - `claude/skills/` owns the plugin skills, auto-discovered when Claude Code loads with `--plugin-dir`
 - `claude/skills/<skill>/REQUIREMENT.md`: optional sibling of `SKILL.md` holding the skill's gap statement, inert at load time
-- `claude/.claude-plugin/` owns `plugin.json`, the plugin manifest
+- `claude/.claude-plugin/` owns `plugin.json`, the plugin manifest. Its `name` field is `aitk`, which is what namespaces every invocation as `/aitk:<skill>`
 
 ## Plugin skills
 

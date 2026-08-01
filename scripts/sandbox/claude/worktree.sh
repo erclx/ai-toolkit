@@ -29,7 +29,7 @@ EOF
     log_step "Scenario ready: matched-plan tier (Step 2, tier 1)"
     log_info "Branch: feat/foo"
     log_info "Plan:   .claude/plans/feature-feat-foo.md"
-    log_info "Action:  /toolkit:claude-worktree"
+    log_info "Action:  /aitk:claude-worktree"
     log_info "Expect:  skill derives feat-foo from tier 1, no prompt"
     log_info "         worktree at .claude/worktrees/feat-foo/, branch feat-foo post-rename"
     ;;
@@ -51,7 +51,7 @@ EOF
     log_step "Scenario ready: multi-plan tier (Step 2, tier 3)"
     log_info "Branch: default"
     log_info "Plans:  feature-alpha.md, feature-bravo.md"
-    log_info "Action:  /toolkit:claude-worktree"
+    log_info "Action:  /aitk:claude-worktree"
     log_info "Expect:  skill falls to tier 3 and asks which plan"
     log_info "         respond with alpha or bravo to pick the slug"
     ;;
@@ -61,7 +61,7 @@ EOF
     log_step "Scenario ready: branch-only tier (Step 2, tier 4)"
     log_info "Branch: feat/bar"
     log_info "Plans:  none"
-    log_info "Action:  /toolkit:claude-worktree"
+    log_info "Action:  /aitk:claude-worktree"
     log_info "Expect:  skill falls to tier 4 and uses feat-bar"
     log_info "         worktree at .claude/worktrees/feat-bar/, branch feat-bar post-rename"
     ;;

@@ -17,7 +17,7 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 
 ## Step 0: enter a worktree
 
-If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `toolkit:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
+If `git rev-parse --git-dir` equals `git rev-parse --git-common-dir`, the session is in the main worktree. Invoke `aitk:claude-worktree` before continuing. The wrapper handles name derivation and branch alignment. Do not call `EnterWorktree` directly.
 
 If neither command resolves, stop: `❌ Not a git repository. Autoship needs git or a WorktreeCreate hook.`
 
@@ -43,7 +43,7 @@ Do not loop. Do not bypass hooks.
 
 ## Step 4: UI test (conditional)
 
-If the diff touches UI files (JSX, TSX, Vue, Svelte, HTML, or CSS under `src/`), invoke `toolkit:claude-ui-test`.
+If the diff touches UI files (JSX, TSX, Vue, Svelte, HTML, or CSS under `src/`), invoke `aitk:claude-ui-test`.
 
 If `claude-ui-test` produces a manual checklist, stop: `❌ UI requires visual verification. Checklist at .claude/review/ui-checklist-<slug>.md. Verify manually, then run /git-ship.`
 
@@ -53,7 +53,7 @@ If all UI changes are covered by e2e tests, continue.
 
 Classify the diff first. Run `git diff main --name-only` (or `git diff --staged --name-only` when staged). If every changed file matches `*.md` or `*.txt`, skip review entirely and continue to Step 7. Prose-only changes are already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on them burns tokens with no signal.
 
-Otherwise invoke `toolkit:claude-review`.
+Otherwise invoke `aitk:claude-review`.
 
 ## Step 6: evaluate findings
 
@@ -68,12 +68,12 @@ Do not auto-fix findings. The stop here is deliberate.
 
 Invoke each sub-skill in order via the Skill tool. After each returns, invoke the next immediately. Do not output text between steps.
 
-1. `toolkit:claude-docs`: sync `.claude/` planning docs against session decisions
-2. `toolkit:docs-sync`: sync public docs against changes since main
+1. `aitk:claude-docs`: sync `.claude/` planning docs against session decisions
+2. `aitk:docs-sync`: sync public docs against changes since main
 3. Run `git add -A` to stage files the sync skills wrote
-4. `toolkit:git-stage`: group staged changes and commit by concern
-5. `toolkit:git-branch`: rename the branch to conventional format
-6. `toolkit:git-pr`: push and open the pull request
+4. `aitk:git-stage`: group staged changes and commit by concern
+5. `aitk:git-branch`: rename the branch to conventional format
+6. `aitk:git-pr`: push and open the pull request
 
 After the PR is created, mark it as draft:
 
@@ -83,8 +83,8 @@ gh pr ready --undo
 
 After marking draft, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop and report the failing check with its URL. Do not auto-fix.
 
-7. `toolkit:claude-memory-capture`: extract durable patterns from the session into `.claude/memory/`
-8. `toolkit:claude-memory-review`: if `claude-memory-capture` wrote or updated at least one entry this session, propose fixes scoped to those entries, writing the decision-ready receipt while session context is fresh. Skip when capture wrote nothing.
+7. `aitk:claude-memory-capture`: extract durable patterns from the session into `.claude/memory/`
+8. `aitk:claude-memory-review`: if `claude-memory-capture` wrote or updated at least one entry this session, propose fixes scoped to those entries, writing the decision-ready receipt while session context is fresh. Skip when capture wrote nothing.
 
 Stop at the Propose phase. Do not run Apply. Promoting an entry to `CLAUDE.md` or a skill body mutates how the agent operates and ships as its own change, separate from this feature.
 

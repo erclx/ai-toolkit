@@ -21,7 +21,7 @@ its own reply, so skip the comment in step 6. The push and body sync still run.
 
 1. Run `git status` to confirm the changes are intentional
 2. Run `git add -A` to stage every change
-3. Invoke `toolkit:git-commit` to generate one conventional commit from the staged diff
+3. Invoke `aitk:git-commit` to generate one conventional commit from the staged diff
 4. Run `git push` to the tracking branch
 5. Check for existing review comments: `gh api 'repos/{owner}/{repo}/pulls/<number>/comments' --jq 'length'`, resolving `<number>` from `gh pr view --json number`.
 6. When invoked with `reply-owned`, skip this step's comment: the caller posts the reply. Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first scanning it for em dashes and semicolons and rewriting each since the hook does not see an inline comment body. If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
