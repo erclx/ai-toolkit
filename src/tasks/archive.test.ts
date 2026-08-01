@@ -169,6 +169,18 @@ describe('removePriorityRow', () => {
       false,
     )
   })
+
+  it('should keep a row that only names the task as a blocker', () => {
+    const text = [
+      '| [v28.1 escalation](v28.1-trigger-escalation.md) | `src/tasks/` |',
+      '| [v17.4 roadmap](v17.4-roadmap-lifecycle-gate.md) | waits on [v28.1](v28.1-trigger-escalation.md) |',
+    ].join('\n')
+
+    const result = removePriorityRow(text, 'v28.1-trigger-escalation')
+
+    expect(result.text).toContain('v17.4-roadmap-lifecycle-gate.md')
+    expect(result.text).not.toContain('| [v28.1 escalation]')
+  })
 })
 
 describe('archiveTask', () => {
@@ -244,6 +256,15 @@ describe('archiveTask', () => {
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
       ok: true,
+    })
+  })
+
+  it('should refuse a live plan written from the project root', async () => {
+    const stem = await seedTask({ plan: '.claude/plans/feature-trigger.md' })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
+      ok: false,
+      reason: 'plan-unswept',
     })
   })
 

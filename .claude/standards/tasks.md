@@ -129,8 +129,12 @@ Two callers reach that command. The `claude-tasks` skill runs it inside a sessio
 
 One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/.tmp/plans-archive/` and stays gitignored, so an archived task does not start appearing in diffs. The cost is that scratch is unbacked, which is the same cost the plans archive already carries.
 
-Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. The archive clears the task's row from `priority.md` itself, since a shipped task left in the ordering reads as ready to hand a worker. It matches the row by the link it carries rather than by a line pattern, and it leaves prose naming the task alone for a person to resolve.
+Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. The archive clears the task's row from `priority.md` itself, since a shipped task left in the ordering reads as ready to hand a worker. It leaves prose naming the task alone for a person to resolve.
+
+The row is matched by the link in its first cell rather than by a pattern against the whole line. A row names the task it is about in the first cell, so a link anywhere after that is a reference, such as a blocker pointing at what it waits on. Matching the line would delete the referring task's row too, on a board that is gitignored and has nothing to recover it from.
 
 Sweep the plan before archiving the task. The sweep finds its work by scanning the live folder, so a task archived first is beyond its reach for good, and the plan is left with no live task citing it and an archived task pointing at a path nothing will retarget. The archive refuses a task whose `Plan:` line still resolves inside `.claude/plans/` for that reason, which puts the ordering under a gate rather than under a convention the unattended caller cannot follow.
+
+That gate resolves the target against `.claude/tasks/` and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file. `claude-docs` reads the line the same way, and two halves of one ordering that parsed it differently would leave a plan stranded by the form it was written in.
 
 A task with an open outcome stays on the board. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. The sweep is gated on the same condition, so archiving around an open outcome also leaves the plan behind.

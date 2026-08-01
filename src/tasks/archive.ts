@@ -114,11 +114,22 @@ export function removePriorityRow(
 ): { readonly text: string; readonly removed: boolean } {
   const target = `](${stem}.md)`
   const lines = text.split('\n')
-  const kept = lines.filter(
-    (line) => !(line.trimStart().startsWith('|') && line.includes(target)),
-  )
+  const kept = lines.filter((line) => !isRowFor(line, target))
 
   return { text: kept.join('\n'), removed: kept.length !== lines.length }
+}
+
+/**
+ * A row is about a task when its first cell links to it. A later cell naming
+ * another task is a reference, such as a blocker pointing at what it waits on,
+ * and matching anywhere in the line would delete that task's row alongside it.
+ */
+function isRowFor(line: string, target: string): boolean {
+  const trimmed = line.trimStart()
+  if (!trimmed.startsWith('|')) return false
+
+  const [, first] = trimmed.split('|')
+  return first !== undefined && first.includes(target)
 }
 
 /**
@@ -127,6 +138,21 @@ export function removePriorityRow(
  */
 function isUnder(path: string, dir: string): boolean {
   return path === dir || path.startsWith(`${dir}${sep}`)
+}
+
+/**
+ * Resolves the `Plan:` target against the board and against the project root
+ * both, which is how `claude-docs` reads the same line. It accepts `../plans/x.md`
+ * and `.claude/plans/x.md` as one file, so a gate reading only the first form
+ * would pass the second and strand the plan this exists to protect.
+ */
+function isLivePlan(target: string, dir: string, root: string): boolean {
+  const plans = join(root, PLANS_DIR)
+
+  return (
+    isUnder(resolve(dir, target), plans) ||
+    isUnder(resolve(root, target), plans)
+  )
 }
 
 async function listTaskStems(dir: string): Promise<string[]> {
@@ -238,7 +264,7 @@ export async function archiveTask(
   }
 
   const planTarget = readPlanTarget(text)
-  if (planTarget && isUnder(resolve(dir, planTarget), join(root, PLANS_DIR))) {
+  if (planTarget && isLivePlan(planTarget, dir, root)) {
     return refuse(
       'plan-unswept',
       `${stem} still points at a live plan. Run /claude-docs to sweep it first, then archive.`,
