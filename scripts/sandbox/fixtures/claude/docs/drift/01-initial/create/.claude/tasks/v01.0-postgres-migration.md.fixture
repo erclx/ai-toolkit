@@ -5,7 +5,7 @@ description: Persist tasks in Postgres instead of SQLite
 
 # v01.0: Migrate storage to Postgres
 
-Plan: .claude/plans/feature-postgres-migration.md
+Plan: [feature-postgres-migration](../plans/feature-postgres-migration.md)
 
 - [ ] Outcome: tasks persist in Postgres instead of SQLite
 - [ ] Outcome: connection config reads from environment

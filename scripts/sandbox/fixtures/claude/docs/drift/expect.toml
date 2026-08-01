@@ -38,4 +38,4 @@ pattern = '^- \[x\] Outcome: tasks persist in Postgres'
 
 [[content]]
 path = ".claude/tasks/v01.0-postgres-migration.md"
-pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-postgres-migration\.md'
+pattern = '^Plan: \[feature-postgres-migration\]\(\.\./\.tmp/plans-archive/feature-postgres-migration\.md\)'

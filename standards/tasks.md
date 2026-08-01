@@ -67,8 +67,8 @@ description: One line on what this task achieves
 
 # vX.Y: Title
 
-Plan: .claude/plans/feature-<slug>.md
-Groundwork: .claude/.tmp/groundwork/<slug>/
+Plan: [feature-<slug>](../plans/feature-<slug>.md)
+Groundwork: [<slug>](../.tmp/groundwork/<slug>/)
 Issue: #NNN
 
 Why this task exists and what it depends on.
@@ -91,11 +91,13 @@ Every task names where it came from, through a `Plan:`, `Groundwork:`, or `Issue
 
 A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track or an open issue that no task points at is work already decided and on its way to being forgotten.
 
+`Plan:` and `Groundwork:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/` and `../.tmp/groundwork/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
+
 Phase-label format and where labels may appear are governed by `standards/versioning.md`.
 
-`Plan:` points at `.claude/plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `.claude/.tmp/plans-archive/feature-<slug>.md`. Retarget the line rather than dropping it, so a completed task still leads to the reasoning behind it. One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
+`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../.tmp/plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it. One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
-`Groundwork:` points at `.claude/.tmp/groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
+`Groundwork:` points at `../.tmp/groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
 
 ## What goes in
 

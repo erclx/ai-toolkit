@@ -48,7 +48,7 @@ pattern = '^- \[x\] Outcome: a list request accepts a page size and an offset'
 
 [[content]]
 path = ".claude/tasks/v02.0-pagination.md"
-pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-pagination\.md'
+pattern = '^Plan: \[feature-pagination\]\(\.\./\.tmp/plans-archive/feature-pagination\.md\)'
 
 # The retarget matters more here than on the closing task. This task was already
 # `[x]` before the run, so a sweep that moved the plan without rewriting the line
@@ -56,14 +56,14 @@ pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-pagination\.md'
 # `.claude/plans/` is gitignored so nothing recovers it.
 [[content]]
 path = ".claude/tasks/v01.0-rate-limit.md"
-pattern = '^Plan: \.claude/\.tmp/plans-archive/feature-rate-limit\.md'
+pattern = '^Plan: \[feature-rate-limit\]\(\.\./\.tmp/plans-archive/feature-rate-limit\.md\)'
 
 # The control's pointer stays put. Asserting the plan's location alone would pass
 # on a run that retargeted the line anyway, leaving the task aimed at an archive
 # path holding no file.
 [[content]]
 path = ".claude/tasks/v03.0-search.md"
-pattern = '^Plan: \.claude/plans/feature-search\.md'
+pattern = '^Plan: \[feature-search\]\(\.\./plans/feature-search\.md\)'
 
 # Its outcomes stay open. HEAD ships no search, so a run marking either one has
 # matched on the board rather than on the diff.
