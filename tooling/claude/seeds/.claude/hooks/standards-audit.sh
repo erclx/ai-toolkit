@@ -39,11 +39,18 @@ hits=$(awk -v words="$words" '
   banned != "" {
     prose = tolower($0)
     gsub(/`[^`]*`/, "", prose)
-    if (match(prose, banned)) {
+    found = ""
+    delete seen
+    while (match(prose, banned)) {
       word = substr(prose, RSTART, RLENGTH)
       gsub(/[^a-z]/, "", word)
-      print NR ": banned word (" word "): " $0
+      if (word != "" && !(word in seen)) {
+        seen[word] = 1
+        found = found (found == "" ? "" : ", ") word
+      }
+      prose = substr(prose, RSTART + RLENGTH)
     }
+    if (found != "") print NR ": banned word (" found "): " $0
   }
 ' "$file")
 
