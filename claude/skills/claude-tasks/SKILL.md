@@ -38,6 +38,8 @@ Write `.claude/tasks/vXX.Y-<slug>.md` following the format in `.claude/standards
 
 Write `Plan:` and `Groundwork:` as markdown links relative to `.claude/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
 
+Never write a `Pull request:` line here. `git-pr` adds it when a pull request opens, and a number guessed at create time points at someone else's work.
+
 Write it immediately. Claude Code's tool permission dialog is the confirmation gate. Do not pause for approval.
 
 ### Step 4: report unlinked origins
@@ -48,15 +50,13 @@ Report rather than prompt. A track can be opened long after its task would have 
 
 ## Archive
 
-The `post-merge` git hook names archive candidates after a pull, so a request to archive often arrives already naming the file. It prints and moves nothing, and it cannot tell whether the work merged, so every step below still runs against a board the hook left untouched.
+The `post-merge` git hook archives the task a merge closed, so a request arriving here is usually one the hook could not resolve on its own. Run the steps below against whatever the hook left in place.
 
-### Step 1: check the outcomes
+Do not move the file, edit `priority.md`, or regenerate the index by hand. `aitk tasks archive` owns all three as one unit and the hook calls the same command, so a hand-rolled move here drifts from the unattended path.
 
-Read the task file. Continue only when every outcome is `[x]`. When one is unchecked, name it and stop: `❌ <n> outcome(s) still open. Close them or cut them from the task, then archive.`
+### Step 1: confirm the work reached main
 
-An unchecked box means one of two things and neither is a reason to archive around it. The outcome shipped and nothing marked it, since `claude-docs` marks from the diff rather than from the conversation, in which case run `claude-docs` and archive after. Or the outcome is genuinely open, in which case the task belongs on the board. A task being abandoned rather than finished is the third case, and it cuts its outcomes first, so the board records what was dropped rather than leaving a reader to infer it from an archived file.
-
-Then confirm the work reached `main`. `claude-docs` marks outcomes on the branch as step 1 of the ship chain, so an all-`[x]` task routinely describes a pull request that is still open, and the outcome check alone cannot tell the two apart:
+`claude-docs` marks outcomes on the branch as step 1 of the ship chain, so an all-`[x]` task routinely describes a pull request that is still open. The command gates on the outcomes and cannot tell those two apart, which is what puts this check here:
 
 ```bash
 git fetch origin main --quiet && git log origin/main --oneline -20
@@ -64,33 +64,34 @@ git fetch origin main --quiet && git log origin/main --oneline -20
 
 Match the shipped outcomes against that log, widening to `gh pr list --state merged --limit 20` when a remote is configured and the log does not settle it. When the work is not on `main`, name the task and stop: `❌ Work not on main. Archiving now loses the task if the pull request is abandoned.`
 
-The board is gitignored, so an archived task has no history behind it and nothing restores one archived early. That is the failure the trigger's own design ruled the ship chain out for, and marking happening before the merge is what puts this check here rather than upstream.
+The board is gitignored, so an archived task has no history behind it and nothing restores one archived early. Skip this check when the task carries a `Pull request:` line and that pull request is merged, since the number already proves what the log is being read for.
 
-Stopping here is what lets Step 2 route to `claude-docs` and mean it. That sweep only reaches tasks whose outcomes are all `[x]`, so admitting an open outcome past this point would send the caller to a skill that provably declines, and returning from it would fire the same guard again.
+### Step 2: run the archive
 
-### Step 2: check the plan pointer
+Pass the task's filename stem, or the pull request number when the request names one:
 
-Parse the `Plan:` line and route on where it points. The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file.
+```bash
+aitk tasks archive <stem>
+```
 
-- No `Plan:` line, or the target resolves inside `.claude/.tmp/plans-archive/`: continue to Step 3.
-- Target resolves inside `.claude/plans/` and no other task file cites it: stop. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
-- Target resolves inside `.claude/plans/` and another task file cites it: stop, naming that task. `❌ Plan shared with <task>. One plan per task, so resolve the citation before archiving.`
+The command refuses rather than reports, so read its exit code. On success it prints what moved, what row it cleared, and whether the index changed.
 
-The guard enforces an ordering rather than a preference. `claude-docs` Step 8 sweeps plans by scanning `.claude/tasks/*.md`, so it can only reach a task that is still in the folder. Archiving the task first puts it beyond that scan permanently, leaving the plan in `.claude/plans/` with no live task citing it and an archived task pointing at a path nothing will ever retarget. Both folders are gitignored, so nothing recovers the pointer afterward.
+### Step 3: route on a refusal
 
-The two stops differ only in where they send the caller, and that is the whole reason to count. `claude-docs` sweeps an unshared plan and declines a shared one, so routing both there would send half the callers to a skill that provably returns without moving anything, and they would come back to the same guard. A shared plan is the misfile `.claude/standards/tasks.md` names, so it is resolved by hand rather than by a sweep.
+Each reason has one resolution and none of them is to archive around it:
 
-Do not move a plan from this skill. `claude-docs` Step 8 owns that move and the last-live-citation rule that governs it. Two skills relocating the same file drift into relocating it differently.
+- `open-outcomes`: the named outcomes are unmarked or genuinely open. Run `claude-docs` when the work shipped and nothing marked it. Leave the task on the board when the outcome is real. Cut the outcomes first when the work is being abandoned, so the board records what was dropped.
+- `plan-unswept`: stop and route to `claude-docs`, which owns the plans sweep and the last-live-citation rule. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
+- `ambiguous`: two tasks name one pull request, which is the misfile `.claude/standards/tasks.md` rules out. Resolve the citation by hand, since no sweep repairs it.
+- `no-match`: the stem or number names nothing on the board. Check the name against the listed stems.
 
-### Step 3: move the task file
+Do not move a plan from this skill. `claude-docs` owns that move. Two skills relocating the same file drift into relocating it differently.
 
-Create `.claude/.tmp/task-archive/` and move the file there under its own name, overwriting any file already at that name. Never delete a task file. The live index regenerates without it on the next hook run.
+Leave `TASK-ARCHIVE.md` alone when it is present in the archive folder. It records the single-file era in the shape that era used, and splitting it would fabricate per-task files nobody wrote.
 
-Leave `TASK-ARCHIVE.md` alone when it is present. It records the single-file era in the shape that era used, and splitting it would fabricate per-task files nobody wrote.
+### Step 4: clear prose naming the task
 
-### Step 4: clear the ordering file
-
-Remove the archived task's row from `.claude/tasks/priority.md` when that file exists, along with any prose paragraph that names it. A shipped task left in the ordering is worse than no ordering, since it reads as ready to hand a worker.
+The command drops the task's row from `.claude/tasks/priority.md` and leaves prose alone. Remove any sentence that still names the archived task or counts the rows that changed, since a stale count reads as board state.
 
 ## Output
 
@@ -111,10 +112,12 @@ Create:
 
 Omit the origin block when everything is linked.
 
-Archive:
+Archive, reporting the paths the command returned:
 
 ```plaintext
 📦 Archived: .claude/.tmp/task-archive/vXX.Y-<slug>.md
 
-<plan disposition in one line>
+<ordering and index disposition in one line>
 ```
+
+A refusal reports the reason and the resolution Step 3 routes it to, on one line each.

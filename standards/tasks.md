@@ -72,6 +72,7 @@ description: One line on what this task achieves
 Plan: [feature-<slug>](../plans/feature-<slug>.md)
 Groundwork: [<slug>](../.tmp/groundwork/<slug>/)
 Issue: #NNN
+Pull request: #NNN
 
 Why this task exists and what it depends on.
 
@@ -101,6 +102,10 @@ Phase-label format and where labels may appear are governed by `standards/versio
 
 `Groundwork:` points at `../.tmp/groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
 
+`Pull request:` records which pull request carries the task's work, as a bare `#NNN` the way `Issue:` does. It is not an origin, so a task without one is well-formed. `git-pr` writes it when a pull request opens, which is the one step that always runs whether the chain drives it or a person does.
+
+The line is what lets a merge close its own task. Every merge on `main` is a squash carrying the number in its subject, so the number survives where a branch name does not, and `aitk tasks archive --pull-request <n>` resolves the task from it. Without the line the board can only be swept blind, and a blind sweep cannot tell a shipped task from an abandoned one. One task, one pull request: two tasks naming the same number refuse to archive rather than both moving.
+
 ## What goes in
 
 - Task entries describing observable behavior, one outcome per line
@@ -118,12 +123,18 @@ Phase-label format and where labels may appear are governed by `standards/versio
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.claude/.tmp/task-archive/` under its own name, and the live index regenerates without it. The `claude-tasks` skill owns the move.
+Never delete a task file. A shipped task moves to `.claude/.tmp/task-archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
+
+Two callers reach that command. The `claude-tasks` skill runs it inside a session, and the `post-merge` hook runs it unattended after a pull that merged the work. Both go through the command rather than moving the file themselves, so the two paths cannot drift into archiving differently. Every gate the command applies refuses with a non-zero exit rather than reporting, because a caller with nobody watching cannot act on a warning.
 
 One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/.tmp/plans-archive/` and stays gitignored, so an archived task does not start appearing in diffs. The cost is that scratch is unbacked, which is the same cost the plans archive already carries.
 
-Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. Remove the task's row from `priority.md` in the same pass, since a shipped task left in the ordering reads as ready to hand a worker.
+Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. The archive clears the task's row from `priority.md` itself, since a shipped task left in the ordering reads as ready to hand a worker. It leaves prose naming the task alone for a person to resolve.
 
-Sweep the plan before archiving the task. The sweep finds its work by scanning the live folder, so a task archived first is beyond its reach for good, and the plan is left with no live task citing it and an archived task pointing at a path nothing will retarget.
+The row is matched by the link in its first cell rather than by a pattern against the whole line. A row names the task it is about in the first cell, so a link anywhere after that is a reference, such as a blocker pointing at what it waits on. Matching the line would delete the referring task's row too, on a board that is gitignored and has nothing to recover it from.
+
+Sweep the plan before archiving the task. The sweep finds its work by scanning the live folder, so a task archived first is beyond its reach for good, and the plan is left with no live task citing it and an archived task pointing at a path nothing will retarget. The archive refuses a task whose `Plan:` line still resolves inside `.claude/plans/` for that reason, which puts the ordering under a gate rather than under a convention the unattended caller cannot follow.
+
+That gate resolves the target against `.claude/tasks/` and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file. `claude-docs` reads the line the same way, and two halves of one ordering that parsed it differently would leave a plan stranded by the form it was written in.
 
 A task with an open outcome stays on the board. Close it, or cut it from the task when the work is being abandoned, so what was dropped is recorded rather than inferred from an archived file. The sweep is gated on the same condition, so archiving around an open outcome also leaves the plan behind.
