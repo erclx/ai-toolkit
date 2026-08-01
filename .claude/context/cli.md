@@ -22,6 +22,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/init/` owns the `aitk init` flag plan and the partial-failure domain runner
 - `src/docs/` and `src/wiki/` own the two read-only domains, which reach for no shared engine because neither syncs into a target. `src/wiki/` scaffolds `.claude/wiki/` in a target, and reports a root `wiki/` left by an older scaffold rather than migrating it
 - `src/claude/` owns seed planning, the gitignore preview, and the user settings merge, the three pieces the `claude` dispatcher held before it was deleted
+- `src/tasks/` owns the task-board archive, the one domain whose primary caller is a git hook rather than a person
 
 ## Decisions
 
@@ -60,6 +61,8 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - A picker standing in for a required argument refuses headlessly rather than defaulting to its first option. `aitk gov install` with no stack installed 26 astro rules into an empty directory, and `aitk snippets install` with no category installed every category, both because `select_option` returned `options[0]`. Confirm-then-apply prompts keep `nonInteractiveDefault`, since the caller already named what to apply. The distinction is whether the prompt is choosing what to do or confirming what was asked for.
 - Machine-readable output goes through `JSON.stringify` rather than a `printf` template. Two list verbs interpolated names straight into a JSON string literal, so any name carrying a quote emitted output a consuming skill could not parse. Both were inert on the current corpus, which is why the shape held until someone named a snippet with a quote in it.
 - A branch gated behind a prompt takes an optional decision seam so a test can reach it. `select` exits without a TTY, which left the `aitk sync` staging and commit branches reachable only by driving a PTY by hand. `WorkflowDeps.choose` defaults to the real prompt, so the command layer omits it and production behavior is unchanged, while the tests assert the exact staged set. Prefer this over asserting on the logic that feeds a prompt and calling the branch behind it covered.
+- A command an unattended caller drives makes every gate a refusal with a non-zero exit. `aitk tasks archive` is called by `.husky/post-merge` and by `claude-tasks`, and a gate that only reports is useful to the second and worthless to the first. The command owning the gates is also what keeps the two callers from drifting into archiving differently, which is why the plan-pointer check moved out of the skill body and into the command.
+- A domain earns a command when the operation is mechanical, not when the domain is important. Tasks gained `archive` alone. Creating a task proposes a phase label from the board and writes prose from a conversation, which is judgment, so it stays in `claude-tasks` and no `create` verb exists to tempt a caller.
 - Feature entries stay separate from this one. They document a user-facing artifact such as the `SLIDES.md` source shape or the design token schema, which is worth reading without the CLI plumbing.
 
 ## Gotchas
