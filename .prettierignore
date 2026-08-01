@@ -2,3 +2,4 @@
 
 # release-please rewrites these on every release and serializes them its own way
 **/.claude-plugin/*.json
+/CHANGELOG.md
