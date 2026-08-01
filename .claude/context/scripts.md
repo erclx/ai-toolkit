@@ -106,7 +106,7 @@ Narrowed to one function. The payload builder that used to live here is `src/gov
 | ------------- | ------------------------------------------------------------------------------------------------------ | ---------------------- |
 | `rule_subdir` | Emit a source rule's subdirectory relative to the rules root, or empty when the rule sits at the root. | Stays bash permanently |
 
-`rule_subdir` has three remaining callers and all are sandbox scripts, which stay bash by decision. `ruleSubdir` in `src/gov/install.ts` is the TypeScript copy the migrated installer uses. The two must agree, since a rule installed to the wrong subdirectory is one the sandbox scenarios then fail to find.
+`rule_subdir` has three remaining call sites across two sandbox scenarios, which stay bash by decision. `manage-sandbox.sh` dropped its own caller when gov injection moved to the real installer, so the dispatcher no longer sources `gov.sh` at all. `ruleSubdir` in `src/gov/install.ts` is the TypeScript copy the migrated installer uses. The two must agree, since a rule installed to the wrong subdirectory is one the sandbox scenarios then fail to find.
 
 The bash `strip_frontmatter` treated the first `---` on any line as the start of a frontmatter block, so a document whose body carried two horizontal rules lost everything between them. `stripFrontmatter` in `src/frontmatter.ts` anchors to the first line instead and leaves such a body intact. The docs migration took the TypeScript reading, which means `aitk docs <topic>` now emits sections the bash silently swallowed.
 

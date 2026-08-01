@@ -70,6 +70,7 @@ Full help: `aitk <command> --help`.
 | `aitk sandbox reset`     | Reset sandbox to baseline                                                                      |
 | `aitk sandbox clean`     | Wipe the sandbox                                                                               |
 | `aitk sandbox check`     | Score a provisioned sandbox against a scenario expectation (`--json` for the verdict)          |
+| `aitk sandbox coverage`  | Report which scenarios declare expectations (`--json`, `--strict`)                             |
 | `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                                           |
 | `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                                       |
 | `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                                              |
@@ -190,12 +191,28 @@ aitk sandbox check claude:docs drift --json
 | `--envelope <file>` | Read `is_error`, `num_turns`, and denials from a run       |
 | `--writes <file>`   | Newline-delimited paths the session wrote, for write scope |
 | `--json`            | Emit the verdict record on stdout                          |
+| `--strict`          | Exit 1 on `unchecked` instead of 0                         |
 
 The verdict `state` is `pass`, `fail`, or `unchecked`. An arm with no `expect.toml` is `unchecked` and exits 0, so the harness stays usable while expectations roll out. A declaration that exists but asserts nothing is a failure, since an expectation file that asserts nothing passes every run.
 
 Omitting `--writes` or `--envelope` does not silently drop the assertion kinds that need them. Write scope and the turn ceiling report as unchecked and appear in the count, so the standalone command cannot claim more coverage than it had. A verdict never reports `pass` with zero assertions.
 
-Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a malformed target, or a sandbox that was never provisioned. A missing sandbox reports as an error rather than a failed verdict, because failing every path assertion would read as a skill that did nothing.
+Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a malformed target, or a sandbox that was never provisioned. A missing sandbox reports as an error rather than a failed verdict, because failing every path assertion would read as a skill that did nothing. `--strict` moves `unchecked` to exit 1 for a caller that has finished arming its scenarios.
+
+### Scenario coverage
+
+`aitk sandbox coverage` reports which scenarios declare expectations and which only provision a state. It reads the fixture tree, so it needs no provisioned sandbox and runs nothing.
+
+```bash
+aitk sandbox coverage --json
+```
+
+| Flag       | Effect                                            |
+| ---------- | ------------------------------------------------- |
+| `--json`   | Emit the coverage record on stdout                |
+| `--strict` | Exit 1 while any scenario declares no expectation |
+
+The record carries every scenario with the arms that declare, plus `totalScenarios`, `armedScenarios`, and `armedArms`. Scenarios and arms count separately, since several arms can share one scenario and dividing one by the other overstates the rollout.
 
 `scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints. It also writes that merged record to `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json` with a `writes` array appended, and logs the path on stderr. Both fields are what a later re-score needs, since `--envelope` and `--writes` read files the run deletes on exit. Stdout carries the same bytes it did before the record existed.
 

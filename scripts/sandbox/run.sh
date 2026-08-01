@@ -15,23 +15,16 @@ export GIT_TERMINAL_PROMPT=0
 
 MODEL="${AITK_SKILL_TEST_MODEL:-sonnet}"
 ALLOWED_TOOLS="${AITK_SKILL_TEST_TOOLS:-Bash,Read,Glob,Grep,Edit,Write}"
-# Raised from 20 on 2026-07-30. The `claude/docs` `drift` arm used 29 turns on a
-# clean run, so the old default truncated a correct session into a failure
-# indistinguishable from a reasoning miss.
-#
-# This is the only budget. `max_turns` in an arm's `expect.toml` is a ceiling
-# asserted after the run, not a cap enforced during it, and nothing here reads
-# that file. An arm needing more than this truncates whatever it declares, and a
-# declared ceiling above the cap then passes while every other assertion fails.
-# Raise the budget here, or per run with the variable below.
+# The only budget. `max_turns` in an arm's `expect.toml` is a ceiling asserted
+# after the run, not a cap enforced during it, so a declaration cannot raise what
+# it runs under. An arm needing more than this truncates, and a truncated run
+# fails the same assertions a reasoning miss does with nothing to separate them.
 MAX_TURNS="${AITK_SKILL_TEST_MAX_TURNS:-30}"
 
-# Probed on 2026-07-30: `acceptEdits` denies writes under `.claude/`, and neither
-# an `--allowedTools` glob nor a `permissions.allow` rule in settings.json lifts
-# it. `bypassPermissions` is the only mode that gets a run far enough to write
-# there, which is the fallback question 7 of the decision record prescribes. The
-# scoping the permission layer used to give now comes from `write_scope` in the
-# arm's `expect.toml`, asserted after the run instead of enforced during it.
+# `bypassPermissions` is the only mode that lets a run write under `.claude/`,
+# which most arms need. The scoping the permission layer would have given comes
+# from `write_scope` instead, asserted after the run rather than enforced during
+# it, so a skill that writes where it should not still wrote there.
 PERMISSION_MODE="${AITK_SKILL_TEST_PERMISSION_MODE:-bypassPermissions}"
 
 # Records `hash<TAB>path` per file so the post-run comparison can name what the
@@ -62,14 +55,12 @@ writes_between() {
     awk '{ $1=""; sub(/^ /, ""); print }' | sort -u
 }
 
-# A verdict printed to a terminal is gone once the terminal scrolls. Re-scoring
-# later with `aitk sandbox check` recovers the tree-based assertions from the
-# surviving `.sandbox/` state, but `max_turns` reads the envelope and
-# `write_scope` reads the writes list, and both were deleted with the temp files.
-# The record carries both so a run can be scored again after the fact.
+# Keeps what re-scoring needs. `aitk sandbox check` recovers the tree assertions
+# from surviving `.sandbox/` state, but `max_turns` reads the envelope and
+# `write_scope` reads the writes list, both of which die with the temp files.
 #
-# Writes to stderr and to disk only. `docs/agents.md` makes stdout the data
-# contract, so a failure here warns and leaves the verdict to print regardless.
+# Writes to stderr and disk only, since `docs/agents.md` makes stdout the data
+# contract, so a failure here warns and lets the verdict print regardless.
 record_run() {
   local target="$1"
   local scenario="$2"
