@@ -22,7 +22,7 @@ Standards and snippets author at `standards/` and `snippets/` in the repository 
 
 Edit the root copy. A change written under `.claude/standards/` or `.claude/snippets/` is overwritten on the next check with nothing to explain where it went.
 
-Governance rules split the same way, though through a different mechanism. Author under `governance/rules/`, which `aitk governance` installs into a target project's `.claude/rules/`.
+Governance rules split the same way, though through a different mechanism. Author under `governance/rules/`, which `aitk gov install` writes into a target project's `.claude/rules/`.
 
 ## Commits
 
