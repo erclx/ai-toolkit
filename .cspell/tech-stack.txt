@@ -67,6 +67,7 @@ repr
 rerank
 reranker
 rlength
+rstart
 semgrep
 setattr
 sidepanel
