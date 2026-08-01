@@ -19,17 +19,24 @@ one runs and when.
 
 Read the board in parallel, resolving the paths at the main worktree root per Worktrees in `CLAUDE.md`:
 
-- `.claude/ROADMAP.md`: the active version and what it groups
+- `.claude/tasks/priority.md`: execution order and what each task is waiting on
 - `.claude/tasks/index.md`: what is queued
 - `.claude/plans/*.md`: features already planned and ready to hand off
+- `.claude/ROADMAP.md`: sequencing rationale, when the file exists
 - open PRs via `gh pr list --json number,title,headRefName,isDraft`
 
 Then output the state of play so the human knows what to launch, review, and merge.
 
+`priority.md` is the ordering source. `index.md` sorts by filename and says nothing about order, so read the sequence from the first and never infer it from the second. When `priority.md` is absent, report the queue and say the order is unrecorded.
+
+The roadmap is optional and this skill does not require it. It carries why a sequence is what it is, changes only when strategy changes, and is absent in a project whose scope has already shipped. Report what it says and name it as the source. Never assert an active version the file does not state, and say nothing about one when the file is missing.
+
 ## Output
 
 ```plaintext
-Orchestrator ready. Active: vX.Y, <the Now row's outcome>.
+Orchestrator ready.
+
+Roadmap: vX.Y, <the Now row's outcome>, as of <date>.
 
 Ready to build (hand each to its own worker):
 
@@ -53,9 +60,13 @@ Next: <the single most useful action>
 
 Omit any section with nothing in it. Recommend a handoff only for a plan whose file set is disjoint from every track already in flight, per Parallelism below.
 
+Omit the `Roadmap` line when `.claude/ROADMAP.md` is absent. Quote the `Now` row rather than restating it, and date the line from `git log -1 --format=%ad --date=short -- .claude/ROADMAP.md` so an old sequence reads as old instead of as the state of play.
+
+That command returns nothing for a roadmap that exists but has never been committed, which is the state `claude-roadmap` leaves behind when it writes the file and declines to stage it. Write `uncommitted` as the date in that case. A blank there would read as a formatting slip rather than as the newest possible sequence.
+
 ## The loop
 
-1. Own the roadmap. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from `.claude/REQUIREMENTS.md`. Capture a needed resequence in the plan or a task file for a worker to apply in its branch, so the tracked edit ships in a PR rather than dirtying main.
+1. Own the roadmap while a scope exists to sequence. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from the MVP list in `.claude/REQUIREMENTS.md`, and skip it once that list has shipped, since later work then arrives as discrete items rather than as versions. Capture a needed resequence in the plan or a task file for a worker to apply in its branch, so the tracked edit ships in a PR rather than dirtying main.
 2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive.
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
@@ -79,7 +90,7 @@ Keep enough planned, non-conflicting tasks available that a free worker never wa
 1. Run `gh pr list --state open` and `git log --oneline -8`. Report any pull request whose review has not been posted and stop for that one first.
 2. For each pull request merged since the last sweep, place every finding it produced. Route a finding that changes a rule to the standard or rule that states it, one that changes another task to that task's Findings, and one that overturns a groundwork lean to that folder marked answered. Never leave a finding in a pull request thread alone.
 3. Archive what closed. A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive. A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
-4. Read `.claude/tasks/priority.md` and count entries under `Now` that carry a written plan. Keep one in reserve beyond what is running.
+4. Read `.claude/tasks/priority.md` and count entries under its `## Run now` heading that carry a written plan. Keep one in reserve beyond what is running.
 5. Promote by whether a task establishes functionality rather than by age. Prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
 6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint.
 7. Write a plan for each newly promoted task with `claude-feature`, then report:

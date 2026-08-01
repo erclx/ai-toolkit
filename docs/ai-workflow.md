@@ -69,6 +69,8 @@ When features are independent, run them in parallel instead of sequentially. Use
 
 To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](../wiki/operating-model.md) for the full loop.
 
+Roadmap ownership holds while a scope exists to sequence. Once the MVP list in `.claude/REQUIREMENTS.md` has shipped, later work arrives as discrete items and the orchestrator reads `.claude/tasks/priority.md` for execution order instead.
+
 Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives. No fixed number caps the worker tracks underneath it. Collision between file sets is what binds, so a candidate opens only when its files are disjoint from every track in flight, and the ceiling in practice is how many outputs one session can still review properly.
 
 Before a handoff, the orchestrator checks the plan against the tree rather than reading it: grep each construct it names and count the sites, confirm every phase label it cites is still open, and open each file it describes. A plan goes stale from whatever merged after it was written, and reading cannot catch that.
