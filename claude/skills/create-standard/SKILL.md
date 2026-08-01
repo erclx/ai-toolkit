@@ -10,6 +10,8 @@ Read these files in parallel:
 - `${CLAUDE_SKILL_DIR}/references/standard.md`: the meta-standard for a standard's shape, frontmatter, and structure
 - `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+
 ## Guards
 
 - If neither `standards/` nor `.claude/standards/` exists, stop: `❌ No standards/ or .claude/standards/ directory found.`

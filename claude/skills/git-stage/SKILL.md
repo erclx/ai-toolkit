@@ -10,6 +10,8 @@ Read these files in parallel:
 - `${CLAUDE_SKILL_DIR}/references/commit.md`: format, types, scopes, and constraints
 - `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+
 ## Context
 
 Run these commands in parallel to gather git context:

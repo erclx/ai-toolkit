@@ -10,6 +10,8 @@ Read these files from the project root in parallel:
 - `.claude/standards/prose.md`: prose conventions for all generated text
 - `.claude/standards/readme.md`: README structure, required sections, and content rules
 
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+
 ## Diff baseline
 
 Resolve the base ref once and reuse it in Context and in Guards:

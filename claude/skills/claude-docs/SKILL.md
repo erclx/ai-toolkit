@@ -74,7 +74,7 @@ Stop here when the session shows no divergence **and** the diff matches no queue
 
 ## Step 3: update
 
-For each doc with relevant changes, apply updates following these rules:
+For each doc with relevant changes, apply updates following these rules. Read a standard named below from `${CLAUDE_SKILL_DIR}/../../standards/` when the project has no `.claude/standards/`.
 
 **`.claude/tasks/`**
 
