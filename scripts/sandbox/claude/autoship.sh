@@ -5,7 +5,7 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_anchor() {
-  export ANCHOR_REPO="toolkit-sandbox"
+  use_sandbox_anchor
 }
 
 use_config() {
@@ -17,9 +17,7 @@ stage_setup() {
 
   log_step "Configuring autoship environment ($ANCHOR_REPO)"
 
-  configure_sandbox_git_identity
-
-  git remote add origin "$(sandbox_anchor_url)"
+  configure_sandbox_anchor_remote
 
   # Wipe anchor content to start clean
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +

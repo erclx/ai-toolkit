@@ -5,7 +5,7 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_anchor() {
-  export ANCHOR_REPO="toolkit-sandbox"
+  use_sandbox_anchor
 }
 
 use_config() {
@@ -20,9 +20,7 @@ stage_setup() {
   "feature-branch")
     log_step "Configuring PR environment ($ANCHOR_REPO)"
 
-    configure_sandbox_git_identity
-
-    git remote add origin "$(sandbox_anchor_url)"
+    configure_sandbox_anchor_remote
     git push --force origin HEAD:main
     git push origin --delete feature/string-utils -q 2>/dev/null || true
 

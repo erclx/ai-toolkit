@@ -6,7 +6,7 @@ source "$PROJECT_ROOT/scripts/lib/gov.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_anchor() {
-  export ANCHOR_REPO="toolkit-sandbox"
+  use_sandbox_anchor
 }
 
 use_config() {
@@ -19,9 +19,7 @@ stage_setup() {
   local src_standards="$PROJECT_ROOT/standards"
   local src_rules="$PROJECT_ROOT/governance/rules"
 
-  configure_sandbox_git_identity
-
-  git remote add origin "$(sandbox_anchor_url)"
+  configure_sandbox_anchor_remote
 
   local -a stale_standards=()
   while IFS= read -r file; do

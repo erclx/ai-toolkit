@@ -5,7 +5,7 @@ set -o pipefail
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_anchor() {
-  export ANCHOR_REPO="toolkit-sandbox"
+  use_sandbox_anchor
 }
 
 use_config() {
@@ -16,10 +16,7 @@ use_config() {
 stage_setup() {
   select_or_route_scenario "Which scenario?" "open-pr" "review-comment" "no-pr-guard" "main-guard"
 
-  configure_sandbox_git_identity
-
-  git remote remove origin 2>/dev/null || true
-  git remote add origin "$(sandbox_anchor_url)"
+  configure_sandbox_anchor_remote
   git branch -M main
 
   git push --force origin HEAD:main -q
