@@ -8,7 +8,7 @@ description: Audits changed markdown files against applicable authoring standard
 ## Guards
 
 - Resolve the base ref first, per Diff baseline below, then scope the file list exactly as Step 1 does, fallback included. If no markdown files changed, stop: `✅ No markdown changes to audit.` A guard that reads bare local `main`, or that skips the unusable-baseline fallback, passes the skill clean on a branch it never read.
-- If `.claude/standards/` does not exist, stop: `❌ No .claude/standards/ directory. Install toolkit standards first.`
+- If neither `.claude/standards/prose.md` nor `${CLAUDE_SKILL_DIR}/../../standards/prose.md` is present, stop: `❌ prose.md standard not found. Install toolkit standards first.` Test the file rather than the directory, since a project that installed standards before a given file existed keeps the directory without ever receiving that file.
 
 ## Diff baseline
 
@@ -46,6 +46,8 @@ For each changed markdown file, pick the applicable standards:
 - `README.md` at any level: also `.claude/standards/readme.md`
 - Branch names proposed in the session: `${CLAUDE_SKILL_DIR}/references/branch.md`
 - PR titles or bodies drafted in the session: `${CLAUDE_SKILL_DIR}/references/pr.md`
+
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Step 3: read standards and audit
 

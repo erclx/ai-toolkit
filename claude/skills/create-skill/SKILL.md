@@ -11,9 +11,11 @@ Read these files from the project root in parallel:
 - `.claude/standards/skill.md`: skill structure, skill types, frontmatter fields, invocation rules
 - `.claude/standards/prose.md`: prose conventions for skill body text
 
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+
 ## Guards
 
-- If `.claude/standards/skill.md` is not present, stop: `❌ .claude/standards/skill.md not found. Run aitk standards install first.`
+- If neither `.claude/standards/skill.md` nor `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is present, stop: `❌ skill.md standard not found. Run aitk standards install first.`
 
 ## Steps
 

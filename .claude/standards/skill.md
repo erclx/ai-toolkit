@@ -186,8 +186,19 @@ Without this skill, a session <observed failure>, <observed failure>.
 A skill reads from two roots. Know which one a file lives under before referencing it.
 
 - Bundled skill assets (`references/`, `scripts/`, `assets/`) resolve against the skill's own directory in the source clone. Reference them with `${CLAUDE_SKILL_DIR}/<path>`, never a bare relative path, so a plugin skill running from another project still finds them.
-- Installed shared docs (`.claude/standards/X.md`, `.claude/rules/`, `.claude/context/`) resolve against the target project cwd, where install placed them. Reference them by that path.
-- To lean on a standard, reference `.claude/standards/X.md` and rely on install. Do not hand-copy a standard into a skill. A hand-copied file drifts from its source and belongs to no owner. If a skill must carry its own copy, generate it from the single source and reference it through `${CLAUDE_SKILL_DIR}`, so one owner keeps every copy in sync.
+- Installed shared docs (`.claude/rules/`, `.claude/context/`) resolve against the target project cwd, where install placed them. Reference them by that path.
+- Do not hand-copy a standard into a skill. A hand-copied file drifts from its source and belongs to no owner. If a skill must carry its own copy, generate it from the single source and reference it through `${CLAUDE_SKILL_DIR}`, so one owner keeps every copy in sync.
+
+### Citing a standard
+
+A standard reaches a skill by two routes, and a body that names only the first breaks in a project that installed the plugin without running `aitk standards install`.
+
+- Cite `.claude/standards/X.md` first, then name `${CLAUDE_SKILL_DIR}/../../standards/X.md` as the fallback. The plugin ships the whole standards folder beside `skills/`, so the second path resolves in every install.
+- The project copy wins when it exists, which keeps a target's local edits authoritative. The fallback only covers the case where the project lacks that file.
+- Condition the fallback on the standard, never on the `.claude/standards/` directory. `aitk standards sync` updates only filenames it already finds and never adds one, so a project that installed before a standard existed keeps the directory and never receives that file. A directory test passes there, no fallback engages, and the standard reads as absent.
+- State the fallback once per body, at the site that reads the standard. A later mention of a standard the body already read stays bare, since repeating the fallback at every mention is noise rather than instruction.
+- A guard on a standard's presence names the file and tests both paths before it stops. A guard that tests only `.claude/standards/` refuses to run in a plugin-only project that has the file, and a guard that tests the directory passes in the partial-install case it exists to catch.
+- Use `${CLAUDE_SKILL_DIR}`, never a bare `../../` and never `${CLAUDE_PLUGIN_ROOT}`. Only `${CLAUDE_SKILL_DIR}` is expanded before the body reaches the model. The other two leave the model to infer a base path, which it may resolve against the session cwd instead.
 
 ## Invocation
 

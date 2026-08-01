@@ -21,6 +21,8 @@ Read in parallel from the project root, skipping any that do not exist:
 - `.claude/memory/MEMORY.md`: existing index, to avoid duplicates
 - `.claude/standards/prose.md`: prose conventions applied to memory file bodies
 
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+
 ## Step 2: classify candidates
 
 Scan the session and group candidate patterns into four types:

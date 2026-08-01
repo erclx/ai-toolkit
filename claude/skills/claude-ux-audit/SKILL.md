@@ -18,6 +18,8 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `.claude/standards/wireframes.md`, these carry layout and intent, not implementation detail.
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+
 ## Step 2: identify surfaces
 
 List the UI surfaces in the project. A surface is a distinct screen, page, panel, or major component (e.g. sidepanel, popup, settings page, empty state). Group files by surface. Do not audit speculative or unfinished code flagged in `.claude/tasks/` as in-progress.

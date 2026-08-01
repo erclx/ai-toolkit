@@ -43,7 +43,7 @@ Ask the user which to bootstrap. Accept folder paths, `all`, or `none`. The user
 For each chosen folder, read every `*.md` sibling and draft frontmatter:
 
 - `title`: derived from the first H1. If absent, derive from the filename in sentence case.
-- `description`: one line summarizing the file's purpose, drawn from the first paragraph after the H1. Follow `.claude/standards/prose.md` § Frontmatter descriptions for length and style.
+- `description`: one line summarizing the file's purpose, drawn from the first paragraph after the H1. Follow `.claude/standards/prose.md` § Frontmatter descriptions for length and style, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it.
 
 Surface every drafted entry to the user grouped by file:
 

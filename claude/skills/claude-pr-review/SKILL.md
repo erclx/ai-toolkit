@@ -55,7 +55,7 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the comment to `.claude/.tmp/pr-review/body-<number>.md`. Key the filename on the PR number so two sessions reviewing different pull requests never overwrite each other between the write and the post. The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice: cut editorializing, and keep every sentence load-bearing. Match this shape:
+Write the comment to `.claude/.tmp/pr-review/body-<number>.md`. Key the filename on the PR number so two sessions reviewing different pull requests never overwrite each other between the write and the post. The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it: cut editorializing, and keep every sentence load-bearing. Match this shape:
 
 ```markdown
 ## Review
