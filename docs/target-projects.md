@@ -66,7 +66,11 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 ### Core domains and skips
 
-`aitk init` installs base tooling, Claude workflow, governance, standards, and snippets by default, and scaffolds `.claude/wiki/`. `standards` and `wiki` are skippable:
+`aitk init` installs base tooling, Claude workflow, standards, and snippets, and scaffolds `.claude/wiki/`. Governance needs `--stack <name>`: without it the domain is skipped and the run prints the `aitk gov install <stack> <path>` command to add rules afterward.
+
+Pass a stack unless there is a reason not to. The seed `CLAUDE.md` covers doc-authoring routing on its own, so a stack-less project still reaches `prose.md`, but every coding standard under `.claude/rules/` is missing and nothing in the project says so.
+
+`standards` and `wiki` are skippable:
 
 - `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.

@@ -1,0 +1,69 @@
+# Authoring test
+
+Regression test for an always-loaded authoring artifact. The standards arms answer whether a session that has never seen a standard can author a conforming artifact from that standard alone. The seed arm answers whether a session handed a project scaffolded from the Claude seed can work in it without asking for context the seed should have carried.
+
+This is a spec-quality test, not an efficacy test. It says nothing about whether the resulting artifact is useful, which is the separate ablation designed in the `context-research` groundwork track. No baseline arm and N of 1 are correct here, because failure is self-evident: a session that reads the standard and still writes a per-file tree has proved the standard failed to communicate its own central rule.
+
+The folder sat at `scripts/standards/authoring-test/` while standards were all it tested. The seed arm made that placement wrong, since the seed is a tooling artifact rather than a standard, so it moved here at three referencing files rather than after the next arm made the move expensive. It stays unreachable from `aitk`: a run that spends real money is started by a person deciding to spend it, not by a command surface.
+
+## Running
+
+```bash
+scripts/eval/run.sh context      # standards/context.md
+scripts/eval/run.sh wireframes   # standards/wireframes.md
+scripts/eval/run.sh seed         # tooling/claude/seeds/
+```
+
+Each run spawns one headless `claude -p` session. Measured cost is $0.59 for the context arm and $0.74 for the wireframes arm, both around 15 to 20 turns. Budget roughly a dollar per arm. Judged output prints to stdout and the cost line to stderr, so redirecting stdout captures the result alone.
+
+The runner passes `--dangerously-skip-permissions`. The flag grants tool use across the filesystem rather than within a directory, so the disposable fixture is not what makes it acceptable. What makes it acceptable is the task: the cwd is the fixture, the prompt names one file to write, and no credential or repo path is in reach of the instruction. Copy the flag only where the same three hold. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.
+
+A permission classifier in the calling session can refuse to spawn that nested session. The run is started by a person for that reason, and an agent that hits the refusal should hand the command back rather than route around it.
+
+The runner copies the live `standards/<name>.md` in at run time rather than using a pinned copy, so the test always exercises the current standard.
+
+## The seed arm
+
+The standards arms copy one document into the fixture and judge one produced file. The seed arm differs on both counts.
+
+It installs through the real CLI, `aitk claude init` followed by `aitk standards install`, rather than copying `tooling/claude/seeds/` across. Copying would skip the executable bit on the four hooks and the `settings.json` merge that registers them, which is a third of the seed and a state no project is ever in. The second call is needed because `claude init` installs no standards while the seed's Markdown section cites `.claude/standards/prose.md` and the standards-audit hook reads that same file to build its word list.
+
+The CLI runs by path, never as the globally linked `aitk`. `PROJECT_ROOT` resolves from the CLI's own source directory, so a global binary installs the main checkout's seed and silently ignores the edits under test.
+
+Git is initialized after the install, so the seed's `.gitignore` means something and the rules that shell out to git are reachable. A section the fixture puts out of reach cannot be judged unused.
+
+The arm judges the transcript rather than an artifact, because the finding is which questions the session asked and which seed files it opened. That needs `--output-format stream-json`, since only the per-turn `tool_use` blocks carry real `file_path` values. Never grep a transcript for a filename: the seed names its own paths, so a grep hits the instruction text rather than a read of the file.
+
+## Why the fixture is a tarball
+
+The fixture has to be extracted outside this repository before it runs. A fixture sitting under the repo would load the toolkit's own `CLAUDE.md` through the ancestor chain, and the session under test would arrive already knowing the conventions the test is trying to measure. The runner extracts to `mktemp -d` and cleans up on exit.
+
+`fixture.tar.gz` holds a synthetic tool called `feedwatch` in three arms: `ctx-arm` for the context standard, `wf-arm` for the wireframes standard, and `seed-arm` for the Claude seed. Synthetic rather than a real domain, because every domain in this repo already carries an entry, and a real domain would let the session pattern-match from prior exposure instead of from the standard. The seed arm ships with no `.claude/` and no `CLAUDE.md`, since the installer puts both there.
+
+## Reading a result
+
+`pre-registration.md` fixes what counts as a hit before any run. It names the decisions planted in the fixture source and the pass criteria per arm. Read it before judging output, so a miss cannot be reinterpreted after the fact.
+
+Three decisions are planted in the context arm and three layout intents in the wireframes arm. Each carries its reasoning in a code comment rather than in a doc, so recording it requires reading code and judging that it matters.
+
+The seed arm sorts every seed section into exactly one of three buckets: exercised, unreachable by this task, or reachable and ignored. Only the third justifies an edit. Fixing the buckets before the run is what stops a trim from being rationalized afterward, which is the failure the seed audit exists to avoid.
+
+## Known harness behavior
+
+`--permission-mode acceptEdits` is not enough. It treats paths under `.claude/` as sensitive and a non-interactive session cannot get approval, so the run either returns the artifact in its final message, routes around the block and writes somewhere unexpected, or gives up and writes nothing. All three happened across three runs before this was diagnosed.
+
+Fixture-local settings do not fix it. An untrusted workspace makes Claude Code ignore `permissions.allow` outright, and a `mktemp` path is never trusted. Skipping permissions is what remains.
+
+The runner also snapshots the fixture before the run and recovers any markdown created during it, so an artifact written to an unexpected path still survives. Recovered artifacts print first, followed by an HTML comment marking where the run's own commentary begins.
+
+A missing file at the requested path is a harness result, never a standard failure. Judge the artifact.
+
+## Results on file
+
+`result-context.md` is the 2026-07-31 run against `standards/context.md`, the run that first exercised the success criterion. Passed all five criteria and recovered all three planted decisions unprompted.
+
+`result-wireframes.md` is the 2026-07-31 run against `standards/wireframes.md`. Passed all five criteria. It correctly withheld the rejected-modal rationale that the standard routes to `.claude/context/`, which is the rule most likely to be ignored, and named what it was withholding. Its Harness history section records the two inconclusive attempts that preceded it and the fixes each one forced.
+
+The two results are not parity, and the record says so. The context arm ran with its criterion already present, so it measures the standard as it ships. The wireframes arm ran before its criterion existed, so it measures the shape rules alone and the criterion written from it has never been exercised.
+
+Both standards passed, which is a finding about the harness rather than about either standard. A test that has confirmed twice and discriminated zero times has not yet shown it can fail anything. Treat a pass as weak evidence until one arm fails.
