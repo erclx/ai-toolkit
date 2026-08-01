@@ -14,6 +14,12 @@ scripts/eval/run.sh wireframes   # standards/wireframes.md
 scripts/eval/run.sh seed         # tooling/claude/seeds/
 ```
 
+A second argument records why the run was started, either `findings` or `regression`, and defaults to `findings`. The harness cannot infer it, since guessing from whether the verdict changed would mislabel a regression run that happens to find something. Pass it on the runs that confirm nothing broke.
+
+```bash
+scripts/eval/run.sh seed regression
+```
+
 Each run spawns one headless `claude -p` session. Measured cost is $0.59 for the context arm and $0.74 for the wireframes arm, both around 15 to 20 turns. Budget roughly a dollar per arm. Judged output prints to stdout and the cost line to stderr, so redirecting stdout captures the result alone.
 
 The runner passes `--dangerously-skip-permissions`. The flag grants tool use across the filesystem rather than within a directory, so the disposable fixture is not what makes it acceptable. What makes it acceptable is the task: the cwd is the fixture, the prompt names one file to write, and no credential or repo path is in reach of the instruction. Copy the flag only where the same three hold. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.
@@ -57,6 +63,16 @@ Fixture-local settings do not fix it. An untrusted workspace makes Claude Code i
 The runner also snapshots the fixture before the run and recovers any markdown created during it, so an artifact written to an unexpected path still survives. Recovered artifacts print first, followed by an HTML comment marking where the run's own commentary begins.
 
 A missing file at the requested path is a harness result, never a standard failure. Judge the artifact.
+
+## What a run leaves behind
+
+Every run appends a row to `ledger.md` and copies its raw output to `.claude/.tmp/eval-runs/<arm>-<timestamp>/`. The row is committed and the output is gitignored, which splits the durable record from the bulky one: a transcript carries the full text of every file the session read, so a hundred retained runs is a repository hundreds of megabytes larger for every clone.
+
+Both writes are additive. A failure to record warns on stderr and the judged result still prints, since stdout is the data contract.
+
+The ledger row lands with its verdict set to `pending`. Whoever reads the report edits that cell. Nothing prunes the retained output, and clearing it by hand loses the paths the ledger points at.
+
+Promote a transcript into the arm's result document by hand on the day it becomes evidence for a specific claim. That keeps the default cheap and the exception deliberate.
 
 ## Results on file
 
