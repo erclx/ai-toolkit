@@ -51,7 +51,7 @@ For each row, determine merge state of its branch:
 
 Determine dirtiness: `git -C <path> status --porcelain` non-empty means `dirty`.
 
-Determine current: the row whose `path` equals the session's `pwd`.
+Determine current: the row whose `path` equals `git rev-parse --show-toplevel`. Resolve the root rather than comparing `pwd`, which equals the worktree root only when the session sits at the top of it. A session in any subdirectory would match no row, and the current-worktree exclusion in `cleanup` would pass its own worktree into the remove set.
 
 ## `list` mode
 
