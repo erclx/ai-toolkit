@@ -92,8 +92,9 @@ It announces and moves nothing, so `aitk:claude-tasks` stays the only writer. A 
 For features on a mature stack, chain the post-plan pipeline in one session. Approve the plan, invoke `aitk:claude-autoship`, and the skill runs implement → verify → review → ship sequentially.
 
 - Use when the plan is tight and the stack has real verify commands and test coverage
-- Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, any review finding above minor, or hook failure
+- Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, any review finding above minor, no diff baseline resolving against `main`, an empty changed-file list, or hook failure
 - Review is skipped entirely when the diff is prose-only (every changed file matches `*.md` or `*.txt`). Prose changes are gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks.
+- An empty changed-file list stops the chain rather than counting as prose-only. The filename test passes vacuously on an empty set, which routed a branch past review instead of through it.
 - Every stop leaves recoverable state. Fix and resume with `/git-ship`
 - Skip autoship for auth, migrations, security-sensitive changes, or work where the plan itself is uncertain
 - After the PR is open, both `autoship` and `git-ship` invoke `claude-memory-capture` to write session patterns into `.claude/memory/`. If capture wrote at least one entry, `claude-memory-review` then proposes a decision-ready fix scoped to those captures while context is fresh, otherwise it is skipped. They stop at Propose. Review the receipt and run Apply yourself, on its own commit separate from the feature. Run `claude-memory-review` standalone to curate the whole pen.
