@@ -94,6 +94,22 @@ fi
 rm -rf .claude/.tmp/pr
 ```
 
+### Record the number on the task
+
+Resolve the number the run created or edited, then write it onto the task the branch is closing:
+
+```bash
+gh pr view --json number --jq .number
+```
+
+Find the task by reading `.claude/tasks/` at the main worktree root, resolved with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. The board is shared scratch, so a linked worktree writing to its own `pwd` creates a second board nothing reads.
+
+Match on the plan or branch the pull request came from rather than on the diff. Add `Pull request: #NNN` under the existing `Plan:`, `Groundwork:`, or `Issue:` lines when the task carries no such line, and correct the number in place when it does.
+
+Skip this silently in three cases: no `.claude/tasks/` folder, no task matching the branch, or more than one match. One task, one pull request, so a second match is a misfile that a guessed write would compound.
+
+The number is what lets the merge close the task. Every merge on `main` is a squash carrying it in the subject, so the number survives where a branch name does not, and `post-merge` reads it back to call `aitk tasks archive`. Writing it here rather than at worktree time is what makes it a pull request number rather than a branch the squash discards.
+
 ## After execution
 
 Respond with exactly one line:
