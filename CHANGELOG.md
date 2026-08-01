@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/erclx/aitk/compare/v0.3.0...v0.3.1) (2026-08-01)
+
+
+### Bug Fixes
+
+* **skills:** resolve a cited standard in the plugin root ([#663](https://github.com/erclx/aitk/issues/663)) ([f758f42](https://github.com/erclx/aitk/commit/f758f42fe3389ed6b99b44d042c8aad4e155991c))
+
 ## [0.3.0](https://github.com/erclx/aitk/compare/v0.2.0...v0.3.0) (2026-08-01)
 
 
