@@ -15,6 +15,19 @@ case "$file_path" in
 */.claude/.tmp/*) exit 0 ;;
 esac
 
+# A project whose own root sits under a path carrying a tmp segment is not
+# writing to system temp, and the bare pattern below trips the guard on every
+# source file it holds. Anchor on the project root before the pattern match.
+#
+# This gives up one case on purpose: a write to <project>/tmp/ is a genuine
+# scratch violation that no longer warns. The false positive fires on every
+# source write in an affected project, so the trade favors the anchor.
+if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
+  case "$file_path" in
+  "$CLAUDE_PROJECT_DIR"/*) exit 0 ;;
+  esac
+fi
+
 case "$file_path" in
 */tmp/* | *\\tmp\\* | */Temp/* | *\\Temp\\* | */var/folders/*) ;;
 *) exit 0 ;;
