@@ -55,6 +55,8 @@
   - `pre-commit` → `bunx lint-staged`
   - `commit-msg` → `bunx commitlint --edit "$1"`
   - `pre-push` → `bun run check`
+  - `post-merge` → names `.claude/tasks/` entries whose outcomes are all `[x]`, silent otherwise and when the board is absent
+- Husky runs hooks as `sh -e`, so a hook carrying logic is POSIX sh under errexit no matter what its shebang says.
 - Note: lint-staged handles its own glob expansion and passes matched files as arguments. `**/*.sh` is safe here, unlike in package.json scripts.
 
 ## GitHub
