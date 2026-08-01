@@ -13,7 +13,7 @@ Read `.claude/context/snippets.md` for system overview, categories, and structur
 - Plain markdown only. No YAML frontmatter.
 - No user fill-in placeholders. If a value depends on context, the user adds it after invocation.
 - Use `aitk snippets create` to add a snippet. To add manually: create a `.md` file in the correct folder.
-- Toolkit-internal snippets (maintenance, authoring, runbooks) go in `internal/snippets/`, which the plugin never ships. Reserve `snippets/claude/` for snippets a target project would invoke.
+- Placement follows who invokes a snippet rather than what its topic sounds like. One a target project would invoke goes in `snippets/claude/`, and one only this repository can run goes in `internal/snippets/`, which the plugin never ships.
 - Before adding a snippet, check invocation cadence. Prompts invoked many times across sessions belong in `snippets/`. One-shot-per-project audit, migration, or bootstrap prompts go to external notes.
 
 ## Presets
