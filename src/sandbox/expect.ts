@@ -3,9 +3,9 @@ import { join } from 'node:path'
 
 /**
  * Three states rather than two. An arm with no declaration is `unchecked`: it
- * cannot pass, because nothing was asserted, and it cannot fail, because fifty
- * arms carry no declaration the day this lands and failing all of them would
- * make the harness unusable while expectations roll out.
+ * cannot pass, since nothing was asserted, and it does not fail, since failing
+ * every undeclared arm would make the harness unusable while expectations roll
+ * out. `aitk sandbox coverage` is what keeps the count from hiding.
  */
 export type VerdictState = 'pass' | 'fail' | 'unchecked'
 
@@ -70,11 +70,13 @@ const EXIT_CODE: Record<VerdictState, number> = {
 }
 
 /**
- * `unchecked` exits zero. The suite runs on demand rather than per commit, so an
- * undeclared arm does not need to break a gate. It needs to be impossible to
- * miss, which the summary line handles.
+ * `unchecked` exits zero so an undeclared arm does not break a gate while
+ * expectations roll out. Pass `strict` to make it exit one, which is how a
+ * caller that has finished arming its scenarios keeps them armed.
  */
-export function verdictExitCode(state: VerdictState): number {
+export function verdictExitCode(state: VerdictState, strict = false): number {
+  if (strict && state === 'unchecked') return 1
+
   return EXIT_CODE[state]
 }
 

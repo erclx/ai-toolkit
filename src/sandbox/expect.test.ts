@@ -441,6 +441,15 @@ describe('verdictExitCode', () => {
     expect(verdictExitCode('fail')).toBe(1)
     expect(verdictExitCode('pass')).toBe(0)
   })
+
+  it('should exit non-zero on an unchecked arm under strict', () => {
+    expect(verdictExitCode('unchecked', true)).toBe(1)
+  })
+
+  it('should leave a pass passing under strict', () => {
+    expect(verdictExitCode('pass', true)).toBe(0)
+    expect(verdictExitCode('fail', true)).toBe(1)
+  })
 })
 
 describe('parseTarget', () => {
