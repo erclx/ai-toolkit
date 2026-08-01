@@ -24,7 +24,19 @@ Applies to `.claude/REQUIREMENTS.md`. Describes what the product does and why, n
 
 ## Sections
 
-Use `## Problem`, `## Goals`, `## Non-goals`, `## MVP features`, `## Tech stack`, and `## Constraints`. Drop a section rather than pad it with filler.
+Use `## Problem`, `## Goals`, `## Non-goals`, `## MVP features`, `## Tech stack`, and `## Constraints`. Add `## Distribution` when the rule below applies. Drop a section rather than pad it with filler.
+
+## Lifecycle
+
+The MVP list is a historical record of the original scope. Once those features ship it stays as written. Do not renumber it, do not append to it, and do not annotate entries with status. A reader telling the original scope apart from what followed depends on the first one staying legible.
+
+Later scope arrives as a new section rather than as an extension of the MVP list. Name the section for what it delivers and state its entries as outcomes, the same way the goals are stated. The roadmap standard sends a project here once its last version ships, and this is the pass it means.
+
+## Distribution
+
+Include `## Distribution` only when the project ships to consumers outside its own repository. An internal service or a monorepo application has nothing to put in it, and a section every project is told to fill is one most projects pad. Place it after `## MVP features`.
+
+State each entry as an outcome the consumer reaches, never as the mechanism that delivers it. A registry name, a manifest format, a version scheme, or a release tool is implementation and belongs in `.claude/ARCHITECTURE.md`. Distribution pulls harder toward mechanism than any other section, which is why the rule is repeated here.
 
 ## Template
 
