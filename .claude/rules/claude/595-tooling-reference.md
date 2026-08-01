@@ -8,5 +8,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/aitk/tooling-reference.md` for stack reference content, structure, and the extends chain. It is the single source.
+- Follow `.claude/internal/standards/tooling-reference.md` for stack reference content, structure, and the extends chain. It is the single source.
 - Read it before editing a stack reference. Do not work the shape from memory.
