@@ -85,6 +85,40 @@ services:
     ports: ["8000:8000"]
 EOF
 
+  mkdir -p fixtures
+
+  cat <<'EOF' >fixtures/known-bad.mmd
+flowchart TB
+  subgraph Browser
+    A["Web shell"]
+    B["Chat components"]
+    C["Agent loop with Vercel AI SDK"]
+    D["Tool registry"]
+  end
+  subgraph Server
+    E["FastAPI HTTP layer"]
+    F["Retriever"]
+    G["Ranker"]
+    H["Cross encoder reranker"]
+    I["Embedding wrapper"]
+  end
+  subgraph Storage
+    J["SQLite corpus"]
+    K["FTS5 keyword index"]
+    L["Vector table"]
+  end
+  A --> B --> C --> D --> E
+  E --> F --> J
+  F --> K
+  F --> I --> L
+  F --> G --> H
+  H --> E
+  G --> E
+  J --> F
+  K --> F
+  L --> F
+EOF
+
   git add . && git commit -m "feat(sandbox): seed two-folder app with architecture and retrieval modules" --no-verify -q
 
   log_step "Scenario ready: diagram from a multi-component project"
@@ -95,4 +129,10 @@ EOF
   log_info "  docker-compose.yml: web and api services → deployment diagram"
   log_info "Action: /aitk:claude-diagram"
   log_info "Expect: .claude/DIAGRAMS.md with components, request flow, retrieval pipeline, and deployment sections"
+  log_info "Expect: PNG renders under .claude/.tmp/diagrams/, one per diagram the pass wrote"
+  log_info "Expect: chat output reports a verified render count, or names the check it skipped"
+  log_info "Known-bad fixture: fixtures/known-bad.mmd passes every source rule and fails three ways rendered"
+  log_info "  Render it to see the failure: bunx -y @mermaid-js/mermaid-cli -i fixtures/known-bad.mmd -o /tmp/known-bad.png"
+  log_info "  Diagonal layout, three parallel stores in a row reading as a chain, six edges bundled on one node"
+  log_info "Manual leg: whether an inspected render actually got corrected cannot be asserted here"
 }
