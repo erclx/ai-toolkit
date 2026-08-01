@@ -15,7 +15,7 @@ This doc stays at the narrative layer. For command flags and JSON shapes, see [a
 Two steps, in order:
 
 1. Run the framework's own scaffold if the project needs one, such as `bun init`, `npm create vite`, or `npm create astro`. The toolkit does not wrap framework scaffolding.
-2. Invoke `toolkit:setup-init` in Claude Code. The skill detects the stack, resolves flags, previews the full chain, and runs it end-to-end.
+2. Invoke `aitk:setup-init` in Claude Code. The skill detects the stack, resolves flags, previews the full chain, and runs it end-to-end.
 
 The chain is:
 
@@ -31,8 +31,8 @@ Keep the `## Scripts` table in `.claude/context/development.md` current as scrip
 Scaffold installs tooling and seeds. It does not fill the planning docs or the design system. Complete those before the first feature session:
 
 1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
-2. For a UI project, invoke `toolkit:claude-design-propose` to draft `.claude/DESIGN.md` from the requirements and a `## Personality` section. Skip for non-UI projects.
-3. Optionally invoke `toolkit:claude-diagram` to draft `.claude/DIAGRAMS.md` from the architecture.
+2. For a UI project, invoke `aitk:claude-design-propose` to draft `.claude/DESIGN.md` from the requirements and a `## Personality` section. Skip for non-UI projects.
+3. Optionally invoke `aitk:claude-diagram` to draft `.claude/DIAGRAMS.md` from the architecture.
 4. Start the feature loop. See [AI workflow](ai-workflow.md) for the per-feature sequence.
 
 ### Stack decision
@@ -56,9 +56,9 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 When a new need appears after scaffold, install the one domain without re-running `aitk init`.
 
-- Governance rule for a newly adopted library: invoke `toolkit:setup-gov`, or run `aitk gov install <stack> --add <rule> <path>`
-- Project-specific rule the toolkit does not ship: invoke `toolkit:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
-- Index.md system for a markdown-heavy folder that emerged: invoke `toolkit:setup-indexes`
+- Governance rule for a newly adopted library: invoke `aitk:setup-gov`, or run `aitk gov install <stack> --add <rule> <path>`
+- Project-specific rule the toolkit does not ship: invoke `aitk:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
+- Index.md system for a markdown-heavy folder that emerged: invoke `aitk:setup-indexes`
 - A snippet preset or category: `aitk snippets install <preset|category|all> <path>`. The argument is required, since the picker refuses headlessly rather than choosing for the caller
 - A single standard: `aitk standards install <name> <path>`
 
@@ -70,7 +70,7 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 ### Check first
 
-`aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next. A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `toolkit:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `toolkit:migration-standards` handles.
+`aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next. A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `aitk:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `aitk:migration-standards` handles.
 
 That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes recording a hash per installed file. Each domain holds its own toolkit commit, so syncing governance today does not move the revision standards measures against, and each domain reports the upstream commits touching its own source path. A project that has never synced under a toolkit new enough to write a stamp reports every difference as `drifted`, the unattributed verdict. Running any sync stamps that domain, and the report names the ones still unstamped.
 
@@ -82,11 +82,11 @@ Tooling is not covered by the stamp. Reconcile those configs with `aitk tooling 
 
 `aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence. It never touches user-owned seed files. Governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
-Standards are the exception inside that run, and the stamp narrows it. A standard the project customized is reported and left alone rather than overwritten. A standard still matching what was installed carries no local edits to lose, so a headless run updates it. On an unstamped project the old blanket rule holds and every drifted standard is left alone. To take the upstream version of a customized file, run `aitk standards sync <path>` interactively, or use `toolkit:claude-seed-sync` below to merge section by section.
+Standards are the exception inside that run, and the stamp narrows it. A standard the project customized is reported and left alone rather than overwritten. A standard still matching what was installed carries no local edits to lose, so a headless run updates it. On an unstamped project the old blanket rule holds and every drifted standard is left alone. To take the upstream version of a customized file, run `aitk standards sync <path>` interactively, or use `aitk:claude-seed-sync` below to merge section by section.
 
 ### Targeted
 
-- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`, plus installed standards under `.claude/standards/`: invoke `toolkit:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part across both surfaces and proposes per-part edits. User customizations are preserved.
+- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`, plus installed standards under `.claude/standards/`: invoke `aitk:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part across both surfaces and proposes per-part edits. User customizations are preserved.
 - Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules
 - Standards already installed: `aitk standards sync <path>` diffs and applies whole files, and refuses to apply without a prompt
 - Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
@@ -110,9 +110,9 @@ cd <your-project>
 claude --plugin-dir <toolkit>/claude
 ```
 
-In the session, invoke `toolkit:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
+In the session, invoke `aitk:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
 
-Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `toolkit:claude-seed-sync` for seed drift or `aitk sync .` for a catch-all refresh.
+Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `aitk:claude-seed-sync` for seed drift or `aitk sync .` for a catch-all refresh.
 
 ### Web application
 
@@ -121,12 +121,12 @@ bun create vite my-app && cd my-app
 claude --plugin-dir <toolkit>/claude
 ```
 
-Invoke `toolkit:setup-init`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.
+Invoke `aitk:setup-init`. The skill reads `package.json` and the Vite config, resolves tooling to `vite-react` and governance to `react`, and runs `aitk init` with the resolved flags.
 
 Ongoing maintenance:
 
 - What has drifted: `aitk sync --check .`
-- Seed drift: invoke `toolkit:claude-seed-sync`
+- Seed drift: invoke `aitk:claude-seed-sync`
 - Catch-all sync: `aitk sync .`
 - Governance rule refresh only: `aitk gov sync .`
 - Layer a new rule on top, for example `260-shadcn` after adopting shadcn: `aitk gov install react --add 260-shadcn .`

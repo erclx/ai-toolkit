@@ -93,6 +93,6 @@ EOF
   log_info "  .claude/ARCHITECTURE.md: 4 layers, hybrid retrieval, SQLite, BYOK → components + data pipeline"
   log_info "  Vercel AI SDK agent loop in prose → request-flow sequence diagram"
   log_info "  docker-compose.yml: web and api services → deployment diagram"
-  log_info "Action: /toolkit:claude-diagram"
+  log_info "Action: /aitk:claude-diagram"
   log_info "Expect: .claude/DIAGRAMS.md with components, request flow, retrieval pipeline, and deployment sections"
 }

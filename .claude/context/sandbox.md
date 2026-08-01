@@ -96,11 +96,11 @@ The `aitk-sandbox-check` skill maps changed plugin skills and changed `scripts/`
 
 ```bash
 scripts/sandbox/run.sh <cat:cmd> "<prompt>" [scenario]
-scripts/sandbox/run.sh git:commit "/toolkit:git-commit"
-scripts/sandbox/run.sh claude:feature "/toolkit:claude-feature add a widget" small
+scripts/sandbox/run.sh git:commit "/aitk:git-commit"
+scripts/sandbox/run.sh claude:feature "/aitk:claude-feature add a widget" small
 ```
 
-The prompt is the explicit skill invocation. Use the `/toolkit:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
+The prompt is the explicit skill invocation. Use the `/aitk:<skill>` form so `--plugin-dir` resolves the skill whether or not the branch changed it. A bare `/<skill>` only resolves for skills the sandbox injects, which is the subset changed on the current branch.
 
 The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`, plus a `verdict` object holding `state`, `asserted`, `failed`, and `unchecked`. Override the model, allowed tools, turn cap, or permission mode with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, `AITK_SKILL_TEST_MAX_TURNS`, and `AITK_SKILL_TEST_PERMISSION_MODE`.
 

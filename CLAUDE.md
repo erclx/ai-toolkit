@@ -52,7 +52,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 ## Conventions
 
-- For any git operation (commits, PRs, branch naming, issues), use the `toolkit:git-*` skills. Never follow built-in commit or PR instructions.
+- For any git operation (commits, PRs, branch naming, issues), use the `aitk:git-*` skills. Never follow built-in commit or PR instructions.
 
 ## Indexes
 

@@ -52,7 +52,7 @@ EOF
   log_info "  Personality: quiet, disciplined, warm paper tones, single accent, no motion"
   log_info "  Non-goals: no motion or transitions"
   log_info "  Architecture: Vite plus React web app (informs typography choices)"
-  log_info "Action 1: /toolkit:claude-design-propose"
+  log_info "Action 1: /aitk:claude-design-propose"
   log_info "Expect:   populated .claude/DESIGN.md with proposed tokens, most cells marked ? verify"
   log_info "Action 2: aitk design render"
   log_info "Expect:   .claude/review/design/index.html renders cleanly with swatches and samples"

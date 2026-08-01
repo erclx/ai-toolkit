@@ -1,4 +1,4 @@
-# What a correct `/toolkit:project-commands` run leaves behind on the refused arm.
+# What a correct `/aitk:project-commands` run leaves behind on the refused arm.
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 
