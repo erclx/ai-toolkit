@@ -132,7 +132,7 @@ main() {
 
   log_step "Consumed copies"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-claude-copies.sh" "Consumed-copy regen failed"
-  assert_no_drift ".claude/standards .claude/snippets" "Consumed copies drifted. Run bun run check and commit .claude/standards and .claude/snippets."
+  assert_no_drift ".claude/standards .claude/snippets .claude/internal" "Consumed copies drifted. Run bun run check and commit .claude/standards, .claude/snippets, and .claude/internal."
   log_info "Consumed copies clean"
 
   log_step "Skill references"
@@ -143,6 +143,10 @@ main() {
   log_step "Skill paths"
   run_check "bash $PROJECT_ROOT/scripts/core/check-skill-paths.sh" "Shipped skills reference a repo-local path."
   log_info "Skill paths clean"
+
+  log_step "Plugin boundary"
+  run_check "bash $PROJECT_ROOT/scripts/core/check-plugin-boundary.sh" "Plugin ships toolkit-internal content."
+  log_info "Plugin boundary clean"
 
   log_step "Plugin manifests"
   if ! command -v claude >/dev/null 2>&1; then
