@@ -54,7 +54,7 @@ EOF
   cat <<'EOF' >.claude/tasks/priority.md
 # Priority
 
-## Now
+## Run now
 
 - `v00.1-log-entry`: plan written, ready to hand off
 EOF
