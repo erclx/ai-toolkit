@@ -296,7 +296,7 @@ describe('runGitWorkflow staging', () => {
     })
 
     expect(git.calls).toEqual([
-      'createBranch chore/toolkit-sync-20260729-1242',
+      'createBranch chore/aitk-sync-20260729-1242',
       'stage .claude/standards/prose.md',
       'commit chore(sync): update standards from toolkit',
     ])
@@ -352,10 +352,10 @@ describe('runGitWorkflow staging', () => {
 
     expect(code).toBe(0)
     expect(git.calls).toEqual([
-      'createBranch chore/toolkit-sync-20260729-1242',
+      'createBranch chore/aitk-sync-20260729-1242',
       'stage .claude/standards/prose.md',
       'commit chore(sync): update standards from toolkit',
-      'push chore/toolkit-sync-20260729-1242',
+      'push chore/aitk-sync-20260729-1242',
     ])
     expect(prCalls).toEqual(['pr chore(sync): update standards from toolkit'])
   })
