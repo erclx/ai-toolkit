@@ -2,6 +2,7 @@
 
 # release-please rewrites these on every release and serializes them its own way
 **/.claude-plugin/*.json
+/CHANGELOG.md
 
 # hand-authored, no tool writes it, so it keeps its format gate
 !.claude-plugin/marketplace.json
