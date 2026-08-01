@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/worktree.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
 WRITE="${VERIFY_WRITE:-true}"
@@ -101,6 +102,7 @@ main() {
 
   if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
 
+  repair_bare_flag
   collect_changed_files
 
   if [ "$WRITE" = true ]; then

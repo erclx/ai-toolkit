@@ -18,8 +18,17 @@ Run in parallel:
 
 - `git worktree list --porcelain | awk '/^worktree /{print $2; exit}' 2>/dev/null || pwd`
 - `git branch --show-current 2>/dev/null || echo ""`
+- `git config --get core.bare 2>/dev/null || echo false`
 
 Plans always live at the main root, never inside a linked worktree. See Worktrees in `CLAUDE.md`.
+
+`EnterWorktree` writes `core.bare = true` into the shared config, and nothing restores it, so the repository can already be broken before this session arrives. Repair it before entering when the value is `true` and `<main-root>/.git` is a directory:
+
+```bash
+git config core.bare false
+```
+
+The directory test separates the defect from a genuinely bare repository, which keeps its objects at the root and has no `.git` directory. Announce the repair in one line naming the flag. Leave the file alone when the value is already `false`.
 
 ## Step 2: derive the worktree name
 
@@ -47,7 +56,7 @@ Source: <plan|branch|user>
 
 Call `EnterWorktree` with `name: "<name>"`. Claude Code's tool permission dialog is the confirmation gate. Do not pause for additional confirmation.
 
-## Step 5: align the branch name
+## Step 5: align the branch name and repair the shared config
 
 `EnterWorktree` creates a branch named `worktree-<name>`, which diverges from `<name>` and breaks downstream slug derivation in `claude-autoship` and any skill that reads `git branch --show-current`. Rename it to match:
 
@@ -58,5 +67,13 @@ git branch -m worktree-<name> <name>
 Before renaming, guard against a collision: if `git show-ref --verify --quiet refs/heads/<name>` succeeds, the target branch already exists. Stop: `❌ Branch <name> already exists. Resolve manually before continuing.` Do not delete the existing branch.
 
 Skip the rename if the worktree was entered via `path` rather than `name`, since the branch already exists under its own identity.
+
+Entry also sets `core.bare = true` in the shared config, which strands the main worktree. Every later command run there fails with `fatal: this operation must be run in a work tree` while the files sit untouched on disk. The linked worktree keeps working, so nothing surfaces until the operator returns to the main checkout. Repeat the Step 1 repair, which writes the parent's config even from inside the linked worktree:
+
+```bash
+git config core.bare false
+```
+
+The flag is not set on every entry, so read before writing and announce only when the write happened. Tracked upstream as `anthropics/claude-code#58345`, closed as not planned, so the repair stays until the tool changes.
 
 Do not invoke `ExitWorktree` from this skill. Exit is the user's call.
