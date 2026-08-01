@@ -43,7 +43,7 @@ One session works for most features. Prefer splitting across two sessions only w
 
 Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
-- When the current state is unmeasured and more than one approach is live, invoke `toolkit:claude-groundwork` first. It opens a scratch folder under `.claude/.tmp/groundwork/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
+- When the current state is unmeasured and more than one approach is live, invoke `toolkit:claude-groundwork` first. It opens a scratch folder under `.claude/.tmp/groundwork/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled. A track may run experiments to settle a question, writing any fixture it needs under `.claude/.tmp/groundwork-fixtures/<slug>/` and spawning up to three billed headless runs before it asks.
 - Invoke `toolkit:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
 - For UI changes, invoke `toolkit:claude-ui-test` to generate and run Playwright e2e tests

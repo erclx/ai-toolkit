@@ -197,6 +197,8 @@ Plan mode is a permission mode that restricts Claude to read-only exploration. `
 
 `claude-groundwork` sits ahead of all three. It runs before a topic is ready to plan, and its output is a scratch folder that can conclude in doing nothing. Reach for it when the current state is unmeasured and more than one approach is live, then run `claude-feature` on the decision it produces.
 
+A track may run its own experiments. Reading and computing were always in scope, so the permission that mattered is the fixture write, and it lands under `.claude/.tmp/groundwork-fixtures/<slug>/` rather than inside the track folder so mode detection never matches a fixture as a track. A billed headless run is bounded by a count of three rather than by a dollar figure, because a headless run reports its total cost only after it finishes, which makes a budget reportable and not enforceable while a count is checkable before spawning. The record lands in `08-spikes.md`, the one reserved number sitting after the closing files, because it holds evidence rather than a topic.
+
 ### Running the app
 
 | Aspect   | `run` (built-in)                                             | `project-commands` skill                                  |
