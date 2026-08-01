@@ -7,7 +7,24 @@ description: Reviews all changes since main for bugs, edge cases, and logic flaw
 
 ## Guards
 
-- If both `git diff --staged` and `git diff main` are empty, stop: `✅ No changes to review.`
+- Resolve the base ref first, per Diff baseline below. If the staged set, the branch set, and the working set are all empty, stop: `✅ No changes to review.` A guard reading bare local `main` stops the skill on `main` before it ever reaches Step 2.
+
+## Diff baseline
+
+Resolve the base ref once and reuse it in the guard and in Step 2:
+
+```bash
+git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
+```
+
+Prefer `origin/main` over local `main`. On `main` itself the local ref resolves to HEAD, so every committed change drops out of the set and the skill reports a clean branch rather than admitting it cannot see the work.
+
+The baseline is unusable in two cases:
+
+- No merge base resolves against either ref.
+- The base equals HEAD, whichever ref resolved it. Nothing is committed ahead of the base to compare against. This is the ordinary shape on `main`, and on a feature branch before its first commit.
+
+An unusable baseline costs only the committed half. `git diff <base> HEAD` is empty by definition once the base equals HEAD, while the staged set and `git diff HEAD` still report work at correct scope. Review those and lead the report with `⚠ Baseline unusable. Reviewed the uncommitted set only.`, so a clean summary is never read as a clean branch.
 
 ## Step 1: read context
 
@@ -21,7 +38,7 @@ Coding standards from `.claude/rules/` are auto-loaded by Claude Code. Always-on
 
 ## Step 2: get the diff and changed files
 
-Run these in parallel from the project root:
+Resolve the base ref per Diff baseline above, then run these in parallel from the project root:
 
 ```bash
 git diff --staged
@@ -32,14 +49,16 @@ git diff --staged --name-only
 ```
 
 ```bash
-git diff main
+git diff <base> HEAD
 ```
 
 ```bash
-git diff main --name-only
+git diff <base> HEAD --name-only
 ```
 
-If `git diff --staged` is non-empty, use it as the diff scope and use the `--staged --name-only` list as the file list. Otherwise use `git diff main` and the `main --name-only` list.
+If `git diff --staged` is non-empty, use it as the diff scope and use the `--staged --name-only` list as the file list. Otherwise use `git diff <base> HEAD` and its name-only list.
+
+When the baseline is unusable, substitute `git diff HEAD` and `git diff HEAD --name-only` for the branch pair. Never substitute the whole tree for a missing baseline.
 
 ## Step 3: read changed files
 
