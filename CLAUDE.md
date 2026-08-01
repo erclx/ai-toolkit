@@ -151,6 +151,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 - Before answering a how-to question about an external tool or a Claude Code concept, scan `wiki/index.md` for a relevant page. Workflow method, shell environment, and target-project questions are answered from `docs/index.md` instead.
 - A page belongs in `wiki/` when its subject is owned by someone outside this repo. Content about how this repo works goes to `docs/`, `.claude/context/`, or a skill body. `wiki/rule-writing-vocabulary.md` is the one recorded exception.
+- Every page closes its intro paragraph with a `Source:` sentence naming who owns the subject, so the test above is checkable by reading. Link the canonical page when one exists, and name the owner alone when the subject has no single URL.
 - Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
 - When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge
 - Wiki pages stay tool-general reference prose. Rewrite experiment narrative ("Against the X repo, tool Y read Z") into general statements ("Tool Y reads prose surfaces") before committing.
