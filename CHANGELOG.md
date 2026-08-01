@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/erclx/aitk/compare/v0.5.0...v0.6.0) (2026-08-01)
+
+
+### Features
+
+* **tasks:** close a task from the merge that shipped it ([#676](https://github.com/erclx/aitk/issues/676)) ([b64be89](https://github.com/erclx/aitk/commit/b64be89b4246e25c4d2b4d8445bf3941caef1181))
+
 ## [0.5.0](https://github.com/erclx/aitk/compare/v0.4.1...v0.5.0) (2026-08-01)
 
 
