@@ -9,6 +9,7 @@ What belongs:
 - User-facing goals stated as outcomes, not implementation
 - Explicit non-goals: scope boundaries that prevent feature creep. Mark deferred items "(deferred)" to signal they are not permanently excluded.
 - MVP features as a numbered list: feature name and one-line description. No implementation detail.
+- Distribution outcomes, stated as what a user outside this repository can do. The MVP list stays as written once shipped, so later scope lands in its own section.
 - Tech stack as a plain list of tools. Rationale lives in the relevant `.claude/context/<domain>.md`.
 - Hard constraints that shape all decisions
 
@@ -44,7 +45,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 - Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, snippets, and rules. Native `aitk` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
 - Ship first-class support for every AI coding tool. Claude Code is the platform the toolkit targets. Extending to another tool stays open (deferred), but no parallel surface is maintained without a concrete use case driving it.
 - Wrap framework scaffolding. Users run `bun init`, `npm create vite`, and similar themselves. The toolkit layers on top.
-- Provide a hosted service. Everything runs locally against local CLIs.
+- Provide a hosted service. Everything runs locally against local CLIs. Publishing an artifact to a registry someone else hosts stays in scope, since the boundary is where execution happens rather than where a download comes from.
 
 ## MVP features
 
@@ -56,6 +57,14 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 6. Prose, commit, branch, PR, and skill authoring standards synced into every project.
 7. Snippets for recurring chat workflows.
 8. `aitk transcripts`: fetch a YouTube transcript with metadata frontmatter into the current repo.
+
+## Distribution
+
+The scope that followed the MVP. What the toolkit has to achieve for a user who is not the maintainer and not on this machine.
+
+- Install without cloning: a user can get the toolkit onto a machine and use it without copying this repository by hand.
+- Know and change version: a user can tell which version they are running and move to a different one without rebuilding their setup.
+- Contribute unaided: a user can find what the project expects of a change and open one that fits, without a maintainer explaining the conventions.
 
 ## Tech stack
 
