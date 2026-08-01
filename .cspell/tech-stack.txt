@@ -75,6 +75,7 @@ semgrep
 setattr
 sidepanel
 soffice
+startswith
 statusline
 streamable
 subgraph
