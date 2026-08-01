@@ -38,6 +38,12 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 - An assertion kind whose input the caller did not supply reports as unchecked rather than dropping out of the count. Omitting `--writes` would otherwise let write scope vanish silently from the cheap standalone path, which is the path most likely to be trusted. A verdict never reports `pass` having asserted nothing, since the declaration counts globs while the verdict counts writes and the two diverge at zero.
 - The checker is TypeScript while provisioning stays bash. The harness was closed as bash on the grounds that what remains is `git` and `gh` orchestration plus copying trees, which is true of provisioning and does not describe a component that parses a declaration, aggregates partial failures, and emits counts. Its stated failure mode is asserting nothing while reporting green, which is invisible at runtime, so it has to be the unit-testable part.
 - A run reports pass, fail, or unchecked. Absence of a declaration is `unchecked` rather than a pass, since a scenario that asserts nothing cannot pass, and rather than a failure, since failing every undeclared arm would make the harness unusable while expectations roll out. Only a failure exits non-zero.
+- `unchecked` keeps its name rather than becoming `unproven`. The state already existed when the reporting gap was scoped, and a second word for one state costs more than the clearer label gains.
+- The per-arm verdict was never the coverage problem. A single arm reports `unchecked` honestly, but reading that number across the catalog meant running `find` by hand, so the rollout had no surface. `aitk sandbox coverage` is that surface, and it counts scenarios and arms separately because the two denominators disagree.
+- `--strict` inverts the exit rule for a caller that has finished arming. It stays opt-in, since the default has to keep 49 undeclared scenarios runnable.
+- Standards and gov rules provision through the real installer rather than a copy. Both copies reimplemented an installer's selection rules, and the standards one omitted the `index.md` a real install rebuilds while neither wrote the `.claude/aitk.json` stamp. A sandbox now carries what a target carries, which is what makes a rule change observable to a run.
+- Seeds stay a raw copy. `aitk claude init` does more than drop files, and the scenarios depending on the current shape outnumber the drift the copy risks. Hooks ship inside the seed tree, so a hook change is already reachable by any scenario declaring `SANDBOX_INJECT_SEEDS`.
+- The two headless harnesses stay separate. `scripts/standards/authoring-test/` extracts a fixture outside the repository so no ancestor instruction file leaks in, which is the opposite of the sandbox's need to look like a real installed project. Merging them would cost one of the two its defining property.
 - A declaration that exists and declares no mechanical assertion fails. That is the silent-truncation failure `scripts/core/install-check.sh` documents in its own comment, where a domain with no assertion stays green while its output shrinks to nothing. Prose in `manual` does not count towards the total, or an arm could carry five lines a checker cannot read and still report green.
 - Git history initializes fresh each run, and a `refs/sandbox/baseline` ref marks the post-setup state so `aitk sandbox reset` restores without provisioning again.
 - The anchor URL is built once by `sandbox_anchor_url` in `lib/sandbox-git.sh` and reaches GitHub over HTTPS. Eleven call sites hardcoded an SSH URL before, so no anchor scenario could run on a machine carrying only `gh` credentials. `setup_ssh` went with them, since an agent cannot answer a passphrase prompt and nothing authenticates over SSH now.
@@ -66,6 +72,14 @@ aitk() {
 - An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the catalog.
 - Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
 - Anchor scenarios used to be order-dependent, because each cloned `toolkit-sandbox` main while several force-push to it, so one arm provisioned from whatever the previous arm published. Two identical sweeps of the sixteen arms disagreed on eleven of them, and `git:ship with-changelog` aborted outright once the anchor already carried the files it commits. Taking the tree from a fixture closes that, since the starting tree no longer depends on the remote's current state. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
+
+## Standing limits
+
+Three things a run cannot reach. Each is a property of the harness rather than a gap to close per task, so a claim depending on one is hand-verified and should say so.
+
+- Marketplace install behavior. `run.sh` points `--plugin-dir` at a worktree instead of installing the plugin, so anything whose behavior depends on a real install stays outside the harness.
+- A mid-session rule change. Rules are discovered at session start and the harness spawns a fresh session per run, so this binds the session doing the editing rather than the run.
+- Host-conditional behavior such as linked-worktree locks or remote-state failures. A standalone sandbox repo cannot reproduce the trigger.
 
 ## Prerequisites
 
@@ -137,6 +151,24 @@ Expectations are not agent-only. An `infra` arm invoking the CLI directly declar
 
 `src/sandbox/expect.test.ts` builds a tree per assertion kind that violates it and requires a red verdict. A checker exercised only against a correct tree cannot distinguish asserting correctly from asserting nothing, so the negative trees are the point rather than extra coverage.
 
+## Coverage
+
+`aitk sandbox coverage` reports which scenarios declare expectations and which only provision a state. It reads the fixture tree rather than running anything, so it costs nothing and needs no provisioned sandbox.
+
+```bash
+aitk sandbox coverage           # framed report on stderr
+aitk sandbox coverage --json    # machine copy on stdout
+aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
+```
+
+Scenarios and arms count separately. Seven arms across three scenarios out of fifty-two is 5 percent of scenarios, not the 13 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
+
+The twelve scenarios declaring `SANDBOX_INJECT_STANDARDS` or `SANDBOX_INJECT_GOV` are the first candidates for arming. Moving to the real installers narrowed what they receive from all 38 source rules to the 20 in `base`, and none of the twelve declares expectations, so nothing in the harness would detect a scenario that depended on a rule outside `base`. The overlap against the seven armed arms is empty, so no existing assertion is affected, but the residual is invisible by exactly the measure this section exists to report.
+
+A scenario enumerates from its script under `scripts/sandbox/<category>/`, not from the fixture tree. An unarmed scenario has no fixture directory to find, so counting fixtures would hide exactly the arms the report exists to surface. A declaration sitting at the command root belongs to the unnamed arm and reports as `(default)`.
+
+`aitk sandbox check` takes `--strict` as well, which turns a single `unchecked` verdict into a non-zero exit. Both flags stay opt-in so the undeclared majority keeps running.
+
 ## Writing a sandbox
 
 Each sandbox is a `.sh` file with two optional hook functions and a required `stage_setup` function.
@@ -200,9 +232,13 @@ use_config() {
 }
 ```
 
-`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs.
+`SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs. Hooks ride along in that tree, which is what makes a hook change observable to a run.
 
-`SANDBOX_INJECT_STANDARDS` writes `.claude/standards/`, matching what `aitk standards install` produces. It copies the flat `standards/` root only, so `bundled/` and `aitk/` stay out, and omits `index.md`, which a real install rebuilds against the files that landed.
+`SANDBOX_INJECT_STANDARDS` and `SANDBOX_INJECT_GOV` run `aitk standards install` and `aitk gov install` against the sandbox rather than copying source trees. The installer decides what lands, so the sandbox cannot drift from what a target receives, and provisioning exercises the installer as a side effect. `SANDBOX_GOV_STACK` picks the stack and defaults to `base`.
+
+A stack install narrows what arrives. The copy it replaced took all 38 rules under `governance/rules`, while `base` resolves to 20, which is what a real target holds since no project carries both the React and FastAPI rules. A scenario needing a framework's rules sets `SANDBOX_GOV_STACK` rather than assuming every rule is present.
+
+A failed install aborts provisioning with the installer's own stderr, since a sandbox missing the rules a scenario depends on would otherwise fail later somewhere unrelated.
 
 ### use_anchor
 

@@ -3,6 +3,11 @@ import { join } from 'node:path'
 import type { Command } from 'commander'
 import { PROJECT_ROOT, execScript } from '@/exec'
 import {
+  collectCoverage,
+  coveragePercent,
+  type CoverageReport,
+} from '@/sandbox/coverage'
+import {
   expectFilePath,
   parseTarget,
   resolveVerdict,
@@ -36,6 +41,12 @@ interface CheckOptions {
   readonly envelope?: string
   readonly writes?: string
   readonly json?: boolean
+  readonly strict?: boolean
+}
+
+interface CoverageOptions {
+  readonly json?: boolean
+  readonly strict?: boolean
 }
 
 function getCategories(): string[] {
@@ -144,6 +155,51 @@ function reportVerdict(verdict: Verdict): void {
   else logInfo(summary)
 }
 
+/**
+ * Lists the undeclared scenarios by name rather than counting them. A percentage
+ * alone is a number nobody acts on, while a name is the next thing to arm.
+ */
+function reportCoverage(report: CoverageReport): void {
+  const armed = report.scenarios.filter((s) => s.armed.length > 0)
+  const bare = report.scenarios.filter((s) => s.armed.length === 0)
+
+  if (armed.length > 0) {
+    logStep('Declares expectations')
+    for (const scenario of armed) {
+      logInfo(
+        `${scenario.category}:${scenario.command} (${scenario.armed.join(', ')})`,
+      )
+    }
+  }
+
+  if (bare.length > 0) {
+    logStep('Provisions only, asserts nothing')
+    for (const scenario of bare)
+      logWarn(`${scenario.category}:${scenario.command}`)
+  }
+
+  logStep('Coverage')
+  const summary =
+    `${report.armedScenarios}/${report.totalScenarios} scenarios declared ` +
+    `(${coveragePercent(report)}%), ${report.armedArms} armed arms`
+  if (bare.length > 0) logWarn(summary)
+  else logInfo(summary)
+}
+
+function runCoverage(options: CoverageOptions): void {
+  intro('aitk sandbox coverage')
+
+  const report = collectCoverage(PROJECT_ROOT)
+  reportCoverage(report)
+  if (options.json === true) process.stdout.write(`${JSON.stringify(report)}\n`)
+
+  outro()
+  process.exitCode =
+    options.strict === true && report.armedScenarios < report.totalScenarios
+      ? 1
+      : 0
+}
+
 function runCheck(
   target: string,
   arm: string | undefined,
@@ -187,7 +243,7 @@ function runCheck(
     process.stdout.write(`${JSON.stringify(verdict)}\n`)
 
   outro()
-  process.exitCode = verdictExitCode(verdict.state)
+  process.exitCode = verdictExitCode(verdict.state, options.strict === true)
 }
 
 export function register(program: Command): void {
@@ -217,6 +273,7 @@ export function register(program: Command): void {
     .option('--envelope <file>', 'Run envelope JSON from claude -p')
     .option('--writes <file>', 'Newline-delimited paths the session wrote')
     .option('--json', 'Emit the verdict as JSON on stdout')
+    .option('--strict', 'Exit non-zero when the arm declares no expectation')
     .addHelpText(
       'after',
       [
@@ -226,6 +283,7 @@ export function register(program: Command): void {
         '  aitk sandbox check claude:docs drift --envelope run.json --json',
         '',
         'Exit codes: 0 on pass or unchecked, 1 on failure.',
+        'With --strict, unchecked exits 1 as well.',
       ].join('\n'),
     )
     .action(
@@ -233,4 +291,25 @@ export function register(program: Command): void {
         runCheck(target, arm, options)
       },
     )
+
+  sandbox
+    .command('coverage')
+    .description('Report which scenarios declare expectations')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit the report as JSON on stdout')
+    .option('--strict', 'Exit non-zero while any scenario declares nothing')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Examples:',
+        '  aitk sandbox coverage',
+        '  aitk sandbox coverage --json',
+        '',
+        'Exit codes: 0 always, unless --strict and a scenario declares nothing.',
+      ].join('\n'),
+    )
+    .action((options: CoverageOptions) => {
+      runCoverage(options)
+    })
 }
