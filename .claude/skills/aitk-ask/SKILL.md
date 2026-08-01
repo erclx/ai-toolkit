@@ -18,7 +18,7 @@ Manual Q&A surface for toolkit self-knowledge. User triggers with `/aitk-ask <qu
 
 From the project root, read these together:
 
-- `docs/index.md`: one-line summary per consumer-facing reference (CLI surface, AI workflow, target-project integration)
+- `docs/index.md`: one-line summary per consumer-facing reference (CLI surface, AI workflow, target-project integration, and the workflow method docs)
 - `.claude/context/index.md`: one-line summary per domain's internal narrative (how a domain is built, decisions, gotchas)
 - `wiki/index.md`: one-line summary per tool and concept reference
 
@@ -26,7 +26,7 @@ All three indexes are small. Parallel read avoids routing errors between consume
 
 ## Step 2: pick one file
 
-Match the question against the one-line summaries in all three indexes. Pick the single most relevant file. Prefer `docs/` for CLI surface, AI workflow, and target-project integration. Prefer `.claude/context/` for how a specific domain is built (structure, decisions, gotchas). Prefer `wiki/` for Claude Code concepts, tool reference, and workflow prose.
+Match the question against the one-line summaries in all three indexes. Pick the single most relevant file. Prefer `docs/` for CLI surface, target-project integration, and the workflow this repo runs on (AI workflow, operating model, design tiers, shell aliases). Prefer `.claude/context/` for how a specific domain is built (structure, decisions, gotchas). Prefer `wiki/` for Claude Code concepts and reference on tools owned outside this repo.
 
 If two entries look equally relevant, read both. Do not read more than two.
 

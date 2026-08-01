@@ -71,7 +71,7 @@ Each rule or knowledge item lives in exactly one surface. Other surfaces point, 
 - Per-domain internal narrative about domain X (structure, decisions, gotchas): `.claude/context/<X>.md`
 - Consumer-facing reference (AI workflow, target-project integration): `docs/`
 - CLI command surface or invocation contract: `docs/agents.md`
-- Skill authoring strategy and redundancy notes: `wiki/skills-strategy.md`
+- Skill authoring strategy and redundancy notes: `.claude/context/claude-plugin.md`, with the rules it produces in `.claude/skills/aitk-claude/SKILL.md`
 
 When adding new content, place it in the canonical owner. If another surface needs awareness, add a one-line pointer.
 
@@ -102,9 +102,9 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 - `.claude/context/`: per-domain internal narrative (how each domain is built, decisions, gotchas), indexed via `.claude/context/index.md`
 - `snippets/`: reusable prompt snippets for Claude and Gemini chat
 - `src/`: TypeScript CLI entry point, commander subcommands, exec helper
-- `docs/`: consumer-facing reference (CLI surface, AI workflow, target-project integration)
+- `docs/`: consumer-facing reference (CLI surface, AI workflow, target-project integration, and the workflow method this repo runs on)
 - `scripts/`: bash domain scripts, core maintenance, sandbox, and prompt generation
-- `wiki/`: internal reference pages for tools, workflows, and concepts
+- `wiki/`: reference pages for tools and concepts owned outside this repo
 
 ## Commands
 
@@ -149,7 +149,8 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Wiki
 
-- Before answering a how-to question about toolkit tooling, workflows, or shell environment, scan `wiki/index.md` for a relevant page.
+- Before answering a how-to question about an external tool or a Claude Code concept, scan `wiki/index.md` for a relevant page. Workflow method, shell environment, and target-project questions are answered from `docs/index.md` instead.
+- A page belongs in `wiki/` when its subject is owned by someone outside this repo. Content about how this repo works goes to `docs/`, `.claude/context/`, or a skill body. `wiki/rule-writing-vocabulary.md` is the one recorded exception.
 - Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
 - When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge
 - Wiki pages stay tool-general reference prose. Rewrite experiment narrative ("Against the X repo, tool Y read Z") into general statements ("Tool Y reads prose surfaces") before committing.
