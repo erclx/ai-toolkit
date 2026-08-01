@@ -36,6 +36,8 @@ Do not derive the label from a version file. `.claude/standards/versioning.md` p
 
 Write `.claude/tasks/vXX.Y-<slug>.md` following the format in `.claude/standards/tasks.md`. Include a link line only when the file or folder it names exists. A link to a plan nobody has written yet is the broken pointer the archive rules exist to prevent.
 
+Write `Plan:` and `Groundwork:` as markdown links relative to `.claude/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
+
 Write it immediately. Claude Code's tool permission dialog is the confirmation gate. Do not pause for approval.
 
 ### Step 4: report unlinked origins
@@ -56,11 +58,11 @@ Stopping here is what lets Step 2 route to `claude-docs` and mean it. That sweep
 
 ### Step 2: check the plan pointer
 
-Parse the `Plan:` line and route on where it points.
+Parse the `Plan:` line and route on where it points. The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file.
 
-- No `Plan:` line, or the path is already inside `.claude/.tmp/plans-archive/`: continue to Step 3.
-- Path inside `.claude/plans/` and no other task file cites it: stop. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
-- Path inside `.claude/plans/` and another task file cites it: stop, naming that task. `❌ Plan shared with <task>. One plan per task, so resolve the citation before archiving.`
+- No `Plan:` line, or the target resolves inside `.claude/.tmp/plans-archive/`: continue to Step 3.
+- Target resolves inside `.claude/plans/` and no other task file cites it: stop. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
+- Target resolves inside `.claude/plans/` and another task file cites it: stop, naming that task. `❌ Plan shared with <task>. One plan per task, so resolve the citation before archiving.`
 
 The guard enforces an ordering rather than a preference. `claude-docs` Step 8 sweeps plans by scanning `.claude/tasks/*.md`, so it can only reach a task that is still in the folder. Archiving the task first puts it beyond that scan permanently, leaving the plan in `.claude/plans/` with no live task citing it and an archived task pointing at a path nothing will ever retarget. Both folders are gitignored, so nothing recovers the pointer afterward.
 

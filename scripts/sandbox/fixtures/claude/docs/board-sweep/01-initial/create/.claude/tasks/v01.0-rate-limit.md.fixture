@@ -5,7 +5,7 @@ description: Reject a client that exceeds the request budget for a window
 
 # v01.0: Rate limit the task API
 
-Plan: .claude/plans/feature-rate-limit.md
+Plan: [feature-rate-limit](../plans/feature-rate-limit.md)
 
 - [x] Outcome: a client over the request budget is rejected
 - [x] Outcome: the budget resets on a rolling window
