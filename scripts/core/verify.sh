@@ -88,6 +88,16 @@ run_check() {
   echo "$output" | pipe_output
 }
 
+# Whatever plugin and marketplace manifests the repo currently carries, so the
+# stage picks up a new one without an edit here. Both listings honor .gitignore,
+# which keeps linked worktrees and dependency copies out.
+collect_plugin_manifests() {
+  {
+    git -C "$PROJECT_ROOT" ls-files -- '*.claude-plugin/plugin.json' '*.claude-plugin/marketplace.json'
+    git -C "$PROJECT_ROOT" ls-files --others --exclude-standard -- '*.claude-plugin/plugin.json' '*.claude-plugin/marketplace.json'
+  } | sort -u
+}
+
 assert_no_drift() {
   local paths=$1
   local err_msg=$2
@@ -131,6 +141,22 @@ main() {
   log_step "Skill paths"
   run_check "bash $PROJECT_ROOT/scripts/core/check-skill-paths.sh" "Shipped skills reference a repo-local path."
   log_info "Skill paths clean"
+
+  log_step "Plugin manifests"
+  if ! command -v claude >/dev/null 2>&1; then
+    log_info "Skipped, claude is not installed"
+  else
+    local manifests manifest
+    manifests=$(collect_plugin_manifests)
+    if [ -z "$manifests" ]; then
+      log_info "Skipped, no manifests present"
+    else
+      while IFS= read -r manifest; do
+        run_check "cd $PROJECT_ROOT && claude plugin validate --strict '$manifest'" "Manifest validation failed: $manifest"
+      done <<<"$manifests"
+      log_info "Manifests valid"
+    fi
+  fi
 
   log_step "Spelling"
   run_check "bun run check:spell" "Spell check failed"
