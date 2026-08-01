@@ -51,6 +51,14 @@ One file per task, ordered by phase label
 - [v00.1: Log a habit with one tap](v00.1-log-entry.md): Mark a habit done for today with a single tap
 EOF
 
+  cat <<'EOF' >.claude/tasks/priority.md
+# Priority
+
+## Now
+
+- `v00.1-log-entry`: plan written, ready to hand off
+EOF
+
   cat <<'EOF' >.claude/tasks/v00.1-log-entry.md
 ---
 title: 'v00.1: Log a habit with one tap'
@@ -86,9 +94,10 @@ EOF
   git add . && git commit -m "docs(project): roadmap, tasks, and log-entry plan" --no-verify -q
 
   log_step "Scenario ready: orchestrator board readout"
-  log_info "Context: ROADMAP active at v0.1, one task queued, a plan for log-entry, none for streak-view"
+  log_info "Context: ROADMAP now-row at v0.1, priority.md orders the board, a plan for log-entry, none for streak-view"
   log_info "Action:  /claude-orchestrate"
-  log_info "Expect:  state of play: active v0.1, log-entry ready to hand to a worker (has plan),"
-  log_info "         streak-view needs /claude-feature first, and a single Next action"
-  log_info "         In review is omitted (no open PRs in this fixture)"
+  log_info "Expect:  a Roadmap line quoting the v0.1 now-row and dating it, never asserting Active: v0.1 as fact,"
+  log_info "         order read from priority.md rather than inferred from index.md,"
+  log_info "         log-entry ready to hand to a worker (has plan), streak-view needs /claude-feature first,"
+  log_info "         a single Next action, and In review omitted (no open PRs in this fixture)"
 }
