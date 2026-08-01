@@ -1,0 +1,15 @@
+{
+  "name": "aitk",
+  "description": "One source for your repos' AI conventions. Install once, sync everywhere.",
+  "owner": {
+    "name": "Eric Le",
+    "url": "https://github.com/erclx"
+  },
+  "plugins": [
+    {
+      "name": "aitk",
+      "source": "./claude",
+      "description": "Automated governance, versioning, and discovery tools for Claude Code."
+    }
+  ]
+}
