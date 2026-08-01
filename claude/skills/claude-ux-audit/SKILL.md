@@ -18,7 +18,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `.claude/standards/wireframes.md`, these carry layout and intent, not implementation detail.
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Step 2: identify surfaces
 

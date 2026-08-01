@@ -194,9 +194,10 @@ A skill reads from two roots. Know which one a file lives under before referenci
 A standard reaches a skill by two routes, and a body that names only the first breaks in a project that installed the plugin without running `aitk standards install`.
 
 - Cite `.claude/standards/X.md` first, then name `${CLAUDE_SKILL_DIR}/../../standards/X.md` as the fallback. The plugin ships the whole standards folder beside `skills/`, so the second path resolves in every install.
-- The project copy wins when it exists, which keeps a target's local edits authoritative. The fallback only covers the case where the project has none.
+- The project copy wins when it exists, which keeps a target's local edits authoritative. The fallback only covers the case where the project lacks that file.
+- Condition the fallback on the standard, never on the `.claude/standards/` directory. `aitk standards sync` updates only filenames it already finds and never adds one, so a project that installed before a standard existed keeps the directory and never receives that file. A directory test passes there, no fallback engages, and the standard reads as absent.
 - State the fallback once per body, at the site that reads the standard. A later mention of a standard the body already read stays bare, since repeating the fallback at every mention is noise rather than instruction.
-- A guard on a standard's presence tests both paths before it stops. A guard that tests only `.claude/standards/` refuses to run in a plugin-only project that has the file.
+- A guard on a standard's presence names the file and tests both paths before it stops. A guard that tests only `.claude/standards/` refuses to run in a plugin-only project that has the file, and a guard that tests the directory passes in the partial-install case it exists to catch.
 - Use `${CLAUDE_SKILL_DIR}`, never a bare `../../` and never `${CLAUDE_PLUGIN_ROOT}`. Only `${CLAUDE_SKILL_DIR}` is expanded before the body reaches the model. The other two leave the model to infer a base path, which it may resolve against the session cwd instead.
 
 ## Invocation

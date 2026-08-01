@@ -11,7 +11,7 @@ Read these files from the project root in parallel:
 - `.claude/standards/skill.md`: skill structure, skill types, frontmatter fields, invocation rules
 - `.claude/standards/prose.md`: prose conventions for skill body text
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Guards
 

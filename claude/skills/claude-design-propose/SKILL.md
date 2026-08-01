@@ -21,7 +21,7 @@ Read these from the project root, skipping any that do not exist:
 - `CLAUDE.md`: voice rules, spelling, conventions
 - `.claude/standards/prose.md`: tone constraints if present
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 Do not scan `src/`, stylesheets, or UI modules. This skill runs before code exists. If those files are present, the scenario is wrong and `claude-design-extract` is the correct tool.
 

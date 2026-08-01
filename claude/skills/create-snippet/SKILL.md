@@ -10,7 +10,7 @@ Read these files in parallel:
 - `${CLAUDE_SKILL_DIR}/references/snippets.md`: authoring conventions, invocation channels, use patterns
 - `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Guards
 

@@ -14,7 +14,7 @@ Read these files in parallel:
 - `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 - `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 Resolve the base ref first, because the log range and the diff below both consume it:
 

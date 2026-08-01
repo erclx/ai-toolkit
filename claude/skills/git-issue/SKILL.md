@@ -14,7 +14,7 @@ Read these in parallel:
 - `${CLAUDE_SKILL_DIR}/references/issue.md`: issue title, labels, body sections, and banned phrases
 - `.claude/standards/prose.md` from the project root: prose conventions for all generated text
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 Then gather repo context in parallel:
 

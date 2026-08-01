@@ -50,7 +50,7 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 - every `*.md` under `.claude/standards/`: authoring references
 - every `*.md` under `governance/rules/` in the toolkit repo, or `.claude/rules/` in a target project: coding-standards rules
 
-Read the authoring references from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read any authoring reference the project does not have from `${CLAUDE_SKILL_DIR}/../../standards/` instead.
 
 ### Step 3: classify each entry
 

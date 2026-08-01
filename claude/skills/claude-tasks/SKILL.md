@@ -7,7 +7,7 @@ description: Creates a task file in `.claude/tasks/` with the filename, phase la
 
 Owns the two operations that bring a task file into existence and take it out of the folder. `claude-docs` edits the contents of a task that already exists, marking outcomes `[x]` and sweeping the plans those tasks cite. Do not mark outcomes here and do not archive a plan on its own.
 
-Read `.claude/standards/tasks.md` from the project root before writing any file, or `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` when the project has no `.claude/standards/`. It holds the filename convention, the frontmatter contract, and the file format. Do not work them from memory.
+Read `.claude/standards/tasks.md` from the project root before writing any file, or `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` when the project does not have it. It holds the filename convention, the frontmatter contract, and the file format. Do not work them from memory.
 
 ## Guards
 

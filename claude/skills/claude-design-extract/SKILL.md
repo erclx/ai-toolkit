@@ -22,7 +22,7 @@ Read these from the project root, skipping any that do not exist:
 - `docs/agents.md`, `docs/index.md`: any output shape or framing rules already documented
 - Any `*.css`, `tailwind.config.*`, or `theme.*` file at the project root
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project has no `.claude/standards/`.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 Run these reads in parallel. Do not speculatively recurse into every directory.
 

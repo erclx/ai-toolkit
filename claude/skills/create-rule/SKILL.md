@@ -40,7 +40,7 @@ Pick the lowest unused number in the band that collides with neither the project
 
 ## Step 4: write the rule
 
-Read `.claude/standards/rule.md` for frontmatter, body shape, and voice before writing the body, or `${CLAUDE_SKILL_DIR}/../../standards/rule.md` when the project has no `.claude/standards/`. Do not work the shape from memory.
+Read `.claude/standards/rule.md` for frontmatter, body shape, and voice before writing the body, or `${CLAUDE_SKILL_DIR}/../../standards/rule.md` when the project does not have it. Do not work the shape from memory.
 
 Write `.claude/rules/<subdir>/<n>-<slug>.md` where `<slug>` is a 1-to-3-word kebab topic. Preview the resolved path, band, number, and frontmatter, then write immediately. The tool permission dialog is the confirmation gate.
 
