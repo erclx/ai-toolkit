@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/erclx/aitk/compare/v0.2.0...v0.3.0) (2026-08-01)
+
+
+### Features
+
+* **standards:** route tooling references and flag banned words ([#658](https://github.com/erclx/aitk/issues/658)) ([0bfcd3c](https://github.com/erclx/aitk/commit/0bfcd3cd13083d304d46a690144b45e7a9f5771b))
+
+
+### Bug Fixes
+
+* **skills:** resolve the diff baseline against a merge base ([#657](https://github.com/erclx/aitk/issues/657)) ([1991db7](https://github.com/erclx/aitk/commit/1991db799d158a811b1ae49a361d8c77d188314b))
+
 ## [0.2.0](https://github.com/erclx/aitk/compare/v0.1.0...v0.2.0) (2026-08-01)
 
 
