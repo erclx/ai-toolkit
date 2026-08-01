@@ -39,7 +39,7 @@ Skills that perform a one-time structural move of an existing project into a new
 | `claude-groundwork`      | Open, resume, and close a numbered groundwork folder under `.claude/.tmp/groundwork/<slug>/`     |
 | `claude-memory-capture`  | Extract durable patterns from the session into `.claude/memory/`                                 |
 | `claude-memory-review`   | Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete          |
-| `claude-orchestrate`     | Assert the orchestrator role and dispatch the roadmap, feature, review, and worktree skills      |
+| `claude-orchestrate`     | Assert the orchestrator role, refill the ready queue, and dispatch the build loop                |
 | `claude-pr-review`       | Review an open PR from an independent session and post findings as a PR comment                  |
 | `claude-address-review`  | Pull PR findings and CI status, fix each, refresh stale docs, push a follow-up, and reply        |
 | `claude-review`          | Review all changes since main for bugs, edge cases, and logic flaws                              |

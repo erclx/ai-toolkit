@@ -67,7 +67,11 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `aitk:git-ship`
 - For full autonomy per worktree, invoke `aitk:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](../wiki/operating-model.md) for the full loop.
+To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](../wiki/operating-model.md) for the full loop.
+
+Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives. No fixed number caps the worker tracks underneath it. Collision between file sets is what binds, so a candidate opens only when its files are disjoint from every track in flight, and the ceiling in practice is how many outputs one session can still review properly.
+
+Before a handoff, the orchestrator checks the plan against the tree rather than reading it: grep each construct it names and count the sites, confirm every phase label it cites is still open, and open each file it describes. A plan goes stale from whatever merged after it was written, and reading cannot catch that.
 
 `.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
@@ -123,7 +127,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `aitk:claude-groundwork`     | Before a plan is warranted, measure an unknown in a scratch folder under `.claude/.tmp/groundwork/`                    |
 | `aitk:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                              |
 | `aitk:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                       |
-| `aitk:claude-orchestrate`    | Assert the orchestrator role and dispatch the roadmap, feature, and review skills                                      |
+| `aitk:claude-orchestrate`    | Assert the orchestrator role, refill the ready queue, and dispatch the roadmap, feature, and review skills             |
 | `aitk:claude-diagram`        | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code                                           |
 | `aitk:claude-design-propose` | Day one on a UI project, draft `.claude/DESIGN.md` from requirements. Use `claude-design-extract` if UI already exists |
 | `aitk:claude-review`         | In a fresh session, review all changes since main                                                                      |
