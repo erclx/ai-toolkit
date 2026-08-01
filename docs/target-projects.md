@@ -21,7 +21,13 @@ claude plugin install aitk@aitk
 
 The URL form clones over HTTPS. The `erclx/aitk` shorthand resolves to SSH and fails on a machine with no key configured.
 
-The `aitk` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so a project that leans on those skills still wants the CLI linked from a clone. See the [readme](../README.md) for that path.
+The `aitk` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so it installs from the registry as its own step.
+
+```bash
+bun install --global @erclx/aitk
+```
+
+The package ships the catalogs the CLI reads, not only `src/`, so `aitk init` resolves standards, snippets, governance, tooling, and the seeds from wherever the package landed.
 
 Pointing Claude Code at a checkout stays the development path, where a local skill edit overrides the installed copy for that session.
 
