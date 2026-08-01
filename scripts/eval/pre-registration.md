@@ -30,6 +30,38 @@ Recording any one of these with its reasoning satisfies the "at least one real d
 2. **Below 600px the status pill drops its text and renders as a colored dot.** `src/ui/FeedRow.tsx:18` and the media query in `feed-list.css`. This is a genuine layout change across a breakpoint, so it earns a second fence under the standard's variants rule.
 3. **The empty state is its own layout with a sample-feed shortcut.** `src/ui/EmptyState.tsx`. A second named variant.
 
+## Seed arm
+
+Written before the seed run. The subject is `tooling/claude/seeds/`, twelve files rather than one document, and the question is the task's outcome text: can a session that has never seen the seed work in a project scaffolded from it without asking for context the seed should have carried.
+
+The fixture is `feedwatch` again, stripped of `.claude/` and `CLAUDE.md`, with the seed installed through `aitk claude init` and the standards through `aitk standards install`. The CLI runs by path rather than as the linked binary, since `PROJECT_ROOT` resolves from the CLI's own source and a global binary would install the main checkout's seed instead of the one under test. Git is initialized after the install so the seed's `.gitignore` means something and the rules that shell out to git are reachable.
+
+The prompt is an ordinary feature request naming no `.claude/` path and no seed file: add a Slack delivery sink alongside the existing webhook and email sinks. Naming a seed file would tell the session where to look and measure obedience rather than discoverability.
+
+### The three-way split
+
+Every seed section is sorted into exactly one bucket. Fixing the buckets here is what stops a trim from being rationalized after the fact, which is the failure this task exists to avoid.
+
+- **Exercised**: the run produced the section's trigger and the session observably followed or violated the rule, or opened a path the section names. Keep, and the run says whether the wording works.
+- **Unreachable by this task**: the run could not produce the section's trigger at all. A single feature request cannot reach the spelling rules without cspell, the snippet rule without an `@` reference, or the worktree rules without a multi-session feature flow. Not evidence for cutting. Cutting one of these needs its own arm.
+- **Reachable and ignored**: the run produced the trigger and the session did not follow the rule. This is the only bucket that justifies an edit, and the edit can be a cut or a rewrite.
+
+A section landing in the third bucket is a failure of the seed, not of the session. That is the finding the task is buying.
+
+### Pass criteria, seed arm
+
+- Completes the feature without asking a question the seed should have answered. A question about the product, such as which Slack field carries the item title, is not a seed failure. A question about the project's own conventions is.
+- Opens at least one installed seed file beyond `CLAUDE.md`, or demonstrates it had no reason to. The transcript decides this from real `file_path` values in `tool_use` blocks, never from a grep for a filename, since the seed names its own paths and a grep hits the instruction rather than the read.
+- Follows the Output section's path convention in its final message.
+- Fires at least one of the four hooks on its writes, confirming the settings merge registered them.
+- Produces a `Reachable and ignored` list, empty or not. An empty list is a real result and means the seed is right-sized for this task, not that the run failed.
+
+### Standing rule, seed arm
+
+N of 1, one arm, no baseline, matching the standards arms. The harness has confirmed twice and discriminated zero times, so a pass here is a third confirmation from a test that has never failed anything. Weigh it accordingly and say so in the result.
+
+A cut removes a line from new projects and leaves it in every existing one. Any cut this run justifies names `claude-seed-sync` as the path that carries it into projects already scaffolded, or states that it does not.
+
 ## Pass criteria
 
 Verbatim from `05-experiment-design.md:21`. Applied to the context arm as written, and read across to the wireframes arm by its own standard's section names.

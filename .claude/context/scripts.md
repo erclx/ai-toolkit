@@ -15,7 +15,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
 - `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards`, `gov`, and `docs` keep only a list command there, `claude` keeps nothing, and `snippets` and `tooling` keep only authoring helpers
 - `scripts/gov/`, `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
-- `scripts/standards/authoring-test/` owns the standards authoring harness. It is not a verb and nothing dispatches to it, so it is invoked by path and never through `aitk`
+- `scripts/eval/` owns the authoring harness. It is not a verb and nothing dispatches to it, so it is invoked by path and never through `aitk`
 - `scripts/lib/` owns shared functions, sourced and never executed directly. `worktree.sh` is the one under test, via `src/worktree-repair.test.ts`
 - `scripts/sandbox/` owns scenario provisioning, covered in `sandbox.md`
 
@@ -23,7 +23,7 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 - `manage-sandbox.sh` is the last entry point and stays bash permanently by decision. It holds its domain logic in the dispatcher rather than in a verb folder, so read it before assuming a scenario's behavior sits one file down.
 - A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, `snippets/`, `standards/`, and `claude/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
-- A research harness lives beside the domain it measures rather than in a top-level folder of its own. `scripts/standards/authoring-test/` sits under `standards/` because it exercises the standards, and it is deliberately unreachable from `aitk`, since a spec-quality test is run by a person deciding to spend on it rather than by a command surface.
+- A research harness lives beside the domain it measures only while it measures one. The harness sat at `scripts/standards/authoring-test/` because standards were all it tested, and the seed arm made that placement wrong: the seed is a tooling artifact, not a standard. It moved to `scripts/eval/` at three referencing files rather than after the next arm made the move expensive. What did not change is that it stays unreachable from `aitk`, since a run that spends real money is started by a person deciding to spend it rather than by a command surface.
 - A dispatcher holding domain logic migrates in one pull request per file rather than verb by verb. `sync`, `init`, and `standards` went together because they shared the two documents listing dispatchers, and splitting them would have collided there for no review benefit.
 - A dispatcher that grew domain logic migrates that logic out to `src/<domain>/` rather than into the command file. `manage-claude.sh` was the largest single script at 465 lines and held seed collection, gitignore scanning, and a settings merge, none of which a command file can unit-test because `src/exec.ts` throws under vitest.
 - Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because `gov/list.sh`, `docs/list.sh`, and `standards/list.sh` call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
