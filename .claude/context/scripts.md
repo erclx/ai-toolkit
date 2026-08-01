@@ -46,17 +46,19 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 ## Core scripts
 
-| Script                 | `bun run`   | What it does                                                                                                                         |
-| ---------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `bootstrap.sh`         | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable                    |
-| `verify.sh`            | `check`     | Format, three drift stages, the skill-path guard, and spell always run. Shell, types, and tests gate on changed files unless `--all` |
-| `update.sh`            | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                                   |
-| `clean.sh`             | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                                    |
-| `snapshot.sh`          | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                                       |
-| `regen-indexes.sh`     |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                                              |
-| `check-skill-paths.sh` |             | Fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target                            |
+| Script                 | `bun run`   | What it does                                                                                                                                                   |
+| ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bootstrap.sh`         | `bootstrap` | Installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent, re-runnable                                              |
+| `verify.sh`            | `check`     | Repairs `core.bare`, then format, three drift stages, the skill-path guard, and spell always run. Shell, types, and tests gate on changed files unless `--all` |
+| `update.sh`            | `update`    | Interactive dep update via `bun update --interactive`, then verify                                                                                             |
+| `clean.sh`             | `clean`     | Wipes `node_modules/`, clears bun cache, reinstalls from lockfile                                                                                              |
+| `snapshot.sh`          | `snapshot`  | Writes project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context                                                                 |
+| `regen-indexes.sh`     |             | Thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI                                                                        |
+| `check-skill-paths.sh` |             | Fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target                                                      |
 
 CI runs every stage through `bun run check:ci`, which passes `--all`. The local run scopes shell, types, and tests to the changed-file set, so it is the weaker of the two. See `ci.md`.
+
+`repair_bare_flag` runs ahead of every stage rather than as one of them, because Claude Code's worktree entry leaves `core.bare` set in the shared config and that flag breaks the git reads that scope the run. It writes only when the flag is set and the repository's common dir is named `.git`, which spares a genuinely bare repository that keeps its objects at the root. `claude-worktree` carries the same repair at entry, and this copy covers the entries that never go through the skill. See `claude-plugin.md` for the split and `wiki/claude-worktrees.md` for the upstream issue.
 
 ## UI framing across exec boundaries
 

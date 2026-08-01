@@ -44,6 +44,26 @@ All three paths produce the same session isolation. The native flag is convenien
 
 The tool descriptions explicitly require an instruction trail before invocation: a user request, a `CLAUDE.md` rule, or a memory entry. Wrapping invocation in a skill is the canonical pattern, since the skill body is the instruction trail. The `claude-worktree` plugin skill is the toolkit's reference wrapper.
 
+### Entry can mark the repository bare
+
+`EnterWorktree` sometimes writes `core.bare = true` into the parent repository's shared config, and `ExitWorktree` does not restore it. Config is shared across every worktree, so the flag outlives the session that set it and reaches sessions that never entered a worktree at all.
+
+Nothing surfaces at entry, because the linked worktree keeps working normally. The next command run from the main checkout fails instead:
+
+```plaintext
+fatal: this operation must be run in a work tree
+```
+
+The files are untouched on disk. Recovery is one line, and it works from any worktree of the repository because the write lands in the shared config:
+
+```bash
+git config core.bare false
+```
+
+`core.bare = true` on a repository whose root holds a `.git` directory is always this defect. A genuinely bare repository keeps its objects at the root and has no `.git` directory, which is the test worth automating.
+
+Tracked upstream as `anthropics/claude-code#58345`, closed as not planned after a duplicate sweep, with `#45201` and `#45645` as sibling reports. All three describe the harness writing to shared config where worktree-local config belongs. Making the config file immutable at the filesystem level does stop the corruption, but it also blocks git's own legitimate writes, so prefer the repair over the lock.
+
 ## Background sessions
 
 A background session is a full independent Claude Code session that runs without an attached terminal. Start one with `claude --bg "<task>"`, or send the current session to the background with `/bg`, then manage every session from the `claude agents` view. Unlike a subagent, which runs inside the parent's context, a background session has its own conversation, transcript, and quota.
