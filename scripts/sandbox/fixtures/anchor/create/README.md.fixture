@@ -1,0 +1,11 @@
+# Sandbox anchor
+
+Starting tree for the scenarios that need a real GitHub remote. Kept to what a
+scenario actually reads, so the tree stays small enough to eyeball.
+
+`utils.js` is the file the `git:pr`, `git:issue`, and `git:followup` scenarios
+append to. The other six either write their own tree or wipe this one first.
+
+Dropped from the tree the anchor remote used to carry, because nothing reads it:
+a `package.json`, an application scaffold, and any `.claude/` content, which the
+injection flags provide when a scenario asks for it.

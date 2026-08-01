@@ -9,6 +9,7 @@ export PROJECT_ROOT
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-fixtures.sh"
 
 # Without this, git falls back to a terminal prompt when no helper supplies a
 # credential, and an unauthenticated run blocks on /dev/tty instead of failing.
@@ -38,32 +39,39 @@ show_help() {
   exit 0
 }
 
-clone_anchor() {
-  local repo_name=${ANCHOR_REPO:-"vite-react-template"}
-  local repo_url
+ANCHOR_FIXTURE_DIR="$PROJECT_ROOT/scripts/sandbox/fixtures/anchor/create"
 
+# Where an anchor scenario's tree comes from and where its remote points are two
+# concerns, and only the remote needs a network. Taking the tree from a fixture
+# stops an arm provisioning from whatever the previous arm force-pushed, which is
+# what made two identical sweeps of the sixteen arms disagree on eleven.
+stage_anchor_tree() {
+  # The nine anchor scenarios configure a real remote from their own stage_setup,
+  # and sandbox_anchor_url runs inside a command substitution there, where
+  # log_error would exit only the subshell and leave an empty remote behind. The
+  # guard has to fire here, in the main shell, before any of them run.
   require_sandbox_anchor_config
-  repo_url=$(sandbox_anchor_url "$repo_name")
 
-  log_step "Cloning anchor repository ($repo_name)"
+  log_step "Staging anchor tree from fixture"
+
+  assert_fixtures_suffixed "$ANCHOR_FIXTURE_DIR"
+  if [ "$(count_fixture_files "$ANCHOR_FIXTURE_DIR")" -eq 0 ]; then
+    log_error "Anchor fixture provisions nothing: $ANCHOR_FIXTURE_DIR"
+  fi
 
   if [ -d "$SANDBOX" ]; then
     rm -rf "$SANDBOX"
   fi
+  mkdir -p "$SANDBOX"
 
-  # The clone predates the sandbox repo, so the helper cannot come from its
-  # local config the way every later push does. The empty value first resets any
-  # helper inherited from global config, which would otherwise be tried ahead.
-  git -c credential.helper= -c credential.helper="$SANDBOX_GIT_CREDENTIAL_HELPER" \
-    clone --depth 1 "$repo_url" "$SANDBOX"
-  rm -rf "$SANDBOX/.git"
   (
     cd "$SANDBOX"
+    create_from_fixtures "$ANCHOR_FIXTURE_DIR"
     git init >/dev/null
     git add .
     git commit -m "feat(sandbox): initial sandbox setup from anchor" --no-verify >/dev/null
   )
-  log_info "Anchor cloned and new git repo initialized in sandbox: $repo_url"
+  log_info "Anchor tree staged from fixture, remote stays $ANCHOR_REPO"
 }
 
 select_sandbox_category() {
@@ -170,7 +178,7 @@ provision_sandbox() {
 
   if [[ "$(type -t use_anchor)" == "function" ]]; then
     use_anchor
-    clone_anchor
+    stage_anchor_tree
   else
     init_empty_sandbox
   fi
