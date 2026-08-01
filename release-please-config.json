@@ -5,7 +5,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "package-name": "aitk",
+      "package-name": "@erclx/aitk",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {

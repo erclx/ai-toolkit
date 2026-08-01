@@ -1,11 +1,26 @@
 {
-  "name": "aitk",
+  "name": "@erclx/aitk",
   "type": "module",
   "version": "0.7.0",
-  "private": true,
   "description": "Infrastructure and quality tooling for developer workflows",
+  "license": "MIT",
   "bin": {
     "aitk": "./src/cli.ts"
+  },
+  "files": [
+    "src",
+    "scripts",
+    "standards",
+    "snippets",
+    "governance",
+    "tooling",
+    "claude",
+    "docs",
+    "tsconfig.json",
+    "!**/*.test.ts"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "check:spell": "cspell '**' '.*/**' '.*' --no-progress --color --show-context",
