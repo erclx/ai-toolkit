@@ -48,6 +48,8 @@ Report rather than prompt. A track can be opened long after its task would have 
 
 ## Archive
 
+The `post-merge` git hook announces tasks whose outcomes are all `[x]` after a pull, so a request to archive often arrives already naming the file. It prints and moves nothing, so every step below still runs against a board the hook left untouched.
+
 ### Step 1: check the outcomes
 
 Read the task file. Continue only when every outcome is `[x]`. When one is unchecked, name it and stop: `❌ <n> outcome(s) still open. Close them or cut them from the task, then archive.`

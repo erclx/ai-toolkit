@@ -81,6 +81,10 @@ The sweep reads the whole board rather than the tasks the session touched. It is
 
 `toolkit:claude-tasks` owns the two operations that bracket a task's life. It creates the file, holding the filename convention and the frontmatter contract so a malformed write cannot break the index for every sibling, and it moves a shipped task to `.claude/.tmp/task-archive/`. Creation is where the origin invariant is enforced: every task names a plan, a groundwork folder, or an issue, since a task with no origin is either lost context or work nobody decided to do. Archiving a task leaves its plan alone, because `toolkit:claude-docs` owns the plans sweep and already holds the last-live-citation rule. That makes the order load-bearing, so the archive verb refuses to run while the `Plan:` line still points into `.claude/plans/`. The sweep only reaches tasks still in the live folder, and archiving the task first would strand the plan there with nothing citing it.
 
+Nothing chained that archive until the `post-merge` git hook landed. Every earlier step fires from `toolkit:claude-autoship` or `toolkit:git-ship`, both of which finish while the pull request is still open, so a task archived there would close for work that may be abandoned. The board is gitignored, which rules out reading it from anywhere but the machine that pulled. The hook names the tasks whose outcomes are all `[x]` and stays silent otherwise, including on a project with no board.
+
+It announces and moves nothing, so `toolkit:claude-tasks` stays the only writer. A shell-side archive would change a gitignored board with no diff to review and no session watching, and `index.md` regenerates from a session hook that a shell `mv` never fires. The hook ships with the `base` tooling stack, so a target project running this workflow gets the same trigger.
+
 ### Autonomous ship
 
 For features on a mature stack, chain the post-plan pipeline in one session. Approve the plan, invoke `toolkit:claude-autoship`, and the skill runs implement → verify → review → ship sequentially.
