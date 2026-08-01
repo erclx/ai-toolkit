@@ -7,6 +7,8 @@ description: Glossary of terms for writing rules, prompts, and standards
 
 A running bank of terms worth reaching for when authoring rules, prompts, skills, and standards. Each entry is term, one-line gloss, and one-line use-when. Entries are grouped by category and alphabetical within each. Append new terms as they come up. Prune or consolidate during periodic wiki sweeps.
 
+This page is a knowing exception to the rule that a wiki page's subject belongs to someone outside this repo. The vocabulary is the toolkit's own, so the test says move it. It stays because the bank is a working surface that grows a term at a time and gets pruned in place, and no target project consumes it. Moving it to `docs/` would file a churning scratch list among finished consumer reference.
+
 ## Techniques
 
 Ways to write a rule well.

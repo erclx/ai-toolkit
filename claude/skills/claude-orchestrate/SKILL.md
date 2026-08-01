@@ -15,6 +15,10 @@ This skill holds the framing, the board procedure, and the dispatch. Every step
 that builds something runs an existing skill. The queue rules below decide which
 one runs and when.
 
+Run `aitk docs operating-model` for the model this skill enacts: the two roles
+and what each owns, the loop end to end, why the worker's self-review and this
+session's review are different passes, and how a feature is sized.
+
 ## On invocation
 
 Read the board in parallel, resolving the paths at the main worktree root per Worktrees in `CLAUDE.md`:

@@ -1,6 +1,6 @@
 ---
 title: Claude internal
-description: Toolkit-only internal skills, the orchestrator and worker flow, and plugin discovery for local sessions
+description: Toolkit-only internal skills, the task and plan artifacts that coordinate sessions, and plugin discovery for local sessions
 ---
 
 # Claude internal
@@ -29,7 +29,7 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 ## Orchestration
 
-Larger projects use an orchestrator session that breaks work into task files and hands each one to a worker session running in a linked worktree. The toolkit ships two artifacts to make this flow mechanical.
+`docs/operating-model.md` owns the two roles and the loop they run, reachable in a target as `aitk docs operating-model`. What this entry adds is the pair of artifacts the toolkit ships to make the handoff mechanical.
 
 | Artifact                          | Author                 | Holds                                                                                     | Lifecycle                                              |
 | --------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -64,6 +64,6 @@ alias clp='claude --plugin-dir $TOOLKIT/claude'
 alias clps='clp --model sonnet'
 ```
 
-For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../../wiki/zshrc-aliases.md).
+For the full alias set covering resume, continue, worktree, and model shortcuts, see `docs/zshrc-aliases.md`.
 
 Machine provisioning is a separate concern reachable by the same word. `aitk claude setup` installs user-level Claude config at `~/.claude/` and is covered in `.claude/context/claude-plugin.md`.

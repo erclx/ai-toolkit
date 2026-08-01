@@ -67,7 +67,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `aitk:git-ship`
 - For full autonomy per worktree, invoke `aitk:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](../wiki/operating-model.md) for the full loop.
+To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
 
 Roadmap ownership holds while a scope exists to sequence. Once the MVP list in `.claude/REQUIREMENTS.md` has shipped, later work arrives as discrete items and the orchestrator reads `.claude/tasks/priority.md` for execution order instead.
 
@@ -121,7 +121,7 @@ Invoke `aitk:claude-review` at the start of session 2. It reads all changed file
 
 ### UI-heavy project
 
-Before the first feature session on a UI-heavy project, pick a design tier. The tier determines seed shape, installed MCP servers, and installed plugin skills. See [visual design workflow](../wiki/visual-design-workflow.md) for the framework and decision guide.
+Before the first feature session on a UI-heavy project, pick a design tier. The tier determines seed shape, installed MCP servers, and installed plugin skills. See [visual design workflow](visual-design-workflow.md) for the framework and decision guide.
 
 ## Skills
 
