@@ -42,7 +42,7 @@ The origin invariant is owned by `.claude/standards/tasks.md`. What orchestratio
 
 Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles, commit messages, or git tags. See `.claude/standards/versioning.md` for the rules and the why.
 
-## Setup
+## Plugin discovery
 
 Inside the toolkit repository, Claude Code auto-discovers the plugin from `claude/.claude-plugin/plugin.json`. No flag needed.
 
@@ -63,3 +63,5 @@ alias clps='clp --model sonnet'
 ```
 
 For the full alias set covering resume, continue, worktree, and model shortcuts, see [Zshrc aliases for Claude Code](../../wiki/zshrc-aliases.md).
+
+Machine provisioning is a separate concern reachable by the same word. `aitk claude setup` installs user-level Claude config at `~/.claude/` and is covered in `.claude/context/claude-plugin.md`.
