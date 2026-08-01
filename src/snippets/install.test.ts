@@ -66,11 +66,15 @@ describe('resolveSnippets', () => {
   it('should collect every category for all', () => {
     seedSnippet('a-one.md')
     seedSnippet(join('claude', 'two.md'))
-    seedSnippet(join('aitk', 'internal.md'))
+    seedSnippet(join('gemini', 'three.md'))
 
     const resolution = resolveSnippets(root, 'all')
 
-    expect(relPaths(resolution)).toEqual(['a-one.md', 'claude/two.md'])
+    expect(relPaths(resolution)).toEqual([
+      'a-one.md',
+      'claude/two.md',
+      'gemini/three.md',
+    ])
   })
 
   it('should resolve a preset before a folder sharing its name', () => {
@@ -81,17 +85,6 @@ describe('resolveSnippets', () => {
     const resolution = resolveSnippets(root, 'essentials')
 
     expect(relPaths(resolution)).toEqual(['picked.md'])
-  })
-
-  it('should skip a preset slug pointing into the internal category', () => {
-    seedSnippet('kept.md')
-    seedSnippet(join('aitk', 'internal.md'))
-    seedPresets('[essentials]\nnames = ["kept", "aitk/internal"]\n')
-
-    const resolution = resolveSnippets(root, 'essentials')
-
-    expect(relPaths(resolution)).toEqual(['kept.md'])
-    expect(resolution.ok && resolution.missing).toEqual([])
   })
 
   it('should report a preset slug with no source file', () => {

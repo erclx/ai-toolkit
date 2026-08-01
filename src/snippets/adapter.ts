@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { isInternalCategory, snippetsSourceDir } from '@/snippets/categories'
+import { snippetsSourceDir } from '@/snippets/categories'
 import type { InstalledFile, SyncAdapter } from '@/sync/engine'
 
 /**
@@ -29,8 +29,6 @@ function locateSource(
   sourceDir: string,
   file: InstalledFile,
 ): string | undefined {
-  if (isInternalCategory(file.relToRoot)) return undefined
-
   const source = join(sourceDir, file.relToRoot)
   return existsSync(source) ? source : undefined
 }

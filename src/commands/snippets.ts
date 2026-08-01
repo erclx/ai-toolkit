@@ -2,7 +2,7 @@ import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
 import { PROJECT_ROOT } from '@/exec'
 import { createSnippetsAdapter } from '@/snippets/adapter'
-import { BASE_CATEGORY, isInternalCategoryName } from '@/snippets/categories'
+import { BASE_CATEGORY } from '@/snippets/categories'
 import {
   ALL_CATEGORY,
   installSnippets,
@@ -136,14 +136,6 @@ async function runInstall(
     const choice = await chooseCategory(PROJECT_ROOT)
     if (typeof choice === 'number') return choice
     selected = choice
-  }
-
-  if (isInternalCategoryName(selected)) {
-    logError(
-      `Category '${selected}' is internal to the toolkit and not installable.`,
-    )
-    outro()
-    return 1
   }
 
   const resolution = resolveSnippets(PROJECT_ROOT, selected)

@@ -65,6 +65,7 @@ pydantic
 pyproject
 pytest
 pytestmark
+realpath
 repr
 rerank
 reranker

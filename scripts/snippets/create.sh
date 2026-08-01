@@ -9,15 +9,6 @@ source "$PROJECT_ROOT/scripts/lib/ui.sh"
 trap close_timeline EXIT
 
 SNIPPETS_SOURCE="$PROJECT_ROOT/snippets"
-INTERNAL_CATEGORIES=("aitk")
-
-is_internal_category() {
-  local name="$1"
-  for internal in "${INTERNAL_CATEGORIES[@]}"; do
-    [ "$name" = "$internal" ] && return 0
-  done
-  return 1
-}
 
 show_help() {
   echo -e "${GREY}┌${NC}"
@@ -33,10 +24,7 @@ show_help() {
 
 list_categories() {
   echo "base (root, no prefix)"
-  while IFS= read -r name; do
-    is_internal_category "$name" && continue
-    echo "$name"
-  done < <(find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
+  find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
   echo "new category"
 }
 
