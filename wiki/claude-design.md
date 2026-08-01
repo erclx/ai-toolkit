@@ -5,7 +5,7 @@ description: Anthropic's hosted design product, its capabilities, and how it han
 
 # Claude Design
 
-[Claude Design](https://claude.ai/design) is Anthropic's first-party design product from the Anthropic Labs team. It turns text prompts and uploaded references into prototypes, wireframes, mockups, pitch decks, and one-pagers, then packages the result as a handoff bundle that Claude Code consumes in a single instruction. Released 2026-04-17 and powered by Opus 4.7.
+[Claude Design](https://claude.ai/design) is Anthropic's first-party design product from the Anthropic Labs team. It turns text prompts and uploaded references into prototypes, wireframes, mockups, pitch decks, and one-pagers, then packages the result as a handoff bundle that Claude Code consumes in a single instruction. Released 2026-04-17 and powered by Opus 4.7. Source: Anthropic, which builds and hosts the product.
 
 This page covers what Claude Design does, how to use it, and how it fits alongside Claude Code. For where it sits in the broader design tier framework, see [visual design workflow](../docs/visual-design-workflow.md).
 
@@ -102,7 +102,7 @@ The URL returns a gzipped tarball, roughly 60KB for a single-artifact project, n
 The tarball expands into a project folder with this shape:
 
 - `README.md`, a meta-prompt written for coding agents that tells them to read the chat transcripts first, read the primary HTML top to bottom, follow imports, and ask before implementing if anything is ambiguous
-- `chats/`, conversation transcripts preserving the Q&A iteration so the implementer knows intent, not just output
+- `chats/`, conversation transcripts preserving the Q&A iteration so the implementer sees the intent behind the output
 - `project/<artifact>.html`, the primary design file
 - `project/design_system/`, tokens and type scale bundled inline
 - `project/wireframes/`, `project/screenshots/`, `project/wireframe.css`, supporting files

@@ -5,7 +5,7 @@ description: Event hooks, configuration, and behavior control
 
 # Claude Code hooks
 
-Hooks are shell commands that run in response to Claude Code events. The harness executes them, not Claude. Use hooks to enforce rules, auto-format files, inject context, or block actions.
+Hooks are shell commands that run in response to Claude Code events. The harness executes them, not Claude. Use hooks to enforce rules, auto-format files, inject context, or block actions. Source: Anthropic, in the [Claude Code docs](https://code.claude.com/docs).
 
 Configure hooks in `settings.json` under the `hooks` key. Project-level hooks go in `.claude/settings.json` and are shareable via source control. User-level hooks go in `~/.claude/settings.json`.
 

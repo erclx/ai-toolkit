@@ -5,7 +5,7 @@ description: Modes, allow/ask/deny rules, and rule syntax
 
 # Claude Code permissions
 
-Claude Code evaluates every tool call against permission rules before executing. Rules are checked in order: deny beats ask beats allow. The first match wins.
+Claude Code evaluates every tool call against permission rules before executing. Rules are checked in order: deny beats ask beats allow. The first match wins. Source: Anthropic, in the [Claude Code docs](https://code.claude.com/docs).
 
 ## Permission modes
 

@@ -7,7 +7,7 @@ description: When and how a skill should spawn a subagent, parallel vs sequentia
 
 A subagent is a separate Claude session spawned from the main thread through the `Agent` tool. It runs in its own fresh context, does its own tool calls, and returns a single final message to the parent. Subagents are the right tool when a task needs independence, isolation, or parallel lenses that a same-session invocation cannot give.
 
-See [Anthropic's subagent docs](https://code.claude.com/docs/en/sub-agents) and the [SDK reference](https://code.claude.com/docs/en/agent-sdk/subagents) for the canonical behavior.
+Source: Anthropic, in the [subagent docs](https://code.claude.com/docs/en/sub-agents) and the [SDK reference](https://code.claude.com/docs/en/agent-sdk/subagents), which carry the canonical behavior.
 
 ## What a subagent sees
 
@@ -35,7 +35,7 @@ Three cases justify a subagent. If none apply, a same-session step is cheaper an
 
 ### Independence
 
-The subagent must not inherit reasoning from the caller. Code review is the canonical case. An implementer's context biases the reviewer toward rationalizing the approach that was just written. A cold subagent starts from the diff and the standards and sees the code the way a new reviewer would.
+The subagent must not inherit reasoning from the caller. Code review is the canonical case. An implementer's context biases the reviewer toward rationalizing the approach already on the page. A cold subagent starts from the diff and the standards and sees the code the way a new reviewer would.
 
 The [claude-autoship skill](../claude/skills/claude-autoship/SKILL.md) uses this pattern in step 5: it spawns a subagent to invoke `aitk:claude-review` so the review cannot absorb implementation context from the same session.
 
@@ -53,15 +53,15 @@ A foreground subagent blocks the main conversation until it returns, and this is
 
 Run subagents sequentially when a later one needs output from an earlier one, or when ordering matters for user-visible state, such as review before ship. The cost is wall time.
 
-Do not fan out just because you can. Each spawned subagent pays its own startup and context cost. If the work is small, inline it. For sustained independent work rather than a single delegated task, a background session is the better tool. See the [background sessions](claude-worktrees.md#background-sessions) section for the worktree-isolated variant.
+Fan out only when the work earns it. Each spawned subagent pays its own startup and context cost. If the work is small, inline it. For sustained independent work rather than a single delegated task, a background session is the better tool. See the [background sessions](claude-worktrees.md#background-sessions) section for the worktree-isolated variant.
 
 ## Pitfalls
 
-- Under-briefed prompts. The subagent cannot see what the parent knows. Write the prompt as if onboarding a colleague who just walked in: goal, relevant file paths, constraints, and what "done" looks like.
+- Under-briefed prompts. The subagent cannot see what the parent knows. Write the prompt as if onboarding a colleague on their first day: goal, relevant file paths, constraints, and what "done" looks like.
 - Confusing subagents with skills. A skill is reusable instructions the main agent follows. A subagent is a separate session. Skills with `context: fork` become subagent invocations at runtime, but a plain `/skill-name` call does not.
 - Over-delegation. Spawning a subagent for a two-file read wastes time and hides the work from the user. The parent should handle anything where the full context already fits and the reasoning is not required to be cold.
 - Filesystem agent staleness. Edits to `.claude/agents/*.md` take effect only on session restart.
-- Windows prompt length. Very long prompts can hit the 8191-character command-line limit on Windows. Split or shorten before passing.
+- Windows prompt length. Long prompts can hit the 8191-character command-line limit on Windows. Split or shorten before passing.
 - Hidden risky decisions. A subagent's internal steps are not visible to the user in the main transcript. Do not delegate work with irreversible side effects without a review step in the parent.
 
 ## Related

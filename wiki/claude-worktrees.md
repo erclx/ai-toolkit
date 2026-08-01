@@ -7,7 +7,7 @@ description: Running parallel sessions on independent branches
 
 Each Claude Code conversation is a session tied to the current working directory. Sessions for a directory are stored under `~/.claude/projects/<sanitized-path>/`. A git worktree is a separate working directory on a separate branch, so a worktree gets its own session scope, its own transcripts, and its own `/resume` history. Two worktrees means two independent sessions, and those sessions can run in parallel.
 
-See [how Claude Code works](https://code.claude.com/docs/en/how-claude-code-works) and the [parallel sessions workflow](https://code.claude.com/docs/en/common-workflows) for the canonical behavior.
+Source: Anthropic for the session behavior, in [how Claude Code works](https://code.claude.com/docs/en/how-claude-code-works) and the [parallel sessions workflow](https://code.claude.com/docs/en/common-workflows). Worktrees themselves are a Git feature.
 
 ## Ways to create a worktree
 

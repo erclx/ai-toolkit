@@ -5,7 +5,7 @@ description: Read-only exploration and plan approval flow
 
 # Claude Code plan mode
 
-Plan mode tells Claude to research and propose changes without executing them. Claude reads files and explores the codebase freely, but does not edit files or run commands. Use it when you want to see the full approach before anything changes.
+Plan mode tells Claude to research and propose changes without executing them. Claude reads files and explores the codebase freely, but does not edit files or run commands. Use it when you want to see the full approach before anything changes. Source: Anthropic, in the [Claude Code docs](https://code.claude.com/docs).
 
 ## Entering plan mode
 

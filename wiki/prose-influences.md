@@ -5,7 +5,7 @@ description: Industry style guides behind prose.md and AI-specific additions
 
 # Prose influences
 
-The rules in `.claude/standards/prose.md` draw from three industry style guides plus AI-specific additions.
+The rules in `.claude/standards/prose.md` draw from three industry style guides plus AI-specific additions. Source: Google, Microsoft, and Apple, whose guides are linked in the table below.
 
 ## Industry guides
 
