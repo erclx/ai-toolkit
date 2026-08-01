@@ -34,7 +34,8 @@ One feature travels this path end to end.
 3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 5. Worker addresses the findings with `claude-address-review`, then pushes a follow-up.
-6. The human reads the result and merges. The orchestrator tells any trailing worker to rebase when its branch shares a seam with the merged one.
+6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added and posts under `## Review closed`, so the thread shows one review ending rather than a second one opening.
+7. The human reads the result and merges. The orchestrator tells any trailing worker to rebase when its branch shares a seam with the merged one.
 
 There is no loop construct here. Each worker is a single build that halts at the
 PR. The merge stays a manual human gate. Reliability comes from the plan being
@@ -57,10 +58,14 @@ merge is the final gate. No layer repeats another.
 
 Review travels on the PR, not through chat. `claude-pr-review` posts findings to
 the PR. `claude-address-review` reads them back, fixes each, replies or resolves
-the threads, and pushes a follow-up. The feedback becomes a durable artifact
-both sessions read, survives a session ending, and anchors to the change. That
-removes the copy-paste that otherwise routes review through the human between
-two sessions.
+the threads, and pushes a follow-up. `claude-pr-review` then runs a second time
+to close the review out, reading only what the follow-up added.
+
+The two passes carry different headings, `## Review` and `## Review closed`, so
+a thread can be scanned for state without opening either comment. The feedback
+becomes a durable artifact both sessions read, survives a session ending, and
+anchors to the change. That removes the copy-paste that otherwise routes review
+through the human between two sessions.
 
 ## Feature sizing
 
