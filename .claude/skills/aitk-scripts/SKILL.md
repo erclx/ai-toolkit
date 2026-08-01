@@ -7,6 +7,11 @@ description: CLI entry point, bash scripts, sandbox scenarios, and lib functions
 
 Read `.claude/context/scripts.md` for structure, file inventory, and lib responsibilities before editing.
 
+## Editing files
+
+- Edit a structured file with the file-editing tool, never a stream editor. An unescaped `&` in a `sed` replacement expands to the whole match and silently rewrites the line it was anchored to, and `sed -i` exits zero when its pattern matches nothing, so a `||` fallback never fires. `awk -i inplace` and `perl -pi` share both failure modes.
+- The file-editing tool errors on a non-match and has no replacement metacharacters, which is what makes it the safe path. Reserve stream editors for a filter that writes to stdout and gets read before it is used.
+
 ## Lib rules
 
 - Each lib file owns one concern. Read `.claude/context/scripts.md` for responsibilities before adding or modifying.

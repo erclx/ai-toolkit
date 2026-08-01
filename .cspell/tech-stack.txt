@@ -31,10 +31,12 @@ glama
 gsub
 heredoc
 httpx
+inplace
 kwargs
 labelledby
 lucide
 mermaid
+metacharacters
 mktemp
 modelcontextprotocol
 modelfile
