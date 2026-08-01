@@ -39,8 +39,10 @@ Coding standards from `.claude/rules/` are auto-loaded by Claude Code.
 Find the commit the last pass covered:
 
 ```bash
-gh pr view <number> --json reviews --jq '[.reviews[] | select(.body // "" | startswith("## Review"))] | last | .commit.oid'
+gh pr view <number> --json reviews --jq '[.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .commit.oid'
 ```
+
+Match the first line for equality against the two headings this skill posts. A prefix test also matches `## Review response` and any heading merely starting with those words, which would scope the close-out to whatever commit that comment carried. The `\r` trim covers a body composed in the GitHub web editor, which stores CRLF.
 
 An empty result is a first pass. Read the whole change:
 

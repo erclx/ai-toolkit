@@ -71,11 +71,11 @@ rerank
 reranker
 rlength
 rstart
+rtrimstr
 semgrep
 setattr
 sidepanel
 soffice
-startswith
 statusline
 streamable
 subgraph
