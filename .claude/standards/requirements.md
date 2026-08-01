@@ -30,7 +30,7 @@ Use `## Problem`, `## Goals`, `## Non-goals`, `## MVP features`, `## Tech stack`
 
 The MVP list is a historical record of the original scope. Once those features ship it stays as written. Do not renumber it, do not append to it, and do not annotate entries with status. A reader telling the original scope apart from what followed depends on the first one staying legible.
 
-Later scope arrives as a new section rather than as an extension of the MVP list. Name the section for what it delivers and state its entries as outcomes, the same way the goals are stated. The roadmap standard sends a project here once its last version ships, and this is the pass it means.
+Later scope arrives as a new section rather than as an extension of the MVP list. Name the section for what it delivers and state its entries as outcomes, the same way the goals are stated. A roadmap sequences the MVP list alone, so a later scope section is sequenced by a fresh pass rather than folded into the roadmap that already shipped. The roadmap standard sends a project here once its last version ships, and this is the pass it means.
 
 ## Distribution
 
@@ -52,6 +52,8 @@ State each entry as an outcome the consumer reaches, never as the mechanism that
 ## MVP features
 
 1. Feature: description
+
+<!-- ## Distribution: include only when shipping outside the repository -->
 
 ## Tech stack
 
