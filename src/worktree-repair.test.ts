@@ -8,15 +8,22 @@ const LIB = join(import.meta.dirname, '../scripts/lib/worktree.sh')
 
 let root: string
 
+// Every inherited GIT_* var is dropped before the fixtures are built. A git hook
+// exports GIT_DIR, so a run under pre-push would otherwise resolve `git -C
+// real-bare.git` against the toolkit's own repository and the genuinely-bare case
+// would pass for the wrong reason. Isolating config also drops the commit
+// identity, hence the ident vars.
+const gitFreeEnv = (): NodeJS.ProcessEnv =>
+  Object.fromEntries(
+    Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_')),
+  )
+
 const sh = (script: string): string =>
   execFileSync('bash', ['-c', script], {
     cwd: root,
     encoding: 'utf8',
-    // The repair reads and writes git config, so the fixtures are isolated from
-    // the developer's own. That drops the identity a commit needs, hence the four
-    // ident vars.
     env: {
-      ...process.env,
+      ...gitFreeEnv(),
       GIT_AUTHOR_EMAIL: 'test@example.com',
       GIT_AUTHOR_NAME: 'test',
       GIT_COMMITTER_EMAIL: 'test@example.com',
