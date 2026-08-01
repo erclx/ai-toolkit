@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/erclx/aitk/compare/v0.4.0...v0.4.1) (2026-08-01)
+
+
+### Bug Fixes
+
+* **orchestrate:** stop asserting an active version with no source ([#670](https://github.com/erclx/aitk/issues/670)) ([4b88086](https://github.com/erclx/aitk/commit/4b88086369740a2fe07c19f138c080f7ca3c221d))
+
 ## [0.4.0](https://github.com/erclx/aitk/compare/v0.3.1...v0.4.0) (2026-08-01)
 
 
