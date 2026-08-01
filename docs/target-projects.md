@@ -12,12 +12,14 @@ This doc stays at the narrative layer. For command flags and JSON shapes, see [a
 
 ## Getting the skills
 
-The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and a push reaches the machine on the next refresh.
+The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and updates arrive on release, so an upstream push does not reach an installed copy.
 
 ```bash
-claude plugin marketplace add erclx/aitk
+claude plugin marketplace add https://github.com/erclx/aitk
 claude plugin install aitk@aitk
 ```
+
+The URL form clones over HTTPS. The `erclx/aitk` shorthand resolves to SSH and fails on a machine with no key configured.
 
 The `aitk` CLI is separate. Twenty skills invoke it in a command position, and a marketplace install does not put it on `PATH`, so a project that leans on those skills still wants the CLI linked from a clone. See the [readme](../README.md) for that path.
 
