@@ -17,7 +17,7 @@ Target projects scale by splitting context across three loading tiers. Knowing w
 | Path-scoped lazy | `.claude/rules/<scope>.md` with `paths:` frontmatter                                       | Lazy by glob match when files are read               | Do/don't rules, naming and pattern conventions for a file scope                                           |
 | On-demand lookup | `.claude/context/<domain>.md`, `.claude/wireframes/<surface>.md`, `.claude/wiki/<page>.md` | Read by Claude when the domain or surface is touched | Per-domain narrative, per-surface layout intent, and tooling or workflow reference, indexed for discovery |
 
-`.claude/context/<domain>.md` is the new tier introduced for larger projects. It exists because nested `CLAUDE.md` files would auto-load along the cwd's ancestor chain and bloat context as a session walks the repo. The `index.md` lookup pattern keeps the cost on-demand.
+`.claude/context/<domain>.md` is the new tier introduced for larger projects. It exists for discoverability rather than for load cost. A nested `CLAUDE.md` below the cwd loads lazily when its subtree is read, so it is already cheap, and what it lacks is any signal that it exists. The `index.md` catalog lists every entry up front, so a session picks the one it needs before touching the domain.
 
 ## Layout
 
