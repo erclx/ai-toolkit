@@ -2,3 +2,6 @@
 
 # release-please rewrites these on every release and serializes them its own way
 **/.claude-plugin/*.json
+
+# hand-authored, no tool writes it, so it keeps its format gate
+!.claude-plugin/marketplace.json
