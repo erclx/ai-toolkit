@@ -47,11 +47,11 @@ For each row, determine merge state of its branch:
    - `OPEN`: state is `open`, record PR number and URL.
    - `CLOSED`: state is `closed` (not merged), record PR number.
    - Command fails or returns no PR: fall through.
-3. Fallback: `git branch --merged main 2>/dev/null | grep -qx "  <branch>"` to detect linear-merge ancestry. On match, mark `merged (local)`. Otherwise `unmerged`.
+3. Fallback: `git branch --merged main --format='%(refname:short)' 2>/dev/null | grep -qx "<branch>"` to detect linear-merge ancestry. On match, mark `merged (local)`. Otherwise `unmerged`. Match the name alone. Without `--format`, git decorates the current branch with `*` and every branch checked out in a linked worktree with `+`, which is the whole set being enumerated.
 
 Determine dirtiness: `git -C <path> status --porcelain` non-empty means `dirty`.
 
-Determine current: the row whose `path` matches the session's current worktree path (from `MAIN_ROOT` enumeration compared to `pwd`).
+Determine current: the row whose `path` equals `git rev-parse --show-toplevel`. Resolve the root rather than comparing `pwd`, which equals the worktree root only when the session sits at the top of it. A session in any subdirectory would match no row, and the current-worktree exclusion in `cleanup` would pass its own worktree into the remove set.
 
 ## `list` mode
 

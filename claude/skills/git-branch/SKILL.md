@@ -3,7 +3,7 @@ name: git-branch
 description: Generates and validates conventional branch names. Use for any branch naming or renaming.
 ---
 
-# Git Branch
+# Git branch
 
 Before generating a branch name, read:
 

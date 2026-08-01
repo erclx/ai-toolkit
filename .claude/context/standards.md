@@ -43,7 +43,7 @@ Owns the markdown docs defining developer workflow conventions. They install int
 
 `standards/bundled/standard.md` carries two rules that govern the standards themselves rather than the docs they produce.
 
-A standard states a success criterion, near the top and above the shape rules. Specifying structure exhaustively and success nowhere leaves nothing to argue a proposed change against, so the standard gets edited on whichever input arrived most recently. `standards/context.md` was the first to gain one, as `## What a working entry looks like`.
+A standard states a success criterion, near the top and above the shape rules. Specifying structure exhaustively and success nowhere leaves nothing to argue a proposed change against, so the standard gets edited on whichever input arrived most recently. `standards/context.md` was the first to gain one, as `## What a working entry looks like`. `standards/skill.md` gained the second under `## Requirement`, scoped to the requirement file rather than the skill, because writing eight of them is the work that exercised it.
 
 A standard then changes on a failure rather than on a finding. A finding is that the vendor docs say X or a paper suggests Y, and it goes to the task board as a hypothesis. A failure is an artifact that satisfied every shape rule and still missed the criterion, and it edits the standard. The change cites the failing artifact.
 

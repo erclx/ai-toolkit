@@ -69,6 +69,18 @@ Read it before editing the skill. When a change closes no gap the requirement st
 
 Write the gaps from what the skill is for, then compare the body against them. Deriving the requirement from the body is circular, because a requirement reverse-engineered from an overfitted skill records the overfitting as the requirement.
 
+Not every skill needs one. A body short enough to read as its own specification already answers the questions below, and the file is worth writing when the skill's scope is arguable rather than obvious. Length is a weak proxy for that, since a short skill with a contested boundary earns one and a long skill doing one plain thing may not.
+
+### What a working requirement looks like
+
+A requirement works when a proposed change to the skill can be settled by reading it alone, without re-deriving what the skill is for:
+
+- Does this change close a gap the file states?
+- Does a line already in the body trace to one of those gaps?
+- Does this behavior belong to this skill or to a sibling the file names?
+
+A requirement that leaves any of the three open is non-conforming regardless of whether it satisfies every shape rule below. The third question is what makes a requirement worth more than a restated description, because a boundary stated only in prose is never checked against the skill on the other side of it.
+
 - State each gap as an observed failure, not an intent. "Without this skill a session invents its own filename" can be shown wrong. "This skill helps manage tasks" cannot fail, so it constrains nothing.
 - Trace everything under `## Must` to a stated gap. A `Must` with no gap behind it is the padding the file exists to prevent.
 - Keep it high level. A requirement that outgrows one file has stopped being a requirement, and `references/` already holds detail.
