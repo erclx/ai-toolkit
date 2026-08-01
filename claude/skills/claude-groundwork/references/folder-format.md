@@ -81,7 +81,7 @@ Evidence by experiment, sitting beside the evidence by measurement `01-current-s
 Each spike carries four things:
 
 - The open question it answers, named by file and number. A spike attached to no question is the same runaway the current-state file is capped against.
-- The method, stated fully enough for a later reader to re-run it. Name the fixture, the exact command, and how many repetitions were run.
+- The method, stated fully enough for a later reader to re-run it. Name the fixture and where it lived, the exact command, and how many repetitions were run. A headless arm pointed at a fixture inside the repository measured the repository, so the fixture location is part of whether the result stands.
 - The result, and which question it closes. A spike that settles nothing is still recorded, so a later pass does not pay to learn the same thing twice.
 - The measured cost, and the caveats that bound what the result proves.
 

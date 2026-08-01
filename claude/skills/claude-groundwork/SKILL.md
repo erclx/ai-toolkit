@@ -19,7 +19,7 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 
 - Write only inside `.claude/.tmp/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
 - One exception, at close only: write one task file recording what the track concluded.
-- A second exception, for experiments: write a fixture a spike needs under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/.tmp/groundwork/` so mode detection never matches a fixture as a track.
+- A second exception, for experiments: write a fixture a spike needs under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/.tmp/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Every claim about a source outside the project carries a link to it. A source found and not read is listed as a lead and is never cited.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
@@ -29,10 +29,12 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 A track may run an experiment to settle an open question without stopping to ask. What it takes depends on what the experiment does.
 
 - Reading or computing: run it. Unrestricted reading already covers this, and it is what most spikes turn out to be.
-- Writing a fixture: run it, under the fixtures path above. Provisioning is the usual blocker rather than spend, and it costs nothing.
+- Writing a fixture this session reads or provisions itself: run it, under the fixtures path above. Provisioning is the usual blocker rather than spend, and it costs nothing.
 - Spawning a billed headless session: run up to three, then ask before spawning more. The bound is a run count rather than a budget, because a headless run reports its total cost only after it finishes, so a dollar ceiling is reportable and not enforceable while a run count is checkable before spawning.
 
-Record method, result, measured cost, and caveats in `08-spikes.md`. Reach for a test harness the project already carries before building one.
+A fixture a headless run is pointed at goes outside the repository, under `mktemp -d`, and never under `.claude/.tmp/`. A session started anywhere beneath the project root loads that project's `CLAUDE.md`, `.claude/rules/`, and `.claude/standards/` through the ancestor chain, so an in-repo fixture measures the repository instead of the arm. Record the fixture as contaminated and re-run it outside if this is discovered after the fact, because the result reads as evidence either way.
+
+Record method, result, measured cost, and caveats in `08-spikes.md`. Reach for a test harness the project already carries before building one, and copy how it isolates its fixture rather than only what it asserts.
 
 ## Step 1: detect the mode
 
