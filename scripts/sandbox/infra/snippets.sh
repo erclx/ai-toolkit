@@ -16,7 +16,6 @@ stage_setup() {
   while IFS= read -r file; do
     local rel parent
     rel="${file#"$src_snippets/"}"
-    [ "${rel%%/*}" = "aitk" ] && continue
     parent=$(dirname "sync/.claude/snippets/$rel")
     mkdir -p "$parent"
     cp "$file" "sync/.claude/snippets/$rel"
@@ -24,7 +23,7 @@ stage_setup() {
 
   local root_snippet nested_snippet
   root_snippet=$(find "$src_snippets" -maxdepth 1 -type f -name "*.md" | sort | head -n 1)
-  nested_snippet=$(find "$src_snippets" -mindepth 2 -type f -name "*.md" -not -path "$src_snippets/aitk/*" | sort | head -n 1)
+  nested_snippet=$(find "$src_snippets" -mindepth 2 -type f -name "*.md" | sort | head -n 1)
   echo "<!-- stale -->" >>"sync/.claude/snippets/${root_snippet#"$src_snippets/"}"
   echo "<!-- stale -->" >>"sync/.claude/snippets/${nested_snippet#"$src_snippets/"}"
   echo "# project local" >"sync/.claude/snippets/project-only.md"

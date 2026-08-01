@@ -1,8 +1,6 @@
 import { readdirSync } from 'node:fs'
-import { join, sep } from 'node:path'
+import { join } from 'node:path'
 import { isDirectory } from '@/target'
-
-const INTERNAL_CATEGORIES = new Set(['aitk'])
 
 export const BASE_CATEGORY = 'base'
 
@@ -10,24 +8,13 @@ export function snippetsSourceDir(root: string): string {
   return join(root, 'snippets')
 }
 
-export function isInternalCategoryName(name: string): boolean {
-  return INTERNAL_CATEGORIES.has(name)
-}
-
 /**
- * Reads the first path segment as a category. Snippets also live directly under
- * `snippets/`, where that segment is a filename rather than a category, so the
- * check has to tolerate a bare name instead of assuming every entry is nested.
- */
-export function isInternalCategory(relToRoot: string): boolean {
-  const [top] = relToRoot.split(sep)
-  return top !== undefined && isInternalCategoryName(top)
-}
-
-/**
- * Lists the folder categories, internal ones filtered out. `base` is the
- * synthetic name for snippets sitting directly under `snippets/`, so it is not
- * a directory and callers prepend it themselves.
+ * Lists the folder categories. `base` is the synthetic name for snippets
+ * sitting directly under `snippets/`, so it is not a directory and callers
+ * prepend it themselves.
+ *
+ * Nothing is filtered: toolkit-internal snippets are authored under `internal/`,
+ * which this never reads, so every category found here is publishable.
  */
 export function listFolderCategories(root: string): string[] {
   const dir = snippetsSourceDir(root)
@@ -36,7 +23,6 @@ export function listFolderCategories(root: string): string[] {
   return readdirSync(dir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
-    .filter((name) => !isInternalCategoryName(name))
     .sort()
 }
 

@@ -65,15 +65,6 @@ describe('createSnippetsAdapter', () => {
     ).toBeUndefined()
   })
 
-  it('should return undefined for an internal-category snippet that exists at source', () => {
-    writeFixture(join(TOOLKIT, 'snippets/aitk/format-edits.md'), 'a')
-    const adapter = createSnippetsAdapter(TOOLKIT)
-
-    expect(
-      adapter.locateSource(installedFile(join('aitk', 'format-edits.md'))),
-    ).toBeUndefined()
-  })
-
   it('should return undefined for a snippet the toolkit no longer ships', () => {
     writeFixture(join(TOOLKIT, 'snippets/compact-summary.md'), 'a')
     const adapter = createSnippetsAdapter(TOOLKIT)

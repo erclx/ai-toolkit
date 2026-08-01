@@ -5,7 +5,6 @@ import {
   BASE_CATEGORY,
   categoryDir,
   categoryExists,
-  isInternalCategory,
   listCategories,
   listEntries,
   snippetsSourceDir,
@@ -79,7 +78,6 @@ export function resolveSnippets(
     const missing: string[] = []
 
     for (const slug of preset.slugs) {
-      if (isInternalCategory(`${slug}.md`)) continue
       const src = join(snippetsSourceDir(root), `${slug}.md`)
       if (existsSync(src)) files.push({ src, relPath: `${slug}.md` })
       else missing.push(slug)

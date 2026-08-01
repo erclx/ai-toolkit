@@ -38,17 +38,6 @@ describe('buildSnippetsCatalog', () => {
     })
   })
 
-  it('should omit the internal category from the catalog', () => {
-    seedSnippet(join('aitk', 'internal.md'))
-    seedSnippet(join('claude', 'two.md'))
-
-    const names = buildSnippetsCatalog(root).categories.map(
-      (category) => category.name,
-    )
-
-    expect(names).toEqual(['base', 'claude'])
-  })
-
   it('should serialize a name carrying a quote as valid JSON', () => {
     seedSnippet('say "hi".md')
 
