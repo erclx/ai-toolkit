@@ -24,9 +24,7 @@ show_help() {
 
 list_categories() {
   echo "base (root, no prefix)"
-  while IFS= read -r name; do
-    echo "$name"
-  done < <(find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
+  find "$SNIPPETS_SOURCE" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
   echo "new category"
 }
 

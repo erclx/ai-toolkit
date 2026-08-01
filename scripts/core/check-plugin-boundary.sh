@@ -16,6 +16,14 @@ if [ ! -d "$PLUGIN_ROOT" ]; then
   exit 1
 fi
 
+# `realpath` resolves each walked path below. Absent, `set -e` aborts on the
+# substitution and the stage reports a leak for a tool that is not installed,
+# which is the same unmeasured-tree-with-a-verdict shape the guard above closes.
+if ! command -v realpath >/dev/null 2>&1; then
+  echo "realpath is not installed, boundary unverifiable." >&2
+  exit 1
+fi
+
 # The plugin reaches `standards/` and `snippets/` through symlinks, which an
 # installer dereferences with no code in the path to filter. Walking the plugin
 # tree with symlinks followed is what an install actually copies, so resolving
