@@ -75,11 +75,12 @@ The filter, the match, and the session id come out of one `jq` pass, so the hot 
 - `pre-commit` runs `lint-staged` (prettier, cspell, shfmt, shellcheck on staged files).
 - `commit-msg` runs `commitlint` against the conventional commit format.
 - `pre-push` runs `bun run check`. After pushing, run `git status`. If files changed, commit the diff as `style(<scope>):` and push again.
-- `post-merge` names the tasks whose outcomes are all `[x]` and stays silent otherwise. It is the only trigger that fires after a merge, covered in `claude-plugin.md`.
+- `post-merge` names the board's archive candidates and stays silent otherwise. It is the only trigger that fires after a merge, covered in `claude-plugin.md`.
+- `post-rewrite` delegates to `post-merge` on the `rebase` argument, so a `pull.rebase=true` machine gets the same check. It exits on `amend`, which rewrites nothing on the board.
 
-Husky runs every hook as `sh -e "$hook"`, so the shebang on `post-merge` is advisory and the file is POSIX sh under errexit whatever it declares. A bare `grep` that matches nothing aborts the hook and prints a husky failure on a clean pull, which is why each test sits inside an `if` condition rather than standing alone. Errexit exempts a condition and nothing else.
+Husky runs every hook as `sh -e "$hook"`, so the shebang on both is advisory and the file is POSIX sh under errexit whatever it declares. A bare `grep` that matches nothing aborts the hook and prints a husky failure on a clean pull, which is why each test sits inside an `if` condition rather than standing alone. Errexit exempts a condition and nothing else.
 
-`check:shell` globs `*.sh` under `scripts`, `tooling`, and `.claude/hooks`, so no husky hook is linted. That cost nothing while all three were one-liners and now leaves one real script uncovered. Run `shellcheck --shell=sh .husky/post-merge` by hand after editing it.
+`check:shell` globs `*.sh` under `scripts`, `tooling`, and `.claude/hooks`, so no husky hook is linted. That cost nothing while all three were one-liners and now leaves two real scripts uncovered. Run `shellcheck --shell=sh .husky/post-merge .husky/post-rewrite` by hand after editing either.
 
 ## Session scratch
 

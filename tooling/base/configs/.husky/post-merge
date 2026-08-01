@@ -1,10 +1,17 @@
 #!/usr/bin/env sh
 
-# Reports tasks whose outcomes are all `[x]` after a pull merges work in.
+# Names archive candidates after a pull merges work in.
 #
 # Every step before the merge fires from a chain and the archive fires when a
 # person remembers, so shipped tasks accumulate on a board that reads as ready
 # to hand a worker. This is the only event that lands after a merge.
+#
+# Candidates rather than closed tasks, because an all-`[x]` board entry does not
+# mean the work merged. `claude-docs` marks outcomes on the branch as step 1 of
+# the ship chain, so a task can read closed while its pull request is still open
+# or already abandoned. The board is gitignored and an archived task has nothing
+# to recover it, so `claude-tasks` confirms the work is on `main` before moving
+# anything and this output says so rather than implying the check is done.
 #
 # It announces and never moves a file. The board is gitignored, so a shell-side
 # archive leaves no diff to review with nobody watching, and `index.md` is
@@ -49,5 +56,6 @@ done
 
 [ "$count" -gt 0 ] || exit 0
 
-printf '\n📋 %s task(s) closed on the board:\n%s\n' "$count" "$closed"
-printf 'Archive with /claude-tasks, which sweeps the plan first.\n\n'
+printf '\n📋 %s archive candidate(s) on the board:\n%s\n' "$count" "$closed"
+printf 'Outcomes are marked on the branch, so each still needs its work confirmed\n'
+printf 'on main. Run /claude-tasks, which checks that and sweeps the plan first.\n\n'

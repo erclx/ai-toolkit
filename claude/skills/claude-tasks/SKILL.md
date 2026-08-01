@@ -48,13 +48,23 @@ Report rather than prompt. A track can be opened long after its task would have 
 
 ## Archive
 
-The `post-merge` git hook announces tasks whose outcomes are all `[x]` after a pull, so a request to archive often arrives already naming the file. It prints and moves nothing, so every step below still runs against a board the hook left untouched.
+The `post-merge` git hook names archive candidates after a pull, so a request to archive often arrives already naming the file. It prints and moves nothing, and it cannot tell whether the work merged, so every step below still runs against a board the hook left untouched.
 
 ### Step 1: check the outcomes
 
 Read the task file. Continue only when every outcome is `[x]`. When one is unchecked, name it and stop: `❌ <n> outcome(s) still open. Close them or cut them from the task, then archive.`
 
 An unchecked box means one of two things and neither is a reason to archive around it. The outcome shipped and nothing marked it, since `claude-docs` marks from the diff rather than from the conversation, in which case run `claude-docs` and archive after. Or the outcome is genuinely open, in which case the task belongs on the board. A task being abandoned rather than finished is the third case, and it cuts its outcomes first, so the board records what was dropped rather than leaving a reader to infer it from an archived file.
+
+Then confirm the work reached `main`. `claude-docs` marks outcomes on the branch as step 1 of the ship chain, so an all-`[x]` task routinely describes a pull request that is still open, and the outcome check alone cannot tell the two apart:
+
+```bash
+git fetch origin main --quiet && git log origin/main --oneline -20
+```
+
+Match the shipped outcomes against that log, widening to `gh pr list --state merged --limit 20` when a remote is configured and the log does not settle it. When the work is not on `main`, name the task and stop: `❌ Work not on main. Archiving now loses the task if the pull request is abandoned.`
+
+The board is gitignored, so an archived task has no history behind it and nothing restores one archived early. That is the failure the trigger's own design ruled the ship chain out for, and marking happening before the merge is what puts this check here rather than upstream.
 
 Stopping here is what lets Step 2 route to `claude-docs` and mean it. That sweep only reaches tasks whose outcomes are all `[x]`, so admitting an open outcome past this point would send the caller to a skill that provably declines, and returning from it would fire the same guard again.
 
