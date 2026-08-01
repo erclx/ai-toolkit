@@ -126,6 +126,8 @@ Five of five. Weigh it as the pre-registration says to: the harness has now conf
 
 The Markdown section says to follow `.claude/standards/prose.md` when editing any markdown file. The session edited `README.md` and never opened `prose.md`, or any file under `.claude/standards/`, at any point in 32 turns. The rule was in context, the trigger fired, and the referenced document went unread. A rule that names a path the session will not open is a rule that does not run.
 
+Read this one with the confound named in run 02 below. The fixture installed no governance, so `500-prose.md` was absent and the seed's weaker inline wording was the only prose instruction present. The finding stands as far as it goes, that the seed's own wording did not move the session, but it is not evidence about a correctly scaffolded project and it was wrongly used to justify cutting the section.
+
 ## Findings the run produced outside the split
 
 Two defects in the seed surface, neither of which a reading pass had found.
@@ -140,7 +142,7 @@ The `bun run check` failure is a fixture artifact rather than a seed defect. The
 
 `cost_usd: 1.00704 | turns: 26`, against an 86-line seed with the `base` governance stack installed. Run 01 was 32 turns and $1.18 against 96 lines with no governance, so the two differ on both the artifact and the fixture and neither number isolates a cause.
 
-Cut between the runs: the `## Markdown` section, the tasks-index bullet, and the Context tier taxonomy. Tightened: eight bullet periods, the Indexes pair, the Context on-demand bullet.
+Cut between the runs: the `## Markdown` section, the tasks-index bullet, and the Context tier taxonomy. Tightened: eight bullet periods, the Indexes pair, the Context on-demand bullet. Review later reverted the `## Markdown` cut, so run 02 measured a seed three lines shorter than the one this branch ships. Nothing it found bears on those three lines, but the run is not a test of the final artifact and should not be read as one.
 
 Seed surface reached, after the reporting correction below:
 
@@ -165,17 +167,21 @@ Judged against the pre-registered criteria, run 02 passes four and cannot score 
 
 The task asks for the two to be reconciled where they diverge, or the divergence stated. Section inventories after the cuts, the toolkit root at 154 lines against the seed at 86:
 
-| Section                                                                                    | Root   | Seed                      |
-| ------------------------------------------------------------------------------------------ | ------ | ------------------------- |
-| Behavior, Indexes, Commands, Output, Key paths, Spelling, Snippets, Tasks, Memory, Scratch | yes    | yes                       |
-| Design principles, After editing, Conventions, Content ownership, System overview, Wiki    | yes    | no                        |
-| Context                                                                                    | no     | yes                       |
-| Parallel sessions, called Worktrees in the seed                                            | yes    | yes                       |
-| Markdown                                                                                   | **no** | **no, as of this change** |
+| Section                                                                                    | Root | Seed              |
+| ------------------------------------------------------------------------------------------ | ---- | ----------------- |
+| Behavior, Indexes, Commands, Output, Key paths, Spelling, Snippets, Tasks, Memory, Scratch | yes  | yes               |
+| Design principles, After editing, Conventions, Content ownership, System overview, Wiki    | yes  | no                |
+| Context                                                                                    | no   | yes               |
+| Parallel sessions, called Worktrees in the seed                                            | yes  | yes               |
+| Markdown                                                                                   | no   | yes, deliberately |
 
 Six root-only sections are toolkit-specific and correctly absent from a seed: a domain-to-skill routing table, a content-ownership map, and a wiki convention describe this repository rather than a project scaffolded from it.
 
-The last row is the reconciliation and it was found by comparing rather than by arguing. The root file carries no `## Markdown` section and never has. It routes prose through `.claude/rules/claude/500-prose.md` and has done since governance shipped. The seed carried a weaker inline copy of the same rule, missing the `Read it before a substantial prose edit` line the rule version has. Cutting that section did not create a divergence, it closed one, and the root file had already made the same call.
+The last row is the reconciliation and it is the one place the two files should differ. The root file carries no `## Markdown` section and never has, routing prose through `.claude/rules/claude/500-prose.md` since governance shipped. This session cut the seed's inline copy to match, and review reverted the cut.
+
+The revert is the finding worth keeping. The toolkit has governance installed, so the root file can rely on it. A seed cannot: `init.ts:151` skips governance entirely without `--stack` while `init.ts:166` installs standards regardless, so cutting the pointers left a bare `aitk init` with `.claude/standards/prose.md` on disk and nothing referring to it. Duplication that reads as redundant against one install path is the only thing holding up another. The seed's copy was restored carrying the `Read it before a substantial prose edit` line it had been missing, so the weaker-wording divergence closed even though the structural one stayed open. It ends when `--stack` defaults to `base`, tracked as `v24.3`.
+
+This is also a caution about the method. The cut had a written justification, a governance rule cited by number for each bullet, and a section inventory backing it, and it was still wrong. Verifying that a rule exists somewhere else is not the same as verifying it is installed on the path the artifact ships to.
 
 Two divergences stay open and are stated rather than closed. The seed's `## Context` has no root counterpart, because the toolkit reaches its own catalog through a direct `@.claude/context/index.md` import and needs no orientation prose. Both files also drift from `prose.md` on trailing periods after single-sentence bullets, and only the seed was corrected here, since the root file is out of this task's scope.
 
