@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/erclx/aitk/compare/v0.4.1...v0.5.0) (2026-08-01)
+
+
+### Features
+
+* **standards:** define post-MVP scope with lifecycle and distribution ([#675](https://github.com/erclx/aitk/issues/675)) ([0341604](https://github.com/erclx/aitk/commit/03416041fec4fc24fea4b71fc7ed6e4d57528bbd))
+
 ## [0.4.1](https://github.com/erclx/aitk/compare/v0.4.0...v0.4.1) (2026-08-01)
 
 
