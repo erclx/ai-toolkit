@@ -1,15 +1,16 @@
 ---
 title: Visual design workflow
 description: Tiered guide for design and wireframe authoring with Claude Code
+category: Workflow
 ---
 
 # Visual design workflow
 
 Three tiers cover the range from prose-only design docs to a fully graphical design source of truth. Pick one per project based on how UI-heavy the work is, whether stakeholders review visuals, and whether a designer is involved. Tiers stack, so moving up does not invalidate work done at a lower tier.
 
-The tier framework sits alongside [Claude Design](claude-design.md), [visual wireframes](visual-wireframes.md), [community skills and plugins](community-skills.md), and [community MCP servers](community-mcp-servers.md). Those pages catalog the tooling. This page decides when to reach for what.
+The tier framework sits alongside [Claude Design](../wiki/claude-design.md), [visual wireframes](../wiki/visual-wireframes.md), [community skills and plugins](../wiki/community-skills.md), and [community MCP servers](../wiki/community-mcp-servers.md). Those pages catalog the tooling. This page decides when to reach for what.
 
-Two tools anchor tier 1 and tier 2. [Stitch](stitch.md) is the agent-addressable default through its MCP server at `stitch.googleapis.com/mcp`, with a free tier of 400 daily credits that covers daily iteration. [Claude Design](claude-design.md), released 2026-04-17 and priced inside Claude subscriptions, is the ceiling tool reserved for codebase extraction and the richly annotated handoff bundle. Each covers a different job, they are not swappable.
+Two tools anchor tier 1 and tier 2. [Stitch](../wiki/stitch.md) is the agent-addressable default through its MCP server at `stitch.googleapis.com/mcp`, with a free tier of 400 daily credits that covers daily iteration. [Claude Design](../wiki/claude-design.md), released 2026-04-17 and priced inside Claude subscriptions, is the ceiling tool reserved for codebase extraction and the richly annotated handoff bundle. Each covers a different job, they are not swappable.
 
 ## Tier 0: prose only
 
@@ -50,16 +51,16 @@ Impeccable, if installed, keeps its own root `DESIGN.md` and `PRODUCT.md` in the
 
 ### Tools
 
-- Stitch via MCP at `stitch.googleapis.com/mcp`. Default pick for agent-driven visual generation. Free tier of 400 daily credits. See [Stitch](stitch.md).
-- Excalidraw canvas server on localhost plus the `yctimlin/mcp_excalidraw` MCP shim, for projects that need an agent to draw, read back, and revise a canvas. See [visual wireframes](visual-wireframes.md) for setup and footguns.
-- Playwright MCP for browser-side verification. See [Playwright](community-mcp-servers.md#playwright-microsoft).
-- Chrome DevTools MCP for live frontend debugging. See [Chrome DevTools](community-mcp-servers.md#chrome-devtools-google).
-- Claude Design as the ceiling option for codebase extraction or polished handoff bundles. See [Claude Design](claude-design.md).
+- Stitch via MCP at `stitch.googleapis.com/mcp`. Default pick for agent-driven visual generation. Free tier of 400 daily credits. See [Stitch](../wiki/stitch.md).
+- Excalidraw canvas server on localhost plus the `yctimlin/mcp_excalidraw` MCP shim, for projects that need an agent to draw, read back, and revise a canvas. See [visual wireframes](../wiki/visual-wireframes.md) for setup and footguns.
+- Playwright MCP for browser-side verification. See [Playwright](../wiki/community-mcp-servers.md#playwright-microsoft).
+- Chrome DevTools MCP for live frontend debugging. See [Chrome DevTools](../wiki/community-mcp-servers.md#chrome-devtools-google).
+- Claude Design as the ceiling option for codebase extraction or polished handoff bundles. See [Claude Design](../wiki/claude-design.md).
 
 ### Skills
 
 - Everything from tier 0
-- A frontend design skill to steer visual quality. Pick one of [Impeccable](community-skills.md#pbakausimpeccable), [UI/UX Pro Max](community-skills.md#nextlevelbuilderui-ux-pro-max-skill), or Anthropic's `frontend-design` plugin. Impeccable is the strongest default because of its curated anti-patterns.
+- A frontend design skill to steer visual quality. Pick one of [Impeccable](../wiki/community-skills.md#pbakausimpeccable), [UI/UX Pro Max](../wiki/community-skills.md#nextlevelbuilderui-ux-pro-max-skill), or Anthropic's `frontend-design` plugin. Impeccable is the strongest default because of its curated anti-patterns.
 
 ### When to pick
 
@@ -90,9 +91,9 @@ Design happens in a graphical tool. `.claude/DESIGN.md` either regenerates from 
 
 ### Tools
 
-- Figma desktop app with the [Figma Dev Mode MCP](community-skills.md#figma-mcp-and-code-to-canvas) for teams with a dedicated designer already on Figma. Bidirectional sync and Code to Canvas capture.
-- Claude Design with its Claude Code handoff bundle for teams without an existing Figma investment and for solo founders or PMs driving design themselves. One-way handoff, no bidirectional sync. See [Claude Design](claude-design.md).
-- Stitch via MCP as a low-cost complement to either, used for bulk screen generation driven by Claude Code. See [Stitch](stitch.md).
+- Figma desktop app with the [Figma Dev Mode MCP](../wiki/community-skills.md#figma-mcp-and-code-to-canvas) for teams with a dedicated designer already on Figma. Bidirectional sync and Code to Canvas capture.
+- Claude Design with its Claude Code handoff bundle for teams without an existing Figma investment and for solo founders or PMs driving design themselves. One-way handoff, no bidirectional sync. See [Claude Design](../wiki/claude-design.md).
+- Stitch via MCP as a low-cost complement to either, used for bulk screen generation driven by Claude Code. See [Stitch](../wiki/stitch.md).
 - Playwright and Chrome DevTools MCPs as in tier 1
 
 ### Skills
@@ -127,9 +128,9 @@ Zero or one yes: tier 0. Two or three: tier 1. Four: tier 2. Resist over-tiering
 
 ## References
 
-- [Stitch](stitch.md): Gemini-powered design product with the MCP server that anchors tier 1
-- [Claude Design](claude-design.md): first-party hosted design product and handoff bundle
-- [Skills strategy](skills-strategy.md): how to decide between workflow and domain-knowledge skills
-- [Visual wireframes](visual-wireframes.md): Excalidraw research and setup for the tier 1 wireframe companion
-- [Community skills and plugins](community-skills.md): catalog of frontend design skills and integrations
-- [Community MCP servers](community-mcp-servers.md): catalog of MCPs referenced across all tiers
+- [Stitch](../wiki/stitch.md): Gemini-powered design product with the MCP server that anchors tier 1
+- [Claude Design](../wiki/claude-design.md): first-party hosted design product and handoff bundle
+- `.claude/context/claude-plugin.md`: how to decide between workflow and domain-knowledge skills
+- [Visual wireframes](../wiki/visual-wireframes.md): Excalidraw research and setup for the tier 1 wireframe companion
+- [Community skills and plugins](../wiki/community-skills.md): catalog of frontend design skills and integrations
+- [Community MCP servers](../wiki/community-mcp-servers.md): catalog of MCPs referenced across all tiers

@@ -1,6 +1,7 @@
 ---
 title: Operating model
 description: Orchestrator and worker roles for building across parallel sessions
+category: Workflow
 ---
 
 # Operating model
@@ -9,7 +10,7 @@ A way to build fast and reliably across parallel Claude Code sessions without a
 loop and without losing the human review gate. One warm session plans and
 reviews. Cold worker sessions build. The human launches workers and merges. This
 page covers the roles and the loop. For the worktree mechanism (isolation, merge
-order, port collisions), see [Claude Code and git worktrees](claude-worktrees.md).
+order, port collisions), see [Claude Code and git worktrees](../wiki/claude-worktrees.md).
 
 ## Two roles
 
@@ -90,11 +91,11 @@ at two or three worker tracks and split them across the stack so they do not
 collide on the same files. Unit checks run freely in many worktrees at once.
 Only fixed-port work (a dev server, an end-to-end run, a screenshot) and
 singleton resources (one local model server, one GPU) serialize. See
-[Claude Code and git worktrees](claude-worktrees.md) for merge order and the
+[Claude Code and git worktrees](../wiki/claude-worktrees.md) for merge order and the
 port-collision detail.
 
 ## Related
 
-- [Claude Code and git worktrees](claude-worktrees.md) for the isolation and fan-out mechanics
-- [Claude Code subagents](claude-subagents.md) for in-session parallelism without worktrees
-- [Skills strategy](skills-strategy.md) for how the skills in the loop are categorized
+- [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the isolation and fan-out mechanics
+- [Claude Code subagents](../wiki/claude-subagents.md) for in-session parallelism without worktrees
+- `.claude/context/claude-plugin.md` for how the skills in the loop are categorized

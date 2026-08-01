@@ -67,7 +67,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `aitk:git-ship`
 - For full autonomy per worktree, invoke `aitk:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](../wiki/operating-model.md) for the full loop.
+To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
 
 Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives. No fixed number caps the worker tracks underneath it. Collision between file sets is what binds, so a candidate opens only when its files are disjoint from every track in flight, and the ceiling in practice is how many outputs one session can still review properly.
 
@@ -119,7 +119,7 @@ Invoke `aitk:claude-review` at the start of session 2. It reads all changed file
 
 ### UI-heavy project
 
-Before the first feature session on a UI-heavy project, pick a design tier. The tier determines seed shape, installed MCP servers, and installed plugin skills. See [visual design workflow](../wiki/visual-design-workflow.md) for the framework and decision guide.
+Before the first feature session on a UI-heavy project, pick a design tier. The tier determines seed shape, installed MCP servers, and installed plugin skills. See [visual design workflow](visual-design-workflow.md) for the framework and decision guide.
 
 ## Skills
 

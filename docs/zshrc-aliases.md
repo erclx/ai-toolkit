@@ -1,6 +1,7 @@
 ---
 title: Zshrc aliases for Claude Code
 description: Shell aliases that shorten common Claude Code invocations
+category: Workflow
 ---
 
 # Zshrc aliases for Claude Code
@@ -9,10 +10,13 @@ Claude Code auto-discovers the toolkit plugin from `claude/.claude-plugin/plugin
 
 ## The aliases
 
-`bun run bootstrap` installs this block. It owns the canonical copy in `scripts/core/bootstrap.sh` and appends it to `~/.zshrc` between `# >>> aitk aliases >>>` markers, sets `TOOLKIT` to the cloned path, and skips on re-run. The block below is reference for what lands.
+`bun run bootstrap` installs this block. It owns the canonical copy in `scripts/core/bootstrap.sh`, appends it to `~/.zshrc` wrapped in the two marker comments below, and sets `TOOLKIT` to the cloned path. The markers are how a re-run recognizes its own block and skips.
+
+A block installed by hand before the managed one has no markers. Bootstrap detects that case through the `alias clp=` line instead, warns, and leaves the block untouched rather than appending a second copy. To switch over, delete the hand-rolled block and re-run the bootstrap.
 
 ```zsh
-TOOLKIT=~/path/to/toolkit
+# >>> aitk aliases >>>
+TOOLKIT="/path/to/toolkit"
 
 alias cl='claude'
 alias clr='cl -r'
@@ -23,9 +27,10 @@ alias cls='cl --model sonnet'
 alias clp='claude --plugin-dir $TOOLKIT/claude'
 alias clpc='clp -c'
 alias clps='clp --model sonnet'
+# <<< aitk aliases <<<
 ```
 
-The block sits after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clpc` and `clps` inherit `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions. To switch a hand-rolled block over to the managed one, delete it and re-run the bootstrap.
+The block sits after any `PATH` mutations and the `claude` CLI install. Zsh expands aliases recursively on the first word, so `clr`, `clc`, `clw`, and `cls` inherit their base through `cl`, and `clpc` and `clps` inherit `--plugin-dir` through `clp`. `$TOOLKIT` expands at invocation time, so updating the variable and re-sourcing reroutes all `clp` calls without touching the alias definitions.
 
 ## What each one does
 
@@ -51,7 +56,7 @@ Use `clp` in any other repository where you want the toolkit skills available. W
 
 Use `cls` or `clps` to save Opus usage on routine sessions. Switch mid-session with `/model` to avoid restarting.
 
-Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](claude-worktrees.md) for fan-out rules.
+Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for fan-out rules.
 
 Use `clc` to resume the last session without a picker. Use `clr` when you have several sessions and need to pick by name or recency. Outside the toolkit repo, `clpc` is the same shortcut as `clc` with the plugin loaded.
 
