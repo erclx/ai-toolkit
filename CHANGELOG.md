@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/erclx/aitk/compare/v0.17.0...v0.18.0) (2026-08-02)
+
+
+### Features
+
+* **standards:** subdivide context blocks past 40 unbroken lines ([#719](https://github.com/erclx/aitk/issues/719)) ([2610e05](https://github.com/erclx/aitk/commit/2610e05ebc19744b402dbb3f435d43181a4e8c34))
+
 ## [0.17.0](https://github.com/erclx/aitk/compare/v0.16.0...v0.17.0) (2026-08-02)
 
 
