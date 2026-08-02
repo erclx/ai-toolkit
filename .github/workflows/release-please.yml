@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      tag:
+        # Empty runs release-please as usual, a tag publishes that tag alone
+        description: Tag to publish
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -18,6 +24,8 @@ jobs:
   release-please:
     name: 🏷️ Release Please
     runs-on: ubuntu-latest
+    # A dispatch naming a tag republishes it, so no release is cut
+    if: inputs.tag == ''
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -40,14 +48,18 @@ jobs:
         id: release
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Not GITHUB_TOKEN, which authors a bot pull request CI will not run
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
   publish:
     name: 📦 Publish
     needs: release-please
-    if: needs.release-please.outputs.release_created == 'true'
+    # release-please is skipped on a tag dispatch, so the gate cannot need its success
+    if: >-
+      !cancelled()
+      && (needs.release-please.outputs.release_created == 'true' || inputs.tag != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,13 +67,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+
+      # npm 10 runs prepare under --ignore-scripts, npm 11 honors the flag
+      - name: Pin npm
+        run: npm install -g npm@11
 
       - name: Publish
         run: npm publish --access public --ignore-scripts
