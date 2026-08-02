@@ -201,6 +201,28 @@ The twelve scenarios declaring `SANDBOX_INJECT_STANDARDS` or `SANDBOX_INJECT_GOV
 
 A scenario enumerates from its script under `scripts/sandbox/<category>/`, not from the fixture tree. An unarmed scenario has no fixture directory to find, so counting fixtures would hide exactly the arms the report exists to surface. A declaration sitting at the command root belongs to the unnamed arm and reports as `(default)`.
 
+### The skill census
+
+`--skills` adds a per-skill verdict beside the scenario view. It answers what the scenario count cannot, which is whether anything can fail a given skill.
+
+```bash
+aitk sandbox coverage --skills  # per-skill census, scenario view kept
+```
+
+A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default and the work queue the arm batches consume. `exempt` means no arm should be written, and it holds only with a reason.
+
+The denominators disagree on purpose. Five of 55 skills are asserted where six of 56 scenarios are, because `infra:wiki` is armed and drives the `aitk wiki` CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against.
+
+Pairing tries two spellings, `<category>-<command>` first and bare `<command>` second. The first alone reaches 29 skills, and the fallback is what pairs `claude/setup-init.sh` to `setup-init` rather than to a `claude-setup-init` that does not exist. Stating one spelling while shipping two is what let the earlier audit report a paired skill as unpaired, so the rule lives in `skillForScenario` and this paragraph describes code rather than substituting for it.
+
+The census counts `claude/skills/`, not `.claude/skills/`. The second holds toolkit-internal skills that reach no target, and folding them in would inflate a denominator meant to describe what ships.
+
+An exemption lives in `scripts/sandbox/exempt.toml`, keyed by skill with a `reason`. It cannot live in the arm's `manual` array, which is where `#723` put prose a checker could not assert: `resolveVerdict` fails any declaration carrying zero mechanical assertions, so an `expect.toml` holding only an exempt reason goes red the moment it is written. An exempt skill has no assertion to pair the prose with, which is what makes it exempt, so the two cases cannot share a home. Two reasons qualify and nothing else does, a harness limit the checker cannot reach past and a skill that writes no artifact. "Nobody has written one yet" is `should-be-asserted`.
+
+A verdict decays in one direction, so an armed arm outranks an exemption rather than the reverse. An exemption naming a skill the tree no longer carries prints as an error and exits 1 without `--strict`, since a claim nobody can check is worse than no claim.
+
+Losing an exemption is invisible in the counts, because the skill reclassifies to `should-be-asserted` and rejoins a queue someone already ruled it out of. So the parser throws on a file that does not parse and on a table carrying no usable `reason`, rather than reporting the smaller set that survived. `runCoverage` catches both and frames them, for the reason `resolveVerdict` catches its own parse: a typo in a declaration reads the way a pattern that does not compile does rather than as a stack trace.
+
 `aitk sandbox check` takes `--strict` as well, which turns a single `unchecked` verdict into a non-zero exit. Both flags stay opt-in so the undeclared majority keeps running.
 
 ## Writing a sandbox

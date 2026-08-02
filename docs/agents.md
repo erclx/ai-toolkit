@@ -70,7 +70,7 @@ Full help: `aitk <command> --help`.
 | `aitk sandbox reset`     | Reset sandbox to baseline                                                                      |
 | `aitk sandbox clean`     | Wipe the sandbox                                                                               |
 | `aitk sandbox check`     | Score a provisioned sandbox against a scenario expectation (`--json` for the verdict)          |
-| `aitk sandbox coverage`  | Report which scenarios declare expectations (`--json`, `--strict`)                             |
+| `aitk sandbox coverage`  | Report which scenarios declare expectations (`--json`, `--strict`, `--skills`)                 |
 | `aitk indexes regen`     | Regenerate `index.md` files from sibling frontmatter                                           |
 | `aitk docs [topic]`      | Emit toolkit reference docs (`list`, or a topic by name)                                       |
 | `aitk design render`     | Render `.claude/DESIGN.md` tokens to HTML and CSS                                              |
@@ -228,12 +228,17 @@ Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a ma
 aitk sandbox coverage --json
 ```
 
-| Flag       | Effect                                            |
-| ---------- | ------------------------------------------------- |
-| `--json`   | Emit the coverage record on stdout                |
-| `--strict` | Exit 1 while any scenario declares no expectation |
+| Flag       | Effect                                                      |
+| ---------- | ----------------------------------------------------------- |
+| `--json`   | Emit the coverage record on stdout                          |
+| `--strict` | Exit 1 while any scenario declares no expectation           |
+| `--skills` | Add a per-skill asserted, should-be-asserted, exempt census |
 
 The record carries every scenario with the arms that declare, plus `totalScenarios`, `armedScenarios`, and `armedArms`. Scenarios and arms count separately, since several arms can share one scenario and dividing one by the other overstates the rollout.
+
+`--skills` answers what the scenario count cannot, which is whether anything can fail a given skill. It adds `skills`, `totalSkills`, `asserted`, `shouldBeAsserted`, `exempt`, and `staleExemptions` to the record, and keeps the scenario view rather than replacing it. The two denominators disagree on purpose: an armed scenario under `infra/` or `tooling/` exercises a CLI domain and pairs with no skill at all.
+
+A skill pairs to a scenario by filename, `<category>-<command>` first and bare `<command>` second, so `claude/setup-init.sh` reaches the `setup-init` skill. `should-be-asserted` is the default and is the work queue for writing arms. `exempt` means no arm should be written and holds only with a reason, declared in `scripts/sandbox/exempt.toml` and limited to a harness limit the checker cannot reach past or a skill that writes no artifact. An armed arm outranks an exemption, and an exemption naming no shipped skill exits 1 without `--strict`.
 
 `scripts/sandbox/run.sh` calls this after a headless run and merges the verdict into the envelope it prints. It also writes that merged record to `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json` with a `writes` array appended, and logs the path on stderr. Both fields are what a later re-score needs, since `--envelope` and `--writes` read files the run deletes on exit. Stdout carries the same bytes it did before the record existed.
 
