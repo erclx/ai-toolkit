@@ -1,0 +1,38 @@
+# What a correct `/aitk:claude-review` run leaves behind on the default arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+#
+# Almost everything this arm wants to assert is demoted. `claude-review` writes
+# its report to shared session scratch, which the harness cannot keep inside
+# `.sandbox/`, so no assertion over the report can run here. See the `manual`
+# entries and the fourth standing limit in `.claude/context/sandbox.md`.
+
+# The one mechanical claim left, and it is about provisioning rather than about
+# the run. `claude/review.sh` declares no `SANDBOX_INJECT_STANDARDS`, so the
+# project copy of the standard is absent and
+# `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is the only route left. A later
+# edit adding the flag would resolve the project path instead and void the whole
+# premise of this arm, so the absence is asserted where that edit lands.
+#
+# Nothing else belongs in this list. The report never reaches `.sandbox/` at all,
+# so an `absent` entry over any filename the run might have chosen would pass
+# because the file is elsewhere rather than because the run was correct. That is
+# the vacuous pass `manual` exists to keep out of the count, and inverting a
+# demoted assertion is how it gets in.
+absent = [".claude/standards/skill.md"]
+
+# Declared intent rather than a live assertion. The run writes outside the
+# snapshot, so `writes` comes back empty and this reports unchecked. It starts
+# asserting the moment the escape is closed.
+write_scope = [".claude/**"]
+
+# No max_turns. A clean run cost 10 turns on 2026-08-02, but that run never
+# landed its own output inside the sandbox, so the number measures a shape no
+# assertion could read rather than the ceiling a working arm needs.
+
+manual = [
+  "The report lands at `.claude/review/review-feat-user-batch.md`, which is the slug transform in `standards/skill.md` applied to branch `feat/user-batch`. The transform appears in no skill body, so the filename is the evidence that the plugin fallback resolved. Unwired: nothing determines which root the file lands under, since the sandbox's seeded `CLAUDE.md` and the toolkit's ancestor copy both send shared scratch to the main worktree root. Measured 2026-08-02, when this arm's run wrote the correct filename into the toolkit's own `.claude/review/` while the `claude/ui-test` run wrote its correct filename inside `.sandbox/`. Declaring the path would go red on the runs that get it right",
+  "The report carries the `X critical, Y should-fix, Z minor` summary line and names `src/api/users.ts`. Unwired: same escape, and no assertion can read a file the snapshot never sees",
+  "The off-by-one on `i <= ids.length` is ranked critical rather than minor. Semantic: severity is the skill's judgment and a substring cannot tell a correct ranking from a word that happens to appear",
+  "The report names the fetch with no error handling and the mutating `mergeUser`. Semantic: both are describable in wording no pattern anticipates, and pinning one phrasing goes red on a rewrite that is just as correct",
+]

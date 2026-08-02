@@ -1,0 +1,36 @@
+# What a correct `/aitk:claude-memory-review` run leaves behind on the default
+# arm, through the propose pass alone. Read by `aitk sandbox check`. Patterns use
+# TOML literal strings so a regex needs no backslash escaping.
+#
+# The propose pass writes one file and that file is shared session scratch, which
+# the harness cannot keep inside `.sandbox/`. Every claim about the proposal is
+# therefore demoted and this declaration keeps one mechanical assertion. See the
+# `manual` entries and the fourth standing limit in `.claude/context/sandbox.md`.
+
+# The precondition, asserted rather than described. `claude/memory-review.sh`
+# declares no `SANDBOX_INJECT_STANDARDS`, so the project copy is absent and the
+# plugin fallback is the only route to the slug transform. Injecting standards
+# later would resolve the project path and void the premise of this arm, so the
+# absence is asserted where that edit lands.
+#
+# The proposal filenames a wrong run would choose are deliberately not listed
+# here. No proposal reaches `.sandbox/` under any name, so each entry would pass
+# because the file is elsewhere rather than because the run was correct.
+absent = [".claude/standards/skill.md"]
+
+# Propose writes the proposal and nothing else. The apply pass, which edits
+# `CLAUDE.md`, the skill body, and `MEMORY.md`, needs a second turn the headless
+# run never takes, so a run that reached those files applied without approval.
+# This is the one assertion the escape makes sharper rather than weaker: those
+# targets are ordinary project files and would land inside the snapshot.
+write_scope = [".claude/review/**"]
+
+# No max_turns. No clean run measured yet.
+
+manual = [
+  "The proposal lands at `.claude/review/memory-review-chore-memory-sweep.md`, which is the slug transform in `standards/skill.md` applied to branch `chore/memory-sweep`. The transform appears in no skill body, so the filename is the evidence that the plugin fallback resolved. Unwired: nothing determines which root the file lands under, since the sandbox's seeded `CLAUDE.md` and the toolkit's ancestor copy both send shared scratch to the main worktree root. Measured 2026-08-02 across two runs that disagreed, so declaring the path would go red on whichever half of the coin comes up",
+  "The proposal opens with `# Memory review: chore-memory-sweep` and gives every item a `Decision:` slot. Unwired: same escape, and an item written without a slot strands the pass the proposal exists to open",
+  "`feedback-be-careful.md` and `feedback-memory-location.md` both reach the proposal as items, the first stating nothing actionable and the second already absorbed into the seeded `CLAUDE.md`. Unwired: same escape, and a pass that dropped either reviewed a subset while reporting the whole",
+  "`no-obvious-comments` and `comments-explain-why` are fused into one promote rather than proposed separately. Semantic: consolidation is the skill's judgment and both filenames appear in the proposal either way",
+  "`zod-in-src-routes` targets the path-scoped skill body and `confirm-destructive-commands` targets CLAUDE.md. Semantic: the routing rule is the point of the arm, and a pattern matching a target name cannot tell a correct route from a coincidence",
+]

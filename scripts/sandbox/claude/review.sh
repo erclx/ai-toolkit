@@ -2,6 +2,14 @@
 set -e
 set -o pipefail
 
+# No SANDBOX_INJECT_STANDARDS, deliberately. The absent project copy is what
+# forces `claude-review` onto the `${CLAUDE_SKILL_DIR}/../../standards/skill.md`
+# fallback, and the branch name below turns that citation into a report filename
+# a reader can check by eye. `expect.toml` carries that claim as a manual entry
+# rather than an assertion, because the report lands at a root no run determines.
+# Adding the flag here resolves the project path instead and the arm stops being
+# about the fallback at all, so the declaration asserts the absence to make that
+# edit go red rather than pass quietly.
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"
@@ -67,6 +75,15 @@ EOF
   log_info "  1. Off-by-one in getUsers loop (i <= ids.length)"
   log_info "  2. No error handling on fetch response"
   log_info "  3. mergeUser mutates the base object"
-  log_info "Action:  /claude-review"
-  log_info "Expect:  findings report with critical/should-fix/minor across src/api/users.ts"
+  log_info ""
+  log_info "This arm also checks the standards citation, not the skill alone."
+  log_info "  .claude/standards/ is absent, so the skill must reach the plugin copy"
+  log_info "  the slug transform lives only in standards/skill.md, never in the skill body"
+  log_info "  so review-feat-user-batch.md is evidence the fallback resolved"
+  log_info "  read that filename yourself, the checker cannot assert it yet"
+  log_info ""
+  log_info "Action:  /aitk:claude-review"
+  log_info "Expect:  declared in fixtures/claude/review/expect.toml"
+  log_info "         Check it with: aitk sandbox check claude:review"
+  log_info "         One assertion is mechanical. Four claims need a reader."
 }
