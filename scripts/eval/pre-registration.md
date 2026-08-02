@@ -62,6 +62,57 @@ N of 1, one arm, no baseline, matching the standards arms. The harness has confi
 
 A cut removes a line from new projects and leaves it in every existing one. Any cut this run justifies names `claude-seed-sync` as the path that carries it into projects already scaffolded, or states that it does not.
 
+## Ablation pairs
+
+Written before any pair ran. The seed arm above asked whether the seed carries a session through a task and got a pass. Whether a given line does work is a different measurement, and it needs a comparison group no arm above has.
+
+A pair runs the same prompt twice against the same fixture. The `kept` half reads the seed as it ships. The `cut` half reads it with one section's candidate lines removed and nothing else changed. `run.sh` strips the installed `CLAUDE.md` after every installer has run, then retains both halves' copies beside their transcripts, so a pair stays re-diffable when a later question needs it.
+
+Each pair carries its own prompt. One feature request reaches none of these sections, which is what turns four cuts into eight arms and also means the four results are not comparable to each other.
+
+### Candidates
+
+Eleven bullets across four sections, addressed by their text rather than by their ordinal. The task that ordered this work names "Indexes bullets 3 and 4" against a section that now holds three, so an ordinal is not a stable address. `run.sh` fails the run when an anchor stops matching exactly one line.
+
+| Section | Bullets | What the candidate carries                                                                                                     |
+| ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Memory  | 4       | Where memory files go, when a feedback memory is worth saving, the 3-line shape, and the check for an existing file            |
+| Indexes | 2       | `index.md` is regenerated from sibling frontmatter and is not hand-edited, and `auto: false` opts a folder out                 |
+| Output  | 3       | Relative paths in the main worktree, absolute paths in a linked one, and the `**Created:**` grouping for a multi-file response |
+| Tasks   | 2       | A plan lives in `.claude/plans/` and is linked from the task intro, and it is written in the same session as the task          |
+
+### Governance coverage, audited before the runs
+
+A candidate the `base` stack already delivers path-scoped cannot show a difference, because the cut half still carries the rule through another file. Auditing this first is what separates a null meaning the section is dead from a null meaning governance carried it. Both are nulls and only one is evidence about the seed.
+
+- **Memory**: no rule and no installed standard mentions `.claude/memory/`. The cut half loses the rule outright.
+- **Indexes**: `standards/context.md` tells a session to skip `index.md` because `aitk indexes regen` rewrites it, and `555-tasks.md` forbids hand-editing the task index. Neither covers the `auto: false` escape. Coverage is partial and lands on the first candidate bullet.
+- **Output**: no rule and no installed standard mentions the `**Created:**` grouping. The cut half loses the rule outright.
+- **Tasks**: `standards/tasks.md` covers the `Plan:` link, the `../plans/` path, and the `../.tmp/plans-archive/` destination in full, and `555-tasks.md` names that file the single source. Coverage is complete.
+
+One hook bears on the Indexes pair. `index-reminder.sh` fires on `Grep` and `Glob` and tells the session an `index.md` exists and should be read. That reinforces the Indexes bullet this pair keeps rather than either bullet it cuts, so it is a confound on attention rather than on the rule under test. Record whether it fired.
+
+### Predictions
+
+Fixed here so a miss cannot be reinterpreted afterward.
+
+1. **Memory discriminates.** The kept half writes to `.claude/memory/` in the 3-line shape. The cut half writes the correction somewhere else or not at all. This is the cleanest candidate and the cheapest place to learn the method does not work.
+2. **Indexes discriminates weakly.** Both halves should leave `.claude/context/index.md` alone, since `standards/context.md` carries that much. A difference should appear on the `auto: false` escape alone, which nothing else covers, and the prompt may not reach it.
+3. **Output discriminates on one bullet of three.** The grouping bullet is reachable through a prompt that creates, modifies, and deletes at once. The two worktree bullets are not reachable by a headless run in a single worktree, so a null on those two is evidence about the prompt.
+4. **Tasks does not discriminate.** Governance covers both candidate bullets in full. A null here means the seed is duplicating an installed standard, which is the `v24.0` cut criterion rather than this task's.
+
+### What counts as a difference
+
+An observable change in what the session did, read from the transcript and the file diff rather than from the tone of the final message. A different file written, a rule followed in one half and not the other, or a question asked in one half alone. Turn count and cost are recorded and are not themselves differences, since both vary run to run at a fixed seed.
+
+A single paired divergence is noise until a second pair reproduces it. Runs 01 and 02 reached the worktree rule by different routes with no seed change explaining it, so one difference is inside the run-to-run variation this harness has already shown.
+
+### What a null licenses
+
+Nothing on its own. `v24.0` files these sections as unreachable by an ordinary feature request and forbids cutting on that basis, and a null against a prompt that never reached the section is evidence about the prompt. A section earns a verdict only where the pair reached its trigger.
+
+A null with a named mechanism is different from a bare null. Where governance covers a candidate in full and the pair confirms no behavioral difference, the cut rests on the redundancy rather than on the ablation, and the result document says which of the two carries it.
+
 ## Pass criteria
 
 Verbatim from `05-experiment-design.md:21`. Applied to the context arm as written, and read across to the wireframes arm by its own standard's section names.
