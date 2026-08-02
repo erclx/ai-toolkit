@@ -17,6 +17,7 @@ import {
   type Verdict,
 } from '@/sandbox/expect'
 import {
+  frameError,
   intro,
   logError,
   logInfo,
@@ -28,6 +29,34 @@ import {
 } from '@/ui'
 
 const SANDBOX_DIR = join(PROJECT_ROOT, 'scripts', 'sandbox')
+
+/**
+ * Reports that the scenario tree does not ship, and answers whether it reported,
+ * so a caller that sees `true` returns without touching the tree.
+ *
+ * `scripts/sandbox` is excluded from the published package, so an installed
+ * `aitk` resolves `SANDBOX_DIR` to a directory that is not there. Both entry
+ * points that walk the tree ask here rather than carrying a check each, because
+ * absence is a property of the install rather than of a verb, and a second copy
+ * of the question is a second message to keep true. `check` reads the tree as
+ * well, through `expectFilePath`, and needs no guard because its provisioned-tree
+ * check already stops an installed run before the read.
+ *
+ * The distinction it preserves is between an absent tree and an empty one. Only
+ * the second is a real zero, and a coverage percentage over a denominator nobody
+ * looked at reads as a suite that examined everything and found it clean.
+ *
+ * The frame opens and closes here, so this runs before `intro` rather than
+ * inside an open frame.
+ */
+function reportAbsentScenarioTree(): boolean {
+  if (existsSync(SANDBOX_DIR)) return false
+
+  frameError('sandbox is toolkit-only and is absent from an installed aitk')
+  process.exitCode = 1
+
+  return true
+}
 
 /**
  * The provisioned tree, as opposed to `SANDBOX_DIR` above, which holds the
@@ -217,6 +246,8 @@ function reportCoverage(report: CoverageReport): void {
 }
 
 function runCoverage(options: CoverageOptions): void {
+  if (reportAbsentScenarioTree()) return
+
   intro('aitk sandbox coverage')
 
   const report = collectCoverage(PROJECT_ROOT)
@@ -284,6 +315,8 @@ export function register(program: Command): void {
     .allowExcessArguments(true)
     .passThroughOptions()
     .action(async (_opts: unknown, cmd: Command) => {
+      if (reportAbsentScenarioTree()) return
+
       const args = cmd.args
 
       if (args.length === 0) {
@@ -336,7 +369,8 @@ export function register(program: Command): void {
         '  aitk sandbox coverage',
         '  aitk sandbox coverage --json',
         '',
-        'Exit codes: 0 always, unless --strict and a scenario declares nothing.',
+        'Exit codes: 0, unless --strict and a scenario declares nothing.',
+        'Where the scenario tree does not ship, exits 1 without a report.',
       ].join('\n'),
     )
     .action((options: CoverageOptions) => {
