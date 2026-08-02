@@ -17,6 +17,8 @@
     "claude",
     "docs",
     "tsconfig.json",
+    "!scripts/sandbox",
+    "!scripts/eval",
     "!**/*.test.ts"
   ],
   "publishConfig": {
