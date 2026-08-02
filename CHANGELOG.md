@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.0](https://github.com/erclx/aitk/compare/v0.8.0...v0.9.0) (2026-08-02)
+
+
+### Features
+
+* **claude:** split the diagram surface into per-kind entries ([#692](https://github.com/erclx/aitk/issues/692)) ([b8d8d34](https://github.com/erclx/aitk/commit/b8d8d348e973d650e720daa8e113ec64340be59e))
+* **skill:** add requirements across the ship-chain family ([#691](https://github.com/erclx/aitk/issues/691)) ([a5188bc](https://github.com/erclx/aitk/commit/a5188bca59887cab4cefd268e420ee7a6a9184c6))
+
+
+### Bug Fixes
+
+* **hooks:** repair core.bare on Bash calls rather than only in check ([#689](https://github.com/erclx/aitk/issues/689)) ([06ad76e](https://github.com/erclx/aitk/commit/06ad76eaea1433dec334868c96227d7ab165aa3f))
+* **release:** reach the registry and run checks without a maintainer ([#690](https://github.com/erclx/aitk/issues/690)) ([ca209c9](https://github.com/erclx/aitk/commit/ca209c95c2821ac4a19bc6fe051a02f740b96862))
+
 ## [0.8.0](https://github.com/erclx/aitk/compare/v0.7.0...v0.8.0) (2026-08-02)
 
 
