@@ -4,7 +4,7 @@
 #
 # Kept in bash because the list commands call it once per field per file
 # inside a loop, where shelling into the CLI would cost a process per read.
-# The index engine that used to live here is TypeScript, in src/indexes/.
+# Index logic is TypeScript, in src/indexes/, and does not belong here.
 read_frontmatter_field() {
   local file="$1"
   local key="$2"

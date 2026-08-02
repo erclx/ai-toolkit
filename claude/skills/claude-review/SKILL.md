@@ -85,6 +85,8 @@ Flag only issues that will definitely cause incorrect behavior or break a docume
 - Linter territory
 - Issues that depend on unverified state
 
+A comment that makes a false claim about the code is a correctness finding, not a style one. Flag it past the exclusions above and let the severity ladder rank it.
+
 If uncertain, do not flag. False positives erode trust.
 
 ### Severity

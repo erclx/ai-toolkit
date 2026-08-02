@@ -325,6 +325,8 @@ Two exclusions are structural rather than tuning. Heredoc bodies are dropped fro
 
 The degradation sweep reads its vocabulary from whichever rule publishes a `## Degradation vocabulary` heading, preferring `.claude/rules/` over `governance/rules/`, so one definition serves the toolkit and every target. Discovery anchors on the heading rather than a filename, because a renumbered rule would otherwise empty the vocabulary while the sweep still reported clean. With no such rule the sweep reports **skipped** rather than zero hits, since finding nothing and looking for nothing mean opposite things.
 
+`090-code-comments` is the rule that publishes the list, and it ships on the `base` stack. A project that installs or syncs governance for the first time after that rule landed gets a sweep that previously reported skipped, so hits appear where the command used to stay quiet. Edit the backticked terms in the installed copy to change what that project sweeps for. The sweep matches comment text, so a comment naming a term as an example is a hit, and a hit is a prompt to read the line rather than a verdict on it.
+
 ## Runtime catalogs
 
 Use these to discover what's available instead of hardcoding names.
