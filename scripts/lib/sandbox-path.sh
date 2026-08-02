@@ -21,15 +21,69 @@ resolve_sandbox_dir() {
   printf '%s/aitk/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
 }
 
-# Collapses repeated separators and strips every trailing one, leaving a bare
-# root as `/`. Every comparison below is a string test, so `//` and `$HOME//`
-# would otherwise read as paths no rule names.
+# Collapses repeated separators, folds `.` and `..` segments, and strips every
+# trailing separator, leaving a bare root as `/`. Every comparison below is a
+# string test, so `//`, `$HOME//`, and `$HOME/../../usr` each read as a path no
+# rule names until this runs, and an unresolved `..` defeats the allowlist and
+# both directions of the repository test at once.
+#
+# The fold is lexical because the guard runs before provisioning creates the
+# tree, which rules out `cd` with `pwd -P` and any resolution needing the path
+# to exist. Nothing here follows a symlink, so a `..` below one resolves against
+# the link's own path rather than its target. A `..` climbing past the root
+# clamps to `/`, matching the kernel, which leaves the allowlist to refuse it
+# under the rule that already covers every root path.
 normalize_sandbox_path() {
   local path="$1"
+
+  [ -n "$path" ] || return 0
 
   while [ "$path" != "${path//\/\//\/}" ]; do
     path="${path//\/\//\/}"
   done
+
+  local root=""
+  if [ "${path#/}" != "$path" ]; then
+    root="/"
+    path="${path#/}"
+  fi
+
+  # `resolved` carries each kept segment behind its own separator, so a pop is
+  # one suffix removal and popping an empty stack is the no-op that clamps at
+  # the root. `climbed` holds the leading `..` a relative path has no segment to
+  # pop against, which dropping would change the directory it names.
+  local resolved="" climbed="" segment
+  local remaining=4096
+
+  while [ -n "$path" ] && [ "$remaining" -gt 0 ]; do
+    remaining=$((remaining - 1))
+
+    segment="${path%%/*}"
+    if [ "$segment" = "$path" ]; then
+      path=""
+    else
+      path="${path#*/}"
+    fi
+
+    case "$segment" in
+    "" | .) ;;
+    ..)
+      if [ -n "$resolved" ]; then
+        resolved="${resolved%/*}"
+      elif [ -z "$root" ]; then
+        climbed="$climbed../"
+      fi
+      ;;
+    *) resolved="$resolved/$segment" ;;
+    esac
+  done
+
+  if [ -n "$root" ]; then
+    path="${resolved:-/}"
+  else
+    path="${climbed}${resolved#/}"
+    path="${path:-.}"
+  fi
 
   while [ "${#path}" -gt 1 ] && [ "${path%/}" != "$path" ]; do
     path="${path%/}"
