@@ -14,7 +14,6 @@ Does not govern:
 
 - Skill folders, which carry frontmatter, references, and scripts a snippet has none of: `skill.md`
 - Voice, punctuation, and formatting in snippet prose: `prose.md`
-- Which snippets a project ships, which is a catalog rather than a shape
 
 ## What a snippet is
 

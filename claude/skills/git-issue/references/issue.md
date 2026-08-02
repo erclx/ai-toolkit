@@ -15,7 +15,6 @@ Does not govern:
 - Pull request title and body: `pr.md`
 - Whether a phase label may appear in issue text: `versioning.md`
 - Voice, punctuation, and banned words in issue prose: `prose.md`
-- Which issues a project files and how they are triaged
 
 ## Title
 

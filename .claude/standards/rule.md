@@ -18,7 +18,6 @@ Does not govern:
 - Authoring conventions for a document type, which are standards rather than rules. A rule points at the standard that owns one and never restates it.
 - Skill folders and skill frontmatter: `skill.md`
 - Cross-domain behavior rules, which live in `CLAUDE.md` at the project root
-- The subject matter of any one rule, which belongs to the domain it scopes
 
 ## Location
 

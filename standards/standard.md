@@ -19,7 +19,6 @@ Does not govern:
 
 - The voice, punctuation, and formatting a standard is written in: `prose.md`
 - The shape of any artifact a standard governs, which is that standard's own subject
-- Which standards a project installs and where they land, which is a delivery concern rather than an authoring one
 
 ## What a working standard looks like
 
@@ -38,7 +37,8 @@ A standard failing these questions is non-conforming even when it satisfies ever
 
 - Govern one document type per standard, or one attribute across every document. Split unrelated conventions into separate files.
 - Open with a `## Scope` section stating what the standard governs and what it does not, placed above the shape rules. A standard that specifies shape exhaustively and jurisdiction nowhere cannot refuse a rule, so the rule with no obvious owner lands in whichever standard sits nearest.
-- Write it as one line naming the artifact or attribute and where it applies, then a `Does not govern:` list. Give each entry the excluded concern and the sibling standard that owns it, named by bare filename since standards install as siblings.
+- Write it as one line naming the artifact or attribute and where it applies, then a `Does not govern:` list. Give each entry the excluded concern and the owner it goes to. Name a sibling standard by bare filename, since standards install as siblings, and name the surface instead where the owner is one, such as a coding rule, a project policy, or the code.
+- Cut an entry that names no owner at all. It is either excluding something nothing was going to claim, or it is a content exclusion, which the rule below sends to the shape rules instead.
 - Declare a boundary from both sides. A yield, an exemption, or a handoff stated in one standard alone is never checked against the standard on the other side of it, which is how two files come to claim the same rule or neither does.
 - Separate a jurisdiction exclusion from a content exclusion. The first names a concern another standard owns and belongs in `## Scope`. The second names what does not belong inside the document and stays with the shape rules. Merging them puts a boundary claim where no sibling will read it.
 - Stay silent on a section the standard holds today but should not own. Claiming it makes the scope statement false the moment it moves, and the mismatch is the evidence that moves it.

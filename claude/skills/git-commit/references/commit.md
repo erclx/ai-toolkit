@@ -15,7 +15,6 @@ Does not govern:
 - Branch naming, which shares the type vocabulary: `branch.md`
 - Pull request title and body, which share the subject form: `pr.md`
 - Whether a phase label or a semver tag may appear in a subject: `versioning.md`
-- How changes are grouped into commits, which is a workflow choice rather than a message shape
 
 ## Format
 
@@ -37,7 +36,7 @@ Does not govern:
 - `ci`: CI/CD pipeline changes (GitHub Actions)
 - `revert`: revert a previous commit
 
-## Scope
+## Scope vocabulary
 
 - Single lowercase word representing a system component
 - Prefer single word

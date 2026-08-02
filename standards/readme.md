@@ -16,7 +16,6 @@ Governs every `README.md`: voice, heading structure, required and optional secti
 Does not govern:
 
 - Punctuation, formatting, spelling, and banned words in README prose: `prose.md`, which yields the voice and keeps the rest
-- Full API reference and contribution detail, which the README links to rather than holds
 - Product scope and goals: `requirements.md`
 
 ## Voice

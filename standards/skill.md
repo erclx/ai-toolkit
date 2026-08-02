@@ -19,7 +19,6 @@ Does not govern:
 - Single-purpose chat prompts carrying no frontmatter, references, or scripts: `snippets.md`
 - Voice, punctuation, and formatting in a skill body: `prose.md`
 - The domain conventions a skill cites, each of which belongs to the standard that owns it
-- Which skills a project installs, which is a catalog rather than a shape
 
 ## Skill types
 
