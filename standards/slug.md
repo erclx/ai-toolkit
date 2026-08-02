@@ -1,9 +1,9 @@
 ---
-title: Branch slug reference
+title: Slug reference
 description: Transform from a git branch name to a slug, and the three responses to an empty result
 ---
 
-# Branch slug reference
+# Slug reference
 
 ## Scope
 

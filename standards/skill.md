@@ -18,7 +18,7 @@ Does not govern:
 - Path-scoped coding rules, which load on a file match rather than on a request match: `rule.md`
 - Single-purpose chat prompts carrying no frontmatter, references, or scripts: `snippets.md`
 - Voice, punctuation, and formatting in a skill body: `prose.md`
-- The transform from a branch name to a slug a skill carries in a filename: `branch-slug.md`
+- The transform from a branch name to a slug a skill carries in a filename: `slug.md`
 - The domain conventions a skill cites, each of which belongs to the standard that owns it
 
 ## Skill types

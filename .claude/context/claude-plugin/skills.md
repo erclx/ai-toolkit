@@ -189,7 +189,7 @@ The rules this argument produces fire when a skill is being written, so they liv
 
 ### Shared procedures
 
-Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. Each has a standard of its own, `pre-publish.md` for the scan and `branch-slug.md` for the transform. Both sat inside a document-type standard that did not govern them until `v38.4` moved them out, `prose.md` holding the scan and `skill.md` holding the transform.
+Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. Each has a standard of its own, `publish.md` for the scan and `slug.md` for the transform. Both sat inside a document-type standard that did not govern them until `v38.4` moved them out, `prose.md` holding the scan and `skill.md` holding the transform.
 
 The scan carries two checks under one citation, characters and phase labels, with the rules themselves held by `prose.md` and `versioning.md` beside it. A skill citing the scan gets both without naming either file, which is what keeps a new check from costing an edit in every consuming body. The label check scopes by destination, so `claude-diagram` cites the same standard and takes the character half alone.
 

@@ -8,16 +8,16 @@ subtitle: Reference docs for consistent authoring across the toolkit and target 
 Reference docs for consistent authoring across the toolkit and target projects.
 
 - [Architecture reference](architecture.md): Shape and content rules for .claude/ARCHITECTURE.md
-- [Branch slug reference](branch-slug.md): Transform from a git branch name to a slug, and the three responses to an empty result
 - [Context entry reference](context.md): Shape and content rules for .claude/context/<domain>.md entries
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
 - [Diagram reference](diagrams.md): Shape and content rules for .claude/diagrams/<kind>.md files
-- [Pre-publish reference](pre-publish.md): Scan run against finished text leaving through a channel no automated check covers
 - [Prose reference](prose.md): Voice, structure, formatting, and language rules for reference markdown
+- [Publish reference](publish.md): Scan run against finished text leaving through a channel no automated check covers
 - [Readme reference](readme.md): Readme voice, structure, and content conventions
 - [Requirements reference](requirements.md): Shape and content rules for .claude/REQUIREMENTS.md
 - [Governance rule reference](rule.md): Rule frontmatter, body shape, and voice for .claude/rules files
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
+- [Slug reference](slug.md): Transform from a git branch name to a slug, and the three responses to an empty result
 - [Standard reference](standard.md): Shape and content rules for authoring a standard
 - [Tasks reference](tasks.md): Folder layout, filename convention, and content rules for .claude/tasks/
 - [Versioning reference](versioning.md): Phase label vs semver discipline across tasks, PRs, reviews, issues, commits, and tags

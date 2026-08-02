@@ -131,7 +131,7 @@ The `What is right` section is optional, capped at three bullets, and included o
 
 Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
-Before posting, run the scan in `.claude/standards/pre-publish.md` against the body, or `${CLAUDE_SKILL_DIR}/../../standards/pre-publish.md` when the project does not have it. The hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
+Before posting, run the scan in `.claude/standards/publish.md` against the body, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it. The hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
 
 ```bash
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md

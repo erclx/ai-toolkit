@@ -16,7 +16,7 @@ Does not govern:
 - What sections a document has, or what belongs in each: the standard for that document type
 - Which frontmatter fields a document carries, which is that standard's own subject. This file governs the wording of a `title` and a `description` and nothing else about them.
 - Phase-label and semver discipline: `versioning.md`
-- The scan that applies these bans to finished text on its way out: `pre-publish.md`
+- The scan that applies these bans to finished text on its way out: `publish.md`
 - Code style and language conventions, which are governance rules rather than a standard
 
 ## Voice

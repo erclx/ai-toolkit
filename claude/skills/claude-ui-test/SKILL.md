@@ -57,7 +57,7 @@ If all changes are automatable, skip the manual checklist:
 
 ### Persist the checklist
 
-Derive `<slug>` per `.claude/standards/branch-slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/branch-slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
 
 When a manual checklist is produced, write it directly to `.claude/review/ui-checklist-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 

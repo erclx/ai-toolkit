@@ -58,7 +58,7 @@ If nothing is wrong, use: `✅ No observations.`
 
 ### Persist
 
-Derive `<slug>` per `.claude/standards/branch-slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/branch-slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
 
 Write the full report directly to `.claude/review/ux-audit-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 

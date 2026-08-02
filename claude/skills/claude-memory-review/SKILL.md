@@ -78,7 +78,7 @@ Rules that resist crisp one-line phrasing default to **Delete** over promote. Ne
 
 ### Step 4: write the proposal to the review file
 
-Derive `<slug>` per `.claude/standards/branch-slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/branch-slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
 
 Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline.
 

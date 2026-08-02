@@ -1,9 +1,9 @@
 ---
-title: Pre-publish reference
+title: Publish reference
 description: Scan run against finished text leaving through a channel no automated check covers
 ---
 
-# Pre-publish reference
+# Publish reference
 
 ## Scope
 
