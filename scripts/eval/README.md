@@ -14,7 +14,7 @@ scripts/eval/run.sh wireframes   # standards/wireframes.md
 scripts/eval/run.sh seed         # tooling/claude/seeds/
 ```
 
-A second argument records why the run was started, either `findings` or `regression`, and defaults to `findings`. The harness cannot infer it, since guessing from whether the verdict changed would mislabel a regression run that happens to find something. Pass it on the runs that confirm nothing broke.
+A second argument records why the run was started, either `findings` or `regression`, and defaults to `findings`. The harness cannot infer it, since guessing from whether the verdict changed would mislabel a regression run that happens to find something. Pass it on the runs that confirm nothing broke. An ablation half takes a third value the runner writes for itself, covered below.
 
 ```bash
 scripts/eval/run.sh seed regression
@@ -28,6 +28,8 @@ scripts/eval/run.sh seed findings memory-cut
 ```
 
 Both halves are labeled rather than pairing a bare `seed` against a cut variant. The bare arm carries the ordinary feature request, which reaches none of these sections, so pairing against it would vary the prompt and the artifact at once. The label lands in the ledger's `Arm` column as `seed-memory-cut`, which sorts a pair together.
+
+A variant records its `Kind` as `ablation` and ignores the second argument. The runner sets it because a variant carries its own reason for existing, unlike an ordinary run. It also keeps the two meanings of `Verdict` apart: under `findings` and `regression` the cell says whether the artifact conformed, and under `ablation` it says whether the pair discriminated. Counting those together answers neither question.
 
 The strip anchors on each bullet's text and fails the run when an anchor stops matching exactly one line. A cut half that silently kept its section is indistinguishable from its partner in every artifact the run leaves behind, so it would read as a null result rather than as a broken run.
 

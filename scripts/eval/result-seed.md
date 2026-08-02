@@ -205,6 +205,34 @@ The plan suggested a third argument naming the ablated section and pairing the r
 
 The strip anchors on each bullet's text and fails the run when an anchor stops matching exactly one line. A cut half that silently kept its section would be indistinguishable from its partner in every artifact a run leaves behind, so it would read as a null rather than as a broken run. Retention confirms the strip worked on every arm: kept halves recorded 87 lines, `memory-cut` 80, `indexes-cut` and `tasks-cut` 85, and `output-cut` 84.
 
+### What each cut removed
+
+Committed rather than left in scratch. The retained `claude-md.txt` sits under `.claude/.tmp/`, which resolves on one machine until someone clears it, and the verdicts below rest on exactly these lines. Anyone can regenerate a half from the seed and the runner at the row's `Subject` commit, and this is the copy that survives without the checkout.
+
+Recovered by diffing each cut half's retained seed against a kept half. `memory` also loses its heading and the blank line the collapse closes.
+
+```plaintext
+memory
+  ## Memory
+  - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
+  - Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
+  - Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.
+  - Before creating a new memory file, check for an existing one on the same topic. Update rather than duplicate.
+
+indexes
+  - For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
+  - Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
+
+output
+  - In the main worktree: relative from `pwd` works because `pwd` equals the editor root
+  - In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
+  - When the response covers multiple files, group paths under headers: `**Created:**`, `**Modified:**`, `**Deleted:**`. For single-file changes, the path on its own line is enough.
+
+tasks
+  - When a task needs execution detail beyond its own file, create a plan in `.claude/plans/` and link to it from the task's intro paragraph. When that task ships, move its plan file to `.claude/.tmp/plans-archive/`. Never delete it.
+  - Write the plan in the same session as the task file. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
+```
+
 ### Memory discriminates, reproduced twice
 
 The starkest result in the folder. Both kept halves wrote the correction to `.claude/memory/` inside the project and named the seed as the reason, one of them saying it put the file there `per the project's CLAUDE.md, not ~/.claude/projects/`. Both cut halves wrote to `~/.claude/projects/<fixture>/memory/` instead and left the project with no new file at all.
@@ -263,6 +291,8 @@ The `auto: false` escape is the one candidate still unmeasured. Cutting it needs
 ### Harness notes
 
 A cut half can write outside the fixture, and the snapshot does not see it. Both `memory-cut` arms wrote into `~/.claude/projects/`, so the runner's before-and-after comparison over the fixture reported no files changed while the session had written two. The transcript caught what the snapshot missed. Read the two together rather than trusting the file list, and clear the stray directory afterward.
+
+The sandbox harness has the same defect, and `write_scope` reports from a manifest diff over `.sandbox/` that cannot see outside it either. Two harnesses snapshotting a directory the session can write past is one finding rather than two, so it is recorded in `.claude/context/scripts.md` where both are in scope, and the fix belongs to both at once.
 
 Hook firing still cannot be scored. No hook output appears in any of the fourteen transcripts, including one whose final message claims the standards-audit hook rejected its punctuation. A run's self-report about a hook is not evidence that the hook fired. Run 01 scored this criterion from a marker file left under `.claude/.tmp/`, and the trap deletes the workdir holding it, so that route closes the moment a run ends. The criterion cannot be scored until either the capture carries hook events or retention copies the marker directory out.
 

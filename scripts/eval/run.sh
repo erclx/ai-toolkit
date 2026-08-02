@@ -25,6 +25,13 @@ arm="${1:-context}"
 # caller has to remember on the runs that confirm nothing broke.
 kind="${2:-findings}"
 
+# A variant overrides the caller's kind below, after the variant is parsed. The
+# harness cannot infer why an ordinary run was started, which is what makes
+# `kind` a caller argument, but a variant carries its own reason: the run exists
+# to be half of a comparison. Leaving it `findings` would put ablation halves
+# and standards arms in one bucket, and `Verdict` means different things in
+# each, so the count the ledger reads would silently mix them.
+
 # One half of an ablation pair, as `<section>-kept` or `<section>-cut`. Empty
 # runs the arm the way it has always run.
 #
@@ -36,7 +43,8 @@ kind="${2:-findings}"
 variant="${3:-}"
 
 usage="usage: run.sh [context|wireframes|seed] [findings|regression] [<section>-kept|<section>-cut]
-sections: memory indexes output tasks"
+sections: memory indexes output tasks
+a variant records its kind as \`ablation\` and ignores the second argument"
 
 case "$arm" in
 context)
@@ -153,7 +161,12 @@ fi
 # What the ledger and the retained output call this run. A variant sorts next
 # to its partner, which is what makes eight rows readable as four pairs.
 arm_label="$arm"
-[ -n "$variant" ] && arm_label="$arm-$variant"
+if [ -n "$variant" ]; then
+  arm_label="$arm-$variant"
+
+  # Set here rather than taken from the caller, per the note beside `kind`.
+  kind=ablation
+fi
 
 # What a run leaves behind, split by what each costs to keep. The raw output
 # lands in gitignored scratch and the ledger row is committed. A transcript
@@ -411,7 +424,12 @@ if [ "$arm" = seed ]; then
   # Retain the seed the run actually read. A pair is only re-diffable later if
   # both halves recorded what they were handed, and the cut half's CLAUDE.md
   # exists nowhere else once the trap clears the workdir.
-  retain_run_output "$fixture/CLAUDE.md" claude-md.txt || true
+  #
+  # Routed through the same flag as the transcript rather than swallowed. A row
+  # claiming a retained output while the file that makes the pair re-diffable
+  # is missing records a directory that cannot answer the question it is cited
+  # for, and nothing else would report the gap.
+  retain_run_output "$fixture/CLAUDE.md" claude-md.txt || retained=no
 
   append_ledger_row "$cost" "$turns" "$retained"
 
