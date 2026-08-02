@@ -11,7 +11,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 
 ## Scope
 
-Governs a skill folder as one artifact: `SKILL.md`, its optional sibling `REQUIREMENT.md`, and the bundled `references/`, `scripts/`, and `assets/` beside them.
+Governs a skill folder under `skills/` as one artifact: `SKILL.md`, its optional sibling `REQUIREMENT.md`, and the bundled reference, script, and asset folders beside them.
 
 Does not govern:
 
