@@ -25,7 +25,7 @@ jobs:
     name: 🏷️ Release Please
     runs-on: ubuntu-latest
     # A dispatch naming a tag republishes it, so no release is cut
-    if: inputs.tag == ''
+    if: github.event_name == 'push' || inputs.tag == ''
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -59,7 +59,8 @@ jobs:
     # release-please is skipped on a tag dispatch, so the gate cannot need its success
     if: >-
       !cancelled()
-      && (needs.release-please.outputs.release_created == 'true' || inputs.tag != '')
+      && (needs.release-please.outputs.release_created == 'true'
+      || (github.event_name == 'workflow_dispatch' && inputs.tag != ''))
     runs-on: ubuntu-latest
     permissions:
       contents: read
