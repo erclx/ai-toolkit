@@ -1,0 +1,41 @@
+---
+name: claude-autoship
+description: What the post-plan pipeline is for, the gaps it closes, and why every stop leaves the work recoverable
+---
+
+# Claude autoship requirement
+
+## Gap
+
+Without this skill, the run from an approved plan to an open pull request is a conversation. A session implements, then asks what comes next, and the answer varies by session. Review gets skipped on a diff that needed one, or spent on prose already gated by a hook. A run that halts leaves no stated resume point, so the user reconstructs how far it got from the working tree.
+
+## Must
+
+- Take the approved plan for the branch as the scope, and implement only what it describes
+- Give every step a stop condition, and leave the code on the branch and the receipts on disk at each one
+- Classify the changed-file list before review, so a prose-only diff skips a code review with no signal on it
+- Stop on any critical or should-fix finding rather than acting on it
+- Open the pull request as a draft, then watch continuous integration to a terminal state
+- Name the recovery for the stop it took, since the value of stopping is that the user knows where to resume
+
+## Must not
+
+- Expand past the plan, refactor a neighbor, or touch a file outside it without reason
+- Loop on a failed verify. One fix attempt against the reported errors, then stop.
+- Fix a review finding or a failing check. Both stops are deliberate, since a green pull request reached by auto-fix hides what broke.
+- Run the memory Apply phase. Promoting an entry changes how the agent operates and ships as its own change.
+- Read an empty changed-file list as prose-only. It satisfies that test vacuously and would route the branch past review instead of through it.
+
+## Guards
+
+- Detached HEAD: stop, no slug resolves
+- No approved plan at the branch's plan path: stop and route to the planning skill
+- Uncommitted changes unrelated to the plan: stop
+- No diff baseline against main: stop
+- Empty changed-file list: stop, and never advise removing the output from `.gitignore` to get past it
+
+## Out of scope
+
+- Writing the plan, which `claude-feature` owns. This chain starts from one already approved.
+- The behavior of each step, owned by the skill invoked. This skill owns the order and the stop conditions.
+- The resume path after a stop, which `git-ship` owns. That skill is the tail of this same sequence, which is why the two overlap by design.
