@@ -77,11 +77,13 @@ allowed-tools: <tools required>
 
 `REQUIREMENT.md` states what a skill is for, so a proposed change can be argued against something. This standard governs shape across the corpus and the requirement governs scope for one skill. Claude Code loads `SKILL.md` as the entry and ignores the sibling, so the file costs a target session nothing.
 
+The file serves a second purpose beside the argument. A skill body is procedural by design, so what the skill is for sits spread across its steps rather than stated in one place. The requirement is the compressed statement a reader gets before opening the body, and that purpose holds whether or not the skill's scope is contested.
+
 Read it before editing the skill. When a change closes no gap the requirement states, change the requirement first or drop the change.
 
-Write the gaps from what the skill is for, then compare the body against them. Deriving the requirement from the body is circular, because a requirement reverse-engineered from an overfitted skill records the overfitting as the requirement.
+Write the gaps from what the skill is for, then compare the body against them. Deriving the requirement from the body is circular, because a requirement reverse-engineered from an overfitted skill records the overfitting as the requirement. That failure costs more under the orientation purpose than under the argument one, since a file summarizing the body misinforms whoever reads it in place of the body rather than merely failing to gate a change.
 
-Not every skill needs one. A body short enough to read as its own specification already answers the questions below, and the file is worth writing when the skill's scope is arguable rather than obvious. Length is a weak proxy for that, since a short skill with a contested boundary earns one and a long skill doing one plain thing may not.
+A skill earns one when a reader cannot recover what the skill is for from the body alone. Apply the test to a skill nobody in the session has read before: read the body once, then state both the failures the skill exists to prevent and the nearest thing it deliberately does not do. A body answering both is its own specification and needs no sibling, and a body leaving either open earns one. Length is a weak proxy for that, since a short skill with a contested boundary earns one and a long skill doing one plain thing may not.
 
 ### What a working requirement looks like
 
