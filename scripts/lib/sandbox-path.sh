@@ -126,13 +126,28 @@ assert_sandbox_dir_safe() {
     return 1
   fi
 
+  # `normalize_sandbox_path` stops at 4096 segments and drops the remainder,
+  # which would hand the tests below an ancestor of the path provisioning
+  # removes. Refusing past `PATH_MAX` keeps that bound out of reach, since a
+  # segment costs at least two bytes and no syscall accepts the string anyway.
+  if [ "${#raw}" -gt 4096 ]; then
+    printf 'Refusing the sandbox path. It is %s characters, past the longest path any filesystem here accepts.\n' "${#raw}"
+    return 1
+  fi
+
   local dir home temp
   dir="$(normalize_sandbox_path "$raw")"
   home="$(normalize_sandbox_path "${HOME:-/root}")"
   temp="$(normalize_sandbox_path "${TMPDIR:-/tmp}")"
 
+  # Every message below names `$raw`, which is what the operator set. The tests
+  # compare `$dir`, so a path carrying `..` is refused for a location its own
+  # spelling does not show.
+  local resolution=""
+  [ "$dir" = "$raw" ] || resolution=" It resolves to $dir."
+
   if ! is_at_or_above "$home" "$dir" && ! is_at_or_above "$temp" "$dir"; then
-    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, so the path has to sit under %s or %s.\n' "$raw" "$home" "$temp"
+    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, so the path has to sit under %s or %s.%s\n' "$raw" "$home" "$temp" "$resolution"
     return 1
   fi
 
@@ -147,13 +162,13 @@ assert_sandbox_dir_safe() {
   main_root="$(normalize_sandbox_path "${main_root:-$root}")"
 
   if is_at_or_above "$dir" "$main_root"; then
-    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, and that path contains %s.\n' "$raw" "$main_root"
+    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, and that path contains %s.%s\n' "$raw" "$main_root" "$resolution"
     return 1
   fi
 
   case "$dir" in
   "$main_root"/*)
-    printf 'Sandbox at %s sits inside %s, which puts the toolkit CLAUDE.md back on the session ancestor chain. Point AITK_SANDBOX_DIR outside the repository.\n' "$raw" "$main_root"
+    printf 'Sandbox at %s sits inside %s, which puts the toolkit CLAUDE.md back on the session ancestor chain.%s Point AITK_SANDBOX_DIR outside the repository.\n' "$raw" "$main_root" "$resolution"
     return 1
     ;;
   esac
