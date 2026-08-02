@@ -7,7 +7,7 @@ description: Transform from a git branch name to a slug, and the three responses
 
 ## Scope
 
-Governs an attribute rather than a document type: the transform from a git branch name to the slug a surface carries in a derived name, which applies wherever a branch-derived name is produced. It also fixes the responses available when the transform returns empty.
+Governs the transform from a git branch name to the slug a surface carries in a derived name, and the responses available when the transform returns empty. It is an attribute standard rather than a document-type one, so it applies wherever a branch-derived name is produced.
 
 Does not govern:
 
