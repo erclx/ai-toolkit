@@ -69,6 +69,8 @@ If Mode is Independent, append this line to the preview:
 
 After outputting the preview, execute the final commands immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
+Before running them, run the banned-character scan in `.claude/standards/prose.md` against every title and body, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it. Each body stages under `.claude/.tmp/` and leaves through `gh`, so the hook sees neither and this scan is the only gate.
+
 ### Final commands
 
 For independent mode, base every branch on `main`:
