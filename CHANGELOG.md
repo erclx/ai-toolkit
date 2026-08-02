@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/erclx/aitk/compare/v0.15.0...v0.16.0) (2026-08-02)
+
+
+### Features
+
+* **sandbox:** arm three claude scenarios and pair the memory review scenario ([#714](https://github.com/erclx/aitk/issues/714)) ([631a80a](https://github.com/erclx/aitk/commit/631a80ae200c65ac1aaf73fad3ac26dcfdeccba1))
+
 ## [0.15.0](https://github.com/erclx/aitk/compare/v0.14.0...v0.15.0) (2026-08-02)
 
 
