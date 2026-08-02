@@ -44,7 +44,7 @@ A rule written in a standard fires only when a session reads it. The Claude Code
 
 ### A diagram folder per kind rather than one file
 
-`.claude/diagrams/` holds one entry per kind under a fixed filename, chosen over a single `DIAGRAMS.md`. The kinds drift at rates spanning roughly an order of magnitude, so a deploy change rewrites one entry and leaves the other four untouched. Fixed filenames are what let a session refreshing a kind find the file it is meant to overwrite instead of writing a second entry beside it under a name of its own.
+`.claude/diagrams/` holds an entry per kind under a fixed filename, chosen over a single `DIAGRAMS.md`. The kinds drift at rates spanning roughly an order of magnitude, so a deploy change rewrites one entry and leaves the others untouched. Fixed filenames are what let a session refreshing a kind find the file it is meant to overwrite instead of writing a second entry beside it under a name of its own. A kind carrying a second question takes a suffixed name and repeats its category, which is how the folder reaches nine entries across five kinds.
 
 ### Review travels on the pull request
 
