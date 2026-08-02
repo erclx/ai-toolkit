@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.0](https://github.com/erclx/aitk/compare/v0.24.0...v0.25.0) (2026-08-02)
+
+
+### Features
+
+* **sandbox:** arm the two scenarios the blast-radius rule reaches ([#743](https://github.com/erclx/aitk/issues/743)) ([88c2a48](https://github.com/erclx/aitk/commit/88c2a48fd590baee7d5614d08d402adf822198d3))
+* **sync:** attribute unstamped drift from toolkit git history ([#742](https://github.com/erclx/aitk/issues/742)) ([5819cbf](https://github.com/erclx/aitk/commit/5819cbfae633ba4310ce54e590709c7c146fed5e))
+
 ## [0.24.0](https://github.com/erclx/aitk/compare/v0.23.0...v0.24.0) (2026-08-02)
 
 
