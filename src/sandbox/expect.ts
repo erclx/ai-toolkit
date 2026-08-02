@@ -141,6 +141,14 @@ function contentArray(value: unknown): ContentAssertion[] {
     if (typeof entry !== 'object' || entry === null) continue
 
     const record = entry as Record<string, unknown>
+
+    // Dropping a half-written entry rather than throwing is deliberate, and it
+    // reads as the opposite of the stray-key check below. An entry missing its
+    // path or pattern declares no assertion to lose, and `checkExpectation`
+    // fails an arm whose surviving declaration asserts nothing, so the vacuous
+    // pass is already closed one level up. A stray key is the reverse: the entry
+    // is well-formed and the declaration around it silently lost a key it
+    // appears to carry, which nothing downstream can see.
     if (typeof record.path !== 'string' || record.path === '') continue
     if (typeof record.pattern !== 'string' || record.pattern === '') continue
 
