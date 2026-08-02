@@ -23,4 +23,11 @@ mirror_dir "$PROJECT_ROOT/snippets" "$PROJECT_ROOT/.claude/snippets" -name "*.md
 
 # `internal/` is the surface the plugin does not symlink. Mirrored on its own so
 # toolkit sessions read it at a `.claude/` path like every other consumed copy.
-mirror_dir "$PROJECT_ROOT/internal" "$PROJECT_ROOT/.claude/internal" -name "*.md"
+# `internal/rules/` is excluded because it lands in `.claude/rules/` below, and
+# mirroring it here too would publish each rule at a second inert path.
+mirror_dir "$PROJECT_ROOT/internal" "$PROJECT_ROOT/.claude/internal" -name "*.md" -not -path "*/rules/*"
+
+# `.claude/rules/` is a subset rather than a mirror, so it resolves through the
+# stack machinery instead of a fourth `mirror_dir` call. The record naming the
+# subset is `internal/governance.toml`.
+bun "$PROJECT_ROOT/src/cli.ts" gov regen --root "$PROJECT_ROOT"

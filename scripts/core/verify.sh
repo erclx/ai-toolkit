@@ -132,7 +132,7 @@ main() {
 
   log_step "Consumed copies"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-claude-copies.sh" "Consumed-copy regen failed"
-  assert_no_drift ".claude/standards .claude/snippets .claude/internal" "Consumed copies drifted. Run bun run check and commit .claude/standards, .claude/snippets, and .claude/internal."
+  assert_no_drift ".claude/standards .claude/snippets .claude/internal .claude/rules" "Consumed copies drifted. Run bun run check and commit .claude/standards, .claude/snippets, .claude/internal, and .claude/rules."
   log_info "Consumed copies clean"
 
   log_step "Skill references"
