@@ -13,6 +13,8 @@ A skill folder may also carry `REQUIREMENT.md` beside `SKILL.md`, stating the ga
 
 Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-claude-md`, `migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
 
+### Catalog
+
 - `bash-script`: Generate interactive bash scripts with a visual timeline UI and error handling
 - `ci-workflow`: Generate GitHub Actions CI workflow files with parallel, gated jobs
 - `cli-script`: Generate non-interactive automation and CI bash scripts in a lean functional style
@@ -69,6 +71,8 @@ Skills that perform a one-time structural move of an existing project into a new
 - `project-commands`: Run a command documented in `.claude/context/development.md` and stop at the launch
 - `youtube-transcripts`: Fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
 
+### Invocation and the task board
+
 Invoke with `/skill-name` or let Claude auto-trigger by matching against the skill description. Skills marked with `disable-model-invocation: true` (`claude-autoship`, `claude-orchestrate`, `create-skill`, `git-ship`, `toolkit-operator`) require explicit invocation and will not auto-trigger. Git skills (`git-commit`, `git-pr`, `git-branch`, `git-stage`) override built-in commit and PR behavior. See `.claude/standards/skill.md` for authoring conventions.
 
 Two skills write to the task board and the split is by operation rather than by file. `claude-tasks` brings a task file into existence and moves a shipped one to `.claude/.tmp/task-archive/`. `claude-docs` edits the contents of a file that already exists, marking outcomes `[x]` from the diff and sweeping the plans those tasks cite. Neither crosses into the other, because two skills relocating the same file drift into relocating it differently.
@@ -93,6 +97,8 @@ The sandbox arm for this is `board-sweep`, kept separate from `drift`. `drift` a
 
 The arm carries a third task whose outcomes stay open and whose plan must survive the run. Widening a scan and dropping the gate that bounds it fail in opposite directions but look identical in a fixture where every task closes, so the arm needs a case the sweep is required to pass over. Its assertions cover the plan's location and the task's untouched `Plan:` line, since a run that retargeted the pointer anyway would leave the task aimed at an archive path holding no file.
 
+### Archiving on merge
+
 Which task closes is decided from the diff, not the session. `claude-docs` resolves a merge base against `origin/main`, unions the committed diff with the working tree and untracked files, then matches unchecked outcomes on the board against what shipped. Completion is a fact about the repository, so a session that shipped a queued task without ever discussing it still leaves the board correct. Requirements, architecture, and design stay session-sourced, because those are judgments a diff cannot carry. The same baseline feeds the wireframe sweep and the context refresh, which previously read `git diff main` and saw nothing at all when run on `main` itself.
 
 Nothing chained the archive until the `post-merge` git hook landed. Every earlier step fires from `claude-autoship` or `git-ship`, both of which finish while the pull request is still open, and a task archived there closes for work that may be abandoned. So the hook is the only event that lands late enough, and the board being gitignored rules out reading it from anywhere but the operator's own machine.
@@ -104,6 +110,8 @@ Naming it is what nothing recorded. A branch name cannot carry the link, because
 The gates all live in `aitk tasks archive` rather than in the shell. A hook that pre-filtered would duplicate them in a language where the outcome test already needed an errexit comment, and the skill calling the same command is what stops the attended and unattended paths archiving differently. Each gate refuses with a non-zero exit rather than reporting, since a caller with nobody watching cannot act on a warning. A task whose outcomes are not all closed, whose plan is still live, or which shares its pull request number with another task all refuse and print why. `claude-tasks` keeps the one check the command cannot make, which is confirming the work reached `main` when a person archives by name rather than by merge.
 
 `post-rewrite` carries the same check for anyone pulling with rebase. `git pull` under `pull.rebase=true` runs `git rebase`, which fires that event and never `post-merge`, so without it the trigger is a silent no-op on that machine. It delegates to `post-merge` on the `rebase` argument alone, since the same event fires on `commit --amend` and an amend changes nothing on the board. Silence is the wrong failure mode for a hook that exists to stop a shipped task being forgotten, and the base stack ships to targets whose pull style this repository does not control.
+
+### The diff baseline
 
 A `git init` project on `main` with no remote resolves no usable baseline, which is the ordinary shape of a scaffolded target project rather than an edge case. That costs only the committed half of the diff, since the working tree and untracked files still scope correctly. The marking step recovers the committed half by reading `git log -p -1`, which supplies content where a bare file list would not. The wireframe sweep and the context refresh run on the working tree and untracked files, and skip only when that set is empty. Neither ever substitutes the whole tree for a missing baseline, because both write, and a set that wide would stub a wireframe per uncovered surface and rewrite every context entry. The asymmetry with the marking step is deliberate and worth keeping: on a scaffolded project the last commit is the scaffold commit, so the `git log -p -1` recovery is the whole tree by another route, which a step that only reads can tolerate and a step that writes cannot. Widening what a step reads is safe. Widening what a step writes is not.
 
@@ -125,6 +133,8 @@ The empty list is what stops the chain instead. Routing it into review rather th
 
 A plan whose output is entirely gitignored still reaches the stop rather than a fix, which is a separate defect that surfaces six steps later at `git-stage`. The stop names that case apart from a plan yet to produce output, since the two want opposite responses and a single message covering both sends the operator to the wrong check. Advising a re-run once the output is tracked is the wrong fix for scratch that is gitignored by design, and followed literally it commits scratch to close a stopped run.
 
+### The roadmap gate
+
 `claude-orchestrate` asserted an active version from a roadmap this repository never had. `.claude/ROADMAP.md` is specified by `standards/bundled/roadmap.md`, written by `claude-roadmap`, and read by `claude-orchestrate` and `claude-pr-review`, and the file has never existed here. Every read path skips a missing file by instruction, so nothing failed loudly and the `Active: vX.Y` output line was unsourced on every run since the skill shipped.
 
 Drafting the roadmap was the obvious fix and the standard forbids it. All eight MVP features in `.claude/REQUIREMENTS.md` have shipped and `v0.3.1` is tagged, and the Lifecycle section of `standards/bundled/roadmap.md` says the scope is exhausted once the last version ships, with later work arriving as discrete items rather than extending the roadmap. A table of the current maintenance labels would satisfy the format and break the lifecycle rule in the same file.
@@ -137,6 +147,8 @@ What the gate reads is a section's presence rather than a shipped flag. `standar
 
 `## Distribution` stays outside the trigger set. The standard tells a project shipping to outside consumers to include that section from the start, so a greenfield project carries it before a single feature ships and a gate reading it would stop the loop at step one while asserting a scope was sequenced that never was. The cost is that a project whose only later scope is that section passes the gate, which this repository is, since the distribution work landed here without the requirements pass that would have named a section freely. Both remaining gaps under-fire rather than stop wrongly, which is the direction a guard reading a convention should fail in.
 
+### The review two-pass model
+
 `claude-pr-review` reads the same path and was left untouched. Its read informs a review comment and asserts nothing, so it carries no defect to fix, and the body sits inside a queued rewrite's file set where an edit here would buy a rebase for no behavior change.
 
 That rewrite landed as a second pass the skill had never described. `claude-pr-review` posts twice over a pull request's life, a first pass and a close-out, and `claude-orchestrate` step 7 assumed the second one while the skill body defined only the first. The body path carries the head commit now, `body-<number>-<short-sha>.md`, because keying on the pull request number alone stops two sessions reviewing different pull requests from colliding and says nothing about one session posting twice. Callers invented five spellings for the second file across roughly twenty-five scratch files, and the sessions that had already written the defect down overwrote their first-pass body anyway. A name the caller has to choose is a name the caller gets wrong, so the fix is that the second segment is derived.
@@ -146,6 +158,8 @@ Deriving it also decides what a close-out reads. `gh pr view --json reviews` ret
 The heading is the half a reader sees without opening anything. `## Review` opens a review and `## Review closed` reports its findings closed, so a thread of comments can be scanned for state. `claude-address-review` already nests `## Review response` under the first of those, and the close-out heading extends that family rather than starting a new one.
 
 Sharing a prefix across that family is why the detection matches the first line for equality rather than testing a prefix. A prefix test also accepts `## Review response`, and it happened to be safe only because `claude-address-review` posts through `gh pr comment`, which lands in `.comments` and never in `.reviews`. Nothing recorded that dependency, so the close-out would have started scoping to the worker's reply the day that skill switched to posting a review. An equality test costs the same and owes nothing to a sibling's choice of command.
+
+### The CLI shell-out pattern
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
 
