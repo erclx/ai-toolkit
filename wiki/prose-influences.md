@@ -15,7 +15,7 @@ The rules in `.claude/standards/prose.md` draw from three industry style guides 
 | Microsoft Writing Style Guide              | Direct verbs, no filler openers, front-loaded paragraphs, scannable structure                             | [learn.microsoft.com/en-us/style-guide](https://learn.microsoft.com/en-us/style-guide/welcome/)        |
 | Apple Style Guide                          | Concise phrasing, no vague qualifiers, developer-level assumptions                                        | [support.apple.com/guide/applestyleguide](https://support.apple.com/guide/applestyleguide/welcome/web) |
 
-These guides overlap heavily on core principles. Our rules compress the shared consensus into a single reference.
+These guides overlap heavily on core principles. Our rules take the subset of that overlap that survives in terse reference prose, and leave two shared principles to the standards governing the surfaces where they apply.
 
 ## AI-specific additions
 
@@ -34,6 +34,16 @@ These patterns are not covered by the industry guides. They target habits common
 ## Positive guidance
 
 The bans above subtract slop. They also push output toward a uniform staccato cadence, so prose.md pairs them with construction guidance: vary sentence length and opening structure, use substantive connectives where flow matters, and never pad for rhythm. This guidance is soft judgment, not a fixed pattern, so the standards audit does not score it mechanically.
+
+## What we left out
+
+Two principles these guides state did not reach `prose.md`, and neither is a disagreement. Both address a reader that terse reference prose does not serve.
+
+Google's [guidance on person](https://developers.google.com/style/person) says to address the reader as _you_ rather than _we_, and permits first-person plural where the authoring organization is a clear antecedent. `prose.md` takes no position on person at all.
+
+Microsoft states [three voice principles](https://learn.microsoft.com/en-us/style-guide/brand-voice-above-all-simple-human), "Warm and relaxed", "Crisp and clear", and "Ready to lend a hand". Only the middle one reached `prose.md`, whose opening voice bullet is close to a paraphrase of it. The same page names contractions under its "Talk like a person" style tip.
+
+Both land in the `## Voice` section of `standards/readme.md` instead, scoped to the README at a repository root. The guides were adopted by surface rather than in full.
 
 ## Where we diverge
 
