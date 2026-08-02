@@ -10,6 +10,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { execaSync } from 'execa'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   applyChanges,
@@ -390,6 +391,127 @@ describe('planSync attribution', () => {
     const plan = planSync(createAdapter(), TARGET)
 
     expect(plan.entries[0].state).toBe('drifted')
+  })
+
+  it('should report history as unavailable outside a git checkout', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.historyUnavailable).toBe(true)
+  })
+
+  it('should leave history available when nothing needs attributing', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.historyUnavailable).toBe(false)
+  })
+})
+
+describe('planSync attribution without a stamp', () => {
+  const stamped = (): SyncAdapter =>
+    createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } })
+
+  function git(...args: string[]): string {
+    return execaSync('git', ['-C', ROOT, ...args]).stdout
+  }
+
+  function publish(content: string, message: string): string {
+    writeFixture(join(SOURCE, 'core/000-const.md'), content)
+    git('add', '--all')
+    git('commit', '-m', message)
+
+    return git('rev-parse', 'HEAD').trim()
+  }
+
+  beforeEach(() => {
+    git('init', '--initial-branch=main')
+    git('config', 'user.email', 'test@example.com')
+    git('config', 'user.name', 'Test')
+  })
+
+  it('should recover stale from history when the stamp covers nothing', () => {
+    const released = publish('installed\n', 'publish v1')
+    publish('upstream\n', 'publish v2')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries[0].state).toBe('stale')
+    expect(plan.entries[0].since).toBe(released)
+  })
+
+  it('should keep a file matching no published version unattributed', () => {
+    publish('installed\n', 'publish v1')
+    publish('upstream\n', 'publish v2')
+    writeFixture(join(TARGET, STAMPED_RULE), 'edited by the project\n')
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.entries[0].state).toBe('drifted')
+    expect(plan.entries[0].since).toBeUndefined()
+  })
+
+  it('should report history as available once it has been read', () => {
+    publish('installed\n', 'publish v1')
+    publish('upstream\n', 'publish v2')
+    writeFixture(join(TARGET, STAMPED_RULE), 'edited by the project\n')
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.historyUnavailable).toBe(false)
+  })
+
+  it('should still queue the copy that closes a recovered drift', () => {
+    publish('installed\n', 'publish v1')
+    publish('upstream\n', 'publish v2')
+    writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
+
+    const plan = planSync(stamped(), TARGET)
+
+    expect(plan.changes.map((change) => change.kind)).toEqual(['copy'])
+  })
+
+  it('should let a refusing domain apply once every file is recovered', async () => {
+    publish('installed\n', 'publish v1')
+    publish('upstream\n', 'publish v2')
+    const dest = join(TARGET, STAMPED_RULE)
+    writeFixture(dest, 'installed\n')
+
+    const code = await runDomainSync(
+      createAdapter({
+        stamp: { domain: 'governance', toolkitRoot: ROOT },
+        nonInteractive: { kind: 'refuse', message: 'refused', hint: 'run it' },
+      }),
+      TARGET,
+      { protectedRoot: '/nowhere' },
+    )
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('upstream\n')
+  })
+
+  it('should keep refusing when a file resists attribution', async () => {
+    publish('installed\n', 'publish v1')
+    publish('upstream\n', 'publish v2')
+    const dest = join(TARGET, STAMPED_RULE)
+    writeFixture(dest, 'edited by the project\n')
+
+    const code = await runDomainSync(
+      createAdapter({
+        stamp: { domain: 'governance', toolkitRoot: ROOT },
+        nonInteractive: { kind: 'refuse', message: 'refused', hint: 'run it' },
+      }),
+      TARGET,
+      { protectedRoot: '/nowhere' },
+    )
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('edited by the project\n')
   })
 })
 
