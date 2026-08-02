@@ -16,8 +16,8 @@ Skills that perform a one-time structural move of an existing project into a new
 - `bash-script`: Generate interactive bash scripts with a visual timeline UI and error handling
 - `ci-workflow`: Generate GitHub Actions CI workflow files with parallel, gated jobs
 - `cli-script`: Generate non-interactive automation and CI bash scripts in a lean functional style
-- `claude-design-extract`: Draft `.claude/DESIGN.md` from existing prose and shell UI surfaces
-- `claude-design-propose`: Draft `.claude/DESIGN.md` on day one from REQUIREMENTS.md and a personality paragraph
+- `claude-design-extract`: Draft `.claude/DESIGN.md`, sourcing tokens from existing UI surfaces or proposing them on day one
+- `claude-design-propose`: Pointer at `claude-design-extract`, removed in `0.19.0`
 - `claude-diagram`: Write per-kind Mermaid entries into `.claude/diagrams/`, then verify each render
 - `claude-docs`: Update .claude/ planning docs and mark outcomes the diff shipped
 - `claude-feature`: Plan a feature by reading Claude setup and scanning source files
@@ -43,8 +43,8 @@ Skills that perform a one-time structural move of an existing project into a new
 - `migration-context`: Classify `docs/` content and propose `git mv` to `.claude/context/`
 - `create-rule`: Scaffold a project-local governance rule into .claude/rules/
 - `create-skill`: Create a new skill file in .claude/skills/
-- `create-snippet`: Create a new snippet file in snippets/
-- `create-standard`: Create a new standard file in standards/ following the meta-standard
+- `create-snippet`: Pointer at `create-standard`, removed in `0.19.0`
+- `create-standard`: Create a new standard file following the meta-standard, or a new snippet file
 - `docs-sync`: Rewrite stale README.md and docs/\*.md sections since main
 - `git-branch`: Rename current branch to match conventional format
 - `git-commit`: Generate a conventional commit message from staged changes
