@@ -1,40 +1,41 @@
 ---
 title: Components
-description: Two delivery paths authored content takes into a project, drawn from a code scan
+description: Layers inside the boundary, the tree the plugin cannot reach, and the two channels that carry content out, drawn from ARCHITECTURE.md
 category: Components
-verified: 73e9a3f8 2026-08-02
+verified: 7b1107ac 2026-08-02
 ---
 
 # Components
 
-The parts inside the boundary, arranged by which path each one uses to reach a project.
+The parts inside the boundary, arranged by which of them ships and which of them cannot.
 
 ```mermaid
 flowchart TB
-  accTitle: How authored content reaches a project through two paths
-  accDescr: One body of authored content splits into two delivery paths, a CLI that copies domain files into a target project and a set of plugin skills that load live into a Claude Code session, with the skills calling the CLI rather than duplicating its logic.
+  accTitle: The layers inside the boundary and which of them reach a project
+  accDescr: Content is authored at the repository root and splits into installable domains and an internal tree nothing shippable reaches, the installable side is also consumed into a generated copy this repository commits and reads back, and two independent channels carry it outward, a CLI that copies files into a target and a plugin that loads its skills live.
 
-  authored["Authored content:<br/>rules, standards, snippets, tooling"]
+  subgraph authored["Authored at the root"]
+    internal["internal/"]
+    domains["Installable domains"]
+    internal ~~~ domains
+  end
 
-  plugin["Claude plugin skills"]
-  cli["aitk CLI<br/>install and sync"]
-  session["Claude Code session"]
-  project[".claude in target project"]
+  consumed[".claude/ copy"]
+  plugin["Plugin skills"]
+  cli["aitk CLI"]
+  target["Target project"]
 
-  authored --> plugin
-  authored --> cli
+  internal --> consumed
+  domains --> consumed
+  domains --> plugin
+  domains --> cli
   plugin -->|calls| cli
-  plugin -->|loads into| session
-  cli -->|copies files| project
-  session -->|works in| project
+  plugin -->|loads live| target
+  cli -->|copies files| target
 ```
 
-Source: code. Fidelity is lower than prose-driven diagrams. Verify against the project's intent.
+The split worth seeing is the one on the right, because the folder tree shows the domains but not which of them travel by which route. Content under `governance/`, `standards/`, `snippets/`, and `tooling/` is copied, and a per-domain install or sync command writes it to a fixed path under the target's `.claude/`, so the project holds a real file it owns and edits without the toolkit present. Skills are never copied, and the marketplace loads them into a session straight from this repository, which is why a skill edit reaches users on merge while a standards edit reaches them only when someone runs a sync. The edge from the skills to the CLI is what keeps the two channels from diverging, since a skill reads a catalog through a `list --json` verb and then executes the CLI rather than restating what it does.
 
-Budget: six edges over five nodes trips the density guidance in `.claude/standards/diagrams.md`. Moving the consumption side, the session and the target project, into its own entry would clear it. The entry stays whole because a delivery path is only legible against what it reaches, and the standard asks for a warning on this budget rather than a refusal.
+`internal/` is the node that reaches no delivery channel, and its position is the enforcement. Toolkit-internal runbooks and dev helpers live there because nothing inside the shipped plugin tree reaches it. A filter at each entry point was the alternative, and it is what this repository ran until it failed. Two entries in the plugin are symlinks an installer dereferences and copies whatever sits behind, so five internal files reached every plugin cache with no code left in the path to filter them out.
 
-The structure worth seeing is the split into two paths, because the file tree shows the folders but not which of them travel by which route. Content under `governance/`, `standards/`, `snippets/`, and `tooling/` is copied. A per-domain `install` or `sync` command reads it here and writes it to a fixed path under the target project's `.claude/` folder, so the target holds a real file it can read without the toolkit present. Skills under `claude/skills/` are never copied. The marketplace loads them into a session from this repository, which is why a skill edit reaches users on merge while a standards edit reaches them only when someone runs a sync.
-
-The edge from the skills to the CLI is the constraint that keeps the two paths from diverging. A skill detects the CLI and calls it. It does not reimplement what the CLI does, so a rule about how content installs has exactly one implementation and the skill stays a thin caller. The same principle drives every domain having a `list` command with a `--json` flag, which lets a skill read a catalog at runtime instead of hardcoding names that would go stale.
-
-One wrinkle is invisible above. The toolkit consumes its own output. Standards and snippets are authored at the repository root and installed to `.claude/standards/` and `.claude/snippets/` here as well as in a target, and that consumed copy is committed and regenerated by `bun run check`. Every rule and skill can then reference `.claude/standards/X.md` and have the path resolve identically whether it runs in this repository or in a project that installed from it. See `.claude/context/standards.md` for the sync mechanism and `.claude/context/cli.md` for where the TypeScript surface hands off to bash.
+The consumed copy is the wrinkle a reader would not guess. Standards and snippets are authored at the root and installed to `.claude/` here exactly as they are in a target, and that copy is committed and regenerated by `bun run check`. Every rule and skill can then cite `.claude/standards/X.md` and have the path resolve the same way in both places. See `.claude/ARCHITECTURE.md` for the decisions behind each of these and `.claude/diagrams/components-cli.md` for where the code inside the CLI hands off to bash.
