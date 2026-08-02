@@ -66,7 +66,7 @@ Full help: `aitk <command> --help`.
 | `aitk init [path]`       | Bootstrap a project with selected toolkit domains                                              |
 | `aitk sync [path]`       | Sync all installed domains in a target project                                                 |
 | `aitk sync --check`      | Report toolkit drift without writing (`--json`, `--exit-code`)                                 |
-| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed)                                                  |
+| `aitk sandbox [cat:cmd]` | Run sandbox scenarios (interactive or routed), toolkit-only like the tree it reads             |
 | `aitk sandbox reset`     | Reset sandbox to baseline                                                                      |
 | `aitk sandbox clean`     | Wipe the sandbox                                                                               |
 | `aitk sandbox check`     | Score a provisioned sandbox against a scenario expectation (`--json` for the verdict)          |
@@ -189,7 +189,7 @@ inside an already-open frame.
 
 ### Sandbox scenarios
 
-Scenarios live under `scripts/sandbox/`, one folder per category. `scripts/sandbox/fixtures/` is the exception, holding file content that scenarios stage rather than scenarios of its own, so both pickers filter it out. Route non-interactively with `SANDBOX_SCENARIO`:
+Scenarios live under `scripts/sandbox/`, one folder per category. `scripts/sandbox/fixtures/` is the exception, holding file content that scenarios stage rather than scenarios of its own, so both pickers filter it out. `files` in `package.json` excludes that tree, so an installed `aitk` carries the command, reports it as toolkit-only on one line, and exits 1 rather than failing on the missing directory. Route non-interactively with `SANDBOX_SCENARIO`:
 
 ```bash
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
@@ -222,7 +222,7 @@ Exit 0 means `pass` or `unchecked`. Exit 1 means `fail`, or a caller error: a ma
 
 ### Scenario coverage
 
-`aitk sandbox coverage` reports which scenarios declare expectations and which only provision a state. It reads the fixture tree, so it needs no provisioned sandbox and runs nothing.
+`aitk sandbox coverage` reports which scenarios declare expectations and which only provision a state. It reads the fixture tree, so it needs no provisioned sandbox and runs nothing. Where that tree does not ship it exits 1 and prints no percentage, since a denominator nobody looked at is not a coverage result. A tree that is present and holds no scenarios is a real zero and still reports one.
 
 ```bash
 aitk sandbox coverage --json
