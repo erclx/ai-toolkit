@@ -8,6 +8,7 @@ export PROJECT_ROOT
 
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-path.sh"
 
 # The agent pushes from inside the sandbox on its own, in a session this script
 # spawns, so the guard has to reach that environment and not only provisioning.
@@ -55,8 +56,66 @@ writes_between() {
     awk '{ $1=""; sub(/^ /, ""); print }' | sort -u
 }
 
+# The roots a run must not write shared session scratch to. `snapshot_tree` reads
+# the sandbox alone, so before this a session that resolved that scratch against
+# a toolkit root wrote where no manifest looked: the run reported success, the
+# write list came back empty, and `write_scope` had nothing to assert against.
+#
+# It makes an escape visible rather than impossible. A session can write to a
+# home directory, to a sibling worktree, or to any path outside these roots, and
+# none of that is watched. The standing limits in `.claude/context/sandbox.md`
+# carry what stays invisible.
+escape_roots() {
+  printf '%s\n' "$PROJECT_ROOT"
+
+  # A linked worktree is the normal place to develop this repository, and the
+  # rule an escaping session follows sends scratch to the main root rather than to
+  # the worktree it was launched from. Watching only `$PROJECT_ROOT` would miss
+  # the escape in exactly the case it was measured in.
+  local main_root
+  main_root="$(git -C "$PROJECT_ROOT" worktree list --porcelain 2>/dev/null |
+    grep -m 1 '^worktree ' | cut -d' ' -f2-)"
+  if [ -n "$main_root" ] && [ "$main_root" != "$PROJECT_ROOT" ]; then
+    printf '%s\n' "$main_root"
+  fi
+
+  return 0
+}
+
+# The four directories the seed's shared-scratch rule names, and the whole of
+# where an escape lands. A session that resolves that rule against a toolkit root
+# writes here and nowhere else, so watching these rather than the whole root
+# costs no detection.
+#
+# It buys the difference between a signal and noise. Nothing distinguishes the
+# spawned session's writes from the operator's own, so a watch over the whole
+# root reports ordinary editing during a run as an escape. Measured 2026-08-02:
+# three runs against the relocated sandbox all wrote their report to the right
+# place, and two of the three still reported an escape under the wide watch,
+# naming a context entry being edited in the session that launched them.
+# Narrowing to these four leaves the report readable without discarding any
+# destination the failure reaches.
+ESCAPE_SCRATCH_DIRS=(.claude/plans .claude/review .claude/memory .claude/tasks)
+
+snapshot_root() {
+  local dir="$1"
+  local manifest="$2"
+
+  local -a targets=()
+  local sub
+  for sub in "${ESCAPE_SCRATCH_DIRS[@]}"; do
+    [ -d "$dir/$sub" ] && targets+=("./$sub")
+  done
+
+  : >"$manifest"
+  [ ${#targets[@]} -eq 0 ] && return 0
+
+  (cd "$dir" && find "${targets[@]}" -type f -exec sha1sum {} +) |
+    sed "s|\./||" | sort -k2 >"$manifest"
+}
+
 # Keeps what re-scoring needs. `aitk sandbox check` recovers the tree assertions
-# from surviving `.sandbox/` state, but `max_turns` reads the envelope and
+# from surviving sandbox state, but `max_turns` reads the envelope and
 # `write_scope` reads the writes list, both of which die with the temp files.
 #
 # Writes to stderr and disk only, since `docs/agents.md` makes stdout the data
@@ -132,13 +191,26 @@ main() {
   log_step "Provisioning $target"
   bash "$PROJECT_ROOT/scripts/manage-sandbox.sh" --no-header "$target" "$scenario" >&2
 
-  local sandbox="$PROJECT_ROOT/.sandbox"
-  local before after envelope writes
+  local sandbox
+  sandbox="$(resolve_sandbox_dir)"
+
+  local before after envelope writes escapes
   before="$(mktemp)"
   after="$(mktemp)"
   envelope="$(mktemp)"
   writes="$(mktemp)"
+  escapes="$(mktemp)"
   snapshot_tree "$sandbox" "$before"
+
+  local -a escape_dirs=() escape_manifests=()
+  local root manifest
+  while IFS= read -r root; do
+    [ -d "$root" ] || continue
+    manifest="$(mktemp)"
+    snapshot_root "$root" "$manifest"
+    escape_dirs+=("$root")
+    escape_manifests+=("$manifest")
+  done < <(escape_roots)
 
   log_step "Running $prompt on $MODEL"
   local out
@@ -164,6 +236,19 @@ main() {
   writes_between "$before" "$after" >"$writes"
   printf '%s' "$out" >"$envelope"
 
+  # Taken before the verdict runs, since `aitk sandbox check` and `record_run`
+  # both write under a watched root themselves.
+  local index=0 after_manifest
+  : >"$escapes"
+  for root in "${escape_dirs[@]}"; do
+    after_manifest="$(mktemp)"
+    snapshot_root "$root" "$after_manifest"
+    writes_between "${escape_manifests[$index]}" "$after_manifest" |
+      sed "s|^|${root%/}/|" >>"$escapes"
+    rm -f "${escape_manifests[$index]}" "$after_manifest"
+    index=$((index + 1))
+  done
+
   # The verdict decides the outcome. The envelope can only fail a run the
   # expectations would otherwise have passed, never pass one on its own.
   local verdict_code=0 verdict_json
@@ -175,16 +260,44 @@ main() {
   # framed stderr, per the stream contract in `docs/agents.md`. A run that
   # returned output that does not parse still emits its verdict rather than both
   # to a jq error, since a silent stdout would read as a run that never happened.
+  #
+  # An escape rides alongside the verdict rather than inside it. The verdict
+  # answers what the sandbox contains, and a file the session put somewhere else
+  # is not in that tree to be asserted over.
+  #
+  # It reports without failing, which is the same relationship `write_scope` has
+  # to the writes it names. Nothing here distinguishes the spawned session's
+  # writes from the operator's own, and on a machine running parallel sessions
+  # the watched directories are rarely quiet: of five runs on 2026-08-02, three
+  # reported an escape and every one named a file another session was writing.
+  # Failing on that would trade the silence this replaced for a red verdict that
+  # says nothing about the skill, which is the flaky arm the whole task exists to
+  # avoid. What enforces the scope is that the sandbox now sits outside the
+  # repository, so a correct run has nothing to escape with.
+  local escapes_json
+  escapes_json="$(jq -R -s 'split("\n") | map(select(length > 0))' "$escapes")"
+
+  if [ -s "$escapes" ]; then
+    log_warn "Shared scratch changed under a toolkit root during this run:"
+    while IFS= read -r path; do
+      [ -n "$path" ] && log_rem "$path"
+    done <"$escapes"
+    log_warn "No assertion covers these. Check them against what else was running."
+  fi
+
   local merged
   if ! merged="$(printf '%s' "$out" |
-    jq --argjson verdict "${verdict_json:-null}" '. + {verdict: $verdict}' 2>/dev/null)"; then
+    jq --argjson verdict "${verdict_json:-null}" \
+      --argjson escapes "$escapes_json" \
+      '. + {verdict: $verdict, escapes: $escapes}' 2>/dev/null)"; then
     log_warn "Envelope was not valid JSON. Emitting the verdict alone."
-    merged="$(printf '{"is_error":true,"verdict":%s}' "${verdict_json:-null}")"
+    merged="$(printf '{"is_error":true,"verdict":%s,"escapes":%s}' \
+      "${verdict_json:-null}" "$escapes_json")"
     verdict_code=1
   fi
 
   record_run "$target" "$scenario" "$merged" "$writes"
-  rm -f "$before" "$after" "$envelope" "$writes"
+  rm -f "$before" "$after" "$envelope" "$writes" "$escapes"
 
   trap - EXIT
   close_timeline
