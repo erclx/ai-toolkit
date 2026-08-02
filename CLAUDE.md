@@ -94,7 +94,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 ## Key paths
 
 - `governance/rules/`: governance rules
-- `internal/`: toolkit-internal standards and snippets, outside every installable surface
+- `internal/`: toolkit-internal standards, snippets, and rules, plus the record of which governance stack this repo consumes, all outside every installable surface
 - `standards/`: reference docs synced to target projects
 - `tooling/`: golden configs (base), references, and manifests per stack
 - `claude/skills/`: plugin skills installable in target projects

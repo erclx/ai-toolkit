@@ -49,6 +49,14 @@ Pass `--all` to force the full suite, and `--help` to print the argument list. `
 
 Measure CPU seconds and not wall clock when judging a stage's cost. The suite fans 415 tests across every core, so it is the most expensive stage and among the fastest, and ranking by wall time hides it. Test-count growth is invisible in wall time and linear in CPU.
 
+## Consumed copies
+
+The Consumed copies stage runs `scripts/core/regen-claude-copies.sh` and then asserts no drift across `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules`. Regenerating and then asserting is what turns an edit to a source surface into a failure that names the copy, rather than a stale copy nothing reads as wrong.
+
+Three of the four are whole-directory mirrors. `.claude/rules/` is not, because the toolkit authors 38 rules and consumes 22 of them, and installing the framework and ui rules here would fire a React rule on a fixture this repository writes. It resolves through `aitk gov regen` instead, which reads the stack named in `internal/governance.toml` and installs it with the same machinery `aitk gov install` uses for a target.
+
+The producer clears `.claude/rules/` before installing, so a rule dropped from the record disappears rather than lingering as an unsourced file. That is also why `internal/rules/` exists: a rule governing toolkit authoring alone needs a source somewhere outside `governance/rules/`, which ships to every target. The internal mirror excludes `internal/rules/` so those rules land at one path rather than two.
+
 ## Manifest validation
 
 The Plugin manifests stage runs `claude plugin validate --strict` over every plugin and marketplace manifest the repository carries. It always runs, because a manifest edit is not the only thing that invalidates one and the whole stage costs about a third of a second.

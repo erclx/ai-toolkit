@@ -136,6 +136,16 @@ headlessly, so a call that names its stack or category is unchanged.
 `aitk snippets install`. Both resolve the target before anything else, so a path
 that does not exist fails rather than being scaffolded.
 
+`aitk gov regen` is the one governance verb that runs against the toolkit root,
+because the `.claude/rules/` it writes there is produced output rather than an
+operator's working copy. It reads the stack recorded in `internal/governance.toml`,
+installs it alongside anything under `internal/rules/`, and clears the
+destination first so a rule the record stopped naming disappears. It takes
+`--root <path>` and defaults to the toolkit root, prints nothing on success, and
+reports the reason on stderr with exit 1 when the record names a stack or rule
+that does not resolve. `scripts/core/regen-claude-copies.sh` calls it, and the
+Consumed copies stage of `bun run check` asserts the result is committed.
+
 `aitk sync` runs every installed domain sync, then offers to commit the result
 and open a pull request. Under `AITK_NON_INTERACTIVE=1` it applies the domain
 syncs and then refuses the git workflow, reporting the branch and commit it

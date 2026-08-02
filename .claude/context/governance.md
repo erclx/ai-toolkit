@@ -13,6 +13,8 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 
 - `governance/rules/` owns the source rules, organized into one subfolder per numbering band
 - `governance/stacks/` owns stack definitions as toml, each declaring an optional extends chain and a flat rules list
+- `internal/rules/` owns rules that govern toolkit authoring alone, installed into this repo's copy and shipped to no target
+- `internal/governance.toml` records which stack and extras this repo consumes, and `src/gov/consumed.ts` produces the copy from it
 - `src/sync/engine.ts` owns the shared sync engine every domain runs on
 - `src/gov/` owns the gov half: the adapter that feeds the engine, and the rules payload builder behind `build`
 - `scripts/gov/` owns the list entry point, the one verb still on bash
@@ -27,7 +29,8 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - Gov is the first domain on the shared sync engine, and it went first because its source lookup is the thinnest of the four. The engine owns target validation, the scan report, the prompt, and the apply loop. The adapter supplies two things only: where a destination file's source lives, and what counts as a change beyond a content diff.
 - Sync matches an installed rule to its source by rule name rather than by relative path. A rule that moves between bands in the toolkit still syncs into the subdirectory the target already uses, so a reorganization here does not strand installed copies.
 - `510-context` carries a write-time policy alongside its read-time one, so editing a domain leaves its context entry conforming. It ships in `base.toml` to every consumer, so the bullet states an outcome of the edit rather than a backlog to drain, which is the only phrasing that also reads correctly in a project with no entries yet.
-- Every standard that governs a file path carries a rule routing to it, so an edit loads the standard without the matching skill being invoked. `595-tooling-reference` is toolkit-local and lives only in `.claude/rules/claude/`, because `internal/standards/tooling-reference.md` governs a surface a target never authors and shipping the route would point at a path no install creates.
+- Every standard that governs a file path carries a rule routing to it, so an edit loads the standard without the matching skill being invoked. `595-tooling-reference` is toolkit-local and is authored under `internal/rules/claude/`, because `internal/standards/tooling-reference.md` governs a surface a target never authors and shipping the route would point at a path no install creates. It sits in `internal/` rather than `governance/rules/` so location enforces the boundary, the same way the internal standards and snippets do.
+- The toolkit's own `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `aitk gov regen` resolves it through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside. Recording the subset stops the producer from reading its own output to decide what that output should be.
 - `standards/versioning.md` is deliberately unrouted. It governs commit subjects, PR titles, and git tags, none of which are files, so a path-scoped rule has nothing to match and would never fire. `git-commit` and `git-pr` reach that surface by instruction instead, and what catches a leak there is a check rather than a route.
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
@@ -43,7 +46,8 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 ## Gotchas
 
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
-- `aitk gov sync` refuses to run against the toolkit root, so this repo's own `.claude/rules/` copy is hand-maintained. Nothing checks it for drift against `governance/rules/`, unlike the standards and snippets consumed copies.
+- `aitk gov install` and `aitk gov sync` refuse to run against the toolkit root, because a target's rules are the operator's to edit. `aitk gov regen` runs against it on purpose, since the destination there is produced output rather than someone's working copy. Editing `.claude/rules/` by hand is pointless either way, as the next `bun run check` overwrites it from the source.
+- A widened source rule now fails `bun run check` until the copy is committed, which is the miss that cost `v33.1`. The regen propagates the change and the drift assertion turns the resulting diff into a failure. A rule matching nothing still does not error, so the gate catches the stale copy rather than the dead glob.
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
 - `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts. The payload builder moved to `src/gov/payload.ts` and frontmatter stripping to `src/frontmatter.ts`, which `docs` shares.
 - `aitk gov sync` and `aitk gov build` no longer offer a `Review diffs` branch. It was the last path that shelled out to `code --diff`, which hangs a headless agent, and the tooling sync dropped it one step earlier.
@@ -73,6 +77,7 @@ Each stack declares an optional `extends` chain and a flat `rules` list. The cha
 | `aitk gov install` | Bootstrap rules for a stack into `.claude/rules/`                 |
 | `aitk gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
 | `aitk gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
+| `aitk gov regen`   | Rebuild this repo's own `.claude/rules/` from its record          |
 | `aitk gov list`    | Emit catalog of stacks and rules                                  |
 
 Flags, arguments, and JSON shapes live in `docs/agents.md`. `install`, `sync`, and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `list` still execs bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there chose a whole stack for the caller.
