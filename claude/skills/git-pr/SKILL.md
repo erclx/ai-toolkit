@@ -69,12 +69,7 @@ Leave a box unchecked only for the human-only cases the reference defines, and n
 
 ### Pre-publish scan
 
-Before running the final command, scan the PR title and body for banned characters and rewrite each occurrence:
-
-- `—` (em dash): split into two sentences or use a comma
-- `;` (semicolon): split into two sentences
-
-These bans come from `.claude/standards/prose.md` and apply to PR text on top of `${CLAUDE_SKILL_DIR}/references/pr.md`. Reading `prose.md` is not enough. The scan is an explicit step.
+Before running the final command, run the banned-character scan in `.claude/standards/prose.md` against the PR title and body. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
 
 ### Final command
 
