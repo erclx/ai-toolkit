@@ -1,33 +1,50 @@
 ---
 title: Standard reference
 description: Shape and content rules for authoring a standard
-consumers: create-standard
 ---
 
 # Standard reference
 
 ## Overview
 
-A standard is a target-facing authoring convention for one document type. It installs into a project under `.claude/standards/` and is consumed by skills and developers alike. One standard governs one doc type. Split unrelated conventions into separate files.
+A standard is a target-facing authoring convention for one document type. It installs into a project under `.claude/standards/` and is consumed by skills and developers alike. This file governs itself, so every rule below applies to it.
+
+## What a working standard looks like
+
+A standard answers these questions. Each can be answered wrong, which is what makes them a test rather than a preamble.
+
+- Which single document type does this govern, and where does that document live?
+- Can an author who has seen no example produce a conforming document from this file alone?
+- Does every rule state a shape the document must have, rather than a fact about the repository that happens to store it?
+- What does a conforming document achieve, stated so a reviewer can call one non-conforming without appealing to taste?
+
+A standard failing these questions is non-conforming even when it satisfies every shape rule below.
+
+## Scope
+
+- Govern one document type per standard. Split unrelated conventions into separate files.
+- Name no path, filename, or folder outside the document type the standard governs. A standard reaches projects whose layout is their own, so a path borrowed from the authoring repository is wrong in a target and nothing reports it.
+- State the rule, never the mechanism enforcing it. Hooks, scripts, checks, and skill catalogs are facts about one repository. Name the condition the document must meet and let the enforcing surface name its own case.
+- Invent inline examples rather than citing a real file elsewhere in the project. A cited file moves or is deleted and the standard goes stale in silence.
 
 ## Frontmatter
 
-- Start the file with a frontmatter block carrying `title` and `description`.
-- `title`: names the doc type in sentence case, suffixed `reference` (`Commit reference`, `Branch reference`).
+- Start the file with a frontmatter block carrying `title` and `description`
+- `title`: names the doc type in sentence case, suffixed `reference` (`Commit reference`, `Branch reference`)
 - `description`: one line naming what the standard covers. It becomes the index link label on install.
 
 ## Structure
 
-- Use sentence case for every heading.
+- Use sentence case for every heading
 - Flat `##` rule groups for a single-topic standard. Group `##` headers by concern for a multi-topic one.
 - When one `##` section covers more than one sub-concern, split its bullets into `###` subgroups, one subgroup per sub-concern. A flat bullet list under an `##` covers a single sub-concern. Roughly seven bullets is a signal to split, not a hard cap.
-- Order groups from the most-used rule down to the edge case.
+- Order groups from the most-used rule down to the edge case
 
 ## Rules
 
-- Write rules as imperative bullets: one rule per bullet, one concern per group.
-- State the forbidden shape rather than enumerating allowed options, so a rule survives new categories.
-- Cut any rule that resists a crisp one-line phrasing.
+- Write rules as imperative bullets: one rule per bullet, one concern per group
+- State the forbidden shape rather than enumerating allowed options, so a rule survives new categories
+- Cut any rule that resists a crisp one-line phrasing
 - Do not pad with filler prose. Every line earns its place as a usable reference entry.
 
 ## Success criterion
@@ -47,6 +64,6 @@ A standard is a target-facing authoring convention for one document type. It ins
 ## Examples
 
 - Include examples only where a rule is non-obvious. A self-evident rule needs none.
-- When shown, label them `### Correct` and `### Incorrect` with an inline `# reason` on each entry.
+- When shown, label them `### Correct` and `### Incorrect` with an inline `# reason` on each entry
 - Keep to two or three entries. Show the pattern, not a catalog.
 - Keep each entry a short one-liner or command. Do not write multi-line correct and incorrect function blocks.
