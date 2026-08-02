@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/erclx/aitk/compare/v0.21.0...v0.22.0) (2026-08-02)
+
+
+### Features
+
+* **standards:** scan phase labels on text bound for a remote ([#727](https://github.com/erclx/aitk/issues/727)) ([2ea803c](https://github.com/erclx/aitk/commit/2ea803c16409351d3847f64914593727fca4b804))
+
 ## [0.21.0](https://github.com/erclx/aitk/compare/v0.20.0...v0.21.0) (2026-08-02)
 
 
