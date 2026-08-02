@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/erclx/aitk/compare/v0.19.0...v0.20.0) (2026-08-02)
+
+
+### Features
+
+* **sandbox:** provision the tree outside the toolkit worktree ([#723](https://github.com/erclx/aitk/issues/723)) ([837da3e](https://github.com/erclx/aitk/commit/837da3eac7119d9f6647c6c5dd5726bfd9893383))
+
 ## [0.19.0](https://github.com/erclx/aitk/compare/v0.18.0...v0.19.0) (2026-08-02)
 
 
