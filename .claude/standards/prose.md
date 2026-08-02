@@ -74,9 +74,13 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - Do not address the reader as a participant (`Let's`, `Here's`, `Here are`). State the content directly.
 - Commit to a position. Do not hedge in clusters (`It might be worth considering`) or use false balance (`While X is true, Y is also important`). Recommend, or state the tradeoff.
 
-## Banned-character scan
+## Pre-publish scan
 
 Wherever text leaves through a channel no automated check covers, the author is the only gate and runs this scan. Text sent to another service, written to a path the project's checks exclude, and text inside a fenced block are the usual cases. The surface that publishes the text is what knows which gap applies, so it names its own rather than reading one here.
+
+Run the scan as an explicit step against the finished text. Having read this file before drafting does not cover it, because the check has to happen after the text exists.
+
+### Banned characters
 
 Scan the drafted text and rewrite each occurrence:
 
@@ -85,7 +89,17 @@ Scan the drafted text and rewrite each occurrence:
 
 Restructure the sentence rather than substituting the character. A semicolon swapped for a period leaves both clauses in the order the semicolon chose, which is the shape the ban exists to remove.
 
-Run the scan as an explicit step against the finished text. Having read this file before drafting does not cover it, because the check has to happen after the text exists.
+### Phase labels
+
+Text addressed to a reader outside the project carries no internal phase label. The versioning standard beside this file holds the label rule and the table of surfaces, so read it at scan time rather than working the format from memory.
+
+Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, takes the character checks alone.
+
+### An unreadable source
+
+Stop and name the source when one this scan reaches for cannot be read. Do not scan what resolved and report the result.
+
+A run that covers half its sources and says nothing is worse than one that visibly did not happen, because the surfaces running this scan are the ones that describe themselves as the only gate. A clean result from a half-run scan is read as coverage.
 
 ## Frontmatter descriptions
 
