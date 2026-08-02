@@ -5,7 +5,7 @@ description: Voice, structure, formatting, and language rules for reference mark
 
 # Prose reference
 
-Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages.
+Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, commit messages, or the explanation prose in `.claude/diagrams/`. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface, since the standards-audit hook is the only gate on published text.
 
 ## Voice
 
