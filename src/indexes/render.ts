@@ -161,19 +161,39 @@ function renderIndex(
       }
     })
   } else {
-    for (const entry of entries) {
-      out += formatEntry(entry)
-    }
+    /**
+     * Flat mode sorts sub-catalogs among the files rather than after them. A
+     * folder and a file are both one domain to a reader scanning the catalog,
+     * so a trailing folder reads as absent from the alphabetical run it belongs
+     * in. Grouped mode keeps its own heading below, where a category is the
+     * organizing key and alphabetical position carries no meaning.
+     */
+    const lines = [
+      ...entries.map((entry) => ({
+        key: entry.name,
+        text: formatEntry(entry),
+      })),
+      ...subCatalogs.map((catalog) => ({
+        key: catalog.name,
+        text: formatSubCatalog(catalog),
+      })),
+    ].sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
+
+    for (const line of lines) out += line.text
   }
 
-  if (subCatalogs.length > 0) {
-    if (hasCategories) out += '\n## Sub-catalogs\n\n'
+  if (hasCategories && subCatalogs.length > 0) {
+    out += '\n## Sub-catalogs\n\n'
     for (const catalog of subCatalogs) {
-      out += `- [${catalog.title}](${catalog.name}/${INDEX_FILE}): ${catalog.subtitle}\n`
+      out += formatSubCatalog(catalog)
     }
   }
 
   return out
+}
+
+function formatSubCatalog(catalog: SubCatalog): string {
+  return `- [${catalog.title}](${catalog.name}/${INDEX_FILE}): ${catalog.subtitle}\n`
 }
 
 function formatEntry(entry: IndexEntry): string {

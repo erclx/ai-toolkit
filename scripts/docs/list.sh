@@ -38,8 +38,33 @@ is_internal_topic() {
   esac
 }
 
+# Emits `name<TAB>description<TAB>target` per context entry, sorted so a domain
+# split into a folder lands in its alphabetical place rather than after every
+# file. Matches listTopics in src/docs/read.ts, which sorts both together.
+collect_context() {
+  local file name description
+  {
+    while IFS= read -r file; do
+      name=$(basename "$file" .md)
+      [ "$name" = "index" ] && continue
+      is_internal_topic "$name" && continue
+      description=$(read_frontmatter_field "$file" "description")
+      printf '%s\t%s\t%s\n' "$name" "$description" ".claude/context/$name.md"
+    done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md")
+
+    # A split domain is named by its folder and described by its generated
+    # index, which carries subtitle where a sibling file carries description
+    while IFS= read -r file; do
+      name=$(basename "$(dirname "$file")")
+      is_internal_topic "$name" && continue
+      description=$(read_frontmatter_field "$file" "subtitle")
+      printf '%s\t%s\t%s\n' "$name" "$description" ".claude/context/$name/index.md"
+    done < <(find "$CONTEXT_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md")
+  } | sort
+}
+
 list_text() {
-  local file name description category
+  local file name description category target
   log_step "Docs"
   while IFS= read -r file; do
     name=$(basename "$file" .md)
@@ -53,22 +78,9 @@ list_text() {
   # Absent in a registry install, which ships docs/ without .claude/
   if [ -d "$CONTEXT_DIR" ]; then
     log_step "Domain context"
-    while IFS= read -r file; do
-      name=$(basename "$file" .md)
-      [ "$name" = "index" ] && continue
-      is_internal_topic "$name" && continue
-      description=$(read_frontmatter_field "$file" "description")
+    while IFS=$'\t' read -r name description target; do
       log_info "$name : $description"
-    done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
-
-    # A domain split into a folder is named by the folder and described by its
-    # generated index, which carries subtitle where a sibling carries description
-    while IFS= read -r file; do
-      name=$(basename "$(dirname "$file")")
-      is_internal_topic "$name" && continue
-      description=$(read_frontmatter_field "$file" "subtitle")
-      log_info "$name : $description"
-    done < <(find "$CONTEXT_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md" | sort)
+    done < <(collect_context)
   fi
 }
 
@@ -85,7 +97,7 @@ emit_json_entry() {
 }
 
 list_json() {
-  local file name description category
+  local file name description category target
   JSON_FIRST=1
   printf '['
   while IFS= read -r file; do
@@ -98,20 +110,9 @@ list_json() {
   done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 
   if [ -d "$CONTEXT_DIR" ]; then
-    while IFS= read -r file; do
-      name=$(basename "$file" .md)
-      [ "$name" = "index" ] && continue
-      is_internal_topic "$name" && continue
-      description=$(read_frontmatter_field "$file" "description")
-      emit_json_entry "$name" "$description" "" ".claude/context/$(basename "$file")"
-    done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
-
-    while IFS= read -r file; do
-      name=$(basename "$(dirname "$file")")
-      is_internal_topic "$name" && continue
-      description=$(read_frontmatter_field "$file" "subtitle")
-      emit_json_entry "$name" "$description" "" ".claude/context/$name/index.md"
-    done < <(find "$CONTEXT_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md" | sort)
+    while IFS=$'\t' read -r name description target; do
+      emit_json_entry "$name" "$description" "" "$target"
+    done < <(collect_context)
   fi
   printf ']'
 }
