@@ -93,7 +93,7 @@ Queued (run manually after testing the current scenario):
   AITK_NON_INTERACTIVE=1 ./scripts/manage-sandbox.sh <category>:<scenario>
 
 Headless verification (this session runs it):
-  scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>"
+  scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>" <arm>
 
 Interactive re-test (copied to clipboard):
 cd <current-root>/.sandbox && claude --plugin-dir <current-root>/claude --model sonnet
@@ -114,7 +114,7 @@ Rules for the block:
 - `.sandbox/` is a single directory per repo root. Provisioning a second scenario overwrites the first, so the skill provisions one at a time and queues the rest.
 - `Queued:` lists every remaining distinct scenario as a full `manage-sandbox.sh` command, one per line, so the user can copy directly. Omit the section when there is only one scenario.
 - Omit `Provisioning:` and `Queued:` when every pairing is `NONE` or `UNMAPPED`, since there is nothing to provision.
-- `Headless verification:` shows the Step 6 command for the `Provisioning:` scenario alone. Replace the command with `gate: <label>` when a Step 6 skip condition holds, so the report says why before the run is missing rather than after.
+- `Headless verification:` shows the Step 6 command for the `Provisioning:` scenario alone, carrying the arm when the scenario is multi-arm. Replace the command with `gate: <label>` when a Step 6 skip condition holds, so the report says why before the run is missing rather than after.
 - Print the interactive re-test command flush-left as a single chained line (`cd … && claude --plugin-dir … --model sonnet`) so the user can paste it into any terminal. The `--plugin-dir` points at `<current-root>/claude` so unchanged sub-skills (those not dev-injected) stay available to chained skills like `claude-autoship`. Dev-injected skills under the sandbox's `.claude/skills/` still take priority.
 - Pipe the same chained command to the clipboard using the first available tool: `wl-copy`, `xclip -selection clipboard`, `pbcopy`, then `clip.exe`. If none are present, drop the `(copied to clipboard)` suffix from the heading and continue silently.
 - After the `Interactive re-test:` block, print one line: `Note: in the interactive session, invoke skills as /<skill-name>, not /aitk:<skill-name>. The project-scoped copy takes priority.` The headless prompt in Step 6 uses the qualified form for the opposite reason, so keep the two lines distinct.
@@ -130,22 +130,29 @@ Do not run any `Queued:` scenarios. The user copies the next command after testi
 
 Skip this step when every pairing is `NONE` or `UNMAPPED`.
 
-Also skip it when Step 6 runs. `run.sh` provisions the same target before its session, so a separate provision is duplicate work.
+Also skip it when Step 6 reaches its run, meaning no gate fired. `run.sh` provisions the same target before its session, so a separate provision is duplicate work. A gated Step 6 leaves this step to run, since the user still needs the scenario provisioned for the interactive re-test.
 
 ## Step 6: run the headless verification
 
 Verify the `Provisioning:` scenario through `scripts/sandbox/run.sh`, which drives the skill under `claude -p` and returns without holding a terminal. One arm per invocation. Never sweep the `Queued:` list, which is what keeps the spend inside the $0.10 to $0.25 a run costs.
 
-Derive both arguments from the Step 2 mapping:
+Derive the arguments from the Step 2 mapping:
 
 - Target: `<category>:<rest>` from the scenario path `scripts/sandbox/<category>/<rest>.sh`
 - Prompt: `/aitk:<skill-name>` with no arguments. The qualified form resolves through `--plugin-dir` whether or not the branch changed the skill, and a bare `/<skill-name>` resolves only for the ones the sandbox injects.
+- Arm: required for a multi-arm scenario, omitted for a single-arm one
 
 ```bash
-scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>"
+scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>" <arm>
 ```
 
-Print the target and prompt used before running, since a wrong pairing is invisible in the verdict alone. A scenario that needs prompt arguments is a case to report, not to guess at.
+Resolve the arm before running. Grep the scenario file for `select_or_route_scenario`, which is what a multi-arm scenario calls. Roughly half the catalog declares it, so treat the multi-arm case as ordinary rather than exceptional.
+
+A multi-arm scenario run with no arm never reaches the skill session. `run.sh` forwards the arm to `manage-sandbox.sh`, which sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE` only when it receives one, so an empty arm leaves both unset and `select_or_route_scenario` falls through to the picker. The picker aborts on a missing TTY, which is every agent-driven run, and it blocks on input when a TTY is attached. Passing `AITK_NON_INTERACTIVE=1` to dodge that is worse than not running, since the picker then takes the first arm and the verdict reports an arm nobody chose.
+
+Do not guess the arm from the scenario file. Ask the user: `Arm for <category>:<rest>? (arm name, or "none" to skip verification)`. Accept `none` as the `no-mechanism` gate. This mirrors the question Step 2a already asks when a skill maps to no scenario.
+
+Print the target, prompt, and arm before running, since a wrong pairing is invisible in the verdict alone. A scenario that needs prompt arguments is a case to report, not to guess at.
 
 Report the verdict. Do not assert it. `run.sh` merges a `verdict` object into the JSON envelope on stdout carrying `state`, `asserted`, `failed`, and `unchecked`. Print `state` as it came back, and say so when it is `unchecked`, which means the arm declared no expectations and the run asserted nothing. Do not read `unchecked` as a pass or convert it into a failure. `--strict` covers a caller that has finished arming.
 
@@ -159,10 +166,10 @@ Verification: <state>  <category>:<rest>  →  <asserted> asserted, <failed> fai
 
 Skip the run and print `Verification: skipped  <category>:<rest>  →  gate: <label>` when either condition holds:
 
-- `no-mechanism`: the `Provisioning:` scenario came from a Step 2b script mapping, so no skill invocation exists to pass as the prompt
+- `no-mechanism`: the `Provisioning:` scenario came from a Step 2b script mapping, so no skill invocation exists to pass as the prompt, or the user answered `none` to the arm question
 - `credentials`: the scenario file declares a `use_anchor` function and `gh auth status` fails. Those scenarios push to a private remote, so the failure is the credential rather than the skill. Check both before running, since no precondition catches this and a missing credential otherwise surfaces as a push error naming the host.
 
-Skip this step whenever Step 5 is skipped.
+Skip this step when every pairing is `NONE` or `UNMAPPED`, the same condition Step 5 names. There is no scenario to verify.
 
 ### Gate vocabulary
 
