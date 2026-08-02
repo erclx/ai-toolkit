@@ -35,7 +35,7 @@ Load `${CLAUDE_SKILL_DIR}/references/patterns.md` for the timeline lifecycle, lo
 - Name functions verb-first: `validate_input`, `deploy_service`, `install_dependencies`.
 - Do not use global variables except exports from `ask()`.
 - Do not define unused color variables.
-- Do not include comments except the shebang line.
+- Comment only a fact the reader cannot recover from the code, and follow the code-comment rule in `.claude/rules/` when the project installs it.
 - Use sentence case for section headers and log messages. Proper nouns and product names retain their casing.
 - Quote variables inside parameter expansions: `"${file#"$dir"/}"` not `"${file#$dir/}"`.
 - Quote variables in test brackets: `[ "$i" -eq "$cur" ]` not `[ $i -eq $cur ]`.

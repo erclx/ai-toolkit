@@ -33,7 +33,7 @@ Load `${CLAUDE_SKILL_DIR}/references/template.md` for the base skeleton. Copy it
 - Decompose by responsibility. Each function does one thing, `main()` orchestrates.
 - Name functions verb-first: `parse_args`, `fetch_data`, `validate_input`.
 - Quote variables in expansions and test brackets.
-- Do not include comments except the shebang line.
+- Comment only a fact the reader cannot recover from the code, and follow the code-comment rule in `.claude/rules/` when the project installs it.
 - Use 2-space indentation.
 
 ## Validation
