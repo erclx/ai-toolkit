@@ -34,7 +34,7 @@ Skills that perform a one-time structural move of an existing project into a new
 - `claude-screencast`: Draft a stack-agnostic screencast script with pre-seeded beats and defaults
 - `claude-seed-sync`: Audit installed seed docs and standards against toolkit sources, write per-part proposals
 - `claude-slides-draft`: Draft a `.claude/SLIDES.md` source and render it to PowerPoint via `aitk slides render`
-- `claude-standards-audit`: Audit changed markdown files against applicable authoring standards, reporting only
+- `claude-standards-audit`: Audit changed markdown files against every standard declaring jurisdiction over their paths, reporting only
 - `claude-tasks`: Create a task file on the board and archive a shipped one out of the folder
 - `migration-standards`: Propose `git mv` of root standards/ and snippets/ into .claude/
 - `claude-ui-test`: Generate and run Playwright e2e tests, with manual checklist for visual-only items

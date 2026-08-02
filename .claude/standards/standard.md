@@ -13,7 +13,7 @@ A standard is a target-facing authoring convention for one document type, or for
 
 ## Scope
 
-Governs what an authored standard contains: its stated jurisdiction, success criterion, frontmatter, structure, and rule phrasing.
+Governs each authored standard under `standards/`: its stated jurisdiction, success criterion, frontmatter, structure, and rule phrasing.
 
 Does not govern:
 
@@ -38,6 +38,8 @@ A standard failing these questions is non-conforming even when it satisfies ever
 - Govern one document type per standard, or one attribute across every document. Split unrelated conventions into separate files.
 - Open with a `## Scope` section stating what the standard governs and what it does not, placed above the shape rules. A standard that specifies shape exhaustively and jurisdiction nowhere cannot refuse a rule, so the rule with no obvious owner lands in whichever standard sits nearest.
 - Write it as one line naming the artifact or attribute and where it applies, then a `Does not govern:` list. Give each entry the excluded concern and the owner it goes to. Name a sibling standard by bare filename, since standards install as siblings, and name the surface instead where the owner is one, such as a coding rule, a project policy, or the code.
+- Put the governed path in backticks inside the first sentence of that line, anchored deep enough to resolve from a project root. A bare folder name matches a same-named folder elsewhere in the tree, and a path held back until a later sentence sits beside every other path the statement mentions, including the ones it excludes.
+- Say in that same sentence when the standard governs an attribute rather than a document type. An attribute is written across every document and has no path to name, so the silence reads as an omission unless the sentence claims it.
 - Cut an entry that names no owner at all. It is either excluding something nothing was going to claim, or it is a content exclusion, which the rule below sends to the shape rules instead.
 - Declare a boundary from both sides. A yield, an exemption, or a handoff stated in one standard alone is never checked against the standard on the other side of it, which is how two files come to claim the same rule or neither does.
 - Separate a jurisdiction exclusion from a content exclusion. The first names a concern another standard owns and belongs in `## Scope`. The second names what does not belong inside the document and stays with the shape rules. Merging them puts a boundary claim where no sibling will read it.

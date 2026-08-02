@@ -411,7 +411,7 @@ Use these to discover what's available instead of hardcoding names.
 | ------------------------------- | -------------------------------------------- |
 | `aitk tooling list --json`      | Stacks, extends chain, dep and script counts |
 | `aitk snippets list --json`     | Presets and categories with their slugs      |
-| `aitk standards list --json`    | Standards docs                               |
+| `aitk standards list --json`    | Standards docs and the paths each governs    |
 | `aitk gov list --json`          | Governance stacks and rule sets              |
 | `aitk claude seeds list --json` | Seed doc sources with content                |
 | `aitk docs list --json`         | Consumer docs plus per-domain context        |
@@ -419,6 +419,14 @@ Use these to discover what's available instead of hardcoding names.
 Every catalog serializes through `JSON.stringify`, so a name carrying a quote
 emits valid JSON. `aitk tooling list` and `aitk snippets list` previously built
 their output with `printf` and no escaping.
+
+`aitk standards list` carries `appliesTo` per standard, the paths that standard's
+`## Scope` statement declares. It holds the backticked paths from the first
+sentence of the statement, the single entry `*` for a standard governing an
+attribute rather than a document type, and an empty array when the statement
+declares nothing a parser can read. A consumer mapping a file to its governing
+standards reads this rather than holding a table of its own, and reports an empty
+array rather than skipping the standard behind it.
 
 `aitk claude seeds list` reads the same plan `aitk claude init` applies, so the
 listing and the install cannot disagree. It now reports

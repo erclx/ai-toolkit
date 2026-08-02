@@ -1,6 +1,6 @@
 ---
 name: claude-standards-audit
-description: Audits changed markdown files against applicable authoring standards (prose, skill, readme) and reports violations without fixing. Maps each file to its standards, greps for banned tokens, and groups findings by file. Use when asked to "audit prose", "audit standards", "check standards", "standards audit", or after editing markdown where standards compliance matters. Do NOT fix violations. Reporting only.
+description: Audits changed markdown files against every authoring standard that declares jurisdiction over their paths and reports violations without fixing. Reads the standards catalog to map each file, greps for banned tokens, and groups findings by file. Use when asked to "audit prose", "audit standards", "check standards", "standards audit", or after editing markdown where standards compliance matters. Do NOT fix violations. Reporting only.
 ---
 
 # Claude standards audit
@@ -35,17 +35,33 @@ Get the changed file list, substituting `git diff HEAD --name-only` when the bas
 git diff <base> HEAD --name-only
 ```
 
-Filter to markdown (`.md`). Drop generated files the project does not hand-author (`index.md` when `auto: false` is absent, any file in a gitignored directory).
+Filter to markdown (`.md`), then drop what the project does not hand-author:
+
+- `index.md`, unless its frontmatter carries `auto: false`
+- Any file in a gitignored directory
+- Any file sitting in a skill's bundled reference folder whose frontmatter names the consumers a generator copied it out to
+
+The last rule keeps a fan-out from multiplying one edit into a finding per copy. The source is the file to audit and the only one an author can fix, because the next regen overwrites every copy.
+
+It takes both halves. A generator copies frontmatter verbatim, so the field alone matches the source as well and drops the one file the rule means to keep. The location alone matches a reference the skill author wrote by hand, which carries no such field and is governed like the rest of the folder.
 
 ## Step 2: map files to standards
 
-For each changed markdown file, pick the applicable standards:
+Read the mapping rather than holding it here. Every standard declares the paths it governs, so a standard added later joins this audit with no edit to this body:
 
-- Any markdown with prose: `.claude/standards/prose.md`
-- `SKILL.md` under `.claude/skills/` or `claude/skills/`: also `.claude/standards/skill.md`
-- `README.md` at any level: also `.claude/standards/readme.md`
+```bash
+aitk standards list --json
+```
 
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+Each entry carries `appliesTo`, the paths its `## Scope` statement declares. Match every changed file against every entry:
+
+- `*` matches every changed markdown file
+- An entry ending in `/` matches when the file path contains it at a path-segment boundary
+- Any other entry matches when the file path ends with it at a path-segment boundary
+
+Add any standard in `.claude/standards/` the catalog did not list, and derive every declaration the same way when `aitk` is unavailable: the backticked paths in the first sentence under `## Scope`, or `*` when that sentence says the standard governs an attribute. Skip `index.md`, which is generated from the others and declares nothing. Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` when the project does not have it.
+
+An entry whose `appliesTo` is empty declared nothing this can read. Report it as a finding against that standard's own file in Step 4 and audit the rest. A standard dropped in silence is the same miss this mapping exists to remove, one level up.
 
 Every mapping names a changed markdown file, which is the only thing Step 1 produces. Text that never lands in the tree, such as a branch name or a pull request body, is checked by the skill that publishes it rather than here.
 
@@ -60,14 +76,14 @@ Every changed markdown file gets the prose pattern pass, since `.claude/standard
 
 ## Step 4: report
 
-Group findings by file with line references. Use this shape:
+Group findings by file with line references, naming the standard each one comes from. One file is one fix pass, and the standard is what the reader opens to settle a finding they disagree with. Use this shape:
 
 ```markdown
 path/to/file.md
 
-- L12: em dash in prose
-- L34: semicolon used to join clauses
-- L67: bullet ends with period but is a single fragment
+- L12: `prose.md`, em dash in prose
+- L34: `prose.md`, semicolon used to join clauses
+- L67: `context.md`, decision entry names no rejected alternative
 ```
 
 If clean, respond with `✅ No violations.`
