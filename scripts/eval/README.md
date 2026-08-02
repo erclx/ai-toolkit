@@ -20,6 +20,17 @@ A second argument records why the run was started, either `findings` or `regress
 scripts/eval/run.sh seed regression
 ```
 
+A third argument runs one half of an ablation pair against the seed arm, as `<section>-kept` or `<section>-cut` over `memory`, `indexes`, `output`, and `tasks`. The `cut` half removes that section's candidate lines from the installed `CLAUDE.md` and the `kept` half leaves them in. Both halves carry the same section-specific prompt, so the pair differs in the seed and in nothing else.
+
+```bash
+scripts/eval/run.sh seed findings memory-kept
+scripts/eval/run.sh seed findings memory-cut
+```
+
+Both halves are labeled rather than pairing a bare `seed` against a cut variant. The bare arm carries the ordinary feature request, which reaches none of these sections, so pairing against it would vary the prompt and the artifact at once. The label lands in the ledger's `Arm` column as `seed-memory-cut`, which sorts a pair together.
+
+The strip anchors on each bullet's text and fails the run when an anchor stops matching exactly one line. A cut half that silently kept its section is indistinguishable from its partner in every artifact the run leaves behind, so it would read as a null result rather than as a broken run.
+
 Each run spawns one headless `claude -p` session. Measured cost is $0.59 for the context arm and $0.74 for the wireframes arm, both around 15 to 20 turns. Budget roughly a dollar per arm. Judged output prints to stdout and the cost line to stderr, so redirecting stdout captures the result alone.
 
 The runner passes `--dangerously-skip-permissions`. The flag grants tool use across the filesystem rather than within a directory, so the disposable fixture is not what makes it acceptable. What makes it acceptable is the task: the cwd is the fixture, the prompt names one file to write, and no credential or repo path is in reach of the instruction. Copy the flag only where the same three hold. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.

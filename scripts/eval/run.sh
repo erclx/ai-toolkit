@@ -3,7 +3,12 @@
 # ask whether a session that has never seen a standard can author a conforming
 # artifact from it alone. The seed arm asks whether a session handed a project
 # scaffolded from the Claude seed can work in it without asking for context the
-# seed should have carried. Prints the judged result to stdout.
+# seed should have carried.
+#
+# An ablation variant runs one half of a pair: the same prompt against the seed
+# with a section and against the seed without it. Sufficiency and necessity are
+# different measurements, and the arms above only answer the first. Prints the
+# judged result to stdout.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,7 +25,18 @@ arm="${1:-context}"
 # caller has to remember on the runs that confirm nothing broke.
 kind="${2:-findings}"
 
-usage="usage: run.sh [context|wireframes|seed] [findings|regression]"
+# One half of an ablation pair, as `<section>-kept` or `<section>-cut`. Empty
+# runs the arm the way it has always run.
+#
+# Both halves carry a label rather than pairing a bare `seed` against a
+# `seed-no-<section>`. A pair has to differ in the seed and in nothing else,
+# and the bare arm carries the ordinary feature request, which reaches none of
+# these sections. Pairing against it would vary the prompt and the artifact at
+# once, which is the confound runs 01 and 02 already have.
+variant="${3:-}"
+
+usage="usage: run.sh [context|wireframes|seed] [findings|regression] [<section>-kept|<section>-cut]
+sections: memory indexes output tasks"
 
 case "$arm" in
 context)
@@ -52,6 +68,93 @@ findings | regression) ;;
   ;;
 esac
 
+# The lines a `cut` half removes and the prompt both halves carry.
+#
+# Anchor a candidate on its own text, never on its ordinal. The task that
+# ordered this work names "Indexes bullets 3 and 4" against a section that now
+# holds three, so a line-addressed strip would remove a real line and report it
+# under the name of a different one. Each anchor is a fixed string checked to
+# match exactly one line, which turns a reworded seed into a loud failure
+# rather than a silent measurement of the wrong bullet.
+#
+# Each pair needs its own prompt because no single feature request reaches any
+# of these sections. That is what makes four cuts into eight arms, and it also
+# means the four results are not comparable to each other.
+ablate_anchors=()
+variant_prompt=""
+
+if [ -n "$variant" ]; then
+  if [ "$arm" != seed ]; then
+    echo "→ a variant needs the seed arm" >&2
+    exit 1
+  fi
+
+  ablate_section="${variant%-*}"
+  ablate_half="${variant##*-}"
+
+  case "$ablate_half" in
+  kept | cut) ;;
+  *)
+    echo "$usage" >&2
+    exit 1
+    ;;
+  esac
+
+  case "$ablate_section" in
+  memory)
+    # The whole section. Removing its four bullets and leaving the heading
+    # would plant an empty heading, which is a signal of its own.
+    ablate_anchors=(
+      "## Memory"
+      "- Write all memory files to"
+      "- Save a feedback memory only when"
+      "- Keep feedback memories to 3 lines"
+      "- Before creating a new memory file"
+    )
+    variant_prompt="Correcting you for the second time: a new delivery sink has \
+to be registered in the sinks index or it never gets drained. Record that \
+correction so a future session gets it right the first time."
+    ;;
+  indexes)
+    ablate_anchors=(
+      "- For folders where an agent browses to pick a document"
+      "- Every \`index.md\` carries its own frontmatter"
+    )
+    variant_prompt="Write a narrative entry for the pollers domain covering how \
+it is structured, the decisions behind it, and its gotchas, so a future session \
+reads it before touching that code."
+    ;;
+  output)
+    ablate_anchors=(
+      "- In the main worktree: relative from"
+      "- In a linked worktree (under"
+      "- When the response covers multiple files"
+    )
+    variant_prompt="Add a Slack delivery sink that posts each new item to an \
+incoming webhook URL read from the environment, and retire the email sink \
+completely."
+    ;;
+  tasks)
+    ablate_anchors=(
+      "- When a task needs execution detail beyond its own file"
+      "- Write the plan in the same session as the task file"
+    )
+    variant_prompt="Feedwatch has to move off bun:sqlite to Postgres. That is \
+multi-session work with real dependencies, so queue it rather than starting it \
+now."
+    ;;
+  *)
+    echo "$usage" >&2
+    exit 1
+    ;;
+  esac
+fi
+
+# What the ledger and the retained output call this run. A variant sorts next
+# to its partner, which is what makes eight rows readable as four pairs.
+arm_label="$arm"
+[ -n "$variant" ] && arm_label="$arm-$variant"
+
 # What a run leaves behind, split by what each costs to keep. The raw output
 # lands in gitignored scratch and the ledger row is committed. A transcript
 # carries the full text of every file the session read, so a hundred retained
@@ -59,7 +162,7 @@ esac
 # row that costs bytes. Nothing prunes the scratch. Promote a transcript into
 # the arm's result document by hand on the day it becomes evidence for a claim.
 run_stamp="$(date +%Y%m%dT%H%M%S)"
-run_dir="$REPO_ROOT/.claude/.tmp/eval-runs/$arm-$run_stamp"
+run_dir="$REPO_ROOT/.claude/.tmp/eval-runs/$arm_label-$run_stamp"
 ledger="$SCRIPT_DIR/ledger.md"
 
 # The stamp resolves to the second, so two runs of one arm inside the same
@@ -69,7 +172,7 @@ ledger="$SCRIPT_DIR/ledger.md"
 # name instead. `%N` would be shorter and BSD `date` does not have it.
 run_suffix=2
 while [ -e "$run_dir" ]; do
-  run_dir="$REPO_ROOT/.claude/.tmp/eval-runs/$arm-$run_stamp-$run_suffix"
+  run_dir="$REPO_ROOT/.claude/.tmp/eval-runs/$arm_label-$run_stamp-$run_suffix"
   run_suffix=$((run_suffix + 1))
 done
 
@@ -147,12 +250,44 @@ append_ledger_row() {
   fi
 
   if printf '| %s | %s | %s | %s | %s | %s | pending | %s |\n' \
-    "$(date +%Y-%m-%d)" "$arm" "$kind" "$subject" "$cost" "$turns" \
+    "$(date +%Y-%m-%d)" "$arm_label" "$kind" "$subject" "$cost" "$turns" \
     "$output_cell" >>"$ledger"; then
     echo "→ ledger row appended to ${ledger#"$REPO_ROOT"/}" >&2
   else
     echo "→ warn: could not append the ledger row to $ledger" >&2
   fi
+}
+
+# Remove the candidate lines from the installed seed, so the two halves of a
+# pair differ in those lines and in nothing else.
+#
+# A miss is fatal rather than a warning. A cut half that silently kept its
+# section is indistinguishable from its partner in the ledger and in the
+# retained output both, so it would read as a null result for the section
+# instead of as a broken run. Stop before spending the API call.
+strip_seed_section() {
+  local file="$1"
+  local tmp="$file.ablate"
+  local anchor matches
+
+  for anchor in "${ablate_anchors[@]}"; do
+    matches="$(grep -cF -- "$anchor" "$file" || true)"
+    if [ "$matches" != 1 ]; then
+      echo "→ anchor matched $matches lines, expected 1: $anchor" >&2
+      echo "→ the seed moved under this ablation, so the strip is not trustworthy" >&2
+      exit 1
+    fi
+    grep -vF -- "$anchor" "$file" >"$tmp"
+    mv "$tmp" "$file"
+  done
+
+  # Collapse the blank pair a removed heading leaves behind. The seed is
+  # prettier-formatted and carries no double blank of its own, so this only
+  # ever closes a gap the strip opened.
+  awk 'NF == 0 { if (blank++) next } NF { blank = 0 } { print }' "$file" >"$tmp"
+  mv "$tmp" "$file"
+
+  echo "→ ablated $ablate_section, ${#ablate_anchors[@]} anchors matched" >&2
 }
 
 # The fixture must live outside the repo. A fixture under the repo would load
@@ -187,6 +322,12 @@ if [ "$arm" = seed ]; then
   # The first run omitted this and its prose finding was confounded as a result.
   AITK_NON_INTERACTIVE=1 "${cli[@]}" gov install base "$fixture" >&2
 
+  # Strip after every installer has run, since each one may write CLAUDE.md and
+  # a strip before the last would be overwritten without a word.
+  if [ "${ablate_half:-}" = cut ]; then
+    strip_seed_section "$fixture/CLAUDE.md"
+  fi
+
   # Initialize git after the install, so the seed's .gitignore means something
   # and the rules that shell out to git are reachable rather than failing on a
   # non-repo. A section the fixture puts out of reach cannot be judged unused.
@@ -219,10 +360,15 @@ if [ "$arm" = seed ]; then
   # An ordinary feature request, phrased the way a user would. It names no
   # .claude/ path and no seed file on purpose: naming one tells the session
   # where to look and measures obedience rather than discoverability, which is
-  # the opposite of what a seed audit is for.
-  prompt="Add a Slack delivery sink to feedwatch, alongside the existing webhook \
+  # the opposite of what a seed audit is for. A variant prompt is written to
+  # the same rule and reaches one section's trigger instead of the sinks.
+  if [ -n "$variant_prompt" ]; then
+    prompt="$variant_prompt"
+  else
+    prompt="Add a Slack delivery sink to feedwatch, alongside the existing webhook \
 and email sinks. It should post each new item to a Slack incoming webhook URL \
 read from the environment."
+  fi
 else
   prompt="This project has no $(dirname "$dest")/ entry yet. Read .claude/standards/$standard \
 and author $surface at $dest, following that standard. Write the file."
@@ -261,6 +407,12 @@ if [ "$arm" = seed ]; then
 
   retained=yes
   retain_run_output "$transcript" transcript.jsonl || retained=no
+
+  # Retain the seed the run actually read. A pair is only re-diffable later if
+  # both halves recorded what they were handed, and the cut half's CLAUDE.md
+  # exists nowhere else once the trap clears the workdir.
+  retain_run_output "$fixture/CLAUDE.md" claude-md.txt || true
+
   append_ledger_row "$cost" "$turns" "$retained"
 
   calls="$workdir/.eval-calls"

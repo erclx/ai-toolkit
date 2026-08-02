@@ -7,7 +7,7 @@ A row records that a run happened. `result-<arm>.md` records what a run found. T
 ## Columns
 
 - `Date`: the day the run started
-- `Arm`: which arm ran, matching the argument to `run.sh`
+- `Arm`: which arm ran, matching the argument to `run.sh`. An ablation half reads `seed-<section>-kept` or `seed-<section>-cut`, which sorts the two halves of a pair together and keeps a schema change out of a file this small
 - `Kind`: `findings` for a run started to learn something, `regression` for one confirming nothing broke. Written by the caller, since the harness cannot know why it was started
 - `Subject`: short commit of the working tree the standard or seed was read from, suffixed `-dirty` when tracked files were modified. A run exercises the tree rather than a release. This file is excluded from that check, since appending a row would otherwise mark every run after the first as dirty
 - `Cost`: `total_cost_usd` as reported by the run
@@ -18,6 +18,8 @@ A row records that a run happened. `result-<arm>.md` records what a run found. T
 ## Reading a row
 
 A `pending` verdict older than its report means nobody closed the loop. The three confirmed-versus-discriminated claims are a count over `Verdict` filtered by `Kind`, and a harness that has never produced a `fail` has not yet shown it can fail anything.
+
+Two rows sharing a section and differing on `kept` against `cut` are one ablation pair. Read them together or not at all, since a single half carries no verdict of its own. The retained output holds the `CLAUDE.md` each half was handed, which is what makes a pair re-diffable after the runs.
 
 The `Output` path points at scratch, so it resolves only on the machine that ran it and only until that scratch is cleared. A transcript that becomes load-bearing evidence for a claim gets promoted by hand into the arm's result document, which keeps the default cheap and the exception deliberate.
 
