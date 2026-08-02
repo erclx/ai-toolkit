@@ -57,4 +57,5 @@ EOF
   log_info "Action 2: aitk design render"
   log_info "Expect:   .claude/review/design/index.html renders cleanly with swatches and samples"
   log_info "Filename pairs with the claude-design-propose pointer and retires with it in 0.19.0"
+  log_info "This fixture is the only greenfield coverage, so 0.19.0 folds it into design-extract.sh as a second arm"
 }

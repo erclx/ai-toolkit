@@ -49,9 +49,11 @@ Install in a target project via `aitk claude install` and invoke with `/aitk:cla
 
 ### The absorbed name
 
-`claude-design-propose` was the greenfield path as its own skill until `0.18.0`, which absorbed it. Its folder keeps a pointer body so a project that installed before the merge still resolves the name, and the pointer carries `disable-model-invocation: true` so it never competes for routing against the survivor. The pointer and `scripts/sandbox/claude/design-propose.sh` both go in `0.19.0`.
+`claude-design-propose` was the greenfield path as its own skill until `0.18.0`, which absorbed it. Its folder keeps a pointer body so a project that installed before the merge still resolves the name, and the pointer carries `disable-model-invocation: true` so it never competes for routing against the survivor. Both the pointer and `scripts/sandbox/claude/design-propose.sh` go in `0.19.0`.
 
 The scenario keeps the old filename for that cycle because `aitk-sandbox-check` maps a scenario to a skill by filename, and `design-extract.sh` already holds the source path. Its actions invoke the survivor.
+
+The fixture outlives the filename. `design-propose.sh` is the only greenfield coverage in the catalog, so `0.19.0` folds it into `design-extract.sh` as a second arm through `select_or_route_scenario` rather than deleting it. That is what the `memory.sh` to `memory-review.sh` rename did: it moved the coverage to a name the mapping rule finds. Deleting this file instead would retire the pointer and the only test of the survivor's greenfield branch in one step.
 
 ## Render command
 
