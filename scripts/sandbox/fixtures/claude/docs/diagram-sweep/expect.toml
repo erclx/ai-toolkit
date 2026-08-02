@@ -1,0 +1,48 @@
+# What a correct `/claude-docs` run leaves behind on the diagram-sweep arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# Both Step 5 findings fire here. The branch deletes `src/gov/install.ts`, which
+# `components.md` cites, and adds `.claude/REQUIREMENTS.md` with no entry
+# covering the system context kind.
+
+# The stub reaches the tree. That is the whole durability argument for the step:
+# a chat line dies with the session, a file reaches review through the diff.
+paths = [".claude/diagrams/system-context.md"]
+
+write_scope = [".claude/**"]
+
+# The stub carries the standard's one non-SHA value for a required field. A stub
+# written without it, or with a SHA, asserts a verification that never happened.
+[[content]]
+path = ".claude/diagrams/system-context.md"
+pattern = '^verified: .TODO: never verified.$'
+
+[[content]]
+path = ".claude/diagrams/system-context.md"
+pattern = '^category: System context$'
+
+# The annotation names the path that left the tree, not merely that something did.
+[[content]]
+path = ".claude/diagrams/components.md"
+pattern = '^stale:.*install\.ts'
+
+# `verified` survives the sweep untouched. Two writers share this marker and the
+# sweep owns neither `verified` nor the body, so a run that refreshed the date
+# while annotating has claimed a check it never ran.
+[[content]]
+path = ".claude/diagrams/components.md"
+pattern = '^verified: a1b2c3d4 2026-07-20$'
+
+# The cited path that survives is not flagged. Without this the arm passes on a
+# run that annotates every cited path rather than the one that left.
+[[content]]
+path = ".claude/diagrams/components.md"
+pattern = '^Drift is a separate path\. `src/gov/sync\.ts` compares'
+
+# No max_turns. Same reason as the diagram-quiet arm: no clean run measured yet.
+
+manual = [
+  "The stub carries no mermaid fence, so nobody fills it in without a render",
+  "The components.md mermaid body and both explanation paragraphs are byte-identical",
+]

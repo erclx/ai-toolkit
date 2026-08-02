@@ -72,7 +72,15 @@ Keep the match conservative:
 
 Skip Step 3 when the session shows no divergence **and** the diff matches no queued outcome, reporting `✅ No doc updates needed. Session matched the original plan.` Both conditions have to hold. Shipping a queued task exactly as planned is the ordinary case and it reads as no divergence, so a session-only skip would drop the marking step with it.
 
-Continue to Step 4 rather than stopping the skill. Steps 4 and 5 read the diff rather than the session, so they find work in exactly the sessions this skip describes. A project with an empty task board making a mechanical change satisfies both conditions above, and stopping here would put an uncovered surface and an uncovered diagram kind out of reach in every such project.
+Then run Steps 4 through 8. Step 3 is the only one this skips, because it is the only one driven by the session rather than by the diff or the board. A project with an empty task board making a mechanical change satisfies both conditions above, and stopping here would put an uncovered surface and an uncovered diagram kind out of reach in every such project.
+
+Three of the steps that follow write, so each earns the reach separately:
+
+- Steps 4 and 5 stub against the diff. These are why the skip is not a stop. A session that changed no docs is exactly when an uncovered surface or diagram kind goes unnoticed.
+- Step 7 rewrites context entries against the diff. The Diff baseline section above already groups it with Steps 4 and 5 as a scoped-set step, so a quiet session is no different from any other for it.
+- Step 8 reads the board rather than the session. Its board-wide scan exists to clear a plan an earlier run stranded, and a run that stops at Step 2 can never reach one.
+
+This changes which steps the skill reaches. It does not widen what any of them reads. Steps 4, 5, and 7 still take the same scoped set the Diff baseline section defines, and that section's rule is about the input a write is handed rather than about which writes run.
 
 ## Step 3: update
 
@@ -250,3 +258,5 @@ Output one line per file updated:
 If no files were updated and nothing was swept, output:
 
 `✅ No changes needed.`
+
+Suppress that line when Step 2 already reported no doc updates. It closes the run on its own, and emitting both leaves a quiet session reporting success twice for one outcome.

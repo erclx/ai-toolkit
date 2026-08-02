@@ -101,12 +101,11 @@ stage_setup() {
     log_info "  .claude/REQUIREMENTS.md enters the tree with no system-context.md entry covering it"
     log_info ""
     log_info "Action:  /claude-docs"
-    log_info "Expect:  Step 5 appends a stale: key to .claude/diagrams/components.md naming src/gov/install.ts"
-    log_info "         Step 5 stubs .claude/diagrams/system-context.md with no mermaid fence"
-    log_info "         The stub carries verified: 'TODO: never verified'"
-    log_info "         components.md keeps verified: a1b2c3d4 2026-07-20 unchanged"
-    log_info "         The mermaid body and both explanation paragraphs are untouched"
-    log_info "         No stale: key mentions src/gov/sync.ts"
+    log_info "Expect:  declared in fixtures/claude/docs/diagram-sweep/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:docs diagram-sweep"
+    log_info "         A stale: key on components.md naming install.ts, a stubbed"
+    log_info "         system-context.md, and verified: left untouched on both"
+    log_info "         Two expectations need a reader and report as unchecked."
     ;;
   "diagram-quiet")
     stage_fixtures claude docs diagram-quiet 01-initial
@@ -124,10 +123,13 @@ stage_setup() {
     log_info "  on a cited path being touched would annotate. The path never leaves the tree."
     log_info ""
     log_info "Action:  /claude-docs"
-    log_info "Expect:  Step 5 emits nothing at all"
-    log_info "         .claude/diagrams/components.md is byte-identical after the run"
-    log_info "         No .claude/diagrams/system-context.md is created"
-    log_info "         The arm fails on any Step 5 line, not only on a written file"
+    log_info "Expect:  declared in fixtures/claude/docs/diagram-quiet/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:docs diagram-quiet"
+    log_info "         No system-context.md, and components.md frontmatter pinned"
+    log_info "         whole so an appended stale: key fails the match"
+    log_info "         The run closes on one line. Step 2 reports no doc updates"
+    log_info "         and the After completion fallback stays suppressed."
+    log_info "         Two expectations need a reader and report as unchecked."
     ;;
   "board-sweep")
     stage_fixtures claude docs board-sweep 01-initial
