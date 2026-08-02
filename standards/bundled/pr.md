@@ -1,7 +1,7 @@
 ---
 title: Pull request reference
 description: Pull request title and body conventions
-consumers: git-split, git-pr, claude-standards-audit
+consumers: git-split, git-pr
 ---
 
 # Pull request reference
