@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/erclx/aitk/compare/v0.9.0...v0.10.0) (2026-08-02)
+
+
+### Features
+
+* **comments:** measure comment density and trend from git ([#695](https://github.com/erclx/aitk/issues/695)) ([26b68d9](https://github.com/erclx/aitk/commit/26b68d97cdfe7e6c00faed7b95512300fda52955))
+* **standards:** add a voice register for README.md ([#696](https://github.com/erclx/aitk/issues/696)) ([a54e90d](https://github.com/erclx/aitk/commit/a54e90dcd6edcfb9b20f460e79f386146ad20610))
+
 ## [0.9.0](https://github.com/erclx/aitk/compare/v0.8.0...v0.9.0) (2026-08-02)
 
 
