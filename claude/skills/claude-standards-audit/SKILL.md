@@ -35,7 +35,13 @@ Get the changed file list, substituting `git diff HEAD --name-only` when the bas
 git diff <base> HEAD --name-only
 ```
 
-Filter to markdown (`.md`). Drop generated files the project does not hand-author (`index.md` when `auto: false` is absent, any file in a gitignored directory).
+Filter to markdown (`.md`), then drop what the project does not hand-author:
+
+- `index.md`, unless its frontmatter carries `auto: false`
+- Any file in a gitignored directory
+- Any file carrying a frontmatter field that names the consumers a generator copied it out to, since the copy is written from a source elsewhere in the tree
+
+The last rule is what keeps a fan-out from multiplying one edit into a finding per copy. The source is the file to audit and the only one an author can fix, because the next regen overwrites every copy. A mapping wide enough to reach a generated tree makes this the difference between one finding and ten.
 
 ## Step 2: map files to standards
 
