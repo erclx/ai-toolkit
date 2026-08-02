@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { $ } from 'bun'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import { isIgnored, listIndexes } from '@/indexes/walk'
 
 let root: string
@@ -64,7 +65,10 @@ describe('listIndexes', () => {
 
 describe('isIgnored', () => {
   async function initRepo(ignoreBody: string): Promise<void> {
-    await $`git -C ${root} init --quiet`.quiet()
+    // Strips `GIT_DIR` for the same reason the production call does. Run from
+    // a git hook, an inherited one sends `init` at the hook's repository and
+    // leaves this fixture without one.
+    await $`git -C ${root} init --quiet`.env(gitEnv()).quiet()
     writeFileSync(join(root, '.gitignore'), ignoreBody)
   }
 
