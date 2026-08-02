@@ -13,6 +13,15 @@ readonly REPO_ROOT
 
 arm="${1:-context}"
 
+# Why the run was started, written by the caller. The harness cannot infer it:
+# guessing from whether the verdict changed would mislabel a regression run
+# that happens to find something. It defaults to `findings` so the documented
+# one-argument invocation keeps working, which makes `regression` the label a
+# caller has to remember on the runs that confirm nothing broke.
+kind="${2:-findings}"
+
+usage="usage: run.sh [context|wireframes|seed] [findings|regression]"
+
 case "$arm" in
 context)
   standard="context.md"
@@ -30,10 +39,121 @@ seed)
   arm_dir="seed-arm"
   ;;
 *)
-  echo "usage: run.sh [context|wireframes|seed]" >&2
+  echo "$usage" >&2
   exit 1
   ;;
 esac
+
+case "$kind" in
+findings | regression) ;;
+*)
+  echo "$usage" >&2
+  exit 1
+  ;;
+esac
+
+# What a run leaves behind, split by what each costs to keep. The raw output
+# lands in gitignored scratch and the ledger row is committed. A transcript
+# carries the full text of every file the session read, so a hundred retained
+# runs is a repository hundreds of megabytes larger for every clone, against a
+# row that costs bytes. Nothing prunes the scratch. Promote a transcript into
+# the arm's result document by hand on the day it becomes evidence for a claim.
+run_stamp="$(date +%Y%m%dT%H%M%S)"
+run_dir="$REPO_ROOT/.claude/.tmp/eval-runs/$arm-$run_stamp"
+ledger="$SCRIPT_DIR/ledger.md"
+
+# The stamp resolves to the second, so two runs of one arm inside the same
+# second would land in one directory and the later would overwrite the earlier
+# while both ledger rows still pointed at it. That destroys evidence silently,
+# which is the failure this whole file exists to prevent. Take the next free
+# name instead. `%N` would be shorter and BSD `date` does not have it.
+run_suffix=2
+while [ -e "$run_dir" ]; do
+  run_dir="$REPO_ROOT/.claude/.tmp/eval-runs/$arm-$run_stamp-$run_suffix"
+  run_suffix=$((run_suffix + 1))
+done
+
+# Copy a run's raw output out of the workdir before the trap deletes it. The
+# derived report was the only survivor until now, and it was wrong once: seed
+# run 02 reported `(none)` for the seed surface because the pattern required a
+# slash, and the correction was possible only because the full call list
+# happened to sit in the same report. A narrower report loses the run.
+#
+# Writes to stderr and disk alone. Retention is additive, so every failure here
+# warns and lets the verdict print. It reports the failure through its exit
+# status as well, because the caller has to know whether the ledger may name
+# the directory. A warning scrolls past and the row is the durable record.
+retain_run_output() {
+  local src="$1"
+  local name="$2"
+
+  if ! mkdir -p "$run_dir" 2>/dev/null; then
+    echo "→ warn: could not create $run_dir, output not retained" >&2
+    return 1
+  fi
+
+  if cp "$src" "$run_dir/$name" 2>/dev/null; then
+    echo "→ output retained at ${run_dir#"$REPO_ROOT"/}/$name" >&2
+    return 0
+  fi
+
+  echo "→ warn: could not retain $name at $run_dir" >&2
+  return 1
+}
+
+# Append one row per run, so the claims repeated across the readme and the
+# result files become a query rather than a memory.
+#
+# Append, never rewrite. The row anchors on no existing line, which is what
+# keeps a stream editor's failure modes out of a file that grows one row at a
+# time. The table therefore has to stay last in the ledger.
+#
+# The verdict is written `pending` because judging happens after a human reads
+# the report, and whoever judges it edits that one cell.
+append_ledger_row() {
+  # A run whose output carried no result object leaves these empty rather than
+  # null, since jq emits nothing at all on empty input and its `//` fallback
+  # never fires. An empty cell reads as "nobody recorded it", so name the gap.
+  local cost="${1:-unknown}"
+  local turns="${2:-unknown}"
+  local retained="${3:-no}"
+
+  # A run that failed to retain must not name the directory it would have used.
+  # The warning is on stderr and the row outlives it, so a path recorded anyway
+  # is a durable claim that something is on disk when nothing is.
+  local output_cell
+  if [ "$retained" = yes ]; then
+    output_cell="${run_dir#"$REPO_ROOT"/}"
+  else
+    output_cell="none"
+  fi
+
+  # The subject is the commit the standard or seed under test was read from,
+  # since the run exercises the working tree rather than a release.
+  #
+  # The ledger is excluded from the dirty check. It is a tracked file that this
+  # function appends to, so counting it marks every run after the first `-dirty`
+  # with nothing under test changed, which corrupts the one column saying which
+  # tree a run exercised.
+  local subject
+  subject="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  if ! git -C "$REPO_ROOT" diff --quiet HEAD -- ":!${ledger#"$REPO_ROOT"/}" 2>/dev/null; then
+    subject="$subject-dirty"
+  fi
+
+  if [ ! -f "$ledger" ]; then
+    echo "→ warn: no ledger at $ledger, run not recorded" >&2
+    return 0
+  fi
+
+  if printf '| %s | %s | %s | %s | %s | %s | pending | %s |\n' \
+    "$(date +%Y-%m-%d)" "$arm" "$kind" "$subject" "$cost" "$turns" \
+    "$output_cell" >>"$ledger"; then
+    echo "→ ledger row appended to ${ledger#"$REPO_ROOT"/}" >&2
+  else
+    echo "→ warn: could not append the ledger row to $ledger" >&2
+  fi
+}
 
 # The fixture must live outside the repo. A fixture under the repo would load
 # this project's CLAUDE.md through the ancestor chain and contaminate the run.
@@ -135,7 +255,13 @@ if [ "$arm" = seed ]; then
     --dangerously-skip-permissions </dev/null) >"$transcript"
 
   summary="$(jq -c 'select(.type == "result")' <"$transcript" | tail -1)"
-  jq -r '"cost_usd: \(.total_cost_usd) | turns: \(.num_turns)"' <<<"$summary" >&2
+  cost="$(jq -r '.total_cost_usd // "unknown"' <<<"$summary")"
+  turns="$(jq -r '.num_turns // "unknown"' <<<"$summary")"
+  echo "cost_usd: $cost | turns: $turns" >&2
+
+  retained=yes
+  retain_run_output "$transcript" transcript.jsonl || retained=no
+  append_ledger_row "$cost" "$turns" "$retained"
 
   calls="$workdir/.eval-calls"
   jq -r 'select(.type == "assistant") | .message.content[]?
@@ -178,7 +304,17 @@ fi
 result="$(cd "$fixture" && claude -p "$prompt" --output-format json \
   --dangerously-skip-permissions </dev/null)"
 
-jq -r '"cost_usd: \(.total_cost_usd) | turns: \(.num_turns)"' <<<"$result" >&2
+cost="$(jq -r '.total_cost_usd // "unknown"' <<<"$result")"
+turns="$(jq -r '.num_turns // "unknown"' <<<"$result")"
+echo "cost_usd: $cost | turns: $turns" >&2
+
+# Retained as `result.json` rather than `transcript.jsonl`, because these arms
+# ask for a single judged artifact and run under `--output-format json`. The
+# seed arm needs per-turn tool_use blocks and so takes the stream instead.
+printf '%s' "$result" >"$workdir/result.json"
+retained=yes
+retain_run_output "$workdir/result.json" result.json || retained=no
+append_ledger_row "$cost" "$turns" "$retained"
 
 # A session that cannot write the requested path may write somewhere else
 # entirely, so recover from what the run actually created rather than trusting
