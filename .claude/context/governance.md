@@ -33,6 +33,7 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - The toolkit's own `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `aitk gov regen` resolves it through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside. Recording the subset stops the producer from reading its own output to decide what that output should be.
 - Registering a new rule for this repository means naming it somewhere the record resolves, not writing it into `.claude/rules/`. Add it to a stack in `governance/stacks/`, to the `add` list in `internal/governance.toml`, or to `internal/rules/` when it governs toolkit authoring alone. A rule with a source that no stack names never installs, and the drift assertion still passes because the copy matches what the record resolves to. A file written into `.claude/rules/` by hand is deleted on the next `bun run check`.
 - `standards/versioning.md` is deliberately unrouted. It governs commit subjects, PR titles, and git tags, none of which are files, so a path-scoped rule has nothing to match and would never fire. `git-commit` and `git-pr` reach that surface by instruction instead, and what catches a leak there is a check rather than a route.
+- `090-code-comments` owns the degradation term list rather than `src/comments/`, because `src/comments/vocabulary.ts` reads the terms out of whichever rule publishes a `## Degradation vocabulary` heading. Landing the rule is what turned the sweep in `aitk comments scan` from skipped to live, and editing the backticked terms there changes what the command sweeps for here and in every target on `base`. Discovery anchors on the heading rather than the filename, so a renumber cannot silently empty the list.
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
 | Range     | Domain                                                                                                                       |
@@ -52,6 +53,7 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
 - `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts. The payload builder moved to `src/gov/payload.ts` and frontmatter stripping to `src/frontmatter.ts`, which `docs` shares.
 - `aitk gov sync` and `aitk gov build` no longer offer a `Review diffs` branch. It was the last path that shelled out to `code --diff`, which hangs a headless agent, and the tooling sync dropped it one step earlier.
+- The degradation sweep matches on comment text, so a comment naming a term as an example reads as a hit. The matcher's own doc comment in `src/comments/scan.ts` is the standing case. Read a hit before treating it as a defect.
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
 
 ## Install path
@@ -64,7 +66,7 @@ Each stack declares an optional `extends` chain and a flat `rules` list. The cha
 
 | Stack            | Extends | Rules                                                                                                                                         |
 | ---------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base`           | -       | 000–080 core rules, 500–591 claude authoring (prose, context, wireframes, canonical docs, tasks, skills, readme, rule and standard authoring) |
+| `base`           | -       | 000–090 core rules, 500–591 claude authoring (prose, context, wireframes, canonical docs, tasks, skills, readme, rule and standard authoring) |
 | `node`           | base    | 100-typescript                                                                                                                                |
 | `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness              |
 | `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                                            |
