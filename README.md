@@ -1,5 +1,9 @@
 # aitk
 
+![npm version](https://img.shields.io/npm/v/@erclx/aitk)
+![CI status](https://img.shields.io/github/actions/workflow/status/erclx/aitk/verify.yml)
+![License MIT](https://img.shields.io/npm/l/@erclx/aitk)
+
 One source for your repos' AI conventions. Install once, sync everywhere.
 
 ![Adding the aitk marketplace and installing the plugin in Claude Code](assets/install.png)
