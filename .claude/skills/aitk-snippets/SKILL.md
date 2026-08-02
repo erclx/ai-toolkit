@@ -22,14 +22,14 @@ Read `.claude/context/snippets.md` for system overview, categories, and structur
 
 - `essentials` is the default `aitk init` install. Keep it tight: only snippets the user reaches for in nearly every session.
 - Slugs may include a folder prefix (`claude/feature-recap`). They resolve to `.claude/snippets/<slug>.md` on install.
-- New presets append a section to `snippets.toml` and a row in `.claude/context/snippets.md`.
+- New presets append a section to `snippets.toml` and nothing else. `aitk snippets list` resolves them at runtime, so the context entry holds no preset row.
 
 ## Sync checklist
 
 When adding a snippet:
 
 - Place the file in `snippets/{category}/{name}.md` (or `snippets/{name}.md` for base)
-- Update `.claude/context/snippets.md` categories table and snippets table
+- Leave `.claude/context/snippets.md` alone unless the layout or a decision changed. `aitk snippets list` is the catalog, so the entry keeps no per-snippet or per-category record to update.
 - If the snippet belongs in `essentials`, add it to `snippets/snippets.toml`
 
 When renaming a snippet:
