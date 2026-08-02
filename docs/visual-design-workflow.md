@@ -130,7 +130,7 @@ Zero or one yes: tier 0. Two or three: tier 1. Four: tier 2. Resist over-tiering
 
 - [Stitch](../wiki/stitch.md): Gemini-powered design product with the MCP server that anchors tier 1
 - [Claude Design](../wiki/claude-design.md): first-party hosted design product and handoff bundle
-- `.claude/context/claude-plugin.md`: how to decide between workflow and domain-knowledge skills
+- `.claude/context/claude-plugin/skills.md`: how to decide between workflow and domain-knowledge skills
 - [Visual wireframes](../wiki/visual-wireframes.md): Excalidraw research and setup for the tier 1 wireframe companion
 - [Community skills and plugins](../wiki/community-skills.md): catalog of frontend design skills and integrations
 - [Community MCP servers](../wiki/community-mcp-servers.md): catalog of MCPs referenced across all tiers
