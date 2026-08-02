@@ -30,6 +30,8 @@ flowchart TB
 
 Source: code. Fidelity is lower than prose-driven diagrams. Verify against the project's intent.
 
+Budget: six edges over five nodes trips the density guidance in `.claude/standards/diagrams.md`. Moving the consumption side, the session and the target project, into its own entry would clear it. The entry stays whole because a delivery path is only legible against what it reaches, and the standard asks for a warning on this budget rather than a refusal.
+
 The structure worth seeing is the split into two paths, because the file tree shows the folders but not which of them travel by which route. Content under `governance/`, `standards/`, `snippets/`, and `tooling/` is copied. A per-domain `install` or `sync` command reads it here and writes it to a fixed path under the target project's `.claude/` folder, so the target holds a real file it can read without the toolkit present. Skills under `claude/skills/` are never copied. The marketplace loads them into a session from this repository, which is why a skill edit reaches users on merge while a standards edit reaches them only when someone runs a sync.
 
 The edge from the skills to the CLI is the constraint that keeps the two paths from diverging. A skill detects the CLI and calls it. It does not reimplement what the CLI does, so a rule about how content installs has exactly one implementation and the skill stays a thin caller. The same principle drives every domain having a `list` command with a `--json` flag, which lets a skill read a catalog at runtime instead of hardcoding names that would go stale.
