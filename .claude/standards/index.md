@@ -12,7 +12,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
 - [Diagram reference](diagrams.md): Shape and content rules for .claude/diagrams/<kind>.md files
 - [Prose reference](prose.md): Voice, structure, formatting, and language rules for reference markdown
-- [Readme reference](readme.md): Readme structure and content conventions
+- [Readme reference](readme.md): Readme voice, structure, and content conventions
 - [Requirements reference](requirements.md): Shape and content rules for .claude/REQUIREMENTS.md
 - [Governance rule reference](rule.md): Rule frontmatter, body shape, and voice for .claude/rules files
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules

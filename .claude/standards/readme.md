@@ -1,9 +1,23 @@
 ---
 title: Readme reference
-description: Readme structure and content conventions
+description: Readme voice, structure, and content conventions
 ---
 
 # Readme reference
+
+Applies to every `README.md`. The `## Voice` section states the voice for a repository's root README, so `prose.md` yields to it there. The yield covers voice alone. The punctuation bans, spelling rules, banned words, and formatting rules in `prose.md` stay in force, so the warmer register ships with the same hygiene: no em dashes, no semicolons, no buzzwords.
+
+The reader is what changes. Reference prose serves someone who already committed to the project and is scanning for a fact. A root README meets someone deciding whether to commit at all, and it is often the only file they read.
+
+## Voice
+
+Scoped to the README at a repository root. A nested README documenting a folder, a harness, or an internal tool keeps the reference voice in `prose.md`, since its reader has already committed and arrived looking for a fact.
+
+- Address the reader in second person. First-person plural needs an authoring organization as its antecedent, so a single-maintainer project has none to use.
+- Use contractions wherever the sentence reads better for one. Do not force them in.
+- Write with a point of view. State what the project chose and why, not a neutral survey of the options it passed over.
+- Ground a claim in something concrete rather than an adjective. A command, a number, or a named constraint carries more than a description of quality.
+- Be honest about limits. Naming what the project does not do reads as more credible, not less.
 
 ## Structure
 
