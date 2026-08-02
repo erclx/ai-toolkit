@@ -80,7 +80,7 @@ The code paths the explanation cites are what the `claude-docs` sweep watches fo
 
 Quote node labels containing spaces or special characters with double quotes (`A["Web shell"]`). Avoid parentheses inside labels, they break some renderers. Use `<br/>` for line breaks inside labels.
 
-Run the pre-publish scan in `.claude/standards/prose.md` against the whole file, including inside mermaid `subgraph` labels and node text, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it. The file lands in the repository rather than on a remote, so the scan's destination scoping leaves the character checks and not the phase-label one. A colon also works as a replacement inside a label. The pedagogical voice the diagram standard asks for is a yield on voice alone and buys no exemption from these bans.
+Run the scan in `.claude/standards/publish.md` against the whole file, including inside mermaid `subgraph` labels and node text, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it. The file lands in the repository rather than on a remote, so the scan's destination scoping leaves the character checks and not the phase-label one. A colon also works as a replacement inside a label. The pedagogical voice the diagram standard asks for is a yield on voice alone and buys no exemption from these bans.
 
 Nothing enforces the ban inside the diagram. The standards-audit hook toggles on a fence and skips every line within it, so a label carrying an em dash passes silently while the same character in the explanation paragraph below is caught. Check the labels by reading them. This is the one place in the file where the author is the only gate.
 
