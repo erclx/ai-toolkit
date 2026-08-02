@@ -2,6 +2,7 @@
 title: Request flow
 description: Orchestrator and worker loop from plan to merge, drawn from the operating model
 category: Request flow
+verified: 73e9a3f8 2026-08-02
 ---
 
 # Request flow

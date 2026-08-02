@@ -24,8 +24,14 @@ An entry that fails these is non-conforming regardless of whether it satisfies e
 - `title` (required): sentence case, names what the entry answers (`System context`, `Request flow`), not what it draws.
 - `description` (required): one line on which question the entry settles and which source signal drives it.
 - `category` (required): the diagram kind, one of the five in Entry kinds. It is the grouping field `aitk indexes regen` renders headings from.
+- `verified` (required): the short commit SHA an entry was last checked against and the ISO date of that check, separated by a space (`73e9a3f8 2026-08-02`). A stub nobody has drawn yet carries the literal `TODO: never verified` instead, which is the one other accepted value.
+- `stale` (optional): one line naming what changed under the entry since that check. Absent on an entry nothing has flagged.
 
-All three feed `.claude/diagrams/index.md` when regenerated. The catalog sorts categories alphabetically rather than in narrative order, so an entry cannot rely on its position to introduce another. Each entry names its own starting point, and the catalog's subtitle routes a first-time reader to the system context entry.
+The first three feed `.claude/diagrams/index.md` when regenerated. The catalog sorts categories alphabetically rather than in narrative order, so an entry cannot rely on its position to introduce another. Each entry names its own starting point, and the catalog's subtitle routes a first-time reader to the system context entry.
+
+The marker fields reach the catalog through neither route. `aitk indexes regen` reads `title`, `description`, and `category` and ignores every other key, so a marker changes no generated file. A reader picks it up by opening the entry, which is where it sits above the diagram and where anyone deciding whether to trust the picture is already standing.
+
+Two writers share the marker and neither touches the other's field. A pass that renders an entry and reads the picture back sets `verified` and clears `stale`. The `claude-docs` sweep appends `stale` and never edits `verified`. Keeping them separate is what lets a reader tell a diagram nobody has checked since the code moved from one that was checked and found correct.
 
 ## Entry kinds
 
@@ -72,7 +78,7 @@ A second entry for one kind takes a suffixed name (`request-flow-admin.md`) and 
 
 - One to three short paragraphs below each diagram. Plain English and pedagogical.
 - Lead with what the diagram shows. Follow with why this shape was chosen and what alternative was rejected, when the choice was non-obvious.
-- Reference one or two specific code paths the reader can open. Do not enumerate every file.
+- Reference one or two specific code paths the reader can open. Do not enumerate every file. Backticked paths here are also the set the `claude-docs` sweep watches, so a path cited in this section is one a later session gets told about when it leaves the tree.
 - Do not duplicate prose across entries. An entry that restates its neighbor has taken the neighbor's job.
 - The audience is mixed, so vocabulary runs as a gradient across the set. `System context` assumes no knowledge of the repository. `Deployment` may assume the reader has read the others.
 
@@ -101,5 +107,7 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 - When the system changes, update the entries whose source signal changed and leave the rest alone. Rewriting the folder wholesale reproduces the defect the per-kind split exists to end.
 - A diagram showing a defunct host or library is worse than no diagram. Audit the affected entry in the same PR.
 - `System context` has no named source signal beyond `.claude/REQUIREMENTS.md`, so nothing tells a session it went stale. Re-read it when the boundary or the set of external dependencies moves.
+- The `claude-docs` sweep watches two things and writes frontmatter only. It appends `stale` when a path an entry cites leaves the tree, and it stubs a kind when a diff adds the source signal that kind is drawn from. Diagram bodies and explanation paragraphs are off limits to it, because a change that removes a module does not carry the new correct shape of the picture.
+- That watch samples thinly. It sees the one or two paths an entry happened to cite and nothing else, so a change elsewhere leaves the entry looking current. `verified` is what covers the gap, and an entry whose date sits far behind the branch is due a read whether or not anything flagged it.
 - Mermaid blocks are inside fenced code, so the prose-standards hook ignores them. The explanation paragraphs around them are still prose. Follow `standards/prose.md`.
 - The punctuation bans still apply to node and subgraph labels, and nothing checks them there. An em dash in a label passes every gate the repository has, so read the labels before shipping the entry.

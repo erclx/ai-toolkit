@@ -2,6 +2,7 @@
 title: Components
 description: Two delivery paths authored content takes into a project, drawn from a code scan
 category: Components
+verified: 73e9a3f8 2026-08-02
 ---
 
 # Components
