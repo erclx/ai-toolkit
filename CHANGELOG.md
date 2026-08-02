@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.23.0](https://github.com/erclx/aitk/compare/v0.22.1...v0.23.0) (2026-08-02)
+
+
+### Features
+
+* **sandbox:** report which skills a run can pass or fail ([#737](https://github.com/erclx/aitk/issues/737)) ([a9255e7](https://github.com/erclx/aitk/commit/a9255e7f1d3f512c9e202ff87dce154f37a3d6eb))
+
+
+### Bug Fixes
+
+* **skills:** drop unreachable mappings from the standards audit ([#736](https://github.com/erclx/aitk/issues/736)) ([87ac2ba](https://github.com/erclx/aitk/commit/87ac2bafb9a82d13e61b9612b232544022ba1867))
+
 ## [0.22.1](https://github.com/erclx/aitk/compare/v0.22.0...v0.22.1) (2026-08-02)
 
 
