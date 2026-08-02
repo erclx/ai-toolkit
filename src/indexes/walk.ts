@@ -1,6 +1,6 @@
 import { existsSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { $ } from 'bun'
+import { listIgnored } from '@/git-ignore'
 
 const INDEX_FILE = 'index.md'
 
@@ -40,34 +40,6 @@ export async function listIndexes(root: string): Promise<string[]> {
   if (ignored.size === 0) return candidates
 
   return candidates.filter((path) => !ignored.has(path))
-}
-
-async function listIgnored(
-  root: string,
-  candidates: string[],
-): Promise<Set<string>> {
-  const isRepo = await $`git -C ${root} rev-parse --git-dir`
-    .quiet()
-    .nothrow()
-    .then((result) => result.exitCode === 0)
-
-  if (!isRepo) return new Set()
-
-  const stdin = Buffer.from(`${candidates.join('\n')}\n`)
-
-  const result = await $`git -C ${root} check-ignore --stdin < ${stdin}`
-    .quiet()
-    .nothrow()
-
-  if (result.exitCode > 1) return new Set()
-
-  return new Set(
-    result
-      .text()
-      .split('\n')
-      .filter(Boolean)
-      .map((path) => resolve(root, path)),
-  )
 }
 
 /**
