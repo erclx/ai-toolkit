@@ -39,9 +39,11 @@ Filter to markdown (`.md`), then drop what the project does not hand-author:
 
 - `index.md`, unless its frontmatter carries `auto: false`
 - Any file in a gitignored directory
-- Any file carrying a frontmatter field that names the consumers a generator copied it out to, since the copy is written from a source elsewhere in the tree
+- Any file sitting in a skill's bundled reference folder whose frontmatter names the consumers a generator copied it out to
 
-The last rule is what keeps a fan-out from multiplying one edit into a finding per copy. The source is the file to audit and the only one an author can fix, because the next regen overwrites every copy. A mapping wide enough to reach a generated tree makes this the difference between one finding and ten.
+The last rule keeps a fan-out from multiplying one edit into a finding per copy. The source is the file to audit and the only one an author can fix, because the next regen overwrites every copy.
+
+It takes both halves. A generator copies frontmatter verbatim, so the field alone matches the source as well and drops the one file the rule means to keep. The location alone matches a reference the skill author wrote by hand, which carries no such field and is governed like the rest of the folder.
 
 ## Step 2: map files to standards
 
