@@ -142,10 +142,17 @@ An arm declares what a correct run leaves behind in `expect.toml`, beside its nu
 | `absent`      | Files that must not exist                                    |
 | `content`     | Array of tables, each a `path` and a `pattern` it must match |
 | `write_scope` | Globs bounding where the session may write                   |
+| `reply`       | Substrings the run's reply text must carry                   |
 | `manual`      | Prose the checker cannot assert, reported as unchecked       |
 | `max_turns`   | Turn ceiling, above which the run fails                      |
 
 Patterns use TOML literal strings (`'^- \[x\] done'`) so a regex needs no backslash escaping. The split between mechanical and human-judged is per expectation, not per skill: the `claude/docs` `drift` arm produces both kinds in one run, three the checker asserts and two needing a reader.
+
+`reply` reads `result` off the same envelope `max_turns` reads, so it costs nothing new to capture. Entries are plain substrings matched case-sensitively rather than regexes, because the token worth asserting is a path or a command and a regex invites an anchored sentence that goes red on any rewording. An absent envelope skips the assertion, while an envelope carrying an empty reply fails it. Those are different states and collapsing them would turn a gap in the input into a red arm.
+
+Declare only positives. An entry asserting what a run must not have said passes on every reply that phrases the thing differently, which is the vacuous pass `manual` is excluded from the count to prevent. Negatives stay in `manual`.
+
+Every `manual` entry states why it stays there, as a sentence appended to the claim. `Semantic:` marks a claim no string match can carry, and `Unwired:` marks one that needs an input the harness does not yet supply, such as stderr or the tool calls. Without the label the bucket absorbs both, and work with a mechanism waiting for it reads the same as work that will never have one.
 
 Expectations are not agent-only. An `infra` arm invoking the CLI directly declares the same way, minus `max_turns`. No agent drives it, so no envelope is produced and a ceiling would sit permanently skipped rather than assert anything. `infra/wiki` carries one declaration per arm and is the pattern to copy for a CLI scenario.
 
