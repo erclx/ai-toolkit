@@ -43,7 +43,7 @@ Google's [guidance on person](https://developers.google.com/style/person) says t
 
 Microsoft states [three voice principles](https://learn.microsoft.com/en-us/style-guide/brand-voice-above-all-simple-human), "Warm and relaxed", "Crisp and clear", and "Ready to lend a hand". Only the middle one reached `prose.md`, whose opening voice bullet is close to a paraphrase of it. The same page names contractions under its "Talk like a person" style tip.
 
-Both land in `standards/readme.md` instead. Its `## Voice` section requires second person, permits contractions, and asks for a point of view and honesty about limits, all scoped to the README at a repository root. The guides were adopted by surface rather than in full.
+Both land in the `## Voice` section of `standards/readme.md` instead, scoped to the README at a repository root. The guides were adopted by surface rather than in full.
 
 ## Where we diverge
 
