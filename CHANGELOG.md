@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/erclx/aitk/compare/v0.14.0...v0.15.0) (2026-08-02)
+
+
+### Features
+
+* **eval:** add an ablation dimension and run the four seed pairs ([#712](https://github.com/erclx/aitk/issues/712)) ([b6ce6c8](https://github.com/erclx/aitk/commit/b6ce6c8fe774ee860a1e387115e1005d538a7f34))
+
 ## [0.14.0](https://github.com/erclx/aitk/compare/v0.13.0...v0.14.0) (2026-08-02)
 
 
