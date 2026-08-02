@@ -5,6 +5,7 @@ import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
 import { PROJECT_ROOT } from '@/exec'
 import { createGovAdapter } from '@/gov/adapter'
+import { regenConsumedRules } from '@/gov/consumed'
 import { hasStandards, installRules, lookupRules } from '@/gov/install'
 import { buildRulesPayload, listRuleFiles } from '@/gov/payload'
 import {
@@ -37,6 +38,10 @@ const PASS_THROUGH_VERBS = ['list'] as const
 
 interface InstallOptions {
   readonly add?: string
+}
+
+interface RegenOptions {
+  readonly root?: string
 }
 
 export function register(program: Command): void {
@@ -95,7 +100,42 @@ export function register(program: Command): void {
       process.exitCode = await runBuild(target)
     })
 
+  gov
+    .command('regen')
+    .description("Rebuild a repository's own .claude/rules/ from its record")
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Repository root to regenerate', PROJECT_ROOT)
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Reads internal/governance.toml and installs the stack it names, plus',
+        'any rules under internal/rules/. Unlike install and sync, this runs',
+        'against the toolkit root, whose .claude/rules/ is produced output.',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: RegenOptions) => {
+      process.exitCode = await runRegen(opts)
+    })
+
   registerPassThroughVerbs(gov, 'gov', PASS_THROUGH_VERBS)
+}
+
+/**
+ * Silent on success so the consumed-copy stage that calls it stays as quiet as
+ * the three `mirror_dir` lines it sits beside. The installed set is readable on
+ * disk, so printing it would only add noise to every `bun run check`.
+ */
+async function runRegen(opts: RegenOptions): Promise<number> {
+  const result = await regenConsumedRules(resolve(opts.root ?? PROJECT_ROOT))
+
+  if (!result.ok) {
+    process.stderr.write(`Consumed-rules regen failed: ${result.reason}\n`)
+    return 1
+  }
+
+  return 0
 }
 
 /**

@@ -1,0 +1,12 @@
+# The governance subset this repository consumes into `.claude/rules/`.
+#
+# The toolkit authors every stack and installs one of them into its own
+# sessions. Without this record the producer would read `.claude/rules/` to
+# decide what `.claude/rules/` should hold, deriving intent from its own
+# output. Naming the stack here makes the regen deterministic and makes a
+# deliberate addition show up in a diff.
+#
+# Rules under `internal/rules/` install alongside these and need no entry.
+
+stack = "node"
+add = ["300-testing-ts"]
