@@ -26,7 +26,9 @@ pattern = '^---\ntitle: Components\ndescription: [^\n]+\ncategory: Components\nv
 # run to quote yet, so a guessed ceiling would fail honest runs or assert
 # nothing. Add it once a run has been observed.
 
+# Prose the checker cannot assert, each with the reason it stays here. Both are
+# negatives about emitted text, which is the shape the reply kind refuses.
 manual = [
-  "Step 5 emits no line at all, neither a stub nor a drift warning",
-  "The run closes on one line, not on both Step 2's report and the After completion fallback",
+  "Step 5 emits no line at all, neither a stub nor a drift warning. Semantic: a negative over emitted text, and a substring passes on every run that words the line differently",
+  "The run closes on one line, not on both Step 2's report and the After completion fallback. Semantic: the claim counts lines rather than naming a token, and no kind counts",
 ]
