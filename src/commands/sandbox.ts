@@ -86,6 +86,11 @@ async function interactivePicker(): Promise<string> {
  * file was given, so the turn ceiling reports as skipped rather than passing on a
  * fabricated zero. A file that exists but does not parse falls back to clean,
  * since decision 8 lets the envelope fail a run but never pass one.
+ *
+ * `result` carries the reply text and is left undefined on both fallbacks, which
+ * routes a reply assertion to skipped. Fabricating an empty string there would
+ * fail every reply assertion on a run that supplied no envelope, turning a gap in
+ * the input into a red arm.
  */
 function readEnvelope(path: string | undefined): RunEnvelope | undefined {
   if (path === undefined) return undefined
@@ -102,6 +107,7 @@ function readEnvelope(path: string | undefined): RunEnvelope | undefined {
       isError: parsed.is_error === true,
       turns: typeof parsed.num_turns === 'number' ? parsed.num_turns : 0,
       denials: Array.isArray(denials) ? denials.length : 0,
+      reply: typeof parsed.result === 'string' ? parsed.result : undefined,
     }
   } catch {
     return CLEAN_ENVELOPE

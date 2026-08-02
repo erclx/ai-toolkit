@@ -19,6 +19,7 @@ export interface Expectation {
   readonly absent: readonly string[]
   readonly content: readonly ContentAssertion[]
   readonly writeScope: readonly string[]
+  readonly reply: readonly string[]
   readonly manual: readonly string[]
   readonly maxTurns?: number
 }
@@ -28,10 +29,17 @@ export interface AssertionResult {
   readonly message: string
 }
 
+/**
+ * `reply` is optional because an absent reply and an empty one mean different
+ * things. A run whose envelope was never supplied has nothing to assert against
+ * and skips. A run that genuinely returned no text carries the empty string and
+ * fails every reply assertion, which is the finding.
+ */
 export interface RunEnvelope {
   readonly isError: boolean
   readonly turns: number
   readonly denials: number
+  readonly reply?: string
 }
 
 export interface Verdict {
@@ -155,6 +163,7 @@ export function parseExpectation(source: string): Expectation {
     absent: stringArray(parsed.absent),
     content: contentArray(parsed.content),
     writeScope: stringArray(parsed.write_scope),
+    reply: stringArray(parsed.reply),
     manual: stringArray(parsed.manual),
     maxTurns:
       typeof parsed.max_turns === 'number' ? parsed.max_turns : undefined,
@@ -171,7 +180,8 @@ export function countMechanicalAssertions(expectation: Expectation): number {
     expectation.paths.length +
     expectation.absent.length +
     expectation.content.length +
-    expectation.writeScope.length
+    expectation.writeScope.length +
+    expectation.reply.length
   )
 }
 
@@ -260,6 +270,42 @@ function checkWriteScope(
 }
 
 /**
+ * Plain substrings, matched case-sensitively, against the text the run replied
+ * with. A substring rather than a regex because the pattern a reply assertion
+ * wants is a load-bearing token, a path or a command, and a regex invites the
+ * anchored sentence that goes red on any rewording.
+ *
+ * Declare only positives. A negative substring passes on every reply that
+ * phrases the thing differently, which is the vacuous pass
+ * `countMechanicalAssertions` excludes `manual` to prevent. An entry asserting
+ * what a run must not have said stays in `manual` with its reason.
+ */
+function checkReply(
+  expectation: Expectation,
+  envelope: RunEnvelope | undefined,
+): KindOutcome {
+  if (expectation.reply.length === 0) return { results: [], skipped: [] }
+
+  if (envelope?.reply === undefined) {
+    return {
+      results: [],
+      skipped: ['reply: no reply text supplied, pass --envelope'],
+    }
+  }
+
+  const reply = envelope.reply
+
+  return {
+    results: expectation.reply.map((fragment) =>
+      reply.includes(fragment)
+        ? { ok: true, message: `reply says: ${fragment}` }
+        : { ok: false, message: `reply never says: ${fragment}` },
+    ),
+    skipped: [],
+  }
+}
+
+/**
  * The envelope never determines a pass. It can only fail a run the expectations
  * would otherwise have passed. Under `bypassPermissions` the denial count is
  * always zero, so the write-scope assertion is what replaced it.
@@ -306,16 +352,18 @@ export function checkExpectation(
   input: CheckInput,
 ): Verdict {
   const scope = checkWriteScope(expectation, input.writes)
+  const reply = checkReply(expectation, input.envelope)
   const envelope = checkEnvelope(expectation, input.envelope)
 
   const results = [
     ...checkPaths(expectation, input.sandboxDir),
     ...checkAbsent(expectation, input.sandboxDir),
     ...checkContent(expectation, input.sandboxDir),
+    ...reply.results,
     ...scope.results,
     ...envelope.results,
   ]
-  const skipped = [...scope.skipped, ...envelope.skipped]
+  const skipped = [...scope.skipped, ...reply.skipped, ...envelope.skipped]
 
   const failed = results.filter((result) => !result.ok).length
 

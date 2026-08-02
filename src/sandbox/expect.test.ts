@@ -72,12 +72,37 @@ function driftExpectation(): Expectation {
       },
     ],
     writeScope: ['.claude/**'],
+    reply: [],
     manual: [
       'ARCHITECTURE.md storage section rewritten',
       'REQUIREMENTS.md non-goals updated',
     ],
     maxTurns: 20,
   }
+}
+
+/**
+ * A reply assertion beside one tree assertion that always holds. The tree half
+ * keeps the verdict out of the zero-assertion branch, so a skipped reply reads as
+ * a skip rather than as the separate failure an arm with nothing to run reports.
+ */
+function replyExpectation(): Expectation {
+  return {
+    paths: [],
+    absent: [PLANS_LIVE],
+    content: [],
+    writeScope: [],
+    reply: ['.claude/context/development.md'],
+    manual: [],
+    maxTurns: undefined,
+  }
+}
+
+function runReply(envelope: RunEnvelope | undefined): Verdict {
+  return checkExpectation(replyExpectation(), {
+    sandboxDir: sandbox,
+    envelope,
+  })
 }
 
 function checkInput(overrides: Partial<CheckInput> = {}): CheckInput {
@@ -273,6 +298,7 @@ describe('checkExpectation with no assertion able to run', () => {
     absent: [],
     content: [],
     writeScope: ['.claude/**'],
+    reply: [],
     manual: [],
     maxTurns: undefined,
   }
@@ -343,6 +369,74 @@ describe('checkExpectation with data the caller did not supply', () => {
   })
 })
 
+/**
+ * The text is already on disk and the checker already opens the file. These cases
+ * are what separates asserting against it from reporting a fabricated default,
+ * which is the trap the kind was written around.
+ */
+describe('checkExpectation on the reply text', () => {
+  it('should pass when the reply carries the declared fragment', () => {
+    const verdict = runReply({
+      ...CLEAN_ENVELOPE,
+      reply: 'Stopped. No .claude/context/development.md in this project.',
+    })
+
+    expect(verdict.state).toBe('pass')
+    expect(verdict.results).toContainEqual({
+      ok: true,
+      message: 'reply says: .claude/context/development.md',
+    })
+  })
+
+  it('should fail when the reply never says the declared fragment', () => {
+    const verdict = runReply({
+      ...CLEAN_ENVELOPE,
+      reply: 'Started the dev server on port 5173.',
+    })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.results).toContainEqual({
+      ok: false,
+      message: 'reply never says: .claude/context/development.md',
+    })
+  })
+
+  it('should skip rather than assert when no envelope was supplied', () => {
+    const verdict = runReply(undefined)
+
+    expect(verdict.skipped).toContain(
+      'reply: no reply text supplied, pass --envelope',
+    )
+    expect(verdict.asserted).toBe(1)
+    expect(verdict.unchecked).toBe(1)
+  })
+
+  it('should skip when the envelope carries no reply text', () => {
+    const verdict = runReply(CLEAN_ENVELOPE)
+
+    expect(verdict.skipped).toContain(
+      'reply: no reply text supplied, pass --envelope',
+    )
+    expect(verdict.state).toBe('pass')
+  })
+
+  it('should fail an empty reply rather than skipping it', () => {
+    const verdict = runReply({ ...CLEAN_ENVELOPE, reply: '' })
+
+    expect(verdict.state).toBe('fail')
+    expect(verdict.skipped).toHaveLength(0)
+  })
+
+  it('should match case-sensitively so a near miss does not read green', () => {
+    const verdict = runReply({
+      ...CLEAN_ENVELOPE,
+      reply: 'Missing .CLAUDE/CONTEXT/DEVELOPMENT.MD',
+    })
+
+    expect(verdict.state).toBe('fail')
+  })
+})
+
 describe('resolveVerdict', () => {
   it('should report unchecked when no declaration exists', () => {
     const verdict = resolveVerdict(join(sandbox, 'expect.toml'), checkInput())
@@ -396,10 +490,10 @@ describe('countMechanicalAssertions', () => {
 
   it('should count each assertion kind', () => {
     const expectation = parseExpectation(
-      'paths = ["a"]\nabsent = ["b"]\nwrite_scope = ["c/**"]\n\n[[content]]\npath = "d"\npattern = "e"\n',
+      'paths = ["a"]\nabsent = ["b"]\nwrite_scope = ["c/**"]\nreply = ["f"]\n\n[[content]]\npath = "d"\npattern = "e"\n',
     )
 
-    expect(countMechanicalAssertions(expectation)).toBe(4)
+    expect(countMechanicalAssertions(expectation)).toBe(5)
   })
 })
 
@@ -426,6 +520,7 @@ describe('parseExpectation', () => {
       absent: [],
       content: [],
       writeScope: [],
+      reply: [],
       manual: [],
       maxTurns: undefined,
     })
