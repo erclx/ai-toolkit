@@ -25,7 +25,7 @@ Project docs live in `.claude/` at the project root.
 └── rules/           ← path-scoped governance rules, written by aitk gov install
 ```
 
-Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md` discovered via `.claude/context/index.md`). See [the context model](../.claude/context/context-model.md) for the full picture.
+Three tiers of context load with different cost: always-loaded (root `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/ARCHITECTURE.md`), path-scoped lazy (`.claude/rules/<scope>.md` with `paths:` glob), and on-demand lookup (`.claude/context/<domain>.md`, or `.claude/context/<domain>/` once a domain outgrows one file, discovered via `.claude/context/index.md`). See [the context model](../.claude/context/context-model.md) for the full picture.
 
 Run `aitk init` to seed the `.claude/` directory, a root `CLAUDE.md` file, and `.claude/rules/` in one pass. `aitk init` chains claude init and governance install. Claude Code auto-loads every file in `.claude/rules/` at session start, applying always-on rules unconditionally and path-scoped rules to files matching their `paths:` glob.
 

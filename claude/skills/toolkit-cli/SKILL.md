@@ -35,4 +35,4 @@ What each `aitk` sync or install command does to existing files in a target proj
 
 ## Source of truth
 
-- Full semantics live in the toolkit's `.claude/context/tooling.md`, `standards.md`, and `claude-plugin.md`. This skill is the target-session summary. When they disagree, the context docs win.
+- Full semantics live in the toolkit's `.claude/context/tooling.md`, `standards.md`, and `claude-plugin/`. This skill is the target-session summary. When they disagree, the context docs win.

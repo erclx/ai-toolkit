@@ -24,6 +24,7 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - Both integration points are opt-in per project and the toolkit ships no default. Git-driven projects want `lint-staged`, agent-driven ones want the hook, and picking one for them would be wrong half the time.
 - This was the first domain migrated off bash, chosen because nothing else depended on its walker. The engine reads frontmatter with `Bun.YAML` instead of the awk parser it replaced, and emits JSON with `JSON.stringify` instead of a hand-rolled escape that covered only backslash and double quote.
 - Frontmatter is re-emitted verbatim rather than re-serialized from the parsed object. Key order, comments, and the `auto: false` marker all survive a regeneration that way.
+- Flat mode sorts sub-catalogs among the sibling files instead of appending them. A folder and a file are both one domain to a reader scanning the catalog, and the rendered lines are indistinguishable, so a trailing entry reads as absent from the alphabetical run it belongs in. `.claude/context/claude-plugin/` was the repository's first sub-catalog, so nothing read the append path until it landed at the bottom of a catalog `CLAUDE.md` loads every session. Grouped mode keeps the append, because its heading is what makes the child catalogs visible there.
 
 ## Gotchas
 
@@ -119,9 +120,9 @@ Per-domain narrative loaded on demand
 
 A folder that holds its own `index.md` is a child catalog. The parent links it so an agent reading the parent discovers the sub-catalog without opening files. Linking is recursive because each folder regenerates independently.
 
-The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling file renders as `- [<title>](<filename>): <description>`. Each immediate subfolder that carries an `index.md` renders as `- [<child title>](<child>/index.md): <child subtitle>`, listed after the sibling files.
+The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling file renders as `- [<title>](<filename>): <description>`. Each immediate subfolder that carries an `index.md` renders as `- [<child title>](<child>/index.md): <child subtitle>`, sorted among the sibling files by name rather than appended after them.
 
-In grouped mode those folder entries collect under a trailing `## Sub-catalogs` heading.
+In grouped mode those folder entries collect under a trailing `## Sub-catalogs` heading instead, since a category is the organizing key there and alphabetical position carries no meaning.
 
 ## Opt-out
 
@@ -145,7 +146,7 @@ A Claude Code `PostToolUse` hook on `Edit` and `Write` matching `**/*.md` covers
 
 ## Enforcement
 
-The index system only pays off when sessions consult the catalogs instead of searching past them. The Claude seed ships a `PreToolUse` hook on `Grep` and `Glob` that walks up from the search path to the nearest `index.md` and reminds the agent to read it first. It fires once per folder per session and only where an index exists, so it self-scales to a project's index density. See `.claude/context/claude-plugin.md` for the seed settings block.
+The index system only pays off when sessions consult the catalogs instead of searching past them. The Claude seed ships a `PreToolUse` hook on `Grep` and `Glob` that walks up from the search path to the nearest `index.md` and reminds the agent to read it first. It fires once per folder per session and only where an index exists, so it self-scales to a project's index density. See `.claude/context/claude-plugin/cli.md` for the seed settings block.
 
 ## Bootstrap
 

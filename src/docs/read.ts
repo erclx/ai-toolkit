@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { basename, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 import { stripFrontmatter } from '@/frontmatter'
 
 const INDEX_TOPIC = 'index'
@@ -16,14 +16,25 @@ export interface ResolvedTopic {
   readonly rel: string
 }
 
+/**
+ * A domain too large for one file splits into `<domain>/` with a generated
+ * `index.md`, so a topic names either a sibling file or such a folder. Both
+ * spellings resolve to the same name a caller types.
+ */
 export function resolveTopic(
   root: string,
   topic: string,
 ): ResolvedTopic | undefined {
   for (const dir of ROOTS) {
-    const rel = join(dir, `${topic}.md`)
-    const path = join(root, rel)
-    if (existsSync(path)) return { path, rel }
+    const candidates = [
+      join(dir, `${topic}.md`),
+      join(dir, topic, `${INDEX_TOPIC}.md`),
+    ]
+
+    for (const rel of candidates) {
+      const path = join(root, rel)
+      if (existsSync(path)) return { path, rel }
+    }
   }
 
   return undefined
@@ -41,14 +52,21 @@ export function listTopics(root: string): string[] {
     const cwd = join(root, dir)
     if (!existsSync(cwd)) continue
 
-    const names = [
+    const files = [
       ...new Bun.Glob('*.md').scanSync({ cwd, onlyFiles: true, dot: true }),
     ]
       .map((name) => basename(name, '.md'))
       .filter((name) => name !== INDEX_TOPIC)
-      .sort()
 
-    topics.push(...names)
+    const folders = [
+      ...new Bun.Glob(`*/${INDEX_TOPIC}.md`).scanSync({
+        cwd,
+        onlyFiles: true,
+        dot: true,
+      }),
+    ].map((name) => dirname(name))
+
+    topics.push(...[...files, ...folders].sort())
   }
 
   return topics

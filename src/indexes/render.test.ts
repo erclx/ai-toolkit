@@ -81,6 +81,19 @@ describe('computeIndex', () => {
     )
   })
 
+  it('should sort a sub-catalog among the sibling files, not after them', async () => {
+    writeIndex(root, 'Parent', 'Top level')
+    writeEntry(root, 'alpha.md', { title: 'Alpha', description: 'First' })
+    writeEntry(root, 'zebra.md', { title: 'Zebra', description: 'Last' })
+    writeIndex(join(root, 'middle'), 'Middle', 'Nested catalog')
+
+    const result = await computeIndex(root)
+
+    expect(result.ok && result.content).toContain(
+      '- [Alpha](alpha.md): First\n- [Middle](middle/index.md): Nested catalog\n- [Zebra](zebra.md): Last\n',
+    )
+  })
+
   it('should separate sub-catalogs with their own heading when categories exist', async () => {
     writeIndex(root, 'Parent', 'Top level')
     writeEntry(root, 'page.md', {

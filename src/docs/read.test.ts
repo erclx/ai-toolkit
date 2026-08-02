@@ -48,6 +48,30 @@ describe('resolveTopic', () => {
     expect(resolveTopic(ROOT, 'shared')?.rel).toBe(join('docs', 'shared.md'))
   })
 
+  it('should resolve a topic split into a folder to its index', () => {
+    writeDoc('.claude/context/claude-plugin/index.md', '# Claude plugin\n')
+
+    expect(resolveTopic(ROOT, 'claude-plugin')).toEqual({
+      path: join(ROOT, '.claude', 'context', 'claude-plugin', 'index.md'),
+      rel: join('.claude', 'context', 'claude-plugin', 'index.md'),
+    })
+  })
+
+  it('should prefer a sibling file over a folder of the same name', () => {
+    writeDoc('.claude/context/both.md', '# From the file\n')
+    writeDoc('.claude/context/both/index.md', '# From the folder\n')
+
+    expect(resolveTopic(ROOT, 'both')?.rel).toBe(
+      join('.claude', 'context', 'both.md'),
+    )
+  })
+
+  it('should return undefined for a folder carrying no index', () => {
+    writeDoc('.claude/context/headless/skills.md', '# Skills\n')
+
+    expect(resolveTopic(ROOT, 'headless')).toBeUndefined()
+  })
+
   it('should return undefined for a topic in neither root', () => {
     expect(resolveTopic(ROOT, 'bogus')).toBeUndefined()
   })
@@ -74,6 +98,22 @@ describe('listTopics', () => {
     writeDoc('.claude/context/index.md', 'c')
 
     expect(listTopics(ROOT)).toEqual(['agents'])
+  })
+
+  it('should list a folder topic beside the sibling files, sorted together', () => {
+    writeDoc('.claude/context/tooling.md', 'a')
+    writeDoc('.claude/context/cli.md', 'b')
+    writeDoc('.claude/context/claude-plugin/index.md', 'c')
+    writeDoc('.claude/context/claude-plugin/skills.md', 'd')
+
+    expect(listTopics(ROOT)).toEqual(['claude-plugin', 'cli', 'tooling'])
+  })
+
+  it('should omit a nested folder that carries no index', () => {
+    writeDoc('.claude/context/cli.md', 'a')
+    writeDoc('.claude/context/headless/skills.md', 'b')
+
+    expect(listTopics(ROOT)).toEqual(['cli'])
   })
 
   it('should skip a root that does not exist', () => {
