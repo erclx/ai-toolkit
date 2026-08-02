@@ -7,7 +7,13 @@ const SEEDS_DIR = join('tooling', 'claude', 'seeds')
 const CLAUDE_DIR = '.claude'
 const CLAUDE_MD = 'CLAUDE.md'
 const HOOKS = 'hooks'
-const SUBDIRS: readonly string[] = [HOOKS, 'context', 'tasks', 'wireframes']
+const SUBDIRS: readonly string[] = [
+  HOOKS,
+  'context',
+  'diagrams',
+  'tasks',
+  'wireframes',
+]
 
 export type SeedScope = 'claude' | 'root'
 

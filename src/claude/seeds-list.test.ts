@@ -55,15 +55,17 @@ describe('listSeeds', () => {
     ])
   })
 
-  it('should list hooks, tasks, and wireframes alongside the claude root level', () => {
+  it('should list hooks, diagrams, tasks, and wireframes alongside the claude root level', () => {
     seedFile(join('.claude', 'settings.json'), '{}')
     seedFile(join('.claude', 'hooks', 'scratch-guard.sh'), 'Hook')
+    seedFile(join('.claude', 'diagrams', 'index.md'), 'Diagrams')
     seedFile(join('.claude', 'tasks', 'index.md'), 'Tasks')
     seedFile(join('.claude', 'wireframes', 'index.md'), 'Wireframes')
 
     expect(listSeeds(root).map((entry) => entry.name)).toEqual([
       'settings.json',
       'hooks/scratch-guard.sh',
+      'diagrams/index.md',
       'tasks/index.md',
       'wireframes/index.md',
     ])
