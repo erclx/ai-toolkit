@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.0](https://github.com/erclx/aitk/compare/v0.26.0...v0.27.0) (2026-08-02)
+
+
+### Features
+
+* **standards:** admit a skill requirement by what the body omits ([#748](https://github.com/erclx/aitk/issues/748)) ([d7eeca8](https://github.com/erclx/aitk/commit/d7eeca853e6494242a03897349978990bbda6d82))
+
 ## [0.26.0](https://github.com/erclx/aitk/compare/v0.25.0...v0.26.0) (2026-08-02)
 
 
