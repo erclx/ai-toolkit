@@ -10,7 +10,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "board-sweep"
+  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "diagram-sweep" "diagram-quiet" "board-sweep"
 
   case "$SELECTED_OPTION" in
   "drift")
@@ -80,6 +80,54 @@ stage_setup() {
     log_info "Expect:  Step 4 reports drift in .claude/wireframes/byok-gate.md (Anthropic-only contradicted)"
     log_info "         Step 4 stubs .claude/wireframes/mock-demo-strip.md with a TODO"
     log_info "         Operator resolves drift manually; auto-rewrite of prose is out of scope"
+    ;;
+  "diagram-sweep")
+    # The injected seeds add .claude/REQUIREMENTS.md at the setup commit. Stage
+    # 02 has to *add* that signal for the stub to fire, so drop the seeded copy
+    # before the initial commit rather than letting stage 02 modify one.
+    rm -f .claude/REQUIREMENTS.md
+    stage_fixtures claude docs diagram-sweep 01-initial
+    git add -A && git commit -m "feat(gov): install rules into a target project" --no-verify -q
+
+    git checkout -b feat/split-install -q
+    stage_fixtures claude docs diagram-sweep 02-split
+    git rm -q src/gov/install.ts
+    git add . && git commit -m "feat(gov): replace the installer with a planner" --no-verify -q
+
+    log_step "Scenario ready: docs diagram staleness sweep"
+    log_info "Context: branch deletes the module components.md cites and adds a new source signal"
+    log_info "  .claude/diagrams/components.md cites src/gov/install.ts, which this branch deletes"
+    log_info "  It also cites src/gov/sync.ts, which survives and must not be flagged"
+    log_info "  .claude/REQUIREMENTS.md enters the tree with no system-context.md entry covering it"
+    log_info ""
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  Step 5 appends a stale: key to .claude/diagrams/components.md naming src/gov/install.ts"
+    log_info "         Step 5 stubs .claude/diagrams/system-context.md with no mermaid fence"
+    log_info "         The stub carries verified: 'TODO: never verified'"
+    log_info "         components.md keeps verified: a1b2c3d4 2026-07-20 unchanged"
+    log_info "         The mermaid body and both explanation paragraphs are untouched"
+    log_info "         No stale: key mentions src/gov/sync.ts"
+    ;;
+  "diagram-quiet")
+    stage_fixtures claude docs diagram-quiet 01-initial
+    git add . && git commit -m "feat(gov): install rules into a target project" --no-verify -q
+
+    git checkout -b feat/sync-stack-arg -q
+    stage_fixtures claude docs diagram-quiet 02-tweak
+    git add . && git commit -m "feat(gov): take a stack argument on sync" --no-verify -q
+
+    log_step "Scenario ready: ordinary change produces no diagram output"
+    log_info "Context: the control arm for diagram-sweep. Every trigger is present but unfired."
+    log_info "  .claude/REQUIREMENTS.md is already committed and no system-context.md covers it,"
+    log_info "  so a sweep keying on the signal existing would stub. This branch never adds it."
+    log_info "  src/gov/sync.ts changes body only, and components.md cites it, so a sweep keying"
+    log_info "  on a cited path being touched would annotate. The path never leaves the tree."
+    log_info ""
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  Step 5 emits nothing at all"
+    log_info "         .claude/diagrams/components.md is byte-identical after the run"
+    log_info "         No .claude/diagrams/system-context.md is created"
+    log_info "         The arm fails on any Step 5 line, not only on a written file"
     ;;
   "board-sweep")
     stage_fixtures claude docs board-sweep 01-initial
