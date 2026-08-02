@@ -5,6 +5,8 @@ description: Shape and content rules for authoring a standard
 
 # Standard reference
 
+Applies to each authored standard in the folder. Skip for `index.md`, which is generated rather than authored.
+
 ## Overview
 
 A standard is a target-facing authoring convention for one document type. It installs into a project under `.claude/standards/` and is consumed by skills and developers alike. This file governs itself, so every rule below applies to it.
@@ -29,7 +31,7 @@ A standard failing these questions is non-conforming even when it satisfies ever
 
 ## Frontmatter
 
-- Start the file with a frontmatter block carrying `title` and `description`
+- Start the file with a frontmatter block carrying at least `title` and `description`. A consuming surface may require more.
 - `title`: names the doc type in sentence case, suffixed `reference` (`Commit reference`, `Branch reference`)
 - `description`: one line naming what the standard covers. It becomes the index link label on install.
 
