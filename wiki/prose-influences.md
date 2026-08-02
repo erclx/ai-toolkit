@@ -17,18 +17,20 @@ The rules in `.claude/standards/prose.md` draw from three industry style guides 
 
 These guides overlap heavily on core principles. Our rules take the subset of that overlap that survives in terse reference prose, and leave two shared principles to the standards governing the surfaces where they apply.
 
-The Apple row is narrower than the other two because the guide is a different kind of document. Google and Microsoft each state voice principles on a single page. Apple's guide is a terminology and mechanics reference whose six chapters name no voice or tone chapter, so what it contributes is per-term rulings rather than principles. Read 2026-08-02 against `fcfb9787`, covering the welcome page, `About the guide`, seven `Style and usage A–Z` letter pages, and the `Writing inclusively` and `Technical notation` chapters.
+The Apple row is narrower than the other two because the guide is a different kind of document. Google and Microsoft each state voice principles on a single page. Apple's guide is a terminology and mechanics reference whose six chapters name no voice or tone chapter, so what it contributes is per-term rulings rather than principles.
+
+The row's two claims come from [`Use code font for code`](https://support.apple.com/guide/applestyleguide/code-apsg1fde748e/web) under `Technical notation` and the [`in order to` entry](https://support.apple.com/guide/applestyleguide/i-apsg346ef241/web), which sends the reader to _to_. Read 2026-08-02 against `fcfb9787`, covering the welcome page, `About the guide`, the `Writing inclusively` and `Technical notation` chapters, and the [D](https://support.apple.com/guide/applestyleguide/d-apsg7af4f5d0/web), [E](https://support.apple.com/guide/applestyleguide/e-apsg076a7313/web), [I](https://support.apple.com/guide/applestyleguide/i-apsg346ef241/web), [J](https://support.apple.com/guide/applestyleguide/j-apsgf88bd162/web), [S](https://support.apple.com/guide/applestyleguide/s-apsge70df12b/web), [U](https://support.apple.com/guide/applestyleguide/u-apsg45c3b57e/web), and [V](https://support.apple.com/guide/applestyleguide/v-apsg51b3c806/web) pages of `Style and usage A–Z`.
 
 ## AI-specific additions
 
-These patterns are not covered by the industry guides. They target habits common in LLM-generated text.
+These patterns are not covered by the industry guides. They target habits common in LLM-generated text. `in order to` is absent from the list because the Apple guide rules on it directly, which is why it sits in the row above instead.
 
 - Negative parallelism (`It's not X, it's Y`)
 - Gerund openers (`Leveraging the API...`)
 - Hedging clusters (`It might be worth considering`)
 - False balance (`While X is true, Y is also important`)
 - Participant address (`Let's`, `Here's`, `Here are`)
-- Padded verb phrases (`in order to`, `ensure that`)
+- Padded verb phrases (`ensure that X is set`, `By doing X, you can Y`)
 - Em dash and semicolon overuse
 - Parenthetical asides in prose
 - List lead-ins (`Here are the X:`, `The following X:`)
@@ -53,5 +55,5 @@ Apple devotes a [chapter to writing inclusively](https://support.apple.com/guide
 
 - The industry guides allow semicolons and em dashes with moderation. We ban both outright because AI models overuse them consistently.
 - Google's guide permits "Note that" in specific contexts. We ban it entirely.
-- Apple's `jargon` entry says to avoid jargon whenever possible and define technical terminology on first occurrence. `prose.md` assumes developer-level technical knowledge and skips hand-holding explanations, which reverses the entry for reference docs written for developers.
+- Apple's [`jargon` entry](https://support.apple.com/guide/applestyleguide/j-apsgf88bd162/web) says to avoid jargon whenever possible and define technical terminology on first occurrence. `prose.md` assumes developer-level technical knowledge and skips hand-holding explanations, which reverses the entry for reference docs written for developers.
 - None of the industry guides address negative parallelism or hedging clusters since these patterns predate widespread LLM usage in docs.
