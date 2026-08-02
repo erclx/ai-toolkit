@@ -63,7 +63,7 @@ Before executing, output:
 
 ## Execute
 
-Run the chain in order. Each step's permission dialog is the confirmation gate. Run from the target project's current directory.
+Run the chain in order, starting immediately after the preview. Each step's permission dialog is the confirmation gate. Do not pause for additional confirmation. Run from the target project's current directory.
 
 Step 1: `aitk init` installs base tooling, claude seeds, governance rules, standards, snippets, and wiki.
 
