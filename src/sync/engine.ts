@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { isAbsolute, relative, resolve } from 'node:path'
 import { copyPreservingMode } from '@/copy'
+import { findInstalledOrigin, readHistoryIndex } from '@/sync/history'
 import {
   type DomainHashes,
   hashFile,
@@ -74,12 +75,16 @@ export type EntryState =
 export interface ScanEntry {
   readonly state: EntryState
   readonly rel: string
+  /** Toolkit revision this file's content came from, when history proved it. */
+  readonly since?: string
 }
 
 export interface SyncPlan {
   readonly entries: readonly ScanEntry[]
   readonly retired: readonly RetiredSurface[]
   readonly changes: readonly SyncChange[]
+  /** Set when a file needed history to attribute it and this toolkit has none. */
+  readonly historyUnavailable: boolean
 }
 
 /**
@@ -156,6 +161,7 @@ export function listInstalled(root: string, target: string): InstalledFile[] {
 export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   const entries: ScanEntry[] = []
   const changes: SyncChange[] = []
+  const unattributed: UnattributedFile[] = []
 
   const hashes = stampedHashes(readStamp(target), adapter.stamp?.domain)
   const walked = new Set<string>()
@@ -176,7 +182,12 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
       continue
     }
 
-    entries.push({ state: attribute(hashes, file), rel: file.rel })
+    const state = attribute(hashes, file)
+    if (state === 'drifted') {
+      unattributed.push({ index: entries.length, source, path: file.path })
+    }
+
+    entries.push({ state, rel: file.rel })
     changes.push({
       kind: 'copy',
       source,
@@ -185,6 +196,8 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
     })
   }
 
+  const historyUnavailable = recoverAttribution(adapter, entries, unattributed)
+
   entries.push(...strandedByRelocation(target, hashes, walked))
 
   const retired = adapter.collectRetired?.(target) ?? []
@@ -192,7 +205,53 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
     changes.push({ kind: 'delete', dest: surface.path, rel: surface.rel })
   }
 
-  return { entries, retired, changes }
+  return { entries, retired, changes, historyUnavailable }
+}
+
+interface UnattributedFile {
+  readonly index: number
+  readonly source: string
+  readonly path: string
+}
+
+/**
+ * Second pass over the files the stamp could not attribute, which is every file
+ * in a target installed before stamping shipped. Matching the installed content
+ * against the toolkit's own history recovers the fact a stamp would have held,
+ * and a file matching no published version stays unattributed.
+ *
+ * Runs as one git call for the whole domain rather than one per file, and only
+ * when the first pass left something to attribute. Reports whether history was
+ * readable at all, so a registry install can say why it fell short instead of
+ * reporting every file as a local edit.
+ */
+function recoverAttribution(
+  adapter: SyncAdapter,
+  entries: ScanEntry[],
+  unattributed: readonly UnattributedFile[],
+): boolean {
+  const toolkitRoot = adapter.stamp?.toolkitRoot
+  if (toolkitRoot === undefined || unattributed.length === 0) return false
+
+  const index = readHistoryIndex(
+    toolkitRoot,
+    unattributed.map((file) => relative(toolkitRoot, file.source)),
+  )
+
+  if (index === undefined) return true
+
+  for (const file of unattributed) {
+    const since = findInstalledOrigin(
+      index,
+      relative(toolkitRoot, file.source),
+      file.path,
+    )
+
+    if (since === undefined) continue
+    entries[file.index] = { ...entries[file.index], state: 'stale', since }
+  }
+
+  return false
 }
 
 export async function applyChanges(
@@ -314,7 +373,12 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
   for (const entry of plan.entries) {
     if (entry.state === 'matching') logInfo(entry.rel)
     else if (entry.state === 'drifted') logWarn(entry.rel)
-    else if (entry.state === 'stale') logWarn(`${entry.rel} (toolkit updated)`)
+    else if (entry.state === 'stale')
+      logWarn(
+        entry.since === undefined
+          ? `${entry.rel} (toolkit updated)`
+          : `${entry.rel} (toolkit updated since ${entry.since.slice(0, 7)})`,
+      )
     else if (entry.state === 'customized')
       logWarn(`${entry.rel} (locally customized)`)
     else if (entry.state === 'stranded')
@@ -324,6 +388,12 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
 
   for (const surface of plan.retired) {
     logWarn(surface.notice)
+  }
+
+  if (plan.historyUnavailable) {
+    logWarn(
+      'Attribution unavailable: this toolkit has no git history to match against.',
+    )
   }
 }
 

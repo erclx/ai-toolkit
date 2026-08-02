@@ -23,6 +23,7 @@ function buildReport(entries: readonly ScanEntry[]): CheckReport {
         stamped: true,
         counts: countStates(entries),
         entries,
+        historyUnavailable: false,
         upstream: [],
       },
     ],

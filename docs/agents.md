@@ -163,8 +163,16 @@ matches what the toolkit installed, `customized` when the project edited it,
 when the project authored it, or `drifted` when no stamp covers it. Use `--json`
 for the machine-readable report and `--exit-code` to fail a CI job. Orphaned
 files are excluded from that exit code, since a project-authored rule never
-converges. Attribution needs `.claude/aitk.json`, which every install and sync
-writes. Without it, every difference reports as `drifted`.
+converges. Attribution reads `.claude/aitk.json`, which every install and sync
+writes.
+
+A target installed before stamping shipped has no such file, and the report
+falls back to the toolkit's own git history. Installed content matching any
+version that history ever published proves the file is untouched, so it reports
+`stale` naming the commit it came from, and content matching no published
+version stays `drifted`. A toolkit reached outside a git clone, which is what a
+registry install is, cannot run that fallback and reports
+`historyUnavailable` alongside the unattributed files.
 
 Each domain carries its own toolkit anchor in that file, so syncing one domain
 never advances the revision another measures from, and each reports the upstream

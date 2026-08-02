@@ -99,7 +99,11 @@ function renderCheck(report: CheckReport): void {
     logStep(domain.domain)
 
     if (domain.commit === undefined) {
-      logWarn('Not stamped. Drift below is reported unattributed.')
+      logWarn(
+        domain.historyUnavailable
+          ? 'Not stamped, and this toolkit has no git history. Drift below is reported unattributed.'
+          : 'Not stamped. Drift below is attributed from toolkit history.',
+      )
     } else {
       logInfo(`Synced from ${domain.commit} on ${domain.syncedAt}`)
     }

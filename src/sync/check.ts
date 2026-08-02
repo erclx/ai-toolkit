@@ -54,6 +54,11 @@ export interface DomainReport {
   readonly counts: StateCounts
   readonly entries: readonly ScanEntry[]
   readonly upstream: readonly UpstreamCommit[]
+  /**
+   * Separates a toolkit that could not attribute from one that attributed and
+   * found a local edit. Only the first is a capability the install lacks.
+   */
+  readonly historyUnavailable: boolean
 }
 
 export interface UpstreamCommit {
@@ -145,6 +150,7 @@ async function buildDomainReport(
     syncedAt: record?.syncedAt,
     counts: countStates(plan.entries),
     entries: plan.entries,
+    historyUnavailable: plan.historyUnavailable,
     upstream:
       since === undefined
         ? []
