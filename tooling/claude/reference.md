@@ -14,6 +14,7 @@ The claude stack installs the `.claude/` workflow directory into a project. Stat
 ├── ARCHITECTURE.md    ← seeded. Technical design decisions and open questions
 ├── DESIGN.md          ← seeded. Visual intent and the decisions behind it
 ├── wireframes/        ← seeded. Per-surface ASCII layouts. `index.md` is the discovery anchor; `<surface>.md` files hold the sketches and behavior bullets.
+├── diagrams/          ← seeded. Per-kind Mermaid views. `index.md` is the discovery anchor. `<kind>.md` files hold one diagram each, grouped by the `category` frontmatter field.
 ├── GOV.md             ← retired. Removed by `aitk gov sync` if present from a prior install
 ├── settings.json      ← seeded. Project-level Claude Code config (PreToolUse and PostToolUse hooks). User-level config installed separately via `aitk claude setup`.
 ├── plans/             ← execution detail for multi-step tasks, gitignored. `feature-*.md` entries swept by claude-docs.
@@ -31,6 +32,10 @@ Convert by hand, once per project:
 1. Split each `###` block into `.claude/tasks/vXX.Y-<slug>.md`, adding the `title` and `description` frontmatter that `.claude/standards/tasks.md` requires. Compare each new file against the block it came from rather than checking that every block landed somewhere.
 2. Run `aitk indexes regen --no-stage --root . .claude/tasks/<any-task>.md` to build the catalog.
 3. Delete `.claude/TASKS.md`, and swap its `.gitignore` entry for `.claude/tasks/`.
+
+## Upgrading from a single-file diagram set
+
+A project installed before the diagram surface became a folder still holds `.claude/DIAGRAMS.md`. Unlike the board, this one migrates itself. The `claude-diagram` skill reads the flat file when `.claude/diagrams/` holds no entries, splits it by kind into the folder, and reports what it wrote. The old file stays on disk so the split can be compared against its source, and deleting it is a manual step once that check passes.
 
 ## Gitignore
 
