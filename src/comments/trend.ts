@@ -1,4 +1,5 @@
 import { $ } from 'bun'
+import { gitEnv } from '@/git-env'
 import {
   countFiles,
   isPruned,
@@ -51,6 +52,7 @@ export async function listCommits(
 ): Promise<Commit[]> {
   const boundary =
     await $`git -C ${root} log -1 --format=%H%x09%ad --date=short ${since}`
+      .env(gitEnv())
       .quiet()
       .nothrow()
 
@@ -58,6 +60,7 @@ export async function listCommits(
 
   const range =
     await $`git -C ${root} log --first-parent --reverse --format=%H%x09%ad --date=short ${`${since}..HEAD`}`
+      .env(gitEnv())
       .quiet()
       .nothrow()
 
@@ -105,7 +108,10 @@ export async function readRevision(
   rev: string,
   languages: readonly Language[] = LANGUAGES,
 ): Promise<SourceFile[]> {
-  const listed = await $`git -C ${root} ls-tree -r -z ${rev}`.quiet().nothrow()
+  const listed = await $`git -C ${root} ls-tree -r -z ${rev}`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
   if (listed.exitCode !== 0) return []
 
   const wanted: { oid: string; path: string }[] = []
@@ -129,6 +135,7 @@ export async function readRevision(
 
   const stdin = Buffer.from(`${wanted.map(({ oid }) => oid).join('\n')}\n`)
   const batch = await $`git -C ${root} cat-file --batch < ${stdin}`
+    .env(gitEnv())
     .quiet()
     .nothrow()
 

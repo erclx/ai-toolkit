@@ -134,6 +134,30 @@ describe('readRevision', () => {
   it('should return nothing for an unresolvable revision', async () => {
     expect(await readRevision(REPO, 'not-a-real-ref')).toEqual([])
   })
+
+  /**
+   * A git hook exports `GIT_DIR`, and it overrides `-C` when git resolves the
+   * repository. Without the strip, a scan scoped to a subtree silently returns
+   * the whole repository from any hook-invoked run, which is wrong output
+   * rather than a failure.
+   */
+  it.skipIf(SHALLOW)(
+    'should stay scoped to the subtree when GIT_DIR is set in the environment',
+    async () => {
+      const previous = process.env.GIT_DIR
+      process.env.GIT_DIR = join(REPO, '.git')
+
+      try {
+        const files = await readRevision(join(REPO, 'src'), 'ef8c4b07', ['ts'])
+
+        expect(files.length).toBeGreaterThan(0)
+        expect(files.every((file) => !file.path.startsWith('src/'))).toBe(true)
+      } finally {
+        if (previous === undefined) delete process.env.GIT_DIR
+        else process.env.GIT_DIR = previous
+      }
+    },
+  )
 })
 
 /**

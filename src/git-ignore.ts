@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
 import { $ } from 'bun'
+import { gitEnv } from '@/git-env'
 
 /**
  * Reports which of `candidates` git ignores under `root`.
@@ -16,6 +17,7 @@ export async function listIgnored(
   if (candidates.length === 0) return new Set()
 
   const isRepo = await $`git -C ${root} rev-parse --git-dir`
+    .env(gitEnv())
     .quiet()
     .nothrow()
     .then((result) => result.exitCode === 0)
@@ -25,6 +27,7 @@ export async function listIgnored(
   const stdin = Buffer.from(`${candidates.join('\n')}\n`)
 
   const result = await $`git -C ${root} check-ignore --stdin < ${stdin}`
+    .env(gitEnv())
     .quiet()
     .nothrow()
 
