@@ -5,7 +5,7 @@ description: Voice, structure, formatting, and language rules for reference mark
 
 # Prose reference
 
-Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface, including the surfaces no automated check reaches, which is what the scan below is for.
+Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface, including the surfaces no automated check reaches.
 
 ## Scope
 
@@ -16,6 +16,7 @@ Does not govern:
 - What sections a document has, or what belongs in each: the standard for that document type
 - Which frontmatter fields a document carries, which is that standard's own subject. This file governs the wording of a `title` and a `description` and nothing else about them.
 - Phase-label and semver discipline: `versioning.md`
+- The scan that applies these bans to finished text on its way out: `pre-publish.md`
 - Code style and language conventions, which are governance rules rather than a standard
 
 ## Voice
@@ -84,33 +85,6 @@ Does not govern:
 - Do not pad verb phrases or delay the action. Write the shortest form (`in order to` → `to`, `ensure that X is set` → `set X`, `By doing X, you can Y` → state Y directly).
 - Do not address the reader as a participant (`Let's`, `Here's`, `Here are`). State the content directly.
 - Commit to a position. Do not hedge in clusters (`It might be worth considering`) or use false balance (`While X is true, Y is also important`). Recommend, or state the tradeoff.
-
-## Pre-publish scan
-
-Wherever text leaves through a channel no automated check covers, the author is the only gate and runs this scan. Text sent to another service, written to a path the project's checks exclude, and text inside a fenced block are the usual cases. The surface that publishes the text is what knows which gap applies, so it names its own rather than reading one here.
-
-Run the scan as an explicit step against the finished text. Having read this file before drafting does not cover it, because the check has to happen after the text exists.
-
-### Banned characters
-
-Scan the drafted text and rewrite each occurrence:
-
-- `—` (em dash): split into two sentences, or use a comma
-- `;` (semicolon): split into two sentences
-
-Restructure the sentence rather than substituting the character. A semicolon swapped for a period leaves both clauses in the order the semicolon chose, which is the shape the ban exists to remove.
-
-### Phase labels
-
-The versioning standard beside this file holds the label rule and the table of surfaces. Read it at scan time rather than working the format from memory.
-
-Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, takes the character checks alone.
-
-### An unreadable source
-
-Stop and name the source when one this scan reaches for cannot be read. Do not scan what resolved and report the result.
-
-A run that covers half its sources and says nothing is worse than one that visibly did not happen, because the surfaces running this scan are the ones that describe themselves as the only gate. A clean result from a half-run scan is read as coverage.
 
 ## Frontmatter descriptions
 

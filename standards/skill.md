@@ -18,6 +18,7 @@ Does not govern:
 - Path-scoped coding rules, which load on a file match rather than on a request match: `rule.md`
 - Single-purpose chat prompts carrying no frontmatter, references, or scripts: `snippets.md`
 - Voice, punctuation, and formatting in a skill body: `prose.md`
+- The transform from a branch name to a slug a skill carries in a filename: `branch-slug.md`
 - The domain conventions a skill cites, each of which belongs to the standard that owns it
 
 ## Skill types
@@ -183,18 +184,6 @@ Without this skill, a session <observed failure>, <observed failure>.
 - Codify a skill's posted or generated output as a fenced template, and keep the body consistent with every capability the frontmatter description names.
 - When a skill gathers user input or pre-seeds a template, attach a concrete proposed default to every question, derived from project context. Accept "use defaults" as a bulk-confirm.
 - Separate correctness axes (routing, sourcing, escalation, decline) from shape axes (line count, formatting, variant sprawl) when tuning a skill. Tighten only on correctness regressions. Do not convert soft caps to hard caps for aesthetic drift when correctness passes.
-
-### Deriving the branch slug
-
-Run `git branch --show-current` and replace every `/` with `-`. The result is `<slug>`. Anything reading a branch-derived name uses this transform, so two skills cannot spell it differently.
-
-A skill that persists output under `.claude/` carries the slug in the filename, which is what keeps parallel worktrees from overwriting each other's output.
-
-The empty result is a detached HEAD, and the skill picks one of three responses rather than inheriting a default. State the choice in the body, since the transform is shared and this is not.
-
-- Fall back to `latest`, so a read-only pass still writes somewhere predictable
-- Stop, when the skill commits or opens a pull request. There is no branch to put the work on, so `latest` would bury the problem instead of reporting it. State the stop in the skill's guards.
-- Fall through to the next source, when the slug is one candidate among several rather than the name of an output file
 
 ## Scripts
 
