@@ -6,7 +6,9 @@
 
 One source for your repos' AI conventions. Install once, sync everywhere.
 
-![Adding the aitk marketplace and installing the plugin in Claude Code](assets/install.png)
+![The aitk catalog, listing skills, governance rules, and standards with the count each ships and a sample of their names](assets/hero.png)
+
+If you work across more than one repository and your AI setup has started to drift between them, this is for you. The counts above are read from the catalogs when the image is built, so they're what the repo actually ships today.
 
 ## Install
 
@@ -16,6 +18,8 @@ Add the marketplace, then install the Claude Code plugin.
 claude plugin marketplace add https://github.com/erclx/aitk
 claude plugin install aitk@aitk
 ```
+
+![Adding the aitk marketplace and installing the plugin in Claude Code](assets/install.png)
 
 The skills land as `/aitk:<name>`. If your session was already open, run `/reload-plugins` to pick them up. Updates arrive on release, so a push to this repo won't reach your installed copy.
 

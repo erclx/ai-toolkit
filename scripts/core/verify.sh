@@ -135,6 +135,14 @@ main() {
   assert_no_drift ".claude/standards .claude/snippets .claude/internal .claude/rules" "Consumed copies drifted. Run bun run check and commit .claude/standards, .claude/snippets, .claude/internal, and .claude/rules."
   log_info "Consumed copies clean"
 
+  # Only the HTML is asserted. The PNG beside it is a chromium render whose bytes
+  # move with the browser version, so a drift check over it would fail on a
+  # machine whose chromium differs rather than on a stale count.
+  log_step "Hero"
+  run_check "bash $PROJECT_ROOT/scripts/core/regen-hero.sh" "Hero regen failed"
+  assert_no_drift "assets/hero.html" "Hero counts drifted. Run bun run check, then aitk capture assets/hero.html, and commit assets/hero.html with assets/hero.png."
+  log_info "Hero clean"
+
   log_step "Skill references"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-skill-references.sh" "Skill-reference regen failed"
   assert_no_drift "claude/skills/*/references" "Skill references drifted. Run bun run check and commit the updated reference files."
