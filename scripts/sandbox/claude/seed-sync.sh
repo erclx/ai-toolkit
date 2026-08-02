@@ -29,6 +29,11 @@ EOF
     sed -i 's/^- Use active voice\./- Use active voice and present tense./' .claude/standards/prose.md
   fi
 
+  # An explicit branch rather than whatever `git init` inherited. The proposal
+  # filename carries the slug, so leaving it on the machine's `init.defaultBranch`
+  # would make the expectation pass or fail by local git config.
+  git checkout -b chore/seed-drift -q
+
   git add . && git commit -m "chore(claude): trim CLAUDE.md and drift standards" --no-verify -q
 
   log_step "Scenario ready: seed sync with drift across seeds and standards"

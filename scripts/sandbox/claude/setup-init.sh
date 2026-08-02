@@ -25,7 +25,7 @@ EOF
     log_step "Scenario ready: setup-init skill on an empty repo"
     log_info "Context: package.json only, no framework evidence"
     log_info "Action:  /aitk:setup-init"
-    log_info "Expect:  stack resolves to 'base' (fallback), aitk init runs and auto-builds .claude/GOV.md, tooling sync is skipped (tooling stack also 'base' = already synced), setup-verify finds no stack scripts and reports base scripts only"
+    log_info "Expect:  stack resolves to 'base' (fallback), aitk init lands .claude/rules/ and stamps .claude/aitk.json, tooling sync is skipped (tooling stack also 'base' = already synced), setup-verify finds no stack scripts and reports base scripts only"
     ;;
   "vite-react")
     log_step "Running bun create vite"
@@ -42,7 +42,7 @@ EOF
     log_step "Scenario ready: setup-init skill on a Vite + React project"
     log_info "Context: real bunx create-vite output (index.html, public/, src/App.tsx, src/index.css)"
     log_info "Action:  /aitk:setup-init"
-    log_info "Expect:  governance stack 'react', tooling stack 'vite-react', aitk init builds .claude/GOV.md, tooling sync drops golden configs from tooling/web and tooling/vite-react, setup-verify runs lint/typecheck/check/test/build"
+    log_info "Expect:  governance stack 'react', tooling stack 'vite-react', aitk init lands .claude/rules/, tooling sync drops golden configs from tooling/web and tooling/vite-react, setup-verify runs lint/typecheck/check/test/build"
     ;;
   "astro")
     log_step "Running bun create astro"
@@ -59,7 +59,7 @@ EOF
     log_step "Scenario ready: setup-init skill on an Astro project"
     log_info "Context: real bunx create-astro output (src/pages, astro.config.mjs, tsconfig.json)"
     log_info "Action:  /aitk:setup-init"
-    log_info "Expect:  governance stack 'astro', tooling stack 'astro', aitk init builds .claude/GOV.md, tooling sync drops golden configs from tooling/web and tooling/astro, setup-verify runs lint/typecheck/check/test/build"
+    log_info "Expect:  governance stack 'astro', tooling stack 'astro', aitk init lands .claude/rules/, tooling sync drops golden configs from tooling/web and tooling/astro, setup-verify runs lint/typecheck/check/test/build"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

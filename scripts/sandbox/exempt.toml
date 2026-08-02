@@ -20,7 +20,10 @@
 #   - A skill that produces no artifact, so there is nothing to assert over.
 #
 # "Nobody has written one yet" is not a reason. That is `should-be-asserted`,
-# and that list is the work queue the arm batches consume.
+# which is a default rather than a queue. Which of those skills earns an arm is
+# decided by the blast-radius rule under `## Coverage` in
+# `.claude/context/sandbox.md`, and this file is the other half of that split:
+# the rule says what to write, an entry here says what never will be.
 
 [setup-plugins]
 reason = "Writes user-scoped plugin state on the machine via the claude plugin CLI. The checker asserts over the sandbox tree, which that write never enters."
