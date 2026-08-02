@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.0](https://github.com/erclx/aitk/compare/v0.25.0...v0.26.0) (2026-08-02)
+
+
+### Features
+
+* **standards:** give two shared procedures standards of their own ([#741](https://github.com/erclx/aitk/issues/741)) ([6937acc](https://github.com/erclx/aitk/commit/6937acc153c4857c2e4a64f2d44aa0bcd3a7dea8))
+* **standards:** map a changed file to every standard that governs it ([#744](https://github.com/erclx/aitk/issues/744)) ([a1a5238](https://github.com/erclx/aitk/commit/a1a52389d9be35e731d39e23cf423a97761797e8))
+
 ## [0.25.0](https://github.com/erclx/aitk/compare/v0.24.0...v0.25.0) (2026-08-02)
 
 
