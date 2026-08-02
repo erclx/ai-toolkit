@@ -10,6 +10,17 @@ Applies to `.claude/ROADMAP.md`. Sequences the scope from `.claude/REQUIREMENTS.
 
 The roadmap is one scannable table. That is what keeps it distinct from `.claude/tasks/`: the roadmap is an overview read at a glance, while tasks are worked one file at a time.
 
+## Scope
+
+Governs the sequencing document at `.claude/ROADMAP.md`: the version table, its columns, and its lifecycle.
+
+Does not govern:
+
+- What the scope is, which the roadmap sequences rather than defines: `requirements.md`
+- Task files, outcomes, and board state: `tasks.md`
+- Phase-label format and semver discipline: `versioning.md`
+- Rationale for a technical choice: `architecture.md`
+
 ## What goes in
 
 - One row per version, ordered top to bottom by sequence
@@ -20,9 +31,8 @@ The roadmap is one scannable table. That is what keeps it distinct from `.claude
 
 ## What does not go in
 
-- Task breakdown, checkboxes, or per-feature file lists. Those live in `.claude/tasks/` and `.claude/plans/`.
+- Task breakdown, checkboxes, or per-feature file lists
 - Implementation detail, API names, or component references
-- Rationale for tech choices. That belongs in `.claude/ARCHITECTURE.md`.
 - Sentence-long cells. Keep each cell terse so the table stays scannable.
 
 ## Format

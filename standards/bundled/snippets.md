@@ -6,6 +6,15 @@ consumers: create-standard
 
 # Snippet reference
 
+## Scope
+
+Governs a snippet file: what one is for, how it is invoked, and the structure of its body.
+
+Does not govern:
+
+- Skill folders, which carry frontmatter, references, and scripts a snippet has none of: `skill.md`
+- Voice, punctuation, and formatting in snippet prose: `prose.md`
+
 ## What a snippet is
 
 A snippet is a short, focused prompt stored as a plain markdown file. Invoke one to insert a prepared instruction into any AI chat without retyping it. Each snippet covers one purpose. If a prompt needs headers or multiple goals, use a system prompt instead.

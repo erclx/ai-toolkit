@@ -7,6 +7,15 @@ description: Shape and content rules for .claude/DESIGN.md
 
 Applies to `.claude/DESIGN.md`. Captures visual intent and the decisions behind how things look, not a style guide, component spec, or framework reference. Update when a visual decision is made or a rule changes.
 
+## Scope
+
+Governs the visual-intent document at `.claude/DESIGN.md`: tokens described as intent, layout constraints, and the omissions that keep visual scope closed.
+
+Does not govern:
+
+- Screen layout, on-screen copy, and interaction intent: `wireframes.md`
+- Per-domain implementation narrative: `context.md`
+
 ## What goes in
 
 - Tokens described as intent ("mid gray, muted text"), not computed values. Exact values live in code.
@@ -17,7 +26,6 @@ Applies to `.claude/DESIGN.md`. Captures visual intent and the decisions behind 
 ## What does not go in
 
 - CSS classes, computed values, component filenames, and prop names. Those live in code.
-- UX copy and interaction flows. Those live in the wireframes.
 - Anything that needs updating every time the code is refactored
 
 ## Format

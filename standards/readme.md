@@ -9,6 +9,15 @@ Applies to every `README.md`. The `## Voice` section states the voice for a repo
 
 The reader is what changes. Reference prose serves someone who already committed to the project and is scanning for a fact. A root README meets someone deciding whether to commit at all, and it is often the only file they read.
 
+## Scope
+
+Governs every `README.md`: voice, heading structure, required and optional sections, badge selection, and what the page links out to instead of carrying.
+
+Does not govern:
+
+- Punctuation, formatting, spelling, and banned words in README prose: `prose.md`, which yields the voice and keeps the rest
+- Product scope and goals: `requirements.md`
+
 ## Voice
 
 Scoped to the README at a repository root. A nested README documenting a folder, a harness, or an internal tool keeps the reference voice in `prose.md`, since its reader has already committed and arrived looking for a fact.

@@ -9,6 +9,17 @@ Applies to `.claude/tasks/`. Tracks what is being built and why, at the level of
 
 The folder is gitignored. Board state changes when work ships rather than when a branch is written, so committing it would put a claim about the future into the diff of an unrelated pull request. The git log records what shipped.
 
+## Scope
+
+Governs the task board under `.claude/tasks/`: folder layout, filenames, frontmatter, file format, origin lines, and archiving.
+
+Does not govern:
+
+- Phase-label format and which surfaces a label may appear on: `versioning.md`
+- Sequencing across versions and why the order is what it is: `roadmap.md`
+- Architectural reasoning that outlives a task: `architecture.md`
+- When a project opens a task at all, which is project policy rather than a shape rule
+
 ## Layout
 
 ```plaintext

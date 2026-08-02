@@ -9,6 +9,16 @@ description: Rule frontmatter, body shape, and voice for .claude/rules files
 
 Rules give Claude Code coding constraints scoped to file paths. Claude Code discovers `.claude/rules/**/*.md` at session start. A rule with no `paths:` field always applies, at the same priority as `CLAUDE.md`. A rule with `paths:` applies when Claude reads a file matching the glob. Author one rule per topic so the scope stays precise.
 
+## Scope
+
+Governs governance rules under `.claude/rules/`: their location, numbering, frontmatter, and body shape.
+
+Does not govern:
+
+- Authoring conventions for a document type, which are standards rather than rules. A rule points at the standard that owns one and never restates it.
+- Skill folders and skill frontmatter: `skill.md`
+- Cross-domain behavior rules, which live in `CLAUDE.md` at the project root
+
 ## Location
 
 - Rules live at `.claude/rules/<subdirectory>/<n>-<slug>.md`

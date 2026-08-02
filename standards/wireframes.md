@@ -9,6 +9,16 @@ Applies to per-surface entries under `.claude/wireframes/`. Skip for `index.md`,
 
 A wireframe file captures the spatial layout and interaction intent of one UI surface. It is not an implementation log. The check for any single line: would it still be true if the surface were rebuilt in a different framework? If not, it belongs in `.claude/context/`.
 
+## Scope
+
+Governs per-surface wireframe entries under `.claude/wireframes/`: layout, variants, on-screen copy, and interaction intent.
+
+Does not govern:
+
+- Tokens, typography, spacing, and the rest of the visual system: `design.md`
+- The mechanism behind a surface: `context.md`
+- Voice, punctuation, and formatting in wireframe prose: `prose.md`
+
 ## What a working wireframe looks like
 
 A wireframe works when someone can rebuild the surface from it without opening the components:
@@ -64,4 +74,4 @@ Reference the context entry from the wireframe by path when a reader needs the m
 ## Maintenance
 
 - When a surface's layout or interaction changes, update its wireframe file in the same PR. A wireframe showing a defunct layout is worse than none.
-- ASCII blocks sit inside fenced code, so the prose-standards hook ignores them. The Behavior and Copy prose around them is still prose. Follow `standards/prose.md`.
+- The Behavior and Copy prose around an ASCII block is prose and follows `prose.md`. The fenced block itself is not, so a check scoped to prose is the wrong thing to rely on for what sits inside it.

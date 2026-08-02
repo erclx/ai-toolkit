@@ -6,6 +6,16 @@ consumers: git-issue
 
 # Issue reference
 
+## Scope
+
+Governs a tracker issue: its title, its labels, and the sections its body carries.
+
+Does not govern:
+
+- Pull request title and body: `pr.md`
+- Whether a phase label may appear in issue text: `versioning.md`
+- Voice, punctuation, and banned words in issue prose: `prose.md`
+
 ## Title
 
 - Format: `<type>: <subject>`
