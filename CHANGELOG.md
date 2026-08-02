@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://github.com/erclx/aitk/compare/v0.12.0...v0.13.0) (2026-08-02)
+
+
+### Features
+
+* **governance:** add a code-comment rule and activate the sweep ([#708](https://github.com/erclx/aitk/issues/708)) ([c361aa7](https://github.com/erclx/aitk/commit/c361aa781739e9161f6a9f1bba5e196400c478ac))
+* **sandbox:** assert an expectation against a run's reply text ([#707](https://github.com/erclx/aitk/issues/707)) ([4326051](https://github.com/erclx/aitk/commit/43260515fc2cff5945949bcaa7a1730a3dc13cff))
+
 ## [0.12.0](https://github.com/erclx/aitk/compare/v0.11.0...v0.12.0) (2026-08-02)
 
 
