@@ -90,7 +90,7 @@ Only the `development` entry carries this section. It is not a general-purpose h
 - Past roughly 150 lines, check two things before adding more: whether the entry still covers a single domain, and whether it has filled with content `ls` or `--help` reproduces. Fix whichever is true rather than trimming to hit a number.
 - Never cut a `## Decisions` or `## Gotchas` entry to shorten a file. Cut a `## Layout` or `## CLI` section instead.
 - Split into a folder (`.claude/context/<domain>/<sub-area>.md`) when a domain has three or more sub-areas that do not fit cleanly in one file. That split is the natural ceiling.
-- `.claude/context/claude-plugin/` is the worked example. Its `index.md` stays generated, so the domain's own overview and layout live in a sibling rather than in the catalog body, and the `subtitle` names the file to start with.
+- Keep a split domain's `index.md` generated. The catalog body is rewritten on every regen, so the domain's own overview and layout belong in a sibling file rather than in it, and the `subtitle` is what names the file to start with.
 - Author a catalog that grows a row per shipped thing as a bullet list, never a markdown table. A table pads its columns to a shared width, so one row outgrowing its column reflows every row and turns a one-line edit into a whole-file rewrite that conflicts with any sibling branch. This is what forced the split above.
 
 ## Examples
