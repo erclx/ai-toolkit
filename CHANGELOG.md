@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/erclx/aitk/compare/v0.18.0...v0.19.0) (2026-08-02)
+
+
+### Features
+
+* **claude:** merge two skill pairs behind deprecation pointers ([#721](https://github.com/erclx/aitk/issues/721)) ([02eeb33](https://github.com/erclx/aitk/commit/02eeb33e26edbda4f9346e5aab5a64d302792642))
+
 ## [0.18.0](https://github.com/erclx/aitk/compare/v0.17.0...v0.18.0) (2026-08-02)
 
 
