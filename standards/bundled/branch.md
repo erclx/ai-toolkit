@@ -15,7 +15,7 @@ Does not govern:
 - Commit subject format, which shares the type vocabulary: `commit.md`
 - Pull request title and body: `pr.md`
 - Whether a phase label may appear in a branch name: `versioning.md`
-- Deriving an output filename from a branch name, which is a transform the skill running it owns
+- Deriving a slug from a branch name for use in an output filename: `branch-slug.md`
 
 ## Format
 
