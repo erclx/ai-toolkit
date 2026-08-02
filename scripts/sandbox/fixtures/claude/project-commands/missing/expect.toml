@@ -12,8 +12,12 @@ max_turns = 8
 # the right shape here because the correct behavior is that nothing ran.
 absent = ["fell-back.txt"]
 
-# Prose the checker cannot assert.
+# The path is the load-bearing token. A guard that fires without naming the file
+# it wants leaves the reader nothing to act on, and the name is the one part of
+# the reply that cannot be reworded.
+reply = [".claude/context/development.md"]
+
+# Prose the checker cannot assert, each with the reason it stays here.
 manual = [
-  "The reply names .claude/context/development.md as the missing file",
-  "The reply does not suggest a command reconstructed from package.json",
+  "The reply does not suggest a command reconstructed from package.json. Semantic: a negative substring passes on every reply that phrases the suggestion differently",
 ]
