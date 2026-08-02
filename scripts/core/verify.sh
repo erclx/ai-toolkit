@@ -148,6 +148,15 @@ main() {
   run_check "bash $PROJECT_ROOT/scripts/core/check-plugin-boundary.sh" "Plugin ships toolkit-internal content."
   log_info "Plugin boundary clean"
 
+  # Only the citation half of the audit gates. Length, depth, table, and index
+  # findings are judgment thresholds, and failing a push on one would make the
+  # stage something to route around. `bun src/cli.ts` rather than `aitk`, since a
+  # globally installed binary resolves to the main checkout no matter which
+  # worktree is running.
+  log_step "Context citations"
+  run_check "cd $PROJECT_ROOT && bun src/cli.ts context audit --citations-only" "A cited context path does not resolve. Run bun src/cli.ts context audit."
+  log_info "Context citations resolve"
+
   log_step "Plugin manifests"
   if ! command -v claude >/dev/null 2>&1; then
     log_info "Skipped, claude is not installed"
