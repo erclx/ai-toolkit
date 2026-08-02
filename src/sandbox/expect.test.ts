@@ -321,6 +321,37 @@ describe('checkExpectation with no assertion able to run', () => {
 
     expect(verdict.state === 'pass' && verdict.asserted === 0).toBe(false)
   })
+
+  it('should skip a declared scope the run gave no writes to check', () => {
+    const verdict = checkExpectation(scopeOnly, {
+      sandboxDir: sandbox,
+      writes: [],
+    })
+
+    expect(verdict.skipped).toContain(
+      'write scope: the run wrote nothing, so no path was checked',
+    )
+  })
+})
+
+/**
+ * The case an arm alongside other assertions hits. `run.sh` always passes
+ * `--writes`, so a run whose only output escaped the snapshot supplies an empty
+ * list rather than none, and the declaration has to reach the unchecked count
+ * instead of vanishing behind the assertions that did run.
+ */
+describe('checkExpectation with a scope beside assertions that ran', () => {
+  it('should count an unchecked scope when the run wrote nothing', () => {
+    seedCorrectTree()
+
+    const verdict = checkExpectation(driftExpectation(), {
+      sandboxDir: sandbox,
+      writes: [],
+      envelope: CLEAN_ENVELOPE,
+    })
+
+    expect(verdict.unchecked).toBe(3)
+  })
 })
 
 describe('checkExpectation with data the caller did not supply', () => {
@@ -364,8 +395,12 @@ describe('checkExpectation with data the caller did not supply', () => {
       envelope: CLEAN_ENVELOPE,
     })
 
-    expect(absent.skipped).toHaveLength(1)
-    expect(empty.skipped).toHaveLength(0)
+    expect(absent.skipped).toEqual([
+      'write scope: no write data supplied, pass --writes',
+    ])
+    expect(empty.skipped).toEqual([
+      'write scope: the run wrote nothing, so no path was checked',
+    ])
   })
 })
 
@@ -510,6 +545,14 @@ describe('parseExpectation', () => {
     const expectation = parseExpectation('[[content]]\npath = "x.md"\n')
 
     expect(expectation.content).toEqual([])
+  })
+
+  it('should reject a top-level key written below a content block', () => {
+    expect(() =>
+      parseExpectation(
+        '[[content]]\npath = "x.md"\npattern = "y"\nmanual = ["z"]\n',
+      ),
+    ).toThrow('Move top-level keys above the first [[content]] block')
   })
 
   it('should default every key on an empty declaration', () => {

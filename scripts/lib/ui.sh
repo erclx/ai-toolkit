@@ -6,6 +6,12 @@ if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
   exit 1
 fi
 
+# Resolved from this file's own location rather than `$PROJECT_ROOT`, because
+# `require_project_root` is what several scripts call before anything has
+# established a root.
+# shellcheck source=/dev/null
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/sandbox-path.sh"
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
@@ -46,7 +52,9 @@ guard_root() {
 }
 
 require_project_root() {
-  if [[ "$PWD" == *".sandbox"* ]]; then
+  local sandbox
+  sandbox="$(resolve_sandbox_dir)"
+  if [[ "$PWD" == "$sandbox" || "$PWD" == "$sandbox"/* ]]; then
     echo -e "${GREY}┌${NC}" >&2
     log_error "Execution restricted: Command cannot be run from inside the sandbox environment."
   fi

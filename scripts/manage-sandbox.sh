@@ -8,6 +8,7 @@ export PROJECT_ROOT
 
 source "$PROJECT_ROOT/scripts/config.sh"
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
+source "$PROJECT_ROOT/scripts/lib/sandbox-path.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 source "$PROJECT_ROOT/scripts/lib/sandbox-fixtures.sh"
 
@@ -135,8 +136,8 @@ validate_environment() {
     log_error "Sandbox directory not found at: $SANDBOX_DIR"
   fi
 
-  if [[ "$PWD" == *".sandbox"* ]]; then
-    log_warn "Detected execution inside .sandbox. Switching to project root..."
+  if [[ "$PWD" == "$SANDBOX" || "$PWD" == "$SANDBOX"/* ]]; then
+    log_warn "Detected execution inside the sandbox. Switching to project root..."
     cd "$PROJECT_ROOT" || log_error "Failed to switch to project root."
   fi
 }
@@ -324,7 +325,7 @@ finalize_sandbox_run() {
 cmd_clean() {
   log_step "Removing sandbox"
   rm -rf "$SANDBOX"
-  log_rem ".sandbox/"
+  log_rem "$SANDBOX"
   trap - EXIT
   close_timeline
   echo "" >&2
@@ -422,8 +423,13 @@ main() {
     log_error "Context error: you must run this command from inside the toolkit repository."
   fi
 
-  SANDBOX="$PROJECT_ROOT/.sandbox"
+  SANDBOX="$(resolve_sandbox_dir)"
   SANDBOX_DIR="$PROJECT_ROOT/scripts/sandbox"
+
+  local unsafe
+  if ! unsafe="$(assert_sandbox_dir_safe "$SANDBOX" "$PROJECT_ROOT")"; then
+    log_error "$unsafe"
+  fi
 
   if [[ "$1" == "reset" ]]; then
     reset_sandbox

@@ -2,42 +2,50 @@
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 #
-# Almost everything this arm wants to assert is demoted. `claude-review` writes
-# its report to shared session scratch, which the harness cannot keep inside
-# `.sandbox/`, so no assertion over the report can run here. See the `manual`
-# entries and the fourth standing limit in `.claude/context/sandbox.md`.
+# The report is shared session scratch and used to escape the sandbox, which
+# demoted every claim over it. The sandbox now provisions outside the toolkit
+# worktree, so the report lands inside the tree and the assertions over it run.
 
-# The one mechanical claim left, and it is about provisioning rather than about
-# the run. `claude/review.sh` declares no `SANDBOX_INJECT_STANDARDS`, so the
-# project copy of the standard is absent and
-# `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is the only route left. A later
-# edit adding the flag would resolve the project path instead and void the whole
-# premise of this arm, so the absence is asserted where that edit lands.
-#
-# Nothing else belongs in this list. The report never reaches `.sandbox/` at all,
-# so an `absent` entry over any filename the run might have chosen would pass
-# because the file is elsewhere rather than because the run was correct. That is
-# the vacuous pass `manual` exists to keep out of the count, and inverting a
-# demoted assertion is how it gets in.
+# The one mechanical claim that is about provisioning rather than about the run.
+# `claude/review.sh` declares no `SANDBOX_INJECT_STANDARDS`, so the project copy
+# of the standard is absent and `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is
+# the only route left. A later edit adding the flag would resolve the project
+# path instead and void the whole premise of this arm, so the absence is asserted
+# where that edit lands.
 absent = [".claude/standards/skill.md"]
 
-# Declared intent rather than a live assertion, and silent rather than
-# unchecked. The run writes outside the snapshot, so the observed write list
-# comes back empty, and `checkWriteScope` maps over it to produce no result and
-# no skipped entry. The unchecked branch is reachable only when `--writes` is
-# omitted, and `run.sh` always passes it. So this entry contributes nothing to
-# the verdict and says so nowhere in the report. It starts asserting the moment
-# the escape is closed, and making the silence visible is a harness change
-# tracked with the escape itself.
+# The filename is the evidence, not the file. `review-feat-user-batch.md` is the
+# slug transform in `standards/skill.md` applied to branch `feat/user-batch`, and
+# that transform appears in no skill body, so a report at this exact path is what
+# proves the plugin fallback resolved.
+paths = [".claude/review/review-feat-user-batch.md"]
+
+# Bounds where the run may write. Live rather than declared intent now: the
+# report lands inside the tree, so the write list carries it and each entry is
+# checked against these globs.
 write_scope = [".claude/**"]
 
-# No max_turns. A clean run cost 10 turns on 2026-08-02, but that run never
-# landed its own output inside the sandbox, so the number measures a shape no
-# assertion could read rather than the ceiling a working arm needs.
+# No max_turns. Runs on 2026-08-02 came in at 9 and 15 turns against the default
+# cap of 30, and a ceiling set from the low end of that spread would fail
+# legitimate runs rather than catch truncation.
 
 manual = [
-  "The report lands at `.claude/review/review-feat-user-batch.md`, which is the slug transform in `standards/skill.md` applied to branch `feat/user-batch`. The transform appears in no skill body, so the filename is the evidence that the plugin fallback resolved. Unwired: nothing determines which root the file lands under, since the sandbox's seeded `CLAUDE.md` and the toolkit's ancestor copy both send shared scratch to the main worktree root. Measured 2026-08-02, when this arm's run wrote the correct filename into the toolkit's own `.claude/review/` while the `claude/ui-test` run wrote its correct filename inside `.sandbox/`. Declaring the path would go red on the runs that get it right",
-  "The report carries the `X critical, Y should-fix, Z minor` summary line and names `src/api/users.ts`. Unwired: same escape, and no assertion can read a file the snapshot never sees",
   "The off-by-one on `i <= ids.length` is ranked critical rather than minor. Semantic: severity is the skill's judgment and a substring cannot tell a correct ranking from a word that happens to appear",
-  "The report names the fetch with no error handling and the mutating `mergeUser`. Semantic: both are describable in wording no pattern anticipates, and pinning one phrasing goes red on a rewrite that is just as correct",
+  "The report names the fetch with no error handling and the mutating `mergeUser`. Semantic: both are describable in wording no pattern anticipates, and pinning one phrasing goes red on a rewrite that is just as correct. Runs on 2026-08-02 disagreed on the fetch, which is the variance the demotion covers",
 ]
+
+# Every key above this line is top level. A bare key written below a
+# `[[content]]` header belongs to that table in TOML, so anything moved down here
+# would parse clean and assert nothing. `contentArray` rejects that now.
+
+# The summary line and the file under review, which are the two things every
+# correct run states in the same shape. The counts stay as digits because
+# severity is the skill's judgment, asserted here only for appearing in the
+# format the skill's own body fixes.
+[[content]]
+path = ".claude/review/review-feat-user-batch.md"
+pattern = '[0-9]+ critical, [0-9]+ should-fix, [0-9]+ minor'
+
+[[content]]
+path = ".claude/review/review-feat-user-batch.md"
+pattern = 'src/api/users.ts'
