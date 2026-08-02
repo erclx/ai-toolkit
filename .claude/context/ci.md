@@ -23,7 +23,9 @@ Mode selection goes through `VERIFY_WRITE` rather than a flag, matching the exis
 
 Scope selection goes through an `--all` argument rather than a third environment variable, because it describes what to run rather than which mode to run in. An unknown argument exits 1 and `--help` prints the argument list, so the surface stays discoverable without reading the script.
 
-CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request` and `workflow_dispatch` and never on push, so the backstop covers the pull request path alone. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Work lands on `main` through a squash merge of a reviewed pull request, which is why the uncovered direct-push path is theoretical rather than routine. Scoping still baselines on `origin/main` so that path is gated too.
+CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request`, on pushes to `main`, and on `workflow_dispatch`, so the backstop covers the merge as well as the pull request that preceded it. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Scoping still baselines on `origin/main`, so a branch is gated against what it will merge into rather than against its own tip.
+
+The push trigger exists to give the README's CI badge a default-branch run to report. A badge filtered to `main` reads `no status` while the workflow runs on pull requests alone, and an unfiltered one reports whichever branch happened to run last. The second cost is the useful one: a squash merge now runs the full gate against the merged result, which no pull request run observes.
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
 
@@ -57,7 +59,7 @@ Both gates name the event rather than testing the input alone. On a push the `in
 
 ## Triggers
 
-- `verify.yml` on pull requests targeting `main`, and on `workflow_dispatch`
+- `verify.yml` on pull requests targeting `main`, on pushes to `main`, and on `workflow_dispatch`
 - `release-please.yml` on pushes to `main`, and on `workflow_dispatch` with an optional `tag` that publishes that tag alone
 
 ## Checks

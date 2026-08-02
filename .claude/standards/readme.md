@@ -36,6 +36,23 @@ Scoped to the README at a repository root. A nested README documenting a folder,
 - Do not include detailed contribution guidelines. Reference `CONTRIBUTING.md`.
 - Do not include extensive troubleshooting guides. Use a wiki or separate documentation.
 
+### Badges
+
+A badge earns its place by carrying a fact the reader cannot get from the page they are already on. Three classes pass that test.
+
+- Package version, which reports what the registry actually published rather than what the working tree claims
+- Build or CI status, which reports whether the checks are currently passing
+- License, which passes because a README rendered on a registry page has no host sidebar stating it
+
+Stars, forks, download counts, language chips, and "made with" badges fail. The first three restate what a repository host already renders above the README, and the rest decorate.
+
+- Cap the block at four. A fifth costs more scanning than any badge repays.
+- Give each badge alt text naming what it reports rather than the service that renders it. Write `npm version`, not `shields.io`.
+- Link each badge to the page a doubting reader would check next, which is the registry listing for a version badge and the run history for a status badge. A red badge with no route to the failing run reports a problem and withholds the only thing the reader wants.
+- Pin a status badge to the branch whose health it claims to report, and confirm the workflow actually runs on that branch. A workflow triggered by pull requests alone never runs on the default branch, so an unpinned badge reports whichever branch ran last and a pinned one reports nothing at all. Fix the trigger, or drop the badge under the rule below.
+- Verify a badge by the value it renders, not by its status code. A badge service answers 200 for a query it cannot satisfy, so a blank badge and a working one look identical to a status check.
+- Zero badges is a correct answer. A private project with no registry presence and no CI has nothing that passes the test, and an empty block beats a padded one.
+
 ## Content
 
 - Open public-facing READMEs with universal problems any reader recognizes, not repo-specific artifact names. Save artifact names for feature or "What is inside" sections.
@@ -44,6 +61,10 @@ Scoped to the README at a repository root. A nested README documenting a folder,
 - For libraries/tools: include API quickstart
 - For applications/products: include usage instructions and configuration options
 - For CLI tools: include command examples with flags
+- For agent-facing repositories: name the file an agent loads first and the command that lists what the project exposes
+- For marketplace-distributed plugins: give the install command for every channel the project publishes to
+
+A project is often several of these at once. Cover every type that applies rather than picking the closest one. A repository that ships a CLI, distributes a plugin, and holds agent conventions owes its reader all three.
 
 ## Examples
 
