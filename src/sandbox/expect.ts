@@ -144,6 +144,22 @@ function contentArray(value: unknown): ContentAssertion[] {
     if (typeof record.path !== 'string' || record.path === '') continue
     if (typeof record.pattern !== 'string' || record.pattern === '') continue
 
+    // A bare key written below a `[[content]]` header belongs to that table in
+    // TOML, not to the document, so a declaration listing `manual` or
+    // `max_turns` after its content blocks parses clean and silently asserts
+    // neither. The `claude/ui-test` arm shipped that way: a turn ceiling that
+    // never ran and five manual entries that never reached the unchecked count,
+    // while `aitk sandbox coverage` counted the arm as armed. Nothing at the
+    // top level can see the difference, so the check belongs here.
+    const stray = Object.keys(record).filter(
+      (key) => key !== 'path' && key !== 'pattern',
+    )
+    if (stray.length > 0) {
+      throw new Error(
+        `content entry for ${record.path} carries ${stray.join(', ')}. Move top-level keys above the first [[content]] block.`,
+      )
+    }
+
     assertions.push({ path: record.path, pattern: record.pattern })
   }
 
@@ -254,6 +270,20 @@ function checkWriteScope(
     return {
       results: [],
       skipped: ['write scope: no write data supplied, pass --writes'],
+    }
+  }
+
+  // A scope produces one result per write, so a run that wrote nothing produces
+  // none, and without this the declaration vanishes from the verdict entirely:
+  // no result, no skipped entry, and no contribution to the unchecked count that
+  // exists to surface exactly this. The `undefined` branch above cannot stand in,
+  // since `run.sh` always passes `--writes` and `readWrites` returns `[]` for an
+  // empty file. An arm whose output escaped the snapshot reads as a clean run,
+  // which is the vacuous pass the harness exists to remove.
+  if (writes.length === 0) {
+    return {
+      results: [],
+      skipped: ['write scope: the run wrote nothing, so no path was checked'],
     }
   }
 
