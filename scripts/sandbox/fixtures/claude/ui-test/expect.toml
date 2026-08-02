@@ -2,21 +2,17 @@
 # Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
 # needs no backslash escaping.
 #
-# This arm keeps real coverage where `claude/review` and `claude/memory-review`
-# lose theirs. The e2e file is an ordinary project file and lands inside
-# `.sandbox/`, so the assertions over it run. The checklist is shared session
-# scratch and escapes, so its assertions are demoted. See the `manual` entries
-# and the fourth standing limit in `.claude/context/sandbox.md`.
+# The e2e file is an ordinary project file and always landed inside the sandbox.
+# The checklist is shared session scratch, which used to escape the tree as well
+# as being conditional. The sandbox provisions outside the toolkit worktree now,
+# so the escape is closed, and what keeps the checklist demoted is that the skill
+# decides whether to write one at all.
 
 # The precondition, asserted rather than described. `claude/ui-test.sh` declares
 # no `SANDBOX_INJECT_STANDARDS`, so the project copy is absent and the plugin
 # fallback is the only route to the slug transform. Injecting standards later
 # would resolve the project path and void the premise of this arm, so the absence
 # is asserted where that edit lands.
-#
-# The checklist filenames a wrong run would choose are deliberately not listed
-# here. No checklist reaches `.sandbox/` under any name, so each entry would pass
-# because the file is elsewhere rather than because the run was correct.
 absent = [".claude/standards/skill.md"]
 
 paths = ["e2e/ui.test.ts"]
@@ -30,7 +26,39 @@ paths = ["e2e/ui.test.ts"]
 # which needs the install. A run on 2026-08-02 wrote 184 files under it and the
 # scope reported every one as a violation, which was the declaration being wrong
 # rather than the run.
-write_scope = [".claude/**", "e2e/**", "node_modules/**"]
+#
+# `bun.lock` and `test-results/**` are the rest of what running the tests
+# produces, measured on 2026-08-02 once the tests got far enough to execute.
+# Earlier runs never reached them, so the declaration read as complete while only
+# covering the install half of what the skill's body asks for.
+write_scope = [
+  ".claude/**",
+  "e2e/**",
+  "node_modules/**",
+  "bun.lock",
+  "test-results/**",
+]
+
+# A clean run cost 21 turns on 2026-08-02, against 29 for the run before the
+# fixture was corrected, where the skill spent its budget reporting the unmounted
+# input. Set equal to the default cap rather than under it: a truncated run
+# reports one turn past its cap, so an equal ceiling still catches truncation
+# while a lower one fails legitimate runs landing in the gap.
+max_turns = 30
+
+manual = [
+  "The checklist lands at `.claude/review/ui-checklist-feat-task-filter.md`, which is the slug transform in `standards/skill.md` applied to branch `feat/task-filter`. The transform appears in no skill body, so the filename is the evidence that the plugin fallback resolved. Semantic: the skill writes a checklist only for changes it judges visual-only, and a run on 2026-08-02 classified every change as behavioral and correctly wrote none. Declaring the path asserts that judgment rather than the citation, and goes red on a run the skill's own body permits",
+  "The checklist carries the `- [ ]` checkbox syntax the skill's format fixes. Semantic: same conditional, since a format assertion over a file the run is allowed not to write cannot separate a wrong format from an absent file",
+  "The spacing, padding, and color changes land on the checklist and the filter input does not. Semantic: the split between automatable and visual is the skill's judgment, and a pattern matching one item cannot tell a correct classification from a lucky one",
+  "The chat output names the checklist path alone and does not repeat the checklist body. Unwired: the claim is about what the reply omits, and a negative substring passes on every reply that phrases it differently",
+  "The failed Playwright run is reported rather than passed over. Unwired: no browser is installed in the sandbox, so the honest-degradation path is the only one reachable here and the working one stays untested",
+]
+
+# Every key above this line is top level. `max_turns` and all five `manual`
+# entries sat below the content blocks until 2026-08-02, which in TOML bound them
+# to the last block: the ceiling never asserted, the entries never reached the
+# unchecked count, and coverage read the arm as armed the whole time.
+# `contentArray` rejects that now.
 
 # The seeded test survives. The skill adds to the existing file rather than
 # replacing it, and a run that overwrote the file has deleted coverage while
@@ -45,18 +73,3 @@ pattern = 'task list renders the seeded tasks'
 [[content]]
 path = "e2e/ui.test.ts"
 pattern = 'No tasks match that filter'
-
-# A clean run cost 21 turns on 2026-08-02, against 29 for the run before the
-# fixture was corrected, where the skill spent its budget reporting the unmounted
-# input. Set equal to the default cap rather than under it: a truncated run
-# reports one turn past its cap, so an equal ceiling still catches truncation
-# while a lower one fails legitimate runs landing in the gap.
-max_turns = 30
-
-manual = [
-  "The checklist lands at `.claude/review/ui-checklist-feat-task-filter.md`, which is the slug transform in `standards/skill.md` applied to branch `feat/task-filter`. The transform appears in no skill body, so the filename is the evidence that the plugin fallback resolved. Unwired: nothing determines which root the file lands under, since the sandbox's seeded `CLAUDE.md` and the toolkit's ancestor copy both send shared scratch to the main worktree root. This arm's run on 2026-08-02 put it in the right place and the `claude/review` run put its own output in the toolkit, so declaring the path would go red on the runs that get it wrong for a reason the arm is not about",
-  "The checklist carries the `- [ ]` checkbox syntax the skill's format fixes. Unwired: same escape, and no assertion can read a file the snapshot never sees",
-  "The spacing, padding, and color changes land on the checklist and the filter input does not. Semantic: the split between automatable and visual is the skill's judgment, and a pattern matching one item cannot tell a correct classification from a lucky one",
-  "The chat output names the checklist path alone and does not repeat the checklist body. Unwired: the claim is about what the reply omits, and a negative substring passes on every reply that phrases it differently",
-  "The failed Playwright run is reported rather than passed over. Unwired: no browser is installed in the sandbox, so the honest-degradation path is the only one reachable here and the working one stays untested",
-]
