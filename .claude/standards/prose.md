@@ -5,7 +5,7 @@ description: Voice, structure, formatting, and language rules for reference mark
 
 # Prose reference
 
-Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface, since the standards-audit hook is the only gate on published text.
+Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface. The standards-audit hook gates most of them, and the scan below covers the text that hook never reaches.
 
 ## Voice
 
@@ -73,6 +73,19 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 - Do not pad verb phrases or delay the action. Write the shortest form (`in order to` → `to`, `ensure that X is set` → `set X`, `By doing X, you can Y` → state Y directly).
 - Do not address the reader as a participant (`Let's`, `Here's`, `Here are`). State the content directly.
 - Commit to a position. Do not hedge in clusters (`It might be worth considering`) or use false balance (`While X is true, Y is also important`). Recommend, or state the tradeoff.
+
+## Banned-character scan
+
+The standards-audit hook gates files it can see. It skips `.claude/.tmp/`, it never sees text a command sends to another service, and it toggles off inside a fenced block so a code fence or a diagram label passes untouched. Wherever text leaves through one of those gaps, the author is the only gate and runs this scan instead.
+
+Scan the drafted text and rewrite each occurrence:
+
+- `—` (em dash): split into two sentences, or use a comma
+- `;` (semicolon): split into two sentences
+
+Restructure the sentence rather than substituting the character. A semicolon swapped for a period leaves both clauses in the order the semicolon chose, which is the shape the ban exists to remove.
+
+Run the scan as an explicit step against the finished text. Having read this file before drafting does not cover it, because the check has to happen after the text exists.
 
 ## Frontmatter descriptions
 
