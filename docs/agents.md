@@ -80,6 +80,7 @@ Full help: `aitk <command> --help`.
 | `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                          |
 | `aitk tasks archive`     | Move a shipped task off the board, clear its ordering row, and regenerate the index            |
 | `aitk comments scan`     | Measure comment density by language and comment kind, with a trend recomputed from git         |
+| `aitk capture [source]`  | Render HTML capture sources to PNG, toolkit-only and absent from an installed package          |
 
 ### Domain commands
 
@@ -300,6 +301,29 @@ aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .re
 ```
 
 For the board format, the `Pull request:` line, and the archive rules, see `.claude/standards/tasks.md`.
+
+## Capture
+
+`aitk capture [source]` renders HTML capture sources to PNG, which is how a committed documentation image regenerates from its committed source. The source defaults to `assets/`, where a directory expands to every `.html` directly inside it, so adding a capture means dropping a file beside the first one and running the same bare command.
+
+```bash
+aitk capture
+aitk capture assets/install.html
+aitk capture assets --out .claude/review/captures
+```
+
+| Option             | Behavior                                          |
+| ------------------ | ------------------------------------------------- |
+| `--out <dir>`      | Write every PNG here instead of beside its source |
+| `--selector <sel>` | Element to capture (default: `.window`)           |
+
+Each source renders at `deviceScaleFactor` 2 with a transparent background, and the success line reports the pixel dimensions the element wrapped to. Size is reported and never asserted. The height of a terminal frame is whatever its text wrapped to at a fixed width, so pinning that number would harden an accident.
+
+What is asserted is the font. The command reads the first family the captured element declares and fails when the browser did not resolve it, because a fallback face rewraps the block and silently changes the output. Sources therefore name a real font rather than relying on `monospace`. A source that cannot render reports its own line and exits 1 without dropping the rest of the batch.
+
+The browser binary installs separately from the package. A fresh clone runs `bunx playwright install chromium` once, and a run that cannot launch one reports the engine's own remediation inside the frame and exits 1 rather than escaping as a stack trace.
+
+The command is toolkit-only. Its render module holds every browser reference in the toolkit and `files` in `package.json` excludes it, so an installed `aitk` carries the command, reports it as absent on one line, and exits 1. Every other command is unaffected, which is the reason the browser import sits behind a dynamic import rather than at a command's top level.
 
 ## Comments
 

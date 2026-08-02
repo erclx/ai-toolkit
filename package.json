@@ -19,6 +19,7 @@
     "tsconfig.json",
     "!scripts/sandbox",
     "!scripts/eval",
+    "!src/capture",
     "!**/*.test.ts"
   ],
   "publishConfig": {

@@ -50,6 +50,7 @@ nextjs
 noopener
 noreferrer
 nothrow
+noto
 nullglob
 numpy
 nvmrc
