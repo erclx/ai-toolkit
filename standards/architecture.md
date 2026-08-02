@@ -17,7 +17,7 @@ Applies to `.claude/ARCHITECTURE.md`. Describes the system shape and the decisio
 
 - Per-domain structure and narrative. That belongs in `.claude/context/<domain>.md`, one file per domain.
 - Setup commands and install instructions. Those live in the README.
-- How individual functions work line by line. Those go in code comments.
+- How individual functions work line by line. The code carries its own behavior.
 - Full type definitions. They live in code. Reference the shape conceptually if needed.
 
 ## Sections
