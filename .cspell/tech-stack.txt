@@ -35,6 +35,7 @@ httpx
 inplace
 kwargs
 labelledby
+listitem
 lucide
 mermaid
 metacharacters
