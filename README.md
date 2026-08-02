@@ -13,29 +13,31 @@ claude plugin marketplace add https://github.com/erclx/aitk
 claude plugin install aitk@aitk
 ```
 
-The skills are then available as `/aitk:<name>`. Run `/reload-plugins` to pick them up inside a session that was already open. Updates arrive on release, so a push to this repo does not reach an installed copy.
+The skills land as `/aitk:<name>`. If your session was already open, run `/reload-plugins` to pick them up. Updates arrive on release, so a push to this repo won't reach your installed copy.
 
-Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin does not put it on your path. Install it from the registry.
+Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin doesn't put it on your path. Install it from the registry.
 
 ```bash
 bun install --global @erclx/aitk
 ```
 
-[Bun](https://bun.sh) is the CLI runtime and has to be on the path first. Confirm the install by resolving `aitk --help`.
+[Bun](https://bun.sh) is the CLI runtime and has to be on your path first. Confirm the install by resolving `aitk --help`.
 
 ## Why
 
-Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Across enough projects the copies drift, and agents stop getting consistent signals.
+Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Once you're across enough projects, your copies drift and your agents stop getting consistent signals.
 
 Three design choices shape the toolkit.
 
 - Agent-first: every command has a non-interactive path and a JSON catalog. If a Claude Code skill or any other agent cannot drive the CLI without prompts, the design is wrong.
-- Text-native: conventions, rules, and prompts are authored as markdown that humans and agents read the same way. No hidden behavior, no compiled state.
-- One source, many consumers: this repo is the authoritative copy. Target projects install and sync on demand, never author in place.
+- Text-native: conventions, rules, and prompts are authored as markdown that you and your agents read the same way. No hidden behavior, no compiled state.
+- One source, many consumers: this repo is the authoritative copy. Your projects install and sync on demand, never author in place.
+
+Two limits worth knowing before you install. Claude Code is the only agent runtime the plugin targets, and the CLI needs Bun on your path. Snippets are the one surface that also travels to Gemini chat.
 
 ## What is inside
 
-Each domain has a canonical source in this repo and a thin install or sync CLI on the target side. The links run to internal narrative, written for someone maintaining the toolkit rather than installing it.
+Each domain has a canonical source in this repo and a thin install or sync CLI on your side. The links run to internal narrative, written for someone maintaining the toolkit rather than installing it, so skip them on a first pass.
 
 - [Claude Code plugin](.claude/context/claude-plugin.md): skills for planning, review, docs sync, and the git ship chain
 - [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
@@ -49,6 +51,8 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 
 ## Documentation
 
+Scaffolding your first project? Start with target projects, then the AI workflow loop. Everything else answers questions that arrive later.
+
 - [AI workflow](docs/ai-workflow.md): feature-development loop inside a toolkit-managed project
 - [Operating model](docs/operating-model.md): orchestrator and worker roles for building across parallel sessions
 - [Visual design workflow](docs/visual-design-workflow.md): tiered guide for design and wireframe authoring
@@ -58,7 +62,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 
 ## Development
 
-Working on the toolkit starts from a clone. Running the CLI does not, since it installs from the registry.
+Working on the toolkit starts from a clone. Running the CLI doesn't, since it installs from the registry. Skip this section unless you're changing the toolkit itself.
 
 ### Prerequisites
 
@@ -67,7 +71,7 @@ Working on the toolkit starts from a clone. Running the CLI does not, since it i
 - [GitHub CLI](https://cli.github.com) (optional) for ship flows
 - Shell: `zsh` or bash 4+ (`brew install bash` on macOS).
 
-Clone the repo, then run the bootstrap script. It installs dependencies, links the CLI globally, and adds the Claude Code shell aliases to `~/.zshrc`.
+Clone the repo, then run the bootstrap script. It installs dependencies, links the CLI globally, and adds the Claude Code shell aliases to your `~/.zshrc`.
 
 ```bash
 git clone https://github.com/erclx/aitk.git
@@ -76,7 +80,7 @@ bun install
 bun run bootstrap
 ```
 
-The script is idempotent. Re-run it after pulling upstream changes without duplicating anything. It confirms the install by resolving `aitk --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does.
+The script is idempotent, so re-run it after pulling upstream changes without duplicating anything. It confirms the install by resolving `aitk --help` on the last step. See [zshrc aliases](docs/zshrc-aliases.md) for what each alias does.
 
 With the CLI linked, scaffold a fresh project.
 
@@ -86,13 +90,13 @@ git init
 aitk init
 ```
 
-`aitk init` installs base tooling configs, Claude seeds, governance rules, standards, and snippets in one pass, and scaffolds a `.claude/wiki/` stub for the project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/` alongside the standards they route to. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. Run `aitk tooling list --json` to see the catalog.
+`aitk init` installs base tooling configs, Claude seeds, governance rules, standards, and snippets in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/` alongside the standards they route to. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. Run `aitk tooling list --json` to see the catalog.
 
-For the full outsider journey (scaffold, add a domain later, sync upstream drift), see [target projects](docs/target-projects.md).
+For the full journey from scaffold through adding a domain later to syncing upstream drift, see [target projects](docs/target-projects.md).
 
 ## Contributing
 
-Portfolio project. Issues are welcome. Pull requests are accepted by invitation only. See the [contributing guidelines](CONTRIBUTING.md) for the local loop, the authoring split, and the commit convention.
+Portfolio project. Issues are welcome. Pull requests are accepted by invitation only, so open an issue rather than a branch. Read the [contributing guidelines](CONTRIBUTING.md) for the local loop, the authoring split, and the commit convention before you file anything.
 
 ## License
 
