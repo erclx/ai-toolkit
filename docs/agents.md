@@ -80,6 +80,7 @@ Full help: `aitk <command> --help`.
 | `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                          |
 | `aitk tasks archive`     | Move a shipped task off the board, clear its ordering row, and regenerate the index            |
 | `aitk comments scan`     | Measure comment density by language and comment kind, with a trend recomputed from git         |
+| `aitk context audit`     | Report entry length, depth, cited-path resolution, and index drift in the context folders      |
 | `aitk capture [source]`  | Render HTML capture sources to PNG, toolkit-only and absent from an installed package          |
 
 ### Domain commands
@@ -98,6 +99,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `slides`    | `render`, `list`                                                       |
 | `tasks`     | `archive`                                                              |
 | `comments`  | `scan`                                                                 |
+| `context`   | `audit`                                                                |
 
 Common patterns:
 
@@ -350,6 +352,43 @@ Two exclusions are structural rather than tuning. Heredoc bodies are dropped fro
 The degradation sweep reads its vocabulary from whichever rule publishes a `## Degradation vocabulary` heading, preferring `.claude/rules/` over `governance/rules/`, so one definition serves the toolkit and every target. Discovery anchors on the heading rather than a filename, because a renumbered rule would otherwise empty the vocabulary while the sweep still reported clean. With no such rule the sweep reports **skipped** rather than zero hits, since finding nothing and looking for nothing mean opposite things.
 
 `090-code-comments` is the rule that publishes the list, and it ships on the `base` stack. A project that installs or syncs governance for the first time after that rule landed gets a sweep that previously reported skipped, so hits appear where the command used to stay quiet. Edit the backticked terms in the installed copy to change what that project sweeps for. The sweep matches comment text, so a comment naming a term as an example is a hit, and a hit is a prompt to read the line rather than a verdict on it.
+
+## Context audit
+
+`aitk context audit [path]` reports the structural state of the folders following the index-plus-entry contract, meaning a generated `index.md` beside entries carrying frontmatter. It reads and reports. Fixing what it finds is separate work.
+
+```bash
+aitk context audit
+aitk context audit --json
+aitk context audit --citations-only
+aitk context audit --folder context,diagrams
+```
+
+| Option             | Behavior                                                                 |
+| ------------------ | ------------------------------------------------------------------------ |
+| `--json`           | Add a machine-readable record on stdout, keeping the frame               |
+| `--folder <list>`  | Comma-separated folder names under `.claude/` (default: the three below) |
+| `--citations-only` | Run the gating citation check alone, printing nothing when it passes     |
+
+Scope defaults to `context`, `diagrams`, and `wireframes`, and a folder the project does not carry is skipped rather than reported. A domain that outgrew one file and split into `<domain>/` is audited as its own folder, so a split entry measures at the same grain as a flat one.
+
+Exit codes are `0` for a clean run, `1` for a refusal, and `2` for an unresolved citation. Only the citation check sets a failing code. Length, depth, table, and index findings print and return `0`, because each is a judgment threshold and failing a push on one would make the check something to route around.
+
+### What each check reports
+
+Length and depth quote their checkpoints from `.claude/standards/context.md`: roughly 150 lines for an entry, roughly 40 for a run of lines no heading breaks. Depth measures the longest such run rather than everything under one `##`, skips fenced blocks so a markdown example does not read as three headings, and exempts a run whose lines are all list items at one indent. Runs count blank lines, which the standard leaves open, so a hand reader who drops them lands a line or two lower. The report states the convention on every run.
+
+The table check reports a catalog that grows a row per shipped thing, not a table count. A fixed comparison table never reflows, so its size costs nothing. A table qualifies at six or more body rows whose first column mostly carries a path, command, or link, which is what separates a catalog from a comparison without reading the prose.
+
+Index drift compares an index against its siblings in both directions. An entry the index does not link is invisible to a session choosing what to open, and a linked name resolving to nothing sends one to a path that opens nothing.
+
+### The citation gate
+
+The citation check resolves every path into an audited folder that appears anywhere in the repository, and it is the half wired into `bun run check`. A stale reference has a silent failure mode: the session opens nothing and carries on.
+
+Three exclusions keep it from firing on prose about paths. Fenced blocks are skipped in markdown, which covers a standard displaying a path as an example. Fixture and harness trees are skipped by location, covering sandbox scenarios that describe their own scratch tree, the eval harness naming its target project, and `*.test.ts`. A path into a folder the project does not carry is skipped, so a skill directing a reader to `.claude/wireframes/index.md` stays valid in a project that has wireframes and silent in one that does not.
+
+What remains is a sentence naming a hypothetical entry to show the shape of a name, which no syntax separates from a real reference. Append `<!-- audit-ignore-citations -->` to that source line. The marker suppresses citation checking for its own line only.
 
 ## Runtime catalogs
 
