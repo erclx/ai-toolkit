@@ -237,7 +237,7 @@ A plan can serve more than one task, and archiving on the first task to close st
 
 Write the retarget as a markdown link, `Plan: [feature-<slug>](../.tmp/plans-archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
 
-**Reviews.** Derive `<slug>` per Deriving the branch slug in `.claude/standards/skill.md`, or `${CLAUDE_SKILL_DIR}/../../standards/skill.md` when the project does not have it. Fall back to `latest` on an empty result. If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
+**Reviews.** Derive `<slug>` per `.claude/standards/branch-slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/branch-slug.md` when the project does not have it. Fall back to `latest` on an empty result. If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 
 Do not sweep `ui-checklist-*.md` (pending human verification) or `ux-audit-*.md` (standalone deliverable).
 
