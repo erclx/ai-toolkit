@@ -9,11 +9,11 @@ A row records that a run happened. `result-<arm>.md` records what a run found. T
 - `Date`: the day the run started
 - `Arm`: which arm ran, matching the argument to `run.sh`
 - `Kind`: `findings` for a run started to learn something, `regression` for one confirming nothing broke. Written by the caller, since the harness cannot know why it was started
-- `Subject`: short commit of the working tree the standard or seed was read from, suffixed `-dirty` when tracked files were modified. A run exercises the tree rather than a release
+- `Subject`: short commit of the working tree the standard or seed was read from, suffixed `-dirty` when tracked files were modified. A run exercises the tree rather than a release. This file is excluded from that check, since appending a row would otherwise mark every run after the first as dirty
 - `Cost`: `total_cost_usd` as reported by the run
 - `Turns`: `num_turns` as reported by the run
 - `Verdict`: `pending` on append. Whoever judges the report edits the cell to `pass`, `fail`, or `inconclusive`
-- `Output`: the retained raw output under `.claude/.tmp/eval-runs/`, gitignored and never pruned
+- `Output`: the retained raw output under `.claude/.tmp/eval-runs/`, gitignored and never pruned. Reads `none` when retention failed, so the cell never names a directory that was never written
 
 ## Reading a row
 
