@@ -34,6 +34,10 @@ A plugin skill reads a catalog through `aitk <domain> list --json`, matches it a
 
 `src/` parses arguments and owns every migrated domain, and `scripts/` holds what has not moved. Domains migrate one verb at a time rather than in a single rewrite, which is what let each dispatcher be deleted before all of its verbs had moved. Bash keeps only what it is good at. `read_frontmatter_field` stayed because three list scripts call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 
+### Bun as the runtime with no build step
+
+`bin` points at `src/cli.ts` and its `#!/usr/bin/env bun` shebang runs the source directly, so the package ships TypeScript with `tsconfig.json` beside it and nothing compiles. Node with a build step was the alternative, and it costs a publish pipeline plus a `dist/` that can drift from the source a contributor reads. The trade is that the CLI does not run under Node at all, since `Bun.Glob`, `Bun.TOML`, and `Bun.YAML` stand in for globbing and parser dependencies across `src/tooling/`, `src/indexes/`, and `src/snippets/`. A target project installing the CLI needs Bun on the machine rather than only a package manager.
+
 ### Hooks enforce what prose only states
 
 A rule written in a standard fires only when a session reads it. The Claude Code hooks in `.claude/hooks/`, the husky hooks, and the drift stages in `bun run check` fire either way. The scratch-guard hook, the task-board index regen, and the consumed-copy drift assertion each replace an instruction that was already written down and already ignored. The cost is that an enforcement point is code with its own failure modes, so each one has to say what it does when its inputs are missing rather than reporting a pass.
@@ -54,7 +58,7 @@ A rule written in a standard fires only when a session reads it. The Claude Code
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing here reports the gap.
 - A marketplace install is a cached copy, which is the same skew in the other direction. Someone who added the marketplace and never updated runs old skills against a current CLI. Neither direction is detected.
-- Every session pays for this file from the merge onward. The 150-line cap is the whole mitigation and nothing enforces it.
+- Every session pays for this file from the merge onward. No standard sets a length rule for it, so the working limit is a self-imposed 150 lines borrowed from the context-entry checkpoint, and nothing enforces it.
 - Rationale for six of these decisions also sits in `.claude/context/` entries. The duplication is deliberate while four of those entries are claimed by live tasks. The split to converge on is the decision and its rejected alternative here, with the mechanism detail staying in the entry.
 - A `scripts/eval/` run costs roughly a dollar per arm and is started by a person rather than by a command surface. The harness has confirmed twice and discriminated zero times, so treat a pass as weak evidence until one arm fails.
 - Context entries are never created automatically. `claude-docs` refreshes an entry that already exists and adds none, so a new domain stays uncatalogued until someone writes the first entry by hand.
