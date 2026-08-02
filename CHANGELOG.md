@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/erclx/aitk/compare/v0.13.0...v0.14.0) (2026-08-02)
+
+
+### Features
+
+* **sandbox:** route sandbox-check to the headless runner ([#710](https://github.com/erclx/aitk/issues/710)) ([20a42cc](https://github.com/erclx/aitk/commit/20a42ccbe6257737ef50b33b841a60cb44968007))
+
 ## [0.13.0](https://github.com/erclx/aitk/compare/v0.12.0...v0.13.0) (2026-08-02)
 
 
