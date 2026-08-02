@@ -76,7 +76,7 @@ A second entry for one kind takes a suffixed name (`request-flow-admin.md`) and 
 - Do not duplicate prose across entries. An entry that restates its neighbor has taken the neighbor's job.
 - The audience is mixed, so vocabulary runs as a gradient across the set. `System context` assumes no knowledge of the repository. `Deployment` may assume the reader has read the others.
 
-The pedagogical voice is the exemption `standards/prose.md` grants by name in its yield clause. The yield covers voice alone. Punctuation, formatting, and language bans stay in force, and the standards-audit hook enforces them on every write.
+This section states the voice for the surface, which is what claims the yield `standards/prose.md` grants to a surface whose own standard sets it. Explanation prose is pedagogical here and the default developer-facing voice does not apply. The yield covers voice alone. Punctuation, formatting, and language bans stay in force, and the standards-audit hook enforces them on every write.
 
 ## Verification
 
