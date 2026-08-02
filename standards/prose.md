@@ -91,7 +91,7 @@ Restructure the sentence rather than substituting the character. A semicolon swa
 
 ### Phase labels
 
-Text addressed to a reader outside the project carries no internal phase label. The versioning standard beside this file holds the label rule and the table of surfaces, so read it at scan time rather than working the format from memory.
+The versioning standard beside this file holds the label rule and the table of surfaces. Read it at scan time rather than working the format from memory.
 
 Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, takes the character checks alone.
 
