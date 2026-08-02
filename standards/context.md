@@ -88,6 +88,8 @@ Only the `development` entry carries this section. It is not a general-purpose h
 
 - Aim for one entry per domain. There is no hard cap. Length is a symptom, not the defect.
 - Past roughly 150 lines, check two things before adding more: whether the entry still covers a single domain, and whether it has filled with content `ls` or `--help` reproduces. Fix whichever is true rather than trimming to hit a number.
+- Past roughly 40 lines with no heading of any level breaking them, add a subheading at the seam. Measure the longest such run rather than everything under one `##`, and exclude fenced code blocks. The number is a checkpoint like the 150 above, not a cap.
+- Exempt a block whose lines are all list items at one level. A long list of peers is already navigable, and a subheading dropped into it splits a set that belongs together. Mixing prose with the list, or nesting levels inside it, ends the exemption.
 - Never cut a `## Decisions` or `## Gotchas` entry to shorten a file. Cut a `## Layout` or `## CLI` section instead.
 - Split into a folder (`.claude/context/<domain>/<sub-area>.md`) when a domain has three or more sub-areas that do not fit cleanly in one file. That split is the natural ceiling.
 - Keep a split domain's `index.md` generated. The catalog body is rewritten on every regen, so the domain's own overview and layout belong in a sibling file rather than in it, and the `subtitle` is what names the file to start with.
