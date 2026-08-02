@@ -35,14 +35,14 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 - `standards/versioning.md` is deliberately unrouted. It governs commit subjects, PR titles, and git tags, none of which are files, so a path-scoped rule has nothing to match and would never fire. `git-commit` and `git-pr` reach that surface by instruction instead, and what catches a leak there is a check rather than a route.
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
-| Range     | Domain                                                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------ |
-| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                       |
-| `100–199` | lang (TypeScript, Python, etc.)                                                                                    |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                         |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                  |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness)                                                                |
-| `500–599` | claude (markdown prose, .claude/ context, wireframe, canonical-doc, task-board, skill, readme, and rule authoring) |
+| Range     | Domain                                                                                                                       |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                 |
+| `100–199` | lang (TypeScript, Python, etc.)                                                                                              |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                   |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                            |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness)                                                                          |
+| `500–599` | claude (markdown prose, .claude/ context, wireframe, canonical-doc, task-board, skill, readme, rule, and standard authoring) |
 
 ## Gotchas
 
@@ -62,14 +62,14 @@ Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories
 
 Each stack declares an optional `extends` chain and a flat `rules` list. The chain resolves recursively, so `react` resolves through `node` to `base` and the full deduplicated set installs.
 
-| Stack            | Extends | Rules                                                                                                                            |
-| ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `base`           | -       | 000–080 core rules, 500–590 claude authoring (prose, context, wireframes, canonical docs, tasks, skills, readme, rule authoring) |
-| `node`           | base    | 100-typescript                                                                                                                   |
-| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
-| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
-| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                         |
-| `python-fastapi` | python  | 220-fastapi                                                                                                                      |
+| Stack            | Extends | Rules                                                                                                                                         |
+| ---------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`           | -       | 000–080 core rules, 500–591 claude authoring (prose, context, wireframes, canonical docs, tasks, skills, readme, rule and standard authoring) |
+| `node`           | base    | 100-typescript                                                                                                                                |
+| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness              |
+| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                                            |
+| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                                      |
+| `python-fastapi` | python  | 220-fastapi                                                                                                                                   |
 
 ## CLI
 
