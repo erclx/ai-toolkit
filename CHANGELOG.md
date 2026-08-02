@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.12.0](https://github.com/erclx/aitk/compare/v0.11.0...v0.12.0) (2026-08-02)
+
+
+### Features
+
+* **diagrams:** stub and annotate stale diagram entries at ship time ([#704](https://github.com/erclx/aitk/issues/704)) ([3aed6bd](https://github.com/erclx/aitk/commit/3aed6bd3cfe02243779494399e076859cb1008b6))
+* **standards:** admit three badge classes and two project types ([#702](https://github.com/erclx/aitk/issues/702)) ([bf4cb65](https://github.com/erclx/aitk/commit/bf4cb657eabd4286a53e933dd9d713a779f9492e))
+* **standards:** govern authoring with an installable meta-standard ([#703](https://github.com/erclx/aitk/issues/703)) ([319f89c](https://github.com/erclx/aitk/commit/319f89c90df887716fa987268a2274ae61ed0f1b))
+
 ## [0.11.0](https://github.com/erclx/aitk/compare/v0.10.0...v0.11.0) (2026-08-02)
 
 
