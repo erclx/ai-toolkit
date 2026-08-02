@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/erclx/aitk/compare/v0.16.0...v0.17.0) (2026-08-02)
+
+
+### Features
+
+* **capture:** add a command that renders html sources to png ([#717](https://github.com/erclx/aitk/issues/717)) ([1605e7f](https://github.com/erclx/aitk/commit/1605e7ffc33cc8ae4615b21c9e39bc51622c52ab))
+
 ## [0.16.0](https://github.com/erclx/aitk/compare/v0.15.0...v0.16.0) (2026-08-02)
 
 
