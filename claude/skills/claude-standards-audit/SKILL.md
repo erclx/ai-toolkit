@@ -1,6 +1,6 @@
 ---
 name: claude-standards-audit
-description: Audits changed markdown files against applicable authoring standards (prose, skill, readme, branch, pr) and reports violations without fixing. Maps each file to its standards, greps for banned tokens, and groups findings by file. Use when asked to "audit prose", "audit standards", "check standards", "standards audit", or after editing markdown where standards compliance matters. Do NOT fix violations. Reporting only.
+description: Audits changed markdown files against applicable authoring standards (prose, skill, readme) and reports violations without fixing. Maps each file to its standards, greps for banned tokens, and groups findings by file. Use when asked to "audit prose", "audit standards", "check standards", "standards audit", or after editing markdown where standards compliance matters. Do NOT fix violations. Reporting only.
 ---
 
 # Claude standards audit
@@ -44,10 +44,10 @@ For each changed markdown file, pick the applicable standards:
 - Any markdown with prose: `.claude/standards/prose.md`
 - `SKILL.md` under `.claude/skills/` or `claude/skills/`: also `.claude/standards/skill.md`
 - `README.md` at any level: also `.claude/standards/readme.md`
-- Branch names proposed in the session: `${CLAUDE_SKILL_DIR}/references/branch.md`
-- PR titles or bodies drafted in the session: `${CLAUDE_SKILL_DIR}/references/pr.md`
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+
+Every mapping names a changed markdown file, which is the only thing Step 1 produces. Text that never lands in the tree, such as a branch name or a pull request body, is checked by the skill that publishes it rather than here.
 
 ## Step 3: read standards and audit
 
