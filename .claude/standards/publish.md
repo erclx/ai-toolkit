@@ -7,7 +7,7 @@ description: Scan run against finished text leaving through a channel no automat
 
 ## Scope
 
-Governs the scan an author runs against finished text on its way out, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies to any text leaving through a channel no automated check covers.
+Governs an attribute rather than a document type: the scan an author runs against finished text on its way out, which applies to any text leaving through a channel no automated check covers. It also fixes the responses available when a source the scan reaches for cannot be read.
 
 Does not govern:
 
