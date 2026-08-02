@@ -5,11 +5,13 @@ description: Readme voice, structure, and content conventions
 
 # Readme reference
 
-Applies to `README.md`. This standard states the voice for that file, so `prose.md` yields to it. The yield covers voice alone. The punctuation bans, spelling rules, banned words, and formatting rules in `prose.md` stay in force, so the warmer register ships with the same hygiene: no em dashes, no semicolons, no buzzwords.
+Applies to every `README.md`. The `## Voice` section states the voice for a repository's root README, so `prose.md` yields to it there. The yield covers voice alone. The punctuation bans, spelling rules, banned words, and formatting rules in `prose.md` stay in force, so the warmer register ships with the same hygiene: no em dashes, no semicolons, no buzzwords.
 
-The reader is what changes. Reference prose serves someone who already committed to the project and is scanning for a fact. A README meets someone deciding whether to commit at all, and it is often the only file they read.
+The reader is what changes. Reference prose serves someone who already committed to the project and is scanning for a fact. A root README meets someone deciding whether to commit at all, and it is often the only file they read.
 
 ## Voice
+
+Scoped to the README at a repository root. A nested README documenting a folder, a harness, or an internal tool keeps the reference voice in `prose.md`, since its reader has already committed and arrived looking for a fact.
 
 - Address the reader in second person. First-person plural needs an authoring organization as its antecedent, so a single-maintainer project has none to use.
 - Use contractions wherever the sentence reads better for one. Do not force them in.

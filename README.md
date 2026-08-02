@@ -25,7 +25,7 @@ bun install --global @erclx/aitk
 
 ## Why
 
-Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Once you're across enough projects, your copies drift and your agents stop getting consistent signals.
+Every AI coding setup accumulates the same assets. Prompts to reuse, rules agents should follow, slash commands, skills, seed docs, sync scripts. Once you have enough projects, your copies drift and your agents stop getting consistent signals.
 
 Three design choices shape the toolkit.
 
