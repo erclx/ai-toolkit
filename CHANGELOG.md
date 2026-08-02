@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.0](https://github.com/erclx/aitk/compare/v0.7.0...v0.8.0) (2026-08-02)
+
+
+### Features
+
+* **eval:** retain run output and append a ledger row per run ([#686](https://github.com/erclx/aitk/issues/686)) ([e13c540](https://github.com/erclx/aitk/commit/e13c5409497552dc2918dea5e45256a99f292a65))
+* **package:** publish the CLI to the registry as '@erclx/aitk' ([#687](https://github.com/erclx/aitk/issues/687)) ([496ebad](https://github.com/erclx/aitk/commit/496ebad513d0a9e14a3b8a38017b6d4af55cee49))
+* **roadmap:** stop drafting when the MVP scope has already shipped ([#684](https://github.com/erclx/aitk/issues/684)) ([6f8f8f8](https://github.com/erclx/aitk/commit/6f8f8f8ca51a55973523afb8a7676b33f35d7764))
+* **snippets:** ship the orchestrator resume and sweep runbooks ([#685](https://github.com/erclx/aitk/issues/685)) ([b520764](https://github.com/erclx/aitk/commit/b520764d6c8b095ae83c1ab9f76db0a804742a6d))
+
 ## [0.7.0](https://github.com/erclx/aitk/compare/v0.6.0...v0.7.0) (2026-08-01)
 
 
