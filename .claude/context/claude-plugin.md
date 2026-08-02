@@ -188,6 +188,16 @@ Which location is right follows from who benefits. A commit style specific to on
 
 The rules this argument produces fire when a skill is being written, so they live in `.claude/skills/aitk-claude/SKILL.md` rather than here.
 
+### Shared procedures
+
+Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. The banned-character scan lives in `prose.md` and covers text the audit hook never reaches, meaning `.claude/.tmp/`, anything leaving through `gh`, and anything inside a fence. The branch-slug transform lives in `skill.md` and names the files skills write under `.claude/`.
+
+They live in `standards/` rather than `standards/bundled/` because the fan-out serves format references a skill consults while holding still, and these are procedures a skill executes mid-run. A citation resolves through the same two paths as any standard, so a target's own copy still wins. The fan-out was left untouched, so neither mechanism replaced the other.
+
+The split between the two surfaces is what keeps the citation honest. The standard owns the procedure and the body owns the trigger, since both the moment a scan runs and the text it runs against vary per skill. The empty-branch case splits the same way, carrying three legitimate answers across the catalogue: fall back to `latest`, stop, or fall through to another source. A body that cites without stating its own case reads as if the default applied to it.
+
+Nothing detects a body that restates a procedure instead of citing it. `assert_no_drift` covers generated copies and a hand-written restatement is not generated, so the guarantee is only that a single definition exists to correct.
+
 ### Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.
