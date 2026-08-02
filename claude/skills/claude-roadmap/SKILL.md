@@ -15,7 +15,7 @@ description: Drafts or updates `.claude/ROADMAP.md` by sequencing the MVP scope 
 
 A roadmap sequences the MVP list alone, so a later scope section means that list has shipped and a fresh requirements pass owns what follows. The rule is the Lifecycle section of `.claude/standards/requirements.md`, falling back to `${CLAUDE_SKILL_DIR}/../../standards/requirements.md` when the project has no copy.
 
-- A later scope section is a `##` heading after `## MVP features` that is not one of the six the standard tells every project to use. `## Distribution` counts, since the standard adds it conditionally rather than fixing it.
+- A later scope section is a `##` heading after `## MVP features` that `.claude/standards/requirements.md` names nowhere, neither among the six it fixes nor as the conditional `## Distribution`
 - On finding one, stop: `❌ MVP scope already sequenced. ## <section> is later scope, which a fresh requirements pass sequences rather than this roadmap. Say to sequence it anyway to override.`
 - Draft without the gate when neither copy of the standard resolves. Refusing on a rule that could not be read stops more than it protects.
 - When the caller overrides, sequence the later scope section's entries as versions and proceed
