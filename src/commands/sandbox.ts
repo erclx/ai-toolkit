@@ -275,11 +275,19 @@ function reportCensus(report: CensusReport): void {
     for (const entry of exempt) logInfo(`${entry.skill}: ${entry.reason}`)
   }
 
-  // A stale exemption is the one way this report can overstate itself, so it
-  // prints as an error even on a run that is otherwise clean.
+  // A wrong exemption is the one way this report can overstate itself, so both
+  // kinds print as errors even on a run that is otherwise clean. They separate
+  // because the reader checks a different thing: whether the skill left the
+  // tree, or whether an arm landed and the entry outlived its reason.
   if (report.staleExemptions.length > 0) {
     logStep('Exemptions naming no shipped skill')
     for (const skill of report.staleExemptions) logError(skill)
+  }
+
+  if (report.supersededExemptions.length > 0) {
+    logStep('Exemptions an arm now asserts')
+    for (const skill of report.supersededExemptions)
+      logError(`${skill}, delete the entry`)
   }
 
   logStep('Skills')
@@ -332,14 +340,16 @@ function runCoverage(options: CoverageOptions): void {
 
   outro()
 
-  // A stale exemption exits non-zero without `--strict`. It is a wrong claim in
+  // A wrong exemption exits non-zero without `--strict`. It is a wrong claim in
   // committed data rather than a rollout still in progress, and the whole point
   // of the verdict is that an exemption someone can no longer check is worse
   // than no exemption at all.
-  const staleExemption = (census?.staleExemptions.length ?? 0) > 0
+  const wrongExemption =
+    (census?.staleExemptions.length ?? 0) > 0 ||
+    (census?.supersededExemptions.length ?? 0) > 0
   const rolloutIncomplete =
     options.strict === true && report.armedScenarios < report.totalScenarios
-  process.exitCode = staleExemption || rolloutIncomplete ? 1 : 0
+  process.exitCode = wrongExemption || rolloutIncomplete ? 1 : 0
 }
 
 function runCheck(
@@ -452,8 +462,8 @@ export function register(program: Command): void {
         '  aitk sandbox coverage --json',
         '  aitk sandbox coverage --skills',
         '',
-        'Exit codes: 0, unless --strict and a scenario declares nothing,',
-        'or --skills and an exemption names no shipped skill.',
+        'Exit codes: 0, unless --strict and a scenario declares nothing, or',
+        '--skills and an exemption names no shipped skill or one an arm asserts.',
         'Where the scenario tree does not ship, exits 1 without a report.',
       ].join('\n'),
     )

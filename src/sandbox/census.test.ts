@@ -9,6 +9,7 @@ import {
   parseExemptions,
   skillForScenario,
 } from '@/sandbox/census'
+import { DEFAULT_ARM } from '@/sandbox/coverage'
 
 let root: string
 
@@ -122,7 +123,7 @@ describe('collectCensus', () => {
       skill: 'claude-docs',
       verdict: 'asserted',
       scenarios: ['claude:docs'],
-      armed: ['drift'],
+      armed: ['claude:docs/drift'],
     })
     expect(report.asserted).toBe(1)
   })
@@ -175,6 +176,28 @@ describe('collectCensus', () => {
     expect(report.exempt).toBe(0)
   })
 
+  it('should report an exemption an arm now asserts rather than dropping it', () => {
+    skill('toolkit-cli')
+    scenario('infra', 'toolkit-cli')
+    declaration('infra', 'toolkit-cli', '')
+    exempt('toolkit-cli', 'writes nothing')
+
+    const report = collectCensus(root)
+
+    expect(report.supersededExemptions).toEqual(['toolkit-cli'])
+    expect(report.staleExemptions).toEqual([])
+  })
+
+  it('should not report a superseded exemption for a skill no arm asserts', () => {
+    skill('toolkit-cli')
+    exempt('toolkit-cli', 'writes nothing')
+
+    const report = collectCensus(root)
+
+    expect(report.supersededExemptions).toEqual([])
+    expect(report.exempt).toBe(1)
+  })
+
   it('should name an exemption pointing at a skill the tree does not carry', () => {
     skill('git-commit')
     exempt('claude-retired', 'gone')
@@ -193,9 +216,27 @@ describe('collectCensus', () => {
 
     const report = collectCensus(root)
 
-    expect(report.skills[0]?.armed).toEqual(['drift', 'stale'])
+    expect(report.skills[0]?.armed).toEqual([
+      'claude:review/drift',
+      'dev:review/stale',
+    ])
     expect(report.skills[0]?.scenarios).toEqual(['claude:review', 'dev:review'])
     expect(report.asserted).toBe(1)
+  })
+
+  it('should keep two same-named arms distinct rather than collapsing them', () => {
+    skill('review')
+    scenario('claude', 'review')
+    scenario('dev', 'review')
+    declaration('claude', 'review', '')
+    declaration('dev', 'review', '')
+
+    const report = collectCensus(root)
+
+    expect(report.skills[0]?.armed).toEqual([
+      `claude:review/${DEFAULT_ARM}`,
+      `dev:review/${DEFAULT_ARM}`,
+    ])
   })
 
   it('should exclude a scenario driving no skill from the census', () => {

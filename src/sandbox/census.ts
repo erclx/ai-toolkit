@@ -20,6 +20,13 @@ export interface SkillCensusEntry {
    * skill, and naming only the first would credit its arms to the wrong file.
    */
   readonly scenarios: readonly string[]
+  /**
+   * Each armed arm as `<category>:<command>/<arm>`. Qualified rather than bare,
+   * because a skill two scenarios drive can hold two arms of the same name and
+   * a bare list renders them as one label twice. Deduplicating instead would
+   * read as one arm where two assert, which understates in the one direction
+   * this report exists to keep honest.
+   */
   readonly armed: readonly string[]
   /** Why no arm asserts this skill. Present only on `exempt`. */
   readonly reason?: string
@@ -33,6 +40,12 @@ export interface CensusReport {
   readonly exempt: number
   /** Exemptions naming a skill the tree does not carry. */
   readonly staleExemptions: readonly string[]
+  /**
+   * Exemptions on a skill an arm now asserts. The claim is wrong in the one
+   * direction a verdict decays, and the entry outranks nothing, so dropping it
+   * silently leaves committed data nobody is told to delete.
+   */
+  readonly supersededExemptions: readonly string[]
 }
 
 function directories(path: string): string[] {
@@ -155,9 +168,10 @@ export function collectCensus(
 
     // Accumulate rather than assign. Dropping a second scenario would report a
     // skill unarmed while an arm under the other spelling asserts it.
+    const pair = `${scenario.category}:${scenario.command}`
     const existing = pairings.get(skill) ?? { scenarios: [], armed: [] }
-    existing.scenarios.push(`${scenario.category}:${scenario.command}`)
-    existing.armed.push(...scenario.armed)
+    existing.scenarios.push(pair)
+    existing.armed.push(...scenario.armed.map((arm) => `${pair}/${arm}`))
     pairings.set(skill, existing)
   }
 
@@ -178,15 +192,26 @@ export function collectCensus(
     return { skill, verdict: 'should-be-asserted', scenarios, armed }
   })
 
+  // An exemption outranked by an arm is as wrong as one naming no skill, and it
+  // is the case the armed-wins rule creates rather than one the tree arrives
+  // with. Reading `entries` rather than recomputing keeps the two in step, so a
+  // change to the precedence cannot leave the report contradicting the verdict.
+  const assertedSkills = new Set(
+    entries.filter((e) => e.verdict === 'asserted').map((e) => e.skill),
+  )
+
   return {
     skills: entries,
     totalSkills: entries.length,
-    asserted: entries.filter((e) => e.verdict === 'asserted').length,
+    asserted: assertedSkills.size,
     shouldBeAsserted: entries.filter((e) => e.verdict === 'should-be-asserted')
       .length,
     exempt: entries.filter((e) => e.verdict === 'exempt').length,
     staleExemptions: [...exemptions.keys()]
       .filter((skill) => !known.has(skill))
+      .sort(),
+    supersededExemptions: [...exemptions.keys()]
+      .filter((skill) => assertedSkills.has(skill))
       .sort(),
   }
 }
