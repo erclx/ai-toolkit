@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { execaSync } from 'execa'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import {
   applyChanges,
   listInstalled,
@@ -417,7 +418,10 @@ describe('planSync attribution without a stamp', () => {
     createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } })
 
   function git(...args: string[]): string {
-    return execaSync('git', ['-C', ROOT, ...args]).stdout
+    return execaSync('git', ['-C', ROOT, ...args], {
+      env: gitEnv(),
+      extendEnv: false,
+    }).stdout
   }
 
   function publish(content: string, message: string): string {

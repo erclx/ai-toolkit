@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { sep } from 'node:path'
 import { execaSync } from 'execa'
+import { gitEnv } from '@/git-env'
 
 /** Blob SHA to the newest commit whose post-image for that path held it. */
 export type PathHistory = ReadonlyMap<string, string>
@@ -89,7 +90,7 @@ export function readHistoryIndex(
       '--',
       ...paths.map(toRepoPath),
     ],
-    { reject: false },
+    { reject: false, env: gitEnv(), extendEnv: false },
   )
 
   return result.exitCode === 0 ? parseRawLog(result.stdout) : undefined

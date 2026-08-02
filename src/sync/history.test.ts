@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import {
   findInstalledOrigin,
   gitBlobHash,
@@ -13,7 +14,10 @@ import {
 let ROOT: string
 
 function git(...args: string[]): string {
-  return execaSync('git', ['-C', ROOT, ...args]).stdout
+  return execaSync('git', ['-C', ROOT, ...args], {
+    env: gitEnv(),
+    extendEnv: false,
+  }).stdout
 }
 
 function commit(path: string, content: string, message: string): string {
