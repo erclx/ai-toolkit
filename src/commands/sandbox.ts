@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { PROJECT_ROOT, execScript } from '@/exec'
@@ -27,6 +28,29 @@ import {
 } from '@/ui'
 
 const SANDBOX_DIR = join(PROJECT_ROOT, 'scripts', 'sandbox')
+
+/**
+ * The provisioned tree, as opposed to `SANDBOX_DIR` above, which holds the
+ * scenario scripts. It sits outside the toolkit worktree so the toolkit's own
+ * `CLAUDE.md` stays off the ancestor chain of the session `run.sh` spawns with
+ * cwd here.
+ *
+ * Twin of `resolve_sandbox_dir` in `scripts/lib/sandbox-path.sh`. The exec
+ * boundary rules out a shared constant, so a change to the default lands on both
+ * sides.
+ */
+function sandboxTree(): string {
+  const override = process.env.AITK_SANDBOX_DIR
+  if (override !== undefined && override !== '') return override
+
+  const state = process.env.XDG_STATE_HOME
+  const base =
+    state !== undefined && state !== ''
+      ? state
+      : join(homedir(), '.local', 'state')
+
+  return join(base, 'aitk', 'sandbox')
+}
 
 /**
  * Holds fixture content for scenarios rather than scenarios of its own.
@@ -224,7 +248,7 @@ function runCheck(
   // A sandbox that was never provisioned fails every path assertion, reading as a
   // skill that did nothing rather than a caller that ran check too early. The
   // whole point of a verdict is that it means what it says.
-  const sandboxDir = join(PROJECT_ROOT, '.sandbox')
+  const sandboxDir = sandboxTree()
   if (!existsSync(sandboxDir)) {
     logError(`No sandbox at ${sandboxDir}. Provision one with aitk sandbox.`)
     outro()
