@@ -34,10 +34,10 @@ The directory test separates the defect from a genuinely bare repository, which 
 
 Try each source in order. Stop at the first match.
 
-1. **Plan matched to current branch.** Take the branch name and replace `/` with `-` to get `<slug>`. If `<main-root>/.claude/plans/feature-<slug>.md` exists, use `<slug>`.
+1. **Plan matched to current branch.** Derive `<slug>` per Deriving the branch slug in `.claude/standards/skill.md`, or `${CLAUDE_SKILL_DIR}/../../standards/skill.md` when the project does not have it. An empty result falls through to the next source here rather than becoming `latest`, since the slug is one candidate among several. If `<main-root>/.claude/plans/feature-<slug>.md` exists, use `<slug>`.
 2. **Single plan file.** List `<main-root>/.claude/plans/feature-*.md`. If exactly one match, derive `<slug>` from the filename.
 3. **Multiple plan files, no branch match.** Ask the user which plan. Show the candidate slugs as a numbered list. Do not pick.
-4. **Current branch.** When no plan exists, use the branch name (with `/` replaced by `-`) if it is not `main` or `master`.
+4. **Current branch.** When no plan exists, use the `<slug>` from step 1 if it is not `main` or `master`.
    4b. **Session context.** When on `main` or `master` with no matching plan, read the current conversation to infer a kebab slug from the topic being discussed. Propose it: `Infer: <slug>. Confirm or rename?` Do not enter the worktree until the user confirms or provides a corrected name.
 5. **Ask.** None of the above applies. Ask the user for a name. Do not invent one.
 

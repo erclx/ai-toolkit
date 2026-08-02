@@ -40,12 +40,7 @@ After outputting the preview, execute the final command immediately. Claude Code
 
 ### Pre-publish scan
 
-Before running the final command, scan the title and body for banned characters and rewrite each occurrence:
-
-- `—` (em dash): split into two sentences or use a comma
-- `;` (semicolon): split into two sentences
-
-These bans come from `.claude/standards/prose.md`. Reading it is not enough. The scan is an explicit step.
+Before running the final command, run the banned-character scan in `.claude/standards/prose.md` against the title and body. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/issue.md`.
 
 ### Final command
 

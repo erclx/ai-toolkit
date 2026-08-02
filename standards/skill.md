@@ -173,6 +173,18 @@ Without this skill, a session <observed failure>, <observed failure>.
 - When a skill gathers user input or pre-seeds a template, attach a concrete proposed default to every question, derived from project context. Accept "use defaults" as a bulk-confirm.
 - Separate correctness axes (routing, sourcing, escalation, decline) from shape axes (line count, formatting, variant sprawl) when tuning a skill. Tighten only on correctness regressions. Do not convert soft caps to hard caps for aesthetic drift when correctness passes.
 
+### Deriving the branch slug
+
+Run `git branch --show-current` and replace every `/` with `-`. The result is `<slug>`. Anything reading a branch-derived name uses this transform, so two skills cannot spell it differently.
+
+A skill that persists output under `.claude/` carries the slug in the filename, which is what keeps parallel worktrees from overwriting each other's output.
+
+The empty result is a detached HEAD, and the skill picks one of three responses rather than inheriting a default. State the choice in the body, since the transform is shared and this is not.
+
+- Fall back to `latest`, so a read-only pass still writes somewhere predictable
+- Stop, when the skill commits or opens a pull request. There is no branch to put the work on, so `latest` would bury the problem instead of reporting it. State the stop in the skill's guards.
+- Fall through to the next source, when the slug is one candidate among several rather than the name of an output file
+
 ## Scripts
 
 - Use `scripts/` for operations that must be deterministic or repetitive
@@ -199,6 +211,8 @@ A standard reaches a skill by two routes, and a body that names only the first b
 - State the fallback once per body, at the site that reads the standard. A later mention of a standard the body already read stays bare, since repeating the fallback at every mention is noise rather than instruction.
 - A guard on a standard's presence names the file and tests both paths before it stops. A guard that tests only `.claude/standards/` refuses to run in a plugin-only project that has the file, and a guard that tests the directory passes in the partial-install case it exists to catch.
 - Use `${CLAUDE_SKILL_DIR}`, never a bare `../../` and never `${CLAUDE_PLUGIN_ROOT}`. Only `${CLAUDE_SKILL_DIR}` is expanded before the body reaches the model. The other two leave the model to infer a base path, which it may resolve against the session cwd instead.
+- Cite a shared procedure, never restate it. A procedure two or more skills execute gets one definition in a standard and a citation in each body. Nothing catches a restatement that drifts, because the drift assertion covers generated copies and a hand-written one is not generated, so the guarantee is only that a single definition exists to correct.
+- Keep the trigger in the body and the procedure in the standard. The citing skill states when the procedure runs and what it runs against, since that varies per skill and the standard cannot know it.
 
 ## Invocation
 

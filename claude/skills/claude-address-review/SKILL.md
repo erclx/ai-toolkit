@@ -73,10 +73,9 @@ bullet per finding, each opening with the bolded finding identifier.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
 reads as an independent machine pass, not a human sign-off.
 
-Before posting, scan the reply for em dashes and semicolons and rewrite each,
-splitting into two sentences or using a comma. The standards-audit hook skips
-`.claude/.tmp/`, so this scan is the only gate on the published reply. Post it to
-the PR:
+Before posting, run the banned-character scan in `.claude/standards/prose.md`
+against the reply. The hook skips `.claude/.tmp/`, so this scan is the only gate
+on the published reply. Post it to the PR:
 
 ```bash
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply-<number>.md

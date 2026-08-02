@@ -57,7 +57,7 @@ If all changes are automatable, skip the manual checklist:
 
 ### Persist the checklist
 
-Derive a slug from the current git branch: run `git branch --show-current` and replace any `/` with `-`. If the result is empty (detached HEAD), use `latest`.
+Derive `<slug>` per Deriving the branch slug in `.claude/standards/skill.md`, or `${CLAUDE_SKILL_DIR}/../../standards/skill.md` when the project does not have it. Fall back to `latest` on an empty result.
 
 When a manual checklist is produced, write it directly to `.claude/review/ui-checklist-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 

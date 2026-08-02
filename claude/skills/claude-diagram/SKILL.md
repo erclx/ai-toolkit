@@ -75,7 +75,7 @@ When sources came from a code scan rather than planning prose, lead the explanat
 
 Quote node labels containing spaces or special characters with double quotes (`A["Web shell"]`). Avoid parentheses inside labels, they break some renderers. Use `<br/>` for line breaks inside labels.
 
-Apply the toolkit's prose bans to the whole file, including inside mermaid `subgraph` labels and node text. No em-dashes, no semicolons. Use a colon or split into two sentences instead. The pedagogical voice the standard asks for is a yield on voice alone and buys no exemption from these bans.
+Run the banned-character scan in `.claude/standards/prose.md` against the whole file, including inside mermaid `subgraph` labels and node text, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it. A colon also works as a replacement inside a label. The pedagogical voice the diagram standard asks for is a yield on voice alone and buys no exemption from these bans.
 
 Nothing enforces the ban inside the diagram. The standards-audit hook toggles on a fence and skips every line within it, so a label carrying an em dash passes silently while the same character in the explanation paragraph below is caught. Check the labels by reading them. This is the one place in the file where the author is the only gate.
 
