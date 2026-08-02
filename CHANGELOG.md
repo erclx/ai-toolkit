@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.21.0](https://github.com/erclx/aitk/compare/v0.20.0...v0.21.0) (2026-08-02)
+
+
+### Features
+
+* **context:** report context folder health and gate cited paths ([#728](https://github.com/erclx/aitk/issues/728)) ([e445174](https://github.com/erclx/aitk/commit/e445174d05137c16ffd61b6703bd20cd2501ad23))
+
+
+### Bug Fixes
+
+* **sandbox:** resolve dot-dot before the path guard compares ([#729](https://github.com/erclx/aitk/issues/729)) ([da155c3](https://github.com/erclx/aitk/commit/da155c34142233e371807265cc79cbae45d35f11))
+
 ## [0.20.0](https://github.com/erclx/aitk/compare/v0.19.0...v0.20.0) (2026-08-02)
 
 
