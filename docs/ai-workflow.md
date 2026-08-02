@@ -20,6 +20,7 @@ Project docs live in `.claude/` at the project root.
 ├── ARCHITECTURE.md  ← technical design decisions
 ├── DESIGN.md        ← visual intent and token decisions (UI projects)
 ├── WIREFRAMES.md    ← ASCII wireframes: layout, UI copy, and interaction rules (UI projects)
+├── diagrams/        ← one Mermaid entry per diagram kind with a generated index.md
 ├── tasks/           ← one file per task with a generated index.md, gitignored local scratch
 ├── context/         ← per-domain narrative loaded on demand via index.md
 └── rules/           ← path-scoped governance rules, written by aitk gov install
