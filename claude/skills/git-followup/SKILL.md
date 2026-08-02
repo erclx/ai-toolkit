@@ -24,7 +24,7 @@ its own reply, so skip the comment in step 6. The push and body sync still run.
 3. Invoke `aitk:git-commit` to generate one conventional commit from the staged diff
 4. Run `git push` to the tracking branch
 5. Check for existing review comments: `gh api 'repos/{owner}/{repo}/pulls/<number>/comments' --jq 'length'`, resolving `<number>` from `gh pr view --json number`.
-6. When invoked with `reply-owned`, skip this step's comment: the caller posts the reply. Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first running the banned-character scan in `.claude/standards/prose.md` against it, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it, since the hook does not see an inline comment body. If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
+6. When invoked with `reply-owned`, skip this step's comment: the caller posts the reply. Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first running the pre-publish scan in `.claude/standards/prose.md` against it, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it, since the hook does not see an inline comment body. If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
 
 ## After completion
 

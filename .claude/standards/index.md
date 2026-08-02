@@ -18,5 +18,5 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
 - [Standard reference](standard.md): Shape and content rules for authoring a standard
 - [Tasks reference](tasks.md): Folder layout, filename convention, and content rules for .claude/tasks/
-- [Versioning reference](versioning.md): Phase label vs semver discipline across tasks, PRs, commits, and tags
+- [Versioning reference](versioning.md): Phase label vs semver discipline across tasks, PRs, reviews, issues, commits, and tags
 - [Wireframe reference](wireframes.md): Shape and content rules for .claude/wireframes/<surface>.md files

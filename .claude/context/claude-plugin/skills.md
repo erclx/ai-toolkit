@@ -175,7 +175,9 @@ The rules this argument produces fire when a skill is being written, so they liv
 
 ### Shared procedures
 
-Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. The banned-character scan lives in `prose.md` and the branch-slug transform lives in `skill.md`.
+Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. The pre-publish scan lives in `prose.md` and the branch-slug transform lives in `skill.md`.
+
+The scan carries two checks under one citation, characters and phase labels, with the label rule itself held by `versioning.md` next to it. A skill citing the scan gets both without naming the second file, which is what keeps a new check from costing an edit in every consuming body. The label check scopes by destination, so `claude-diagram` cites the same section and takes the character half alone.
 
 Both are stated generally, and neither names what enforces it here. An installed standard belongs to the project that installed it, so a standard citing this repository's audit hook, scratch paths, or output filenames goes wrong in a target that has none of them, with nothing reporting it. In this repository the scan covers text the hook never reaches, meaning `.claude/.tmp/`, anything leaving through `gh`, and anything inside a fence, and that belongs here rather than in the file that ships. Each citing skill names its own gap for the same reason, since the gap is a fact about the skill.
 

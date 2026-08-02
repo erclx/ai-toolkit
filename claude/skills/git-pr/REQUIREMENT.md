@@ -15,7 +15,7 @@ Without this skill, a pull request body is written from memory of the branch rat
 - Derive the title and body from the commits and the diff against main, with lockfiles excluded
 - Run each check before writing its line, then state the result the run reported
 - Leave a box unchecked only for a human-only case, naming which human and why on the same line
-- Scan the title and body for banned characters as an explicit step, on top of reading the prose standard
+- Scan the title and body for banned characters and internal phase labels as an explicit step, on top of reading the prose standard
 - Detect an open pull request and edit it in place, so a follow-up push keeps the body in sync instead of failing
 
 ## Must not

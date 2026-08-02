@@ -17,6 +17,7 @@ Without this skill, review findings are worked in whatever order the author read
 - Push before replying, so the comment never runs ahead of the code it describes
 - Map every finding to what changed, or to a one-line reason when it is a question or a conscious accept
 - Post the terminal comment only when the findings are addressed and every check passes
+- Scan the reply for banned characters and internal phase labels before posting, since the comment leaves for the remote unchecked
 
 ## Must not
 

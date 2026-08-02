@@ -17,6 +17,7 @@ Without this skill, a pull request is reviewed only by the session that wrote it
 - Apply the integration, contract, and consumer lenses a self-review structurally cannot
 - Post a close-out even with nothing to report, since a first pass left unanswered reads as a review nobody closed
 - Key the body file on both the pull request number and the head commit, so no two passes overwrite each other
+- Scan the comment for banned characters and internal phase labels before posting, since a finding phrased against a phase label reaches a reader with no task board
 
 ## Must not
 

@@ -1,6 +1,6 @@
 ---
 title: Versioning reference
-description: Phase label vs semver discipline across tasks, PRs, commits, and tags
+description: Phase label vs semver discipline across tasks, PRs, reviews, issues, commits, and tags
 ---
 
 # Versioning reference
@@ -31,6 +31,9 @@ External release identity used in git tags and release notes. Independent of pha
 | `.claude/tasks/`          | yes          | no                                  |
 | Chat with the operator    | yes          | no                                  |
 | PR titles                 | no           | only when the PR cuts a release     |
+| PR bodies                 | no           | only when the PR cuts a release     |
+| Review comments           | no           | only when referencing a release     |
+| Issue titles and bodies   | no           | only when referencing a release     |
 | Commit messages           | no           | only when the commit cuts a release |
 | Git tags                  | no           | yes                                 |
 | README and `CHANGELOG.md` | no           | yes                                 |
@@ -41,6 +44,13 @@ External release identity used in git tags and release notes. Independent of pha
 - Commit subjects do not embed phase labels.
 - Git tags use semver only. Phase labels never become tags.
 - A PR that cuts a release may reference its semver tag in the title or body. Phase labels still do not appear.
+- PR bodies, review comments, and issue text name the change itself, never the internal stream that scheduled it. Describe the work rather than the label it was planned under.
+
+## Pre-publish check
+
+Text bound for a remote is checked for phase labels against the finished draft, before it is sent. A body, comment, or title reaches a reader who has no task board, so a label that survives to publication cannot be resolved by anyone downstream.
+
+The surface publishing the text is the last gate on it. Where no automated check covers that surface, the author performs the check as an explicit step rather than relying on having read this file while drafting.
 
 ## Why
 

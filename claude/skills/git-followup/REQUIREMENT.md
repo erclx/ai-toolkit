@@ -14,7 +14,7 @@ Without this skill, an edit made after a pull request is already open ships as a
 - Refuse unless the branch has an upstream and an open pull request, since every later step addresses one of the two
 - Delegate the message to `git-commit` rather than composing one, so a follow-up commit reads like every other commit
 - Sync the body when the new commit moves the scope, and the title when the shift makes it inaccurate
-- Reply on the pull request when it carries review comments, and scan that reply for the banned characters before posting. The hook watches files and never sees a comment body on its way to the remote.
+- Reply on the pull request when it carries review comments, and scan that reply for the banned characters and internal phase labels before posting. The hook watches files and never sees a comment body on its way to the remote.
 - Suppress the reply when the caller owns it, and still run the push and the body sync
 
 ## Must not

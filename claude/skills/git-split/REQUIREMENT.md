@@ -17,7 +17,7 @@ Without this skill, a branch carrying unrelated commits ships as one pull reques
 - Account for every commit ahead of main in the preview
 - State the merge order and the reason behind it, since the order is not recoverable from reading the pull requests afterward
 - Carry the restack loop for stacked mode, where each branch is rebased onto main once the one below it merges
-- Scan every generated title and body for banned characters as an explicit step before opening a pull request
+- Scan every generated title and body for banned characters and internal phase labels as an explicit step before opening a pull request
 
 ## Must not
 
