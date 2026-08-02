@@ -21,15 +21,69 @@ resolve_sandbox_dir() {
   printf '%s/aitk/sandbox\n' "${XDG_STATE_HOME:-$HOME/.local/state}"
 }
 
-# Collapses repeated separators and strips every trailing one, leaving a bare
-# root as `/`. Every comparison below is a string test, so `//` and `$HOME//`
-# would otherwise read as paths no rule names.
+# Collapses repeated separators, folds `.` and `..` segments, and strips every
+# trailing separator, leaving a bare root as `/`. Every comparison below is a
+# string test, so `//`, `$HOME//`, and `$HOME/../../usr` each read as a path no
+# rule names until this runs, and an unresolved `..` defeats the allowlist and
+# both directions of the repository test at once.
+#
+# The fold is lexical because the guard runs before provisioning creates the
+# tree, which rules out `cd` with `pwd -P` and any resolution needing the path
+# to exist. Nothing here follows a symlink, so a `..` below one resolves against
+# the link's own path rather than its target. A `..` climbing past the root
+# clamps to `/`, matching the kernel, which leaves the allowlist to refuse it
+# under the rule that already covers every root path.
 normalize_sandbox_path() {
   local path="$1"
+
+  [ -n "$path" ] || return 0
 
   while [ "$path" != "${path//\/\//\/}" ]; do
     path="${path//\/\//\/}"
   done
+
+  local root=""
+  if [ "${path#/}" != "$path" ]; then
+    root="/"
+    path="${path#/}"
+  fi
+
+  # `resolved` carries each kept segment behind its own separator, so a pop is
+  # one suffix removal and popping an empty stack is the no-op that clamps at
+  # the root. `climbed` holds the leading `..` a relative path has no segment to
+  # pop against, which dropping would change the directory it names.
+  local resolved="" climbed="" segment
+  local remaining=4096
+
+  while [ -n "$path" ] && [ "$remaining" -gt 0 ]; do
+    remaining=$((remaining - 1))
+
+    segment="${path%%/*}"
+    if [ "$segment" = "$path" ]; then
+      path=""
+    else
+      path="${path#*/}"
+    fi
+
+    case "$segment" in
+    "" | .) ;;
+    ..)
+      if [ -n "$resolved" ]; then
+        resolved="${resolved%/*}"
+      elif [ -z "$root" ]; then
+        climbed="$climbed../"
+      fi
+      ;;
+    *) resolved="$resolved/$segment" ;;
+    esac
+  done
+
+  if [ -n "$root" ]; then
+    path="${resolved:-/}"
+  else
+    path="${climbed}${resolved#/}"
+    path="${path:-.}"
+  fi
 
   while [ "${#path}" -gt 1 ] && [ "${path%/}" != "$path" ]; do
     path="${path%/}"
@@ -72,13 +126,28 @@ assert_sandbox_dir_safe() {
     return 1
   fi
 
+  # `normalize_sandbox_path` stops at 4096 segments and drops the remainder,
+  # which would hand the tests below an ancestor of the path provisioning
+  # removes. Refusing past `PATH_MAX` keeps that bound out of reach, since a
+  # segment costs at least two bytes and no syscall accepts the string anyway.
+  if [ "${#raw}" -gt 4096 ]; then
+    printf 'Refusing the sandbox path. It is %s characters, past the longest path any filesystem here accepts.\n' "${#raw}"
+    return 1
+  fi
+
   local dir home temp
   dir="$(normalize_sandbox_path "$raw")"
   home="$(normalize_sandbox_path "${HOME:-/root}")"
   temp="$(normalize_sandbox_path "${TMPDIR:-/tmp}")"
 
+  # Every message below names `$raw`, which is what the operator set. The tests
+  # compare `$dir`, so a path carrying `..` is refused for a location its own
+  # spelling does not show.
+  local resolution=""
+  [ "$dir" = "$raw" ] || resolution=" It resolves to $dir."
+
   if ! is_at_or_above "$home" "$dir" && ! is_at_or_above "$temp" "$dir"; then
-    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, so the path has to sit under %s or %s.\n' "$raw" "$home" "$temp"
+    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, so the path has to sit under %s or %s.%s\n' "$raw" "$home" "$temp" "$resolution"
     return 1
   fi
 
@@ -93,13 +162,13 @@ assert_sandbox_dir_safe() {
   main_root="$(normalize_sandbox_path "${main_root:-$root}")"
 
   if is_at_or_above "$dir" "$main_root"; then
-    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, and that path contains %s.\n' "$raw" "$main_root"
+    printf 'Refusing %s as the sandbox. Provisioning removes the tree first, and that path contains %s.%s\n' "$raw" "$main_root" "$resolution"
     return 1
   fi
 
   case "$dir" in
   "$main_root"/*)
-    printf 'Sandbox at %s sits inside %s, which puts the toolkit CLAUDE.md back on the session ancestor chain. Point AITK_SANDBOX_DIR outside the repository.\n' "$raw" "$main_root"
+    printf 'Sandbox at %s sits inside %s, which puts the toolkit CLAUDE.md back on the session ancestor chain.%s Point AITK_SANDBOX_DIR outside the repository.\n' "$raw" "$main_root" "$resolution"
     return 1
     ;;
   esac

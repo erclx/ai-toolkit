@@ -83,6 +83,7 @@ statusline
 streamable
 subgraph
 subshell
+syscall
 tabindex
 tanstack
 tavily
