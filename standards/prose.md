@@ -5,7 +5,7 @@ description: Voice, structure, formatting, and language rules for reference mark
 
 # Prose reference
 
-Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface. The standards-audit hook gates most of them, and the scan below covers the text that hook never reaches.
+Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface, including the surfaces no automated check reaches, which is what the scan below is for.
 
 ## Voice
 
@@ -76,7 +76,7 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 ## Banned-character scan
 
-The standards-audit hook gates files it can see. It skips `.claude/.tmp/`, it never sees text a command sends to another service, and it toggles off inside a fenced block so a code fence or a diagram label passes untouched. Wherever text leaves through one of those gaps, the author is the only gate and runs this scan instead.
+Wherever text leaves through a channel no automated check covers, the author is the only gate and runs this scan. Text sent to another service, written to a path the project's checks exclude, and text inside a fenced block are the usual cases. The surface that publishes the text is what knows which gap applies, so it names its own rather than reading one here.
 
 Scan the drafted text and rewrite each occurrence:
 

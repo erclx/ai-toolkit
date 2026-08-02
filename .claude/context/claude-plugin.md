@@ -190,7 +190,9 @@ The rules this argument produces fire when a skill is being written, so they liv
 
 ### Shared procedures
 
-Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. The banned-character scan lives in `prose.md` and covers text the audit hook never reaches, meaning `.claude/.tmp/`, anything leaving through `gh`, and anything inside a fence. The branch-slug transform lives in `skill.md` and names the files skills write under `.claude/`.
+Two procedures run inside more than one skill and are defined once in `standards/`, cited from each body the way `v9.3` settled. The banned-character scan lives in `prose.md` and the branch-slug transform lives in `skill.md`.
+
+Both are stated generally, and neither names what enforces it here. An installed standard belongs to the project that installed it, so a standard citing this repository's audit hook, scratch paths, or output filenames goes wrong in a target that has none of them, with nothing reporting it. In this repository the scan covers text the hook never reaches, meaning `.claude/.tmp/`, anything leaving through `gh`, and anything inside a fence, and that belongs here rather than in the file that ships. Each citing skill names its own gap for the same reason, since the gap is a fact about the skill.
 
 They live in `standards/` rather than `standards/bundled/` because the fan-out serves format references a skill consults while holding still, and these are procedures a skill executes mid-run. A citation resolves through the same two paths as any standard, so a target's own copy still wins. The fan-out was left untouched, so neither mechanism replaced the other.
 

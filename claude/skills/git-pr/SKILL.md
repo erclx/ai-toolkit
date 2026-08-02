@@ -69,7 +69,7 @@ Leave a box unchecked only for the human-only cases the reference defines, and n
 
 ### Pre-publish scan
 
-Before running the final command, run the banned-character scan in `.claude/standards/prose.md` against the PR title and body. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
+Before running the final command, run the banned-character scan in `.claude/standards/prose.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
 
 ### Final command
 

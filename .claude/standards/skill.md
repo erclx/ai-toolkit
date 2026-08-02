@@ -177,7 +177,7 @@ Without this skill, a session <observed failure>, <observed failure>.
 
 Run `git branch --show-current` and replace every `/` with `-`. The result is `<slug>`. Anything reading a branch-derived name uses this transform, so two skills cannot spell it differently.
 
-A skill that persists output under `.claude/` carries the slug in the filename, which is what keeps parallel worktrees from overwriting each other's plans, reviews, audits, and checklists: `feature-<slug>.md`, `review-<slug>.md`, `ui-checklist-<slug>.md`, `ux-audit-<slug>.md`.
+A skill that persists output under `.claude/` carries the slug in the filename, which is what keeps parallel worktrees from overwriting each other's output.
 
 The empty result is a detached HEAD, and the skill picks one of three responses rather than inheriting a default. State the choice in the body, since the transform is shared and this is not.
 
