@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.1](https://github.com/erclx/aitk/compare/v0.22.0...v0.22.1) (2026-08-02)
+
+
+### Bug Fixes
+
+* **sandbox:** report an absent scenario tree as toolkit-only ([#733](https://github.com/erclx/aitk/issues/733)) ([5147833](https://github.com/erclx/aitk/commit/5147833d936c9afd9bec279e549e9928f4e2b433))
+
 ## [0.22.0](https://github.com/erclx/aitk/compare/v0.21.0...v0.22.0) (2026-08-02)
 
 
