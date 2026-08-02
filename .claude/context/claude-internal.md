@@ -54,7 +54,7 @@ The origin invariant is owned by `.claude/standards/tasks.md`. What orchestratio
 
 Both artifacts are gitignored, which is what limits the board to one orchestrator at a time. A second session reads neither the other's task files nor its archives, so the two write colliding labels and archive each other's plans. `claude-orchestrate` states the constraint and holds the queue-refill sweep that keeps planned, non-conflicting tasks ahead of a free worker. `snippets/claude/orchestrator-resume.md` covers the one moment the model cannot detect on its own, which is a compaction dropping the reasoning behind the board it is about to act on, and `snippets/claude/orchestrator-sweep.md` triggers the queue refill after a batch of merges.
 
-Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles or bodies, review comments, issues, commit messages, or git tags. What catches a leak on the way out is the pre-publish scan in `.claude/standards/prose.md`, which reads the label rule from `.claude/standards/versioning.md` beside it. See that file for the rules and the why.
+Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles or bodies, review comments, issues, commit messages, or git tags. What catches a leak on the way out is the scan in `.claude/standards/pre-publish.md`, which reads the label rule from `.claude/standards/versioning.md` beside it. See that file for the rules and the why.
 
 ## Plugin discovery
 
