@@ -23,6 +23,12 @@ absent = [".claude/standards/skill.md"]
 # run never takes, so a run that reached those files applied without approval.
 # This is the one assertion the escape makes sharper rather than weaker: those
 # targets are ordinary project files and would land inside the snapshot.
+#
+# On a correct run it is nonetheless silent. The proposal escapes, nothing else
+# is written, and `checkWriteScope` over an empty write list produces no result
+# and no skipped entry rather than reporting unchecked. The entry earns its place
+# by what it catches on a wrong run, not by anything it contributes to a right
+# one.
 write_scope = [".claude/review/**"]
 
 # No max_turns. No clean run measured yet.

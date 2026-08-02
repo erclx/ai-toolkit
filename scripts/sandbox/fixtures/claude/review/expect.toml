@@ -21,9 +21,14 @@
 # demoted assertion is how it gets in.
 absent = [".claude/standards/skill.md"]
 
-# Declared intent rather than a live assertion. The run writes outside the
-# snapshot, so `writes` comes back empty and this reports unchecked. It starts
-# asserting the moment the escape is closed.
+# Declared intent rather than a live assertion, and silent rather than
+# unchecked. The run writes outside the snapshot, so the observed write list
+# comes back empty, and `checkWriteScope` maps over it to produce no result and
+# no skipped entry. The unchecked branch is reachable only when `--writes` is
+# omitted, and `run.sh` always passes it. So this entry contributes nothing to
+# the verdict and says so nowhere in the report. It starts asserting the moment
+# the escape is closed, and making the silence visible is a harness change
+# tracked with the escape itself.
 write_scope = [".claude/**"]
 
 # No max_turns. A clean run cost 10 turns on 2026-08-02, but that run never
