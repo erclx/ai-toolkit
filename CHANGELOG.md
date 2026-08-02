@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/erclx/aitk/compare/v0.23.0...v0.24.0) (2026-08-02)
+
+
+### Features
+
+* **standards:** give every standard a stated scope ([#739](https://github.com/erclx/aitk/issues/739)) ([74786f5](https://github.com/erclx/aitk/commit/74786f5798c2673b9ce1cf1f82c46b6ebe3ffe70))
+
 ## [0.23.0](https://github.com/erclx/aitk/compare/v0.22.1...v0.23.0) (2026-08-02)
 
 
