@@ -102,3 +102,4 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 - A diagram showing a defunct host or library is worse than no diagram. Audit the affected entry in the same PR.
 - `System context` has no named source signal beyond `.claude/REQUIREMENTS.md`, so nothing tells a session it went stale. Re-read it when the boundary or the set of external dependencies moves.
 - Mermaid blocks are inside fenced code, so the prose-standards hook ignores them. The explanation paragraphs around them are still prose. Follow `standards/prose.md`.
+- The punctuation bans still apply to node and subgraph labels, and nothing checks them there. An em dash in a label passes every gate the repository has, so read the labels before shipping the entry.

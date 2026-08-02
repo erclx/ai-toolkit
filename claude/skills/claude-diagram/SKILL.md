@@ -28,7 +28,7 @@ Follow `.claude/standards/diagrams.md` for frontmatter, entry kinds, layout, bud
 
 ### Migrating a pre-split flat file
 
-When `.claude/diagrams/` holds no entries and `.claude/DIAGRAMS.md` exists, this pass converts it. Split each H2 section into the entry whose kind it matches, carry its mermaid body and explanation prose across unchanged, and add the frontmatter the standard requires. Leave `.claude/DIAGRAMS.md` on disk so the split can be compared against its source, and say in Step 7 that deleting it is the user's call.
+When `.claude/diagrams/` holds no entry and `.claude/DIAGRAMS.md` exists, this pass converts it. An entry is any `*.md` in the folder other than `index.md`. The seed ships `index.md` alone, so a folder holding only the catalog is an empty set and still converts. Split each H2 section into the entry whose kind it matches, carry its mermaid body and explanation prose across unchanged, and add the frontmatter the standard requires. Leave `.claude/DIAGRAMS.md` on disk so the split can be compared against its source, and say in Step 7 that deleting it is the user's call.
 
 Convert only. Do not redraw a diagram during a migration pass, since a rewrite and a move landing together leaves no way to tell which one broke a diagram.
 
@@ -36,9 +36,11 @@ Convert only. Do not redraw a diagram during a migration pass, since a rewrite a
 
 Write an entry only when its source signal exists, and only when this pass has a reason to touch it. Skip the rest and leave their files alone.
 
+Count entries the way Step 1 does, excluding `index.md`. Counting the catalog as an entry sends a first pass down the compare branch with nothing to compare, and it writes nothing.
+
 - The user named a kind: write that one.
-- The user asked broadly and the folder is empty: write every kind whose signal exists.
-- The user asked broadly and entries exist: compare each entry against its source signal and write only the ones whose signal moved. Report the untouched ones as current.
+- The user asked broadly and the folder holds no entry: write every kind whose signal exists.
+- The user asked broadly and at least one entry exists: compare each entry against its source signal and write only the ones whose signal moved. Report the untouched ones as current.
 
 The standard fixes one filename and one `category` value per kind. Use them verbatim rather than inventing a name, since a refresh finds its target by filename and a new name writes a duplicate entry beside the old one. Emit `system-context.md` whenever `.claude/REQUIREMENTS.md` exists, since it is the entry a reader outside the team opens first and the set is incomplete without it.
 
@@ -73,7 +75,9 @@ When sources came from a code scan rather than planning prose, lead the explanat
 
 Quote node labels containing spaces or special characters with double quotes (`A["Web shell"]`). Avoid parentheses inside labels, they break some renderers. Use `<br/>` for line breaks inside labels.
 
-Apply the toolkit's prose bans to the whole file, including inside mermaid `subgraph` labels and node text. No em-dashes, no semicolons. Use a colon or split into two sentences instead. The standards-audit hook treats mermaid syntax as prose and will reject the file on every violation, forcing a retry per label. The pedagogical voice the standard asks for is a yield on voice alone and buys no exemption from these bans.
+Apply the toolkit's prose bans to the whole file, including inside mermaid `subgraph` labels and node text. No em-dashes, no semicolons. Use a colon or split into two sentences instead. The pedagogical voice the standard asks for is a yield on voice alone and buys no exemption from these bans.
+
+Nothing enforces the ban inside the diagram. The standards-audit hook toggles on a fence and skips every line within it, so a label carrying an em dash passes silently while the same character in the explanation paragraph below is caught. Check the labels by reading them. This is the one place in the file where the author is the only gate.
 
 ## Step 4: regenerate the catalog
 
