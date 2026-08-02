@@ -1,0 +1,16 @@
+import { withinBudget } from '../rate-limit'
+import { allTasks } from '../store'
+
+export interface Task {
+  readonly id: string
+  readonly title: string
+  readonly done: boolean
+}
+
+export function listTasks(client: string): Task[] {
+  if (!withinBudget(client)) {
+    throw new Error('request budget exceeded')
+  }
+
+  return allTasks()
+}

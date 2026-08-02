@@ -1,0 +1,23 @@
+---
+title: 'v01.0: Rate limit the task API'
+description: Reject a client that exceeds the request budget for a window
+---
+
+# v01.0: Rate limit the task API
+
+Plan: [feature-rate-limit](../plans/feature-rate-limit.md)
+
+The task endpoints answer every request they receive, so one client can spend
+the whole budget the rest of them share.
+
+## Outcomes
+
+- [ ] Outcome: a client over the request budget is rejected
+- [ ] Outcome: the budget resets on a rolling window
+
+## Findings
+
+- The window is per client rather than global, so the counter is keyed by the
+  caller rather than by the route.
+
+> Test strategy: unit, drive the limiter past the budget and past the window.

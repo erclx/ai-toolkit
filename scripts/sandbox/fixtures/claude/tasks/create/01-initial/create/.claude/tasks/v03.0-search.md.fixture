@@ -1,0 +1,23 @@
+---
+title: 'v03.0: Search tasks by title'
+description: Match a query against task titles and return the hits
+---
+
+# v03.0: Search tasks by title
+
+Plan: [feature-search](../plans/feature-search.md)
+
+Finding a task means reading the whole list, which stops working at the point
+pagination bounds the list.
+
+## Outcomes
+
+- [ ] Outcome: a query matches against task titles
+- [ ] Outcome: a query matching nothing returns an empty page
+
+## Findings
+
+- Search returns a page rather than a collection, so it inherits the response
+  shape v02.0 settles.
+
+> Test strategy: unit, query a match, a miss, and a partial word.

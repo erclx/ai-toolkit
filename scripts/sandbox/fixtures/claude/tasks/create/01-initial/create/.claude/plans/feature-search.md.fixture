@@ -1,0 +1,13 @@
+# Feature: Search tasks by title
+
+Match a query against task titles and return the hits in the same page shape
+the list endpoint returns.
+
+**Files to touch:**
+
+- `src/routes/tasks.ts`: match the query, reuse the page response
+
+**Risks:**
+
+- A search returning a bare collection reintroduces the unbounded response
+  pagination exists to remove.
