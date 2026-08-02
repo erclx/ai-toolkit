@@ -24,12 +24,12 @@ absent = [".claude/plans/feature-postgres-migration.md"]
 # the envelope can no longer supply.
 write_scope = [".claude/**"]
 
-# Prose the checker cannot assert. Kept beside the mechanical assertions rather
-# than left in the scenario's log lines, which is the only thing that stops them
-# rotting once the rest are machine-checked.
+# Prose the checker cannot assert, each with the reason it stays here. Kept beside
+# the mechanical assertions rather than left in the scenario's log lines, which is
+# the only thing that stops them rotting once the rest are machine-checked.
 manual = [
-  "ARCHITECTURE.md storage section rewritten from SQLite to Postgres",
-  "REQUIREMENTS.md non-goals updated, multi-user moved in-scope",
+  "ARCHITECTURE.md storage section rewritten from SQLite to Postgres. Semantic: a pattern matching Postgres passes on a sentence saying the run did not migrate to it",
+  "REQUIREMENTS.md non-goals updated, multi-user moved in-scope. Semantic: the claim is which side of a list an item sits on, and a pattern matching the item passes from either side",
 ]
 
 [[content]]

@@ -120,6 +120,7 @@ unmatch
 unrequested
 unrouted
 unsourced
+unwired
 upstreaming
 vitejs
 wireframes
