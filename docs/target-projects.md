@@ -77,7 +77,7 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 `governance`, `standards`, and `wiki` are skippable:
 
 - `--skip governance`: leave `.claude/rules/` empty. Standards still install, so `.claude/standards/prose.md` lands with nothing pointing at it and no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
-- `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root. That fallback now carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform are defined in the standards and cited by the skills that run them.
+- `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root. That fallback now carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
 ## Add a domain later
@@ -100,7 +100,9 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 `aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next. A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `aitk:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `aitk:migration-standards` handles.
 
-That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes recording a hash per installed file. Each domain holds its own toolkit commit, so syncing governance today does not move the revision standards measures against, and each domain reports the upstream commits touching its own source path. A project that has never synced under a toolkit new enough to write a stamp reports every difference as `drifted`, the unattributed verdict. Running any sync stamps that domain, and the report names the ones still unstamped.
+That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes recording a hash per installed file. Each domain holds its own toolkit commit, so syncing governance today does not move the revision standards measures against, and each domain reports the upstream commits touching its own source path. Running any sync stamps that domain, and the report names the ones still unstamped.
+
+A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
 Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code.
 
@@ -110,7 +112,7 @@ Tooling is not covered by the stamp. Reconcile those configs with `aitk tooling 
 
 `aitk sync <path>` runs every installed domain's sync in sequence. Safe to run on a cadence. It never touches user-owned seed files. Governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
-Standards are the exception inside that run, and the stamp narrows it. A standard the project customized is reported and left alone rather than overwritten. A standard still matching what was installed carries no local edits to lose, so a headless run updates it. On an unstamped project the old blanket rule holds and every drifted standard is left alone. To take the upstream version of a customized file, run `aitk standards sync <path>` interactively, or use `aitk:claude-seed-sync` below to merge section by section.
+Standards are the exception inside that run, and the stamp narrows it. A standard the project customized is reported and left alone rather than overwritten. A standard still matching what was installed carries no local edits to lose, so a headless run updates it. An unstamped project reaches the same split through the history fallback, so a headless run updates every standard it can prove untouched and refuses while any file resists attribution. To take the upstream version of a customized file, run `aitk standards sync <path>` interactively, or use `aitk:claude-seed-sync` below to merge section by section.
 
 ### Targeted
 

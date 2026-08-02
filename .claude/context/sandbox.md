@@ -40,7 +40,7 @@ Run `aitk sandbox` with no args for the live catalog. Categories and scenarios e
 - A run reports pass, fail, or unchecked. Absence of a declaration is `unchecked` rather than a pass, since a scenario that asserts nothing cannot pass, and rather than a failure, since failing every undeclared arm would make the harness unusable while expectations roll out. Only a failure exits non-zero.
 - `unchecked` keeps its name rather than becoming `unproven`. The state already existed when the reporting gap was scoped, and a second word for one state costs more than the clearer label gains.
 - The per-arm verdict was never the coverage problem. A single arm reports `unchecked` honestly, but reading that number across the catalog meant running `find` by hand, so the rollout had no surface. `aitk sandbox coverage` is that surface, and it counts scenarios and arms separately because the two denominators disagree.
-- `--strict` inverts the exit rule for a caller that has finished arming. It stays opt-in, since the default has to keep 49 undeclared scenarios runnable.
+- `--strict` inverts the exit rule for a caller that has finished arming. It stays opt-in, since the default has to keep 48 undeclared scenarios runnable.
 - Standards and gov rules provision through the real installer rather than a copy. Both copies reimplemented an installer's selection rules, and the standards one omitted the `index.md` a real install rebuilds while neither wrote the `.claude/aitk.json` stamp. A sandbox now carries what a target carries, which is what makes a rule change observable to a run.
 - Seeds stay a raw copy. `aitk claude init` does more than drop files, and the scenarios depending on the current shape outnumber the drift the copy risks. Hooks ship inside the seed tree, so a hook change is already reachable by any scenario declaring `SANDBOX_INJECT_SEEDS`.
 - The two headless harnesses stay separate. `scripts/eval/run.sh` extracts its fixture to a `mktemp -d` carrying no seed, which is the opposite of the sandbox's need to look like a real installed project. Merging them would cost one of the two its defining property. The path was `scripts/standards/authoring-test/` until `#668` moved it.
@@ -87,7 +87,7 @@ aitk() {
 
 ## Standing limits
 
-Five things a run cannot reach. Each is a property of the harness rather than a gap to close per task, so a claim depending on one is hand-verified and should say so.
+Six things a run cannot reach. Each is a property of the harness rather than a gap to close per task, so a claim depending on one is hand-verified and should say so.
 
 - Marketplace install behavior. `run.sh` points `--plugin-dir` at a worktree instead of installing the plugin, so anything whose behavior depends on a real install stays outside the harness.
 - A mid-session rule change. Rules are discovered at session start and the harness spawns a fresh session per run, so this binds the session doing the editing rather than the run.
@@ -95,6 +95,8 @@ Five things a run cannot reach. Each is a property of the harness rather than a 
 - The standards fallback of a skill the branch changed. A skill body citing `.claude/standards/<file>.md` names `${CLAUDE_SKILL_DIR}/../../standards/<file>.md` as its fallback, and `${CLAUDE_SKILL_DIR}` expands to wherever the harness found the skill. Resolved through `--plugin-dir` the fallback is `<root>/standards/`, which is a different tree from the sandbox's `.claude/standards/` and stays distinguishable. Resolved through injection the base is `<sandbox>/.claude/skills/<name>/`, so the fallback is `<sandbox>/.claude/standards/`, byte-identical to the project path the same citation names. Both branches land on one file and no assertion can tell them apart. Since `inject_changed_skills` injects exactly the skills the branch changed, the inversion is that the skills most in need of the check are the ones injection disqualifies. Checking a skill's fallback means leaving its body alone on that branch.
 
 - A write landing outside both the sandbox tree and the four watched scratch directories. `snapshot_tree` reads the sandbox, and `run.sh` watches `.claude/plans/`, `.claude/review/`, `.claude/memory/`, and `.claude/tasks/` under the toolkit roots for escapes. A session can reach past all of that, to a home directory or a sibling worktree, and nothing reports it. The boundary is stated rather than universal because there is no viable universal one, and `scripts.md` holds the underlying observation that a harness diffing a fixed set of directories cannot see a write outside them, which is true of the eval fixture snapshot in the same way.
+
+- Git state. `snapshot_tree` excludes `.git`, and the seven declaration keys read paths, file content, the write list, the reply, and the turn count, so no key reaches a commit, a branch, or a rewritten history. `git-stage` and `git-split` are the skills this costs most, since rewriting commits and branches is the largest blast radius in the catalogue and a `reply` assertion over either covers what the skill said rather than what it did. Closing it means a new assertion kind rather than another declaration, so both skills stay `should-be-asserted` until one exists.
 
 The fourth is a provisioning consequence rather than a harness defect, and closing it would mean changing what injection copies or what `--plugin-dir` points at. Both trade one unreachable case for another, so it is recorded rather than fixed.
 
@@ -193,13 +195,21 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Twelve arms across six scenarios out of fifty-five is 10 percent of scenarios, not the 22 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
+Scenarios and arms count separately. Fourteen arms across eight scenarios out of 56 is 14 percent of scenarios, well under the 25 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
 
-Neither number weighs an arm by what it asserts. Three of the twelve ran one assertion each when they landed on 2026-08-02, that `.claude/standards/skill.md` is absent, which is a claim about the arm's own provisioning rather than about the skill under test. Moving the sandbox outside the repository the same day brought their output back inside the snapshot and each gained the assertions its escaped file had blocked. The count still reads as scenarios reached rather than behavior covered, since nothing in it distinguishes an arm asserting one provisioning fact from an arm asserting four things about a run, and a reader taking 10 percent as skill coverage is reading past what the declarations say plainly.
+Neither number weighs an arm by what it asserts. Three of the fourteen ran one assertion each when they landed on 2026-08-02, that `.claude/standards/skill.md` is absent, which is a claim about the arm's own provisioning rather than about the skill under test. Moving the sandbox outside the repository the same day brought their output back inside the snapshot and each gained the assertions its escaped file had blocked. The count still reads as scenarios reached rather than behavior covered, since nothing in it distinguishes an arm asserting one provisioning fact from an arm asserting eleven things about a run, and a reader taking 14 percent as skill coverage is reading past what the declarations say plainly.
 
-The twelve scenarios declaring `SANDBOX_INJECT_STANDARDS` or `SANDBOX_INJECT_GOV` are the first candidates for arming. Moving to the real installers narrowed what they receive from all 38 source rules to the 20 in `base`, and none of the twelve declares expectations, so nothing in the harness would detect a scenario that depended on a rule outside `base`. The overlap against the twelve armed arms is empty, and the three arms added on 2026-08-02 declare neither flag by design, so no existing assertion is affected, but the residual is invisible by exactly the measure this section exists to report.
+The twelve scenarios declaring `SANDBOX_INJECT_STANDARDS` or `SANDBOX_INJECT_GOV` were recorded as the first candidates for arming, on the grounds that moving to the real installers narrowed what they receive from all 38 source rules to the 20 in `base` and nothing would detect a scenario depending on a rule outside it. That reads stronger than it is. Both flags are booleans naming no rule, so which scenario depends on which rule resolves by reading the twelve skill bodies rather than by paying for twelve arms, and the rule below selects on damage instead. The overlap against the fourteen armed arms is still empty and no existing assertion is affected.
 
 A scenario enumerates from its script under `scripts/sandbox/<category>/`, not from the fixture tree. An unarmed scenario has no fixture directory to find, so counting fixtures would hide exactly the arms the report exists to surface. A declaration sitting at the command root belongs to the unnamed arm and reports as `(default)`.
+
+### What earns a declaration
+
+Arm a skill when a wrong run is silent and the damage lands in a target project rather than in the sandbox. Blast radius decides rather than a coverage percentage. A percentage names no particular skill and counts an arm asserting one provisioning fact the same as one asserting eleven things about a run, so it rewards whichever arm is cheapest to write next.
+
+The rule explains the arms already written as well as the next ones. The five skills armed before it was stated all mutate a tree with no reader watching, so it describes existing practice rather than only constraining what comes next. `claude-seed-sync` and `setup-init` were the two it selected that the harness could reach on 2026-08-03, and `claude-tasks` is selected while carrying no scenario at all, so its fixture is its own batch rather than a declaration.
+
+The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit above. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
 
 ### The skill census
 
@@ -209,9 +219,9 @@ A scenario enumerates from its script under `scripts/sandbox/<category>/`, not f
 aitk sandbox coverage --skills  # per-skill census, scenario view kept
 ```
 
-A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default and the work queue the arm batches consume. `exempt` means no arm should be written, and it holds only with a reason.
+A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Five of 55 skills are asserted where six of 56 scenarios are, because `infra:wiki` is armed and drives the `aitk wiki` CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against.
+The denominators disagree on purpose. Seven of 55 skills are asserted where eight of 56 scenarios are, because `infra:wiki` is armed and drives the `aitk wiki` CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against.
 
 Pairing tries two spellings, `<category>-<command>` first and bare `<command>` second. The first alone reaches 29 skills, and the fallback is what pairs `claude/setup-init.sh` to `setup-init` rather than to a `claude-setup-init` that does not exist. Stating one spelling while shipping two is what let the earlier audit report a paired skill as unpaired, so the rule lives in `skillForScenario` and this paragraph describes code rather than substituting for it.
 

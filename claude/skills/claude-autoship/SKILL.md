@@ -11,7 +11,7 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 ## Guards
 
 - All `.claude/plans/` and `.claude/review/` reads resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
-- Derive `<slug>` per Deriving the branch slug in `.claude/standards/skill.md`, or `${CLAUDE_SKILL_DIR}/../../standards/skill.md` when the project does not have it. This skill takes the stop rather than the `latest` fallback, since it commits and opens a pull request. If empty, stop: `❌ Detached HEAD. Checkout the feature branch first.`
+- Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. This skill takes the stop rather than the `latest` fallback, since it commits and opens a pull request. If empty, stop: `❌ Detached HEAD. Checkout the feature branch first.`
 - If `.claude/plans/feature-<slug>.md` does not exist at the main worktree root, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
 - If the working tree has uncommitted changes unrelated to the plan, stop: `❌ Uncommitted changes outside the plan. Commit or stash before autoshipping.`
 
