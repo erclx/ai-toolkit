@@ -13,7 +13,7 @@ Without this skill, an issue takes the shape of whatever the session was saying.
 
 - Read the issue reference and the prose standard before formatting
 - Confirm a remote and an authenticated `gh` before composing, so the failure lands before a body is written rather than after
-- Scan the title and body for banned characters as an explicit step. Reading the standard does not catch them, because the text is generated after the read.
+- Scan the title and body for banned characters and internal phase labels as an explicit step. Reading the standard does not catch them, because the text is generated after the read.
 - Map the type to exactly one label, so filing and filtering agree
 - Ask once when the type is ambiguous between a bug and a task, since the label follows from it and a wrong label buries the issue
 - Pass the body through a file and remove it afterward, so shell quoting cannot mangle it
