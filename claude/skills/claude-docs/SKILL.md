@@ -9,11 +9,11 @@ description: Updates `.claude/` planning docs to reflect decisions made during t
 
 - If no `.claude/` directory exists, stop: `❌ No .claude/ directory found. Run aitk claude init to set up the workflow.`
 
-The bail on a session that changed nothing lives at the end of Step 2, because it needs the diff to decide.
+The skip for a session that changed nothing lives at the end of Step 2, because it needs the diff to decide. It drops the doc rewrite alone. The diff-driven sweeps in Steps 4 and 5 still run.
 
 ## Diff baseline
 
-Steps 2, 4, and 7 share one diff on the usable path. An unusable baseline splits them, per the rule below. Resolve the base ref once and reuse it:
+Steps 2, 4, 5, and 7 share one diff on the usable path. An unusable baseline splits them, per the rule below. Resolve the base ref once and reuse it:
 
 ```bash
 git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
@@ -32,9 +32,9 @@ An unusable baseline costs only the committed half. `git diff <base> HEAD` is em
 
 **Step 2 recovers the committed half.** Read `git log -p -1`, widening to `git log -p -<n>` when the session spans several commits, and read the candidate task files against the working tree. That yields names and content both, which is what lets Step 2 decide on behavior rather than on filenames. A fresh `git init` on `main` with no remote is the ordinary shape of a scaffolded project, so this path carries the evidence rather than covering an edge case.
 
-**Steps 4 and 7 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, each reporting the warning its own step names.
+**Steps 4, 5, and 7 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, each reporting the warning its own step names.
 
-Never substitute the whole tree for a missing baseline, and do not reuse Step 2's commit read in these two for consistency. On a fresh `git init` project the last commit is the scaffold commit, so `git log -p -1` is the whole tree by another route. Step 2 tolerates that because it only reads, and it matches conservatively against outcomes already on the board. These two write, so the same set stubs a wireframe for every uncovered surface in the repository and rewrites every context entry that tree touches.
+Never substitute the whole tree for a missing baseline, and do not reuse Step 2's commit read in these three for consistency. On a fresh `git init` project the last commit is the scaffold commit, so `git log -p -1` is the whole tree by another route. Step 2 tolerates that because it only reads, and it matches conservatively against outcomes already on the board. These three write, so the same set stubs a wireframe for every uncovered surface in the repository, stubs a diagram for every source signal the scaffold introduced, and rewrites every context entry that tree touches.
 
 Widening what a step reads is safe. Widening what a step writes is not.
 
@@ -70,7 +70,9 @@ Keep the match conservative:
 - Match on the behavior an outcome describes, not on filenames or commit subjects. The path match above only narrowed which task files to open.
 - Leave an outcome `[ ]` when the diff is ambiguous. An unmarked shipped outcome costs one manual edit, while a wrongly marked one hides work that never happened.
 
-Stop here when the session shows no divergence **and** the diff matches no queued outcome: `✅ No doc updates needed. Session matched the original plan.` Both conditions have to hold. Shipping a queued task exactly as planned is the ordinary case and it reads as no divergence, so a session-only bail would stop the skill before it reaches the marking step.
+Skip Step 3 when the session shows no divergence **and** the diff matches no queued outcome, reporting `✅ No doc updates needed. Session matched the original plan.` Both conditions have to hold. Shipping a queued task exactly as planned is the ordinary case and it reads as no divergence, so a session-only skip would drop the marking step with it.
+
+Continue to Step 4 rather than stopping the skill. Steps 4 and 5 read the diff rather than the session, so they find work in exactly the sessions this skip describes. A project with an empty task board making a mechanical change satisfies both conditions above, and stopping here would put an uncovered surface and an uncovered diagram kind out of reach in every such project.
 
 ## Step 3: update
 
@@ -127,13 +129,59 @@ Output one line per finding:
 
 If the sweep finds nothing, skip silently.
 
-## Step 5: flag diagram staleness
+## Step 5: diagram staleness sweep
 
-If `.claude/DIAGRAMS.md` exists at `pwd` and this session edited any source `claude-diagram` reads (planning docs, deploy or infrastructure config, top-level component folders), surface a one-line warning:
+Skip this step silently when `.claude/diagrams/` does not exist at `pwd` or holds no entry. An entry is any `*.md` other than `index.md`, so a folder carrying the catalog alone is an empty set. A project that has never run `claude-diagram` is not told on every ship that it has holes. When the baseline is unusable, scope the sweep to the working tree and untracked files, and skip it only when that set is empty, reporting `⚠ No diff to scope against. Skipped the diagram sweep.`
 
-`⚠ DIAGRAMS.md may be stale. Run /claude-diagram`
+This step writes frontmatter and never content. Mermaid bodies and explanation paragraphs are off limits to it. A change that removes a module does not carry the new correct shape of the picture, so rewriting a diagram from it produces a confident wrong diagram, which is worse than the stale one it replaced. The author redraws by running `claude-diagram`.
 
-Do not regenerate inline. The author decides when to re-run the diagram skill. Skip the step silently when `.claude/DIAGRAMS.md` does not exist.
+Follow `.claude/standards/diagrams.md` for the marker fields this step writes, or `${CLAUDE_SKILL_DIR}/../../standards/diagrams.md` when the project does not have it.
+
+Both findings key on something literally entering or leaving the tree. Anything looser fires on ordinary feature work and rebuilds the ignored warning this sweep replaced.
+
+**Contradicted entries.** For each entry, collect the backticked code paths its explanation cites. When a cited path is in the diff as a delete or a rename and no longer exists in the tree, append a `stale` key to that entry's frontmatter naming the path:
+
+```yaml
+stale: 'src/gov/install.ts no longer exists'
+```
+
+Append that key alone. Never edit `verified`, `title`, `description`, or `category`, and never touch the body. When the entry already carries `stale`, extend the existing line rather than adding a second key.
+
+**Uncovered kinds.** The standard fixes one source signal per kind. Stub a kind when the diff adds its signal file and no entry covers that kind. The trigger is the signal appearing, never a file under it changing, so a branch editing a component folder that `components.md` already covers produces nothing here.
+
+| Signal added by the diff                                                                                           | Kind stubbed when absent |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
+| `.claude/REQUIREMENTS.md`                                                                                          | `system-context.md`      |
+| `.claude/ARCHITECTURE.md`                                                                                          | `components.md`          |
+| A deploy or infrastructure config (`Dockerfile`, `.github/workflows/*`, `vercel.json`, `fly.toml`, `compose.yaml`) | `deployment.md`          |
+
+Leave `request-flow.md` and `data-pipeline.md` out. Neither has a source signal a diff can point at, so a rule covering them would guess at when they went stale.
+
+Write the stub at `.claude/diagrams/<kind>.md`:
+
+```markdown
+---
+title: <Kind as title case>
+description: 'TODO: name the question this entry settles.'
+category: <the category the standard fixes for this kind>
+verified: 'TODO: never verified'
+---
+
+# <Kind as title case>
+
+TODO: draw this. `<signal path>` entered the tree with no entry covering this kind.
+
+Run `/claude-diagram <kind>` to replace the stub.
+```
+
+No mermaid fence. An empty stub is visible debt that reaches review through the branch diff, while a generated diagram nobody rendered is invisible debt that reads as verified. A fence here invites the next session to fill it in without a render.
+
+Output one line per finding:
+
+- `⚠ Diagram stale: .claude/diagrams/<kind>.md cites <path>, which left the tree`
+- `📝 Stubbed: .claude/diagrams/<kind>.md`
+
+If the sweep finds nothing, skip silently. An ordinary change that adds no signal and deletes no cited path produces no output at all.
 
 ## Step 6: flag CLAUDE.md drift
 

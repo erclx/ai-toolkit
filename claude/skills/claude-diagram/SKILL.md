@@ -55,6 +55,7 @@ One file per kind at `.claude/diagrams/<kind>.md`. Write only the files Step 2 s
 title: <what the entry answers, sentence case>
 description: <the question it settles and the signal that drives it>
 category: <the kind, matching the standard>
+verified: 'TODO: never verified'
 ---
 
 # <Same as title>
@@ -71,7 +72,11 @@ category: <the kind, matching the standard>
 <one to three explanation paragraphs>
 ````
 
+Write `verified` as the literal `TODO: never verified` here, quoted so the colon parses. Step 6 replaces it once a render has been read back, so a SHA written beside the diagram would assert a check that has not run yet. The placeholder is what keeps a render-less project conforming, since Step 5 sends a failed render past Step 6 and nothing stamps the entry. Carry an existing entry's current value across untouched when this pass is rewriting one, and let Step 6 replace that instead.
+
 When sources came from a code scan rather than planning prose, lead the explanation with `Source: code.` and add `Fidelity is lower than prose-driven diagrams. Verify against the project's intent.`
+
+The code paths the explanation cites are what the `claude-docs` sweep watches for staleness, so cite paths that exist and spell them exactly.
 
 Quote node labels containing spaces or special characters with double quotes (`A["Web shell"]`). Avoid parentheses inside labels, they break some renderers. Use `<br/>` for line breaks inside labels.
 
@@ -122,6 +127,20 @@ Read each PNG and judge the picture against what the entry means to say. Apply t
 Fix the source and re-render. Stop after two correction passes on an entry.
 
 When a defect survives, keep the entry and name the defect in the chat output. A diagram whose author states the flaw is recoverable. A wrong diagram reported as verified is not.
+
+### Stamp the marker
+
+Stamp every entry that passed. Set `verified` to the short SHA of `HEAD` and today's ISO date, and delete any `stale` key the `claude-docs` sweep left on it:
+
+```bash
+git rev-parse --short HEAD
+```
+
+The result is one line, `<sha> <date>`, as in `73e9a3f8 2026-08-02`.
+
+Stamp nothing else. An entry Step 2 left alone was never re-checked, an entry whose defect survived is known wrong, and an entry whose render was skipped was never seen. All three keep the marker they already carry, and Step 7 names the last two. The field means a render was read back and judged correct, so stamping any of these spends the only signal a reader has on a diagram nobody confirmed.
+
+A migration pass stamps on the same rule. Conversion writes entries, Step 5 renders them, and this step reads them back, so the marker records the commit the split was checked against rather than the commit the flat file was written at.
 
 ## Step 7: chat output
 
