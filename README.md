@@ -15,7 +15,13 @@ claude plugin install aitk@aitk
 
 The skills are then available as `/aitk:<name>`. Run `/reload-plugins` to pick them up inside a session that was already open. Updates arrive on release, so a push to this repo does not reach an installed copy.
 
-Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin does not put it on your path. Follow [development](#development) to link it until it ships to a package registry.
+Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin does not put it on your path. Install it from the registry.
+
+```bash
+bun install --global @erclx/aitk
+```
+
+[Bun](https://bun.sh) is the CLI runtime and has to be on the path first. Confirm the install by resolving `aitk --help`.
 
 ## Why
 
@@ -52,7 +58,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 
 ## Development
 
-Working on the toolkit, or running the CLI in your own terminal, starts from a clone.
+Working on the toolkit starts from a clone. Running the CLI does not, since it installs from the registry.
 
 ### Prerequisites
 

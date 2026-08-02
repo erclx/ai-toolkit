@@ -222,10 +222,10 @@ The record carries every scenario with the arms that declare, plus `totalScenari
 
 ## Docs
 
-`aitk docs` emits the toolkit's own reference docs so an agent in a target project can orient without the toolkit source checked out. The CLI resolves its bundled `docs/` and `.claude/context/` from its install root.
+`aitk docs` emits the toolkit's own reference docs so an agent in a target project can orient without the toolkit source checked out. The CLI resolves `docs/` and `.claude/context/` from its install root, and which of the two it finds depends on how the CLI was installed. A registry install carries `docs/` alone, since `.claude/` is not published. A clone or a linked worktree carries both.
 
-- `aitk docs list [--json]` lists the downstream catalog: the consumer-facing `docs/` surface plus per-domain narrative from `.claude/context/`. Toolkit-internal context entries (`ci`, `development`, `extensions`, `sandbox`) are dropped.
-- `aitk docs <topic>` prints one doc to stdout, resolved by exact name from `docs/` first, then `.claude/context/`. Any doc is reachable by name, including the toolkit-internal topics the list omits.
+- `aitk docs list [--json]` lists the downstream catalog: the consumer-facing `docs/` surface plus per-domain narrative from `.claude/context/` when that root is present. Toolkit-internal context entries (`ci`, `development`, `extensions`, `sandbox`) are dropped. From a registry install the context section is absent rather than empty.
+- `aitk docs <topic>` prints one doc to stdout, resolved by exact name from `docs/` first, then `.claude/context/`. Any doc the install carries is reachable by name, including the toolkit-internal topics the list omits.
 
 Data prints to stdout and the frame to stderr, so `aitk docs <topic> > out.md` captures clean markdown. With no topic and no verb, `aitk docs` runs `list`. An unknown topic names the available topics on stderr and exits 1.
 

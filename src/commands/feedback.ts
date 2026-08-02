@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { deriveSlug, deriveTitle } from '@/commands/feedback-format'
@@ -24,6 +24,15 @@ function timestamp(): string {
   const d = new Date()
   const pad = (n: number): string => n.toString().padStart(2, '0')
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+}
+
+/**
+ * A registry install ships no `.claude/`, so a local write would land inside
+ * `node_modules/` and report a project-relative path the operator cannot find.
+ * The toolkit source is the only root where local scratch reaches a maintainer.
+ */
+function isToolkitSource(): boolean {
+  return existsSync(join(PROJECT_ROOT, '.claude'))
 }
 
 function writeLocal(body: string): string {
@@ -70,9 +79,22 @@ export function register(program: Command): void {
           process.stdout.write(`${url}\n`)
           return
         }
+        if (!isToolkitSource()) {
+          frameError(
+            'gh unavailable and no toolkit source to fall back to. Install gh, or file it at https://github.com/erclx/aitk/issues/new',
+          )
+          process.exit(1)
+        }
         process.stderr.write(
           `${YELLOW}! gh unavailable, wrote local scratch instead${NC}\n`,
         )
+      }
+
+      if (!isToolkitSource()) {
+        frameError(
+          'Local scratch needs the toolkit source. Re-run with --github to open an issue instead.',
+        )
+        process.exit(1)
       }
 
       const filePath = writeLocal(body)
