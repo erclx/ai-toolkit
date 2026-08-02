@@ -161,7 +161,7 @@ EOF
   log_info "  src/components/Button.tsx: token usage in a real component"
   log_info "  REQUIREMENTS.md non-goal: no motion or transitions"
   log_info "Action 1: /aitk:claude-design-extract"
-  log_info "Expect:   populated .claude/DESIGN.md with token tables filled from tokens.css"
+  log_info "Expect:   source path announced, .claude/DESIGN.md token tables filled from tokens.css"
   log_info "Action 2: aitk design render"
   log_info "Expect:   .claude/review/design/index.html with swatches, samples, and bars"
 }

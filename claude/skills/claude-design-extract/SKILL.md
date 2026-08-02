@@ -1,6 +1,6 @@
 ---
 name: claude-design-extract
-description: Drafts `.claude/DESIGN.md` from a project's existing prose and shell UI surfaces using the toolkit seed template. Reads CLAUDE.md, standards, docs, and CLI UI modules to codify visual intent already implicit in the project. Use when asked to "extract the design system", "draft DESIGN.md", "bootstrap design tokens", or "capture the visual system". Do NOT use to mutate an existing `.claude/DESIGN.md`.
+description: Drafts `.claude/DESIGN.md` from a project's existing prose and shell UI surfaces, or proposes token values from `REQUIREMENTS.md` and a `## Personality` section when no UI code exists yet. Use when asked to "extract the design system", "draft DESIGN.md", "bootstrap design tokens", "capture the visual system", "propose a design system", "bootstrap DESIGN.md from scratch", "draft tokens for a greenfield project", or "replace Claude Design onboarding". Do NOT use to mutate an existing `.claude/DESIGN.md`.
 ---
 
 # Design extract
@@ -10,23 +10,39 @@ description: Drafts `.claude/DESIGN.md` from a project's existing prose and shel
 - If `.claude/DESIGN.md` already exists and has content beyond the seed template, stop: `❌ .claude/DESIGN.md already populated. Edit directly or archive the existing file first.`
 - If `aitk` is not on PATH, stop: `❌ aitk CLI not found.`
 
-## Step 1: read source signals in parallel
+Step 1 carries two more stops that apply to one path only. Do not evaluate them before the path is picked.
 
-Read these from the project root, skipping any that do not exist:
+## Step 1: pick the path from what the project already has
+
+Check the project root for UI surfaces: `src/ui.ts`, `src/ui.tsx`, `src/components/**`, `scripts/lib/ui.sh`, and any `*.css`, `tailwind.config.*`, or `theme.*`.
+
+- Any match takes the source path. Existing code defines the system, so every filled cell traces to a value already in the tree.
+- No match takes the greenfield path. Nothing anchors a value, so every filled cell is a proposal and carries the tag that says so.
+
+The project decides this, never a user flag or an argument. Announce which path ran in one line before Step 2, since the two produce different-looking output from the same skill.
+
+The greenfield path needs a personality paragraph to propose against, and stops without one. The source path needs neither file and skips both stops.
+
+- If `.claude/REQUIREMENTS.md` is missing, stop: `❌ .claude/REQUIREMENTS.md not found. Write requirements before proposing a design system.`
+- If `.claude/REQUIREMENTS.md` has no `## Personality` section, stop: `❌ .claude/REQUIREMENTS.md missing ## Personality section. Add a paragraph describing voice and tone before running this skill.`
+
+## Step 2: read source signals in parallel
+
+Read these from the project root on both paths, skipping any that do not exist:
 
 - `CLAUDE.md`: voice, personality, spelling rules
-- `.claude/REQUIREMENTS.md`: worldview and non-goals that shape visual intent
+- `.claude/REQUIREMENTS.md`: the `## Personality` paragraph, worldview, non-goals
 - `.claude/standards/prose.md`: tone constraints
-- `src/ui.ts`, `src/ui.tsx`, `src/components/**`: color codes, typography, spacing constants
-- `scripts/lib/ui.sh`, `scripts/lib/*.sh`: ANSI color codes, frame glyphs, spacing conventions
-- `docs/agents.md`, `docs/index.md`: any output shape or framing rules already documented
-- Any `*.css`, `tailwind.config.*`, or `theme.*` file at the project root
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
+On the source path, also read the UI surfaces matched in Step 1 plus `docs/agents.md` and `docs/index.md` for output shape or framing rules already documented.
+
+On the greenfield path, also read `.claude/ARCHITECTURE.md` for platform, tech stack, and surface type. Do not scan `src/`, stylesheets, or UI modules. Step 1 already established they hold nothing.
+
 Run these reads in parallel. Do not speculatively recurse into every directory.
 
-## Step 2: fetch the seed template
+## Step 3: fetch the seed template
 
 Run this from the project root:
 
@@ -36,20 +52,38 @@ aitk claude seeds list --json | jq -r '.[] | select(.path == ".claude/DESIGN.md"
 
 Use the returned content as the target shape. Keep every section heading and every table header intact. The `aitk design render` parser depends on them.
 
-## Step 3: fill the template
+## Step 4: fill the template
 
-Walk each section once, pulling concrete signals from Step 1:
+Walk each section once. Follow `.claude/standards/prose.md` throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
 
-- **Personality**: one paragraph. Transcribe what `CLAUDE.md` and `.claude/REQUIREMENTS.md` say about voice, tone, and visual feeling. Do not invent rules the source does not state. Follow `.claude/standards/prose.md`: no em dashes, no semicolons, no marketing buzzwords. If nothing matches, write a one-sentence placeholder ending in `? verify`.
+Mark any cell not traced to a source value by appending ` ? verify` inside the cell value, never as a trailing column. The cell stays inside the table shape: `| #ffffff ? verify |`. A trailing `| ? verify` after the row breaks the parser. A prose section takes its uncertainty inline instead, for example `Proposed 150ms ease-out, not yet confirmed.`, because a trailing tag on a sentence renders raw in the preview.
+
+On the source path, the tag marks the exception. On the greenfield path it marks nearly every cell, since the values are speculative until code or a designer anchors them.
+
+### Source path
+
+- **Personality**: one paragraph. Transcribe what `CLAUDE.md` and `.claude/REQUIREMENTS.md` say about voice, tone, and visual feeling. Do not invent rules the source does not state. If nothing matches, write a one-sentence placeholder ending in `? verify`.
 - **Color**: one row per role. Source hex values from the CLI UI files or stylesheets. If a role has no source signal, leave `Value` blank rather than guessing.
 - **Typography**: one row per role. Source families and sizes from stylesheet or theme config. Leave cells blank when no signal exists.
 - **Spacing**: fill the base unit and multipliers from stylesheet tokens or obvious repeated values in the UI code.
 - **Borders**: one row per role. Source from stylesheet or CSS variables.
 - **Motion** and **Iconography**: one line each. Default to `No animation.` and `No custom icons.` when no evidence exists.
 
-Mark any inferred cell by appending ` ? verify` inside the cell value, never as a trailing column. The cell stays inside the table shape: `| display ? verify | | | | |`. A trailing `| ? verify` after the row breaks the parser.
+### Greenfield path
 
-## Step 4: write and render
+Anchor every proposal to a signal, never to a default. "Calm and dense" pins muted grays and tight spacing. A requirements non-goal of "no motion" makes Motion read `No animation.` with no tag. A CLI-only surface leans Typography monospaced and keeps Borders minimal.
+
+- **Personality**: transcribe the `## Personality` paragraph from `.claude/REQUIREMENTS.md` verbatim. This is the one section that is not a proposal. No tag.
+- **Color**: one row per role. Rewrite the Intent cell in personality language, for example `warm off-white page canvas` instead of the seed default `page canvas`. Propose hex values matching the personality. Dense and calm gives low saturation and high text contrast. Playful gives saturated accents. Every Intent and Value cell gets `? verify`.
+- **Typography**: one row per role. Propose families fitting the platform, system UI for web, monospaced for CLI tools, serif for editorial, and a harmonious scale. Every cell gets `? verify`.
+- **Spacing**: propose a base unit matching density intent. Dense gives a 4px base, roomy gives 8px. Keep the Multiplier column as the seed ships it, no tag. Only the Value column gets `? verify`.
+- **Borders**: propose radius and width per role. Sharp and technical gives a small radius, soft gives a larger one. Every Radius and Width cell gets `? verify`.
+- **Motion**: one line. Write `No animation.` when the requirements forbid motion. Otherwise phrase the uncertainty inline.
+- **Iconography**: one line. Propose style and source library matching personality, phrasing the uncertainty inline.
+
+Do not invent non-goals. A proposed motion line is fine when neither the personality paragraph nor the requirements rule motion out.
+
+## Step 5: write and render
 
 Write the filled template to `.claude/DESIGN.md` from the project root. Then run:
 
@@ -65,5 +99,5 @@ The command writes an HTML plus CSS preview to `.claude/review/design/`. Output 
 📝 Wrote .claude/DESIGN.md
 📝 Wrote .claude/review/design/index.html
 
-N cells marked `? verify`. Open the preview and confirm before committing.
+Ran the <source|greenfield> path. N cells marked `? verify`. Open the preview and confirm before committing.
 ```

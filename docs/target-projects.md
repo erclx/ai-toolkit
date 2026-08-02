@@ -56,7 +56,7 @@ Keep the `## Scripts` table in `.claude/context/development.md` current as scrip
 Scaffold installs tooling and seeds. It does not fill the planning docs or the design system. Complete those before the first feature session:
 
 1. Fill `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`. The seed provides the files, the scope and decisions are yours to write.
-2. For a UI project, invoke `aitk:claude-design-propose` to draft `.claude/DESIGN.md` from the requirements and a `## Personality` section. Skip for non-UI projects.
+2. For a UI project, invoke `aitk:claude-design-extract` to draft `.claude/DESIGN.md`. With no UI code yet it takes the greenfield path and proposes tokens from the requirements and a `## Personality` section. Skip for non-UI projects.
 3. Optionally invoke `aitk:claude-diagram` to draft entries under `.claude/diagrams/` from the architecture and the requirements. One file per diagram kind, so a later refresh of one kind leaves the others untouched. It renders each diagram it writes to verify the layout, which downloads the Mermaid CLI on first use and takes about 15 seconds. A machine without a renderer still gets the diagrams and is told which check was skipped. Each entry records the commit and date it was last verified against, and `aitk:claude-docs` maintains that record on every ship: it annotates an entry whose cited code path left the tree and stubs a kind whose source signal arrived uncovered. The sweep writes frontmatter only, so a diagram's picture and prose change when you redraw them and at no other time.
 4. Start the feature loop. See [AI workflow](ai-workflow.md) for the per-feature sequence.
 

@@ -12,7 +12,7 @@ Per-domain narrative loaded on demand
 - [Claude plugin](claude-plugin/index.md): Plugin skills shipped to target projects, the aitk claude CLI, and overlap with built-in Claude Code features. Start with overview.
 - [CLI](cli.md): TypeScript entry point, the exec boundary to bash, and the TS-native command domains
 - [Context model](context-model.md): Three-tier context loading, which tier holds what, and how context entries get populated at ship time
-- [Design](design.md): DESIGN.md token shape, extract skill, render command
+- [Design](design.md): DESIGN.md token shape, extract skill and its two paths, render command
 - [Development](development.md): Local dev workflow, scripts, and husky hooks
 - [Extensions](extensions.md): External browser and editor extensions
 - [Governance](governance.md): Path-scoped Claude rules, stacks, install and sync

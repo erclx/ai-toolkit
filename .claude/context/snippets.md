@@ -79,7 +79,7 @@ aitk snippets create
 
 Use `aitk snippets create`. It handles file and folder creation. For manual additions, create a `.md` file in the correct folder using a kebab-case name.
 
-The `create-snippet` skill resolves its write surface at either location: `snippets/` at the root when present (the toolkit repo), otherwise `.claude/snippets/` (a target project).
+The `create-standard` skill also writes snippets, resolving the surface at either location: `snippets/` at the root when present, the toolkit repo, otherwise `.claude/snippets/`, a target project. It absorbed `create-snippet` in `0.18.0`, which keeps a pointer body until `0.19.0`.
 
 ## Adding a category
 
