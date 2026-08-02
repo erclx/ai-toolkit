@@ -9,22 +9,42 @@ Applies to each authored standard in the folder. Skip for `index.md`, which is g
 
 ## Overview
 
-A standard is a target-facing authoring convention for one document type. It installs into a project under `.claude/standards/` and is consumed by skills and developers alike. This file governs itself, so every rule below applies to it.
+A standard is a target-facing authoring convention for one document type, or for one attribute carried across every document. It installs into a project under `.claude/standards/` and is consumed by skills and developers alike. This file governs itself, so every rule below applies to it.
+
+## Scope
+
+Governs what an authored standard contains: its stated jurisdiction, success criterion, frontmatter, structure, and rule phrasing.
+
+Does not govern:
+
+- The voice, punctuation, and formatting a standard is written in: `prose.md`
+- The shape of any artifact a standard governs, which is that standard's own subject
+- Which standards a project installs and where they land, which is a delivery concern rather than an authoring one
 
 ## What a working standard looks like
 
 A standard answers these questions. Each can be answered wrong, which is what makes them a test rather than a preamble.
 
-- Which single document type does this govern, and where does that document live?
+- Which single document type or attribute does this govern, and where does it apply?
 - Can an author who has seen no example produce a conforming document from this file alone?
 - Does every rule state a shape the document must have, rather than a fact about the repository that happens to store it?
 - What does a conforming document achieve, stated so a reviewer can call one non-conforming without appealing to taste?
 
 A standard failing these questions is non-conforming even when it satisfies every shape rule below.
 
-## Scope
+## Scoping rules
 
-- Govern one document type per standard. Split unrelated conventions into separate files.
+### Declaring scope
+
+- Govern one document type per standard, or one attribute across every document. Split unrelated conventions into separate files.
+- Open with a `## Scope` section stating what the standard governs and what it does not, placed above the shape rules. A standard that specifies shape exhaustively and jurisdiction nowhere cannot refuse a rule, so the rule with no obvious owner lands in whichever standard sits nearest.
+- Write it as one line naming the artifact or attribute and where it applies, then a `Does not govern:` list. Give each entry the excluded concern and the sibling standard that owns it, named by bare filename since standards install as siblings.
+- Declare a boundary from both sides. A yield, an exemption, or a handoff stated in one standard alone is never checked against the standard on the other side of it, which is how two files come to claim the same rule or neither does.
+- Separate a jurisdiction exclusion from a content exclusion. The first names a concern another standard owns and belongs in `## Scope`. The second names what does not belong inside the document and stays with the shape rules. Merging them puts a boundary claim where no sibling will read it.
+- Stay silent on a section the standard holds today but should not own. Claiming it makes the scope statement false the moment it moves, and the mismatch is the evidence that moves it.
+
+### Staying inside it
+
 - Name no path, filename, or folder outside the document type the standard governs. A standard reaches projects whose layout is their own, so a path borrowed from the authoring repository is wrong in a target and nothing reports it.
 - State the rule, never the mechanism enforcing it. Hooks, scripts, checks, and skill catalogs are facts about one repository. Name the condition the document must meet and let the enforcing surface name its own case.
 - Invent inline examples rather than citing a real file elsewhere in the project. A cited file moves or is deleted and the standard goes stale in silence.
