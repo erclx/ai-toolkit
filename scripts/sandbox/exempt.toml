@@ -1,0 +1,38 @@
+# Skills a sandbox run cannot assert, each with the reason it cannot.
+#
+# `aitk sandbox coverage --skills` reads this. An entry here is a claim that no
+# arm should be written, so it needs a reason a later reader can check and
+# overturn. A skill left out of this file reports `should-be-asserted`, which is
+# the honest default.
+#
+# A table carrying no reason is an error rather than a skipped entry, and so is
+# a file that does not parse. A dropped exemption is invisible in the counts:
+# the skill rejoins the work queue someone already ruled it out of, with nothing
+# naming the entry that stopped counting.
+#
+# The reason cannot live in the arm's `manual` array. `resolveVerdict` fails any
+# `expect.toml` declaring zero mechanical assertions, so a declaration holding
+# only an exempt reason goes red the moment it is written.
+#
+# Two kinds of reason belong here and nothing else does:
+#
+#   - A harness capability limit, where the checker cannot reach the effect.
+#   - A skill that produces no artifact, so there is nothing to assert over.
+#
+# "Nobody has written one yet" is not a reason. That is `should-be-asserted`,
+# and that list is the work queue the arm batches consume.
+
+[setup-plugins]
+reason = "Writes user-scoped plugin state on the machine via the claude plugin CLI. The checker asserts over the sandbox tree, which that write never enters."
+
+[toolkit-cli]
+reason = "Reference only. Its body forbids running the commands it describes, so a correct run produces no artifact to assert over."
+
+[systematic-debugging]
+reason = "Gates how other work proceeds and writes nothing of its own. What it changes is the shape of a later skill's run, which no path assertion over this skill can see."
+
+[session-resume]
+reason = "Reads tracked work and context and writes nothing. A run leaves the tree byte-identical, so every mechanical assertion would pass on a session that did nothing."
+
+[toolkit-feedback]
+reason = "Writes into the toolkit's own .claude/review/ rather than the project it runs in. run.sh reports that as an escape and cannot assert its content, since the path is outside the tree the snapshot covers."

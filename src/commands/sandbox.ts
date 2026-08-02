@@ -4,6 +4,11 @@ import { join } from 'node:path'
 import type { Command } from 'commander'
 import { PROJECT_ROOT, execScript } from '@/exec'
 import {
+  assertedPercent,
+  collectCensus,
+  type CensusReport,
+} from '@/sandbox/census'
+import {
   collectCoverage,
   coveragePercent,
   type CoverageReport,
@@ -100,6 +105,7 @@ interface CheckOptions {
 interface CoverageOptions {
   readonly json?: boolean
   readonly strict?: boolean
+  readonly skills?: boolean
 }
 
 function getCategories(): string[] {
@@ -245,20 +251,105 @@ function reportCoverage(report: CoverageReport): void {
   else logInfo(summary)
 }
 
+/**
+ * Names the skills nothing can fail, which is the work queue the arm batches
+ * consume. Exempt entries print their reason, since an exemption with no reason
+ * beside it is indistinguishable from a skill nobody has got to yet.
+ */
+function reportCensus(report: CensusReport): void {
+  const shouldBe = report.skills.filter(
+    (s) => s.verdict === 'should-be-asserted',
+  )
+  const exempt = report.skills.filter((s) => s.verdict === 'exempt')
+
+  if (shouldBe.length > 0) {
+    logStep('No arm can fail these')
+    for (const entry of shouldBe)
+      logWarn(
+        `${entry.skill} (${entry.scenarios.length === 0 ? 'no scenario' : entry.scenarios.join(', ')})`,
+      )
+  }
+
+  if (exempt.length > 0) {
+    logStep('Exempt')
+    for (const entry of exempt) logInfo(`${entry.skill}: ${entry.reason}`)
+  }
+
+  // A wrong exemption is the one way this report can overstate itself, so both
+  // kinds print as errors even on a run that is otherwise clean. They separate
+  // because the reader checks a different thing: whether the skill left the
+  // tree, or whether an arm landed and the entry outlived its reason.
+  if (report.staleExemptions.length > 0) {
+    logStep('Exemptions naming no shipped skill')
+    for (const skill of report.staleExemptions) logError(skill)
+  }
+
+  if (report.supersededExemptions.length > 0) {
+    logStep('Exemptions an arm now asserts')
+    for (const skill of report.supersededExemptions)
+      logError(`${skill}, delete the entry`)
+  }
+
+  logStep('Skills')
+  const summary =
+    `${report.asserted}/${report.totalSkills} skills asserted ` +
+    `(${assertedPercent(report)}%), ${report.shouldBeAsserted} should be, ` +
+    `${report.exempt} exempt`
+  if (report.shouldBeAsserted > 0) logWarn(summary)
+  else logInfo(summary)
+}
+
 function runCoverage(options: CoverageOptions): void {
   if (reportAbsentScenarioTree()) return
 
   intro('aitk sandbox coverage')
 
   const report = collectCoverage(PROJECT_ROOT)
+
+  // A broken `exempt.toml` reads as a caller error, not as a crash. The parser
+  // throws rather than returning a smaller set, since a dropped exemption is
+  // invisible in the counts, and the conversion belongs here for the reason
+  // `resolveVerdict` catches its own parse: a typo in a declaration should read
+  // the way a pattern that does not compile does rather than as a stack trace.
+  let census: CensusReport | undefined
+  if (options.skills === true) {
+    try {
+      census = collectCensus(PROJECT_ROOT, report)
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error)
+      reportCoverage(report)
+      logStep('Skills')
+      logError(`Cannot read the exemptions: ${reason}`)
+      outro()
+      process.exitCode = 1
+
+      return
+    }
+  }
+
+  // The scenario view stays whichever way `--skills` is set. The two count
+  // different denominators, and replacing one with the other loses the scenario
+  // rollout the strict gate is written against.
   reportCoverage(report)
-  if (options.json === true) process.stdout.write(`${JSON.stringify(report)}\n`)
+  if (census !== undefined) reportCensus(census)
+
+  if (options.json === true)
+    process.stdout.write(
+      `${JSON.stringify(census === undefined ? report : { ...report, ...census })}\n`,
+    )
 
   outro()
-  process.exitCode =
+
+  // A wrong exemption exits non-zero without `--strict`. It is a wrong claim in
+  // committed data rather than a rollout still in progress, and the whole point
+  // of the verdict is that an exemption someone can no longer check is worse
+  // than no exemption at all.
+  const wrongExemption =
+    (census?.staleExemptions.length ?? 0) > 0 ||
+    (census?.supersededExemptions.length ?? 0) > 0
+  const rolloutIncomplete =
     options.strict === true && report.armedScenarios < report.totalScenarios
-      ? 1
-      : 0
+  process.exitCode = wrongExemption || rolloutIncomplete ? 1 : 0
 }
 
 function runCheck(
@@ -361,6 +452,7 @@ export function register(program: Command): void {
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Emit the report as JSON on stdout')
     .option('--strict', 'Exit non-zero while any scenario declares nothing')
+    .option('--skills', 'Add a per-skill asserted, should-be, or exempt census')
     .addHelpText(
       'after',
       [
@@ -368,8 +460,10 @@ export function register(program: Command): void {
         'Examples:',
         '  aitk sandbox coverage',
         '  aitk sandbox coverage --json',
+        '  aitk sandbox coverage --skills',
         '',
-        'Exit codes: 0, unless --strict and a scenario declares nothing.',
+        'Exit codes: 0, unless --strict and a scenario declares nothing, or',
+        '--skills and an exemption names no shipped skill or one an arm asserts.',
         'Where the scenario tree does not ship, exits 1 without a report.',
       ].join('\n'),
     )
