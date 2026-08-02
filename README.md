@@ -1,8 +1,8 @@
 # aitk
 
-![npm version](https://img.shields.io/npm/v/@erclx/aitk)
-![CI status](https://img.shields.io/github/actions/workflow/status/erclx/aitk/verify.yml)
-![License MIT](https://img.shields.io/npm/l/@erclx/aitk)
+[![npm version](https://img.shields.io/npm/v/@erclx/aitk)](https://www.npmjs.com/package/@erclx/aitk)
+[![CI status](https://img.shields.io/github/actions/workflow/status/erclx/aitk/verify.yml?branch=main)](https://github.com/erclx/aitk/actions/workflows/verify.yml)
+[![License MIT](https://img.shields.io/npm/l/@erclx/aitk)](LICENSE)
 
 One source for your repos' AI conventions. Install once, sync everywhere.
 
