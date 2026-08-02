@@ -6,6 +6,17 @@ consumers: git-commit, git-stage
 
 # Commit message reference
 
+## Scope
+
+Governs a git commit message: subject structure, the type and scope vocabulary, and the body.
+
+Does not govern:
+
+- Branch naming, which shares the type vocabulary: `branch.md`
+- Pull request title and body, which share the subject form: `pr.md`
+- Whether a phase label or a semver tag may appear in a subject: `versioning.md`
+- How changes are grouped into commits, which is a workflow choice rather than a message shape
+
 ## Format
 
 - Structure: `<type>(<scope>): <subject>`

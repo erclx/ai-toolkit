@@ -6,6 +6,17 @@ consumers: git-branch, git-split, git-pr
 
 # Branch reference
 
+## Scope
+
+Governs a git branch name: its structure, its length, and the type vocabulary it draws from.
+
+Does not govern:
+
+- Commit subject format, which shares the type vocabulary: `commit.md`
+- Pull request title and body: `pr.md`
+- Whether a phase label may appear in a branch name: `versioning.md`
+- Deriving an output filename from a branch name, which is a transform the skill running it owns
+
 ## Format
 
 - Structure: `<type>/<description>` or `<type>/<ticket>-<description>`

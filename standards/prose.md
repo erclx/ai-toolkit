@@ -7,6 +7,17 @@ description: Voice, structure, formatting, and language rules for reference mark
 
 Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. Punctuation, formatting, and language rules below stay in force on every surface, including the surfaces no automated check reaches, which is what the scan below is for.
 
+## Scope
+
+Governs voice, punctuation, formatting, and word choice wherever prose is written. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and yields on voice alone where that standard states one.
+
+Does not govern:
+
+- What sections a document has, or what belongs in each: the standard for that document type
+- Which frontmatter fields a document carries, which is that standard's own subject. This file governs the wording of a `title` and a `description` and nothing else about them.
+- Phase-label and semver discipline: `versioning.md`
+- Code style and language conventions, which are governance rules rather than a standard
+
 ## Voice
 
 - Write for a developer who is scanning, not studying. Every sentence should be understandable on first read.

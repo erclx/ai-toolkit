@@ -9,6 +9,18 @@ description: Claude skill structure and authoring rules
 
 Skills give Claude Code domain-specific constraints and rules inline, so it can act immediately without reading all docs. Each skill body contains actionable rules for its domain. Full reference docs are the fallback for edge cases and deeper context. Skills use progressive disclosure: Claude reads only frontmatter at session start (~100 tokens each), matches a query against descriptions, then loads the full skill body.
 
+## Scope
+
+Governs a skill folder as one artifact: `SKILL.md`, its optional sibling `REQUIREMENT.md`, and the bundled `references/`, `scripts/`, and `assets/` beside them.
+
+Does not govern:
+
+- Path-scoped coding rules, which load on a file match rather than on a request match: `rule.md`
+- Single-purpose chat prompts carrying no frontmatter, references, or scripts: `snippets.md`
+- Voice, punctuation, and formatting in a skill body: `prose.md`
+- The domain conventions a skill cites, each of which belongs to the standard that owns it
+- Which skills a project installs, which is a catalog rather than a shape
+
 ## Skill types
 
 Pick the type before writing. It decides the body shape.

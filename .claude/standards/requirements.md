@@ -7,6 +7,16 @@ description: Shape and content rules for .claude/REQUIREMENTS.md
 
 Applies to `.claude/REQUIREMENTS.md`. Describes what the product does and why, not how it works. Update when scope changes, goals shift, or a non-goal is promoted to a feature.
 
+## Scope
+
+Governs the product-scope document at `.claude/REQUIREMENTS.md`: problem, goals, non-goals, MVP features, distribution, stack, and constraints.
+
+Does not govern:
+
+- Rationale for a technical choice: `architecture.md`
+- Sequencing the scope into ordered versions: `roadmap.md`
+- Per-domain structure and narrative: `context.md`
+
 ## What goes in
 
 - The problem being solved and for whom
@@ -19,7 +29,6 @@ Applies to `.claude/REQUIREMENTS.md`. Describes what the product does and why, n
 ## What does not go in
 
 - Implementation details, API names, or internal component references
-- Rationale for tech choices. That belongs in `.claude/ARCHITECTURE.md`.
 - Anything that describes how a feature is built rather than what it does
 
 ## Sections

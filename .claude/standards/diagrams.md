@@ -9,6 +9,17 @@ Applies to per-kind entries under `.claude/diagrams/`. Skip for `index.md`, whic
 
 A diagram entry answers one question about the system with one or more Mermaid diagrams and the prose that makes them readable. It is not a rendering of the file tree. The check for any single line: does it tell a reader something the code layout would not have told them? If not, it belongs in `.claude/context/`.
 
+## Scope
+
+Governs per-kind diagram entries under `.claude/diagrams/`: which question each answers, the Mermaid source, the accessibility fields, and the explanation prose beneath. It states the voice for that prose, which is the yield `prose.md` grants a surface whose own standard sets one.
+
+Does not govern:
+
+- Punctuation, formatting, and language in explanation prose and node labels: `prose.md`, whose bans the yield does not lift
+- The mechanism behind any component a diagram draws: `context.md`
+- UI layout, on-screen copy, and interaction intent: `wireframes.md`
+- The decision record a components diagram is drawn from: `architecture.md`
+
 ## What a working entry looks like
 
 An entry works when a reader who has not opened the repository can answer its question:
@@ -82,7 +93,7 @@ A second entry for one kind takes a suffixed name (`request-flow-admin.md`) and 
 - Do not duplicate prose across entries. An entry that restates its neighbor has taken the neighbor's job.
 - The audience is mixed, so vocabulary runs as a gradient across the set. `System context` assumes no knowledge of the repository. `Deployment` may assume the reader has read the others.
 
-This section states the voice for the surface, which is what claims the yield `standards/prose.md` grants to a surface whose own standard sets it. Explanation prose is pedagogical here and the default developer-facing voice does not apply. The yield covers voice alone. Punctuation, formatting, and language bans stay in force, and the standards-audit hook enforces them on every write.
+This section states the voice for the surface, which is what claims the yield `prose.md` grants to a surface whose own standard sets it. Explanation prose is pedagogical here and the default developer-facing voice does not apply. The yield covers voice alone. Punctuation, formatting, and language bans stay in force.
 
 ## Verification
 
@@ -109,5 +120,5 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 - `System context` has no named source signal beyond `.claude/REQUIREMENTS.md`, so nothing tells a session it went stale. Re-read it when the boundary or the set of external dependencies moves.
 - The `claude-docs` sweep watches two things and writes frontmatter only. It appends `stale` when a path an entry cites leaves the tree, and it stubs a kind when a diff adds the source signal that kind is drawn from. Diagram bodies and explanation paragraphs are off limits to it, because a change that removes a module does not carry the new correct shape of the picture.
 - That watch samples thinly. It sees the one or two paths an entry happened to cite and nothing else, so a change elsewhere leaves the entry looking current. `verified` is what covers the gap, and an entry whose date sits far behind the branch is due a read whether or not anything flagged it.
-- Mermaid blocks are inside fenced code, so the prose-standards hook ignores them. The explanation paragraphs around them are still prose. Follow `standards/prose.md`.
+- The explanation paragraphs around a Mermaid block are prose and follow `prose.md`. The fenced block itself is not, which is why a check scoped to prose is the wrong thing to rely on for what sits inside it.
 - The punctuation bans still apply to node and subgraph labels, and nothing checks them there. An em dash in a label passes every gate the repository has, so read the labels before shipping the entry.

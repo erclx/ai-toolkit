@@ -6,6 +6,17 @@ consumers: git-split, git-pr
 
 # Pull request reference
 
+## Scope
+
+Governs a pull request title and body: their format and the sections the body carries.
+
+Does not govern:
+
+- Commit subject format, which shares the title form: `commit.md`
+- Branch naming: `branch.md`
+- Whether a phase label or a semver tag may appear in a title or body: `versioning.md`
+- Voice, punctuation, and banned words in pull request prose: `prose.md`
+
 ## Title
 
 - Format: `<type>(<scope>): <subject>`

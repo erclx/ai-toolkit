@@ -7,6 +7,17 @@ description: Phase label vs semver discipline across tasks, PRs, reviews, issues
 
 Two namespaces, kept separate.
 
+## Scope
+
+Governs the two version namespaces, phase labels and semver tags, and which surfaces each may appear on. It is an attribute standard rather than a document-type one, so it applies wherever either namespace is written.
+
+Does not govern:
+
+- The format of a phase label, which is project-specific by the rule below
+- Task filenames and board layout: `tasks.md`
+- Commit subject, branch name, and pull request title format: `commit.md`, `branch.md`, and `pr.md`
+- Voice, punctuation, and formatting in any text carrying a label: `prose.md`
+
 ## Phase labels
 
 Internal coordination vocabulary used in the task board and chat.
