@@ -60,6 +60,15 @@ list_text() {
       description=$(read_frontmatter_field "$file" "description")
       log_info "$name : $description"
     done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+
+    # A domain split into a folder is named by the folder and described by its
+    # generated index, which carries subtitle where a sibling carries description
+    while IFS= read -r file; do
+      name=$(basename "$(dirname "$file")")
+      is_internal_topic "$name" && continue
+      description=$(read_frontmatter_field "$file" "subtitle")
+      log_info "$name : $description"
+    done < <(find "$CONTEXT_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md" | sort)
   fi
 }
 
@@ -96,6 +105,13 @@ list_json() {
       description=$(read_frontmatter_field "$file" "description")
       emit_json_entry "$name" "$description" "" ".claude/context/$(basename "$file")"
     done < <(find "$CONTEXT_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+
+    while IFS= read -r file; do
+      name=$(basename "$(dirname "$file")")
+      is_internal_topic "$name" && continue
+      description=$(read_frontmatter_field "$file" "subtitle")
+      emit_json_entry "$name" "$description" "" ".claude/context/$name/index.md"
+    done < <(find "$CONTEXT_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md" | sort)
   fi
   printf ']'
 }
