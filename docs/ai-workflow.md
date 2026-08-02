@@ -131,7 +131,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `aitk:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                              |
 | `aitk:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                       |
 | `aitk:claude-orchestrate`    | Assert the orchestrator role, refill the ready queue, and dispatch the roadmap, feature, and review skills             |
-| `aitk:claude-diagram`        | Draft `.claude/DIAGRAMS.md` with mermaid diagrams from architecture and code, then verify each rendered image          |
+| `aitk:claude-diagram`        | Draft per-kind mermaid entries under `.claude/diagrams/` from architecture and code, then verify each rendered image   |
 | `aitk:claude-design-propose` | Day one on a UI project, draft `.claude/DESIGN.md` from requirements. Use `claude-design-extract` if UI already exists |
 | `aitk:claude-review`         | In a fresh session, review all changes since main                                                                      |
 | `aitk:claude-pr-review`      | Review an open PR from an independent session, then close the review out against the commits added since               |
