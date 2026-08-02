@@ -28,7 +28,24 @@ A tiny reference project used to exercise the standards audit skill.
 - `bun run check`: lint and typecheck
 EOF
 
-  mkdir -p docs .claude/skills/example
+  mkdir -p docs .claude/skills/example .claude/context
+  cat <<'EOF' >.claude/context/api.md
+---
+title: API
+description: Request handling, routing, and the serialization boundary
+---
+
+# API
+
+## Overview
+
+Owns request handling and the serialization boundary. Everything below the handler belongs to the data domain.
+
+## Layout
+
+- `src/api/` owns handlers and the router
+EOF
+
   cat <<'EOF' >docs/overview.md
 ---
 title: Overview
@@ -98,6 +115,25 @@ The skill provides a comprehensive way to handle example workflows — it offers
 You should probably try to run the example command if you think it might help.
 EOF
 
+  cat <<'EOF' >.claude/context/api.md
+---
+title: API
+description: Request handling, routing, and the serialization boundary
+---
+
+# API
+
+## Overview
+
+Owns request handling and the serialization boundary — everything below the handler belongs to the data domain.
+
+## Layout
+
+- `src/api/router.ts` builds the route table from the handler registry
+- `src/api/serialize.ts` converts a domain record into a wire payload
+- `src/api/errors.ts` maps a thrown error onto a status code
+EOF
+
   git add . && git commit -m "docs(overview): expand structure section and skill body" --no-verify -q
 
   log_step "Scenario ready: standards audit with seeded violations"
@@ -107,6 +143,9 @@ EOF
   log_info "  3. docs/overview.md: semicolon joining clauses in a bullet"
   log_info "  4. .claude/skills/example/SKILL.md: em dash and inflated prose ('comprehensive', 'offers')"
   log_info "  5. .claude/skills/example/SKILL.md: non-imperative hedging voice ('You should probably try')"
+  log_info "  6. .claude/context/api.md: em dash, and a Layout section listing files instead of folders"
   log_info "Action:  /claude-standards-audit"
-  log_info "Expect:  violations grouped by file with line references across docs/overview.md and SKILL.md"
+  log_info "Expect:  violations grouped by file with line references, each naming its standard."
+  log_info "         .claude/context/api.md is the reach test: it must be audited against context.md,"
+  log_info "         which the mapping resolves from that standard's own scope statement."
 }
