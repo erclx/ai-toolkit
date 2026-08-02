@@ -46,14 +46,15 @@ EOF
 
   git add . && git commit -m "chore(project): seed greenfield focus timer with personality" --no-verify -q
 
-  log_step "Scenario ready: design propose for a greenfield project"
+  log_step "Scenario ready: design extract on its greenfield path"
   log_info "Context: REQUIREMENTS.md with a Personality paragraph, ARCHITECTURE.md, no code"
   log_info "Signals the skill should pick up:"
   log_info "  Personality: quiet, disciplined, warm paper tones, single accent, no motion"
   log_info "  Non-goals: no motion or transitions"
   log_info "  Architecture: Vite plus React web app (informs typography choices)"
-  log_info "Action 1: /aitk:claude-design-propose"
-  log_info "Expect:   populated .claude/DESIGN.md with proposed tokens, most cells marked ? verify"
+  log_info "Action 1: /aitk:claude-design-extract"
+  log_info "Expect:   greenfield path announced, .claude/DESIGN.md proposed, most cells marked ? verify"
   log_info "Action 2: aitk design render"
   log_info "Expect:   .claude/review/design/index.html renders cleanly with swatches and samples"
+  log_info "Filename pairs with the claude-design-propose pointer and retires with it in 0.19.0"
 }

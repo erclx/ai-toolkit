@@ -48,7 +48,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Standards](.claude/context/standards.md): shared authoring conventions, synced to projects
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
-- [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill, render command
+- [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill and its two paths, render command
 - [Slides](.claude/context/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
 - [Transcripts](.claude/context/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
 - [Sandbox](.claude/context/sandbox.md): scenario-based scaffolds for verifying each domain flow

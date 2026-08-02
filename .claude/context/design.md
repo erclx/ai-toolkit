@@ -1,6 +1,6 @@
 ---
 title: Design
-description: DESIGN.md token shape, extract skill, render command
+description: DESIGN.md token shape, extract skill and its two paths, render command
 ---
 
 # Design
@@ -12,13 +12,15 @@ description: DESIGN.md token shape, extract skill, render command
 ## Layout
 
 - `src/design/` owns the DESIGN.md parser and the preview renderer
-- `claude/skills/claude-design-extract/` owns the skill that drafts from an existing codebase
-- `claude/skills/claude-design-propose/` owns the skill that drafts a greenfield project
+- `claude/skills/claude-design-extract/` owns the skill that drafts the file, from an existing codebase or from a greenfield project
+- `claude/skills/claude-design-propose/` holds a pointer body at the absorbed name, removed in `0.19.0`
 - `.claude/review/design/` owns the rendered preview, gitignored
 
 ## Decisions
 
-- Propose and extract share one seed and one render pipeline. Switching later is a rewrite of `DESIGN.md`, not a migration.
+- One skill covers both paths. They shared a seed, a render pipeline, and two byte-identical steps, and the split cost a caller a choice the project already answers.
+- The skill picks its path from whether UI code exists, never from a flag. The general ban on dispatch flags in `.claude/standards/skill.md` targets a toggle the model reads and misapplies. A test against the tree has no such failure.
+- Switching paths later is a rewrite of `DESIGN.md`, not a migration.
 - Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
 
 ## Seed shape
@@ -37,23 +39,19 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 ## Extract skill
 
-`aitk:claude-design-extract` drafts `.claude/DESIGN.md` from a project's existing prose and CLI UI surfaces. The skill reads `CLAUDE.md`, `.claude/standards/prose.md`, CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh`, and any stylesheet or theme config it finds. It fills the seed template from those signals and marks any inferred cell with a trailing `? verify` tag.
+`aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `.claude/standards/prose.md`, fill the same seed, and end at the same render.
 
-The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
+The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`. The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
+
+The greenfield path runs when nothing matches. It requires a `## Personality` paragraph in `.claude/REQUIREMENTS.md`, reads `.claude/ARCHITECTURE.md` for platform signals, and proposes token values from those inputs. Nearly every cell carries `? verify`, since the values are speculative until code or a designer anchors them. This path replaces the Claude Design onboarding quota cost for greenfield projects, and the first render usually shifts several tokens after review.
 
 Install in a target project via `aitk claude install` and invoke with `/aitk:claude-design-extract`.
 
-## Propose skill
+### The absorbed name
 
-`aitk:claude-design-propose` drafts `.claude/DESIGN.md` on day one of a project, before any UI code exists. The skill reads `.claude/REQUIREMENTS.md` for a required `## Personality` paragraph, plus `.claude/ARCHITECTURE.md` for platform signals, and proposes token values from those inputs. Every proposed cell carries a trailing `? verify` tag because the values are speculative until code or a designer anchors them.
+`claude-design-propose` was the greenfield path as its own skill until `0.18.0`, which absorbed it. Its folder keeps a pointer body so a project that installed before the merge still resolves the name, and the pointer carries `disable-model-invocation: true` so it never competes for routing against the survivor. The pointer and `scripts/sandbox/claude/design-propose.sh` both go in `0.19.0`.
 
-This skill replaces the Claude Design onboarding quota cost for greenfield projects. The output is a starting point, not a final system. Expect the first render to shift several tokens after review.
-
-Install in a target project via `aitk claude install` and invoke with `/aitk:claude-design-propose`.
-
-### Choosing propose vs extract
-
-Pick `claude-design-propose` when no UI code, stylesheets, or theme config exists yet and the project has a written personality paragraph. Pick `claude-design-extract` when the project already has components, tokens, or a shell UI library that should define the system.
+The scenario keeps the old filename for that cycle because `aitk-sandbox-check` maps a scenario to a skill by filename, and `design-extract.sh` already holds the source path. Its actions invoke the survivor.
 
 ## Render command
 
@@ -72,7 +70,7 @@ The output directory sits under `.claude/review/` which is gitignored by the see
 
 Typical sequence in a new project:
 
-1. Run the extract skill against an existing codebase, or the propose skill against a greenfield project with a personality paragraph, to draft `.claude/DESIGN.md`
+1. Run the extract skill to draft `.claude/DESIGN.md`. It sources tokens from an existing codebase, or proposes them against a greenfield project with a personality paragraph.
 2. Review `? verify` cells and edit the file directly
 3. Run `aitk design render` to regenerate the preview
 4. Open `.claude/review/design/index.html` in a browser

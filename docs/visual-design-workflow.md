@@ -18,7 +18,7 @@ The default. `.claude/DESIGN.md` holds visual intent as prose plus token tables 
 
 ### Seed shape
 
-The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template. The `aitk:claude-design-extract` skill drafts the file from a project's existing prose and CLI UI surfaces. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
+The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template. The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
 
 ### Tools
 
@@ -27,7 +27,7 @@ The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table
 
 ### Skills
 
-- `aitk:claude-design-extract` to draft `.claude/DESIGN.md` from existing project signals
+- `aitk:claude-design-extract` to draft `.claude/DESIGN.md`, from existing project signals or from requirements alone on day one
 - `aitk:claude-ui-test` for e2e test generation after UI changes
 - `aitk:claude-ux-audit` for UX gap detection on existing surfaces
 - Anthropic's `frontend-design` plugin optional for light visual steering
