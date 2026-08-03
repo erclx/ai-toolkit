@@ -62,7 +62,7 @@ The rate broke from the prior two samples: four of twenty-five against three of 
 - `claude-memory-capture`: Extract durable patterns from the session into `.claude/memory/`
 - `claude-memory-review`: Review `.claude/memory/` and propose per-entry promote, consolidate, handoff, or delete
 - `claude-orchestrate`: Assert the orchestrator role, refill the ready queue, and dispatch the build loop
-- `claude-pr-review`: Review an open PR from an independent session, posting a first pass and a close-out on the delta
+- `claude-pr-review`: Review an open PR from an independent session, posting a first pass and a further pass on each delta until nothing is open
 - `claude-address-review`: Pull PR findings and CI status, fix each, refresh stale docs, push a follow-up, and reply
 - `claude-review`: Review all changes since main for bugs, edge cases, and logic flaws
 - `claude-roadmap`: Draft or update `.claude/ROADMAP.md` by sequencing MVP scope into ordered versions
@@ -190,7 +190,7 @@ That rewrite landed as a second pass the skill had never described. `claude-pr-r
 
 Deriving it also decides what a close-out reads. `gh pr view --json reviews` returns `commit.oid` per review, so the last comment the skill posted names the commit the prior pass covered, and the close-out reads that range to the head rather than the whole change. The same field settles the rebase case without a second mechanism: after a force-push the prior commit no longer reaches the head, `git merge-base --is-ancestor` exits non-zero, and the skill pays for a full pass and states that in the body. Scoping by the prior review's timestamp instead would have needed its own rebase test, since a commit's author date can predate the push that put it on the branch.
 
-The heading is the half a reader sees without opening anything. `## Review` opens a review and `## Review closed` reports its findings closed, so a thread of comments can be scanned for state. `claude-address-review` already nests `## Review response` under the first of those, and the close-out heading extends that family rather than starting a new one.
+The heading is the half a reader sees without opening anything, so it reports state rather than pass number. `## Review` covers every pass carrying a finding and `## Review closed` is reserved for one carrying none, so the state comes off the most recent comment rather than off a label on a kind of pass. A close-out does not close the pull request, which is why the rule reads the latest heading rather than promising the closed one is last. Coupling it to the pass number instead was measured wrong on two reviews in five, since twenty-one of fifty-three close-outs reported an open finding under a heading asserting closure. `claude-address-review` nests `## Review response` under the first of those, so a thread reads as opened, answered, still open, closed.
 
 Sharing a prefix across that family is why the detection matches the first line for equality rather than testing a prefix. A prefix test also accepts `## Review response`, and it happened to be safe only because `claude-address-review` posts through `gh pr comment`, which lands in `.comments` and never in `.reviews`. Nothing recorded that dependency, so the close-out would have started scoping to the worker's reply the day that skill switched to posting a review. An equality test costs the same and owes nothing to a sibling's choice of command.
 

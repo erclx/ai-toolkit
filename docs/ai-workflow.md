@@ -135,7 +135,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `aitk:claude-diagram`        | Draft per-kind mermaid entries under `.claude/diagrams/` from architecture and code, then verify each rendered image |
 | `aitk:claude-design-extract` | Draft `.claude/DESIGN.md`, sourcing tokens from existing UI code or proposing them from requirements on day one      |
 | `aitk:claude-review`         | In a fresh session, review all changes since main                                                                    |
-| `aitk:claude-pr-review`      | Review an open PR from an independent session, then close the review out against the commits added since             |
+| `aitk:claude-pr-review`      | Review an open PR from an independent session, then re-review the commits added since until nothing is open          |
 | `aitk:claude-address-review` | Address PR findings and CI status, refresh stale docs, then push a follow-up                                         |
 | `aitk:claude-tasks`          | Add a task to `.claude/tasks/` or archive a shipped one out of the folder                                            |
 | `aitk:claude-docs`           | When decisions diverged from plan, update `.claude/` docs                                                            |
