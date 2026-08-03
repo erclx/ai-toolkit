@@ -121,7 +121,7 @@ Re-read the review file as source of truth. For each item, parse `Decision:`:
 - `defer` or empty: leave 📝 pending, no action.
 - Contains `?` or unrecognized verb: leave 📝 pending, no action.
 
-Chat shortcut: the user replies with `all`, `none`, or a comma-separated list of numbers. Apply only the numbered items.
+Chat shortcut: the user replies with `all`, `none`, a comma-separated list of numbers, or `skip <nums>`. Write the matching verb into the `Decision:` slot of every item the reply names, `apply` for `all` or a bare list and `skip` for a `skip` reply, then run the parse above against the file. A reply of `none` writes nothing. A slot the reply does not name keeps its own value, so the receipt stays the source of truth and an empty slot still means take no action.
 
 Apply edits one at a time via `Edit`, replacing one section at a time. Never rewrite a whole file. Claude Code's tool permission dialog is the confirmation gate per edit.
 

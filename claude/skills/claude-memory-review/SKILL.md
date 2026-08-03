@@ -181,7 +181,7 @@ Apply edits one at a time via `Edit`. Claude Code's tool permission dialog is th
 
 As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 🗑 for deleted, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the review file. It stays as a receipt until Cleanup runs or the next Propose pass overwrites it.
 
-**Chat shortcut:** the user replies with `all`, `none`, or a comma-separated list of numbers. Apply only the numbered items.
+**Chat shortcut:** the user replies with `all`, `none`, a comma-separated list of numbers, or `skip <nums>`. Write the matching verb into the `Decision:` slot of every item the reply names, `apply` for `all` or a bare list and `skip` for a `skip` reply, then run the parse above against the file. A reply of `none` writes nothing. A slot the reply does not name keeps its own value, so the receipt stays the source of truth and an empty slot still means take no action.
 
 End with: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Omit empty buckets. If anything is pending, remind the user they can refine `Decision:` lines and re-ping, run "discuss" for question items, or commit a skip with `skip <nums>` in chat.
 
