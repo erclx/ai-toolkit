@@ -28,6 +28,18 @@ export const RENDER_WIDTH = 80
 export const PEER_BULLET_CHECKPOINT = 130
 
 /**
+ * Characters a bullet carries before it holds more than the decision itself.
+ *
+ * Unlike the peer-list checkpoint above, this corpus has no gap behind the
+ * number. Bullet weight decays smoothly from a median near 170 with the
+ * steepest relative fall across this boundary and nothing resembling two
+ * populations, so the number is a judgment where that one was a measurement.
+ * A bullet that reads well past it means the number is wrong rather than the
+ * rule, which is why this reports and never gates.
+ */
+export const BULLET_CHECKPOINT = 400
+
+/**
  * A table this size or larger whose first column mostly names artifacts reads
  * as a catalog that grows a row per shipped thing, which is the shape the
  * standard routes to a bullet list. Below it, a table is small enough that a
@@ -71,6 +83,14 @@ const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
  * audited folder, because a threshold on how far a reader travels generalizes
  * across entry types while a rule about what an entry may say does not.
  *
+ * Bullet weight sits on this side of the split with provenance, which the
+ * measure alone would not predict. What decides it is whether the remedy is
+ * actionable: subdividing a run and splitting a file mean something in any
+ * entry, while moving an incident out of a bullet and keeping the decision
+ * means nothing in a folder whose entries carry no decisions to keep. No
+ * diagram entry declares `## Decisions` or `## Gotchas`, so the scope of the
+ * rule is what narrows the finding rather than the shape of the number.
+ *
  * Restating the exclusion in the sibling standards was the alternative. It
  * duplicates one knowledge item across three surfaces, which the root
  * instruction file forbids, and pointing is not available because the surface
@@ -85,6 +105,12 @@ export type ProvenanceKind = 'date' | 'change' | 'release'
 export interface TableFinding {
   readonly line: number
   readonly rows: number
+}
+
+export interface BulletFinding {
+  readonly line: number
+  /** Weight as folded, so a report says how far past the checkpoint it sits. */
+  readonly characters: number
 }
 
 export interface ProvenanceFinding {
@@ -116,6 +142,8 @@ export interface EntryReport {
   readonly catalogTables: readonly TableFinding[]
   /** Empty for an entry no standard bans a change narrative in. */
   readonly provenance: readonly ProvenanceFinding[]
+  /** Empty for the same reason `provenance` is, and under the same folder. */
+  readonly heavyBullets: readonly BulletFinding[]
 }
 
 interface BodyLine {
@@ -303,6 +331,60 @@ function catalogTables(lines: readonly BodyLine[]): TableFinding[] {
 }
 
 /**
+ * Finds the top-level bullets carrying more than a decision.
+ *
+ * A nested item is left out rather than folded into its parent, since the
+ * checkpoint asks what one bullet carries and a child carries its own. Lines
+ * continuing a bullet do fold in, so a heavy bullet cannot fall under the
+ * checkpoint by being wrapped across two source lines. Fenced blocks are
+ * skipped for the reason the scans above skip them: a sample an entry displays
+ * is not a claim it makes.
+ */
+function heavyBullets(lines: readonly BodyLine[]): BulletFinding[] {
+  const findings: BulletFinding[] = []
+  let open: BulletFinding | null = null
+  let fenced = false
+
+  const close = (): void => {
+    if (open && open.characters > BULLET_CHECKPOINT) findings.push(open)
+    open = null
+  }
+
+  for (const line of lines) {
+    if (FENCE.test(line.text)) {
+      fenced = !fenced
+      close()
+      continue
+    }
+    if (fenced) continue
+
+    const item = line.text.match(LIST_ITEM)
+    const text = line.text.trim()
+
+    if (item) {
+      close()
+      if (item[1].length === 0) {
+        open = { line: line.number, characters: text.length }
+      }
+      continue
+    }
+
+    if (text === '' || HEADING.test(line.text) || TABLE_ROW.test(line.text)) {
+      close()
+      continue
+    }
+
+    // The joining space a wrapped line would have carried, so folding two
+    // source lines measures what one unwrapped line would have.
+    if (open) open = { ...open, characters: open.characters + text.length + 1 }
+  }
+
+  close()
+
+  return findings
+}
+
+/**
  * Finds the markers narrating a change rather than describing the domain.
  *
  * Fenced blocks are skipped for the same reason the table scan skips them: a
@@ -365,6 +447,7 @@ export function measureEntry(
     longestRunLine: run.line,
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
+    heavyBullets: governsContent ? heavyBullets(lines) : [],
   }
 }
 
