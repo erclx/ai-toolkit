@@ -87,7 +87,7 @@ Run `aitk standards list` for the catalog of installable standards and their des
 | `aitk standards sync`    | Update standards already present in target                           |
 | `aitk standards list`    | Emit catalog of standards with descriptions                          |
 
-Flags and arguments live in `docs/agents.md`. `--json` emits `{standards: [{name, description, target, appliesTo, content}]}`, and drift-auditing skills consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`, plus `appliesTo`.
+Flags and arguments live in `docs/agents/scripting.md`. `--json` emits `{standards: [{name, description, target, appliesTo, content}]}`, and drift-auditing skills consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`, plus `appliesTo`.
 
 `appliesTo` is the paths a standard's `## Scope` statement declares, parsed by `read_applies_to` in `scripts/standards/list.sh`. It reads the backticked paths in the first sentence of the statement, resolves an attribute standard to `*`, and emits an empty array for a statement it cannot read. The first sentence is the bound rather than the whole statement, since a later sentence names sibling standards and excluded paths that would otherwise land in the same list. `standards/bundled/` stays out because the walk runs at `-maxdepth 1`, which is right rather than a gap: those six govern a commit message, a branch name, a pull request body, and an issue, none of which is a file in a diff.
 

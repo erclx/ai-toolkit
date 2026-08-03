@@ -81,6 +81,6 @@ The Stitch integration (`aitk design sync`, `generate`, `edit`, `variants`, `lis
 
 ## Related
 
-- `agents.md`: CLI flags and invocation contract for `aitk design`
+- `docs/agents/commands.md`: CLI flags and invocation contract for `aitk design`
 - `docs/visual-design-workflow.md`: tier framework for prose-only, visual companion, and graphical source of truth
 - `wiki/stitch.md`: Stitch MCP details for the downstream generation surface

@@ -65,7 +65,7 @@ Scaffolding your first project? Start with target projects, then the AI workflow
 - [Operating model](docs/operating-model.md): orchestrator and worker roles for building across parallel sessions
 - [Visual design workflow](docs/visual-design-workflow.md): tiered guide for design and wireframe authoring
 - [Target projects](docs/target-projects.md): scaffold, add a domain later, sync upstream drift
-- [Agents](docs/agents.md): CLI flags, exit codes, and JSON output shapes
+- [Agents](docs/agents/index.md): CLI flags, exit codes, and JSON output shapes
 - [Docs index](docs/index.md): every reference doc in this repo
 
 ## Development

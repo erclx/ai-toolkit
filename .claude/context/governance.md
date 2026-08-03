@@ -99,7 +99,7 @@ Each stack declares an optional `extends` chain and a flat `rules` list. The cha
 | `aitk gov regen`   | Rebuild this repo's own `.claude/rules/` from its record          |
 | `aitk gov list`    | Emit catalog of stacks and rules                                  |
 
-Flags, arguments, and JSON shapes live in `docs/agents.md`. `install`, `sync`, and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `list` still execs bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there chose a whole stack for the caller.
+Flags, arguments, and JSON shapes live in `docs/agents/index.md`. `install`, `sync`, and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `list` still execs bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there chose a whole stack for the caller.
 
 ## Workflow
 

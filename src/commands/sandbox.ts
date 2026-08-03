@@ -389,7 +389,7 @@ function runCheck(
 
   // The report always renders on stderr. `--json` adds the machine copy on
   // stdout rather than replacing the frame, per the stream contract in
-  // `docs/agents.md`, so one invocation serves a human and a caller at once.
+  // `docs/agents/output-shape.md`, so one invocation serves a human and a caller at once.
   reportVerdict(verdict)
   if (options.json === true)
     process.stdout.write(`${JSON.stringify(verdict)}\n`)

@@ -51,7 +51,7 @@ Presets are virtual curated subsets defined in `snippets.toml`. Categories are a
 | `aitk snippets create`  | Create a new snippet file in the correct category folder      |
 | `aitk snippets list`    | Emit catalog of presets, categories, and entries              |
 
-Flags and arguments live in `docs/agents.md`. `aitk snippets` with no args prints help, since each verb is registered by name rather than routed through a dispatcher.
+Flags and arguments live in `docs/agents/index.md`. `aitk snippets` with no args prints help, since each verb is registered by name rather than routed through a dispatcher.
 
 `install`, `sync`, and `list` are TypeScript, with `sync` built on the shared sync engine. `create` is registered by name and forwards to `scripts/snippets/create.sh`, keeping its own `--help`.
 

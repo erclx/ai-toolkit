@@ -154,11 +154,11 @@ Use the `setup-indexes` plugin skill to add the system to a project that does no
 
 ## Command surface
 
-See `agents.md` for the `aitk indexes regen` invocation contract: flags, exit codes, and JSON output shape.
+See `docs/agents/indexes.md` for the `aitk indexes regen` invocation contract: flags, exit codes, and JSON output shape.
 
 ## Related
 
-- `agents.md`: CLI flags, exit codes, JSON output
+- `docs/agents/indexes.md`: CLI flags, exit codes, JSON output
 - `.claude/context/cli/commands.md`: the TypeScript layer and the migration boundary
 - `scripts/lib.md`: `lib/frontmatter.sh`, the one bash reader that stayed
 - `claude/skills/setup-indexes/`: bootstrap skill source

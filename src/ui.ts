@@ -31,7 +31,7 @@ export function logRemove(message: string): void {
 }
 
 /**
- * Renders the `✗` shape `docs/agents.md` specifies for a failure inside an
+ * Renders the `✗` shape `docs/agents/output-shape.md` specifies for a failure inside an
  * open frame. It does not exit, so the caller closes the frame and returns an
  * exit code rather than terminating mid-write.
  */

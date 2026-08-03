@@ -99,7 +99,7 @@ prepare = "command to run after scaffold, before sync"
 | `aitk tooling list`   | Emit catalog of stacks with extends chain and dep summary       |
 | `aitk tooling verify` | Scaffold into a temp dir, sync, then run the full project check |
 
-Flags and arguments live in `docs/agents.md`.
+Flags and arguments live in `docs/agents/index.md`.
 
 ## Common workflows
 
