@@ -27,6 +27,21 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 | `aitk-tooling`       | Load before editing tooling stacks or golden configs                                                   |
 | `aitk-sandbox-check` | Audit changed plugin skills for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check` |
 
+### Requirement coverage
+
+The rule that gates a skill edit globs `.claude/skills/**/REQUIREMENT.md`, so a skill without one leaves that gate binding nothing. Coverage is selective by design. A skill earns a requirement when a reader cannot recover from the body alone both the failures it prevents and the nearest thing it deliberately does not do, which `.claude/standards/skill.md` states. The verdicts were applied 2026-08-03 against the eight bodies as they stood, so a later audit checks a stated claim rather than re-deriving one.
+
+- `aitk-claude` carries one. Its scope spans the plugin tree, the seed, and the context entries with no stated edge, and its claim on the Claude entries contests `aitk-standards`.
+- `aitk-scripts` carries one. Its instruction to run a scenario and judge the envelope contradicts the arm rules in `aitk-sandbox-check`, and neither body names the other.
+- `aitk-standards` carries one. The `docs/` half of its declared scope gets no guidance of its own, appearing once inside a prose instruction that names `standards/` beside it.
+- `aitk-ask` carries none. Its guards, its `## Do not` block, and the bounded escalation ladder state both halves.
+- `aitk-governance` carries none. Each bullet names the failure it prevents, and no internal sibling contests the source tree.
+- `aitk-sandbox-check` carries none. It is the longest internal body and still its own specification, with four deliberate exclusions under `## Do not`.
+- `aitk-snippets` carries none. Placement by invoker and the invocation-cadence test are its two stated exclusions.
+- `aitk-tooling` carries none. The `tooling/claude/` exclusion ships with its reason, and the body already reads as a list of observed failures.
+
+Length did not discriminate. The 31-line skill earned one and the 191-line skill did not.
+
 ### Sandbox check verification route
 
 `aitk-sandbox-check` maps changed items to scenarios and then verifies one of them. It drives `scripts/sandbox/run.sh` against the `Provisioning:` scenario, deriving the target from the scenario path and the prompt as `/aitk:<skill-name>`, and reports the verdict `run.sh` returns rather than asserting its own.
