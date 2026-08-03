@@ -16,6 +16,7 @@ Without this skill, the memory folder grows and never drains. Entries pile up re
 - Rewrite a rule into the destination's voice instead of moving it unchanged
 - Write the proposal to a receipt on disk and take no action until the user decides per item
 - Keep a promotion on its own commit, since a change to how the agent operates should not ride inside a feature a reviewer is vetting for something else
+- Confine the pass that runs after application to the one receipt it tested, so tidying up removes a file whose decisions are known to be resolved and leaves the pen and every untested receipt alone
 
 ## Must not
 
@@ -23,12 +24,14 @@ Without this skill, the memory folder grows and never drains. Entries pile up re
 - Author a governance rule inline. Coding-standards rules have an owner and a scaffolding path, and a rule written here bypasses both.
 - Mutate tracked files from the main worktree
 - Answer a question raised in a decision slot while applying. Discussion and application are separate passes so an approval is never inferred from a reply.
+- Delete a memory entry outside the approved-per-item pass. The folder is gitignored with no history behind it, so a removal any other phase makes has no undo and no record of what it took.
 
 ## Guards
 
 - No memory folder at the main root: stop
 - The folder holds only its index: stop with a pass, not an error
 - Apply invoked from the main worktree: stop and name the worktree command
+- Cleanup invoked with no receipt on disk: stop with a pass, not an error
 
 ## Out of scope
 
