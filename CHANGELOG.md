@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.0](https://github.com/erclx/aitk/compare/v0.34.0...v0.35.0) (2026-08-03)
+
+
+### Features
+
+* **context:** bound what one entry bullet may carry ([#776](https://github.com/erclx/aitk/issues/776)) ([8418b36](https://github.com/erclx/aitk/commit/8418b36bb827acb70cf6023fee2408444ee0c277))
+
 ## [0.34.0](https://github.com/erclx/aitk/compare/v0.33.0...v0.34.0) (2026-08-03)
 
 
