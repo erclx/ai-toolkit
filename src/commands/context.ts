@@ -2,9 +2,11 @@ import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import {
   type EntryReport,
+  governsContent,
   LENGTH_CHECKPOINT,
   measureFolders,
   PEER_BULLET_CHECKPOINT,
+  PROVENANCE_FOLDER,
   RENDER_WIDTH,
   RUN_CHECKPOINT,
 } from '@/context/audit'
@@ -90,8 +92,8 @@ function parseFolders(list: string | undefined): string[] | string {
 
   if (names.length === 0) return 'Empty --folder list. Pass at least one name.'
 
-  // `..` would resolve the audit root above `.claude/`, where `presentNames`
-  // has no folder name to slice out and hands the citation pattern undefined.
+  // `..` would resolve the audited folder above `.claude/`, taking the scan
+  // and the citation pattern outside the tree the audit describes.
   const invalid = names.filter((name) => !FOLDER_NAME.test(name))
   if (invalid.length > 0) {
     return `--folder takes folder names under .claude/, not paths: ${invalid.join(', ')}`
@@ -138,7 +140,7 @@ async function runAudit(
     reportLength(entries)
     reportDepth(entries)
     reportTables(entries)
-    reportProvenance(entries)
+    reportProvenance(entries, folders)
     reportDrift(drift)
     outro()
   }
@@ -150,6 +152,7 @@ async function runAudit(
         folders: folders.map((folder) => ({
           path: folder.rel,
           entries: folder.entries.length,
+          governsContent: governsContent(folder),
         })),
         citations: {
           scanned: citations.scanned,
@@ -164,6 +167,7 @@ async function runAudit(
           runCountsBlankLines: true,
           renderWidth: RENDER_WIDTH,
           peerBullet: PEER_BULLET_CHECKPOINT,
+          provenanceFolder: PROVENANCE_FOLDER,
         },
       })}\n`,
     )
@@ -332,9 +336,28 @@ function reportTables(entries: readonly EntryReport[]): void {
  * time, and a flat list of those buries the entries holding one. What a reader
  * acts on is which file to open, so the count sits beside the name and the
  * lines follow it.
+ *
+ * The reach is stated on every run, including the run where nothing is in
+ * scope. A check that covered three folders and now covers one reads as quietly
+ * missing things unless the report says which folder it measured.
  */
-function reportProvenance(entries: readonly EntryReport[]): void {
+function reportProvenance(
+  entries: readonly EntryReport[],
+  folders: readonly AuditedFolder[],
+): void {
   logStep('Provenance')
+
+  const governed = folders.filter(governsContent)
+  if (governed.length === 0) {
+    logInfo(
+      `Out of scope. The rule is stated in the standard governing .claude/${PROVENANCE_FOLDER}/, and no audited folder is that one.`,
+    )
+    return
+  }
+
+  logInfo(
+    `Covers .claude/${PROVENANCE_FOLDER}/ alone, whose standard carries the rule. The sibling standards do not restate it.`,
+  )
   logInfo('Fenced blocks are excluded. A marker is a judgment, never a defect.')
 
   const carrying = entries
