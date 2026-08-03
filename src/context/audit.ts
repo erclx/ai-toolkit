@@ -232,6 +232,36 @@ function isScannablePeerList(run: readonly BodyLine[]): boolean {
 }
 
 /**
+ * Reports whether a run is a table, the second shape the checkpoint cannot fix.
+ *
+ * The peer list above is exempt because it is already navigable. A table is
+ * exempt for the other reason: the remedy does not exist. A heading dropped
+ * inside one splits the table into two tables rather than breaking the run, so
+ * a catalog renders as an unbroken stretch by construction and no edit short of
+ * rewriting it as a list clears the report.
+ *
+ * Every non-blank line has to be a row. A run holding a table between
+ * paragraphs is genuinely mixed, and a heading breaks it at a seam either side,
+ * so testing whether the run holds a table would hide the case the checkpoint
+ * exists for.
+ *
+ * A delimiter is required rather than assumed, matching the table scan below. A
+ * stack of lines opening with a pipe and no delimiter renders as paragraph text
+ * and would otherwise earn the exemption on its punctuation.
+ */
+function isTableRun(run: readonly BodyLine[]): boolean {
+  let separators = 0
+
+  for (const line of run) {
+    if (line.text.trim() === '') continue
+    if (!TABLE_ROW.test(line.text)) return false
+    if (TABLE_SEPARATOR.test(line.text)) separators++
+  }
+
+  return separators > 0
+}
+
+/**
  * Height a source line occupies once wrapped.
  *
  * A blank line renders as the gap it is rather than as nothing, which keeps it
@@ -272,7 +302,7 @@ function longestRun(lines: readonly BodyLine[]): {
     // two headings rather than a stretch a reader travels, so it never counts.
     const first = run.find((line) => line.text.trim() !== '')
 
-    if (first && !isScannablePeerList(run)) {
+    if (first && !isScannablePeerList(run) && !isTableRun(run)) {
       const height = run.reduce(
         (sum, line) => sum + renderedHeight(line.text),
         0,

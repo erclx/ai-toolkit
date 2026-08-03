@@ -408,6 +408,9 @@ function reportDepth(entries: readonly EntryReport[]): void {
   logInfo(
     `Fenced blocks are excluded, and so are peer lists averaging under ${PEER_BULLET_CHECKPOINT} characters a bullet.`,
   )
+  logInfo(
+    'A run that is entirely table rows is excluded too, since a heading inside a table splits the table rather than the run.',
+  )
 
   const over = entries
     .filter((entry) => entry.longestRun > RUN_CHECKPOINT)

@@ -45,6 +45,13 @@ function table(rows: string[]): string {
   return ['| Name | Purpose |', '| --- | --- |', ...rows].join('\n')
 }
 
+function catalogRows(count: number): string[] {
+  return Array.from(
+    { length: count },
+    (_, index) => `| \`aitk cmd-${index}\` | Does a thing |`,
+  )
+}
+
 /** A bullet of an exact character count, so a boundary case lands on it. */
 function bullet(characters: number): string {
   return `- ${'w'.repeat(characters - 2)}`
@@ -149,12 +156,30 @@ describe('measureEntry', () => {
     )
   })
 
-  it('should report a table whose rows name artifacts as a growing catalog', () => {
-    const rows = Array.from(
-      { length: CATALOG_ROW_CHECKPOINT },
-      (_, index) => `| \`aitk cmd-${index}\` | Does a thing |`,
+  it('should exempt a run whose lines are all table rows', () => {
+    const source = `${FRONTMATTER}# CI\n\n${table(catalogRows(45))}\n`
+
+    expect(measureEntry('ci.md', source).longestRun).toBe(0)
+  })
+
+  it('should end the table exemption when prose sits either side of it', () => {
+    const source = `${FRONTMATTER}# CI\n\n${prose(2)}\n\n${table(catalogRows(45))}\n\n${prose(2)}\n`
+
+    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
+      RUN_CHECKPOINT,
     )
-    const source = `${FRONTMATTER}# CI\n\n${table(rows)}\n`
+  })
+
+  it('should refuse the table exemption to piped lines carrying no delimiter', () => {
+    const source = `${FRONTMATTER}# CI\n\n${catalogRows(45).join('\n')}\n`
+
+    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
+      RUN_CHECKPOINT,
+    )
+  })
+
+  it('should report a table whose rows name artifacts as a growing catalog', () => {
+    const source = `${FRONTMATTER}# CI\n\n${table(catalogRows(CATALOG_ROW_CHECKPOINT))}\n`
 
     expect(measureEntry('ci.md', source).catalogTables).toEqual([
       { line: 8, rows: CATALOG_ROW_CHECKPOINT },
@@ -172,21 +197,13 @@ describe('measureEntry', () => {
   })
 
   it('should leave a short catalog table unreported', () => {
-    const rows = Array.from(
-      { length: CATALOG_ROW_CHECKPOINT - 1 },
-      (_, index) => `| \`aitk cmd-${index}\` | Does a thing |`,
-    )
-    const source = `${FRONTMATTER}# CI\n\n${table(rows)}\n`
+    const source = `${FRONTMATTER}# CI\n\n${table(catalogRows(CATALOG_ROW_CHECKPOINT - 1))}\n`
 
     expect(measureEntry('ci.md', source).catalogTables).toEqual([])
   })
 
   it('should ignore a table that is an example inside a fenced block', () => {
-    const rows = Array.from(
-      { length: CATALOG_ROW_CHECKPOINT },
-      (_, index) => `| \`aitk cmd-${index}\` | Does a thing |`,
-    )
-    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${table(rows)}\n\`\`\`\n`
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${table(catalogRows(CATALOG_ROW_CHECKPOINT))}\n\`\`\`\n`
 
     expect(measureEntry('ci.md', source).catalogTables).toEqual([])
   })
