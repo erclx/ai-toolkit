@@ -11,7 +11,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 
 ## Scope
 
-Governs a skill folder under `skills/` as one artifact: `SKILL.md`, its optional sibling `REQUIREMENT.md`, and the bundled reference, script, and asset folders beside them.
+Governs a skill folder under `skills/` as one artifact: `SKILL.md`, its sibling `REQUIREMENT.md`, and the bundled reference, script, and asset folders beside them.
 
 Does not govern:
 
@@ -68,14 +68,14 @@ allowed-tools: <tools required>
 
 ## Structure
 
-- Skill is a folder named in kebab-case containing `SKILL.md` (required), `REQUIREMENT.md` (optional), `scripts/` (optional), `references/` (optional), `assets/` (optional)
+- Skill is a folder named in kebab-case containing `SKILL.md` (required), `REQUIREMENT.md` (required), `scripts/` (optional), `references/` (optional), `assets/` (optional)
 - `SKILL.md` must start with YAML frontmatter between `---` delimiters
 - No `README.md` inside the skill folder
 - No spaces, capitals, or underscores in folder or skill name
 
 ## Requirement
 
-`REQUIREMENT.md` states what a skill is for, so a proposed change can be argued against something. This standard governs shape across the corpus and the requirement governs scope for one skill. Claude Code loads `SKILL.md` as the entry and ignores the sibling, so the file costs a target session nothing.
+`REQUIREMENT.md` states what a skill is for, so a proposed change can be argued against something and the corpus can be read to decide whether a skill should exist at all. This standard governs shape across the corpus and the requirement governs scope and behavior for one skill. Claude Code loads `SKILL.md` as the entry and ignores the sibling, so the file costs a target session nothing.
 
 The file serves a second purpose beside the argument. A skill body is procedural by design, so what the skill is for sits spread across its steps rather than stated in one place. The requirement is the compressed statement a reader gets before opening the body, and that purpose holds whether or not the skill's scope is contested.
 
@@ -83,7 +83,7 @@ Read it before editing the skill. When a change closes no gap the requirement st
 
 Write the gaps from what the skill is for, then compare the body against them. Deriving the requirement from the body is circular, because a requirement reverse-engineered from an overfitted skill records the overfitting as the requirement. That failure costs more under the orientation purpose than under the argument one, since a file summarizing the body misinforms whoever reads it in place of the body rather than merely failing to gate a change.
 
-A skill earns one when a reader cannot recover what the skill is for from the body alone. Apply the test to a skill nobody in the session has read before: read the body once, then state both the failures the skill exists to prevent and the nearest thing it deliberately does not do. A body answering both is its own specification and needs no sibling, and a body leaving either open earns one. Length is a weak proxy for that, since a short skill with a contested boundary earns one and a long skill doing one plain thing may not.
+Every skill carries one. Coverage was selective while the file existed only to disambiguate a contested boundary, and a file present for some skills and absent for others cannot be scanned, because an absence reads as a gap rather than as a verdict. A skill whose scope nobody contests still owes the statement, since the reader deciding whether a skill should exist reads the corpus rather than one entry. A new skill is created with the sibling beside it rather than acquiring one in a later sweep.
 
 ### What a working requirement looks like
 

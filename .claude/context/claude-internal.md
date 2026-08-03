@@ -35,7 +35,7 @@ The earlier test earned a skill one only when a reader could not recover from th
 
 The rule gating a skill edit globs `.claude/skills/**/REQUIREMENT.md`, so it now fires on every internal skill edit rather than on three of eight. That increase in what a session reads before editing is the accepted cost of the corpus being readable as a set.
 
-The plugin corpus under `claude/skills/` is still being covered a batch at a time, and `.claude/standards/skill.md` calls the file optional until that finishes.
+The plugin corpus under `claude/skills/` reached the same coverage across three batches, and `.claude/standards/skill.md` now calls the file required for both corpora. A skill whose scope a branch in flight is changing takes its requirement from that branch, so the last of the coverage closes as those branches land rather than ahead of them.
 
 ### Sandbox check verification route
 

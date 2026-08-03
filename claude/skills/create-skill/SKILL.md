@@ -20,5 +20,8 @@ Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the pro
 ## Steps
 
 1. Draft the full `SKILL.md` from the user's description
-2. Confirm the skill name and full content with the user before writing
-3. Write to `.claude/skills/<name>/SKILL.md`
+2. Draft the sibling `REQUIREMENT.md` from what the skill is for, in the shape the standard states. Write the gaps from the user's description rather than from the drafted body, since a requirement derived from the body records whatever the draft overfitted to.
+3. Confirm the skill name and both files with the user before writing
+4. Write to `.claude/skills/<name>/SKILL.md` and `.claude/skills/<name>/REQUIREMENT.md`
+
+Every skill carries a requirement. A skill created without one is a gap someone closes in a later sweep, and the sweep has to reconstruct what the skill was for from the body it already shipped.
