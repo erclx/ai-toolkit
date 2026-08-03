@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.1](https://github.com/erclx/aitk/compare/v0.41.0...v0.41.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **claude:** route executable prose to review by path ([#807](https://github.com/erclx/aitk/issues/807)) ([5d91c64](https://github.com/erclx/aitk/commit/5d91c64a10a0fc348ad2955b61a8798c80f9407c))
+
 ## [0.41.0](https://github.com/erclx/aitk/compare/v0.40.0...v0.41.0) (2026-08-03)
 
 
