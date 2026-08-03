@@ -127,7 +127,7 @@ Use a targeted entry point when only one surface moved upstream. Use the catch-a
 
 ## Verify a sync
 
-Before running a sync against a real project, run the relevant sandbox scenario. The sandbox provisions a representative project state and routes `SANDBOX_SCENARIO=sync` through the domain flow. See [sandbox](../.claude/context/sandbox.md) for the scenario catalog and routing patterns.
+Before running a sync against a real project, run the relevant sandbox scenario. The sandbox provisions a representative project state and routes `SANDBOX_SCENARIO=sync` through the domain flow. See [sandbox](../.claude/context/sandbox/index.md) for the scenario catalog and routing patterns.
 
 ## Scenarios
 
@@ -182,4 +182,4 @@ Sync also refuses a target whose working tree is dirty, so commit or stash befor
 - [agents](agents.md): CLI flags, exit codes, and JSON output shapes
 - [AI workflow](ai-workflow.md): feature-development loop inside a toolkit-managed project
 - [tooling](../.claude/context/tooling.md), [governance](../.claude/context/governance.md), [claude plugin](../.claude/context/claude-plugin/index.md), [indexes](../.claude/context/indexes.md), [snippets](../.claude/context/snippets.md), [standards](../.claude/context/standards.md): per-domain mechanics
-- [sandbox](../.claude/context/sandbox.md): scenario catalog for verifying domain flows
+- [sandbox](../.claude/context/sandbox/index.md): scenario catalog for verifying domain flows

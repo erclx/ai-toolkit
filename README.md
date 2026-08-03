@@ -55,7 +55,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 - [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill and its two paths, render command
 - [Slides](.claude/context/slides.md): `SLIDES.md` source, layout catalog, render command, draft skill
 - [Transcripts](.claude/context/transcripts.md): fetch a YouTube transcript with metadata frontmatter via `aitk transcripts`
-- [Sandbox](.claude/context/sandbox.md): scenario-based scaffolds for verifying each domain flow
+- [Sandbox](.claude/context/sandbox/index.md): scenario-based scaffolds for verifying each domain flow
 
 ## Documentation
 
