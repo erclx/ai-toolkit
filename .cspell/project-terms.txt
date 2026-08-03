@@ -91,6 +91,7 @@ regen
 rescope
 resequence
 resequences
+resequencing
 retarget
 retargeted
 retargets
