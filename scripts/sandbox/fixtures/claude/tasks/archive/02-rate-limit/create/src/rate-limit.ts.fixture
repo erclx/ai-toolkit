@@ -1,0 +1,26 @@
+const BUDGET = 60
+const WINDOW_MS = 60_000
+
+interface Window {
+  readonly start: number
+  count: number
+}
+
+const windows = new Map<string, Window>()
+
+/**
+ * The counter is keyed by caller rather than by route, so the budget bounds one
+ * client rather than the endpoint every client shares.
+ */
+export function withinBudget(client: string, now: number = Date.now()): boolean {
+  const open = windows.get(client)
+
+  if (open === undefined || now - open.start >= WINDOW_MS) {
+    windows.set(client, { start: now, count: 1 })
+    return true
+  }
+
+  open.count += 1
+
+  return open.count <= BUDGET
+}

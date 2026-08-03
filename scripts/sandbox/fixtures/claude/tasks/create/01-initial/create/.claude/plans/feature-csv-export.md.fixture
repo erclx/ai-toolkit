@@ -1,0 +1,29 @@
+# Feature: Export the task list as CSV
+
+Serve the task collection as a CSV download so a caller can open it in a
+spreadsheet without going through the JSON list endpoint.
+
+## Summary
+
+- One endpoint, streaming rows rather than building the whole file in memory
+- The column set matches the JSON fields, so the two views cannot drift
+- Key question: whether the export honours the page parameters or always
+  covers the whole collection
+
+**Files to touch:**
+
+- `src/routes/export.ts`: new, the CSV endpoint
+- `src/routes/tasks.ts`: share the row projection with the list handler
+
+**Risks:**
+
+- Building the file in memory reintroduces the unbounded response pagination
+  exists to remove, at a size nothing caps.
+- A column set written by hand drifts from the JSON fields on the first schema
+  change, and nothing reports the drift.
+
+**Questions:**
+
+1. Does the export honour the page parameters?
+   - Suggested: no. An export covering one page is a page, not an export.
+   - Answer: no, the export covers the whole collection.

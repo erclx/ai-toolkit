@@ -1,0 +1,80 @@
+# What a correct `/claude-tasks` run leaves behind on the create arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# The create path has no CLI verb. `src/commands/tasks.ts` registers `archive`
+# alone, so the skill writes this file itself from `.claude/standards/tasks.md`.
+# That makes the whole of what this arm asserts prose behavior, with no unit
+# test underneath it, which is the opposite of the archive arm beside it.
+
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so a `manual` array written at the bottom
+# parses clean and asserts nothing.
+
+max_turns = 30
+
+# The label is the assertion, not the slug. The board carries v01.0 through
+# v03.0 with no gaps, so a skill reading it proposes v04.0 and one that guessed
+# from a version file or from the plan name lands somewhere else.
+#
+# The three existing tasks are the control. A run that renumbered the board to
+# fit its new entry, or rewrote a neighbor while reading it, goes red here
+# rather than passing on the one file it was asked to write.
+paths = [
+  ".claude/tasks/v04.0-csv-export.md",
+  ".claude/tasks/v01.0-rate-limit.md",
+  ".claude/tasks/v02.0-pagination.md",
+  ".claude/tasks/v03.0-search.md",
+]
+
+# Create writes one file and the index hook rewrites another. Nothing else on
+# this path has a reason to leave the board.
+write_scope = [".claude/tasks/**"]
+
+# The skill's Output block emits the full relative path from the project root,
+# since a bare filename is not clickable. The fragment stops at the label so the
+# assertion reads the part the board determines and leaves the slug free.
+reply = [".claude/tasks/v04.0-"]
+
+manual = [
+  "The proposed label is reported with the neighbors it sits between. Semantic: the sentence is prose and any pin over it goes red on a rewording.",
+  "The board resolves at the main worktree root rather than at pwd. Unwired: a standalone sandbox repository has no linked worktree, so the two roots are the same path and no run can tell them apart.",
+  "No `Pull request:` line is written at create time. Semantic: a negative, and an entry asserting what a run must not have written passes on every spelling that phrases it differently.",
+]
+
+# The frontmatter contract. The index walker fails the whole folder when either
+# field is missing, and the folder is gitignored, so nothing else catches it.
+# `title` is quoted because a leading `vX.Y:` reads as a key to a YAML parser.
+#
+# The apostrophes are spelled `.` here. A TOML literal string cannot carry one,
+# and a basic string would reintroduce the backslash doubling the literal form
+# exists to avoid.
+[[content]]
+path = ".claude/tasks/v04.0-csv-export.md"
+pattern = '^title: .v04\.0: '
+
+[[content]]
+path = ".claude/tasks/v04.0-csv-export.md"
+pattern = '^description: \S'
+
+[[content]]
+path = ".claude/tasks/v04.0-csv-export.md"
+pattern = '^# v04\.0: '
+
+# The origin line, written relative to `.claude/tasks/` rather than from the
+# project root. A root-relative path still renders as a link and resolves to
+# nothing in an editor rooted at the project, which is the failure the form
+# exists to prevent and which no reader notices until they click it.
+[[content]]
+path = ".claude/tasks/v04.0-csv-export.md"
+pattern = '^Plan: \[feature-csv-export\]\(\.\./plans/feature-csv-export\.md\)'
+
+# An outcome, open. A task written with its outcomes already marked would
+# archive on the next unattended sweep without the work ever happening.
+[[content]]
+path = ".claude/tasks/v04.0-csv-export.md"
+pattern = '^- \[ \] Outcome: '
+
+[[content]]
+path = ".claude/tasks/v04.0-csv-export.md"
+pattern = '^> Test strategy: '

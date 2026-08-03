@@ -1,0 +1,70 @@
+# What a correct `/claude-tasks` run leaves behind on the archive arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# The arm asserts the successful move and nothing about the refusals.
+# `src/tasks/archive.test.ts` covers those at 27 tests, and a model session at a
+# dollar a run is the wrong instrument for a typed guard. What no unit test
+# reaches is whether the skill gets to the command at all with the board in the
+# state the command needs.
+
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so a `manual` array written at the bottom
+# parses clean and asserts nothing.
+
+max_turns = 30
+
+# The destination, not the source. A board staged without a swept plan, or with
+# an open outcome, exercises the refusal rather than the archive, and a run that
+# declined leaves the source file exactly where a `paths` entry over it would
+# find it. Asserting the destination is what separates the two.
+#
+# `priority.md` is listed because the content pin below reads it. A run that
+# deleted the file rather than dropping one row would otherwise report a content
+# miss with nothing naming the cause.
+paths = [
+  ".claude/.tmp/task-archive/v01.0-rate-limit.md",
+  ".claude/tasks/v02.0-pagination.md",
+  ".claude/tasks/priority.md",
+]
+
+# The source is gone and the control never moved. The second entry is what
+# catches a run that archived the board rather than the task it was given.
+absent = [
+  ".claude/tasks/v01.0-rate-limit.md",
+  ".claude/.tmp/task-archive/v02.0-pagination.md",
+]
+
+write_scope = [".claude/tasks/**", ".claude/.tmp/task-archive/**"]
+
+# The skill reports the paths the command returned, in full from the project
+# root. The archive destination is the token worth pinning, since a reply naming
+# only the stem reads the same whether the file moved or not.
+reply = [".claude/.tmp/task-archive/v01.0-rate-limit.md"]
+
+manual = [
+  "The run reached the archive through `aitk tasks archive` rather than moving the file by hand. Semantic: both leave the same tree, so no assertion over the tree separates them.",
+  "The board resolves at the main worktree root rather than at pwd. Unwired: a standalone sandbox repository has no linked worktree, so the two roots are the same path and no run can tell them apart.",
+]
+
+# The cleared ordering row, asserted by what survives it. An `absent` entry
+# cannot express a removed table row, and a negative pattern would pass on every
+# rewording, so the pin runs from the separator line into the row that follows
+# it. The fixture puts the archived task's row first, so a run that left it in
+# place pushes the control's row down and the match fails.
+[[content]]
+path = ".claude/tasks/priority.md"
+pattern = '^\| ---- \| ------- \| ---- \|\n\| \[v02\.0 pagination\]\(v02\.0-pagination\.md\)'
+
+# The move carried the file rather than creating an empty one at the
+# destination. `paths` alone passes on a touched file.
+[[content]]
+path = ".claude/.tmp/task-archive/v01.0-rate-limit.md"
+pattern = '^- \[x\] Outcome: a client over the request budget is rejected'
+
+# The control's outcomes stay open. A run that marked them to get the control
+# past the open-outcome gate would leave both tasks archivable, and every other
+# assertion here would still hold.
+[[content]]
+path = ".claude/tasks/v02.0-pagination.md"
+pattern = '^- \[ \] Outcome: a list request accepts a page size and an offset'
