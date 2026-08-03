@@ -71,9 +71,19 @@ Leave a box unchecked only for the human-only cases the reference defines, and n
 
 Before running the final command, run the scan in `.claude/standards/publish.md` against the PR title and body, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
 
+### Resolving the pull request
+
+The run resolves the pull request once, in the final command below, and every later step reads what that command printed. Nothing else looks the number up again.
+
+`gh pr view` is the form this replaces. It resolves by head branch and ignores state, so a branch name reused after an earlier pull request merged returns the closed one. The detection then takes the edit path and rewrites a merged pull request's title and body, and the run reports that pull request's URL as the one it opened, so nothing surfaces the write landing on the wrong object. Scoping the lookup with `--state open` returns empty there and sends the run down the create path.
+
+The lookup scopes to the base as well as the head. One head can carry open pull requests against two bases, and a lookup reading the first result would pick between them by list order. Resolving the base from the repository's default branch is what makes the detection and `gh pr create` agree on which pull request the run is about.
+
+A detached HEAD gives `git branch --show-current` an empty result, which would read as no open pull request and create a second one. The branch-name guard above stops the run first, since an empty name does not match `<type>/<description>`.
+
 ### Final command
 
-Detect an existing PR and branch: edit it in place when one is open, create it otherwise. This keeps the body in sync on a follow-up push instead of erroring on `gh pr create`.
+Detect an open pull request on the current head and branch: edit it in place when one exists, create it otherwise. This keeps the body in sync on a follow-up push instead of erroring on `gh pr create`.
 
 ```bash
 mkdir -p .claude/.tmp/pr
@@ -81,21 +91,21 @@ cat <<'BODY' > .claude/.tmp/pr/body.md
 <body content following pr.md template exactly>
 BODY
 git push -u origin HEAD || exit 1
-if gh pr view --json number >/dev/null 2>&1; then
-  gh pr edit --title "<title>" --body-file .claude/.tmp/pr/body.md
+base_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name) || exit 1
+pr_number=$(gh pr list --head "$(git branch --show-current)" --base "$base_branch" --state open --json number --jq '.[0].number // empty')
+if [ -n "$pr_number" ]; then
+  pr_url=$(gh pr edit "$pr_number" --title "<title>" --body-file .claude/.tmp/pr/body.md) || exit 1
 else
-  gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md
+  pr_url=$(gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md) || exit 1
+  pr_number=${pr_url##*/}
 fi
 rm -rf .claude/.tmp/pr
+printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 ```
 
 ### Record the number on the task
 
-Resolve the number the run created or edited, then write it onto the task the branch is closing:
-
-```bash
-gh pr view --json number --jq .number
-```
+Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. A head branch that carried an earlier pull request now has two, and a second `gh pr view` would pick between them by a precedence rule nothing here states. Reading what created or edited the pull request needs no such rule.
 
 Find the task by reading `.claude/tasks/` at the main worktree root, resolved with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. The board is shared scratch, so a linked worktree writing to its own `pwd` creates a second board nothing reads.
 
@@ -107,7 +117,7 @@ The number is what lets the merge close the task. Every merge on `main` is a squ
 
 ## After execution
 
-Respond with exactly one line:
+Respond with exactly one line, using the `url` the final command printed:
 
 `✅ PR: <url>`
 

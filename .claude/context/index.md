@@ -10,7 +10,7 @@ Per-domain narrative loaded on demand
 - [CI](ci.md): GitHub Actions workflow triggers and checks
 - [Claude internal](claude-internal.md): Toolkit-only internal skills, the task and plan artifacts that coordinate sessions, and plugin discovery for local sessions
 - [Claude plugin](claude-plugin/index.md): Plugin skills shipped to target projects, the aitk claude CLI, and overlap with built-in Claude Code features. Start with overview.
-- [CLI](cli.md): TypeScript entry point, the exec boundary to bash, and the TS-native command domains
+- [CLI](cli/index.md): TypeScript entry point and the layer boundary to bash, command registration and migration, the sync engine and its install stamp, the audit commands, and packaging. Start with overview.
 - [Context model](context-model.md): Three-tier context loading, which tier holds what, and how context entries get populated at ship time
 - [Design](design.md): DESIGN.md token shape, extract skill and its two paths, render command
 - [Development](development.md): Local dev workflow, scripts, and husky hooks

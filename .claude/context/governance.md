@@ -22,18 +22,35 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 
 ## Decisions
 
+### Rule sources and install
+
 - Source rules carry the Claude shape directly, so install is a passthrough copy rather than a transform. Nothing generates a rule, which keeps the source readable and the install trivial.
 - Rules live in subdirectories by domain and install preserves that layout. A flat folder would make the numbering bands the only grouping signal.
 - Install, sync, and build are separate concerns rather than flags on one command. Install bootstraps a stack and overwrites. Sync updates only what is already present and never adds. Build concatenates into a paste payload. Collapsing them would mean guessing intent from target state.
 - Install overwrites existing rules on purpose. Delete rules you do not want after install rather than adding optional or addon complexity to stack definitions.
+
+### Sync and the shared engine
+
 - Gov is the first domain on the shared sync engine, and it went first because its source lookup is the thinnest of the four. The engine owns target validation, the scan report, the prompt, and the apply loop. The adapter supplies two things only: where a destination file's source lives, and what counts as a change beyond a content diff.
 - Sync matches an installed rule to its source by rule name rather than by relative path. A rule that moves between bands in the toolkit still syncs into the subdirectory the target already uses, so a reorganization here does not strand installed copies.
+
+### Rules that route to a standard
+
 - `510-context` carries a write-time policy alongside its read-time one, so editing a domain leaves its context entry conforming. It ships in `base.toml` to every consumer, so each write-time bullet states an outcome of the edit rather than a backlog to drain, which is the only phrasing that also reads correctly in a project with no entries yet.
 - Every standard that governs a file path carries a rule routing to it, so an edit loads the standard without the matching skill being invoked. `595-tooling-reference` is toolkit-local and is authored under `internal/rules/claude/`, because `internal/standards/tooling-reference.md` governs a surface a target never authors and shipping the route would point at a path no install creates. It sits in `internal/` rather than `governance/rules/` so location enforces the boundary, the same way the internal standards and snippets do.
+
+### This repository's own rules
+
 - The toolkit's own `.claude/rules/` is produced from `internal/governance.toml` rather than copied by hand. The record names one stack and its extras, `aitk gov regen` resolves it through the same stack machinery an install uses, and anything under `internal/rules/` installs alongside. Recording the subset stops the producer from reading its own output to decide what that output should be.
 - Registering a new rule for this repository means naming it somewhere the record resolves, not writing it into `.claude/rules/`. Add it to a stack in `governance/stacks/`, to the `add` list in `internal/governance.toml`, or to `internal/rules/` when it governs toolkit authoring alone. A rule with a source that no stack names never installs, and the drift assertion still passes because the copy matches what the record resolves to. A file written into `.claude/rules/` by hand is deleted on the next `bun run check`.
+
+### Rules reached by something other than a glob
+
 - `standards/versioning.md` is deliberately unrouted. It governs commit subjects, PR titles and bodies, review comments, issues, and git tags, none of which are files, so a path-scoped rule has nothing to match and would never fire. `git-commit` and `git-pr` reach that surface by instruction instead, and what catches a leak there is a check rather than a route. The check is `publish.md`, which reads the label rule from `versioning.md` beside it, so the six skills that publish to a remote inherit it from the citation they already carry.
-- `090-code-comments` owns the degradation term list rather than `src/comments/`, because `src/comments/vocabulary.ts` reads the terms out of whichever rule publishes a `## Degradation vocabulary` heading. Landing the rule is what turned the sweep in `aitk comments scan` from skipped to live, and editing the backticked terms there changes what the command sweeps for here and in every target on `base`. Discovery anchors on the heading rather than the filename, so a renumber cannot silently empty the list.
+- `090-code-comments` owns the degradation term list rather than `src/comments/`, because `src/comments/vocabulary.ts` reads the terms out of whichever rule publishes a `## Degradation vocabulary` heading. Editing the backticked terms there changes what `aitk comments scan` sweeps for here and in every target on `base`. Discovery anchors on the heading rather than the filename, so a renumber cannot silently empty the list.
+
+### Numbering bands
+
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
 | Range     | Domain                                                                                                                       |

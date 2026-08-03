@@ -5,7 +5,7 @@ description: What the scripts domain owns, the folder layout, and the decisions 
 
 # Overview
 
-Owns every bash script in the repo: the domain entry points behind each `aitk` command, repo maintenance, sandbox provisioning, and the shared library functions the rest source. The TypeScript side that parses arguments and dispatches here lives in `.claude/context/cli.md`.
+Owns every bash script in the repo: the domain entry points behind each `aitk` command, repo maintenance, sandbox provisioning, and the shared library functions the rest source. The TypeScript side that parses arguments and dispatches here lives in `.claude/context/cli/index.md`.
 
 ## Layout
 
