@@ -33,7 +33,7 @@ The rule that gates a skill edit globs `.claude/skills/**/REQUIREMENT.md`, so a 
 
 - `aitk-claude` carries one. Its scope spans the plugin tree, the seed, and the context entries with no stated edge, and its claim on the Claude entries contests `aitk-standards`.
 - `aitk-scripts` carries one. Its instruction to run a scenario and judge the envelope contradicts the arm rules in `aitk-sandbox-check`, and neither body names the other.
-- `aitk-standards` carries one. The `docs/` half of its declared scope never appears in the body.
+- `aitk-standards` carries one. The `docs/` half of its declared scope gets no guidance of its own, appearing once inside a prose instruction that names `standards/` beside it.
 - `aitk-ask` carries none. Its guards, its `## Do not` block, and the bounded escalation ladder state both halves.
 - `aitk-governance` carries none. Each bullet names the failure it prevents, and no internal sibling contests the source tree.
 - `aitk-sandbox-check` carries none. It is the longest internal body and still its own specification, with four deliberate exclusions under `## Do not`.
