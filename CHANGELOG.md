@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.0](https://github.com/erclx/aitk/compare/v0.45.0...v0.46.0) (2026-08-03)
+
+
+### Features
+
+* **sync:** close three blind spots in the target drift report ([#818](https://github.com/erclx/aitk/issues/818)) ([e0cd4eb](https://github.com/erclx/aitk/commit/e0cd4ebd49151aee091903a5ccc8e41b4e8afed7))
+
 ## [0.45.0](https://github.com/erclx/aitk/compare/v0.44.0...v0.45.0) (2026-08-03)
 
 
