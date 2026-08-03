@@ -466,10 +466,11 @@ one malformed file cannot hide the rest of the catalog. `--names` emits skill
 names one per line.
 
 Each entry also carries `requirement`, whether the folder holds a sibling
-`REQUIREMENT.md`. Coverage of that file is selective by design, so a `false` is
-not a gap to close and the flag answers which skills carry one without a caller
-listing the directory itself. It says nothing about why, which is a judgment the
-toolkit records against its own corpus rather than in the catalog.
+`REQUIREMENT.md`. Every skill is meant to carry one, so a `false` is a gap to
+close rather than a recorded exemption, and the flag answers which skills are
+missing theirs without a caller listing the directory itself. Nothing gates the
+rule yet, which is why the flag is worth reading against the shipped corpus after
+a merge.
 
 ## Non-interactive examples
 
