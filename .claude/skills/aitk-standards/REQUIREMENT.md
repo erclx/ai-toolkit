@@ -29,5 +29,5 @@ The routing failure is the one with no local symptom. A misplaced document reads
 ## Out of scope
 
 - Voice, punctuation, and formatting, which `.claude/standards/prose.md` states directly. Read that file rather than loading this skill to reach it.
-- Creating a standard or a snippet inside a target project, which the shipped `create-standard` skill does
+- Creating a standard inside a target project, which the shipped `create-standard` skill does
 - The content of a Claude context entry that a plugin or skill change dates, which `aitk-claude` updates. This skill owns the entry's shape through `.claude/standards/context.md`.
