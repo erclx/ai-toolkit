@@ -11,13 +11,21 @@ Both split their engine by reason to change rather than by size. `src/comments/`
 
 ## The context audit
 
+### What gates and what reports
+
 - One check out of `aitk context audit` gates `bun run check` and the rest report. Citation resolution has no false positives and a silent failure mode without it, so it earns a stage. Every other measure is a judgment a reader settles, and a push failing on one of those teaches contributors to route around the stage. Apply the split to any later check: gate on a fact, report a judgment.
 - `verify.sh` invokes the CLI as `bun src/cli.ts`, never as `aitk`. A globally installed `aitk` resolves to the main checkout no matter which worktree is running, so the gate would measure the wrong tree and pass a branch whose own citations are broken. This is the first stage in that script to depend on TypeScript at all, which is why every stage above it is still pure bash.
+
+### Folder scope and resolution
+
 - The audit's folder scope is a named list rather than the index-plus-entry contract read off disk. `.claude/standards/` satisfies the contract too, and auditing it would measure the consumed copy of `standards/` against a rule written for per-domain narrative. `--folder` admits another folder without an edit, which is the escape hatch the contract reading would have given for free.
 - A folder name resolves under `.claude/` first and at the project root second, which is what puts `docs/` in reach of the same engine. A sibling command measuring the same things against a different root would put one behavior in two places. `--folder` stays a name rather than a path, since a path invites `../../elsewhere` and the audit's scope is corpora inside the repository.
 - The root base is opt-in through `canResolveAtRoot`, which only `--folder` sets. Applying it to the default list too was the first shape, and it audited any target holding a root `context/`, `diagrams/`, or `wireframes/` against a standard that target never adopted, on a bare run naming nothing.
 - A root folder is measured and stays out of the citation scope, since the pattern spells the `.claude/` prefix. Widening it to a bare `docs/x.md` would match prose referencing nothing. A run with no `.claude/` folder says the check is out of scope, and refuses under `--citations-only`, because a gate exiting clean on a scope it could not build is the failure it exists to catch.
 - A run where no requested name resolves refuses, whichever list it read. Naming the absent ones is what narrows to a name passed by hand, since a project carrying one of the three default folders is ordinary and warning on the other two every run would train a reader past the scope line.
+
+### Which unit answers a measure
+
 - Required sections are the first measure that cannot decide from one entry, so the judgment sits in `missingSections` beside `measureFolders` rather than widening `measureEntry`. Which unit answers is what `nested` on `AuditedFolder` decides.
 - Four domains here split across a folder and describe one domain between them, so any sibling answers and the finding names the folder. Entries of the folder named under `.claude/` are one domain each and answer for themselves. Rolling every folder up was the first shape, and it let one entry stand in for thirteen domains beside it.
 - A heading at any level satisfies a required section, since those split domains carry the overview as the `#` title and an `##` under it would repeat the filename. The check reports rather than gates, the closer call since a missing section reads as a fact. The standard sanctions omitting `## Layout` from a domain owning no paths, and no measure separates that from an entry that forgot it.

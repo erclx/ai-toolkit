@@ -19,11 +19,15 @@ The check pipeline does not follow the two symlinks. The index walker's glob, th
 
 Validation proves the manifest parses and nothing about whether it works. `claude plugin validate --strict` passes a manifest whose `source` points at a directory that does not exist, so it would have accepted the zero-skill root-sourced shape. An install is the only check that proves a shape, which is why `bun run check` covering this file does not retire the manual install.
 
+### Reaching a standard
+
 Delivering a standard and reaching it are separate problems. The shipped skills cite `.claude/standards/X.md`, which resolves against the target project, so in a project with no standards installed a skill once resolved the citation to the project root, found nothing, and never looked in its own plugin root. The cache copies were inert until a skill was told to fall back to them. Each citing body now names `${CLAUDE_SKILL_DIR}/../../standards/X.md` as the fallback, which lands on the dereferenced symlink beside `skills/`. The project copy is still tried first, so a target that installed standards and edited them keeps its override.
 
 The fallback conditions on the file, never on the `.claude/standards/` directory. `aitk standards sync` updates only filenames it already finds and never adds one, so a project that installed before a standard existed keeps the directory and never receives that file. A directory test passes there while the file is missing, which is the partial install the fallback exists to cover rather than an edge case. `git-commit` citing `versioning.md` is the concrete shape.
 
 Only `${CLAUDE_SKILL_DIR}` survives to the model. Measured across three probe skills in a project with no `.claude/`, the body arrived with that variable already expanded to an absolute path, while `${CLAUDE_PLUGIN_ROOT}` reached the model as a literal string and a bare `../../` arrived unresolved. The latter two happened to work because the model inferred a base, which is the inference `standards/skill.md` bans a bare relative path to avoid. A guard on a standard's presence has to test both paths, since one testing only `.claude/standards/` refuses to run in a plugin-only project that has the file. `create-skill` and `claude-standards-audit` each carried such a guard.
+
+### What a symlink costs
 
 A symlink is an entry point that cannot filter. `standards/aitk/` and `snippets/aitk/` were excluded at every CLI verb and still reached every plugin cache, because an installer dereferences the two symlinks and copies whatever is behind them with no code in the path. The count reached five before the fix and grew on its own, since `snippets/aitk/` was where internal snippets were authored. Internal content now lives at `internal/`, which nothing under `claude/` reaches, and the filters that guarded the old category are deleted. `scripts/core/check-plugin-boundary.sh` walks the plugin tree with symlinks followed and fails on any file resolving under `internal/`, so what the filters asserted is now measured against what an install actually copies.
 
