@@ -13,7 +13,7 @@ This skill drives the full memory review lifecycle in five phases. Pick the phas
 | "challenge the promotes" (receipt exists)                              | Challenge | review file only             |
 | "discuss", "respond to questions"                                      | Discuss   | review file only             |
 | "apply decisions", "commit", "ship the review"                         | Apply     | tracked files + memory files |
-| "cleanup", "delete the receipt"                                        | Cleanup   | review files only            |
+| "cleanup", "delete the receipt"                                        | Cleanup   | one review file              |
 
 If the user re-pings the skill with no new phrase and a receipt exists, default to Discuss when any `Decision:` contains `?`, otherwise Apply.
 
@@ -189,10 +189,12 @@ End with: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Om
 
 Trigger: user says "cleanup" or "delete the receipt" after Apply has run.
 
-Cleanup removes receipts and nothing else. Apply is the only phase that deletes a memory entry, and it does so per approved item against a folder that is gitignored with no history behind it, so a deletion made anywhere else has no undo and leaves no record of what it took. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
+Cleanup removes one receipt and nothing else. Apply is the only phase that deletes a memory entry, and it does so per approved item against a folder that is gitignored with no history behind it, so a deletion made anywhere else has no undo and leaves no record of what it took. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
+
+If no `.claude/review/memory-review-*.md` exists at the main root, stop: `✅ No review receipt to clean up.` Every other refusal in this skill carries a message, and the phase reads a receipt before it does anything else.
 
 1. Read the latest `.claude/review/memory-review-*.md` at the main root and confirm Apply has run against it. If any item is still 📝 pending, stop and name the pending numbers.
-2. Delete that review file, along with any older `memory-review-*.md` receipts beside it.
+2. Delete that one file. Leave every other receipt beside it in place, because the pending test above covers the file it read and nothing has tested the rest.
 3. Leave every memory entry in place. A `Skip` decision is terminal, and applied promotions, governance handoffs, and user-type memories each stay as the review left them.
 
 Do not promote, rewrite, or delete a memory entry. Receipts only.
