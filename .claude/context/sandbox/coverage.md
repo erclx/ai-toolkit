@@ -13,7 +13,7 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Sixteen arms across nine scenarios out of 57 is 15 percent of scenarios, well under the 28 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
+Scenarios and arms count separately. Sixteen arms across nine scenarios out of 56 is 16 percent of scenarios, well under the 28 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
 
 Neither number weighs an arm by what it asserts. An arm can carry a single assertion over its own provisioning, such as `.claude/standards/skill.md` being absent, which is a claim about the fixture rather than about the skill under test. The count reads as scenarios reached rather than behavior covered, since nothing in it separates that arm from one asserting eleven things about a run, and a reader taking 15 percent as skill coverage is reading past what the declarations say plainly.
 
