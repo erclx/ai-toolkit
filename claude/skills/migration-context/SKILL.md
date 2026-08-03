@@ -5,6 +5,8 @@ description: Classifies markdown files in a target project's `docs/` folder and 
 
 # Claude context migrate
 
+Run this skill before `migration-claude-md` when both apply. That skill proposes entries into the same `.claude/context/` folder, and an entry landing there first makes the corresponding move here read as a conflict and get skipped, which loses the richer `docs/` file.
+
 ## Guards
 
 - If no `docs/` directory exists at `pwd`, stop: `❌ No docs/ directory found.`
