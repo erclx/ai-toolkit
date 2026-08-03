@@ -183,6 +183,14 @@ main() {
   run_check "cd $PROJECT_ROOT && bun src/cli.ts context audit --citations-only" "A cited context path does not resolve. Run bun src/cli.ts context audit."
   log_info "Context citations resolve"
 
+  # Presence of a required file is a fact, so it gates. The name, description,
+  # folder, and requirement-section measures beside it report and are read from a
+  # bare run. `bun src/cli.ts` for the reason the stage above uses it, and the
+  # command reads the cwd, so this measures the worktree being pushed.
+  log_step "Skill requirements"
+  run_check "cd $PROJECT_ROOT && bun src/cli.ts claude skills audit --requirements-only" "A skill folder carries no REQUIREMENT.md. Run bun src/cli.ts claude skills audit."
+  log_info "Skill requirements present"
+
   log_step "Plugin manifests"
   if ! command -v claude >/dev/null 2>&1; then
     log_info "Skipped, claude is not installed"

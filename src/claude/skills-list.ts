@@ -17,9 +17,9 @@ export interface SkillListing {
  * The folder name wins over the frontmatter `name` when they disagree, because
  * Claude Code invokes a skill by its directory.
  *
- * `requirement` reports whether the folder carries `REQUIREMENT.md`. Coverage is
- * selective by design, so a false is not a gap to close and this field carries no
- * reason for one. The toolkit records those separately from the catalog.
+ * `requirement` reports whether the folder carries `REQUIREMENT.md`. Every skill
+ * is meant to carry one, so a false is a gap rather than a recorded exemption.
+ * `aitk claude skills audit` is what fails on it, across both corpora.
  */
 export function listSkills(root: string): SkillListing[] {
   const skillsRoot = join(root, 'claude', 'skills')
