@@ -159,6 +159,6 @@ See `agents.md` for the `aitk indexes regen` invocation contract: flags, exit co
 ## Related
 
 - `agents.md`: CLI flags, exit codes, JSON output
-- `cli.md`: the TypeScript layer and the migration boundary
+- `.claude/context/cli/commands.md`: the TypeScript layer and the migration boundary
 - `scripts/lib.md`: `lib/frontmatter.sh`, the one bash reader that stayed
 - `claude/skills/setup-indexes/`: bootstrap skill source
