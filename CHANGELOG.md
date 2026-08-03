@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.0](https://github.com/erclx/aitk/compare/v0.36.0...v0.37.0) (2026-08-03)
+
+
+### Features
+
+* **context:** report a missing required section and conform the seeds ([#786](https://github.com/erclx/aitk/issues/786)) ([dbab08e](https://github.com/erclx/aitk/commit/dbab08eefe5a790b864597b5d02baae31da1cb51))
+
 ## [0.36.0](https://github.com/erclx/aitk/compare/v0.35.2...v0.36.0) (2026-08-03)
 
 
