@@ -117,6 +117,39 @@ commits touching its own source path. The `covers` field names the domains a
 target has actually stamped, so a domain that was never stamped is legible
 rather than reading as a clean one.
 
+### Surfaces reported beside the domains
+
+Three sections sit outside the per-domain scan, because each names something
+that walk cannot see. None of them produces a change, and no sync command
+applies any of them.
+
+`seeds` classifies every seed the toolkit ships against the target's copy, as
+`matching`, `stale`, `drifted`, or `missing`. `missing` has no per-domain
+equivalent, since the domain walk lists what a target installed and cannot see a
+file that never arrived. There is no `customized` verdict here, because that one
+needs a stamp and seeds carry none, so a file history cannot attribute stays
+`drifted`. Reconcile the section with `claude-seed-sync`, which merges one
+section at a time rather than replacing a file the project edits.
+
+`superseded` names a file a newer seed folder replaced, such as `.claude/TASKS.md`
+against the `.claude/tasks/` that now ships. The entry carries `replacedBy` and
+nothing else, and the file is never deleted, since the content belongs to the
+project and only its author can decide where it moves. The list derives from the
+seed tree rather than from a fixed set of filenames, so a folder added later is
+covered without a code change. Only an exact stem matches, which leaves a
+suffixed variant such as `TASKS-ARCHIVE.md` unreported.
+
+`unmigrated` names a domain sitting at the root layout an older toolkit installed
+to, with nothing at the path the current one reads. It carries `rootPath`,
+`installPath`, and a file count. Without it a project holding `standards/` at its
+root reports zero entries for that domain and reads as clean, which is the most
+misleading state the report can produce. Route it to `migration-standards`.
+
+`unmigrated` counts toward `--exit-code`, since running the relocation closes it.
+`superseded` and every seed state are excluded, for the reason `orphaned` already
+is: only the user can move content they wrote, so failing a job on it leaves the
+job red with no mechanical remedy.
+
 ## Bootstrap
 
 `aitk init` installs up to six core domains and reports each one independently. A

@@ -41,6 +41,16 @@ The fallback reads history as one `git log --raw` call per domain rather than on
 
 History is absent exactly where the stamp is, since a registry install ships `src/` without `.git`. `historyUnavailable` separates a toolkit that could not attribute from one that attributed and found a local edit, because only the first is a capability the install lacks. It degrades the way `toolkitCommit` already does rather than failing the sync.
 
+## Surfaces reported without a change
+
+Three report sections sit outside the domain scan in `src/sync/check.ts`, each covering something `planSync` structurally cannot. All three are report-only, and the reason is the same in each case: the engine turns a difference into a `copy` and a retired surface into a `delete`, and every file here holds content the project wrote.
+
+Seeds get their own reader in `src/sync/seeds-report.ts` rather than a `SyncAdapter`. Three things blocked the adapter. `listInstalled` globs `**/*.md` under one root while seeds span the target root for `CLAUDE.md`, `.claude/` for the rest, and include a `.json` and four `.sh` files. And `planSync` queues a copy for every non-matching file, which would overwrite `CLAUDE.md` wholesale and defeat the section merge `claude-seed-sync` exists to run. The reader reuses `readHistoryIndex` and `findInstalledOrigin` directly, because `recoverAttribution` is private to the engine and takes an adapter seeds have no way to supply. Seeds carry no stamp, so `customized` is unreachable and an unattributed difference stays `drifted`.
+
+`collectSuperseded` in `src/sync/layout.ts` derives retired artifacts by pairing `SUBDIRS` from `src/claude/seeds.ts` against an uppercase-stem sibling. The existing `collectRetired` adapter hook was the wrong tool: it exists for `.claude/GOV.md`, a generated file, and the engine deletes whatever it returns. Deriving from the seed tree rather than a fixed filename list means a folder added later is covered without a code change, at the cost of missing a suffixed variant like `TASKS-ARCHIVE.md`.
+
+`detectUnmigrated` covers the state that read as clean. `installedStampDomains` lists only domains whose install marker exists, so a project holding `standards/` at its root reported zero entries rather than a problem. It counts toward `--exit-code` because the relocation closes it, while superseded artifacts and seed drift are excluded for the reason `orphaned` already is.
+
 ## aitk sync
 
 `aitk sync [target]` runs every installed domain sync in sequence (standards, snippets, governance, claude), then a git workflow step that detects which domains changed and previews the commit and pull request body before prompting. Committing creates `chore/aitk-sync-YYYYMMDD-HHMM` when the run is on `main` or `master` and stays on the current branch otherwise. The pull request body lists up to three changed filenames per domain, then a count for the rest.
