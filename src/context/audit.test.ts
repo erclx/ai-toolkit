@@ -388,7 +388,8 @@ describe('measureFolders', () => {
   const NARRATED = '# X\n\nThe third layer arrived in #755.\n'
 
   async function provenanceOf(rel: string): Promise<number> {
-    const reports = await measureFolders(root, await resolveFolders(root))
+    const { folders } = await resolveFolders(root)
+    const reports = await measureFolders(root, folders)
 
     return reports.find((entry) => entry.rel === rel)?.provenance.length ?? -1
   }
@@ -412,6 +413,27 @@ describe('measureFolders', () => {
     expect(await provenanceOf('.claude/context/claude-plugin/skills.md')).toBe(
       1,
     )
+  })
+
+  it('should leave a marker and a heavy bullet in a root folder unreported', async () => {
+    const heavy = `- ${'word '.repeat(BULLET_CHECKPOINT / 2)}\n`
+    seed('docs', 'agents.md', `${NARRATED}\n${heavy}`)
+
+    const { folders } = await resolveFolders(root, ['docs'])
+    const [entry] = await measureFolders(root, folders)
+
+    expect(entry.rel).toBe('docs/agents.md')
+    expect(entry.provenance).toEqual([])
+    expect(entry.heavyBullets).toEqual([])
+  })
+
+  it('should still measure a root folder for length', async () => {
+    seed('docs', 'agents.md', '# X\n')
+
+    const { folders } = await resolveFolders(root, ['docs'])
+    const [entry] = await measureFolders(root, folders)
+
+    expect(entry.lines).toBeGreaterThan(0)
   })
 })
 
@@ -445,7 +467,7 @@ describe('missingSections', () => {
   }
 
   async function missingIn(rel: string): Promise<readonly string[]> {
-    const folders = await resolveFolders(root)
+    const { folders } = await resolveFolders(root)
     const entries = await measureFolders(root, folders)
 
     return (

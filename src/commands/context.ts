@@ -59,7 +59,10 @@ export function register(program: Command): void {
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Add a machine-readable record on stdout')
-    .option('--folder <list>', `Comma-separated folder names under .claude/`)
+    .option(
+      '--folder <list>',
+      'Comma-separated folder names, resolved under .claude/ then the project root',
+    )
     .option('--citations-only', 'Run the gating citation check alone')
     .addHelpText(
       'after',
@@ -78,6 +81,7 @@ export function register(program: Command): void {
         '  aitk context audit --json',
         '  aitk context audit --citations-only',
         '  aitk context audit --folder context,diagrams',
+        '  aitk context audit --folder docs',
         '',
       ].join('\n'),
     )
@@ -96,11 +100,11 @@ function parseFolders(list: string | undefined): string[] | string {
 
   if (names.length === 0) return 'Empty --folder list. Pass at least one name.'
 
-  // `..` would resolve the audited folder above `.claude/`, taking the scan
-  // and the citation pattern outside the tree the audit describes.
+  // `..` would resolve the audited folder above the project root, taking the
+  // scan and the citation pattern outside the tree the audit describes.
   const invalid = names.filter((name) => !FOLDER_NAME.test(name))
   if (invalid.length > 0) {
-    return `--folder takes folder names under .claude/, not paths: ${invalid.join(', ')}`
+    return `--folder takes folder names, not paths: ${invalid.join(', ')}`
   }
 
   return names
@@ -116,15 +120,32 @@ async function runAudit(
 
   if (typeof names === 'string') return refuse(names, gateOnly)
 
-  const folders = await resolveFolders(root, names)
+  const { folders, missing } = await resolveFolders(root, names)
   if (folders.length === 0) {
     return refuse(
-      `No audited folder found under .claude/. Looked for: ${names.join(', ')}.`,
+      `No audited folder found under .claude/ or the project root. Looked for: ${names.join(', ')}.`,
       gateOnly,
     )
   }
 
-  const citations = await auditCitations(root, presentNames(folders))
+  // A default folder a project does not carry is the ordinary case and stays
+  // silent. A name passed by hand that resolves nowhere is a typo, and the run
+  // measuring the names that did resolve reads as a pass against a folder it
+  // never opened.
+  const unresolved = opts.folder ? missing : []
+
+  // The gate runs one check. Letting it exit 0 against a scope it could not
+  // build reports a pass on nothing measured, which is the outcome a gate is
+  // there to prevent.
+  const cited = presentNames(folders)
+  if (gateOnly && cited.length === 0) {
+    return refuse(
+      `The citation check spells the .claude/ prefix and no audited folder resolved there. Looked for: ${names.join(', ')}.`,
+      gateOnly,
+    )
+  }
+
+  const citations = await auditCitations(root, cited)
   if (citations.kind === 'unavailable') {
     return refuse(
       'git could not list the tree, so no citation was checked. Run inside a git repository.',
@@ -140,8 +161,8 @@ async function runAudit(
     reportGate(citations)
   } else {
     intro('aitk context audit')
-    reportScope(folders)
-    reportCitations(citations)
+    reportScope(folders, unresolved)
+    reportCitations(citations, cited)
     reportSections(sections, folders)
     reportLength(entries)
     reportDepth(entries)
@@ -158,9 +179,11 @@ async function runAudit(
         root,
         folders: folders.map((folder) => ({
           path: folder.rel,
+          base: folder.base,
           entries: folder.entries.length,
           governsContent: governsContent(folder),
         })),
+        unresolvedFolders: unresolved,
         citations: {
           scanned: citations.scanned,
           total: citations.total,
@@ -228,18 +251,54 @@ function plural(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? '' : 's'}`
 }
 
-function reportScope(folders: readonly AuditedFolder[]): void {
+/**
+ * Names the resolved path of every audited folder, plus the requested names
+ * that resolved nowhere.
+ *
+ * The path is what says which base a name was taken from, which matters once a
+ * name can resolve under `.claude/` or at the project root and a project may
+ * carry both.
+ */
+function reportScope(
+  folders: readonly AuditedFolder[],
+  unresolved: readonly string[],
+): void {
   logStep('Scope')
 
   for (const folder of folders) {
     logInfo(`${folder.rel}: ${folder.entries.length} entries`)
   }
+
+  if (unresolved.length === 0) return
+
+  logWarn(
+    `Under neither .claude/ nor the project root: ${unresolved.join(', ')}`,
+  )
 }
 
 type ScannedCitations = Extract<CitationReport, { kind: 'scanned' }>
 
-function reportCitations(report: ScannedCitations): void {
+/**
+ * States the reach before the count, for the reason the provenance report
+ * states its own.
+ *
+ * A run auditing a folder at the project root builds no pattern, and a count of
+ * zero followed by a line saying every path resolves is indistinguishable from
+ * a corpus that cites nothing.
+ */
+function reportCitations(
+  report: ScannedCitations,
+  cited: readonly string[],
+): void {
   logStep('Citations')
+
+  if (cited.length === 0) {
+    logInfo(
+      'Out of scope. The pattern spells the .claude/ prefix, and no audited folder resolved there.',
+    )
+    return
+  }
+
   logInfo(
     `${plural(report.total, 'cited path')} across ${plural(report.scanned, 'file')}, fixtures and fenced examples excluded`,
   )

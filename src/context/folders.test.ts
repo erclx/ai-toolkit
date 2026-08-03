@@ -35,7 +35,7 @@ describe('resolveFolders', () => {
     seed('.claude/context', ['ci.md'])
     seed('.claude/diagrams', ['components.md'])
 
-    const folders = await resolveFolders(ROOT)
+    const folders = (await resolveFolders(ROOT)).folders
 
     expect(folders.map((folder) => folder.rel)).toEqual([
       '.claude/context',
@@ -46,14 +46,14 @@ describe('resolveFolders', () => {
   it('should skip a default folder the project does not carry', async () => {
     seed('.claude/context', ['ci.md'])
 
-    expect(await resolveFolders(ROOT)).toHaveLength(1)
+    expect((await resolveFolders(ROOT)).folders).toHaveLength(1)
   })
 
   it('should audit a split domain as its own folder', async () => {
     seed('.claude/context', ['ci.md'])
     seed('.claude/context/claude-plugin', ['skills.md', 'overview.md'])
 
-    const folders = await resolveFolders(ROOT)
+    const folders = (await resolveFolders(ROOT)).folders
 
     expect(folders.map((folder) => folder.rel)).toEqual([
       '.claude/context',
@@ -64,7 +64,7 @@ describe('resolveFolders', () => {
   it('should exclude the index from a folder entry list', async () => {
     seed('.claude/context', ['ci.md', 'cli.md'])
 
-    const [folder] = await resolveFolders(ROOT)
+    const [folder] = (await resolveFolders(ROOT)).folders
 
     expect(folder.entries.map((path) => basename(path))).toEqual([
       'ci.md',
@@ -76,16 +76,62 @@ describe('resolveFolders', () => {
     mkdirSync(join(ROOT, '.claude/context'), { recursive: true })
     writeFileSync(join(ROOT, '.claude/context/ci.md'), '# CI\n')
 
-    expect(await resolveFolders(ROOT)).toEqual([])
+    expect((await resolveFolders(ROOT)).folders).toEqual([])
   })
 
   it('should honor an explicit folder list', async () => {
     seed('.claude/context', ['ci.md'])
     seed('.claude/diagrams', ['components.md'])
 
-    const folders = await resolveFolders(ROOT, ['diagrams'])
+    const { folders } = await resolveFolders(ROOT, ['diagrams'])
 
     expect(folders.map((folder) => folder.rel)).toEqual(['.claude/diagrams'])
+  })
+
+  it('should resolve a named folder at the project root', async () => {
+    seed('docs', ['agents.md'])
+
+    const { folders } = await resolveFolders(ROOT, ['docs'])
+
+    expect(folders.map((folder) => folder.rel)).toEqual(['docs'])
+    expect(folders[0].base).toBe('.')
+  })
+
+  it('should audit a split domain under a root folder', async () => {
+    seed('docs', ['agents.md'])
+    seed('docs/reference', ['cli.md'])
+
+    const { folders } = await resolveFolders(ROOT, ['docs'])
+
+    expect(folders.map((folder) => folder.rel)).toEqual([
+      'docs',
+      'docs/reference',
+    ])
+  })
+
+  it('should prefer the .claude folder over the root folder of the same name', async () => {
+    seed('.claude/docs', ['agents.md'])
+    seed('docs', ['agents.md'])
+
+    const { folders } = await resolveFolders(ROOT, ['docs'])
+
+    expect(folders.map((folder) => folder.rel)).toEqual(['.claude/docs'])
+  })
+
+  it('should report a name that resolves under neither base', async () => {
+    seed('.claude/context', ['ci.md'])
+
+    const { folders, missing } = await resolveFolders(ROOT, ['context', 'nope'])
+
+    expect(folders.map((folder) => folder.rel)).toEqual(['.claude/context'])
+    expect(missing).toEqual(['nope'])
+  })
+
+  it('should report every requested name when none resolves', async () => {
+    expect((await resolveFolders(ROOT, ['nope', 'gone'])).missing).toEqual([
+      'nope',
+      'gone',
+    ])
   })
 })
 
@@ -95,7 +141,7 @@ describe('presentNames', () => {
     seed('.claude/context/claude-plugin', ['skills.md'])
     seed('.claude/diagrams', ['components.md'])
 
-    expect(presentNames(await resolveFolders(ROOT))).toEqual([
+    expect(presentNames((await resolveFolders(ROOT)).folders)).toEqual([
       'context',
       'diagrams',
     ])
@@ -104,6 +150,16 @@ describe('presentNames', () => {
   it('should omit a folder the project does not carry', async () => {
     seed('.claude/context', ['ci.md'])
 
-    expect(presentNames(await resolveFolders(ROOT))).not.toContain('wireframes')
+    expect(presentNames((await resolveFolders(ROOT)).folders)).not.toContain(
+      'wireframes',
+    )
+  })
+
+  it('should omit a folder resolved at the project root', async () => {
+    seed('docs', ['agents.md'])
+
+    const { folders } = await resolveFolders(ROOT, ['docs'])
+
+    expect(presentNames(folders)).toEqual([])
   })
 })
