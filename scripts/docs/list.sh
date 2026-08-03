@@ -38,6 +38,35 @@ is_internal_topic() {
   esac
 }
 
+# Emits `name<TAB>description<TAB>category<TAB>target` per target-facing doc,
+# sorted so a domain split into a folder lands in its alphabetical place rather
+# than after every file. A folder declares its category on its own index, since
+# the allowlist is what separates a target-facing doc from a workflow one and a
+# split domain is not exempt from it.
+collect_docs() {
+  local file name description category
+  {
+    while IFS= read -r file; do
+      name=$(basename "$file" .md)
+      [ "$name" = "index" ] && continue
+      category=$(read_frontmatter_field "$file" "category")
+      is_target_facing "$category" || continue
+      description=$(read_frontmatter_field "$file" "description")
+      printf '%s\t%s\t%s\t%s\n' "$name" "$description" "$category" "docs/$name.md"
+    done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md")
+
+    # A split domain is named by its folder and described by its generated
+    # index, which carries subtitle where a sibling file carries description
+    while IFS= read -r file; do
+      name=$(basename "$(dirname "$file")")
+      category=$(read_frontmatter_field "$file" "category")
+      is_target_facing "$category" || continue
+      description=$(read_frontmatter_field "$file" "subtitle")
+      printf '%s\t%s\t%s\t%s\n' "$name" "$description" "$category" "docs/$name/index.md"
+    done < <(find "$DOCS_DIR" -mindepth 2 -maxdepth 2 -type f -name "index.md")
+  } | sort
+}
+
 # Emits `name<TAB>description<TAB>target` per context entry, sorted so a domain
 # split into a folder lands in its alphabetical place rather than after every
 # file. Matches listTopics in src/docs/read.ts, which sorts both together.
@@ -64,16 +93,11 @@ collect_context() {
 }
 
 list_text() {
-  local file name description category target
+  local name description category target
   log_step "Docs"
-  while IFS= read -r file; do
-    name=$(basename "$file" .md)
-    [ "$name" = "index" ] && continue
-    category=$(read_frontmatter_field "$file" "category")
-    is_target_facing "$category" || continue
-    description=$(read_frontmatter_field "$file" "description")
+  while IFS=$'\t' read -r name description category target; do
     log_info "$name : $description"
-  done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  done < <(collect_docs)
 
   # Absent in a registry install, which ships docs/ without .claude/
   if [ -d "$CONTEXT_DIR" ]; then
@@ -97,17 +121,12 @@ emit_json_entry() {
 }
 
 list_json() {
-  local file name description category target
+  local name description category target
   JSON_FIRST=1
   printf '['
-  while IFS= read -r file; do
-    name=$(basename "$file" .md)
-    [ "$name" = "index" ] && continue
-    category=$(read_frontmatter_field "$file" "category")
-    is_target_facing "$category" || continue
-    description=$(read_frontmatter_field "$file" "description")
-    emit_json_entry "$name" "$description" "$category" "docs/$(basename "$file")"
-  done < <(find "$DOCS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+  while IFS=$'\t' read -r name description category target; do
+    emit_json_entry "$name" "$description" "$category" "$target"
+  done < <(collect_docs)
 
   if [ -d "$CONTEXT_DIR" ]; then
     while IFS=$'\t' read -r name description target; do
