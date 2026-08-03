@@ -12,6 +12,15 @@ import {
   type Seed,
 } from '@/claude/seeds'
 import { listSeeds, readSeedContents } from '@/claude/seeds-list'
+import {
+  auditExitCode,
+  auditSkills,
+  CORPORA,
+  DESCRIPTION_LIMIT,
+  REQUIREMENT_SECTIONS,
+  type SkillFinding,
+  type SkillsAudit,
+} from '@/claude/skills-audit'
 import { listSkills } from '@/claude/skills-list'
 import {
   planSettings,
@@ -24,6 +33,7 @@ import { execScript, PROJECT_ROOT } from '@/exec'
 import { isDirectory, resolveTarget } from '@/target'
 import { injectGitignore, pruneGitignore } from '@/tooling/inject'
 import {
+  frameError,
   intro,
   isNonInteractive,
   logAdd,
@@ -32,6 +42,8 @@ import {
   logStep,
   logWarn,
   outro,
+  pipeOutput,
+  plural,
   select,
 } from '@/ui'
 
@@ -47,6 +59,11 @@ interface SeedsListOptions {
 interface SkillsListOptions {
   readonly json?: boolean
   readonly names?: boolean
+}
+
+interface SkillsAuditOptions {
+  readonly json?: boolean
+  readonly requirementsOnly?: boolean
 }
 
 const SEEDED_FILES: readonly string[] = [
@@ -139,15 +156,15 @@ export function register(program: Command): void {
 
   const skills = claude
     .command('skills')
-    .description('Plugin skill catalog (list)')
-    .argument('[subcommand]', "Only 'list' is supported")
+    .description('Plugin skill catalog (list, audit)')
+    .argument('[subcommand]', "One of 'list' or 'audit'")
     .helpOption('-h, --help', 'Show this help message')
     .action((subcommand: string | undefined) => {
       intro('aitk claude')
       logError(
         subcommand === undefined
-          ? "Missing subcommand. Use 'list'."
-          : `Unknown subcommand: ${subcommand}. Use 'list'.`,
+          ? "Missing subcommand. Use 'list' or 'audit'."
+          : `Unknown subcommand: ${subcommand}. Use 'list' or 'audit'.`,
       )
       outro()
       process.exitCode = 1
@@ -171,6 +188,41 @@ export function register(program: Command): void {
     )
     .action((opts: SkillsListOptions) => {
       process.exitCode = runSkillsList(opts)
+    })
+
+  skills
+    .command('audit')
+    .description(
+      'Report both skill corpora against the mechanical rules in standards/skill.md',
+    )
+    .argument('[path]', 'Project root, defaulting to the current directory')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option(
+      '--requirements-only',
+      'Run the gating requirement-presence check alone',
+    )
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the audit completed with every skill carrying a requirement',
+        '  1  refused, with the reason on stderr',
+        '  2  a skill folder carries no REQUIREMENT.md',
+        '',
+        'Only a missing REQUIREMENT.md sets a failing exit code. Name, description,',
+        'folder, and requirement-section findings are advisory.',
+        '',
+        'Examples:',
+        '  aitk claude skills audit',
+        '  aitk claude skills audit --json',
+        '  aitk claude skills audit --requirements-only',
+        '',
+      ].join('\n'),
+    )
+    .action(async (path: string | undefined, opts: SkillsAuditOptions) => {
+      process.exitCode = await runSkillsAudit(path, opts)
     })
 }
 
@@ -412,4 +464,230 @@ function runSkillsList(opts: SkillsListOptions): number {
   }
   outro()
   return 0
+}
+
+/**
+ * Measures the tree at the cwd rather than the toolkit root the catalog reads,
+ * so a linked worktree audits its own branch instead of reporting on `main`. A
+ * target carrying `.claude/skills/` alone is in scope for the same reason.
+ */
+async function runSkillsAudit(
+  path: string | undefined,
+  opts: SkillsAuditOptions,
+): Promise<number> {
+  const root = resolve(path ?? process.cwd())
+  const gateOnly = opts.requirementsOnly ?? false
+  const report = await auditSkills(root)
+
+  if (report.corpora.length === 0) {
+    return refuseAudit(
+      `No skill corpus under ${root}. Looked for ${CORPORA.join(' and ')}.`,
+      gateOnly,
+    )
+  }
+
+  if (gateOnly) {
+    reportRequirementGate(report)
+  } else {
+    intro('aitk claude skills audit')
+    reportScope(report)
+    reportRequirements(report)
+    reportFrontmatter(report)
+    reportFolder(report)
+    reportRequirementShape(report)
+    reportUnmeasured()
+    outro()
+  }
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        corpora: report.corpora.map((corpus) => ({
+          path: corpus.rel,
+          skills: corpus.skills,
+        })),
+        skills: report.skills,
+        findings: {
+          missingRequirement: report.missingRequirement,
+          nameMismatch: report.nameMismatch,
+          missingDescription: report.missingDescription,
+          longDescription: report.longDescription,
+          readme: report.readme,
+          folderName: report.folderName,
+          requirementSections: report.requirementSections,
+        },
+        checkpoints: {
+          descriptionLimit: DESCRIPTION_LIMIT,
+          requirementSections: REQUIREMENT_SECTIONS,
+          corpora: CORPORA,
+        },
+      })}\n`,
+    )
+  }
+
+  return auditExitCode(report)
+}
+
+function refuseAudit(message: string, gateOnly: boolean): number {
+  if (gateOnly) {
+    frameError(message)
+    return 1
+  }
+
+  intro('aitk claude skills audit')
+  logStep('Refused')
+  logWarn(message)
+  outro()
+  return 1
+}
+
+/**
+ * Prints nothing when every skill carries a requirement.
+ *
+ * `--requirements-only` is what `verify.sh` runs on every push, and that script
+ * pipes a stage's whole output into its own frame. A passing gate that printed
+ * its frame would nest one inside the other on every contributor's push.
+ */
+function reportRequirementGate(report: SkillsAudit): void {
+  const missing = report.missingRequirement
+  if (missing.length === 0) return
+
+  intro('aitk claude skills audit')
+  logError(
+    missing.length === 1
+      ? '1 skill folder carries no REQUIREMENT.md'
+      : `${missing.length} skill folders carry no REQUIREMENT.md`,
+  )
+  pipeOutput(missing.join('\n'))
+  outro()
+}
+
+function reportFindings(findings: readonly SkillFinding[]): void {
+  pipeOutput(
+    findings.map((found) => `${found.rel}  ${found.detail}`).join('\n'),
+  )
+}
+
+/**
+ * Names each corpus that resolved, since a corpus the tree does not carry is
+ * skipped silently and a count taken over one of the two reads as the whole.
+ */
+function reportScope(report: SkillsAudit): void {
+  logStep('Scope')
+  for (const corpus of report.corpora) {
+    logInfo(`${corpus.rel}: ${plural(corpus.skills, 'skill')}`)
+  }
+}
+
+function reportRequirements(report: SkillsAudit): void {
+  logStep('Requirements')
+  logInfo('Every skill folder carries REQUIREMENT.md beside SKILL.md.')
+  logInfo('This is the only measure here that fails a run.')
+
+  if (report.missingRequirement.length === 0) {
+    logInfo('Every skill carries one.')
+    return
+  }
+
+  logWarn(`${plural(report.missingRequirement.length, 'skill')} without one`)
+  pipeOutput(report.missingRequirement.join('\n'))
+}
+
+function reportFrontmatter(report: SkillsAudit): void {
+  logStep('Frontmatter')
+  logInfo(
+    `name matches the folder, and description is present and under ${DESCRIPTION_LIMIT} characters.`,
+  )
+  logInfo('A body whose frontmatter does not parse reads as declaring neither.')
+
+  const findings =
+    report.nameMismatch.length +
+    report.missingDescription.length +
+    report.longDescription.length
+  if (findings === 0) {
+    logInfo('Every body declares both fields.')
+    return
+  }
+
+  if (report.nameMismatch.length > 0) {
+    logWarn(
+      `${plural(report.nameMismatch.length, 'body')} whose name does not match its folder`,
+    )
+    reportFindings(report.nameMismatch)
+  }
+
+  if (report.missingDescription.length > 0) {
+    logWarn(
+      `${plural(report.missingDescription.length, 'body')} without a description`,
+    )
+    pipeOutput(report.missingDescription.join('\n'))
+  }
+
+  if (report.longDescription.length > 0) {
+    logWarn(
+      `${plural(report.longDescription.length, 'description')} past the ${DESCRIPTION_LIMIT}-character ceiling`,
+    )
+    reportFindings(report.longDescription)
+  }
+}
+
+function reportFolder(report: SkillsAudit): void {
+  logStep('Folder')
+  logInfo(
+    'No README.md inside a skill folder, and a folder name in kebab-case carrying no capital or underscore.',
+  )
+
+  if (report.readme.length === 0 && report.folderName.length === 0) {
+    logInfo('Every folder conforms.')
+    return
+  }
+
+  if (report.readme.length > 0) {
+    logWarn(`${plural(report.readme.length, 'folder')} carrying a README.md`)
+    pipeOutput(report.readme.join('\n'))
+  }
+
+  if (report.folderName.length > 0) {
+    logWarn(
+      `${plural(report.folderName.length, 'folder name')} outside kebab-case`,
+    )
+    pipeOutput(report.folderName.join('\n'))
+  }
+}
+
+function reportRequirementShape(report: SkillsAudit): void {
+  logStep('Requirement shape')
+  logInfo(
+    `Each REQUIREMENT.md declares ${REQUIREMENT_SECTIONS.join(' and ')}, matched at any heading level.`,
+  )
+  logInfo(
+    'A folder carrying no requirement is reported above rather than counted twice here.',
+  )
+
+  if (report.requirementSections.length === 0) {
+    logInfo('Every requirement declares both.')
+    return
+  }
+
+  logWarn(
+    `${plural(report.requirementSections.length, 'requirement')} short a declared section`,
+  )
+  reportFindings(report.requirementSections)
+}
+
+/**
+ * Stated on every run, including the run where everything above passed. A
+ * report that lists only what it measured reads as a verdict on the standard
+ * rather than on the half of it a parser can reach.
+ */
+function reportUnmeasured(): void {
+  logStep('Unmeasured')
+  logInfo(
+    'The standard states rules no parser reads, and a pass above says nothing about them.',
+  )
+  logInfo(
+    'Whether each Must traces to a stated gap, whether a gap reads as an observed failure rather than an intent, and whether a description routes.',
+  )
+  logInfo('The 5,000-word body ceiling is mechanical and still absent here.')
 }
