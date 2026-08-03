@@ -77,6 +77,8 @@ The run resolves the pull request once, in the final command below, and every la
 
 `gh pr view` is the form this replaces. It resolves by head branch and ignores state, so a branch name reused after an earlier pull request merged returns the closed one. The detection then takes the edit path and rewrites a merged pull request's title and body, and the run reports that pull request's URL as the one it opened, so nothing surfaces the write landing on the wrong object. Scoping the lookup with `--state open` returns empty there and sends the run down the create path.
 
+The lookup scopes to the base as well as the head. One head can carry open pull requests against two bases, and a lookup reading the first result would pick between them by list order. Resolving the base from the repository's default branch is what makes the detection and `gh pr create` agree on which pull request the run is about.
+
 A detached HEAD gives `git branch --show-current` an empty result, which would read as no open pull request and create a second one. The branch-name guard above stops the run first, since an empty name does not match `<type>/<description>`.
 
 ### Final command
@@ -89,7 +91,8 @@ cat <<'BODY' > .claude/.tmp/pr/body.md
 <body content following pr.md template exactly>
 BODY
 git push -u origin HEAD || exit 1
-pr_number=$(gh pr list --head "$(git branch --show-current)" --state open --json number --jq '.[0].number // empty')
+base_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name) || exit 1
+pr_number=$(gh pr list --head "$(git branch --show-current)" --base "$base_branch" --state open --json number --jq '.[0].number // empty')
 if [ -n "$pr_number" ]; then
   pr_url=$(gh pr edit "$pr_number" --title "<title>" --body-file .claude/.tmp/pr/body.md) || exit 1
 else
