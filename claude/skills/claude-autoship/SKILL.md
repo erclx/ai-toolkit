@@ -71,13 +71,17 @@ An empty list stops the chain: `❌ No changed files to classify. Re-run when th
 
 The two causes want different responses. A plan that has yet to produce its output is a re-run once it has. A plan whose output is gitignored by design, such as a read pass writing to `.claude/.tmp/`, is work the chain cannot carry at all, since `git-stage` finds nothing to commit six steps later. Never advise removing the output from `.gitignore`, which trades a stopped run for scratch committed into the repository.
 
-If every changed file matches `*.md` or `*.txt`, skip review entirely and continue to Step 7. Prose-only changes are already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on them burns tokens with no signal.
+The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `aitk:claude-review`.
 
-Otherwise invoke `aitk:claude-review`.
+The behavior paths are `claude/skills/`, `.claude/skills/`, `governance/rules/`, `standards/`, `snippets/`, and `internal/`. Markdown under one of them states what an agent does, so a change there is a behavior change wearing a prose extension. Everything outside them is informational, which keeps `docs/`, `README.md`, and `CHANGELOG.md` skipping without naming them. One behavior file sends the whole branch to review, since documentation shipped beside a behavior change does not cancel it.
+
+Informational prose is already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on it burns tokens with no signal.
+
+That list is this project's rather than a general rule. A project holding executable prose somewhere else adds the path, and until it does every branch touching it skips review silently.
 
 ## Step 6: evaluate findings
 
-Skip this step if Step 5 was skipped (prose-only diff). Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
+Skip this step when Step 5 skipped review. Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
 
 - Any critical or should-fix count greater than zero, stop: `❌ Review found non-minor issues. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
 - Zero critical and zero should-fix, continue. The minor findings stay in the on-disk review receipt. Fold any a reviewer needs into the PR's `## Technical Context`. Do not add a separate review-notes section to the PR body.
