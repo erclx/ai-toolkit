@@ -61,6 +61,25 @@ const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
   { kind: 'release', pattern: /\bv\d+\.\d+(?:\.\d+)?\b/g },
 ]
 
+/**
+ * The folder whose standard carries the exclusion above.
+ *
+ * `standards/context.md` opens its scope by handing diagrams and wireframes to
+ * `diagrams.md` and `wireframes.md`, so a marker reported in either would cite
+ * a rule that entry's own standard routes elsewhere. The length, depth, and
+ * table checkpoints are quoted from the same standard and keep reaching every
+ * audited folder, because a threshold on how far a reader travels generalizes
+ * across entry types while a rule about what an entry may say does not.
+ *
+ * Restating the exclusion in the sibling standards was the alternative. It
+ * duplicates one knowledge item across three surfaces, which the root
+ * instruction file forbids, and pointing is not available because the surface
+ * they would point at is the one disclaiming them. Should a diagram entry ever
+ * accumulate narration, the escalation is an attribute standard owning the rule
+ * across document types, not restoring this reach without an owner.
+ */
+export const PROVENANCE_FOLDER = 'context'
+
 export type ProvenanceKind = 'date' | 'change' | 'release'
 
 export interface TableFinding {
@@ -95,6 +114,7 @@ export interface EntryReport {
   /** First line of the longest run, or 0 when the entry has no run at all. */
   readonly longestRunLine: number
   readonly catalogTables: readonly TableFinding[]
+  /** Empty for an entry no standard bans a change narrative in. */
   readonly provenance: readonly ProvenanceFinding[]
 }
 
@@ -320,7 +340,18 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
     .map((each) => each.finding)
 }
 
-export function measureEntry(rel: string, source: string): EntryReport {
+/**
+ * Measures one entry, scanning for provenance only when a standard claims it.
+ *
+ * The caller passes jurisdiction rather than deriving it from `rel`, because a
+ * path prefix hardcodes what `--folder` exists to override and misses a domain
+ * split into `context/<sub-area>/`.
+ */
+export function measureEntry(
+  rel: string,
+  source: string,
+  governsContent = true,
+): EntryReport {
   const lines = bodyLines(source)
   const run = longestRun(lines)
 
@@ -333,7 +364,7 @@ export function measureEntry(rel: string, source: string): EntryReport {
     longestRun: run.length,
     longestRunLine: run.line,
     catalogTables: catalogTables(lines),
-    provenance: provenance(lines),
+    provenance: governsContent ? provenance(lines) : [],
   }
 }
 
@@ -341,6 +372,9 @@ export function measureEntry(rel: string, source: string): EntryReport {
  * Measures every entry in the audited folders. A generated `index.md` is not
  * among them, since its body is rewritten on every regen and no checkpoint
  * describes a catalog.
+ *
+ * Jurisdiction is applied here rather than at the report, so the JSON record
+ * and the printed run agree on which entries a content rule reached.
  */
 export async function measureFolders(
   root: string,
@@ -351,10 +385,19 @@ export async function measureFolders(
   for (const folder of folders) {
     for (const path of folder.entries) {
       reports.push(
-        measureEntry(relative(root, path), await readFile(path, 'utf8')),
+        measureEntry(
+          relative(root, path),
+          await readFile(path, 'utf8'),
+          governsContent(folder),
+        ),
       )
     }
   }
 
   return reports
+}
+
+/** Reports whether the folder's standard is the one carrying the exclusion. */
+export function governsContent(folder: AuditedFolder): boolean {
+  return folder.name === PROVENANCE_FOLDER
 }

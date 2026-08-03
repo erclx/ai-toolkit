@@ -1,10 +1,15 @@
-import { describe, expect, it } from 'vitest'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   CATALOG_ROW_CHECKPOINT,
   measureEntry,
+  measureFolders,
   RENDER_WIDTH,
   RUN_CHECKPOINT,
 } from '@/context/audit'
+import { resolveFolders } from '@/context/folders'
 
 const FRONTMATTER = '---\ntitle: CI\ndescription: A domain\n---\n\n'
 
@@ -238,5 +243,72 @@ describe('measureEntry', () => {
     expect(
       measureEntry('ci.md', source).provenance.map((found) => found.line),
     ).toEqual([8, 10])
+  })
+
+  it('should leave a marker unreported when no standard claims the content', () => {
+    const source = `${FRONTMATTER}# Components\n\nThe third layer arrived in #755.\n`
+
+    expect(measureEntry('components.md', source, false).provenance).toEqual([])
+  })
+
+  it('should keep measuring length and depth outside the governed folder', () => {
+    const source = `${FRONTMATTER}# Components\n\n${prose(60)}\n`
+
+    // Only the content rule narrows. A readability threshold generalizes
+    // across entry types, so it keeps reaching every audited folder.
+    expect(
+      measureEntry('components.md', source, false).longestRun,
+    ).toBeGreaterThan(RUN_CHECKPOINT)
+  })
+})
+
+describe('measureFolders', () => {
+  let root: string
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'aitk-audit-'))
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  function seed(relativeDir: string, name: string, body: string): void {
+    const dir = join(root, relativeDir)
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(
+      join(dir, 'index.md'),
+      '---\ntitle: X\nsubtitle: Y\n---\n\n# X\n',
+    )
+    writeFileSync(join(dir, name), `${FRONTMATTER}${body}`)
+  }
+
+  const NARRATED = '# X\n\nThe third layer arrived in #755.\n'
+
+  async function provenanceOf(rel: string): Promise<number> {
+    const reports = await measureFolders(root, await resolveFolders(root))
+
+    return reports.find((entry) => entry.rel === rel)?.provenance.length ?? -1
+  }
+
+  it('should report a marker in an entry the rule governs', async () => {
+    seed('.claude/context', 'ci.md', NARRATED)
+
+    expect(await provenanceOf('.claude/context/ci.md')).toBe(1)
+  })
+
+  it('should leave a marker in a diagram entry unreported', async () => {
+    seed('.claude/diagrams', 'components.md', NARRATED)
+
+    expect(await provenanceOf('.claude/diagrams/components.md')).toBe(0)
+  })
+
+  it('should govern a split domain by the folder it sits beneath', async () => {
+    seed('.claude/context', 'ci.md', '# X\n')
+    seed('.claude/context/claude-plugin', 'skills.md', NARRATED)
+
+    expect(await provenanceOf('.claude/context/claude-plugin/skills.md')).toBe(
+      1,
+    )
   })
 })
