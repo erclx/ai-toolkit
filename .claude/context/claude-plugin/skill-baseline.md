@@ -31,6 +31,14 @@ Porting the block also corrected the test for an unusable baseline. `claude-docs
 
 Its unusable test is narrower than the four siblings', which is the wider rule applied rather than an exception to it. A skill reading the committed half alone needs the base-equals-HEAD arm, and the classifier diffs the base against the working tree, so the uncommitted work stays in the set when that arm would fire. Autoship reaches Step 5 before `git-stage` has committed anything, so the base equals HEAD on every ordinary run and porting the arm verbatim would stop the chain every time. The skill body says so at the point of the omission, because the next reader porting the block will otherwise correct it back.
 
-The empty list is what stops the chain instead. Routing it into review rather than stopping would re-create the silent skip by a longer path, since a review of no files produces no findings and the findings step reads that as a clean pass. The prose-only skip survives untouched, because the defect was a broken read making every branch look prose-only rather than the skip itself.
+The empty list is what stops the chain instead. Routing it into review rather than stopping would re-create the silent skip by a longer path, since a review of no files produces no findings and the findings step reads that as a clean pass. That fix left the skip itself alone, because the defect it closed was a broken read making every branch look prose-only rather than the test the skip applied.
+
+### What the classifier admits
+
+The test the skip applied was the file extension alone, and it read a skill body as documentation because both end in `.md`. Three branches of executable prose took the skip on record before that changed. A path test now runs beside the extension one, and it fails the skip when any changed file sits under `claude/skills/`, `.claude/skills/`, `governance/rules/`, `standards/`, `snippets/`, or `internal/`.
+
+Removing the skip was the alternative and it loses on cost, since a documentation branch reaching review burns tokens for no signal and that case is what the rule was written for. Measured over the twenty merges before the change, six newly reach review and three still skip, so the skip keeps the case it names rather than being widened into nothing.
+
+The allowlist is this repository's own surfaces, which is the standing risk. A target project keeping executable prose outside those six paths gets the old behavior with nothing reporting it, so the skill body states the list as a project's rather than as a general rule.
 
 A plan whose output is entirely gitignored still reaches the stop rather than a fix, which is a separate defect that surfaces six steps later at `git-stage`. The stop names that case apart from a plan yet to produce output, since the two want opposite responses and a single message covering both sends the operator to the wrong check. Advising a re-run once the output is tracked is the wrong fix for scratch that is gitignored by design, and followed literally it commits scratch to close a stopped run.
