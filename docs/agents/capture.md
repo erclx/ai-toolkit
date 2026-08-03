@@ -20,6 +20,8 @@ aitk capture assets --out .claude/review/captures
 | `--out <dir>`      | Write every PNG here instead of beside its source |
 | `--selector <sel>` | Element to capture (default: `.window`)           |
 
+## What the command asserts
+
 Each source renders at `deviceScaleFactor` 2 with a transparent background, and the success line reports the pixel dimensions the element wrapped to. Size is reported and never asserted. The height of a terminal frame is whatever its text wrapped to at a fixed width, so pinning that number would harden an accident.
 
 What is asserted is the font. The command reads the first family the captured element declares and fails when the browser did not resolve it, because a fallback face rewraps the block and silently changes the output. Sources therefore name a real font rather than relying on `monospace`. A source that cannot render reports its own line and exits 1 without dropping the rest of the batch.
