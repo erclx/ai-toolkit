@@ -5,10 +5,9 @@
   catalogs at build time, so nothing here is maintained by hand and verify.sh
   fails when the frame falls behind the tree.
 
-  Palette is the one assets/install.html uses, which is src/ui.ts resolved to
-  hex. Grey and white carry the frame and green marks the counts, because
-  promoting a second and third accent into structural roles is what reads as a
-  generated interface.
+  Warm neutrals carry the frame and a single rust accent marks the counts and
+  the install command. One accent, never two, because promoting a second and
+  third into structural roles is what reads as a generated interface.
 -->
 <html>
   <head>
@@ -25,14 +24,13 @@
       }
       .window {
         width: 1200px;
-        height: 675px;
-        background: #14161a;
+        background: #191512;
         border-radius: 12px;
         padding: 44px 52px 38px;
         display: flex;
         flex-direction: column;
         font-family: 'Noto Sans Mono', 'DejaVu Sans Mono', monospace;
-        color: #c9d1d9;
+        color: #c9c0b7;
       }
 
       .topbar {
@@ -40,12 +38,12 @@
         justify-content: space-between;
         align-items: center;
         font-size: 15px;
-        color: #8b949e;
+        color: #a79d94;
         padding-bottom: 22px;
-        border-bottom: 1px solid #24272e;
+        border-bottom: 1px solid #2f2823;
       }
       .topbar .name {
-        color: #e6edf3;
+        color: #f4efe9;
         font-weight: 700;
       }
 
@@ -65,28 +63,33 @@
       h1 {
         font-size: 34px;
         line-height: 1.3;
-        color: #e6edf3;
+        color: #f4efe9;
         font-weight: 700;
         letter-spacing: -0.01em;
       }
       .sub {
         font-size: 16px;
         line-height: 1.65;
-        color: #8b949e;
+        color: #a79d94;
         padding-top: 22px;
       }
-      .runs-label {
-        font-size: 12px;
-        letter-spacing: 0.05em;
-        color: #8b949e;
-        padding: 34px 0 13px;
-      }
-      .badge {
-        border: 1px solid #3a4048;
-        color: #c9d1d9;
+      .cmd {
+        margin-top: 34px;
+        background: #e0724b;
         border-radius: 7px;
-        padding: 9px 16px;
-        font-size: 15px;
+        padding: 12px 18px;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #191512;
+      }
+      .cmd .sigil {
+        opacity: 0.55;
+        padding-right: 9px;
+      }
+      .needs {
+        font-size: 13px;
+        color: #a79d94;
+        padding-top: 13px;
       }
 
       .cols {
@@ -97,8 +100,8 @@
         gap: 18px;
       }
       .col {
-        background: #1a1d23;
-        border: 1px solid #24272e;
+        background: #211c19;
+        border: 1px solid #2f2823;
         border-radius: 10px;
         padding: 16px 16px 14px;
         display: flex;
@@ -108,30 +111,39 @@
         display: flex;
         justify-content: space-between;
         align-items: baseline;
+      }
+      .col-dest {
+        font-size: 11.5px;
+        color: #a79d94;
         padding-bottom: 12px;
         margin-bottom: 12px;
-        border-bottom: 1px solid #24272e;
+        border-bottom: 1px solid #2f2823;
       }
       .col-name {
         font-size: 12px;
         letter-spacing: 0.05em;
-        color: #8b949e;
+        color: #a79d94;
       }
       .col-count {
         font-size: 19px;
         font-weight: 700;
-        color: #61c454;
+        color: #f4efe9;
       }
       .entry {
         font-size: 12.5px;
         line-height: 1.95;
-        color: #c9d1d9;
+        color: #c9c0b7;
         white-space: nowrap;
       }
       .more {
         font-size: 12.5px;
-        color: #8b949e;
+        color: #a79d94;
         padding-top: 11px;
+      }
+
+      .topbar .mark {
+        color: #e0724b;
+        padding-right: 10px;
       }
 
       .stats {
@@ -140,33 +152,38 @@
         align-items: baseline;
         padding-top: 26px;
         margin-top: 30px;
-        border-top: 1px solid #24272e;
+        border-top: 1px solid #2f2823;
         font-size: 14px;
-        color: #8b949e;
+        color: #a79d94;
       }
       .stats b {
-        color: #e6edf3;
+        color: #f4efe9;
         font-weight: 700;
         padding-right: 6px;
+      }
+      .stats .note {
+        margin-left: auto;
+        font-size: 13px;
+        color: #948a81;
       }
     </style>
   </head>
   <body>
     <div class="window">
       <div class="topbar">
-        <span><span class="name">aitk</span> &nbsp;/&nbsp; erclx/aitk</span>
+        <span><span class="mark">✦</span><span class="name">aitk</span> &nbsp;/&nbsp; erclx/aitk</span>
         <span>v{{VERSION}} &nbsp;·&nbsp; MIT</span>
       </div>
 
       <div class="body">
         <div class="pitch">
-          <h1>One source for your repos' AI conventions.</h1>
+          <h1>One source for<br />your repos' AI<br />conventions.</h1>
           <div class="sub">
-            Author skills, rules, standards, snippets, and tooling configs in one repository. Install
-            them into a project and sync when they change.
+            The files land in your project, versioned and yours to edit. One sync pulls them forward
+            when the toolkit moves.
           </div>
-          <div class="runs-label">Runs in</div>
-          <span class="badge">Claude Code</span>
+          <div class="cmd"><span class="sigil">$</span>claude plugin install aitk@aitk</div>
+          <div class="needs">Claude Code. The CLI needs Bun on your path.</div>
         </div>
 
         <div class="cols">
@@ -174,6 +191,7 @@
             <div class="col-head">
               <span class="col-name">skills</span><span class="col-count">{{SKILL_COUNT}}</span>
             </div>
+            <div class="col-dest">via the plugin</div>
 {{SKILL_ENTRIES}}
             <div class="more">+{{SKILL_MORE}} more</div>
           </div>
@@ -182,6 +200,7 @@
             <div class="col-head">
               <span class="col-name">rules</span><span class="col-count">{{RULE_COUNT}}</span>
             </div>
+            <div class="col-dest">.claude/rules/</div>
 {{RULE_ENTRIES}}
             <div class="more">+{{RULE_MORE}} more</div>
           </div>
@@ -190,6 +209,7 @@
             <div class="col-head">
               <span class="col-name">standards</span><span class="col-count">{{STANDARD_COUNT}}</span>
             </div>
+            <div class="col-dest">.claude/standards/</div>
 {{STANDARD_ENTRIES}}
             <div class="more">+{{STANDARD_MORE}} more</div>
           </div>
@@ -200,6 +220,7 @@
         <span><b>{{SNIPPET_COUNT}}</b>snippets</span>
         <span><b>{{GOV_STACK_COUNT}}</b>governance stacks</span>
         <span><b>{{TOOLING_STACK_COUNT}}</b>tooling stacks</span>
+        <span class="note">counts read from the catalogs at build time</span>
       </div>
     </div>
   </body>
