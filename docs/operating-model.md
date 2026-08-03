@@ -29,7 +29,7 @@ dispatch, not logic.
 
 One feature travels this path end to end.
 
-1. Orchestrator drafts or resequences the roadmap with `claude-roadmap`, reading scope from `.claude/REQUIREMENTS.md`. The skill stops when that file carries a later scope section, since the MVP list it sequences has shipped and a fresh requirements pass owns what follows.
+1. Orchestrator captures a needed roadmap draft or resequence in the plan or a task file, naming `.claude/REQUIREMENTS.md` as the scope source, and a worker runs `claude-roadmap` in its branch so the tracked edit ships in a PR. The skill stops when that file carries a later scope section, since the MVP list it sequences has shipped and a fresh requirements pass owns what follows.
 2. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
 3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.

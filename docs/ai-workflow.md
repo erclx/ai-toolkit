@@ -68,7 +68,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `aitk:git-ship`
 - For full autonomy per worktree, invoke `aitk:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap via `aitk:claude-roadmap`, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
+To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap, handing a needed draft or resequence to a worker that runs `aitk:claude-roadmap` in its branch, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, while workers address the posted findings with `aitk:claude-address-review`. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
 
 Roadmap ownership holds while a scope exists to sequence. Once the MVP list in `.claude/REQUIREMENTS.md` has shipped, later work arrives as discrete items and the orchestrator reads `.claude/tasks/priority.md` for execution order instead.
 
@@ -131,7 +131,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `aitk:claude-groundwork`     | Before a plan is warranted, measure an unknown in a scratch folder under `.claude/.tmp/groundwork/`                  |
 | `aitk:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                            |
 | `aitk:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                     |
-| `aitk:claude-orchestrate`    | Assert the orchestrator role, refill the ready queue, and dispatch the roadmap, feature, and review skills           |
+| `aitk:claude-orchestrate`    | Assert the orchestrator role, refill the ready queue, and dispatch the feature, review, and worktree skills          |
 | `aitk:claude-diagram`        | Draft per-kind mermaid entries under `.claude/diagrams/` from architecture and code, then verify each rendered image |
 | `aitk:claude-design-extract` | Draft `.claude/DESIGN.md`, sourcing tokens from existing UI code or proposing them from requirements on day one      |
 | `aitk:claude-review`         | In a fresh session, review all changes since main                                                                    |
