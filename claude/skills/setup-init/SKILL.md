@@ -10,6 +10,7 @@ Orchestrates the onboarding chain. Detects project type, resolves per-domain arg
 ## Scope
 
 - This skill and `aitk init` run once on a fresh scaffold, never on an existing project. They do not guard against clobbering existing configs. When tempted to add guards, mode switches, or an existing-project branch, stop. Extend the per-domain `aitk <domain> install` or `aitk sync` paths instead.
+- The chain does not bootstrap the `index.md` system and does not provision Claude Code plugins. `setup-indexes` owns the first. `setup-plugins` owns the second, which installs once per machine rather than into a project, so no project-scoped chain can carry it. Name both in the report so a clean result does not read as onboarding complete.
 
 ## Read catalogs
 
@@ -112,3 +113,4 @@ After the chain, report:
 - `setup-verify` outcome
 - Any domains or scripts that failed
 - Any detection gaps surfaced during resolve
+- Onboarding steps left to the caller: `setup-indexes` for the `index.md` system, `setup-plugins` for Claude Code plugins
