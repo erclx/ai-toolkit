@@ -1,6 +1,6 @@
 ---
 name: claude-memory-review
-description: Reviews `.claude/memory/` and proposes per-entry actions (promote to `CLAUDE.md`, move into a skill body, hand off to governance, or delete as stale). Also runs the discuss, challenge, apply, and cleanup phases on an existing review file. Use when asked to "review memory", "discuss memory questions", "challenge the promotes", "apply memory decisions", "cleanup memory review", "promote memory", or "consolidate memories". Do NOT auto-apply. Output a grouped proposal and wait for block-by-block approval.
+description: Reviews `.claude/memory/` and proposes per-entry actions (promote to `CLAUDE.md`, move into a skill body, route to a context entry, hand off to governance, or retire as stale). Also runs the discuss, challenge, apply, and cleanup phases on an existing review file. Use when asked to "review memory", "discuss memory questions", "challenge the promotes", "apply memory decisions", "cleanup memory review", "promote memory", or "consolidate memories". Do NOT auto-apply. Output a grouped proposal and wait for block-by-block approval.
 ---
 
 # Claude memory review
@@ -19,9 +19,9 @@ If the user re-pings the skill with no new phrase and a receipt exists, default 
 
 ## Guards
 
-- All `.claude/memory/` reads, edits, and deletes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- All `.claude/memory/` reads, edits, and archive moves resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 - If no `.claude/memory/` directory exists at the main worktree root, stop: `❌ No .claude/memory/ directory found.`
-- If `.claude/memory/` contains no `*.md` entries other than `MEMORY.md`, stop: `✅ No memory entries to review.`
+- If `.claude/memory/` contains no `*.md` entries other than `index.md`, stop: `✅ No memory entries to review.`
 - Cleanup is exempt from the two stops above. It works on receipts in `.claude/review/`, and a drained pen is the normal state once Apply has run, so a pen-shaped stop would strand the receipt it exists to delete.
 - Resolve the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`. All review and memory reads anchor here.
 
@@ -38,8 +38,8 @@ Propose is the ship-time entry point. The ship skills run it right after capture
 
 Read in parallel from the project root:
 
-- `.claude/memory/MEMORY.md`: the index
-- every other `*.md` file under `.claude/memory/`: individual entries with frontmatter (`name`, `description`, `type`)
+- `.claude/memory/index.md`: the generated index
+- every other `*.md` file under `.claude/memory/`: individual entries with frontmatter (`title`, `description`, `category`)
 
 ### Step 2: read promotion targets
 
@@ -55,27 +55,32 @@ Read any authoring reference the project does not have from `${CLAUDE_SKILL_DIR}
 
 ### Step 3: classify each entry
 
-`.claude/memory/` is a holding pen. Default every entry to promote or delete on review. Skip is the rare exception, reserved for active task overlap or user-type memories with no in-repo target.
+`.claude/memory/` is a holding pen. Default every entry to promote or retire on review. Skip is the rare exception, reserved for active task overlap or user-type memories with no in-repo target.
+
+`claude-memory-capture` routes a project fact naming a domain with a context entry to that entry, so a pen filled since routing shipped is mostly feedback: rules about how to work, which no context entry owns. Propose against what the pen holds rather than expecting the older mix. An entry carried from before routing may still name a domain that has a context entry, and that entry's action is **Promote to a context entry**, which hands it to `claude-docs` the same way capture does rather than editing the entry here.
 
 For each in-scope entry (see Scope), pick one action:
 
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in `.claude/standards/<domain>.md`.
+- **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.claude/.tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
 - **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. In the toolkit repo, point the user at `aitk-governance` and `.claude/standards/rule.md`, which own the source-of-truth rules under `governance/rules/`. In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
-- **Delete**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative.
+- **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
+
+Retire is an archive, not a deletion. `.claude/memory/` is gitignored with no history behind it, and a first pass over a folder this size is a bulk judgment with no undo. A plan and a task both archive rather than delete for the same reason, and this costs one `mv` against an unrecoverable wrong call. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why it is cheap rather than free.
 
 When two or more memories collapse into one rule on the same target, propose them as a single merged edit under the matching promote category. The consolidate case is a variant of promote, not a separate action.
 
 #### Absorbed-already check
 
-Before proposing promote, grep the target surface for the rule's keywords. If the rule is already stated there, the action is **Delete**, not promote. Do not rely on memory-file claims that a rule is documented elsewhere. Verify.
+Before proposing promote, grep the target surface for the rule's keywords. If the rule is already stated there, the action is **Retire**, not promote. Do not rely on memory-file claims that a rule is documented elsewhere. Verify.
 
 The check covers implication, not only keyword match. If an adjacent bullet in the target section already implies the rule, merge into that bullet rather than append a second.
 
 #### Crispness check
 
-Rules that resist crisp one-line phrasing default to **Delete** over promote. Never promote a memory unchanged. Rewrite to match the destination surface's tone. Use terser phrasing for `CLAUDE.md` and imperative phrasing for skill bodies.
+Rules that resist crisp one-line phrasing default to **Retire** over promote. Never promote a memory unchanged. Rewrite to match the destination surface's tone. Use terser phrasing for `CLAUDE.md` and imperative phrasing for skill bodies.
 
 ### Step 4: write the proposal to the review file
 
@@ -90,7 +95,7 @@ Structure: a summary block at the top, a legend, then one H2 per numbered item. 
 
 **Pending:** <all numbers>
 
-Legend: ✅ applied · ⏭ skipped · 🗑 deleted · 🤝 handed off · 📝 pending
+Legend: ✅ applied · ⏭ skipped · 📦 retired · 🤝 handed off · 📝 pending
 
 How to respond: fill in `Decision:` per item (`apply`, `skip`, `defer`, or a question with `?`), then re-ping the skill. Say "discuss" for question rounds, "apply" to commit. Chat shortcut: `all`, `none`, or a list of numbers.
 
@@ -106,7 +111,7 @@ Why: <one-line pulled from the memory's Why>
 
 Decision:
 
-## 2. 📝 Delete
+## 2. 📝 Retire
 
 `<memory-file>`
 
@@ -115,7 +120,7 @@ Reason: <one-line reason>
 Decision:
 ````
 
-For Hand off items, the body is a pointer to the governance target instead of a rewritten rule: `aitk-governance` and `.claude/standards/rule.md` in the toolkit repo, or the `create-rule` skill in a target project. For Delete items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
+For Hand off items, the body is a pointer to the governance target instead of a rewritten rule: `aitk-governance` and `.claude/standards/rule.md` in the toolkit repo, or the `create-rule` skill in a target project. For Retire items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
 
 Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping with "discuss" for question rounds or "apply" to commit.
 
@@ -127,9 +132,9 @@ Trigger: user says "challenge the promotes", "challenge before apply", or asks f
 
 1. Read the latest `.claude/review/memory-review-*.md` at the main root.
 2. For each promote item, apply three tests:
-   - **Absorbed**: grep the target surface for the rule's keywords. If already stated or implied, flip to delete.
-   - **Delta**: if the rule is a nice-to-have next to existing bullets, flip to delete.
-   - **Generality**: if the rule fires only on one literal trigger phrase, rewrite broader or flip to delete.
+   - **Absorbed**: grep the target surface for the rule's keywords. If already stated or implied, flip to retire.
+   - **Delta**: if the rule is a nice-to-have next to existing bullets, flip to retire.
+   - **Generality**: if the rule fires only on one literal trigger phrase, rewrite broader or flip to retire.
 3. Rewrite the review file in place with the updated actions and a one-line reason under each flip.
 
 ## Discuss phase
@@ -139,16 +144,16 @@ Trigger: user says "discuss", "respond to questions", or any `Decision:` value c
 1. Read the latest `.claude/review/memory-review-*.md` at the main root.
 2. For each item whose `Decision:` contains `?` or any unrecognized verb (anything other than `apply`, `skip`, `defer`):
    - Write a `Take:` line under `Decision:`, separated by exactly one blank line. If a `Take:` line already exists, overwrite it.
-   - Format: pick + one-line reason. Max 2 sentences. Decision-help style. State the recommendation (`apply` / `skip` / `delete` / specific alternative) first, then the reason. Do not enumerate tradeoffs unless one changes the call.
+   - Format: pick + one-line reason. Max 2 sentences. Decision-help style. State the recommendation (`apply` / `skip` / `retire` / specific alternative) first, then the reason. Do not enumerate tradeoffs unless one changes the call.
    - Leave the H2 emoji as 📝 pending.
 3. Skip items whose `Decision:` is `apply`, `skip`, `defer`, or empty.
 4. End with: `💬 Discussed: <nums> | ⏩ Skipped (committed or empty): <nums>`. Remind the user to refine `Decision:` lines and re-ping with "discuss" for another round, or "apply" when ready to commit.
 
-Do not act on any item. Do not delete memory files. Do not edit MEMORY.md. Do not edit promotion targets. Discuss only.
+Do not act on any item. Do not archive memory files. Do not edit promotion targets. Discuss only.
 
 ## Apply phase
 
-Trigger: user says "apply", "commit", "ship the review", or re-pings with no question items remaining. Mutates tracked files (target surfaces, memory files, `MEMORY.md`).
+Trigger: user says "apply", "commit", "ship the review", or re-pings with no question items remaining. Mutates tracked promotion targets and moves memory files into the archive.
 
 Before applying any item, check the worktree state:
 
@@ -173,13 +178,24 @@ Free-form text after the verb is a reason. Capture it in the receipt but do not 
 
 Action by action type:
 
-- **Promote**: use `Edit` to insert the rewritten rule into the target surface. Then delete the memory file and remove its row from `.claude/memory/MEMORY.md`.
-- **Hand off**: do not edit governance. Delete the memory file only if the user confirmed the handoff explicitly. Otherwise leave it in place.
-- **Delete**: remove the memory file and its row from `.claude/memory/MEMORY.md`.
+- **Promote**: use `Edit` to insert the rewritten rule into the target surface, then archive the memory file.
+- **Promote to a context entry**: append the fact to `.claude/.tmp/memory-routing/<slug>.md`, then archive the memory file. `claude-docs` folds it in on its next run from a branch, which is what keeps one skill writing context entries.
+- **Hand off**: do not edit governance. Archive the memory file only if the user confirmed the handoff explicitly. Otherwise leave it in place.
+- **Retire**: archive the memory file.
+
+Archiving means creating `.claude/.tmp/memory-archive/` at the main worktree root and moving the file there under its original name, overwriting any file already at that name. Never delete a memory entry. Nothing recovers one from a gitignored folder.
+
+Do not hand-edit `.claude/memory/index.md`. Once every archive move is done, regenerate it instead:
+
+```bash
+aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
+```
+
+The `PostToolUse` hook that keeps the index current matches `Write|Edit|MultiEdit`, and an archive move is a shell `mv`, so nothing fires on it. Without this call the index keeps a row per archived entry and drifts exactly the way the hand-appended one did. Run it once after the last move rather than per item.
 
 Apply edits one at a time via `Edit`. Claude Code's tool permission dialog is the confirmation gate per edit. Never rewrite a whole file.
 
-As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 🗑 for deleted, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the review file. It stays as a receipt until Cleanup runs or the next Propose pass overwrites it.
+As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 📦 for retired, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the review file. It stays as a receipt until Cleanup runs or the next Propose pass overwrites it.
 
 **Chat shortcut:** the user replies with `all`, `none`, a comma-separated list of numbers, or `skip <nums>`. Write the matching verb into the `Decision:` slot of every item the reply names, `apply` for `all` or a bare list and `skip` for a `skip` reply, then run the parse above against the file. A reply of `none` writes nothing. A slot the reply does not name keeps its own value, so the receipt stays the source of truth and an empty slot still means take no action.
 
@@ -189,7 +205,7 @@ End with: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Om
 
 Trigger: user says "cleanup" or "delete the receipt" after Apply has run.
 
-Cleanup removes one receipt and nothing else. Apply is the only phase that deletes a memory entry, and it does so per approved item against a folder that is gitignored with no history behind it, so a deletion made anywhere else has no undo and leaves no record of what it took. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
+Cleanup removes one receipt and nothing else. Apply is the only phase that moves a memory entry out of the pen, and it does so per approved item into `.claude/.tmp/memory-archive/`. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
 
 If no `.claude/review/memory-review-*.md` exists at the main root, stop: `✅ No review receipt to clean up.` Every other refusal in this skill carries a message, and the phase reads a receipt before it does anything else.
 
@@ -197,7 +213,7 @@ If no `.claude/review/memory-review-*.md` exists at the main root, stop: `✅ No
 2. Delete that one file. Leave every other receipt beside it in place, because the pending test above covers the file it read and nothing has tested the rest.
 3. Leave every memory entry in place. A `Skip` decision is terminal, and applied promotions, governance handoffs, and user-type memories each stay as the review left them.
 
-Do not promote, rewrite, or delete a memory entry. Receipts only.
+Do not promote, rewrite, or archive a memory entry. Receipts only.
 
 ## After completion
 
@@ -205,7 +221,7 @@ Output one line per action taken in the most recent phase:
 
 - `✅ Promoted: .claude/memory/<memory-file> → <target>`
 - `✅ Handed off: .claude/memory/<memory-file> → governance`
-- `🗑  Deleted: .claude/memory/<memory-file>`
+- `📦 Retired: .claude/memory/<memory-file> → .claude/.tmp/memory-archive/`
 - `🗑  Swept: .claude/review/<review-file>`
 
 If the user accepted nothing, output: `✅ No changes applied.`
