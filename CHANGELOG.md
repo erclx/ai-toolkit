@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.0](https://github.com/erclx/aitk/compare/v0.38.0...v0.39.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** require a requirement file for every skill ([#798](https://github.com/erclx/aitk/issues/798)) ([374e22f](https://github.com/erclx/aitk/commit/374e22f747b20eed10b1a99f790f0c21fa58a341))
+
 ## [0.38.0](https://github.com/erclx/aitk/compare/v0.37.0...v0.38.0) (2026-08-03)
 
 
