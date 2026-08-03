@@ -162,7 +162,7 @@ async function runAudit(
           lines: LENGTH_CHECKPOINT,
           run: RUN_CHECKPOINT,
           runCountsBlankLines: true,
-          runRenderWidth: RENDER_WIDTH,
+          renderWidth: RENDER_WIDTH,
           peerBullet: PEER_BULLET_CHECKPOINT,
         },
       })}\n`,
@@ -245,6 +245,9 @@ function reportCitations(report: ScannedCitations): void {
 
 function reportLength(entries: readonly EntryReport[]): void {
   logStep('Length')
+  logInfo(
+    `Entries measure rendered lines at ${RENDER_WIDTH} columns, frontmatter included.`,
+  )
 
   const over = entries
     .filter((entry) => entry.lines > LENGTH_CHECKPOINT)
@@ -257,7 +260,9 @@ function reportLength(entries: readonly EntryReport[]): void {
 
   logWarn(`${over.length} past the ${LENGTH_CHECKPOINT}-line checkpoint`)
   pipeOutput(
-    over.map((entry) => `${entry.rel}  ${entry.lines} lines`).join('\n'),
+    over
+      .map((entry) => `${entry.rel}  ${entry.lines} rendered lines`)
+      .join('\n'),
   )
 }
 

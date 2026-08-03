@@ -45,6 +45,14 @@ describe('measureEntry', () => {
     expect(entry.lines).toBe(10)
   })
 
+  it('should measure entry length in rendered lines rather than source lines', () => {
+    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(3, PARAGRAPH_BULLET)}\n`
+
+    // Ten short lines render as ten, and each 394-character bullet wraps to
+    // five, so three bullets stand in for fifteen of the checkpoint's budget.
+    expect(measureEntry('ci.md', source).lines).toBe(22)
+  })
+
   it('should report the longest run of lines no heading breaks', () => {
     const source = `${FRONTMATTER}# CI\n\n${prose(60)}\n\n## Layout\n\n${prose(5)}\n`
 

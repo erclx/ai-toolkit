@@ -77,6 +77,11 @@ export interface ProvenanceFinding {
 
 export interface EntryReport {
   readonly rel: string
+  /**
+   * Rendered lines across the whole file, frontmatter included. Both this and
+   * `longestRun` measure in the same unit, since the two checkpoints they feed
+   * sit in one section of the standard and a reader compares them.
+   */
   readonly lines: number
   /** Rendered lines at `RENDER_WIDTH`, not source lines. */
   readonly longestRun: number
@@ -144,8 +149,8 @@ function isScannablePeerList(run: readonly BodyLine[]): boolean {
  * A blank line renders as the gap it is rather than as nothing, which keeps it
  * the distance the source measure already counted it as.
  */
-function renderedHeight(line: BodyLine): number {
-  return Math.max(1, Math.ceil(line.text.length / RENDER_WIDTH))
+function renderedHeight(text: string): number {
+  return Math.max(1, Math.ceil(text.length / RENDER_WIDTH))
 }
 
 /**
@@ -180,7 +185,10 @@ function longestRun(lines: readonly BodyLine[]): {
     const first = run.find((line) => line.text.trim() !== '')
 
     if (first && !isScannablePeerList(run)) {
-      const height = run.reduce((sum, line) => sum + renderedHeight(line), 0)
+      const height = run.reduce(
+        (sum, line) => sum + renderedHeight(line.text),
+        0,
+      )
 
       if (height > longest) {
         longest = height
@@ -311,7 +319,10 @@ export function measureEntry(rel: string, source: string): EntryReport {
 
   return {
     rel,
-    lines: source.replace(/\n$/, '').split('\n').length,
+    lines: source
+      .replace(/\n$/, '')
+      .split('\n')
+      .reduce((sum, text) => sum + renderedHeight(text), 0),
     longestRun: run.length,
     longestRunLine: run.line,
     catalogTables: catalogTables(lines),
