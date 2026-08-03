@@ -58,9 +58,13 @@ An item that ships unverified names one of three gates, `no-mechanism`, `credent
 | `.claude/tasks/vXX.Y-<slug>.md`   | orchestrator           | One task with its outcomes and a test strategy. Phase labels live here.                   | Gitignored, shared across worktrees, archived on ship. |
 | `.claude/plans/feature-<slug>.md` | orchestrator or worker | Files to touch with reasons, optional constraints, risks, answered questions for one task | Gitignored, shared across worktrees, archived on ship. |
 
+### The drafting flow
+
 Drafting flow: orchestrator writes a task file through `claude-tasks`, runs `claude-feature` to produce a plan carrying the reading list and any constraints, then hands the worker a plan slug. Worker enters a linked worktree, reads the plan, and implements. `claude-docs` moves the plan to `.claude/.tmp/plans-archive/` when the task ships and retargets the task file's `Plan:` line at it. The task itself is archived by `aitk tasks archive`, which the `post-merge` hook calls with the pull request number the merge subject carries, so the board closes without a person naming the file. `claude-tasks` calls the same command for the cases the hook cannot resolve.
 
 The origin invariant is owned by `.claude/standards/tasks.md`. What orchestration adds is that a handoff needs more than an origin, because scope lives in the plan rather than in the task file, so a task can sit on the board plan-less and gains one when it is handed out. See Boundaries in `claude-orchestrate` for the handoff rule and for the boundary that keeps tracked edits out of the main worktree.
+
+### Board constraints
 
 Both artifacts are gitignored, which is what limits the board to one orchestrator at a time. A second session reads neither the other's task files nor its archives, so the two write colliding labels and archive each other's plans. `claude-orchestrate` states the constraint and holds the queue-refill sweep that keeps planned, non-conflicting tasks ahead of a free worker. `snippets/claude/orchestrator-resume.md` covers the one moment the model cannot detect on its own, which is a compaction dropping the reasoning behind the board it is about to act on, and `snippets/claude/orchestrator-sweep.md` triggers the queue refill after a batch of merges.
 
