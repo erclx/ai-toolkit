@@ -50,9 +50,25 @@ export const CATALOG_ROW_CHECKPOINT = 6
 /** Share of first cells that must name an artifact for a table to qualify. */
 const CATALOG_NAMED_RATIO = 0.6
 
+/**
+ * Sections `standards/context.md` marks required, in the order it states them.
+ *
+ * The list is held here rather than read out of the standard, the way the four
+ * checkpoints above quote their numbers. A parser over the standard's prose
+ * would decide which sections are required from the wording around them, so it
+ * fails on a rewrite of that wording rather than on a defect in an entry.
+ *
+ * These names do not generalize the way a length threshold does, which is why
+ * the measure is scoped to the folder `governsContent` names. A diagram entry
+ * declares a heading per kind and a wireframe entry per screen, and neither
+ * sibling standard states a required section at all.
+ */
+export const REQUIRED_SECTIONS: readonly string[] = ['Overview', 'Layout']
+
 const FRONTMATTER = /^---\n[\s\S]*?\n---\n?/
 const FENCE = /^\s*(```|~~~)/
 const HEADING = /^#{1,6}\s/
+const HEADING_TEXT = /^#{1,6}\s+(.+?)\s*$/
 const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
 const TABLE_ROW = /^\s*\|/
 const TABLE_SEPARATOR = /^\s*\|[\s:|-]+\|\s*$/
@@ -144,6 +160,23 @@ export interface EntryReport {
   readonly provenance: readonly ProvenanceFinding[]
   /** Empty for the same reason `provenance` is, and under the same folder. */
   readonly heavyBullets: readonly BulletFinding[]
+  /**
+   * Required sections this entry declares, in the standard's order, and empty
+   * outside the folder whose standard names them. What the folder is short of
+   * is `missingSections`, since one entry answers for its siblings.
+   */
+  readonly sections: readonly string[]
+}
+
+export interface SectionFinding {
+  /**
+   * Repo-relative path of whatever owes the sections: the entry itself in the
+   * folder named under `.claude/`, and the folder in a domain split across
+   * one, since the split folder's entries answer for each other.
+   */
+  readonly rel: string
+  /** Required sections the path above does not declare, never empty. */
+  readonly missing: readonly string[]
 }
 
 interface BodyLine {
@@ -423,6 +456,38 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
 }
 
 /**
+ * Finds which required sections the entry declares.
+ *
+ * A heading at any level counts rather than the `##` the standard writes its
+ * examples at. A domain that split into a folder puts its overview in a sibling
+ * named for it, where the section is the `#` title and an `##` beneath it would
+ * repeat the file's own name. All three split folders in this repository are
+ * that shape, so matching `##` alone would report every one of them. Nothing is
+ * titled for a required section without being about it, so the looser match
+ * costs no precision.
+ *
+ * Fenced blocks are skipped for the reason the scans above skip them. A
+ * standard quoted inside an example declares nothing about the entry quoting it.
+ */
+function declaredSections(lines: readonly BodyLine[]): string[] {
+  const found = new Set<string>()
+  let fenced = false
+
+  for (const line of lines) {
+    if (FENCE.test(line.text)) {
+      fenced = !fenced
+      continue
+    }
+    if (fenced) continue
+
+    const match = line.text.match(HEADING_TEXT)
+    if (match && REQUIRED_SECTIONS.includes(match[1])) found.add(match[1])
+  }
+
+  return REQUIRED_SECTIONS.filter((section) => found.has(section))
+}
+
+/**
  * Measures one entry, scanning for provenance only when a standard claims it.
  *
  * The caller passes jurisdiction rather than deriving it from `rel`, because a
@@ -448,6 +513,7 @@ export function measureEntry(
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
     heavyBullets: governsContent ? heavyBullets(lines) : [],
+    sections: governsContent ? declaredSections(lines) : [],
   }
 }
 
@@ -483,4 +549,57 @@ export async function measureFolders(
 /** Reports whether the folder's standard is the one carrying the exclusion. */
 export function governsContent(folder: AuditedFolder): boolean {
   return folder.name === PROVENANCE_FOLDER
+}
+
+/**
+ * Names what does not declare the sections the standard requires.
+ *
+ * Which unit answers depends on what the folder is. A split folder's entries
+ * describe one domain between them and carry the overview and the layout in a
+ * sibling named for them, so any one of them answers and a per-file rule there
+ * would report every other child of all three shipped splits. The entries of
+ * the folder named under `.claude/` are one domain each, so each answers for
+ * itself. Rolling those up too was the first shape of this check, and it let a
+ * single sibling stand in for thirteen domains it says nothing about.
+ *
+ * The judgment sits in the caller because the split case needs the folder's
+ * other entries, which `measureFolders` holds and `measureEntry` does not. A
+ * folder with no entries of its own is a split parent holding an index and
+ * subfolders, and it has nothing to require a section of.
+ *
+ * The standard sanctions omitting `## Layout` from a domain owning no paths,
+ * which no measure can tell from an entry that forgot it. An entry of that
+ * shape therefore reports, which is a reason this is printed and never gated on.
+ */
+export function missingSections(
+  root: string,
+  folders: readonly AuditedFolder[],
+  entries: readonly EntryReport[],
+): SectionFinding[] {
+  const byRel = new Map(entries.map((entry) => [entry.rel, entry]))
+  const findings: SectionFinding[] = []
+
+  const shortOf = (declared: readonly string[]): string[] =>
+    REQUIRED_SECTIONS.filter((name) => !declared.includes(name))
+
+  for (const folder of folders) {
+    if (!governsContent(folder) || folder.entries.length === 0) continue
+
+    const reports = folder.entries
+      .map((path) => byRel.get(relative(root, path)))
+      .filter((entry) => entry !== undefined)
+
+    if (folder.nested) {
+      const missing = shortOf(reports.flatMap((entry) => entry.sections))
+      if (missing.length > 0) findings.push({ rel: folder.rel, missing })
+      continue
+    }
+
+    for (const entry of reports) {
+      const missing = shortOf(entry.sections)
+      if (missing.length > 0) findings.push({ rel: entry.rel, missing })
+    }
+  }
+
+  return findings
 }

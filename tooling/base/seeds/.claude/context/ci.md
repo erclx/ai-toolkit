@@ -5,7 +5,13 @@ description: GitHub Actions workflow triggers and checks
 
 # CI
 
-GitHub Actions workflow for this project.
+## Overview
+
+Owns the GitHub Actions workflow that gates a merge: which events start a run, and which checks have to pass before the branch can land. The checks call package scripts rather than defining commands of their own, so what each one runs is the development entry's subject.
+
+## Layout
+
+- `.github/workflows/` owns the workflow definitions a trigger below starts
 
 ## Triggers
 

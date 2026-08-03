@@ -6,10 +6,13 @@ import {
   governsContent,
   LENGTH_CHECKPOINT,
   measureFolders,
+  missingSections,
   PEER_BULLET_CHECKPOINT,
   PROVENANCE_FOLDER,
   RENDER_WIDTH,
+  REQUIRED_SECTIONS,
   RUN_CHECKPOINT,
+  type SectionFinding,
 } from '@/context/audit'
 import { auditCitations, type CitationReport } from '@/context/citations'
 import {
@@ -51,7 +54,7 @@ export function register(program: Command): void {
   context
     .command('audit')
     .description(
-      'Report entry length, depth, bullet weight, citations, provenance, and index drift',
+      'Report required sections, entry length, depth, bullet weight, citations, provenance, and index drift',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -67,8 +70,8 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '  2  a cited path did not resolve',
         '',
-        'Only unresolved citations set a failing exit code. Length, depth,',
-        'bullet, table, provenance, and index findings are advisory.',
+        'Only unresolved citations set a failing exit code. Section, length,',
+        'depth, bullet, table, provenance, and index findings are advisory.',
         '',
         'Examples:',
         '  aitk context audit',
@@ -131,6 +134,7 @@ async function runAudit(
 
   const entries = gateOnly ? [] : await measureFolders(root, folders)
   const drift = gateOnly ? [] : await auditIndexes(folders)
+  const sections = gateOnly ? [] : missingSections(root, folders, entries)
 
   if (gateOnly) {
     reportGate(citations)
@@ -138,6 +142,7 @@ async function runAudit(
     intro('aitk context audit')
     reportScope(folders)
     reportCitations(citations)
+    reportSections(sections, folders)
     reportLength(entries)
     reportDepth(entries)
     reportBullets(entries, folders)
@@ -162,6 +167,7 @@ async function runAudit(
           unresolved: citations.unresolved,
         },
         entries,
+        missingSections: sections,
         indexDrift: drift,
         checkpoints: {
           lines: LENGTH_CHECKPOINT,
@@ -171,6 +177,7 @@ async function runAudit(
           peerBullet: PEER_BULLET_CHECKPOINT,
           bullet: BULLET_CHECKPOINT,
           provenanceFolder: PROVENANCE_FOLDER,
+          requiredSections: REQUIRED_SECTIONS,
         },
       })}\n`,
     )
@@ -246,6 +253,49 @@ function reportCitations(report: ScannedCitations): void {
   pipeOutput(
     report.unresolved
       .map((citation) => `${citation.file}:${citation.line}  ${citation.path}`)
+      .join('\n'),
+  )
+}
+
+/**
+ * Names the path each finding belongs to, which is an entry in the folder named
+ * under `.claude/` and the folder itself in a domain split across one. States
+ * the reach on every run for the reason the provenance report does.
+ *
+ * This prints ahead of the four readability measures because a missing section
+ * asks whether the entry is the right shape at all, which precedes asking
+ * whether it has grown too long.
+ */
+function reportSections(
+  missing: readonly SectionFinding[],
+  folders: readonly AuditedFolder[],
+): void {
+  logStep('Sections')
+
+  const governed = folders.filter(governsContent)
+  if (governed.length === 0) {
+    logInfo(
+      `Out of scope. The list is stated in the standard governing .claude/${PROVENANCE_FOLDER}/, and no audited folder is that one.`,
+    )
+    return
+  }
+
+  logInfo(
+    `Covers .claude/${PROVENANCE_FOLDER}/ alone, whose standard requires ${REQUIRED_SECTIONS.join(' and ')}.`,
+  )
+  logInfo(
+    'A heading at any level counts. Each entry answers for itself, except in a domain split across a folder, where a sibling answers for the rest.',
+  )
+
+  if (missing.length === 0) {
+    logInfo('Every entry declares each required section.')
+    return
+  }
+
+  logWarn(`${plural(missing.length, 'path')} short a required section`)
+  pipeOutput(
+    missing
+      .map((found) => `${found.rel}  missing: ${found.missing.join(', ')}`)
       .join('\n'),
   )
 }

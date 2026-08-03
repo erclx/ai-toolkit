@@ -49,6 +49,7 @@ function folderAt(names: string[]): AuditedFolder {
     rel: '.claude/context',
     indexPath: join(dir, 'index.md'),
     entries: names.map((name) => join(dir, name)),
+    nested: false,
   }
 }
 

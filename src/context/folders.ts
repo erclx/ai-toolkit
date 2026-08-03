@@ -30,6 +30,16 @@ export interface AuditedFolder {
   readonly indexPath: string
   /** Absolute paths of the folder's own entries, excluding its `index.md`. */
   readonly entries: readonly string[]
+  /**
+   * Whether this is a sub-area a domain split into rather than the folder
+   * named under `.claude/`.
+   *
+   * The entries of a split folder describe one domain between them, so a rule
+   * about what a domain declares is answered by the folder. The entries of the
+   * named folder are one domain each, and a rule answered by a sibling there
+   * would let one entry stand in for domains it says nothing about.
+   */
+  readonly nested: boolean
 }
 
 /**
@@ -91,6 +101,7 @@ export async function resolveFolders(
         rel: relative(root, each),
         indexPath: `${each}/${INDEX_FILE}`,
         entries: await readEntries(each),
+        nested: each !== dir,
       })
     }
   }
