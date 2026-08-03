@@ -9,6 +9,10 @@ Generate production-ready Bash scripts for DevOps and CLI workflows. Enforce str
 
 Load `${CLAUDE_SKILL_DIR}/references/patterns.md` for the timeline lifecycle, logging, interactive prompt, help-screen, and full-script code templates. `${CLAUDE_SKILL_DIR}` expands to this skill's own directory, so the path resolves from any project. Copy those definitions verbatim, keeping only the colors and functions the script actually uses.
 
+## Guards
+
+- A request for a script with no human at the terminal stops and routes to `cli-script`. CI jobs, cron entries, agent-run tasks, and any script whose output is consumed by a pipe render no timeline, so generating one costs the frame and returns nothing.
+
 ## Script setup
 
 - Start with `#!/usr/bin/env bash`, `set -e`, and `set -o pipefail`.
