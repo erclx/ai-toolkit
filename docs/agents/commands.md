@@ -27,6 +27,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk feedback`          | Write toolkit feedback from stdin to `.claude/review/`, or open a GitHub issue with `--github` |
 | `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                          |
 | `aitk tasks archive`     | Move a shipped task off the board, clear its ordering row, and regenerate the index            |
+| `aitk tasks validate`    | Report board rows whose plan, task file, group, or file set does not hold (`--json`)           |
 | `aitk comments scan`     | Measure comment density by language and comment kind, with a trend recomputed from git         |
 | `aitk context audit`     | Report required sections, length, depth, bullet weight, cited paths, provenance, and drift     |
 | `aitk capture [source]`  | Render HTML capture sources to PNG, toolkit-only and absent from an installed package          |
@@ -45,7 +46,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `wiki`      | `init`                                                                 |
 | `design`    | `render`                                                               |
 | `slides`    | `render`, `list`                                                       |
-| `tasks`     | `archive`                                                              |
+| `tasks`     | `archive`, `validate`                                                  |
 | `comments`  | `scan`                                                                 |
 | `context`   | `audit`                                                                |
 

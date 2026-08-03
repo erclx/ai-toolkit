@@ -1,11 +1,11 @@
 ---
 title: Audits
-description: The context audit and the comment census, the two commands that measure rather than install
+description: The context audit, the comment census, and the board validator, the three commands that measure rather than install
 ---
 
 # Audits
 
-`aitk context audit` and `aitk comments scan` are the commands that read a tree and report on it instead of writing into one. Neither installs anything, and only one check across both gates a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
+`aitk context audit`, `aitk comments scan`, and `aitk tasks validate` are the commands that read a tree and report on it instead of writing into one. None installs anything, and only one check across the three gates a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
 
 Both split their engine by reason to change rather than by size. `src/comments/` separates the counting pass (`scan.ts`), the history sampler (`trend.ts`), and the vocabulary loader (`vocabulary.ts`), because counting, sampling, and rule reading are three reasons to change. `src/context/` separates the folder contract (`folders.ts`), the structural measures (`audit.ts`), cited-path resolution (`citations.ts`), and index-to-sibling comparison (`index-drift.ts`), because the contract, the checkpoints, the exclusion set, and the catalog format each move on their own and only `citations.ts` gates anything.
 
@@ -54,3 +54,11 @@ A measurement that is a pure function of a tree is recomputed from git rather th
 The boundary is that this only holds for tree-pure metrics. Which author or session wrote a comment is not recoverable, and adding it would silently make the whole arm dishonest.
 
 The replay is also what found the hand-recorded bash figures unreproducible, which is a finding rather than a test failure. The line totals replay exactly, so the file set is confirmed and only the comment method is lost, while the recorded comment figure matches no file set the command can construct. That is the argument for the command in one line: the figures nobody could repeat are the ones produced by hand.
+
+## The board validator
+
+- `aitk tasks validate` measures a corpus that is gitignored per-machine scratch, which is what keeps it off `bun run check` and off every hook. There is no shared moment to hang it on, so the sweep in `snippets/claude/orchestrator-sweep.md` calls it at the moment the readiness claim is actually made. `src/tasks/validate.ts` parses and checks while `src/commands/tasks.ts` renders, the same split `archive.ts` already uses beside it.
+- Board columns are read from each table's own header rather than by position. Three of the surfaces this repository ships reach a target, and a board laid out differently has to be reported for what it lacks rather than have its second cell read as something it never was. A heading outside the three the standard fixes yields no group at all, which refuses instead of reporting a clean board nothing parsed.
+- An absent `Touches` column and an unreadable one are one finding, not two states. Reporting only the second passed a `## Run now` table declaring no file set, which is the shape where the collision check silently tests nothing.
+- A backticked span counts as a path when it holds a slash or ends in an extension opening with a letter. The letter is what separates `commands.md` from a task version like `v40.2`, since reading the version as a path collides two rows that merely cite the same task.
+- `RESERVED_STEMS` moved out of `archive.ts` as an export and gained `session`, so the two verbs cannot count a board sibling as a task the other does not. It is also what keeps the one-to-one mapping check from reporting `session.md` as a task carrying no row.
