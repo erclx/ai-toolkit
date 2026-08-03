@@ -1,0 +1,38 @@
+# What `aitk sync --check --json` reports on a target whose layout is correct and
+# whose content is behind. Read by `aitk sandbox check`. Patterns use TOML literal
+# strings so a regex needs no backslash escaping.
+#
+# The scenario writes the report itself, so these assert on a file rather than on
+# a headless envelope. No skill runs, which is why there is no `max_turns` and no
+# `write_scope`: the command writes exactly one file and nothing else.
+
+paths = ["drift-report.json"]
+
+# The arm's central expectation. A standard the scenario appended to must come
+# back attributed rather than as a bare difference, which is what proves the
+# history fallback ran on an unstamped target.
+[[content]]
+path = "drift-report.json"
+pattern = '"state": "drifted"'
+
+# CLAUDE.md gained a section the seed never shipped, so the seeds section has to
+# carry it. Before seeds were reported this file was invisible to the command.
+[[content]]
+path = "drift-report.json"
+pattern = '"rel": "CLAUDE.md"'
+
+# The seeds section exists at all. Asserted separately from the entry above so a
+# report that dropped the section reads differently from one that kept it empty.
+[[content]]
+path = "drift-report.json"
+pattern = '"seeds"'
+
+# Neither of the other two classes fires on this arm. A report naming a
+# superseded file here would mean the stem rule matched something it should not.
+[[content]]
+path = "drift-report.json"
+pattern = '"superseded": \[\]'
+
+[[content]]
+path = "drift-report.json"
+pattern = '"unmigrated": \[\]'
