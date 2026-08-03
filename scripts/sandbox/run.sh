@@ -63,8 +63,8 @@ writes_between() {
 #
 # It makes an escape visible rather than impossible. A session can write to a
 # home directory, to a sibling worktree, or to any path outside these roots, and
-# none of that is watched. The standing limits in `.claude/context/sandbox.md`
-# carry what stays invisible.
+# none of that is watched. The standing limits in
+# `.claude/context/sandbox/overview.md` carry what stays invisible.
 escape_roots() {
   printf '%s\n' "$PROJECT_ROOT"
 
