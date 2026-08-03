@@ -296,6 +296,10 @@ inject_changed_skills() {
   [ -z "$combined" ] && return
 
   while IFS= read -r skill_path; do
+    # The diff against main lists a deleted skill alongside a changed one, and
+    # there is nothing left to inject for a name this branch removed.
+    [ -f "$PROJECT_ROOT/$skill_path" ] || continue
+
     local skill_name
     skill_name=$(basename "$(dirname "$skill_path")")
     local target_dir="$SANDBOX/.claude/skills/$skill_name"
