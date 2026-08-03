@@ -140,7 +140,7 @@ async function runAudit(
     reportCitations(citations)
     reportLength(entries)
     reportDepth(entries)
-    reportBullets(entries)
+    reportBullets(entries, folders)
     reportTables(entries)
     reportProvenance(entries, folders)
     reportDrift(drift)
@@ -315,14 +315,30 @@ function reportDepth(entries: readonly EntryReport[]): void {
 }
 
 /**
- * Groups by entry for the reason the provenance report does.
+ * Groups by entry, and states its reach on every run, for the reasons the
+ * provenance report does both.
  *
  * Bullets past the checkpoint cluster in a handful of entries and the heaviest
  * entries carry them a dozen at a time, so a flat list of bullets buries the
  * entry holding one. What a reader acts on is which file to open.
  */
-function reportBullets(entries: readonly EntryReport[]): void {
+function reportBullets(
+  entries: readonly EntryReport[],
+  folders: readonly AuditedFolder[],
+): void {
   logStep('Bullets')
+
+  const governed = folders.filter(governsContent)
+  if (governed.length === 0) {
+    logInfo(
+      `Out of scope. The rule is stated in the standard governing .claude/${PROVENANCE_FOLDER}/, and no audited folder is that one.`,
+    )
+    return
+  }
+
+  logInfo(
+    `Covers .claude/${PROVENANCE_FOLDER}/ alone, since moving an incident out of a bullet needs a decision to keep.`,
+  )
   logInfo(
     'Top-level bullets measure characters, folding in continuation lines.',
   )

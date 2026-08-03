@@ -227,6 +227,16 @@ describe('measureEntry', () => {
     ])
   })
 
+  it('should leave a heavy bullet unreported when no standard claims the content', () => {
+    const source = `${FRONTMATTER}# Components\n\n${bullet(BULLET_CHECKPOINT + 1)}\n`
+
+    // The remedy is to move an incident out and keep the decision, which an
+    // entry type carrying no decisions has no way to act on.
+    expect(measureEntry('components.md', source, false).heavyBullets).toEqual(
+      [],
+    )
+  })
+
   it('should report a date narrating when a change landed', () => {
     const source = `${FRONTMATTER}# CI\n\nThe cap was 20 until 2026-07-30.\n`
 

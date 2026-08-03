@@ -83,6 +83,14 @@ const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
  * audited folder, because a threshold on how far a reader travels generalizes
  * across entry types while a rule about what an entry may say does not.
  *
+ * Bullet weight sits on this side of the split with provenance, which the
+ * measure alone would not predict. What decides it is whether the remedy is
+ * actionable: subdividing a run and splitting a file mean something in any
+ * entry, while moving an incident out of a bullet and keeping the decision
+ * means nothing in a folder whose entries carry no decisions to keep. No
+ * diagram entry declares `## Decisions` or `## Gotchas`, so the scope of the
+ * rule is what narrows the finding rather than the shape of the number.
+ *
  * Restating the exclusion in the sibling standards was the alternative. It
  * duplicates one knowledge item across three surfaces, which the root
  * instruction file forbids, and pointing is not available because the surface
@@ -134,6 +142,7 @@ export interface EntryReport {
   readonly catalogTables: readonly TableFinding[]
   /** Empty for an entry no standard bans a change narrative in. */
   readonly provenance: readonly ProvenanceFinding[]
+  /** Empty for the same reason `provenance` is, and under the same folder. */
   readonly heavyBullets: readonly BulletFinding[]
 }
 
@@ -438,7 +447,7 @@ export function measureEntry(
     longestRunLine: run.line,
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
-    heavyBullets: heavyBullets(lines),
+    heavyBullets: governsContent ? heavyBullets(lines) : [],
   }
 }
 
