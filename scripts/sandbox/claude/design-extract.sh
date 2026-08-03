@@ -8,7 +8,11 @@ use_config() {
 }
 
 stage_setup() {
-  cat <<'EOF' >package.json
+  select_or_route_scenario "Which scenario?" "source" "greenfield"
+
+  case "$SELECTED_OPTION" in
+  "source")
+    cat <<'EOF' >package.json
 {
   "name": "sandbox-design-extract",
   "version": "1.0.0",
@@ -17,7 +21,7 @@ stage_setup() {
 }
 EOF
 
-  cat <<'EOF' >>CLAUDE.md
+    cat <<'EOF' >>CLAUDE.md
 
 # Notes app
 
@@ -29,8 +33,8 @@ Small Vite + React notes app. Voice is calm and direct. Dense screens, sparing a
 - `bun run check`: lint and typecheck
 EOF
 
-  mkdir -p .claude
-  cat <<'EOF' >>.claude/REQUIREMENTS.md
+    mkdir -p .claude
+    cat <<'EOF' >>.claude/REQUIREMENTS.md
 
 # Requirements
 
@@ -44,8 +48,8 @@ EOF
 - No image upload
 EOF
 
-  mkdir -p src/styles src/components
-  cat <<'EOF' >src/styles/tokens.css
+    mkdir -p src/styles src/components
+    cat <<'EOF' >src/styles/tokens.css
 :root {
   --space-xs: 4px;
   --space-sm: 8px;
@@ -70,7 +74,7 @@ EOF
 }
 EOF
 
-  cat <<'EOF' >src/components/Button.tsx
+    cat <<'EOF' >src/components/Button.tsx
 import "./Button.css";
 
 type Variant = "primary" | "secondary";
@@ -92,7 +96,7 @@ export function Button({
 }
 EOF
 
-  cat <<'EOF' >src/components/Button.css
+    cat <<'EOF' >src/components/Button.css
 .btn {
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-default);
@@ -115,7 +119,7 @@ EOF
 }
 EOF
 
-  cat <<'EOF' >src/components/Note.tsx
+    cat <<'EOF' >src/components/Note.tsx
 export function Note({ title, body }: { title: string; body: string }) {
   return (
     <article
@@ -151,17 +155,72 @@ export function Note({ title, body }: { title: string; body: string }) {
 }
 EOF
 
-  git add . && git commit -m "feat(notes): seed minimal notes app with token system" --no-verify -q
+    git add . && git commit -m "feat(notes): seed minimal notes app with token system" --no-verify -q
 
-  log_step "Scenario ready: design extract from a tokenized notes app"
-  log_info "Context: Vite/React notes app with CLAUDE.md personality, tokens.css, and components"
-  log_info "Signals the skill should pick up:"
-  log_info "  CLAUDE.md voice paragraph: calm, direct, dense, sparing accent, no animation"
-  log_info "  src/styles/tokens.css: color, spacing, radius, font tokens"
-  log_info "  src/components/Button.tsx: token usage in a real component"
-  log_info "  REQUIREMENTS.md non-goal: no motion or transitions"
-  log_info "Action 1: /aitk:claude-design-extract"
-  log_info "Expect:   source path announced, .claude/DESIGN.md token tables filled from tokens.css"
-  log_info "Action 2: aitk design render"
-  log_info "Expect:   .claude/review/design/index.html with swatches, samples, and bars"
+    log_step "Scenario ready: design extract from a tokenized notes app"
+    log_info "Context: Vite/React notes app with CLAUDE.md personality, tokens.css, and components"
+    log_info "Signals the skill should pick up:"
+    log_info "  CLAUDE.md voice paragraph: calm, direct, dense, sparing accent, no animation"
+    log_info "  src/styles/tokens.css: color, spacing, radius, font tokens"
+    log_info "  src/components/Button.tsx: token usage in a real component"
+    log_info "  REQUIREMENTS.md non-goal: no motion or transitions"
+    log_info "Action 1: /aitk:claude-design-extract"
+    log_info "Expect:   source path announced, .claude/DESIGN.md token tables filled from tokens.css"
+    log_info "Action 2: aitk design render"
+    log_info "Expect:   .claude/review/design/index.html with swatches, samples, and bars"
+    ;;
+  "greenfield")
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-design-propose",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module"
+}
+EOF
+
+    mkdir -p .claude
+    cat <<'EOF' >>.claude/REQUIREMENTS.md
+
+# Requirements
+
+A focus timer for writers. Single-screen app. Start a session, see elapsed time, end and log the run.
+
+## Personality
+
+Quiet and disciplined. The app should feel like a clean desk at dawn: uncluttered, warm paper tones, a single confident accent for the active state. No decoration, no motion, no sound. The reader should trust the timer is running without needing reassurance from the interface.
+
+## Non-goals
+
+- No team features
+- No statistics dashboard
+- No motion or transitions
+EOF
+
+    cat <<'EOF' >>.claude/ARCHITECTURE.md
+
+# Architecture
+
+- Vite plus React single-page app
+- Local storage for session history
+- No backend, no auth, no network calls
+EOF
+
+    git add . && git commit -m "chore(project): seed greenfield focus timer with personality" --no-verify -q
+
+    log_step "Scenario ready: design extract on its greenfield path"
+    log_info "Context: REQUIREMENTS.md with a Personality paragraph, ARCHITECTURE.md, no code"
+    log_info "Signals the skill should pick up:"
+    log_info "  Personality: quiet, disciplined, warm paper tones, single accent, no motion"
+    log_info "  Non-goals: no motion or transitions"
+    log_info "  Architecture: Vite plus React web app (informs typography choices)"
+    log_info "Action 1: /aitk:claude-design-extract"
+    log_info "Expect:   greenfield path announced, .claude/DESIGN.md proposed, most cells marked ? verify"
+    log_info "Action 2: aitk design render"
+    log_info "Expect:   .claude/review/design/index.html renders cleanly with swatches and samples"
+    ;;
+  *)
+    log_error "Unknown scenario: $SELECTED_OPTION"
+    ;;
+  esac
 }
