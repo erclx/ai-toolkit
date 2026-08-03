@@ -45,7 +45,9 @@ export function register(program: Command): void {
 
   context
     .command('audit')
-    .description('Report entry length, depth, citations, and index drift')
+    .description(
+      'Report entry length, depth, citations, provenance, and index drift',
+    )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Add a machine-readable record on stdout')
@@ -61,7 +63,7 @@ export function register(program: Command): void {
         '  2  a cited path did not resolve',
         '',
         'Only unresolved citations set a failing exit code. Length, depth,',
-        'table, and index findings are advisory.',
+        'table, provenance, and index findings are advisory.',
         '',
         'Examples:',
         '  aitk context audit',
@@ -134,6 +136,7 @@ async function runAudit(
     reportLength(entries)
     reportDepth(entries)
     reportTables(entries)
+    reportProvenance(entries)
     reportDrift(drift)
     outro()
   }
@@ -301,6 +304,46 @@ function reportTables(entries: readonly EntryReport[]): void {
 
   logWarn(`${plural(candidates.length, 'candidate')} for a bullet list`)
   pipeOutput(candidates.join('\n'))
+}
+
+/**
+ * Groups by entry rather than listing every marker.
+ *
+ * The two entries carrying most of a corpus's markers carry them a dozen at a
+ * time, and a flat list of those buries the entries holding one. What a reader
+ * acts on is which file to open, so the count sits beside the name and the
+ * lines follow it.
+ */
+function reportProvenance(entries: readonly EntryReport[]): void {
+  logStep('Provenance')
+  logInfo('Fenced blocks are excluded. A marker is a judgment, never a defect.')
+
+  const carrying = entries
+    .filter((entry) => entry.provenance.length > 0)
+    .sort((a, b) => b.provenance.length - a.provenance.length)
+
+  if (carrying.length === 0) {
+    logInfo('No entry narrates a change.')
+    return
+  }
+
+  const total = carrying.reduce(
+    (sum, entry) => sum + entry.provenance.length,
+    0,
+  )
+  logWarn(
+    `${plural(total, 'marker')} across ${carrying.length} ${carrying.length === 1 ? 'entry' : 'entries'}`,
+  )
+  pipeOutput(
+    carrying
+      .map(
+        (entry) =>
+          `${entry.rel}  ${plural(entry.provenance.length, 'marker')}\n${entry.provenance
+            .map((found) => `  :${found.line}  ${found.kind}  ${found.text}`)
+            .join('\n')}`,
+      )
+      .join('\n'),
+  )
 }
 
 function reportDrift(drift: readonly FolderDrift[]): void {

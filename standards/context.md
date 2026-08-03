@@ -94,11 +94,13 @@ Only the `development` entry carries this section. It is not a general-purpose h
 - Tutorials or human onboarding. Those go in `docs/` if a public audience exists.
 - Generated content (API references). Generate, do not write by hand.
 - Anything already in `.claude/REQUIREMENTS.md` or `.claude/ARCHITECTURE.md`.
+- The history of how the domain reached its current shape. An entry describes the repository as it stands, so a change number, release label, or date attached to a change goes wherever the project tracks work.
+- A rejected alternative's provenance, which is the same rule at the one place the section above admits history. Keep what was tried and why it lost. Cut who tried it and when.
 
 ## Length
 
 - Aim for one entry per domain. There is no hard cap. Length is a symptom, not the defect.
-- Past roughly 150 lines, check two things before adding more: whether the entry still covers a single domain, and whether it has filled with content `ls` or `--help` reproduces. Fix whichever is true rather than trimming to hit a number.
+- Past roughly 150 lines, check three things before adding more: whether the entry still covers a single domain, whether it has filled with content `ls` or `--help` reproduces, and whether it has accumulated the history of its own changes. Fix whichever is true rather than trimming to hit a number.
 - Past roughly 40 lines with no heading of any level breaking them, add a subheading at the seam. Measure the longest such run rather than everything under one `##`, and exclude fenced code blocks. The number is a checkpoint like the 150 above, not a cap.
 - Exempt a block whose lines are all list items at one level. A long list of peers is already navigable, and a subheading dropped into it splits a set that belongs together. Mixing prose with the list, or nesting levels inside it, ends the exemption.
 - Never cut a `## Decisions` or `## Gotchas` entry to shorten a file. Cut a `## Layout` or `## CLI` section instead.
