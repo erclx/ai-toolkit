@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.1](https://github.com/erclx/aitk/compare/v0.46.0...v0.46.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **cli:** report the real version and document how updates arrive ([#821](https://github.com/erclx/aitk/issues/821)) ([93cc075](https://github.com/erclx/aitk/commit/93cc075451eeac0fd3a01d81c89cb075669b362b))
+
 ## [0.46.0](https://github.com/erclx/aitk/compare/v0.45.0...v0.46.0) (2026-08-03)
 
 
