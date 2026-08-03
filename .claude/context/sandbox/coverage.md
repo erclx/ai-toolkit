@@ -27,6 +27,8 @@ Arm a skill when a wrong run is silent and the damage lands in a target project 
 
 The rule explains the arms already written as well as the next ones. Every skill armed before it was stated mutates a tree with no reader watching, so it describes existing practice rather than only constraining what comes next. `claude-seed-sync` and `setup-init` are the two it selects that the harness can reach.
 
+### The task board arms
+
 `claude/tasks.sh` carries two arms, split because create and archive have disjoint preconditions and one arm running both would assert the second against a tree the first mutated. Both stage the board rather than inheriting one, since `SANDBOX_INJECT_SEEDS` drops `.claude/tasks/` and fills it with nothing but the seeded `index.md`.
 
 The two arms cover different things, and the split follows what already has a test. `aitk tasks archive` is a typed verb whose refusals `src/tasks/archive.test.ts` covers at 27 tests, so the archive arm stages a board that satisfies every gate and asserts the successful move. An arm asserting that the command refuses an open outcome would re-test a unit test through a model session at a dollar a run. The create path has no CLI verb at all, so the skill writes the file from `.claude/standards/tasks.md` and the whole of that arm is prose with nothing underneath it.
@@ -38,6 +40,8 @@ Three fixture properties are load-bearing:
 - `priority.md` puts the archived task's row first and the control's second. An `absent` entry cannot express a removed table row, so the arm pins the separator line and the row that follows it, and a run that left the row in place pushes the control down and fails the match.
 
 Neither arm asserts `.claude/tasks/index.md`. A hook regenerates it, so an assertion there would read hook behavior rather than the skill's. Both leave the main-worktree-root guard in `manual`: a standalone sandbox repository has no linked worktree, so `pwd` and the main root are one path and no run distinguishes them.
+
+### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
 
@@ -56,6 +60,8 @@ The denominators disagree on purpose. Eight of 54 skills are asserted where nine
 Pairing tries two spellings, `<category>-<command>` first and bare `<command>` second. The first alone reaches 29 skills, and the fallback is what pairs `claude/setup-init.sh` to `setup-init` rather than to a `claude-setup-init` that does not exist. Stating one spelling while shipping two is what let the earlier audit report a paired skill as unpaired, so the rule lives in `skillForScenario` and this paragraph describes code rather than substituting for it.
 
 The census counts `claude/skills/`, not `.claude/skills/`. The second holds toolkit-internal skills that reach no target, and folding them in would inflate a denominator meant to describe what ships.
+
+### Exemptions
 
 An exemption lives in `scripts/sandbox/exempt.toml`, keyed by skill with a `reason`. It cannot live in the arm's `manual` array, the other home for prose a checker cannot assert: `resolveVerdict` fails any declaration carrying zero mechanical assertions, so an `expect.toml` holding only an exempt reason goes red the moment it is written. An exempt skill has no assertion to pair the prose with, which is what makes it exempt, so the two cases cannot share a home. Two reasons qualify and nothing else does, a harness limit the checker cannot reach past and a skill that writes no artifact. "Nobody has written one yet" is `should-be-asserted`.
 

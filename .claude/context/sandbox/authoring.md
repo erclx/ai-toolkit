@@ -49,6 +49,8 @@ Stage numbering carries ordering, not identity. A stage exists because a commit 
 
 `scripts/sandbox/fixtures/anchor/create/` is the one tree outside the four-segment layout. It belongs to no single scenario, since all nine anchor scenarios provision from it, so `stage_anchor_tree` calls `create_from_fixtures` directly rather than going through `stage_fixtures`. It holds the minimum a scenario reads: `utils.js`, which `git/{pr,issue,followup}.sh` append to, plus a `.gitignore` matching what `init_empty_sandbox` writes. Three of the nine wipe the tree before staging their own and two overwrite what they need, so growing this fixture is warranted only when a scenario reads a file that is missing.
 
+### Keeping a stage coherent
+
 A stage must leave the tree coherent with what the scenario claims it staged. `02-postgres` on the `claude/docs` `drift` arm replaced `src/db.ts` alone, moving `createTask` to `(title, userId)` and returning `rows[0]`, while `src/routes/tasks.ts` stayed at its `01-initial` content calling `createTask(title)` and reading `result.lastInsertRowid`. The commit message said the migration shipped and the route did not compile against the module it imported.
 
 A skill reading that diff saw a half-migration, correctly declined to mark the outcome, and failed four assertions. A stage that changes a module's signature carries its callers, or the arm tests the fixture's incoherence rather than the skill.
