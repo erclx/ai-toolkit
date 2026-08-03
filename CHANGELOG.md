@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/erclx/aitk/compare/v0.27.0...v0.28.0) (2026-08-03)
+
+
+### Features
+
+* **sandbox:** arm claude-tasks with create and archive scenarios ([#750](https://github.com/erclx/aitk/issues/750)) ([599c624](https://github.com/erclx/aitk/commit/599c624aa44ccf7e02d091ae142b14494e3d167a))
+
 ## [0.27.0](https://github.com/erclx/aitk/compare/v0.26.0...v0.27.0) (2026-08-02)
 
 
