@@ -1,0 +1,40 @@
+# What `aitk sync --check --json` reports on a target still holding the files the
+# seed folders replaced. Read by `aitk sandbox check`. Patterns use TOML literal
+# strings so a regex needs no backslash escaping.
+#
+# The retired files appear in `paths` because a superseded entry queues no change.
+# Asserting they survive is the point: an absence check alone cannot tell a move
+# from a delete, and this class exists precisely so nothing deletes them.
+
+paths = [
+  "drift-report.json",
+  ".claude/TASKS.md",
+  ".claude/DIAGRAMS.md",
+  ".claude/TASKS-ARCHIVE.md",
+]
+
+# The suffixed variant stays unmatched, which is the accepted limit of a stem
+# rule rather than a defect. Kept as a reader's check because a pattern matching
+# the filename would also match the TASKS.md entry beside it.
+#
+# Declared above the content blocks deliberately. A bare key below a `[[content]]`
+# header binds to that table rather than to the document, which is how an arm
+# ships manual entries that never reach the unchecked count.
+manual = [
+  "`.claude/TASKS-ARCHIVE.md` appears in the report only as a file on disk, never in the superseded list. Semantic: the distinction is which array the name sits in, and a bare filename pattern passes from either",
+]
+
+# The two retired artifacts are named, each against the folder that replaced it.
+# This pair is the arm's reason to exist: nothing detected either before, because
+# the relocation walk reads a stamp and no real target carries one.
+[[content]]
+path = "drift-report.json"
+pattern = '"rel": "\.claude/TASKS\.md"'
+
+[[content]]
+path = "drift-report.json"
+pattern = '"replacedBy": "\.claude/tasks"'
+
+[[content]]
+path = "drift-report.json"
+pattern = '"rel": "\.claude/DIAGRAMS\.md"'

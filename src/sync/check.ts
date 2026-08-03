@@ -1,8 +1,16 @@
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { createGovAdapter } from '@/gov/adapter'
 import { createSnippetsAdapter } from '@/snippets/adapter'
 import { planSync, type ScanEntry, type SyncAdapter } from '@/sync/engine'
+import {
+  collectSuperseded,
+  detectUnmigrated,
+  type SupersededEntry,
+  type UnmigratedDomain,
+} from '@/sync/layout'
+import { buildSeedsReport, type SeedsReport } from '@/sync/seeds-report'
 import {
   readStamp,
   STAMP_DOMAINS,
@@ -68,13 +76,49 @@ export interface UpstreamCommit {
 
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
+  /** False when the target is not a toolkit project, so every section stays empty. */
+  readonly managed: boolean
   readonly domains: readonly DomainReport[]
+  /**
+   * Reported beside the domains rather than as one of them, because seeds carry
+   * no stamp and produce no change. See `@/sync/seeds-report`.
+   */
+  readonly seeds: SeedsReport
+  readonly superseded: readonly SupersededEntry[]
+  readonly unmigrated: readonly UnmigratedDomain[]
   readonly newSkills: readonly string[]
 }
 
 export function installedStampDomains(target: string): StampDomain[] {
   return STAMP_DOMAINS.filter((domain) =>
     isDirectory(join(target, ...INSTALL_MARKERS[domain])),
+  )
+}
+
+/**
+ * Whether the target is a toolkit-managed project at all. Seeds are enumerated
+ * from the source rather than from what a target installed, so without this gate
+ * a directory the toolkit has never touched reports every seed as `missing` and
+ * routes to a skill that reconciles section by section. `installedStampDomains`
+ * gates the three scanned domains the same way, which is why they stay quiet on
+ * the same directory.
+ *
+ * An unmigrated domain counts as a marker in its own right. `detectUnmigrated`
+ * fires only on root files whose basename the toolkit ships, so it firing proves
+ * the toolkit installed here before the layout moved under `.claude/`. Reading
+ * only the markers would report such a target as unmanaged while the same report
+ * carried its unmigrated domain, and a consumer reading the JSON would route to
+ * the relocation while the rendered half routed to install.
+ */
+export function isManagedTarget(
+  target: string,
+  unmigrated: readonly UnmigratedDomain[],
+): boolean {
+  if (unmigrated.length > 0) return true
+
+  return (
+    isDirectory(join(target, '.claude')) ||
+    existsSync(join(target, 'CLAUDE.md'))
   )
 }
 
@@ -93,8 +137,16 @@ export function countStates(entries: readonly ScanEntry[]): StateCounts {
  * Whether the target has diverged from the toolkit in a way a sync could close.
  * Orphaned files are excluded: a project-authored rule never converges, and
  * counting it would leave `--exit-code` failing forever with no remedy.
+ *
+ * An unmigrated domain counts, because running the relocation closes it. A
+ * superseded artifact does not, for the same reason orphaned files do not: only
+ * the user can move content they wrote, so failing a job on it leaves the job
+ * red with no mechanical remedy. Seeds are excluded on the same grounds, since
+ * every seed a project edits would otherwise fail the check forever.
  */
 export function hasDrift(report: CheckReport): boolean {
+  if (report.unmigrated.length > 0) return true
+
   return report.domains.some(
     (domain) =>
       domain.counts.stale +
@@ -126,9 +178,28 @@ export async function buildCheckReport(
     .map((domain) => domain.commit)
     .filter((commit): commit is string => commit !== undefined)
 
+  const unmigrated = detectUnmigrated(toolkitRoot, target)
+  const managed = isManagedTarget(target, unmigrated)
+
+  if (!managed) {
+    return {
+      covers: [],
+      managed,
+      domains: [],
+      seeds: { entries: [], historyUnavailable: false },
+      superseded: [],
+      unmigrated: [],
+      newSkills: [],
+    }
+  }
+
   return {
     covers: stamp?.covers ?? [],
+    managed,
     domains,
+    seeds: buildSeedsReport(toolkitRoot, target),
+    superseded: collectSuperseded(target),
+    unmigrated,
     newSkills: await readNewSkills(toolkitRoot, anchors),
   }
 }

@@ -18,9 +18,26 @@ Run these from the target project root, in parallel, before acting:
 
 Load a domain doc with `aitk docs <topic>` only when the intent touches that domain. Read the live catalog for any domain you act on with `aitk <domain> list --json`. Never hardcode stack, rule, snippet, or standards names.
 
+## Diagnose
+
+Run `aitk sync --check . --json` before routing. It reports what a target is behind on across every surface, so the intent comes from the project state rather than from the user having to know it already. Skip only when the user named a single operation to run.
+
+Read five fields off the report and carry each to `## Route`:
+
+- `unmigrated`: a domain sitting at the root layout with nothing under `.claude/`. The most urgent finding, because that domain reports no drift of its own while being entirely behind
+- `superseded`: a file a newer seed folder replaced. Report it and stop. No command moves it, since the content is the project's own
+- `seeds`: entries are `matching`, `stale`, `drifted`, or `missing`. Anything but `matching` needs the seed handoff
+- `domains[].entries`: per-file `stale`, `customized`, `stranded`, and `orphaned` as before
+- `historyUnavailable` on a domain or on `seeds`: attribution failed, so treat every difference as unverified and say so rather than reporting a file as untouched
+
+State what the report found in one line per finding before acting on any of it.
+
 ## Route
 
-Map the stated intent to one lifecycle phase, then act:
+Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then act:
+
+- A domain in `unmigrated`: hand off to `migration-standards`
+- Anything in `superseded`: tell the user which files and what replaced them. Do not move or delete them
 
 - First-time scaffold of a fresh project: hand off to `setup-init`
 - Governance rules for the project stack: hand off to `setup-gov`

@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -7,6 +7,7 @@ import {
   countStates,
   hasDrift,
   installedStampDomains,
+  isManagedTarget,
   parseNewSkills,
   parseUpstream,
 } from '@/sync/check'
@@ -14,9 +15,13 @@ import type { ScanEntry } from '@/sync/engine'
 
 let TARGET: string
 
-function buildReport(entries: readonly ScanEntry[]): CheckReport {
+function buildReport(
+  entries: readonly ScanEntry[],
+  overrides: Partial<CheckReport> = {},
+): CheckReport {
   return {
     covers: ['standards'],
+    managed: true,
     domains: [
       {
         domain: 'standards',
@@ -27,7 +32,11 @@ function buildReport(entries: readonly ScanEntry[]): CheckReport {
         upstream: [],
       },
     ],
+    seeds: { entries: [], historyUnavailable: false },
+    superseded: [],
+    unmigrated: [],
     newSkills: [],
+    ...overrides,
   }
 }
 
@@ -49,6 +58,43 @@ describe('installedStampDomains', () => {
     mkdirSync(join(TARGET, '.claude/rules'), { recursive: true })
 
     expect(installedStampDomains(TARGET)).toEqual(['standards', 'governance'])
+  })
+})
+
+describe('isManagedTarget', () => {
+  const rootLayout = [
+    {
+      domain: 'standards' as const,
+      rootPath: 'standards',
+      installPath: join('.claude', 'standards'),
+      files: 9,
+    },
+  ]
+
+  it('should report an empty directory as unmanaged', () => {
+    expect(isManagedTarget(TARGET, [])).toBe(false)
+  })
+
+  it('should report a target carrying .claude as managed', () => {
+    mkdirSync(join(TARGET, '.claude'), { recursive: true })
+
+    expect(isManagedTarget(TARGET, [])).toBe(true)
+  })
+
+  it('should report a target carrying only CLAUDE.md as managed', () => {
+    writeFileSync(join(TARGET, 'CLAUDE.md'), '# Project\n')
+
+    expect(isManagedTarget(TARGET, [])).toBe(true)
+  })
+
+  it('should not read a nested .claude as the target being managed', () => {
+    mkdirSync(join(TARGET, 'packages', 'web', '.claude'), { recursive: true })
+
+    expect(isManagedTarget(TARGET, [])).toBe(false)
+  })
+
+  it('should report a root-layout target with no marker as managed', () => {
+    expect(isManagedTarget(TARGET, rootLayout)).toBe(true)
   })
 })
 
@@ -113,6 +159,45 @@ describe('hasDrift', () => {
     expect(hasDrift(buildReport([{ state: 'customized', rel: 'a.md' }]))).toBe(
       true,
     )
+  })
+
+  it('should report drift for an unmigrated domain', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      unmigrated: [
+        {
+          domain: 'standards',
+          rootPath: 'standards',
+          installPath: join('.claude', 'standards'),
+          files: 9,
+        },
+      ],
+    })
+
+    expect(hasDrift(report)).toBe(true)
+  })
+
+  it('should not report drift for a superseded artifact', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      superseded: [
+        {
+          rel: join('.claude', 'TASKS.md'),
+          replacedBy: join('.claude', 'tasks'),
+        },
+      ],
+    })
+
+    expect(hasDrift(report)).toBe(false)
+  })
+
+  it('should not report drift for a seed the project edited', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      seeds: {
+        entries: [{ state: 'drifted', rel: 'CLAUDE.md' }],
+        historyUnavailable: false,
+      },
+    })
+
+    expect(hasDrift(report)).toBe(false)
   })
 })
 

@@ -17,7 +17,9 @@ Two failures belong to the audit rather than to the diff. A decision taken in ch
 
 - Read seed and standard content from the CLI rather than holding a copy, so the audit and the install cannot disagree
 - Diff per section, treating the preamble as a section of its own
-- Separate a customized section from a stale one, and default the customized one to no action
+- Separate a customized section from a stale one by reading the attribution the drift report records, not by how the section looks, and default the customized one to no action
+- Fall back to appearance only when attribution is unavailable, and mark every verdict reached that way as unverified
+- Leave a file the report proves untouched to the bulk sync that owns it, rather than auditing what carries no edits
 - Persist the proposal and every decision to a review file that stays the source of truth across re-pings
 - Apply one section at a time, never by rewriting a file
 

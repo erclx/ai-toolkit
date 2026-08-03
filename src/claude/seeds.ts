@@ -7,7 +7,12 @@ const SEEDS_DIR = join('tooling', 'claude', 'seeds')
 const CLAUDE_DIR = '.claude'
 const CLAUDE_MD = 'CLAUDE.md'
 const HOOKS = 'hooks'
-const SUBDIRS: readonly string[] = [
+/**
+ * Seed subdirectories under `.claude/`. Exported because each one replaced a
+ * single file of the same stem in an older layout, which is what
+ * `@/sync/layout` pairs a target against to find a superseded artifact.
+ */
+export const SUBDIRS: readonly string[] = [
   HOOKS,
   'context',
   'diagrams',
