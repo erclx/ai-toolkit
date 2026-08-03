@@ -292,7 +292,7 @@ The `auto: false` escape is the one candidate still unmeasured. Cutting it needs
 
 A cut half can write outside the fixture, and the snapshot does not see it. Both `memory-cut` arms wrote into `~/.claude/projects/`, so the runner's before-and-after comparison over the fixture reported no files changed while the session had written two. The transcript caught what the snapshot missed. Read the two together rather than trusting the file list, and clear the stray directory afterward.
 
-The sandbox harness has the same defect, and `write_scope` reports from a manifest diff over `.sandbox/` that cannot see outside it either. Two harnesses snapshotting a directory the session can write past is one finding rather than two, so it is recorded in `.claude/context/scripts.md` where both are in scope, and the fix belongs to both at once.
+The sandbox harness has the same defect, and `write_scope` reports from a manifest diff over `.sandbox/` that cannot see outside it either. Two harnesses snapshotting a directory the session can write past is one finding rather than two, so it is recorded in `.claude/context/scripts/eval.md` where both are in scope, and the fix belongs to both at once.
 
 Hook firing still cannot be scored. No hook output appears in any of the fourteen transcripts, including one whose final message claims the standards-audit hook rejected its punctuation. A run's self-report about a hook is not evidence that the hook fired. Run 01 scored this criterion from a marker file left under `.claude/.tmp/`, and the trap deletes the workdir holding it, so that route closes the moment a run ends. The criterion cannot be scored until either the capture carries hook events or retention copies the marker directory out.
 
