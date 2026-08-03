@@ -55,13 +55,18 @@ Read each discovered file in parallel.
 For each discovered doc, classify as one of:
 
 - `stale`: the diff touches something the doc describes
+- `departed`: the doc records a deliberate contract and the diff broke it
 - `unrelated`: no overlap between diff and doc content
+
+The split between `stale` and `departed` is whether the doc was describing or promising. A doc that trailed the code is `stale`. A doc stating a contract the code was meant to keep is `departed`, and rewriting it to match the diff would record the regression as the contract.
 
 Classify at the section level, not the file level. A doc edited earlier in the session can still be partially stale. For each diff surface, verify the corresponding section is synced.
 
 ## Action
 
 Rewrite only the stale sections. Do not touch sections unrelated to the diff. Write the updated file immediately after the preview. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
+
+Never rewrite a `departed` section. Leave it as written and report it as a finding, since the repair belongs in the code rather than in the prose.
 
 ## Response format
 
@@ -73,6 +78,7 @@ Rewrite only the stale sections. Do not touch sections unrelated to the diff. Wr
 | Doc         | Status    | Action |
 | ----------- | --------- | ------ |
 | README.md   | stale     | update |
+| docs/cli.md | departed  | report |
 | docs/api.md | unrelated | skip   |
 
 After outputting the preview, write all stale updates immediately.
@@ -84,4 +90,5 @@ One line per file, using the same relative path format as the preview table (e.g
 ```plaintext
 ✅ Updated: <relative-path>
 ⏭️  Skipped: <relative-path>
+⚠️ Departed: <relative-path> records <the contract>, and the diff <what it did>. Left unwritten.
 ```

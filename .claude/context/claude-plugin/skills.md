@@ -21,11 +21,11 @@ Coverage is selective by design, so an uncovered skill needs a stated reason rat
 
 Which skills carry the file is a fact `aitk claude skills list --json` reports as `requirement` per entry, so nothing below repeats it. What a listing cannot give is why, and that is what this section holds. A reason is stated per skill where the call was close and collectively where one test decided a whole set, so an exemption is always checkable and is not always its own bullet.
 
-The `setup-*` and `migration-*` families were read as one batch because a shared prefix contests scope by construction. Each verdict names what the body left open, or what it already closed.
+The `setup-*` and `migration-*` families were read as one batch because a shared prefix contests scope by construction. Each verdict names the boundary the prefix contests and which file settles it.
 
-- `setup-init` carries one. It orchestrates a chain whose pieces four siblings each perform, and its body accounts for two of them, leaving index bootstrap and plugin provisioning unresolved against the chain.
-- `setup-gov` carries one. It names no sibling anywhere, so nothing in it settles whether a step from the wider onboarding chain belongs here or in `setup-init`.
-- `migration-context` carries one. It proposes into the same `.claude/context/` folder `migration-claude-md` writes, and neither body states which runs first, which turns a legitimate move into a skipped conflict when the order is wrong.
+- `setup-init` carries one. It orchestrates a chain whose pieces four siblings each perform, so which of them the chain runs is contested by construction and only the requirement settles it against all four.
+- `setup-gov` carries one. It installs one domain of a chain `setup-init` runs whole, and the rule it refuses to author belongs to `create-rule`, so two boundaries meet in one skill.
+- `migration-context` carries one. It proposes into the same `.claude/context/` folder `migration-claude-md` writes, so the order the two run in is a contract neither body owns alone and the requirement is where it lives.
 - `setup-indexes` carries none. Its scope block, its `.claude/snippets/` exclusion, and its opt-in maintenance note each ship with the reason behind them.
 - `setup-plugins` carries none. Machine scope against project scope is its edge, stated in the description and again in the body with the reason.
 - `setup-verify` carries none. Its `## Out of scope` section names three exclusions with a reason each, and hands the first to `project-commands`.
@@ -36,8 +36,8 @@ Length did not discriminate. The longest body in the batch was turned down and t
 
 The remaining twenty-five were read in one pass rather than batched, since two samples at three of eight had already shown the criterion separates. Four were admitted. Their reasons are below, and the twenty-one rejections are stated collectively at the end of this section rather than one bullet each.
 
-- `bash-script` carries one. Ninety-six lines assert a visual house style whose value is that every generated script shares it, which is the one thing no single script establishes for itself and the body never says. Only its stdout and terminal rules state a failure.
-- `ci-workflow` carries one. It is the sole admission failing both limbs of the test. No failure sits behind the manual trigger, the naming, or the artifact rule, and no sibling or request type is named anywhere, so nothing settles whether a deploy job's contents are its business.
+- `bash-script` carries one. Its body asserts a visual house style whose value is that every generated script shares it, which is a property no single script establishes for itself and no body written from inside one can state.
+- `ci-workflow` carries one. Where pipeline structure ends and job contents begin is the only boundary it has, and the requirement is what fixes that line for a body whose rules are otherwise all structure.
 - `docs-sync` carries one. It runs immediately after `claude-docs` in the ship chain and resolves the same baseline against the same tree, and neither body states that the split is by audience rather than by subject.
 - `claude-seed-sync` carries one. It is the section-granular alternative to `aitk standards sync`, which is the grounds `toolkit-cli` and `toolkit-operator` both route to it on, and its own body never says so.
 

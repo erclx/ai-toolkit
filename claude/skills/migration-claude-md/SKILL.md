@@ -7,6 +7,8 @@ description: Classifies each section of a target project's bloated `CLAUDE.md` i
 
 Rebalance a large `CLAUDE.md` so only always-load behavior stays in it, path-scoped behavior becomes a rule, and domain narrative becomes a context entry. Every move is a proposal the user applies by hand.
 
+Run `migration-context` first when both apply. Its moves populate `.claude/context/`, and Step 3 has to read the folder those moves left so an existing entry resolves to an append rather than blocking the move that should have created it.
+
 ## Guards
 
 - If no `CLAUDE.md` exists at `pwd`, stop: `❌ No CLAUDE.md found at the project root.`
