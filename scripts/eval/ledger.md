@@ -9,7 +9,7 @@ A row records that a run happened. `result-<arm>.md` records what a run found. T
 - `Date`: the day the run started
 - `Arm`: which arm ran, matching the argument to `run.sh`. An ablation half reads `seed-<section>-kept` or `seed-<section>-cut`, which sorts the two halves of a pair together and keeps a schema change out of a file this small
 - `Kind`: `findings` for a run started to learn something, `regression` for one confirming nothing broke, `ablation` for one half of a comparison pair. The first two are written by the caller, since the harness cannot know why an ordinary run was started. The third is written by the runner, because a variant carries its own reason and `Verdict` means something different under it
-- `Subject`: short commit of the working tree the standard or seed was read from, suffixed `-dirty` when tracked files were modified. A run exercises the tree rather than a release. This file is excluded from that check, since appending a row would otherwise mark every run after the first as dirty
+- `Subject`: short commit of the working tree the standard or seed was read from, suffixed `-dirty` when tracked files were modified. A run exercises the tree rather than a release, and the cell promises that commit still resolves. This file is excluded from the dirty check, since appending a row would otherwise mark every run after the first as dirty
 - `Cost`: `total_cost_usd` as reported by the run
 - `Turns`: `num_turns` as reported by the run
 - `Verdict`: `pending` on append. Whoever judges the report edits the cell to `pass`, `fail`, or `inconclusive`. What those mean depends on `Kind`, so read the two columns together
@@ -26,6 +26,8 @@ Two rows sharing a section and differing on `kept` against `cut` are one ablatio
 Both halves of a pair carry the pair's verdict rather than one of their own. `pass` means the pair discriminated and the section under test changed observable behavior. `inconclusive` means it did not, which is a statement about the pair rather than about the section, since a null can come from a prompt that never reached the trigger or from a rule another file already carries. The result document says which.
 
 A pair regenerates without the retained scratch. `run.sh` strips by fixed-string anchor, so the seed at the row's `Subject` commit and the runner at that same commit reproduce both halves exactly, and the anchors refuse to match rather than cut the wrong line once the seed moves. The retained `claude-md.txt` is a convenience that saves the checkout. What each cut removed is committed in `result-seed.md`, so the evidence survives a cleared scratch folder.
+
+Regeneration needs the subject commit to still resolve. A commit recorded from a feature branch is unreachable from `main` after a squash merge and gone once the branch is deleted, so an ablation whose pair anyone will regenerate owes an annotated tag under `eval/` pushed to the remote. `eval/seed-ablation-20260802` holds the subject for the fourteen rows dated that day. An ordinary `findings` or `regression` run keeps the bare commit, since nothing regenerates it and a tag per run buries the ones that matter.
 
 The `Output` path points at scratch, so it resolves only on the machine that ran it and only until that scratch is cleared. A transcript that becomes load-bearing evidence for a claim gets promoted by hand into the arm's result document, which keeps the default cheap and the exception deliberate.
 
