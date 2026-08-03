@@ -35,6 +35,10 @@ Then output the state of play so the human knows what to launch, review, and mer
 
 The roadmap is optional and this skill does not require it. It carries why a sequence is what it is, changes only when strategy changes, and is absent in a project whose scope has already shipped. Report what it says and name it as the source. Never assert an active version the file does not state, and say nothing about one when the file is missing.
 
+A compaction is a moment this skill cannot detect, so both sides of it are snippets the human fires. Before one, `@.claude/snippets/claude/orchestrator-handoff.md` writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. After one, `@.claude/snippets/claude/orchestrator-resume.md` reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
+
+Name `${CLAUDE_SKILL_DIR}/../../snippets/claude/<name>.md` as the fallback for any orchestrator snippet the project copy lacks. Snippets install by named bundle rather than wholesale, so a project that installed one bundle has the `.claude/snippets/` directory and none of these files, and the plugin ships the whole snippets folder beside `skills/`.
+
 ## Output
 
 ```plaintext
@@ -68,10 +72,27 @@ Omit the `Roadmap` line when `.claude/ROADMAP.md` is absent. Quote the `Now` row
 
 That command returns nothing for a roadmap that exists but has never been committed, which is the state `claude-roadmap` leaves behind when it writes the file and declines to stage it. Write `uncommitted` as the date in that case. A blank there would read as a formatting slip rather than as the newest possible sequence.
 
+### Every later turn
+
+The block above covers invocation alone. A sweep report, a board report, and an analysis each end in something the human decides, so each opens with the same three slots and puts its evidence underneath:
+
+```plaintext
+State: <what changed since they last looked>
+
+Decisions:
+  1. <one line each, or "none open">
+
+Next: <the single most useful action>
+```
+
+Keep the detail below the block and keep it skippable. A decision reached at the bottom of three paragraphs has been buried, which is the failure this shape exists to prevent. Reuse the vocabulary above rather than inventing a second one, and keep a file set on the row claiming it so the reader can check a disjointness claim instead of taking it.
+
+Write no shape for a correction. A correction is a sentence, and a format for admitting error invites ceremony where plainness is the whole value.
+
 ## The loop
 
 1. Own the roadmap while a scope exists to sequence. Capture a needed draft or resequence of `.claude/ROADMAP.md` in the plan or a task file, naming the MVP list in `.claude/REQUIREMENTS.md` as the source, so a worker runs `claude-roadmap` in its branch and the tracked edit ships in a PR rather than dirtying main. Stop owning it once that list has shipped, since later work then arrives as discrete items rather than as versions.
-2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive.
+2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. A constraint supplied from here that names a surface to leave alone states which of two acts it forbids, and the rule governing that is Step 3 of `claude-feature` under Constraints.
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
 5. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
@@ -89,7 +110,7 @@ That command returns nothing for a roadmap that exists but has never been commit
 
 ## Refilling the ready queue
 
-Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins.
+Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins. `@.claude/snippets/claude/orchestrator-sweep.md` fires this procedure after a batch of merges and adds the plan re-verification that a merge invalidates.
 
 1. Run `gh pr list --state open` and `git log --oneline -8`. Report any pull request whose review has not been posted and stop for that one first.
 2. For each pull request merged since the last sweep, place every finding it produced. Route a finding that changes a rule to the standard or rule that states it, one that changes another task to that task's Findings, and one that overturns a groundwork lean to that folder marked answered. Never leave a finding in a pull request thread alone.
@@ -107,9 +128,21 @@ Serialized: <task> behind <task>, both write <file>
 Ready now: <tasks with plans, and what each waits on>
 ```
 
+That block is the detail. Lead the reply with the three slots under Every later turn above, so the human reads what they own before the evidence for it.
+
 Treat a task that edits `.claude/context/` entries wholesale as conflicting with every other task, because the root instruction file requires each task to update its own domain entry as it lands.
 
 Do not promote a task to fill the queue when nothing qualifies. A thin queue is a real answer and it beats a plan nobody needed.
+
+### Writing the board
+
+Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, and this session is the only writer apart from `aitk tasks archive`.
+
+- Edit the file with the file-editing tool. A shell stream editor and an inline string replace both exit clean on a non-match, so a promotion that matched nothing leaves the board wrong with nothing reporting it, and the file-editing tool errors instead.
+- Put a pointer in the Plan column, never prose. `## Run now` claims a written plan covers every open outcome, and `claude-autoship` refuses at its guard when it follows the column and finds no plan, which spends a worker dispatch to learn what the row should have said.
+- Name the file set in the Touches column. The disjointness call in step 6 is only checkable later when the sets are written down rather than reasoned once and discarded.
+- Re-resolve every Plan pointer after anything archives a plan. `claude-docs` moves a plan to `.claude/.tmp/plans-archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.claude/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
+- Read the file back after writing it, since the row that lands is the row a worker acts on.
 
 ## Parallelism
 
