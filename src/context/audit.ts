@@ -78,9 +78,16 @@ export interface ProvenanceFinding {
 export interface EntryReport {
   readonly rel: string
   /**
-   * Rendered lines across the whole file, frontmatter included. Both this and
-   * `longestRun` measure in the same unit, since the two checkpoints they feed
-   * sit in one section of the standard and a reader compares them.
+   * Rendered lines across the whole file, counting frontmatter and fenced
+   * blocks. Both this and `longestRun` measure in the same unit, since the two
+   * checkpoints they feed sit in one section of the standard and a reader
+   * compares them.
+   *
+   * The exclusions differ on purpose. `longestRun` skips a fence so an example
+   * cannot break the run around it, and a file measure has no run to protect.
+   * Excluding fences here would change which entries report by one and would
+   * not reach the case that motivates it: the most fenced entry in the corpus
+   * runs 20 percent fenced and sits past the checkpoint either way.
    */
   readonly lines: number
   /** Rendered lines at `RENDER_WIDTH`, not source lines. */

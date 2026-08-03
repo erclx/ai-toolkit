@@ -246,7 +246,10 @@ function reportCitations(report: ScannedCitations): void {
 function reportLength(entries: readonly EntryReport[]): void {
   logStep('Length')
   logInfo(
-    `Entries measure rendered lines at ${RENDER_WIDTH} columns, frontmatter included.`,
+    `Entries measure rendered lines at ${RENDER_WIDTH} columns, counting frontmatter and fenced blocks.`,
+  )
+  logInfo(
+    'A reference-heavy entry therefore ranks by its examples, which the depth check excludes.',
   )
 
   const over = entries
