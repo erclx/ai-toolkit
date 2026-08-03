@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.1](https://github.com/erclx/aitk/compare/v0.35.0...v0.35.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **skills:** close six bodies against the gaps their requirements state ([#779](https://github.com/erclx/aitk/issues/779)) ([87627cf](https://github.com/erclx/aitk/commit/87627cf16a43a238c8606f13835e73c470807d0d))
+
 ## [0.35.0](https://github.com/erclx/aitk/compare/v0.34.0...v0.35.0) (2026-08-03)
 
 
