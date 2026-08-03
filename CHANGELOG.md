@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.0](https://github.com/erclx/aitk/compare/v0.31.0...v0.32.0) (2026-08-03)
+
+
+### Features
+
+* **context:** measure depth in rendered lines and weight the exemption ([#761](https://github.com/erclx/aitk/issues/761)) ([b907a1f](https://github.com/erclx/aitk/commit/b907a1f924d724111c21f53a2ab4120e4f1cce87))
+
 ## [0.31.0](https://github.com/erclx/aitk/compare/v0.30.1...v0.31.0) (2026-08-03)
 
 
