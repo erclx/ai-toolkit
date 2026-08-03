@@ -1,0 +1,44 @@
+---
+name: claude-groundwork
+description: Why a question that has not been measured gets a disposable folder instead of a plan, and the write scope that lets the track run without pausing
+---
+
+# Claude groundwork requirement
+
+## Gap
+
+Without this skill, a question nobody has measured is answered with a plan. The session commits to an approach before the current state is known, and the reasoning that produced it lives in a conversation that compacts away. A research pass that does run spreads its findings across chat, so the next session re-measures what this one already counted, or worse carries a figure from recall and states it as current.
+
+Two failure modes cost more than the rest. A track that fans out to subagents returns findings without the reasoning that makes the folder worth keeping, which turns a conversation into a search result. And an experiment fixture written under the project root loads that project's own instruction files through the ancestor chain, so the arm measures the repository instead of the question, and the result reads as evidence either way.
+
+## Must
+
+- Detect open, resume, and close from the folder itself, matching the topic against tracks already there before deriving a slug
+- Apply the qualifying test in open mode alone, so a track already measured is not refused by the test that admitted it
+- Measure the current state now rather than carrying a figure from a previous session
+- Carry a lean and the finding that would overturn it on every open question, or admit that a measurement is missing
+- Confine writes to the track folder, with the close-time task file and the experiment fixture as the only exceptions
+- Link every claim about a source outside the project, and list an unread source as a lead rather than citing it
+- Put a fixture a headless run is pointed at outside the repository
+- Write the next-session file self-contained, since the folder is unbacked and dies with the machine
+
+## Must not
+
+- Write a feature plan, a source change, a standard, a rule, or a reference doc
+- Dispatch subagents. A search too large to run inline is a finding that the question is too broad.
+- Close while an open question quietly fails an outcome, rather than resolving it or recording it as knowingly accepted
+- Spawn more than three billed headless runs without asking
+- Match a topic against the shared scratch directory, which holds folders that were never tracks
+- Pause for approval between steps, which the write scope is what makes safe
+
+## Guards
+
+- No topic given: stop rather than inferring one
+- Fewer than two of the three qualifying conditions hold in open mode: stop and route to the planning skill, because the decision is already made
+- Resume and close are exempt from that test by definition
+
+## Out of scope
+
+- Writing the plan the track concludes toward, which `claude-feature` owns
+- Implementing anything the track recommends
+- Persisting the folder. It is gitignored and disposable, which is what makes it the right container for an unanswered question.
