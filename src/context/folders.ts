@@ -18,6 +18,13 @@ export const DEFAULT_FOLDERS: readonly string[] = [
 ]
 
 export interface AuditedFolder {
+  /**
+   * The requested folder name this was resolved under, which is what says
+   * which standard governs the entries. A nested split folder carries the name
+   * of the folder it sits beneath rather than its own, so
+   * `.claude/context/claude-plugin` is governed as `context`.
+   */
+  readonly name: string
   /** Repo-relative folder path, used verbatim in every report line. */
   readonly rel: string
   readonly indexPath: string
@@ -35,7 +42,7 @@ export interface AuditedFolder {
  * here for the sole reason that this repository has no wireframes.
  */
 export function presentNames(folders: readonly AuditedFolder[]): string[] {
-  return [...new Set(folders.map((folder) => folder.rel.split('/')[1]))]
+  return [...new Set(folders.map((folder) => folder.name))]
 }
 
 async function readEntries(dir: string): Promise<string[]> {
@@ -80,6 +87,7 @@ export async function resolveFolders(
 
     for (const each of [...new Set(dirs)].sort()) {
       folders.push({
+        name,
         rel: relative(root, each),
         indexPath: `${each}/${INDEX_FILE}`,
         entries: await readEntries(each),

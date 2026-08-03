@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import type { AuditedFolder } from '@/context/folders'
 import { auditFolder, listedTargets } from '@/context/index-drift'
 
 let ROOT: string
@@ -41,13 +42,10 @@ function seedFolder(names: string[], index = INDEX): void {
   }
 }
 
-function folderAt(names: string[]): {
-  rel: string
-  indexPath: string
-  entries: string[]
-} {
+function folderAt(names: string[]): AuditedFolder {
   const dir = join(ROOT, '.claude', 'context')
   return {
+    name: 'context',
     rel: '.claude/context',
     indexPath: join(dir, 'index.md'),
     entries: names.map((name) => join(dir, name)),
