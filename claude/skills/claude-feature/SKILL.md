@@ -38,12 +38,20 @@ Measure against the tree rather than recall. Grep for each construct the plan wi
 Construct the plan with these sections:
 
 - **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
-- **Constraints:** durable rules the work must respect (patterns to reuse, surfaces not to touch, platform limits). Optional. Include when an orchestrator or prior context supplies them, omit the section otherwise.
+- **Constraints:** durable rules the work must respect (patterns to reuse, surfaces not to touch, platform limits). Optional. Include when an orchestrator or prior context supplies them, omit the section otherwise. A constraint naming a surface to leave alone carries the distinction under Constraints below.
 - **Files to touch:** each file with a one-line reason
 - **Risks:** conflicts, coupling, or tricky spots. When the plan establishes a resource with more than one consumer, list the consumers and mark each read or write, because a policy stated over that resource has to hold for the writers and not just the consumer that prompted it. If none, use `None identified.`
 - **Questions:** numbered list of things to resolve before starting. Each carries a `- Suggested:` line and an `- Answer:` slot (see Suggestions below). If none, use `None identified.`
 
 Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
+
+### Constraints
+
+A constraint naming a surface to leave alone forbids two different acts. Name which one, since a constraint carrying only the surface leaves the executing session to guess.
+
+- Forbid conforming the surface to whatever shape the change introduces. This is the act a scope constraint means, and it keeps the branch from growing a second concern.
+- Never forbid retargeting a pointer the change breaks. A rename, a split, or a deletion that leaves a citation behind ships a dangling reference, so fixing it is required work rather than scope creep.
+- Decide both acts for every surface the constraint names. Carving the distinction out for one file and leaving its siblings under the bare wording is how a plan ships one correct call beside one broken reference.
 
 ### Suggestions
 

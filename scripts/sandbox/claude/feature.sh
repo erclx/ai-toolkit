@@ -8,7 +8,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "full" "small" "multi-concern"
+  select_or_route_scenario "Which scenario?" "full" "small" "multi-concern" "constraint"
 
   case "$SELECTED_OPTION" in
   "full")
@@ -277,6 +277,82 @@ EOF
     log_info "Context: two unrelated tasks in .claude/tasks/, one API change and one prose edit"
     log_info "Action:  /claude-feature 'add pagination to /users and tighten the docs intro'"
     log_info "Expect:  two plan files in .claude/plans/, one per concern, not a single bundled slug"
+    ;;
+  "constraint")
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Data pipeline with a reference doc that has outgrown one file.
+EOF
+
+    mkdir -p docs .claude/context
+    cat <<'EOF' >docs/reference.md
+# Reference
+
+## Ingest
+
+Rows arrive on the queue and land in the staging table.
+
+## Transform
+
+Staging rows are normalized and written to the warehouse.
+
+## Export
+
+Warehouse rows are published to the reporting bucket.
+EOF
+
+    cat <<'EOF' >docs/onboarding.md
+# Onboarding
+
+Read `docs/reference.md` for the pipeline stages before your first change.
+EOF
+
+    cat <<'EOF' >.claude/context/pipeline.md
+---
+title: Pipeline
+description: Stage boundaries and where each transform runs
+---
+
+# Pipeline
+
+Stage boundaries are stated in `docs/reference.md`. The transform stage is the one carrying retries, and `docs/reference.md` covers the retry budget.
+EOF
+
+    mkdir -p .claude/tasks
+    cat <<'EOF' >.claude/tasks/index.md
+---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
+
+# Tasks
+
+One file per task, ordered by phase label
+
+- [v01.0: Split the reference doc into a folder](v01.0-reference-split.md): Break docs/reference.md into one file per stage under docs/reference/
+EOF
+
+    cat <<'EOF' >.claude/tasks/v01.0-reference-split.md
+---
+title: 'v01.0: Split the reference doc into a folder'
+description: Break docs/reference.md into one file per stage under docs/reference/
+---
+
+# v01.0: Split the reference doc into a folder
+
+Break `docs/reference.md` into `docs/reference/` with one file per stage and an `index.md`. Two files cite the old path.
+
+- [ ] Outcome: docs/reference/ carries one file per stage
+- [ ] Outcome: no file cites the deleted docs/reference.md
+EOF
+
+    git add . && git commit -m "docs(reference): initial reference doc" --no-verify -q
+
+    log_step "Scenario ready: feature planning (constraint)"
+    log_info "Context: docs/reference.md split into a folder, cited by docs/onboarding.md and .claude/context/pipeline.md"
+    log_info "Action:  /claude-feature 'split docs/reference.md per the task. Constraint: leave .claude/context/pipeline.md alone.'"
+    log_info "Expect:  the plan's Constraints entry resolves both acts for pipeline.md, forbidding conforming it to the new shape and requiring its citations of the deleted path be retargeted"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
