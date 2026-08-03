@@ -11,6 +11,10 @@ Without this skill, the session holding the cross-feature picture starts buildin
 
 The queue fails in both directions. It empties and a free worker waits, or it fills with whatever is oldest rather than with what establishes a mechanism. A plan handed over unverified is the quiet one, since it goes stale from whatever merged after it was written, and a worker that trusts its account of the tree builds against a shape that no longer exists. A second orchestrator makes all of this unrecoverable, because the board is gitignored and neither session can read the other's writes.
 
+The session also writes surfaces it is told only how to read. Refilling the queue promotes and demotes rows in the priority file with no stated method, so a session invents one, and an inline rewrite exits clean when it matches nothing and leaves the board wrong with nothing reporting it. A row carrying prose where a plan pointer belongs costs a worker dispatch, because the ship chain refuses at its guard after the worktree is already open. A plan archived from a worker's own branch strands the pointer the board still carries, and the row reads as correct until someone follows it.
+
+Output drifts everywhere the contract stops. The specified shape covers invocation alone, so a sweep report, a board report, and an analysis each end in a decision the human owns and each buries it under the evidence they would have skipped. A compaction is the same failure one step earlier, since the file that survives it has a stated reader and no stated writer, and the session improvises what to save and loses the reasoning the board never held.
+
 ## Must
 
 - Read the priority file for execution order, since the index sorts by filename and states no order
@@ -20,6 +24,11 @@ The queue fails in both directions. It empties and a free worker waits, or it fi
 - Place every finding a merged pull request produced against the surface that owns it
 - Date the roadmap line from that file's last commit, so an old sequence reads as old
 - Keep one planned, non-conflicting task in reserve beyond what is running
+- Write the priority file with an editing tool that errors on a non-match, since the board is where a silent failure costs a dispatch
+- Carry a plan pointer in the Plan column and a file set in the Touches column, so a row's readiness and disjointness claims stay checkable
+- Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
+- Lead a sweep report, a board report, and an analysis with the state, the open decisions, and the next action, keeping the evidence below them
+- Write the pre-compact handoff with what no other file carries, and name the snippet that reads it back
 
 ## Must not
 
@@ -29,6 +38,9 @@ The queue fails in both directions. It empties and a free worker waits, or it fi
 - Hand a worker anything but a plan, because scope lives there
 - Run a second orchestrator against the same board
 - Promote a task to fill the queue when nothing qualifies. A thin queue is a real answer.
+- Rewrite the board with a shell stream editor or an inline string replace, both of which exit clean when they match nothing
+- Restate the board, a task file, or a groundwork folder in the pre-compact handoff, which is the padding that makes a handoff stop being read
+- Specify a shape for a correction, since a format for admitting error invites ceremony where plainness is the whole value
 
 ## Guards
 
