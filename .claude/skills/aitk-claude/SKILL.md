@@ -5,12 +5,12 @@ description: Claude Code plugin and tooling. Use for adding or modifying plugin 
 
 # Claude
 
-Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `index.md`, and `.claude/context/claude-internal.md` for internal skills and plugin setup, before editing. The plugin folder splits into `skills.md` for the catalog and strategy, `distribution.md` for the marketplace and release wiring, `cli.md` for `aitk claude`, and `boundaries.md` for built-in feature overlap.
+Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `index.md`, and `.claude/context/claude-internal.md` for internal skills and plugin setup, before editing. The plugin folder carries `.claude/context/claude-plugin/distribution.md` for the marketplace and release wiring, `.claude/context/claude-plugin/cli.md` for `aitk claude`, and `.claude/context/claude-plugin/boundaries.md` for built-in feature overlap. Everything about the skills themselves sits in the `skill-*` children that `index.md` lists, one per sub-area.
 
 ## Editing rules
 
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
-- Read `.claude/context/claude-plugin/skills.md` before adding a plugin skill and `.claude/context/claude-internal.md` before adding an internal one. Each lists its existing skills.
+- Read `.claude/context/claude-plugin/skill-strategy.md` before adding a plugin skill and `.claude/context/claude-internal.md` before adding an internal one. Run `aitk claude skills list` for the plugin roster, which no entry restates.
 - Follow `.claude/standards/skill.md` for skill structure and frontmatter conventions.
 - Audit skill bodies against both `.claude/standards/skill.md` and `.claude/standards/prose.md`. The first covers structure and frontmatter. The second covers the body.
 
@@ -18,7 +18,7 @@ Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `i
 
 - Write a new skill only when it encodes workflow specific to this toolkit or a convention the author consistently applies. The test: would this same skill be invoked on every target project the author owns?
 - Install a community skill rather than writing one when the need is domain expertise the toolkit does not maintain, such as frontend design, security audits, or stack-specific patterns. Reference it in per-tier install recommendations rather than absorbing it.
-- Do not fork a community skill. Propose a thin toolkit wrapper that composes the upstream one, and fork only when upstream diverges hard from a stated need and the maintenance cost is accepted explicitly. See Skill strategy in `.claude/context/claude-plugin/skills.md` for the reasoning and the redundancy audit.
+- Do not fork a community skill. Propose a thin toolkit wrapper that composes the upstream one, and fork only when upstream diverges hard from a stated need and the maintenance cost is accepted explicitly. See `.claude/context/claude-plugin/skill-strategy.md` for the reasoning and the redundancy audit.
 - Task skills with preview+execute patterns must execute commands immediately after the preview. Do not add a "confirm before running" step or pause for user input. Claude Code's tool permission dialog is the confirmation gate. The user hits Enter to approve or Escape to interrupt and revise.
 - When a skill persists output to `.claude/` (plans, review, audits), follow `.claude/standards/slug.md`. Cite that standard from the skill body and state which empty-case the skill takes, rather than restating the derivation.
 - Never reference a repo-local path such as `wiki/` from a file under `claude/skills/`. It resolves to nothing in a target project, and the Skill paths stage of `bun run check` fails on it.
@@ -40,14 +40,14 @@ When editing any file under `.claude/` in this repo, also check `tooling/claude/
 When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
-- Add the skill to the skills catalog in `.claude/context/claude-plugin/skills.md`, or the table in `.claude/context/claude-internal.md` for an internal skill. The plugin catalog is a bullet list rather than a table, so add one line and leave the rest untouched.
+- Add an internal skill to the table in `.claude/context/claude-internal.md`. A plugin skill needs no catalog edit, since `aitk claude skills list` reads the folder and the plugin entries hold reasons rather than a roster. Add a `skill-*` entry under `.claude/context/claude-plugin/` only when the new skill introduces reasoning no existing child covers.
 - Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point. Exception: skills whose body explicitly forbids probing, listing, grepping, or reading project surfaces have nothing for a seeded sandbox to anchor against. Skip the scenario for these and do not list it as a follow-up.
 - Claude sandboxes provision fixture state only. The user runs `claude` from the scenario directory and invokes the skill manually. "Sandbox cannot drive Claude" is not a reason to skip one, because driving is not its job.
 
 When modifying a skill:
 
 - Read the skill's sibling `REQUIREMENT.md` first when one exists. If the change closes no gap it states, change the requirement first or drop the change.
-- Update the matching entry in `.claude/context/claude-plugin/skills.md` or `.claude/context/claude-internal.md` if the description changed
+- Update the matching row in `.claude/context/claude-internal.md` if an internal skill's description changed. A plugin skill's description is read from its own frontmatter, so nothing mirrors it.
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
 - Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
 
@@ -62,7 +62,7 @@ When modifying the root CLAUDE.md:
 
 ## Reference
 
-- `.claude/context/claude-plugin/`: plugin skills catalog and strategy, distribution and release, aitk claude CLI, built-in feature overlap
+- `.claude/context/claude-plugin/`: skill strategy, requirements, lifecycle, review paths and shared procedures, plus distribution and release, aitk claude CLI, built-in feature overlap
 - `.claude/context/claude-internal.md`: internal skills, orchestration, plugin discovery
 - `.claude/context/context-model.md`: three-tier context model and how entries get populated
 - `.claude/context/snippets.md`: snippets catalog and invocation

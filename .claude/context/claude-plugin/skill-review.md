@@ -1,0 +1,32 @@
+---
+title: Skill review paths
+description: The roadmap gate that stopped an unsourced version claim, and the two-pass model a pull request review posts under
+---
+
+# Skill review paths
+
+## The roadmap gate
+
+`claude-orchestrate` asserted an active version from a roadmap this repository never had. `.claude/ROADMAP.md` is specified by `standards/bundled/roadmap.md`, written by `claude-roadmap`, and read by `claude-orchestrate` and `claude-pr-review`, and the file has never existed here. Every read path skips a missing file by instruction, so nothing failed loudly and the `Active: vX.Y` output line was unsourced on every run since the skill shipped.
+
+Drafting the roadmap was the obvious fix and the standard forbids it. All eight MVP features in `.claude/REQUIREMENTS.md` have shipped, and the Lifecycle section of `standards/bundled/roadmap.md` says the scope is exhausted once the last version ships, with later work arriving as discrete items rather than extending the roadmap. A table of the current maintenance labels would satisfy the format and break the lifecycle rule in the same file.
+
+So the claim was stripped rather than sourced. The skill reads `priority.md` for order, keeps `index.md` for what is queued, and treats the roadmap as optional, reporting what it says with a date from `git log` instead of naming a version as fact. The date is what keeps the report honest when the file is old, since trading an unsourced claim for a confidently stale one repeats the defect by another route. Sequencing read from a committed roadmap returns when a requirements pass defines a next scope, which the distribution work shipped without.
+
+The writer kept drafting over that same exhausted scope for another cycle. `claude-orchestrate` gained the gate and `claude-roadmap` did not, so invoking the skill directly still produced the document the standard forbids. Its only guard tested that `.claude/REQUIREMENTS.md` exists and names MVP features, which a fully delivered scope satisfies exactly as a fresh one does. The gate sits in the writer now, where a refusal reaches every caller rather than the one that happened to carry it.
+
+What the gate reads is a section's presence rather than a shipped flag. `standards/requirements.md` gained a Lifecycle section stating that later scope arrives as a new section and that a roadmap sequences the MVP list alone, so a file carrying a section the standard names nowhere is one whose MVP list has already shipped. Nothing was added to mark a feature shipped, because the same section forbids annotating MVP entries with status and a flag would have been the thing it bans.
+
+`## Distribution` stays outside the trigger set. The standard tells a project shipping to outside consumers to include that section from the start, so a greenfield project carries it before a single feature ships and a gate reading it would stop the loop at step one while asserting a scope was sequenced that never was. The cost is that a project whose only later scope is that section passes the gate, which this repository is, since the distribution work landed here without the requirements pass that would have named a section freely. Both remaining gaps under-fire rather than stop wrongly, which is the direction a guard reading a convention should fail in.
+
+## The review two-pass model
+
+`claude-pr-review` reads that same roadmap path and asserts nothing from it, so it carries no defect to fix there. Its read informs a review comment, and the body sits inside a rewrite's file set where an edit would have bought a rebase for no behavior change.
+
+That rewrite landed as a second pass the skill had never described. `claude-pr-review` posts twice over a pull request's life, a first pass and a close-out, and `claude-orchestrate` step 7 assumed the second one while the skill body defined only the first. The body path carries the head commit now, `body-<number>-<short-sha>.md`, because keying on the pull request number alone stops two sessions reviewing different pull requests from colliding and says nothing about one session posting twice. Callers invented five spellings for the second file across roughly twenty-five scratch files, and the sessions that had already written the defect down overwrote their first-pass body anyway. A name the caller has to choose is a name the caller gets wrong, so the fix is that the second segment is derived.
+
+Deriving it also decides what a close-out reads. `gh pr view --json reviews` returns `commit.oid` per review, so the last comment the skill posted names the commit the prior pass covered, and the close-out reads that range to the head rather than the whole change. The same field settles the rebase case without a second mechanism: after a force-push the prior commit no longer reaches the head, `git merge-base --is-ancestor` exits non-zero, and the skill pays for a full pass and states that in the body. Scoping by the prior review's timestamp instead would have needed its own rebase test, since a commit's author date can predate the push that put it on the branch.
+
+The heading is the half a reader sees without opening anything, so it reports state rather than pass number. `## Review` covers every pass carrying a finding and `## Review closed` is reserved for one carrying none, so the state comes off the most recent comment rather than off a label on a kind of pass. A close-out does not close the pull request, which is why the rule reads the latest heading rather than promising the closed one is last. Coupling it to the pass number instead was measured wrong on two reviews in five, since twenty-one of fifty-three close-outs reported an open finding under a heading asserting closure. `claude-address-review` nests `## Review response` under the first of those, so a thread reads as opened, answered, still open, closed.
+
+Sharing a prefix across that family is why the detection matches the first line for equality rather than testing a prefix. A prefix test also accepts `## Review response`, and it happened to be safe only because `claude-address-review` posts through `gh pr comment`, which lands in `.comments` and never in `.reviews`. Nothing recorded that dependency, so the close-out would have started scoping to the worker's reply the day that skill switched to posting a review. An equality test costs the same and owes nothing to a sibling's choice of command.

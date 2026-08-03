@@ -104,4 +104,4 @@ port-collision detail.
 
 - [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the isolation and fan-out mechanics
 - [Claude Code subagents](../wiki/claude-subagents.md) for in-session parallelism without worktrees
-- `.claude/context/claude-plugin/skills.md` for how the skills in the loop are categorized
+- `.claude/context/claude-plugin/skill-strategy.md` for how the skills in the loop are categorized
