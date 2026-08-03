@@ -7,13 +7,15 @@ description: What the post-plan pipeline is for, the gaps it closes, and why eve
 
 ## Gap
 
-Without this skill, the run from an approved plan to an open pull request is a conversation. A session implements, then asks what comes next, and the answer varies by session. Review gets skipped on a diff that needed one, or spent on prose already gated by a hook. A run that halts leaves no stated resume point, so the user reconstructs how far it got from the working tree.
+Without this skill, the run from an approved plan to an open pull request is a conversation. A session implements, then asks what comes next, and the answer varies by session. A run that halts leaves no stated resume point, so the user reconstructs how far it got from the working tree.
+
+Review is the step that varies most. It gets skipped on a diff that needed one, or spent on prose already gated by a hook. A file-extension test cannot separate the two, since a skill body and a documentation page are both markdown, so a branch changing what an agent does takes the skip a documentation branch earned.
 
 ## Must
 
 - Take the approved plan for the branch as the scope, and implement only what it describes
 - Give every step a stop condition, and leave the code on the branch and the receipts on disk at each one
-- Classify the changed-file list before review, so a prose-only diff skips a code review with no signal on it
+- Classify the changed-file list by path as well as by extension, so informational prose skips a code review with no signal on it and executable prose still reaches one
 - Stop on any critical or should-fix finding rather than acting on it
 - Open the pull request as a draft, then watch continuous integration to a terminal state
 - Name the recovery for the stop it took, since the value of stopping is that the user knows where to resume
@@ -25,6 +27,7 @@ Without this skill, the run from an approved plan to an open pull request is a c
 - Fix a review finding or a failing check. Both stops are deliberate, since a green pull request reached by auto-fix hides what broke.
 - Run the memory Apply phase. Promoting an entry changes how the agent operates and ships as its own change.
 - Read an empty changed-file list as prose-only. It satisfies that test vacuously and would route the branch past review instead of through it.
+- Read a markdown extension as evidence the change only informs. A skill body, a governance rule, and a standard are behavior written in prose.
 
 ## Guards
 
