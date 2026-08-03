@@ -71,7 +71,7 @@ const SEEDED_FILES: readonly string[] = [
   'REQUIREMENTS.md',
   'DESIGN.md',
 ]
-const SEEDED_DIRS: readonly string[] = ['tasks', 'wireframes']
+const SEEDED_DIRS: readonly string[] = ['memory', 'tasks', 'wireframes']
 const USER_DIR = join('tooling', 'claude', 'user')
 const STATUSLINE = 'statusline-command.sh'
 

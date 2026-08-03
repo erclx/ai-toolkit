@@ -11,6 +11,7 @@ const SUBDIRS: readonly string[] = [
   HOOKS,
   'context',
   'diagrams',
+  'memory',
   'tasks',
   'wireframes',
 ]

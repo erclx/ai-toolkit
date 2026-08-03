@@ -9,9 +9,13 @@ description: What memory review is for, the gaps it closes, and why every action
 
 Without this skill, the memory folder grows and never drains. Entries pile up restating rules a durable surface already carries, nothing decides which memory has earned a place in one, and a rule that does get promoted arrives verbatim in a file whose voice it does not match. The folder then reads as a second source of truth that no surface points at.
 
+A pen the caller cannot face is the same gap wearing a different shape. Once routing at capture takes the domain facts, what reaches this skill is feedback about how to work, which is a working set rather than a backlog, and the proposal is a size a person actually reads. An entry leaving the pen is archived rather than deleted, because a folder git does not hold gives a wrong bulk call no undo.
+
 ## Must
 
-- Treat the folder as a holding pen, so every entry in scope leaves it as a promotion, a handoff, or a deletion rather than surviving by default
+- Treat the folder as a holding pen, so every entry in scope leaves it as a promotion, a handoff, or an archive rather than surviving by default
+- Archive an entry out of the pen rather than deleting it, since nothing recovers a file from a gitignored folder
+- Hand a fact a context entry owns to `claude-docs` through the routing file, rather than editing the entry here
 - Verify the rule is not already stated or implied in the target before proposing a promotion, by reading the target rather than trusting the memory's claim about it
 - Rewrite a rule into the destination's voice instead of moving it unchanged
 - Write the proposal to a receipt on disk and take no action until the user decides per item
@@ -25,7 +29,9 @@ Without this skill, the memory folder grows and never drains. Entries pile up re
 - Author a governance rule inline. Coding-standards rules have an owner and a scaffolding path, and a rule written here bypasses both.
 - Mutate tracked files from the main worktree
 - Answer a question raised in a decision slot while applying. Discussion and application are separate passes so an approval is never inferred from a reply.
-- Delete a memory entry outside the approved-per-item pass. The folder is gitignored with no history behind it, so a removal any other phase makes has no undo and no record of what it took.
+- Delete a memory entry at all. Every exit from the pen is a move into the archive.
+- Move an entry out of the pen outside the approved-per-item pass. The folder is gitignored with no history behind it, so a removal any other phase makes leaves no record of what it took.
+- Edit a context entry, or hand-edit the generated memory index
 
 ## Guards
 

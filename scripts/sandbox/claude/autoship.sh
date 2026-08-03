@@ -84,9 +84,9 @@ EOF
     mkdir -p .claude/memory
     cat <<'EOF' >.claude/memory/feedback-export-from-index.md
 ---
-name: Export utilities from src/index.ts
+title: Export utilities from src/index.ts
 description: Public helpers re-export from the package entry point
-type: feedback
+category: Feedback
 ---
 
 Every public helper in `src/` re-exports from `src/index.ts` so callers import from one entry point.
@@ -95,14 +95,19 @@ Every public helper in `src/` re-exports from `src/index.ts` so callers import f
 
 **How to apply:** When adding a public function under `src/`, add its `export` to `src/index.ts` in the same change.
 EOF
-    cat <<'EOF' >.claude/memory/MEMORY.md
-# Memory Index
+    cat <<'EOF' >.claude/memory/index.md
+---
+title: Memory
+subtitle: Session facts with no owning surface, grouped by kind.
+---
+
+# Memory
+
+Session facts with no owning surface, grouped by kind.
 
 ## Feedback
 
-| Name | File | Description |
-| ---- | ---- | ----------- |
-| Export utilities from src/index.ts | [feedback-export-from-index.md](feedback-export-from-index.md) | Public helpers re-export from the package entry point |
+- [Export utilities from src/index.ts](feedback-export-from-index.md): Public helpers re-export from the package entry point
 EOF
 
     log_step "Scenario ready: autoship happy path"

@@ -112,6 +112,10 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 
 Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins. `@.claude/snippets/claude/orchestrator-sweep.md` fires this procedure after a batch of merges and adds the plan re-verification that a merge invalidates.
 
+Open the sweep by invoking `aitk:claude-memory-capture`. Both other callers are ship-chain skills and this session never ships, so without this the session that receives every operator correction is the one session that records none. The sweep is the closest bounded moment this session has to a ship, and it already runs once per batch of merges, which beats an end-of-session moment a compaction can cut short.
+
+Capture is told this session does not commit, so it skips routing and writes memory files alone. A routed fact lands in a context entry, which is a tracked file, and Boundaries below forbids writing one from here. That is the correct split rather than a limitation: a domain fact belongs to the task that owns the surface and goes in that task's Findings, while what this session produces is feedback about how to work, which is exactly the class the memory folder keeps.
+
 1. Run `gh pr list --state open` and `git log --oneline -8`. Report any pull request whose review has not been posted and stop for that one first.
 2. For each pull request merged since the last sweep, place every finding it produced. Route a finding that changes a rule to the standard or rule that states it, one that changes another task to that task's Findings, and one that overturns a groundwork lean to that folder marked answered. Never leave a finding in a pull request thread alone.
 3. Archive what closed. A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive. A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
@@ -121,6 +125,7 @@ Keep enough planned, non-conflicting tasks available that a free worker never wa
 7. Write a plan for each newly promoted task with `claude-feature`, then report:
 
 ```plaintext
+Captured: <memory file> (<type>), or "nothing worth capturing"
 Findings placed: <finding> → <destination>
 Archived: <task>
 Promoted: <task>, touches <surfaces>, parallel with <task> because <disjoint sets>
