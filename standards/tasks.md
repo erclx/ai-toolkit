@@ -26,11 +26,14 @@ Does not govern:
 .claude/tasks/
 ├── index.md              ← generated, never hand-edited
 ├── priority.md           ← hand-maintained execution order
+├── session.md            ← optional, what a compaction is about to destroy
 ├── v09.0-sync-paths.md
 └── v13.0-toolkit-drift.md
 ```
 
 One file per task is what keeps the board safe under parallel sessions. Two sessions working different tasks never write the same file, which matters because a gitignored board has no history to recover a clobbered write from.
+
+Three siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md` and `priority.md` are governed here. `session.md` is the pre-compaction handoff, written by `orchestrator-handoff` and read by `orchestrator-resume`, and it is optional: a project running no orchestrator carries no such file. Anything reading the folder as a task list skips all three, so a name outside the set is a task whatever it holds.
 
 `index.md` is generated from sibling frontmatter. The folder is gitignored, so the whole-repo index walk skips it and a hook passing the changed path regenerates it instead. Never hand-edit it.
 
@@ -49,6 +52,8 @@ Readiness is three groups under fixed headings, `## Run now`, `## Up next`, and 
 - `## Needs a plan`: everything else. The task has no plan, or the plan it carries no longer describes the work.
 
 Each group fixes its own columns, which follow from the test above it rather than from preference. Neither half of the `## Run now` test is checkable without the file set and the plan sitting beside the task. The blocker column under `## Up next` names whether a collision or a dependency holds the row. `## Needs a plan` states no file set at all, because a task with no plan has no bounded one to state. A group with no rows keeps its heading and its header row.
+
+`aitk tasks validate` reads those columns and reports where a row's claim and the tree disagree: a plan pointer resolving to no file, a row and a task file that do not map one to one, a task in two groups, and two `## Run now` rows touching a path in common. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on. It reports and never writes, so a session fixes the row it names.
 
 ```markdown
 ---
