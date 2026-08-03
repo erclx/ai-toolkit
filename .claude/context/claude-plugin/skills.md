@@ -9,7 +9,7 @@ description: The plugin skill catalog, the shell-out pattern, and the workflow v
 
 Plugin skills live in `claude/skills/` and are auto-discovered from the plugin root, whether that root is a marketplace install or a `--plugin-dir` pointed at a checkout. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-A skill folder may also carry `REQUIREMENT.md` beside `SKILL.md`, stating the gaps that skill exists to close so a proposed change has something to be argued against. It is authoring context for whoever maintains the skill. Claude Code loads `SKILL.md` as the entry and never reads the sibling, and `src/sync/check.ts` leaves `claude/skills/` out of the synced sources because skills load live from the plugin directory rather than being copied, so the file reaches no target session and costs no tokens there. `governance/rules/claude/570-skill.md` fires on both filenames and carries the consult-first bullet. Twenty-one skills carry one, covering the whole `git-*` family and the five-skill ship chain, which is what settled the unit as the skill rather than the family.
+A skill folder may also carry `REQUIREMENT.md` beside `SKILL.md`, stating the gaps that skill exists to close so a proposed change has something to be argued against. It is authoring context for whoever maintains the skill. Claude Code loads `SKILL.md` as the entry and never reads the sibling, and `src/sync/check.ts` leaves `claude/skills/` out of the synced sources because skills load live from the plugin directory rather than being copied, so the file reaches no target session and costs no tokens there. `governance/rules/claude/570-skill.md` fires on both filenames and carries the consult-first bullet. Twenty-five skills carry one, covering the whole `git-*` family and the five-skill ship chain, which is what settled the unit as the skill rather than the family. `aitk claude skills list --json` reports presence per entry as `requirement`, so a caller reads coverage from the catalog rather than from the filesystem.
 
 The admission test was replaced and the coverage spread is the reason. None of the eight internal skills carry one while the path-scoped rule globs that tree, so the gate binds nothing there. `standards/skill.md` had said the file was worth writing when a skill's scope was arguable rather than obvious, which correctly exempts most of the corpus and makes a coverage push an argument with the criterion it was meant to satisfy. The standard now names the second purpose the file already served, compressed orientation over a body that is procedural by design, and admits a skill when a reader cannot recover what it is for from the body alone.
 
@@ -18,6 +18,8 @@ Skills that perform a one-time structural move of an existing project into a new
 ### Requirement coverage
 
 Coverage is selective by design, so an uncovered skill needs a stated reason rather than silence. The verdicts below are what make an exemption checkable, since a skill nobody read and a skill the criterion turned down look identical from outside.
+
+Which skills carry the file is a fact `aitk claude skills list --json` reports as `requirement` per entry, so nothing below repeats it. What a listing cannot give is why, and that is what this section holds. A reason is stated per skill where the call was close and collectively where one test decided a whole set, so an exemption is always checkable and is not always its own bullet.
 
 The `setup-*` and `migration-*` families were read as one batch because a shared prefix contests scope by construction. Each verdict names what the body left open, or what it already closed.
 
@@ -31,6 +33,20 @@ The `setup-*` and `migration-*` families were read as one batch because a shared
 - `migration-standards` carries none. It reads the root folders neither sibling touches, and its toolkit-owned against author-owned split ships with the reason it exists.
 
 Length did not discriminate. The longest body in the batch was turned down and the second shortest admitted.
+
+The remaining twenty-five were read in one pass rather than batched, since two samples at three of eight had already shown the criterion separates. Four were admitted. Their reasons are below, and the twenty-one rejections are stated collectively at the end of this section rather than one bullet each.
+
+- `bash-script` carries one. Ninety-six lines assert a visual house style whose value is that every generated script shares it, which is the one thing no single script establishes for itself and the body never says. Only its stdout and terminal rules state a failure.
+- `ci-workflow` carries one. It is the sole admission failing both limbs of the test. No failure sits behind the manual trigger, the naming, or the artifact rule, and no sibling or request type is named anywhere, so nothing settles whether a deploy job's contents are its business.
+- `docs-sync` carries one. It runs immediately after `claude-docs` in the ship chain and resolves the same baseline against the same tree, and neither body states that the split is by audience rather than by subject.
+- `claude-seed-sync` carries one. It is the section-granular alternative to `aitk standards sync`, which is the grounds `toolkit-cli` and `toolkit-operator` both route to it on, and its own body never says so.
+
+The twenty-one rejections share one reason and it is checkable per file. Nineteen of them open with a line stating what the skill is for or what fails without it, carry an explicit `## Boundaries` section, or both, so the two limbs of the test are answered before the body reaches its first step. Open any of the nineteen and the line is the first paragraph under the H1. Two carry neither and were turned down on narrower grounds:
+
+- `claude-ui-test` is the genuine close call. It writes into the same `.claude/review/` namespace as `claude-ux-audit` over the same file types, which reads as contested until the entry conditions are compared. Verify a change against audit an existing surface is a real partition and both descriptions state it.
+- `session-resume` states its purpose in the description rather than the body, and its three do-nots each carry the reason behind them, which answers the second limb without a boundary block.
+
+The rate broke from the prior two samples: four of twenty-five against three of eight twice. The pass was not stopped early, and the nineteen are why. That content is what the `v16.0` audit and the two unreachable-step sweeps added while working the same corpus, so the tail arrived already carrying what a requirement would have supplied. The families the earlier batches sampled were selected because a shared prefix contests scope, and the tail is the residue that has no family and no prefix to contest.
 
 ### Catalog
 

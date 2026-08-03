@@ -415,15 +415,15 @@ What remains is a sentence naming a hypothetical entry to show the shape of a na
 
 Use these to discover what's available instead of hardcoding names.
 
-| Command                          | Returns                                      |
-| -------------------------------- | -------------------------------------------- |
-| `aitk tooling list --json`       | Stacks, extends chain, dep and script counts |
-| `aitk snippets list --json`      | Presets and categories with their slugs      |
-| `aitk standards list --json`     | Standards docs and the paths each governs    |
-| `aitk gov list --json`           | Governance stacks and rule sets              |
-| `aitk claude seeds list --json`  | Seed doc sources with content                |
-| `aitk claude skills list --json` | Plugin skills with their descriptions        |
-| `aitk docs list --json`          | Consumer docs plus per-domain context        |
+| Command                          | Returns                                       |
+| -------------------------------- | --------------------------------------------- |
+| `aitk tooling list --json`       | Stacks, extends chain, dep and script counts  |
+| `aitk snippets list --json`      | Presets and categories with their slugs       |
+| `aitk standards list --json`     | Standards docs and the paths each governs     |
+| `aitk gov list --json`           | Governance stacks and rule sets               |
+| `aitk claude seeds list --json`  | Seed doc sources with content                 |
+| `aitk claude skills list --json` | Plugin skills, descriptions, requirement flag |
+| `aitk docs list --json`          | Consumer docs plus per-domain context         |
 
 Every catalog serializes through `JSON.stringify`, so a name carrying a quote
 emits valid JSON. `aitk tooling list` and `aitk snippets list` previously built
@@ -449,6 +449,12 @@ count spanning both overstates what ships. A skill whose frontmatter is missing
 or unparseable returns an empty description rather than failing the listing, so
 one malformed file cannot hide the rest of the catalog. `--names` emits skill
 names one per line.
+
+Each entry also carries `requirement`, whether the folder holds a sibling
+`REQUIREMENT.md`. Coverage of that file is selective by design, so a `false` is
+not a gap to close and the flag answers which skills carry one without a caller
+listing the directory itself. It says nothing about why, which is a judgment the
+toolkit records against its own corpus rather than in the catalog.
 
 ## Non-interactive examples
 
