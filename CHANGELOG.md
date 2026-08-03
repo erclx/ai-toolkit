@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.29.0](https://github.com/erclx/aitk/compare/v0.28.0...v0.29.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** scope three internal skills with a requirement file ([#752](https://github.com/erclx/aitk/issues/752)) ([d436e14](https://github.com/erclx/aitk/commit/d436e14dec63caf7428de01414470acbb75eb5a8))
+* **hero:** generate the readme hero from the live catalogs ([#747](https://github.com/erclx/aitk/issues/747)) ([b188e02](https://github.com/erclx/aitk/commit/b188e02ec228ff657a19c8edf27b8d95b79a64db))
+* **standards:** fix the board headings and what admits a task to each ([#751](https://github.com/erclx/aitk/issues/751)) ([a739772](https://github.com/erclx/aitk/commit/a7397721f5225cfee892985f176d46e8cfe75f6a))
+
 ## [0.28.0](https://github.com/erclx/aitk/compare/v0.27.0...v0.28.0) (2026-08-03)
 
 
