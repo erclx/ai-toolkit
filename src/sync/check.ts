@@ -4,6 +4,13 @@ import { createGovAdapter } from '@/gov/adapter'
 import { createSnippetsAdapter } from '@/snippets/adapter'
 import { planSync, type ScanEntry, type SyncAdapter } from '@/sync/engine'
 import {
+  collectSuperseded,
+  detectUnmigrated,
+  type SupersededEntry,
+  type UnmigratedDomain,
+} from '@/sync/layout'
+import { buildSeedsReport, type SeedsReport } from '@/sync/seeds-report'
+import {
   readStamp,
   STAMP_DOMAINS,
   type Stamp,
@@ -69,6 +76,13 @@ export interface UpstreamCommit {
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
   readonly domains: readonly DomainReport[]
+  /**
+   * Reported beside the domains rather than as one of them, because seeds carry
+   * no stamp and produce no change. See `@/sync/seeds-report`.
+   */
+  readonly seeds: SeedsReport
+  readonly superseded: readonly SupersededEntry[]
+  readonly unmigrated: readonly UnmigratedDomain[]
   readonly newSkills: readonly string[]
 }
 
@@ -93,8 +107,16 @@ export function countStates(entries: readonly ScanEntry[]): StateCounts {
  * Whether the target has diverged from the toolkit in a way a sync could close.
  * Orphaned files are excluded: a project-authored rule never converges, and
  * counting it would leave `--exit-code` failing forever with no remedy.
+ *
+ * An unmigrated domain counts, because running the relocation closes it. A
+ * superseded artifact does not, for the same reason orphaned files do not: only
+ * the user can move content they wrote, so failing a job on it leaves the job
+ * red with no mechanical remedy. Seeds are excluded on the same grounds, since
+ * every seed a project edits would otherwise fail the check forever.
  */
 export function hasDrift(report: CheckReport): boolean {
+  if (report.unmigrated.length > 0) return true
+
   return report.domains.some(
     (domain) =>
       domain.counts.stale +
@@ -129,6 +151,9 @@ export async function buildCheckReport(
   return {
     covers: stamp?.covers ?? [],
     domains,
+    seeds: buildSeedsReport(toolkitRoot, target),
+    superseded: collectSuperseded(target),
+    unmigrated: detectUnmigrated(toolkitRoot, target),
     newSkills: await readNewSkills(toolkitRoot, anchors),
   }
 }

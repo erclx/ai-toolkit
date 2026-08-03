@@ -14,7 +14,10 @@ import type { ScanEntry } from '@/sync/engine'
 
 let TARGET: string
 
-function buildReport(entries: readonly ScanEntry[]): CheckReport {
+function buildReport(
+  entries: readonly ScanEntry[],
+  overrides: Partial<CheckReport> = {},
+): CheckReport {
   return {
     covers: ['standards'],
     domains: [
@@ -27,7 +30,11 @@ function buildReport(entries: readonly ScanEntry[]): CheckReport {
         upstream: [],
       },
     ],
+    seeds: { entries: [], historyUnavailable: false },
+    superseded: [],
+    unmigrated: [],
     newSkills: [],
+    ...overrides,
   }
 }
 
@@ -113,6 +120,45 @@ describe('hasDrift', () => {
     expect(hasDrift(buildReport([{ state: 'customized', rel: 'a.md' }]))).toBe(
       true,
     )
+  })
+
+  it('should report drift for an unmigrated domain', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      unmigrated: [
+        {
+          domain: 'standards',
+          rootPath: 'standards',
+          installPath: join('.claude', 'standards'),
+          files: 9,
+        },
+      ],
+    })
+
+    expect(hasDrift(report)).toBe(true)
+  })
+
+  it('should not report drift for a superseded artifact', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      superseded: [
+        {
+          rel: join('.claude', 'TASKS.md'),
+          replacedBy: join('.claude', 'tasks'),
+        },
+      ],
+    })
+
+    expect(hasDrift(report)).toBe(false)
+  })
+
+  it('should not report drift for a seed the project edited', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      seeds: {
+        entries: [{ state: 'drifted', rel: 'CLAUDE.md' }],
+        historyUnavailable: false,
+      },
+    })
+
+    expect(hasDrift(report)).toBe(false)
   })
 })
 

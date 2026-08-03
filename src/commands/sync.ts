@@ -123,20 +123,63 @@ function renderCheck(report: CheckReport): void {
     }
   }
 
+  for (const entry of report.unmigrated) {
+    logStep(`${entry.domain} (not migrated)`)
+    logWarn(
+      `${entry.files} files at ${entry.rootPath}/, nothing at ${entry.installPath}/`,
+    )
+    logInfo('Run /aitk:migration-standards to relocate them.')
+  }
+
+  renderSeeds(report)
+
+  if (report.superseded.length > 0) {
+    logStep('Superseded by a newer layout')
+    for (const entry of report.superseded) {
+      logWarn(`${entry.rel} (replaced by ${entry.replacedBy}/)`)
+    }
+    logInfo('Move the content yourself. No sync command touches these.')
+  }
+
   if (report.newSkills.length > 0) {
     logStep('New skills, no sync needed')
     for (const name of report.newSkills) logInfo(name)
   }
 
   outro()
+  const unmigrated = report.unmigrated.map((entry) => entry.domain)
   const uncovered = STAMP_DOMAINS.filter(
-    (domain) => !report.covers.includes(domain),
+    (domain) => !report.covers.includes(domain) && !unmigrated.includes(domain),
   )
   const unstamped =
     uncovered.length === 0 ? '' : `Unstamped: ${uncovered.join(', ')}. `
   process.stderr.write(
     `${GREY}${unstamped}Tooling is never stamped, run \`aitk tooling\` to reconcile configs.${NC}\n`,
   )
+}
+
+/**
+ * Seeds print their own section because no sync command applies them. A `stale`
+ * seed is safe to take whole and a `drifted` one holds edits, which is the split
+ * `claude-seed-sync` reads to decide what needs a section-level merge.
+ */
+function renderSeeds(report: CheckReport): void {
+  const notable = report.seeds.entries.filter(
+    (entry) => entry.state !== 'matching',
+  )
+
+  if (notable.length === 0) return
+
+  logStep('seeds')
+  if (report.seeds.historyUnavailable) {
+    logWarn('This toolkit has no git history. Drift below is unattributed.')
+  }
+
+  for (const entry of notable) {
+    logWarn(`${entry.rel} (${entry.state})`)
+  }
+
+  logInfo('Run /aitk:claude-seed-sync to reconcile these section by section.')
 }
 
 async function runSync(target: string): Promise<number> {
