@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.1](https://github.com/erclx/aitk/compare/v0.30.0...v0.30.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **claude:** confine memory review cleanup to receipts ([#756](https://github.com/erclx/aitk/issues/756)) ([d4e952d](https://github.com/erclx/aitk/commit/d4e952ddf2bbea8ffe43e1dd2031d65d35226077))
+
 ## [0.30.0](https://github.com/erclx/aitk/compare/v0.29.0...v0.30.0) (2026-08-03)
 
 
