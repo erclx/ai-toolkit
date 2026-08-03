@@ -2,10 +2,18 @@ import { describe, expect, it } from 'vitest'
 import {
   CATALOG_ROW_CHECKPOINT,
   measureEntry,
+  RENDER_WIDTH,
   RUN_CHECKPOINT,
 } from '@/context/audit'
 
 const FRONTMATTER = '---\ntitle: CI\ndescription: A domain\n---\n\n'
+
+/** Bullet counts the exempt catalog and the reported wall both hit. */
+const PEER_COUNT = 55
+
+/** Characters a bullet averages in each of the two shapes the corpus holds. */
+const CATALOG_BULLET = 94
+const PARAGRAPH_BULLET = 394
 
 function prose(count: number): string {
   return Array.from({ length: count }, (_, index) => `Line ${index + 1}.`).join(
@@ -20,6 +28,12 @@ function bullets(count: number, indent = ''): string {
   ).join('\n')
 }
 
+function weightedBullets(count: number, width: number): string {
+  return Array.from({ length: count }, (_, index) =>
+    `- Item ${index + 1} `.padEnd(width, 'weight '),
+  ).join('\n')
+}
+
 function table(rows: string[]): string {
   return ['| Name | Purpose |', '| --- | --- |', ...rows].join('\n')
 }
@@ -29,6 +43,14 @@ describe('measureEntry', () => {
     const entry = measureEntry('ci.md', `${FRONTMATTER}# CI\n\n${prose(3)}\n`)
 
     expect(entry.lines).toBe(10)
+  })
+
+  it('should measure entry length in rendered lines rather than source lines', () => {
+    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(3, PARAGRAPH_BULLET)}\n`
+
+    // Ten short lines render as ten, and each 394-character bullet wraps to
+    // five, so three bullets stand in for fifteen of the checkpoint's budget.
+    expect(measureEntry('ci.md', source).lines).toBe(22)
   })
 
   it('should report the longest run of lines no heading breaks', () => {
@@ -66,6 +88,37 @@ describe('measureEntry', () => {
     const source = `${FRONTMATTER}# CI\n\n${bullets(60)}\n`
 
     expect(measureEntry('ci.md', source).longestRun).toBe(0)
+  })
+
+  it('should count a wrapped line as the rows it renders', () => {
+    const source = `${FRONTMATTER}# CI\n\n${'x'.repeat(RENDER_WIDTH * 3)}\n`
+
+    // The blank line after the heading is one row and the long line is three.
+    expect(measureEntry('ci.md', source).longestRun).toBe(4)
+  })
+
+  it('should exempt a flat catalog of short peers', () => {
+    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(PEER_COUNT, CATALOG_BULLET)}\n`
+
+    expect(measureEntry('ci.md', source).longestRun).toBe(0)
+  })
+
+  it('should report paragraph bullets at the count the catalog is exempt at', () => {
+    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(PEER_COUNT, PARAGRAPH_BULLET)}\n`
+
+    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
+      RUN_CHECKPOINT,
+    )
+  })
+
+  it('should report a bullet block whose source lines stay under the checkpoint', () => {
+    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(15, PARAGRAPH_BULLET)}\n`
+
+    // Fifteen bullets and a blank line are sixteen source lines, so only the
+    // rendered measure reaches the checkpoint.
+    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
+      RUN_CHECKPOINT,
+    )
   })
 
   it('should end the exemption when the list nests a second level', () => {

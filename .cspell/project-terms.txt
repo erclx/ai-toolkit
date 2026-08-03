@@ -103,6 +103,7 @@ scriptable
 shadcn
 shellcheck
 shfmt
+skimmable
 softeria
 sonner
 ssot
@@ -119,6 +120,7 @@ uipro
 ultraplan
 uncited
 unconfigured
+undercount
 unmatch
 unparseable
 unrequested
