@@ -26,15 +26,15 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - Who consumes a snippet decides where it lives, not which folder its topic started in. `v9.4` relocated a whole category to `internal/` without judging its files one at a time, which put the orchestrator runbooks out of reach of the target projects running that role. A runbook for a role that ships as a plugin skill ships with it, so both now sit in `snippets/claude/`.
 - Sync updates only what is already present and never adds. A project that installed `essentials` does not silently grow new snippets on the next sync.
 - Sync runs on the shared engine in `src/sync/engine.ts` via `src/snippets/adapter.ts`. The adapter locates a source by relative path where the gov adapter locates one by rule name, which is the only axis the two differ on. It sets no `collectRetired`, so snippets is the proof that hook is optional.
-- An internal-category constant in `src/snippets/categories.ts` used to gate install, list, preset expansion, and the sync adapter, with a bash copy in `create.sh`. Every one of them is gone. The plugin symlinks `snippets/` wholesale and an installer dereferences it, so the one consumer that could carry no filter was the one that shipped the content, and the code the other five ran only looked like a boundary. `scripts/core/check-plugin-boundary.sh` asserts what the filters claimed.
+- No code filters an internal category out of a publishable one. The plugin symlinks `snippets/` wholesale and an installer dereferences it, so the one consumer that could carry no filter is the one that ships the content, and a filter at any other entry point only looks like a boundary. Location is what enforces it, and `scripts/core/check-plugin-boundary.sh` asserts the result.
 
 ## Gotchas
 
 - Sync is not category-aware. It diffs every `.md` already in the target against the toolkit source, regardless of which preset installed it.
 - Matching depends on install and sync agreeing on the destination layout. `deriveDestRelPath` in `src/snippets/install.ts` keeps only the immediate parent, so a snippet nested two levels deep would install to a path sync cannot match. Nothing in the tree is that deep today.
 - A snippet authored directly in a target's `.claude/snippets/` is project-local and survives sync, because sync only touches filenames it recognizes from the toolkit source.
-- The toolkit-feedback flow is now the `toolkit-feedback` plugin skill plus the `aitk feedback` CLI. It replaced the former `aitk/toolkit-feedback` snippet.
-- The memory review phases (challenge, discuss, apply, cleanup) used to be `claude/memory-*` snippets. They are folded into the `claude-memory-review` skill body. Re-ping the skill with the matching phase phrase.
+- The toolkit-feedback flow is the `toolkit-feedback` plugin skill plus the `aitk feedback` CLI, not a snippet.
+- The memory review phases (challenge, discuss, apply, cleanup) live in the `claude-memory-review` skill body rather than in snippets of their own. Re-ping the skill with the matching phase phrase.
 
 ## Presets and categories
 

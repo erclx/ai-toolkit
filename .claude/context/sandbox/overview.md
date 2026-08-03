@@ -79,7 +79,7 @@ aitk() {
 - On Windows, back-to-back headless runs can briefly fail to wipe the sandbox tree with a busy-lock. Re-run or `aitk sandbox clean` first.
 - An autonomous sonnet run costs roughly $0.10 to $0.25, so drive one skill on demand rather than sweeping the catalog.
 - Skills whose body forbids probing project surfaces, such as `toolkit-feedback`, have no fixture to anchor and stay out of scope.
-- Anchor scenarios used to be order-dependent, because each cloned `toolkit-sandbox` main while several force-push to it, so one arm provisioned from whatever the previous arm published. Two identical sweeps of the sixteen arms disagreed on eleven of them, and `git:ship with-changelog` aborted outright once the anchor already carried the files it commits. Taking the tree from a fixture closes that, since the starting tree no longer depends on the remote's current state. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
+- Anchor scenarios take their starting tree from a fixture, so provisioning does not depend on what the previous arm published to the remote. The force-pushes remain, so an assertion that reads `origin/main` rather than the working tree is still order-sensitive.
 
 ## Standing limits
 
