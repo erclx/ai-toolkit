@@ -9,6 +9,8 @@ description: Scope boundary for the ship-time pairing audit, and what separates 
 
 Without this skill, a branch ships a changed skill whose scenario still exercises the body it had before, a verification run measures an arm nobody chose, a run launched from a worktree provisions against the main checkout, a second scenario provisioned beside the first destroys it and leaves the run reading a tree the previous scenario built, and an item ships unverified with no record of what stopped it.
 
+The audit also asks what is already answered. A skill the census has ruled on draws a prompt once per branch, and the answer reaches nothing durable, so the next branch touching that skill asks again. One word covers both deferring verification on this branch and ruling that no arm should ever exist, which are different claims with different lifetimes.
+
 Every one of these returns without complaint. A stale pairing reports nothing because the scenario still passes against the old behavior, and a run on the wrong arm prints a verdict in the same shape a correct one does. The branch then carries a verification receipt covering something other than what it changed, which is worse than carrying none, because the receipt is what a reviewer reads instead of checking.
 
 ## Must
@@ -18,6 +20,9 @@ Every one of these returns without complaint. A stale pairing reports nothing be
 - Invoke the worktree-local script, because the globally installed `aitk` resolves to the main checkout and would run main's scenarios against this branch
 - Provision one scenario and queue the rest, since a single directory per root means the second provision destroys the first
 - Name exactly one gate when an item ships without a live run, so an affordable run and an impossible one do not read the same
+- Read the skill census before asking, so a recorded verdict is reported rather than re-decided, and reach it through the worktree-local entry point for the reason the provisioning command is worktree-local
+- Ask where a scenario file sits at a path no spelling reaches, offering it rather than recording it, since the file proves a scenario exists and not that it exercises this skill
+- Report a verdict, an internal skill outside the census, and an answer given this run under separate labels, since collapsing them is the defect that made the prompt repeat
 
 ## Must not
 
@@ -27,6 +32,7 @@ Every one of these returns without complaint. A stale pairing reports nothing be
 - Open an interactive session, which holds a terminal a headless caller cannot release
 - Sweep the queued scenarios through the runner, which is what keeps a run inside its documented cost
 - Propose or apply a scenario edit, or fix a failing verdict. The audit surfaces the gap and the operator decides.
+- Write an exemption. The file admits a harness capability limit or a skill producing no artifact, both judgments about the harness rather than about the branch in hand, and a claim authored mid-ship-check is how the two-kinds rule erodes.
 
 ## Guards
 

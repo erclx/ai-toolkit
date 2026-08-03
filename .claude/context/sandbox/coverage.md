@@ -61,6 +61,10 @@ Pairing tries two spellings, `<category>-<command>` first and bare `<command>` s
 
 The census counts `claude/skills/`, not `.claude/skills/`. The second holds toolkit-internal skills that reach no target, and folding them in would inflate a denominator meant to describe what ships.
 
+The ship-time pairing audit reads it. `aitk-sandbox-check` used to prompt whenever its own `<category>/<rest>.sh` split found no file, and the answer was a per-run label that reached nothing, so the next branch touching the same skill asked again. It now resolves the skill here first, taking the `scenarios` entry as the pairing and the verdict as the report.
+
+The prompt survives where evidence of a scenario outlives both spellings. Twelve skills are carried with no scenario, and three of them have a file at `infra/<rest>.sh`: `setup-gov`, `setup-indexes`, and `migration-standards`. The audit offers that path and records neither answer on its own, because the file proves a scenario exists rather than proving it exercises the skill. `setup-gov` against `infra/gov.sh` is a real pairing and `migration-standards` against `infra/standards.sh` would be vacuous, since that scenario stages the install and sync trees the `aitk standards` CLI walks. An internal skill draws no prompt at all, being absent from the denominator above by construction rather than unknown.
+
 ### Exemptions
 
 An exemption lives in `scripts/sandbox/exempt.toml`, keyed by skill with a `reason`. It cannot live in the arm's `manual` array, the other home for prose a checker cannot assert: `resolveVerdict` fails any declaration carrying zero mechanical assertions, so an `expect.toml` holding only an exempt reason goes red the moment it is written. An exempt skill has no assertion to pair the prose with, which is what makes it exempt, so the two cases cannot share a home. Two reasons qualify and nothing else does, a harness limit the checker cannot reach past and a skill that writes no artifact. "Nobody has written one yet" is `should-be-asserted`.
