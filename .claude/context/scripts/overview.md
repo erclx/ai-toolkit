@@ -1,0 +1,37 @@
+---
+title: Overview
+description: What the scripts domain owns, the folder layout, and the decisions that set what stays bash
+---
+
+# Overview
+
+Owns every bash script in the repo: the domain entry points behind each `aitk` command, repo maintenance, sandbox provisioning, and the shared library functions the rest source. The TypeScript side that parses arguments and dispatches here lives in `.claude/context/cli.md`.
+
+## Layout
+
+- `scripts/` owns `manage-sandbox.sh`, the only entry point in the folder. No other domain has a dispatcher
+- `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards`, `gov`, and `docs` keep only a list command there, `claude` keeps nothing, and `snippets` and `tooling` keep only authoring helpers
+- `scripts/gov/`, `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
+- `scripts/eval/` owns the authoring harness and its ablation variants. It is not a verb and nothing dispatches to it, so it is invoked by path and never through `aitk`
+- `scripts/lib/` owns shared functions, sourced and never executed directly. `worktree.sh` is the one under test, via `src/worktree-repair.test.ts`
+- `scripts/sandbox/` owns scenario provisioning, covered in `.claude/context/sandbox/index.md`
+
+## Decisions
+
+- `manage-sandbox.sh` is the last entry point and stays bash permanently by decision. It holds its domain logic in the dispatcher rather than in a verb folder, so read it before assuming a scenario's behavior sits one file down.
+- A migrated domain loses its dispatcher entirely. `tooling/`, `gov/`, `snippets/`, `standards/`, and `claude/` still hold the verb scripts that have not moved, but nothing in `scripts/` routes to them. `src/commands/<domain>.ts` does.
+- A dispatcher holding domain logic migrates in one pull request per file rather than verb by verb. `sync`, `init`, and `standards` went together because they shared the two documents listing dispatchers, and splitting them would have collided there for no review benefit.
+- A dispatcher that grew domain logic migrates that logic out to `src/<domain>/` rather than into the command file. Seed collection, gitignore scanning, and a settings merge are the shape that forces it, since a command file can unit-test none of them while `src/exec.ts` throws under vitest.
+- Bash keeps only what it is good at as domains migrate. `read_frontmatter_field` stayed here because `gov/list.sh`, `docs/list.sh`, and `standards/list.sh` call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
+- A recorded verdict is only as wide as its own reasoning. The frontmatter-loop cost above was applied to all six list verbs, and three of them never paid it: `snippets/list.sh` and `claude/seeds-list.sh` read with plain `read -r` loops and `tooling/list.sh` used `awk`. Those three migrated. Check a stated reason against each file before counting one as settled.
+- The four remaining verb scripts stay bash because of who calls them, not how large they are. `tooling/verify.sh`, `tooling/ref.sh`, `snippets/create.sh`, and `tooling/create.sh` are toolkit-internal authoring helpers a human runs at a terminal here. They write nothing into a target and no skill consumes them, so they carry none of the agent-path obligations that moved the other five.
+- Configs always overwrite and seeds preserve user edits. A config is toolkit-owned and a seed grows with the project, so the two need opposite sync behavior.
+
+## Gotchas
+
+- Domain scripts require bash 4+. `scripts/lib/ui.sh` guards the version on source and exits with `brew install bash` instructions when stock macOS bash 3.2 is detected.
+- Deleting a bash file needs a sweep by path (`source`, `exec`, `bash <path>`), not by function name. Twelve sandbox scripts sourced `lib/inject.sh` without calling any of its functions, and a sweep by function name missed every one of them along with five live `exec` sites.
+- `TOOLING_STACK_EXCLUDE` currently holds only `claude`. Excluded names print a redirect error pointing at the correct CLI and exit 1.
+- When adding a command that calls `select_option` or `ask`, verify the non-interactive path works with `AITK_NON_INTERACTIVE=1`. `select_option` returns its first option under that flag, so the first option must be the one a headless caller should get. Listing a review or preview option first sends agents down an interactive branch.
+- A picker that stands in for a required argument must refuse headlessly rather than default. The confirm-then-apply prompts keep `nonInteractiveDefault`, since the caller already named what to apply. `aitk gov install` and `aitk snippets install` return 1 with the valid names when the argument is missing, because defaulting there picked a whole stack or category for the caller.

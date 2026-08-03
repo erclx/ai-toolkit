@@ -18,7 +18,7 @@ Per-domain narrative loaded on demand
 - [Governance](governance.md): Path-scoped Claude rules, stacks, install and sync
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
 - [Sandbox](sandbox/index.md): Scenarios that provision isolated project states, the run and coverage surfaces, and the authoring contract. Start with overview.
-- [Scripts](scripts.md): Bash scripts, lib functions, sandbox hooks
+- [Scripts](scripts/index.md): Bash entry points and the migration boundary, repo maintenance, UI framing across the exec boundary, the shared lib surface, and the eval harness. Start with overview.
 - [Slides](slides.md): SLIDES.md source shape, layout catalog, render command, draft skill
 - [Snippets](snippets.md): Reusable prompt snippets for Claude and Gemini
 - [Standards](standards.md): Authoring conventions synced to projects
