@@ -7,6 +7,27 @@ export const LENGTH_CHECKPOINT = 150
 export const RUN_CHECKPOINT = 40
 
 /**
+ * Columns a source line wraps at when rendered.
+ *
+ * Nothing in this repository sets a line width and entries are authored one
+ * line per bullet, so the rendered width is the viewer's rather than the file's.
+ * The common terminal and diff width is the reproducible choice, and the report
+ * legend states it so a reader can arrive at the same number by hand.
+ */
+export const RENDER_WIDTH = 80
+
+/**
+ * Characters a bullet averages before its list stops reading as a set of peers.
+ *
+ * The exemption below covers a flat catalog of one-liners and a stack of
+ * paragraphs equally, and only the first is navigable. Measured across this
+ * corpus the two shapes separate with nothing between roughly 100 and 170
+ * characters a bullet, so the midpoint splits the population rather than a
+ * continuum. It is a checkpoint like the two above, not a cap.
+ */
+export const PEER_BULLET_CHECKPOINT = 130
+
+/**
  * A table this size or larger whose first column mostly names artifacts reads
  * as a catalog that grows a row per shipped thing, which is the shape the
  * standard routes to a bullet list. Below it, a table is small enough that a
@@ -57,6 +78,7 @@ export interface ProvenanceFinding {
 export interface EntryReport {
   readonly rel: string
   readonly lines: number
+  /** Rendered lines at `RENDER_WIDTH`, not source lines. */
   readonly longestRun: number
   /** First line of the longest run, or 0 when the entry has no run at all. */
   readonly longestRunLine: number
@@ -90,24 +112,44 @@ function bodyLines(source: string): BodyLine[] {
  *
  * Every non-blank line has to be a list item at one indent. Prose mixed into
  * the run or a nested level inside it ends the exemption, because either one
- * means the block is no longer a flat set a reader can skim.
+ * means the block is no longer a flat set a reader can skim. Bullet count says
+ * nothing on its own, since a catalog of one-liners and a wall of paragraphs
+ * reach the same count and read nothing alike, so the average bullet is what
+ * decides whether the set is still skimmable.
  */
-function isPeerList(run: readonly BodyLine[]): boolean {
+function isScannablePeerList(run: readonly BodyLine[]): boolean {
   const indents = new Set<number>()
+  let items = 0
+  let characters = 0
 
   for (const line of run) {
-    if (line.text.trim() === '') continue
+    const text = line.text.trim()
+    if (text === '') continue
 
     const match = line.text.match(LIST_ITEM)
     if (!match) return false
     indents.add(match[1].length)
+    items++
+    characters += text.length
   }
 
-  return indents.size === 1
+  if (indents.size !== 1) return false
+
+  return characters / items < PEER_BULLET_CHECKPOINT
 }
 
 /**
- * Measures the longest run of lines no heading breaks.
+ * Height a source line occupies once wrapped.
+ *
+ * A blank line renders as the gap it is rather than as nothing, which keeps it
+ * the distance the source measure already counted it as.
+ */
+function renderedHeight(line: BodyLine): number {
+  return Math.max(1, Math.ceil(line.text.length / RENDER_WIDTH))
+}
+
+/**
+ * Measures the longest run of lines no heading breaks, in rendered lines.
  *
  * Fenced blocks are skipped rather than treated as breaks, per the standard:
  * they leave the count without ending the run, so prose either side of an
@@ -116,6 +158,11 @@ function isPeerList(run: readonly BodyLine[]): boolean {
  * between signposts and a blank line is distance like any other. A hand reader
  * measuring without them lands one or two lines lower, which the report legend
  * states.
+ *
+ * Height is what a reader travels, and source lines only stand in for it while
+ * lines stay short. An entry authored one line per bullet puts a paragraph on
+ * each, so a block of fifteen bullets measures as fifteen and renders past
+ * sixty. Wrapping every line at a stated width is what closes that gap.
  */
 function longestRun(lines: readonly BodyLine[]): {
   length: number
@@ -132,9 +179,13 @@ function longestRun(lines: readonly BodyLine[]): {
     // two headings rather than a stretch a reader travels, so it never counts.
     const first = run.find((line) => line.text.trim() !== '')
 
-    if (first && run.length > longest && !isPeerList(run)) {
-      longest = run.length
-      longestLine = first.number
+    if (first && !isScannablePeerList(run)) {
+      const height = run.reduce((sum, line) => sum + renderedHeight(line), 0)
+
+      if (height > longest) {
+        longest = height
+        longestLine = first.number
+      }
     }
     run = []
   }

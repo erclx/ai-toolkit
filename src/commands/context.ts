@@ -4,6 +4,8 @@ import {
   type EntryReport,
   LENGTH_CHECKPOINT,
   measureFolders,
+  PEER_BULLET_CHECKPOINT,
+  RENDER_WIDTH,
   RUN_CHECKPOINT,
 } from '@/context/audit'
 import { auditCitations, type CitationReport } from '@/context/citations'
@@ -160,6 +162,8 @@ async function runAudit(
           lines: LENGTH_CHECKPOINT,
           run: RUN_CHECKPOINT,
           runCountsBlankLines: true,
+          runRenderWidth: RENDER_WIDTH,
+          peerBullet: PEER_BULLET_CHECKPOINT,
         },
       })}\n`,
     )
@@ -258,15 +262,22 @@ function reportLength(entries: readonly EntryReport[]): void {
 }
 
 /**
- * Names the blank-line convention on every run.
+ * Names the render width and the blank-line convention on every run.
  *
  * The standard settles heading level and fenced blocks and stops there, so a
  * hand reader who drops blank lines lands a line or two below this number.
- * Stating it is what keeps the two measurements reconcilable.
+ * Stating both is what keeps the two measurements reconcilable, and the width
+ * matters more than the blank lines because a number counted in rendered lines
+ * cannot be reproduced without it.
  */
 function reportDepth(entries: readonly EntryReport[]): void {
   logStep('Depth')
-  logInfo('Runs count blank lines. Fenced blocks and peer lists are excluded.')
+  logInfo(
+    `Runs measure rendered lines at ${RENDER_WIDTH} columns and count blank lines.`,
+  )
+  logInfo(
+    `Fenced blocks are excluded, and so are peer lists averaging under ${PEER_BULLET_CHECKPOINT} characters a bullet.`,
+  )
 
   const over = entries
     .filter((entry) => entry.longestRun > RUN_CHECKPOINT)
@@ -282,7 +293,7 @@ function reportDepth(entries: readonly EntryReport[]): void {
     over
       .map(
         (entry) =>
-          `${entry.rel}:${entry.longestRunLine}  ${entry.longestRun} lines unbroken`,
+          `${entry.rel}:${entry.longestRunLine}  ${entry.longestRun} rendered lines unbroken`,
       )
       .join('\n'),
   )
