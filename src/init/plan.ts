@@ -1,3 +1,5 @@
+import { ALL_SELECTION } from '@/standards/closure'
+
 export const SKIPPABLE_DOMAINS = ['wiki', 'standards', 'governance'] as const
 
 export type SkippableDomain = (typeof SKIPPABLE_DOMAINS)[number]
@@ -31,6 +33,7 @@ export interface InitFlags {
   readonly stack?: string
   readonly add?: string
   readonly snippets: string
+  readonly standards: string
   readonly skip: SkipPlan
 }
 
@@ -106,7 +109,11 @@ export function planInit(flags: InitFlags): InitPlan {
   }
 
   if (!flags.skip.skipped.has('standards')) {
-    preview.push({ level: 'info', text: 'standards (authoring conventions)' })
+    const detail =
+      flags.standards === ALL_SELECTION
+        ? 'authoring conventions'
+        : `${flags.standards}, plus what they cite`
+    preview.push({ level: 'info', text: `standards (${detail})` })
   }
 
   preview.push({ level: 'info', text: `snippets (${flags.snippets})` })

@@ -101,8 +101,12 @@ AITK_NON_INTERACTIVE=1 aitk standards sync /path/to/project
 # Copy every standard into a target, overwriting what is there
 AITK_NON_INTERACTIVE=1 aitk standards install /path/to/project
 
+# Install a named subset, expanded to the standards it cites
+AITK_NON_INTERACTIVE=1 aitk standards install --only slug /path/to/project
+
 # Bootstrap a project. Any flag suppresses the confirmation prompt
 AITK_NON_INTERACTIVE=1 aitk init --stack astro --skip wiki /path/to/project
+AITK_NON_INTERACTIVE=1 aitk init --standards design,wireframes /path/to/project
 
 # Run every domain sync. The git workflow is refused headlessly, so nothing is pushed
 AITK_NON_INTERACTIVE=1 aitk sync /path/to/project

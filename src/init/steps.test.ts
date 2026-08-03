@@ -6,6 +6,7 @@ import { buildSteps } from '@/init/steps'
 function flags(overrides: Partial<InitFlags> = {}): InitFlags {
   return {
     snippets: 'essentials',
+    standards: 'all',
     skip: parseSkip(undefined),
     ...overrides,
   }
@@ -163,6 +164,31 @@ describe('buildSteps', () => {
       'Claude workflow',
       'Governance',
       'Snippets',
+    ])
+  })
+
+  it('should install standards with no selection argument by default', () => {
+    const recorded = recorder()
+    buildSteps('../app', '/abs/app', flags(), recorded.child)
+
+    expect(recorded.calls).toContainEqual(['standards', 'install', '/abs/app'])
+  })
+
+  it('should pass a named standards selection through to install', () => {
+    const recorded = recorder()
+    buildSteps(
+      '../app',
+      '/abs/app',
+      flags({ standards: 'design,wireframes' }),
+      recorded.child,
+    )
+
+    expect(recorded.calls).toContainEqual([
+      'standards',
+      'install',
+      '--only',
+      'design,wireframes',
+      '/abs/app',
     ])
   })
 })
