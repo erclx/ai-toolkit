@@ -35,10 +35,12 @@ The empty list is what stops the chain instead. Routing it into review rather th
 
 ### What the classifier admits
 
-The test the skip applied was the file extension alone, and it read a skill body as documentation because both end in `.md`. Three branches of executable prose took the skip on record before that changed. A path test now runs beside the extension one, and it fails the skip when any changed file sits under `claude/skills/`, `.claude/skills/`, `governance/rules/`, `standards/`, `snippets/`, or `internal/`.
+The test the skip applied was the file extension alone, and it read a skill body as documentation because both end in `.md`. Three branches of executable prose took the skip on record before that changed. A path test now runs beside the extension one, and it fails the skip when any changed file sits under a behavior path.
 
 Removing the skip was the alternative and it loses on cost, since a documentation branch reaching review burns tokens for no signal and that case is what the rule was written for. Measured over the twenty merges before the change, six newly reach review and three still skip, so the skip keeps the case it names rather than being widened into nothing.
 
-The allowlist is this repository's own surfaces, which is the standing risk. A target project keeping executable prose outside those six paths gets the old behavior with nothing reporting it, so the skill body states the list as a project's rather than as a general rule.
+Every entry carries both spellings, because the split this repository runs on gives one surface two paths. Standards, snippets, and rules author at a project root and install under `.claude/`, and a list naming only the authoring half matches nothing in a target, where the installed half is the only one present. `claude/skills/` is absent from a target as well, since skills load from the plugin root rather than being copied in, so an authoring-only list would leave `.claude/skills/` as the single entry that ever fires and the fix close to a no-op wherever the skill ships.
+
+Two entries are neither a skill nor a consumed copy. `tooling/` holds the stack references and the seed documents handed to every target, so its markdown is a target's own instruction file rather than a description of one. Root `CLAUDE.md` is named as a file because a path prefix reaches nothing sitting in no folder, and a branch changing it alone is how a cross-cutting rule lands here.
 
 A plan whose output is entirely gitignored still reaches the stop rather than a fix, which is a separate defect that surfaces six steps later at `git-stage`. The stop names that case apart from a plan yet to produce output, since the two want opposite responses and a single message covering both sends the operator to the wrong check. Advising a re-run once the output is tracked is the wrong fix for scratch that is gitignored by design, and followed literally it commits scratch to close a stopped run.

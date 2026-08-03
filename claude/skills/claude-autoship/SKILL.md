@@ -73,11 +73,20 @@ The two causes want different responses. A plan that has yet to produce its outp
 
 The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `aitk:claude-review`.
 
-The behavior paths are `claude/skills/`, `.claude/skills/`, `governance/rules/`, `standards/`, `snippets/`, and `internal/`. Markdown under one of them states what an agent does, so a change there is a behavior change wearing a prose extension. Everything outside them is informational, which keeps `docs/`, `README.md`, and `CHANGELOG.md` skipping without naming them. One behavior file sends the whole branch to review, since documentation shipped beside a behavior change does not cancel it.
+Behavior paths carry two spellings, the one a surface authors at and the one it installs to, so the rule reads the same in a toolkit and in a project that consumed one:
+
+- `claude/skills/` and `.claude/skills/`
+- `governance/rules/` and `.claude/rules/`
+- `standards/` and `.claude/standards/`
+- `snippets/` and `.claude/snippets/`
+- `internal/` and `tooling/`, which hold the stack references and the seed documents a target is handed
+- `CLAUDE.md` at the repository root, named as a file because a path prefix reaches nothing that sits in no folder
+
+Markdown under one of them states what an agent does, so a change there is a behavior change wearing a prose extension. Everything outside them is informational, which keeps `docs/`, `README.md`, and `CHANGELOG.md` skipping without naming them. One behavior file sends the whole branch to review, since documentation shipped beside a behavior change does not cancel it.
 
 Informational prose is already gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks. Running a code-style review on it burns tokens with no signal.
 
-That list is this project's rather than a general rule. A project holding executable prose somewhere else adds the path, and until it does every branch touching it skips review silently.
+The list covers this toolkit's authoring layout and the layout it installs, which is not every layout. A project keeping executable prose where neither spelling reaches adds the path, and until it does every branch touching it skips review silently.
 
 ## Step 6: evaluate findings
 

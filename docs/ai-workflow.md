@@ -100,7 +100,7 @@ For features on a mature stack, chain the post-plan pipeline in one session. App
 
 - Use when the plan is tight and the stack has real verify commands and test coverage
 - Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, any review finding above minor, no diff baseline resolving against `main`, an empty changed-file list, or hook failure
-- Review is skipped when the diff is prose that only informs: every changed file matches `*.md` or `*.txt`, and none sits under a behavior path such as `claude/skills/`, `governance/rules/`, `standards/`, or `snippets/`. Markdown under those paths states what an agent does, so a branch touching one reaches review while `docs/` and `wiki/` still skip and stay gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks.
+- Review is skipped when the diff is prose that only informs: every changed file matches `*.md` or `*.txt`, and none sits under a behavior path. Behavior paths cover skills, rules, standards, snippets, and `tooling/` in both the authoring and the installed spelling, plus root `CLAUDE.md`, so the list matches whether a repository authors those surfaces or consumed them from the toolkit. Markdown under one states what an agent does, so a branch touching it reaches review while `docs/` and `wiki/` still skip and stay gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks.
 - An empty changed-file list stops the chain rather than counting as prose-only. The filename test passes vacuously on an empty set, which routed a branch past review instead of through it.
 - Every stop leaves recoverable state. Fix and resume with `/git-ship`
 - Skip autoship for auth, migrations, security-sensitive changes, or work where the plan itself is uncertain
