@@ -40,13 +40,15 @@ The `claude-tasks` skill creates and archives task files. `claude-docs` marks ou
 
 `priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Why the order is what it is belongs in `.claude/ROADMAP.md`, which is committed because that rationale has no substitute record.
 
-Group tasks by readiness rather than by status, one row per task, with a stated column for what each is blocked on. Keep it to links and blockers: tables, plus at most one sentence per section. A paragraph in `priority.md` is a defect whatever it says. Stating the shape this way is what lets a single diff fail, since a size cap only trips after the fact and every addition looks defensible on its own.
+Group tasks by readiness rather than by status, one row per task, under the columns each group fixes below. Keep it to links and blockers: tables, plus at most one sentence per section. A paragraph in `priority.md` is a defect whatever it says. Stating the shape this way is what lets a single diff fail, since a size cap only trips after the fact and every addition looks defensible on its own.
 
 Readiness is three groups under fixed headings, `## Run now`, `## Up next`, and `## Needs a plan`, in that order. The names are the contract rather than a suggestion, because a board grouped by readiness under names of its own satisfies every other rule here and still reads as empty to anything counting rows under a heading. Add no fourth group. A task belongs to exactly one, and the tests are read in order.
 
 - `## Run now`: a written plan covers every open outcome, and the files the task touches collide with nothing already running. A worker is handed a task from this group alone.
 - `## Up next`: a written plan exists, and the task either collides with something running or waits on another task to land. The blocker column names which.
 - `## Needs a plan`: everything else. The task has no plan, or the plan it carries no longer describes the work.
+
+Each group fixes its own columns, which follow from the test above it rather than from preference. `## Run now` carries `Task`, `Touches`, and `Plan`, since neither half of its test is checkable without the last two. `## Up next` carries `Task`, `Touches`, and `Waiting on`, the last naming whether a collision or a dependency holds it. `## Needs a plan` carries `Task` and `Waiting on` alone, because a task with no plan has no bounded file set to state.
 
 The tests live here so the board does not carry them. Writing them as a sentence under each heading produces the paragraph the rule above deletes, and a criterion with no home gets restated from memory every time the board is touched.
 
