@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.40.0](https://github.com/erclx/aitk/compare/v0.39.0...v0.40.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** state which act a leave-alone constraint forbids ([#802](https://github.com/erclx/aitk/issues/802)) ([4c0cc77](https://github.com/erclx/aitk/commit/4c0cc77c48090d0d413c99df78c5d2a9021abc30))
+* **sandbox-check:** read the census before prompting for a pairing ([#801](https://github.com/erclx/aitk/issues/801)) ([f470b64](https://github.com/erclx/aitk/commit/f470b64d42a4079513c7e304113e188b45396bf1))
+
 ## [0.39.0](https://github.com/erclx/aitk/compare/v0.38.0...v0.39.0) (2026-08-03)
 
 
