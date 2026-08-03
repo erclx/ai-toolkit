@@ -38,9 +38,9 @@ EOF
   mkdir -p .claude/memory
   cat <<'EOF' >.claude/memory/feedback-port-from-env.md
 ---
-name: Read PORT from the environment
+title: Read PORT from the environment
 description: Resolve the listen port from env with a fallback, not a hardcoded constant
-type: feedback
+category: Feedback
 ---
 
 The server reads its listen port from `process.env.PORT` with a fallback, never a hardcoded literal.
@@ -49,14 +49,19 @@ The server reads its listen port from `process.env.PORT` with a fallback, never 
 
 **How to apply:** When touching server startup, resolve the port from the environment and keep the literal only as a fallback.
 EOF
-  cat <<'EOF' >.claude/memory/MEMORY.md
-# Memory Index
+  cat <<'EOF' >.claude/memory/index.md
+---
+title: Memory
+subtitle: Session facts with no owning surface, grouped by kind.
+---
+
+# Memory
+
+Session facts with no owning surface, grouped by kind.
 
 ## Feedback
 
-| Name | File | Description |
-| ---- | ---- | ----------- |
-| Read PORT from the environment | [feedback-port-from-env.md](feedback-port-from-env.md) | Resolve the listen port from env with a fallback, not a hardcoded constant |
+- [Read PORT from the environment](feedback-port-from-env.md): Resolve the listen port from env with a fallback, not a hardcoded constant
 EOF
 
   git add . && git commit -m "chore(project): init" -q

@@ -13,7 +13,7 @@ Plugin skills shipped to target projects, the aitk claude CLI, and overlap with 
 - [Overview](overview.md): What the plugin domain owns, where its boundary sits, and the layout of the plugin root
 - [Skill archiving on merge](skill-archiving.md): The post-merge hook that closes a shipped task, how a pull request number reaches the board, and where the archive gates live
 - [Skill diff baseline](skill-baseline.md): The merge-base block six skills share, the read against write asymmetry when it fails to resolve, and the narrower test autoship carries
-- [Skill lifecycle](skill-lifecycle.md): How a skill is invoked, the split between the two task-board writers, the plans sweep, and the sandbox arm that covers it
+- [Skill lifecycle](skill-lifecycle.md): How a skill is invoked, the split between the two task-board writers, where a session fact is routed, the plans sweep, and the sandbox arm that covers it
 - [Shared skill procedures](skill-procedures.md): The CLI shell-out pattern every skill follows, the core.bare repair carried at two points, and the procedures defined once in standards and cited from each body
 - [Skill requirements](skill-requirements.md): The REQUIREMENT.md sibling, what loads it, and the admission test universal coverage retired
 - [Skill review paths](skill-review.md): The roadmap gate that stopped an unsourced version claim, and the two-pass model a pull request review posts under

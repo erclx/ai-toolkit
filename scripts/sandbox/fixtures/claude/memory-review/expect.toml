@@ -21,8 +21,9 @@ absent = [".claude/standards/skill.md"]
 paths = [".claude/review/memory-review-chore-memory-sweep.md"]
 
 # Propose writes the proposal and nothing else. The apply pass, which edits
-# `CLAUDE.md`, the skill body, and `MEMORY.md`, needs a second turn the headless
-# run never takes, so a run that reached those files applied without approval.
+# `CLAUDE.md` and the skill body and moves entries into the archive, needs a
+# second turn the headless run never takes, so a run that reached those files
+# applied without approval.
 # Those targets are ordinary project files and land inside the snapshot, and the
 # proposal itself now does too, so the scope has a write to check on a correct
 # run rather than only on a wrong one.

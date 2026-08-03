@@ -26,13 +26,15 @@ The `.claude/context/` folder ships only its `index.md` discovery anchor. The en
 
 ### PostToolUse hooks
 
-The seed `settings.json` ships four hook scripts across three blocks.
+The seed `settings.json` ships five hook scripts across three blocks.
 
 A PostToolUse hook pairs with `.claude/hooks/standards-audit.sh`, which greps markdown files for the em-dashes, semicolons, and closed-set banned words named in `.claude/standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
 The wordlist is parsed out of the standard at runtime rather than hardcoded, so the hook cannot drift from `prose.md` the way a second copy would. Extraction takes the single-word backticked terms from every bullet opening `- Do not use`, which admits the buzzword and vague-qualifier sets and skips the multi-word and punctuation bans phrased the same way. A ban worded differently arms nothing, so the filler bullet opening `Open a sentence with its subject and action` stays outside the hook until the extraction widens to reach it. Matching is case-insensitive on word boundaries and drops inline code spans first, so `just build` in a command and a `--very-verbose` flag do not read as prose. Every banned word on a line is collected into one report line.
 
 The same PostToolUse block also carries `.claude/hooks/tasks-index.sh`, which regenerates `.claude/tasks/index.md` after a task file changes. It is the only trigger that reaches that folder, because the board is gitignored and the whole-repo index walk filters candidates through `git check-ignore`. It derives the walk-up boundary from the file path rather than the session, since the board resolves at the main worktree root and a linked worktree would otherwise reject the path, passes `--no-stage` so a hook never touches the git index, and reports both a frontmatter failure and a missing `aitk` as `additionalContext`, because no gate stage can fail on a stale index in an ignored folder. Reporting is the point of the hook, so neither failure exits quietly, and the path guard keeps both messages scoped to a task-file edit.
+
+`.claude/hooks/memory-index.sh` sits beside it and does the same job for `.claude/memory/index.md`, which is gitignored for the same reason and reached the same way. The memory folder's index was hand-appended by `claude-memory-capture` until this hook took it, and it had drifted to more rows than files, which is what a hand-maintained catalog does at that size. The two hooks differ only in the path they guard on, so a change to one is owed to the other.
 
 ### PreToolUse hooks
 

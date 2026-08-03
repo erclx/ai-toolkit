@@ -32,7 +32,9 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - A child folder whose `index.md` is missing `title` or `subtitle` is skipped with a warning rather than failing the walk.
 - When a folder has both an overview file and a same-named subfolder, both entries appear.
 - Whole-repo walks with no positional paths never auto-stage.
-- A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` depends on that asymmetry: `bun run check` cannot regenerate it, so a `PostToolUse` hook passes the changed path instead. Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit.
+- A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` and `.claude/memory/` both depend on that asymmetry: `bun run check` cannot regenerate either, so a `PostToolUse` hook passes the changed path instead. Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit.
+- A hook keeping such a folder current matches tool names, `Write|Edit|MultiEdit`, so a file relocated by a shell `mv` fires nothing and the index keeps a row for a file that has moved. A skill that archives or relocates an entry calls `aitk indexes regen` itself after the last move rather than relying on the hook.
+- A frontmatter failure takes the whole folder rather than the one file. `collectEntries` returns an error for the directory, so one unparseable entry leaves every sibling's index unwritten.
 
 ## When to adopt
 
@@ -54,7 +56,9 @@ Concrete miss:
 
 Every `index.md` carries `title` and `subtitle` in its own frontmatter. Every sibling `*.md` carries `title` and `description`. The walker fails the folder when any sibling lacks either field.
 
-Optional `category` on a sibling groups it under an H2 heading in the rendered index. When any sibling carries `category`, the walker switches to grouped mode for the whole folder.
+Optional `category` on a sibling groups it under an H2 heading in the rendered index. When any sibling carries `category`, the walker switches to grouped mode for the whole folder. The value is sentence case, since it is emitted as the heading verbatim.
+
+Quote a `description` opening with a backtick or a colon. YAML reserves both at the start of a scalar, so `Bun.YAML.parse` rejects the block and the folder fails per the rule above. A hand-maintained catalog never exercises the parser, so a folder converting to generation surfaces these on its first regen rather than as it grew.
 
 ## Format reference
 
