@@ -27,6 +27,10 @@ description: Narrative for the $title domain
 ## Overview
 
 Owns the $title surface end to end.
+
+## Layout
+
+- \`src/$title/\` owns the $title surface
 ENTRY
 }
 
@@ -128,6 +132,80 @@ seed_drift() {
   rm .claude/context/web.md
 }
 
+# A flat folder short of both sections beside a split one carrying them in the
+# sibling named for them. The required-section rule is answered per folder
+# rather than per file, so an arm seeding only the first would pass while the
+# exemption that keeps three shipped folders quiet went unmeasured.
+seed_short_sections() {
+  mkdir -p .claude/context/scripts
+
+  cat <<'INDEX' >.claude/context/index.md
+---
+title: Context
+subtitle: Per-domain narrative loaded on demand
+---
+
+# Context
+
+Per-domain narrative loaded on demand
+
+- [Short](short.md): An entry declaring neither required section
+INDEX
+
+  cat <<'ENTRY' >.claude/context/short.md
+---
+title: Short
+description: An entry declaring neither required section
+---
+
+# Short
+
+## Triggers
+
+On every push to a pull request.
+ENTRY
+
+  cat <<'INDEX' >.claude/context/scripts/index.md
+---
+title: Scripts
+subtitle: Bash entry points and the shared lib surface
+---
+
+# Scripts
+
+Bash entry points and the shared lib surface
+
+- [Overview](overview.md): Structure of the scripts domain
+- [Lib](lib.md): Shared functions sourced by domain scripts
+INDEX
+
+  cat <<'ENTRY' >.claude/context/scripts/overview.md
+---
+title: Overview
+description: Structure of the scripts domain
+---
+
+# Overview
+
+## Layout
+
+- `scripts/lib/` owns shared bash functions sourced by domain scripts
+ENTRY
+
+  cat <<'ENTRY' >.claude/context/scripts/lib.md
+---
+title: Lib
+description: Shared functions sourced by domain scripts
+---
+
+# Lib
+
+## Decisions
+
+Each lib file owns one concern.
+ENTRY
+}
+
 run_audit() {
   local status=0
   bun "$PROJECT_ROOT/src/cli.ts" context audit "$@" || status=$?
@@ -139,13 +217,14 @@ stage_setup() {
   log_info "clean         : a conforming folder reports no findings and exits 0"
   log_info "stale         : an unresolved citation fails the gate with exit 2"
   log_info "illustration  : fence, fixture, and marker exclusions hold"
+  log_info "sections      : a folder short of both reports, a split one does not"
   log_info "depth         : a long run reports and a peer list is exempt"
   log_info "tables        : a growing catalog reports, a fixed table does not"
   log_info "drift         : index and siblings disagree in both directions"
   log_info "json          : machine record on stdout, frame still on stderr"
 
   select_or_route_scenario "Which scenario?" \
-    "clean" "stale" "illustration" "depth" "tables" "drift" "json"
+    "clean" "stale" "illustration" "sections" "depth" "tables" "drift" "json"
 
   case "$SELECTED_OPTION" in
   "clean")
@@ -155,7 +234,7 @@ stage_setup() {
     log_step "Running: aitk context audit"
     run_audit
     log_info "Expect: 2 entries, every cited path resolves, exit 0"
-    log_info "Expect: no length, depth, table, or drift finding"
+    log_info "Expect: no section, length, depth, table, or drift finding"
     ;;
   "stale")
     seed_repo
@@ -174,6 +253,15 @@ stage_setup() {
     run_audit --citations-only
     log_info "Expect: silence and exit 0, since all three are illustrations"
     log_info "Expect: the fenced pair, the marked line, and the fixture excluded"
+    ;;
+  "sections")
+    seed_repo
+    seed_short_sections
+    log_step "Running: aitk context audit"
+    run_audit
+    log_info "Expect: .claude/context missing Overview and Layout"
+    log_info "Expect: .claude/context/scripts silent, its overview.md carries both"
+    log_info "Expect: exit 0, since a missing section reports rather than gates"
     ;;
   "depth")
     seed_repo

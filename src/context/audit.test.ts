@@ -7,6 +7,7 @@ import {
   CATALOG_ROW_CHECKPOINT,
   measureEntry,
   measureFolders,
+  missingSections,
   RENDER_WIDTH,
   RUN_CHECKPOINT,
 } from '@/context/audit'
@@ -304,6 +305,54 @@ describe('measureEntry', () => {
     expect(measureEntry('components.md', source, false).provenance).toEqual([])
   })
 
+  it('should report a required section declared as a heading', () => {
+    const source = `${FRONTMATTER}# CI\n\n## Overview\n\nOwns the workflow.\n\n## Layout\n\n- \`.github/\` owns it\n`
+
+    expect(measureEntry('ci.md', source).sections).toEqual([
+      'Overview',
+      'Layout',
+    ])
+  })
+
+  it('should report a required section carried by the entry title', () => {
+    // A split domain names the sibling holding its overview for the section,
+    // so the heading is the `#` title rather than an `##` under it repeating
+    // the filename. Every split folder in this repository is that shape.
+    const source = `${FRONTMATTER}# Overview\n\n## Layout\n\n- \`scripts/\` owns them\n`
+
+    expect(measureEntry('overview.md', source).sections).toEqual([
+      'Overview',
+      'Layout',
+    ])
+  })
+
+  it('should return the sections in the order the standard states them', () => {
+    const source = `${FRONTMATTER}# CI\n\n## Layout\n\n- \`.github/\` owns it\n\n## Overview\n\nOwns the workflow.\n`
+
+    expect(measureEntry('ci.md', source).sections).toEqual([
+      'Overview',
+      'Layout',
+    ])
+  })
+
+  it('should leave a heading that only opens with a section name undeclared', () => {
+    const source = `${FRONTMATTER}# Slides\n\n## Layout catalog\n\nOne row a layout.\n`
+
+    expect(measureEntry('slides.md', source).sections).toEqual([])
+  })
+
+  it('should leave a section named inside a fenced block undeclared', () => {
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n## Overview\n\`\`\`\n`
+
+    expect(measureEntry('ci.md', source).sections).toEqual([])
+  })
+
+  it('should declare no section when no standard claims the content', () => {
+    const source = `${FRONTMATTER}# Components\n\n## Overview\n\nThree layers.\n`
+
+    expect(measureEntry('components.md', source, false).sections).toEqual([])
+  })
+
   it('should keep measuring length and depth outside the governed folder', () => {
     const source = `${FRONTMATTER}# Components\n\n${prose(60)}\n`
 
@@ -363,5 +412,93 @@ describe('measureFolders', () => {
     expect(await provenanceOf('.claude/context/claude-plugin/skills.md')).toBe(
       1,
     )
+  })
+})
+
+describe('missingSections', () => {
+  let root: string
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'aitk-sections-'))
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  const CONFORMING =
+    '# CI\n\n## Overview\n\nOwns the workflow.\n\n## Layout\n\n- `.github/` owns it\n'
+
+  function seedFolder(
+    relativeDir: string,
+    entries: Record<string, string>,
+  ): void {
+    const dir = join(root, relativeDir)
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(
+      join(dir, 'index.md'),
+      '---\ntitle: X\nsubtitle: Y\n---\n\n# X\n',
+    )
+    for (const [name, body] of Object.entries(entries)) {
+      writeFileSync(join(dir, name), `${FRONTMATTER}${body}`)
+    }
+  }
+
+  async function missingIn(rel: string): Promise<readonly string[]> {
+    const folders = await resolveFolders(root)
+    const entries = await measureFolders(root, folders)
+
+    return (
+      missingSections(root, folders, entries).find(
+        (folder) => folder.rel === rel,
+      )?.missing ?? []
+    )
+  }
+
+  it('should report both sections when no entry declares either', async () => {
+    seedFolder('.claude/context', {
+      'ci.md': '# CI\n\n## Triggers\n\nOn every push.\n',
+    })
+
+    expect(await missingIn('.claude/context')).toEqual(['Overview', 'Layout'])
+  })
+
+  it('should report the one section the folder is short of', async () => {
+    seedFolder('.claude/context', {
+      'ci.md': '# CI\n\n## Overview\n\nOwns the workflow.\n',
+    })
+
+    expect(await missingIn('.claude/context')).toEqual(['Layout'])
+  })
+
+  it('should leave a folder declaring every required section unreported', async () => {
+    seedFolder('.claude/context', { 'ci.md': CONFORMING })
+
+    expect(await missingIn('.claude/context')).toEqual([])
+  })
+
+  it('should accept a split folder where one sibling carries the sections', async () => {
+    seedFolder('.claude/context', { 'ci.md': CONFORMING })
+    seedFolder('.claude/context/scripts', {
+      'overview.md': '# Overview\n\n## Layout\n\n- `scripts/` owns them\n',
+      'lib.md': '# Lib\n\n## Decisions\n\nOne concern a file.\n',
+    })
+
+    expect(await missingIn('.claude/context/scripts')).toEqual([])
+  })
+
+  it('should leave a split parent carrying no entries of its own unreported', async () => {
+    seedFolder('.claude/context', {})
+    seedFolder('.claude/context/scripts', { 'overview.md': CONFORMING })
+
+    expect(await missingIn('.claude/context')).toEqual([])
+  })
+
+  it('should leave a diagram folder unreported', async () => {
+    seedFolder('.claude/diagrams', {
+      'components.md': '# Components\n\n## Components\n\nThree layers.\n',
+    })
+
+    expect(await missingIn('.claude/diagrams')).toEqual([])
   })
 })
