@@ -6,6 +6,7 @@ const FRONTMATTER = /^---\n([\s\S]*?)\n---/
 export interface SkillListing {
   readonly name: string
   readonly description: string
+  readonly requirement: boolean
 }
 
 /**
@@ -15,6 +16,10 @@ export interface SkillListing {
  *
  * The folder name wins over the frontmatter `name` when they disagree, because
  * Claude Code invokes a skill by its directory.
+ *
+ * `requirement` reports whether the folder carries `REQUIREMENT.md`. Coverage is
+ * selective by design, so a false is not a gap to close and this field carries no
+ * reason for one. The toolkit records those separately from the catalog.
  */
 export function listSkills(root: string): SkillListing[] {
   const skillsRoot = join(root, 'claude', 'skills')
@@ -30,6 +35,7 @@ export function listSkills(root: string): SkillListing[] {
   return paths.map((path) => ({
     name: dirname(path),
     description: readDescription(join(skillsRoot, path)),
+    requirement: existsSync(join(skillsRoot, dirname(path), 'REQUIREMENT.md')),
   }))
 }
 
