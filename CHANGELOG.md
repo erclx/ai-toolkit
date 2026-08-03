@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://github.com/erclx/aitk/compare/v0.35.2...v0.36.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** give the last five internal skills a requirement file ([#787](https://github.com/erclx/aitk/issues/787)) ([f78cf35](https://github.com/erclx/aitk/commit/f78cf3542f6f6e0db2c9b18108d101ca80e0de77))
+
 ## [0.35.2](https://github.com/erclx/aitk/compare/v0.35.1...v0.35.2) (2026-08-03)
 
 
