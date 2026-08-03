@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -7,6 +7,7 @@ import {
   countStates,
   hasDrift,
   installedStampDomains,
+  isManagedTarget,
   parseNewSkills,
   parseUpstream,
 } from '@/sync/check'
@@ -20,6 +21,7 @@ function buildReport(
 ): CheckReport {
   return {
     covers: ['standards'],
+    managed: true,
     domains: [
       {
         domain: 'standards',
@@ -56,6 +58,30 @@ describe('installedStampDomains', () => {
     mkdirSync(join(TARGET, '.claude/rules'), { recursive: true })
 
     expect(installedStampDomains(TARGET)).toEqual(['standards', 'governance'])
+  })
+})
+
+describe('isManagedTarget', () => {
+  it('should report an empty directory as unmanaged', () => {
+    expect(isManagedTarget(TARGET)).toBe(false)
+  })
+
+  it('should report a target carrying .claude as managed', () => {
+    mkdirSync(join(TARGET, '.claude'), { recursive: true })
+
+    expect(isManagedTarget(TARGET)).toBe(true)
+  })
+
+  it('should report a target carrying only CLAUDE.md as managed', () => {
+    writeFileSync(join(TARGET, 'CLAUDE.md'), '# Project\n')
+
+    expect(isManagedTarget(TARGET)).toBe(true)
+  })
+
+  it('should not read a nested .claude as the target being managed', () => {
+    mkdirSync(join(TARGET, 'packages', 'web', '.claude'), { recursive: true })
+
+    expect(isManagedTarget(TARGET)).toBe(false)
   })
 })
 

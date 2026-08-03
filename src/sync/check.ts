@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { createGovAdapter } from '@/gov/adapter'
@@ -75,6 +76,8 @@ export interface UpstreamCommit {
 
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
+  /** False when the target is not a toolkit project, so every section stays empty. */
+  readonly managed: boolean
   readonly domains: readonly DomainReport[]
   /**
    * Reported beside the domains rather than as one of them, because seeds carry
@@ -89,6 +92,21 @@ export interface CheckReport {
 export function installedStampDomains(target: string): StampDomain[] {
   return STAMP_DOMAINS.filter((domain) =>
     isDirectory(join(target, ...INSTALL_MARKERS[domain])),
+  )
+}
+
+/**
+ * Whether the target is a toolkit-managed project at all. Seeds are enumerated
+ * from the source rather than from what a target installed, so without this gate
+ * a directory the toolkit has never touched reports every seed as `missing` and
+ * routes to a skill that reconciles section by section. `installedStampDomains`
+ * gates the three scanned domains the same way, which is why they stay quiet on
+ * the same directory.
+ */
+export function isManagedTarget(target: string): boolean {
+  return (
+    isDirectory(join(target, '.claude')) ||
+    existsSync(join(target, 'CLAUDE.md'))
   )
 }
 
@@ -148,10 +166,15 @@ export async function buildCheckReport(
     .map((domain) => domain.commit)
     .filter((commit): commit is string => commit !== undefined)
 
+  const managed = isManagedTarget(target)
+
   return {
     covers: stamp?.covers ?? [],
+    managed,
     domains,
-    seeds: buildSeedsReport(toolkitRoot, target),
+    seeds: managed
+      ? buildSeedsReport(toolkitRoot, target)
+      : { entries: [], historyUnavailable: false },
     superseded: collectSuperseded(target),
     unmigrated: detectUnmigrated(toolkitRoot, target),
     newSkills: await readNewSkills(toolkitRoot, anchors),

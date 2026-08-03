@@ -123,6 +123,13 @@ Three sections sit outside the per-domain scan, because each names something
 that walk cannot see. None of them produces a change, and no sync command
 applies any of them.
 
+All three report only against a toolkit-managed target, which is one carrying a
+`.claude/` directory or a `CLAUDE.md`. The report says so through `managed` in
+the JSON and routes an unmanaged directory to `aitk init`. Seeds are why the gate
+exists, since they enumerate from the toolkit source rather than from what a
+target installed, so an unmanaged directory would otherwise report every seed as
+`missing`.
+
 `seeds` classifies every seed the toolkit ships against the target's copy, as
 `matching`, `stale`, `drifted`, or `missing`. `missing` has no per-domain
 equivalent, since the domain walk lists what a target installed and cannot see a

@@ -95,6 +95,16 @@ async function runCheck(target: string, options: SyncOptions): Promise<number> {
 function renderCheck(report: CheckReport): void {
   intro('aitk sync --check')
 
+  if (!report.managed) {
+    logStep('Not a toolkit project')
+    logWarn('No .claude/ directory and no CLAUDE.md at the target.')
+    logInfo(
+      'Run `aitk init` to install, or /aitk:setup-init to resolve a stack.',
+    )
+    outro()
+    return
+  }
+
   for (const domain of report.domains) {
     logStep(domain.domain)
 
