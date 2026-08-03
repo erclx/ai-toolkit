@@ -80,6 +80,8 @@ If a domain produces no `infra/<domain>.sh`, do not guess. Ask the user the same
 
 Build the distinct scenario list from Step 2 results. Keep their original input order so re-runs are deterministic. The first entry is the `Provisioning:` target. Any remainder is the `Queued:` list.
 
+Resolve the arm and the gate for the `Provisioning:` scenario here, following the arm rule and the gate list in Step 6. Both outcomes are read before Step 6 runs: this step prints them on the `Headless verification:` line, and Step 5 skips on them. Collecting either one later would print a command against an unresolved arm and skip provisioning on an answer nobody has given yet.
+
 Print one block to chat:
 
 ```plaintext
@@ -130,7 +132,7 @@ Do not run any `Queued:` scenarios. The user copies the next command after testi
 
 Skip this step when every pairing is `NONE` or `UNMAPPED`.
 
-Also skip it when Step 6 reaches its run, meaning no gate fired. `run.sh` provisions the same target before its session, so a separate provision is duplicate work. A gated Step 6 leaves this step to run, since the user still needs the scenario provisioned for the interactive re-test.
+Also skip it when the gate resolved in Step 4 leaves Step 6 free to run. `run.sh` provisions the same target before its session, so a separate provision is duplicate work. A gated Step 6 leaves this step to run, since the user still needs the scenario provisioned for the interactive re-test.
 
 ## Step 6: run the headless verification
 
@@ -146,7 +148,7 @@ Derive the arguments from the Step 2 mapping:
 scripts/sandbox/run.sh <category>:<rest> "/aitk:<skill-name>" <arm>
 ```
 
-Resolve the arm before running. Grep the scenario file for `select_or_route_scenario`, which is what a multi-arm scenario calls. Roughly half the catalog declares it, so treat the multi-arm case as ordinary rather than exceptional.
+Resolve the arm at Step 4, before the report prints. Grep the scenario file for `select_or_route_scenario`, which is what a multi-arm scenario calls. Roughly half the catalog declares it, so treat the multi-arm case as ordinary rather than exceptional.
 
 A multi-arm scenario run with no arm never reaches the skill session. `run.sh` forwards the arm to `manage-sandbox.sh`, which sets `SANDBOX_SCENARIO` and `AITK_NON_INTERACTIVE` only when it receives one, so an empty arm leaves both unset and `select_or_route_scenario` falls through to the picker. The picker aborts on a missing TTY, which is every agent-driven run, and it blocks on input when a TTY is attached. Passing `AITK_NON_INTERACTIVE=1` to dodge that is worse than not running, since the picker then takes the first arm and the verdict reports an arm nobody chose.
 

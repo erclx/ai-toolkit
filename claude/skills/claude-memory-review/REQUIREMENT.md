@@ -15,6 +15,7 @@ Without this skill, the memory folder grows and never drains. Entries pile up re
 - Verify the rule is not already stated or implied in the target before proposing a promotion, by reading the target rather than trusting the memory's claim about it
 - Rewrite a rule into the destination's voice instead of moving it unchanged
 - Write the proposal to a receipt on disk and take no action until the user decides per item
+- Route every decision channel through the receipt, writing a decision given in chat into its item's slot before the parse reads the file, so a channel the skill advertises drains the pen rather than passing over it
 - Keep a promotion on its own commit, since a change to how the agent operates should not ride inside a feature a reviewer is vetting for something else
 - Confine the pass that runs after application to the one receipt it tested, so tidying up removes a file whose decisions are known to be resolved and leaves the pen and every untested receipt alone
 

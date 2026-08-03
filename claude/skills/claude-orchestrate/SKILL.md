@@ -1,6 +1,6 @@
 ---
 name: claude-orchestrate
-description: Asserts the orchestrator role for the current session, holds the build loop and the queue-refill sweep, and dispatches to the roadmap, feature, review, and worktree skills. Use when asked to "be the orchestrator", "run the orchestrator", "orchestrate this project", or to set up the control session for parallel feature builds. Do NOT build features or merge PRs in this session.
+description: Asserts the orchestrator role for the current session, holds the build loop and the queue-refill sweep, and dispatches to the feature, review, and worktree skills. Use when asked to "be the orchestrator", "run the orchestrator", "orchestrate this project", or to set up the control session for parallel feature builds. Do NOT build features or merge PRs in this session.
 disable-model-invocation: true
 ---
 
@@ -70,7 +70,7 @@ That command returns nothing for a roadmap that exists but has never been commit
 
 ## The loop
 
-1. Own the roadmap while a scope exists to sequence. Run `claude-roadmap` to draft or resequence `.claude/ROADMAP.md` from the MVP list in `.claude/REQUIREMENTS.md`, and skip it once that list has shipped, since later work then arrives as discrete items rather than as versions. Capture a needed resequence in the plan or a task file for a worker to apply in its branch, so the tracked edit ships in a PR rather than dirtying main.
+1. Own the roadmap while a scope exists to sequence. Capture a needed draft or resequence of `.claude/ROADMAP.md` in the plan or a task file, naming the MVP list in `.claude/REQUIREMENTS.md` as the source, so a worker runs `claude-roadmap` in its branch and the tracked edit ships in a PR rather than dirtying main. Stop owning it once that list has shipped, since later work then arrives as discrete items rather than as versions.
 2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive.
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.

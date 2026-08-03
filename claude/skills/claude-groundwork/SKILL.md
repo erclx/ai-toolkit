@@ -12,7 +12,8 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 ## Guards
 
 - If no topic is given, stop: `❌ No topic. Name what needs measuring.`
-- Apply the qualifying test before creating anything. Two of these three must hold: the current state is not known, more than one approach is live, and committing wrong costs more than a day of measuring. When one or fewer holds, stop: `❌ Already decided enough to plan. Run /claude-feature instead.`
+- Apply the qualifying test in open mode alone, after Step 1 resolves the mode and before the folder is created. Two of these three must hold: the current state is not known, more than one approach is live, and committing wrong costs more than a day of measuring. When one or fewer holds, stop: `❌ Already decided enough to plan. Run /claude-feature instead.`
+- Resume and close are exempt from the test above. A track that has already been measured fails it by definition, since its current state is now known and its approaches have narrowed, so applying the test to either mode refuses the folder that same test admitted.
 - Do not pause for approval between steps. The write scope below is what makes that safe.
 
 ## Write scope
