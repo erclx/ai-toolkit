@@ -42,6 +42,28 @@ headlessly, so a call that names its stack or category is unchanged.
 `aitk snippets install`. Both resolve the target before anything else, so a path
 that does not exist fails rather than being scaffolded.
 
+## Standards selection
+
+`aitk standards install --only <names>` takes a comma-separated list and
+defaults to `all`, so a call that omits it installs the whole corpus as before.
+A name resolves with or without its `.md` extension, and one that matches no
+standard fails the run with exit 1 rather than being dropped, because a typo
+would otherwise omit a standard silently and compute the closure over the wrong
+set. `aitk init --standards <selection>` passes the same value through.
+
+The selection expands to the standards it cites, so nothing lands with a
+dangling reference. A citation is a backticked filename in a standard's body,
+resolved case-exactly against the flat `standards/` root, which is what drops a
+citation naming a target's own `.claude/ARCHITECTURE.md` or a bundled standard
+install never copies. Whatever the expansion adds is listed under its own step
+in the output.
+
+Reduction is smaller than the flag suggests. The citation graph is strongly
+connected, so of the fifteen standards only `slug.md` cites nothing and installs
+alone. Every other single name reaches fourteen, and `standard.md` reaches all
+fifteen. Treat the flag as a way to install one leaf standard, not as a way to
+take a slice of the corpus.
+
 ## Governance regen
 
 `aitk gov regen` is the one governance verb that runs against the toolkit root,
@@ -97,7 +119,9 @@ exits 1 naming the failures. Passing any flag skips the confirmation prompt,
 which is what makes it scriptable. `--stack` defaults to `base`, and the default
 does not read as a passed flag, so a bare `aitk init` installs governance and
 still prompts. `--skip` takes `wiki`, `standards`, and `governance`, and warns
-without aborting on any other value.
+without aborting on any other value. `--standards` defaults to `all` and reaches
+`aitk standards install` only when it names something narrower, so the default
+run spawns the command it always did.
 
 ## Unguarded tooling primitives
 

@@ -88,7 +88,7 @@ When a new need appears after scaffold, install the one domain without re-runnin
 - Project-specific rule the toolkit does not ship: invoke `aitk:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
 - Index.md system for a markdown-heavy folder that emerged: invoke `aitk:setup-indexes`
 - A snippet preset or category: `aitk snippets install <preset|category|all> <path>`. The argument is required, since the picker refuses headlessly rather than choosing for the caller
-- A single standard: `aitk standards install <name> <path>`
+- A single standard: `aitk standards install --only <names> <path>`. The selection expands to the standards it cites, so a subset never lands with a dangling reference. Omitting the flag installs all of them
 
 Per-domain mechanics live in the corresponding `docs/<domain>.md`. The skill body in `claude/skills/<skill>/SKILL.md` covers detection and preview.
 

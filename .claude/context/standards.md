@@ -47,11 +47,19 @@ Owns the markdown docs defining developer workflow conventions. They install int
 
 ### Install and sync
 
-- Install overwrites all standards on purpose. Sync updates only what is already present and never adds, so a project chooses when to take a new standard.
+- Install overwrites what it installs on purpose. Sync updates only what is already present and never adds, so a project chooses when to take a new standard, and that property is what lets a selective install stay selective across later syncs.
 - `index.md` is generated from what is actually installed rather than copied, so a target's catalog never lists a standard it does not have.
 - Sync runs on the shared engine in `src/sync/engine.ts` via `src/standards/adapter.ts`. It is the third adapter and the first to need the engine widened, which is why the engine now carries a per-adapter non-interactive policy, a walk exclusion, and a completion hook.
 - The headless refusal is a per-adapter policy rather than a branch inside the engine. Gov rules and snippets are toolkit-owned and default to applying. Standards are seeds a project edits, so an unattended overwrite is data loss with no prompt in front of it.
 - Sync matches by filename against the flat `standards/` root. A standard that only exists in a source subfolder has no flat sibling, so it reads as project-authored and is left alone, which keeps install and sync agreeing on the same set.
+
+### Selecting what installs
+
+- `install --only <names>` selects, and the selection expands to the transitive closure of what those standards cite, so a subset cannot land a dangling reference. Warning and shipping anyway was the alternative and leaves a broken target behind a message nobody reads. Closure lives in `src/standards/closure.ts` rather than inside `planInstall`, which keeps the listing verb a lister.
+- The dependency is parsed from the prose, since a backticked filename is the only place a standard names a sibling. Every candidate resolves case-exactly against the flat root, dropping a fenced example, a target's own `.claude/ARCHITECTURE.md`, and a bundled standard install never copies. Matching the listing rather than probing the filesystem is load-bearing, since a case-insensitive volume resolves `SKILL.md` onto `skill.md`.
+- The measured reduction is near zero. The graph is strongly connected, so `slug.md` is the only standard citing nothing and installing alone, every other single name reaches fourteen of fifteen, and `standard.md` reaches all fifteen. The flag installs a leaf, not a slice. Whether the corpus over-cites is the separate question, and it sits on the task board rather than in this branch.
+- A selection is an option rather than a positional. `install [target]` already ships, so a leading `[selection]` would read `aitk standards install ../app` as a standard name. Snippets took the positional because its category argument came first from the start.
+- An unknown name fails the run rather than being warned and dropped, unlike `--skip` on `aitk init`. A dropped name silently omits a standard the caller asked for and computes the closure over the wrong set.
 
 ## Gotchas
 
@@ -81,11 +89,11 @@ Run `aitk standards list` for the catalog of installable standards and their des
 
 ## CLI
 
-| Command                  | What it does                                                         |
-| ------------------------ | -------------------------------------------------------------------- |
-| `aitk standards install` | Copy all standards into a target's `.claude/standards/` (overwrites) |
-| `aitk standards sync`    | Update standards already present in target                           |
-| `aitk standards list`    | Emit catalog of standards with descriptions                          |
+| Command                  | What it does                                                     |
+| ------------------------ | ---------------------------------------------------------------- |
+| `aitk standards install` | Copy standards into a target's `.claude/standards/` (overwrites) |
+| `aitk standards sync`    | Update standards already present in target                       |
+| `aitk standards list`    | Emit catalog of standards with descriptions                      |
 
 Flags and arguments live in `docs/agents/scripting.md`. `--json` emits `{standards: [{name, description, target, appliesTo, content}]}`, and drift-auditing skills consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`, plus `appliesTo`.
 
@@ -96,8 +104,9 @@ Flags and arguments live in `docs/agents/scripting.md`. `--json` emits `{standar
 ## Workflow
 
 ```bash
-aitk standards install ../my-app   # copies all standards into .claude/standards/
-aitk standards sync ../my-app      # diffs what is already present
+aitk standards install ../my-app                # copies all standards into .claude/standards/
+aitk standards install --only slug ../my-app    # copies one, plus what it cites
+aitk standards sync ../my-app                   # diffs what is already present
 ```
 
 ## Authoring a new standard
