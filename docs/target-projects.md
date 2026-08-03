@@ -12,7 +12,7 @@ This doc stays at the narrative layer. For command flags and JSON shapes, see [a
 
 ## Getting the skills
 
-The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and updates arrive on release, so an upstream push does not reach an installed copy.
+The skills reach a session through a marketplace install, once per machine. Every session on that machine carries them afterward, and the installed copy stays at the version it was installed at. Claude Code ships auto-update off for third-party marketplaces, so neither a push nor a release reaches that copy until someone refreshes it with `claude plugin marketplace update aitk` followed by `claude plugin update aitk@aitk`, or turns auto-update on once under `/plugin`. The `aitk` CLI moves on its own schedule through the registry, so a machine can hold current skills against a stale CLI or the reverse.
 
 ```bash
 claude plugin marketplace add https://github.com/erclx/aitk
