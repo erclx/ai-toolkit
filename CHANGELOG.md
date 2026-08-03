@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.38.0](https://github.com/erclx/aitk/compare/v0.37.0...v0.38.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** give 14 plugin skills a requirement file ([#791](https://github.com/erclx/aitk/issues/791)) ([e26ff80](https://github.com/erclx/aitk/commit/e26ff8090586c58649232f7152375f5235fbf681))
+* **context:** audit a folder resolved at the project root ([#792](https://github.com/erclx/aitk/issues/792)) ([8f69b4a](https://github.com/erclx/aitk/commit/8f69b4a5ca795320f670cd4690876ce631c1aa1f))
+
 ## [0.37.0](https://github.com/erclx/aitk/compare/v0.36.0...v0.37.0) (2026-08-03)
 
 
