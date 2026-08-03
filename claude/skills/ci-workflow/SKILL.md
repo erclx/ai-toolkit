@@ -7,6 +7,11 @@ description: Generates GitHub Actions CI workflow files with parallel jobs, emoj
 
 Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job execution, emoji job naming, and gated deployment stages.
 
+## Guards
+
+- A request for what runs inside a deploy, publish, or release job stops at the gate. Credentials, environments, and deploy targets are invisible to this skill, so emit the job with its `needs` wiring and a placeholder step, then name what the caller fills in. Never guess a deploy command.
+- The build, test, and deploy commands belong to the project. Read them from its scripts rather than asserting a second copy in the workflow.
+
 ## Workflow setup
 
 - Include `workflow_dispatch` on every workflow alongside the primary trigger.
@@ -49,4 +54,5 @@ Before responding, verify:
 - E2E uses `needs: build`. Release and deploy use `needs: e2e`.
 - Artifacts upload on `if: failure()` only with `retention-days: 7`.
 - Job names use emoji + title format.
+- Deploy, publish, and release jobs carry a placeholder step and a named handoff, never a guessed deploy command.
 - Bun projects use `oven-sh/setup-bun@v2` with `bun install --frozen-lockfile`.
