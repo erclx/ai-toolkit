@@ -149,7 +149,8 @@ EOF
     log_info "Expect:  finds the prior review's commit via gh pr view --json reviews"
     log_info "         reads only fix(api) reject an empty task title, not the whole change"
     log_info "         confirms the empty-title finding landed"
-    log_info "         posts under ## Review closed, naming the commit and the count read"
+    log_info "         posts under ## Review closed, since the delta raises no findings of its own"
+    log_info "         names the commit and the count read in the summary line"
     log_info "         writes a new body file rather than overwriting the first pass, does NOT merge"
     ;;
 

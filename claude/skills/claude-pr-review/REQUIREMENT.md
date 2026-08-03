@@ -1,6 +1,6 @@
 ---
 name: claude-pr-review
-description: What the independent pull request review is for, the gaps it closes, and why it posts twice
+description: What the independent pull request review is for, the gaps it closes, and why it posts until nothing is open
 ---
 
 # Claude PR review requirement
@@ -11,11 +11,12 @@ Without this skill, a pull request is reviewed only by the session that wrote it
 
 ## Must
 
-- Post both passes. A first pass opens the review against the whole change, and a close-out confirms the prior findings landed.
+- Post until the review closes. A first pass opens against the whole change, and each later pass checks whether the prior findings landed.
+- Set the heading from the finding count rather than the pass number, so the most recent review comment's heading reports whether anything is open
 - Detect the pass from the thread rather than taking it from the caller, matching the heading for equality so a neighboring comment cannot be read as a prior pass
-- Scope a close-out to the commits added since the prior pass, once that commit is confirmed to still reach the head
+- Scope a later pass to the commits added since the prior one, once that commit is confirmed to still reach the head
 - Apply the integration, contract, and consumer lenses a self-review structurally cannot
-- Post a close-out even with nothing to report, since a first pass left unanswered reads as a review nobody closed
+- Post the closing pass even with nothing to report, since a review left unanswered reads as one nobody closed
 - Key the body file on both the pull request number and the head commit, so no two passes overwrite each other
 - Scan the comment for banned characters and internal phase labels before posting, since a finding phrased against a phase label reaches a reader with no task board
 
@@ -23,7 +24,7 @@ Without this skill, a pull request is reviewed only by the session that wrote it
 
 - Merge. Review and post, and leave the gate to the human.
 - Publish a claim the skill did not check. A failed fetch and a rebase both strand the prior commit, and only one of them is a rebase.
-- Invent a third heading, or append a number GitHub already renders
+- Invent a heading beyond the two it posts and the response heading `claude-address-review` owns, or append a number GitHub already renders
 - Review local uncommitted changes
 - Lecture on process. The lenses land as findings, not as asides.
 
