@@ -22,6 +22,13 @@ describe('applyInitOptions', () => {
     expect(command.opts().stack).toBe('base')
   })
 
+  it('should default the standards selection to all', () => {
+    const command = applyInitOptions(new Command('init'))
+    command.parse([], { from: 'user' })
+
+    expect(command.opts().standards).toBe('all')
+  })
+
   it('should offer governance as a skippable domain in the help text', () => {
     const skip = INIT_OPTIONS.find((option) => option.key === 'skip')
 
@@ -44,5 +51,9 @@ describe('flagsProvided', () => {
 
   it('should read a skip as operator-provided', () => {
     expect(readFlagsProvided(['--skip', 'wiki'])).toBe(true)
+  })
+
+  it('should read an explicitly passed standards selection as operator-provided', () => {
+    expect(readFlagsProvided(['--standards', 'slug'])).toBe(true)
   })
 })

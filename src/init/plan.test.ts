@@ -4,6 +4,7 @@ import { type InitFlags, parseSkip, planInit, resolveStack } from '@/init/plan'
 function flags(overrides: Partial<InitFlags> = {}): InitFlags {
   return {
     snippets: 'essentials',
+    standards: 'all',
     skip: parseSkip(undefined),
     ...overrides,
   }
@@ -12,6 +13,20 @@ function flags(overrides: Partial<InitFlags> = {}): InitFlags {
 function texts(plan: ReturnType<typeof planInit>): string[] {
   return plan.preview.map((line) => line.text)
 }
+
+describe('planInit standards preview', () => {
+  it('should describe the default selection as the whole corpus', () => {
+    expect(texts(planInit(flags()))).toContain(
+      'standards (authoring conventions)',
+    )
+  })
+
+  it('should name a narrowed selection and its closure', () => {
+    expect(texts(planInit(flags({ standards: 'design' })))).toContain(
+      'standards (design, plus what they cite)',
+    )
+  })
+})
 
 describe('parseSkip', () => {
   it('should collect nothing when the flag is absent', () => {

@@ -1,5 +1,6 @@
 import type { Command } from 'commander'
 import { DEFAULT_STACK, SKIPPABLE_DOMAINS } from '@/init/plan'
+import { ALL_SELECTION } from '@/standards/closure'
 
 interface InitOptionSpec {
   /** The option value key commander stores the parsed value under. */
@@ -33,6 +34,12 @@ export const INIT_OPTIONS: readonly InitOptionSpec[] = [
     defaultValue: 'essentials',
   },
   {
+    key: 'standards',
+    flags: '--standards <selection>',
+    description: "Comma-separated standard names, or 'all'",
+    defaultValue: ALL_SELECTION,
+  },
+  {
     key: 'skip',
     flags: '--skip <list>',
     description: `Skip core domains: ${SKIPPABLE_DOMAINS.join(', ')}`,
@@ -55,9 +62,9 @@ export function applyInitOptions(command: Command): Command {
 
 /**
  * Whether the operator passed any flag, which is what makes the command
- * scriptable by suppressing the confirmation prompt. `--snippets` and `--stack`
- * both carry defaults, so presence has to be read from where the value came
- * from rather than from the value itself.
+ * scriptable by suppressing the confirmation prompt. `--stack`, `--snippets`,
+ * and `--standards` all carry defaults, so presence has to be read from where
+ * the value came from rather than from the value itself.
  */
 export function flagsProvided(cmd: Command): boolean {
   return INIT_OPTIONS.some(
