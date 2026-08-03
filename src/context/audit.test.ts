@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  BULLET_CHECKPOINT,
   CATALOG_ROW_CHECKPOINT,
   measureEntry,
   measureFolders,
@@ -41,6 +42,11 @@ function weightedBullets(count: number, width: number): string {
 
 function table(rows: string[]): string {
   return ['| Name | Purpose |', '| --- | --- |', ...rows].join('\n')
+}
+
+/** A bullet of an exact character count, so a boundary case lands on it. */
+function bullet(characters: number): string {
+  return `- ${'w'.repeat(characters - 2)}`
 }
 
 describe('measureEntry', () => {
@@ -182,6 +188,43 @@ describe('measureEntry', () => {
     const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${table(rows)}\n\`\`\`\n`
 
     expect(measureEntry('ci.md', source).catalogTables).toEqual([])
+  })
+
+  it('should report a top-level bullet past the character checkpoint', () => {
+    const source = `${FRONTMATTER}# CI\n\n${bullet(BULLET_CHECKPOINT + 1)}\n`
+
+    expect(measureEntry('ci.md', source).heavyBullets).toEqual([
+      { line: 8, characters: BULLET_CHECKPOINT + 1 },
+    ])
+  })
+
+  it('should leave a bullet at the checkpoint unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n${bullet(BULLET_CHECKPOINT)}\n`
+
+    expect(measureEntry('ci.md', source).heavyBullets).toEqual([])
+  })
+
+  it('should leave a nested bullet unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n- Parent\n  ${bullet(BULLET_CHECKPOINT + 1)}\n`
+
+    expect(measureEntry('ci.md', source).heavyBullets).toEqual([])
+  })
+
+  it('should ignore a bullet that is an example inside a fenced block', () => {
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${bullet(BULLET_CHECKPOINT + 1)}\n\`\`\`\n`
+
+    expect(measureEntry('ci.md', source).heavyBullets).toEqual([])
+  })
+
+  it('should fold a continuation line into the bullet it belongs to', () => {
+    const half = Math.ceil((BULLET_CHECKPOINT + 1) / 2)
+    const source = `${FRONTMATTER}# CI\n\n${bullet(half)}\n${'w'.repeat(half)}\n`
+
+    // Neither source line reaches the checkpoint on its own, so a wrapped
+    // bullet only reports once the two are measured as the one bullet they are.
+    expect(measureEntry('ci.md', source).heavyBullets).toEqual([
+      { line: 8, characters: half * 2 + 1 },
+    ])
   })
 
   it('should report a date narrating when a change landed', () => {

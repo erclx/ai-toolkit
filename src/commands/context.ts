@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import {
+  BULLET_CHECKPOINT,
   type EntryReport,
   governsContent,
   LENGTH_CHECKPOINT,
@@ -50,7 +51,7 @@ export function register(program: Command): void {
   context
     .command('audit')
     .description(
-      'Report entry length, depth, citations, provenance, and index drift',
+      'Report entry length, depth, bullet weight, citations, provenance, and index drift',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -67,7 +68,7 @@ export function register(program: Command): void {
         '  2  a cited path did not resolve',
         '',
         'Only unresolved citations set a failing exit code. Length, depth,',
-        'table, provenance, and index findings are advisory.',
+        'bullet, table, provenance, and index findings are advisory.',
         '',
         'Examples:',
         '  aitk context audit',
@@ -139,6 +140,7 @@ async function runAudit(
     reportCitations(citations)
     reportLength(entries)
     reportDepth(entries)
+    reportBullets(entries)
     reportTables(entries)
     reportProvenance(entries, folders)
     reportDrift(drift)
@@ -167,6 +169,7 @@ async function runAudit(
           runCountsBlankLines: true,
           renderWidth: RENDER_WIDTH,
           peerBullet: PEER_BULLET_CHECKPOINT,
+          bullet: BULLET_CHECKPOINT,
           provenanceFolder: PROVENANCE_FOLDER,
         },
       })}\n`,
@@ -306,6 +309,50 @@ function reportDepth(entries: readonly EntryReport[]): void {
       .map(
         (entry) =>
           `${entry.rel}:${entry.longestRunLine}  ${entry.longestRun} rendered lines unbroken`,
+      )
+      .join('\n'),
+  )
+}
+
+/**
+ * Groups by entry for the reason the provenance report does.
+ *
+ * Bullets past the checkpoint cluster in a handful of entries and the heaviest
+ * entries carry them a dozen at a time, so a flat list of bullets buries the
+ * entry holding one. What a reader acts on is which file to open.
+ */
+function reportBullets(entries: readonly EntryReport[]): void {
+  logStep('Bullets')
+  logInfo(
+    'Top-level bullets measure characters, folding in continuation lines.',
+  )
+  logInfo(
+    'Nested items and fenced blocks are excluded. Weight is a judgment, never a defect.',
+  )
+
+  const carrying = entries
+    .filter((entry) => entry.heavyBullets.length > 0)
+    .sort((a, b) => b.heavyBullets.length - a.heavyBullets.length)
+
+  if (carrying.length === 0) {
+    logInfo(`No bullet past the ${BULLET_CHECKPOINT}-character checkpoint.`)
+    return
+  }
+
+  const total = carrying.reduce(
+    (sum, entry) => sum + entry.heavyBullets.length,
+    0,
+  )
+  logWarn(
+    `${plural(total, 'bullet')} past the ${BULLET_CHECKPOINT}-character checkpoint across ${carrying.length} ${carrying.length === 1 ? 'entry' : 'entries'}`,
+  )
+  pipeOutput(
+    carrying
+      .map(
+        (entry) =>
+          `${entry.rel}  ${plural(entry.heavyBullets.length, 'bullet')}\n${entry.heavyBullets
+            .map((found) => `  :${found.line}  ${found.characters} characters`)
+            .join('\n')}`,
       )
       .join('\n'),
   )
