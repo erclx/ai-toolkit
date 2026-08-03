@@ -17,6 +17,12 @@ export const DEFAULT_FOLDERS: readonly string[] = [
   'wireframes',
 ]
 
+/** The base every folder in the default list sits under. */
+const CLAUDE_BASE = '.claude'
+
+/** The project root, reached only by a name the caller asked for. */
+const ROOT_BASE = '.'
+
 export interface AuditedFolder {
   /**
    * The requested folder name this was resolved under, which is what says
@@ -25,6 +31,11 @@ export interface AuditedFolder {
    * `.claude/context/claude-plugin` is governed as `context`.
    */
   readonly name: string
+  /**
+   * The base the name resolved under, which is what says whether the folder is
+   * in the citation check's scope.
+   */
+  readonly base: string
   /** Repo-relative folder path, used verbatim in every report line. */
   readonly rel: string
   readonly indexPath: string
@@ -43,16 +54,28 @@ export interface AuditedFolder {
 }
 
 /**
- * Names the requested folders that actually exist, which is the citation
- * check's scope.
+ * Names the requested `.claude/` folders that actually exist, which is the
+ * citation check's scope.
  *
  * A skill or seed pointing into `.claude/wireframes/` is a live instruction for
  * a project that carries the folder and says nothing about one that does not.
  * Checking a path into an absent folder would fail eight shipped references
  * here for the sole reason that this repository has no wireframes.
+ *
+ * A folder resolved at the project root is measured and stays out of this. The
+ * pattern the citation check builds spells the `.claude/` prefix, so admitting
+ * a root name there would check `.claude/<name>/` paths the audit never read.
+ * Widening the pattern to the root spelling is a separate change, since a bare
+ * `docs/x.md` appears in prose that references nothing.
  */
 export function presentNames(folders: readonly AuditedFolder[]): string[] {
-  return [...new Set(folders.map((folder) => folder.name))]
+  return [
+    ...new Set(
+      folders
+        .filter((folder) => folder.base === CLAUDE_BASE)
+        .map((folder) => folder.name),
+    ),
+  ]
 }
 
 async function readEntries(dir: string): Promise<string[]> {
@@ -70,6 +93,40 @@ async function readEntries(dir: string): Promise<string[]> {
   return paths.sort()
 }
 
+export interface FolderResolution {
+  /** Every folder that resolved, with the nested splits beneath each. */
+  readonly folders: readonly AuditedFolder[]
+  /**
+   * Requested names that resolved under no base, reported rather than dropped.
+   * Which absences are worth saying out loud is the caller's judgment: a
+   * default folder a project does not carry is ordinary, and a name passed by
+   * hand that resolves nowhere is a typo that would otherwise read as a pass.
+   */
+  readonly missing: readonly string[]
+}
+
+export interface ResolveOptions {
+  /**
+   * Whether a name may resolve at the project root when `.claude/` does not
+   * carry it. False for the default list, which names three folders a project
+   * is expected to hold under `.claude/` and nowhere else.
+   */
+  readonly canResolveAtRoot?: boolean
+}
+
+function locate(
+  root: string,
+  name: string,
+  bases: readonly string[],
+): { readonly dir: string; readonly base: string } | undefined {
+  for (const base of bases) {
+    const dir = resolve(root, base, name)
+    if (existsSync(`${dir}/${INDEX_FILE}`)) return { dir, base }
+  }
+
+  return undefined
+}
+
 /**
  * Resolves the folders to audit under `root`.
  *
@@ -77,34 +134,49 @@ async function readEntries(dir: string): Promise<string[]> {
  * folder beneath it, so a domain that outgrew one file and split is audited at
  * the same grain as one that did not. Discovery of the nested folders runs
  * through the shared walker, which is what keeps `.gitignore` and the vendored
- * prune governing this scan as well as index regeneration.
+ * prune governing this scan as well as index regeneration. That prune is what
+ * lets a root folder be walked at all, since a name at the project root sits
+ * beside `node_modules` and a build output.
  *
- * A requested folder that does not exist is dropped rather than reported. The
- * default list names three folders and a project carrying one of them is the
- * ordinary case.
+ * The project root is reached only when the caller opts in, so a target holding
+ * a root `wireframes/` is not audited against a standard it never adopted by
+ * the mere act of running the command. `.claude/` still wins a name carried by
+ * both, and the scope line prints the resolved path so a caller reads which
+ * base was taken rather than inferring it.
+ *
+ * Nothing above this asks where a folder came from. A name that resolves at the
+ * root is measured by every rule that generalizes and gated out of the rules a
+ * single standard carries, which `governsContent` decides from the name.
  */
 export async function resolveFolders(
   root: string,
   names: readonly string[] = DEFAULT_FOLDERS,
-): Promise<AuditedFolder[]> {
+  { canResolveAtRoot = false }: ResolveOptions = {},
+): Promise<FolderResolution> {
+  const bases = canResolveAtRoot ? [CLAUDE_BASE, ROOT_BASE] : [CLAUDE_BASE]
   const folders: AuditedFolder[] = []
+  const missing: string[] = []
 
   for (const name of names) {
-    const dir = resolve(root, '.claude', name)
-    if (!existsSync(`${dir}/${INDEX_FILE}`)) continue
+    const found = locate(root, name, bases)
+    if (!found) {
+      missing.push(name)
+      continue
+    }
 
-    const dirs = [dir, ...(await listIndexes(dir)).map(dirname)]
+    const dirs = [found.dir, ...(await listIndexes(found.dir)).map(dirname)]
 
     for (const each of [...new Set(dirs)].sort()) {
       folders.push({
         name,
+        base: found.base,
         rel: relative(root, each),
         indexPath: `${each}/${INDEX_FILE}`,
         entries: await readEntries(each),
-        nested: each !== dir,
+        nested: each !== found.dir,
       })
     }
   }
 
-  return folders
+  return { folders, missing }
 }
