@@ -62,26 +62,39 @@ describe('installedStampDomains', () => {
 })
 
 describe('isManagedTarget', () => {
+  const rootLayout = [
+    {
+      domain: 'standards' as const,
+      rootPath: 'standards',
+      installPath: join('.claude', 'standards'),
+      files: 9,
+    },
+  ]
+
   it('should report an empty directory as unmanaged', () => {
-    expect(isManagedTarget(TARGET)).toBe(false)
+    expect(isManagedTarget(TARGET, [])).toBe(false)
   })
 
   it('should report a target carrying .claude as managed', () => {
     mkdirSync(join(TARGET, '.claude'), { recursive: true })
 
-    expect(isManagedTarget(TARGET)).toBe(true)
+    expect(isManagedTarget(TARGET, [])).toBe(true)
   })
 
   it('should report a target carrying only CLAUDE.md as managed', () => {
     writeFileSync(join(TARGET, 'CLAUDE.md'), '# Project\n')
 
-    expect(isManagedTarget(TARGET)).toBe(true)
+    expect(isManagedTarget(TARGET, [])).toBe(true)
   })
 
   it('should not read a nested .claude as the target being managed', () => {
     mkdirSync(join(TARGET, 'packages', 'web', '.claude'), { recursive: true })
 
-    expect(isManagedTarget(TARGET)).toBe(false)
+    expect(isManagedTarget(TARGET, [])).toBe(false)
+  })
+
+  it('should report a root-layout target with no marker as managed', () => {
+    expect(isManagedTarget(TARGET, rootLayout)).toBe(true)
   })
 })
 

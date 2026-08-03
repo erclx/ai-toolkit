@@ -124,11 +124,17 @@ that walk cannot see. None of them produces a change, and no sync command
 applies any of them.
 
 All three report only against a toolkit-managed target, which is one carrying a
-`.claude/` directory or a `CLAUDE.md`. The report says so through `managed` in
-the JSON and routes an unmanaged directory to `aitk init`. Seeds are why the gate
-exists, since they enumerate from the toolkit source rather than from what a
-target installed, so an unmanaged directory would otherwise report every seed as
-`missing`.
+`.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
+report says so through `managed` in the JSON and routes an unmanaged directory to
+`aitk init`. Seeds are why the gate exists, since they enumerate from the toolkit
+source rather than from what a target installed, so an unmanaged directory would
+otherwise report every seed as `missing`.
+
+A root-layout domain counts as a marker on its own, because the detection fires
+only on root files the toolkit ships and a project in the old layout is one the
+toolkit installed. When `managed` is false every section comes back empty rather
+than the render alone going quiet, so a consumer reading `--json` never acts on a
+finding the rendered half withheld.
 
 `seeds` classifies every seed the toolkit ships against the target's copy, as
 `matching`, `stale`, `drifted`, or `missing`. `missing` has no per-domain

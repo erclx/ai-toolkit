@@ -102,8 +102,20 @@ export function installedStampDomains(target: string): StampDomain[] {
  * routes to a skill that reconciles section by section. `installedStampDomains`
  * gates the three scanned domains the same way, which is why they stay quiet on
  * the same directory.
+ *
+ * An unmigrated domain counts as a marker in its own right. `detectUnmigrated`
+ * fires only on root files whose basename the toolkit ships, so it firing proves
+ * the toolkit installed here before the layout moved under `.claude/`. Reading
+ * only the markers would report such a target as unmanaged while the same report
+ * carried its unmigrated domain, and a consumer reading the JSON would route to
+ * the relocation while the rendered half routed to install.
  */
-export function isManagedTarget(target: string): boolean {
+export function isManagedTarget(
+  target: string,
+  unmigrated: readonly UnmigratedDomain[],
+): boolean {
+  if (unmigrated.length > 0) return true
+
   return (
     isDirectory(join(target, '.claude')) ||
     existsSync(join(target, 'CLAUDE.md'))
@@ -166,17 +178,28 @@ export async function buildCheckReport(
     .map((domain) => domain.commit)
     .filter((commit): commit is string => commit !== undefined)
 
-  const managed = isManagedTarget(target)
+  const unmigrated = detectUnmigrated(toolkitRoot, target)
+  const managed = isManagedTarget(target, unmigrated)
+
+  if (!managed) {
+    return {
+      covers: [],
+      managed,
+      domains: [],
+      seeds: { entries: [], historyUnavailable: false },
+      superseded: [],
+      unmigrated: [],
+      newSkills: [],
+    }
+  }
 
   return {
     covers: stamp?.covers ?? [],
     managed,
     domains,
-    seeds: managed
-      ? buildSeedsReport(toolkitRoot, target)
-      : { entries: [], historyUnavailable: false },
+    seeds: buildSeedsReport(toolkitRoot, target),
     superseded: collectSuperseded(target),
-    unmigrated: detectUnmigrated(toolkitRoot, target),
+    unmigrated,
     newSkills: await readNewSkills(toolkitRoot, anchors),
   }
 }
