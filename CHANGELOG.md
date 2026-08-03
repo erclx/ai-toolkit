@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/erclx/aitk/compare/v0.29.0...v0.30.0) (2026-08-03)
+
+
+### Features
+
+* **context:** ban a change narrative from an entry and report it ([#755](https://github.com/erclx/aitk/issues/755)) ([08f6b73](https://github.com/erclx/aitk/commit/08f6b735d277dbb464ff1e03ed747b7ae8feac9f))
+
 ## [0.29.0](https://github.com/erclx/aitk/compare/v0.28.0...v0.29.0) (2026-08-03)
 
 
