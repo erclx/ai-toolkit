@@ -70,7 +70,7 @@ export function listSkills(root: string): string[] {
  * Maps a scenario to the skill it drives, trying two spellings in order.
  *
  * `<category>-<command>` is the rule `.claude/context/sandbox/coverage.md` states, and it
- * alone pairs 29 of 55 skills. The bare `<command>` fallback is what reaches the
+ * alone pairs 29 of 54 skills. The bare `<command>` fallback is what reaches the
  * rest: `claude/setup-init.sh` drives the `setup-init` skill, not a
  * `claude-setup-init` that does not exist. Stating one spelling and shipping two
  * is what let the audit report a paired skill as unpaired.

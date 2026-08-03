@@ -51,7 +51,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Eight of 55 skills are asserted where nine of 57 scenarios are, because `infra:wiki` is armed and drives the `aitk wiki` CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against.
+The denominators disagree on purpose. Eight of 54 skills are asserted where nine of 56 scenarios are, because `infra:wiki` is armed and drives the `aitk wiki` CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against.
 
 Pairing tries two spellings, `<category>-<command>` first and bare `<command>` second. The first alone reaches 29 skills, and the fallback is what pairs `claude/setup-init.sh` to `setup-init` rather than to a `claude-setup-init` that does not exist. Stating one spelling while shipping two is what let the earlier audit report a paired skill as unpaired, so the rule lives in `skillForScenario` and this paragraph describes code rather than substituting for it.
 
