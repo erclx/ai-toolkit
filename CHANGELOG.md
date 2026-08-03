@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.41.1](https://github.com/erclx/aitk/compare/v0.41.0...v0.41.1) (2026-08-03)
+## [0.42.0](https://github.com/erclx/aitk/compare/v0.41.0...v0.42.0) (2026-08-03)
+
+
+### Features
+
+* **standards:** install a named selection expanded to its citations ([#808](https://github.com/erclx/aitk/issues/808)) ([449f02b](https://github.com/erclx/aitk/commit/449f02be0d3e8822eddc0f231b45220260b44c27))
 
 
 ### Bug Fixes
