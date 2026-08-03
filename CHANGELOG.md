@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.34.0](https://github.com/erclx/aitk/compare/v0.33.0...v0.34.0) (2026-08-03)
+
+
+### Features
+
+* **context:** retire a superseded decision rather than append beside it ([#766](https://github.com/erclx/aitk/issues/766)) ([a096722](https://github.com/erclx/aitk/commit/a096722f146db13cac3ec8d7d9f714e7002e8bf0))
+
+
+### Bug Fixes
+
+* **claude:** resolve five steps a step above them makes unreachable ([#764](https://github.com/erclx/aitk/issues/764)) ([826a5a1](https://github.com/erclx/aitk/commit/826a5a18af7636f52a5de32c24fa5a8de878f042))
+* **hero:** state the Claude Code requirement as a full sentence ([#770](https://github.com/erclx/aitk/issues/770)) ([182fd60](https://github.com/erclx/aitk/commit/182fd600c8906b80a96e2c8906ed400beebae8e4))
+* **review:** set the pass heading from the finding count ([#769](https://github.com/erclx/aitk/issues/769)) ([4f0b36b](https://github.com/erclx/aitk/commit/4f0b36b4b43961af72c0f6e7ba199f2ef476d262))
+
 ## [0.33.0](https://github.com/erclx/aitk/compare/v0.32.0...v0.33.0) (2026-08-03)
 
 
