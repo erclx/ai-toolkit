@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.0](https://github.com/erclx/aitk/compare/v0.43.0...v0.44.0) (2026-08-03)
+
+
+### Features
+
+* **tasks:** add a board validator checking rows against the tree ([#814](https://github.com/erclx/aitk/issues/814)) ([a272751](https://github.com/erclx/aitk/commit/a272751e3c2d585bb2f94a2e75849bba3e56bed3))
+
 ## [0.43.0](https://github.com/erclx/aitk/compare/v0.42.0...v0.43.0) (2026-08-03)
 
 
