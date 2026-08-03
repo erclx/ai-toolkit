@@ -59,6 +59,11 @@ export function pipeOutput(text: string): void {
   )
 }
 
+/** Counts a noun for a report line, where the plural is the bare `s` form. */
+export function plural(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`
+}
+
 export function frameError(message: string): void {
   process.stderr.write(
     `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,

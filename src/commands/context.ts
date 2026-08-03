@@ -31,6 +31,7 @@ import {
   logWarn,
   outro,
   pipeOutput,
+  plural,
 } from '@/ui'
 
 /** Returned when an unresolved citation is found, which is the gating check. */
@@ -251,10 +252,6 @@ function reportGate(report: ScannedCitations): void {
       .join('\n'),
   )
   outro()
-}
-
-function plural(count: number, noun: string): string {
-  return `${count} ${noun}${count === 1 ? '' : 's'}`
 }
 
 /**
