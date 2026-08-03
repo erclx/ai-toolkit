@@ -5,6 +5,9 @@
 # bytes move with the browser version, so asserting it in verify.sh would fail
 # on a machine whose chromium differs rather than on a stale count. Rebuild the
 # image with `aitk capture assets/hero.html` after this script reports a change.
+# The frame carries no version. `package.json` is bumped on main by the release
+# tooling, so embedding it drifts every open branch on the next release and the
+# stage then fails for work that touched nothing.
 #
 # Clone-only. `src/capture` is excluded from the published tarball, and this
 # script reads the repository's own catalogs, so a registry install has neither.
@@ -82,12 +85,20 @@ const entries = (names) =>
 
 const remaining = (names) => String(Math.max(0, names.length - listed))
 
-const version = JSON.parse(
-  await Bun.file(`${PROJECT_ROOT}/package.json`).text(),
-).version
+// An empty array is well-formed JSON, so the shell guard on an empty payload
+// does not catch a catalog whose tree went missing. A zeroed count would ship a
+// frame claiming the domain has nothing in it.
+for (const [label, list] of [
+  ["skills", skills], ["rules", rules], ["standards", standards],
+  ["snippets", [...snippets]], ["tooling stacks", toolingStacks], ["gov stacks", gov.stacks],
+]) {
+  if (list.length === 0) {
+    console.error(`regen-hero: the ${label} catalog is empty, refusing to write a zeroed hero`)
+    process.exit(1)
+  }
+}
 
 const values = {
-  VERSION: version,
   SKILL_COUNT: String(skills.length),
   RULE_COUNT: String(rules.length),
   STANDARD_COUNT: String(standards.length),

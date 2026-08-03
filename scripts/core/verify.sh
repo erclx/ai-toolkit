@@ -99,6 +99,23 @@ collect_plugin_manifests() {
   } | sort -u
 }
 
+# The drift assert covers the HTML because the PNG is a chromium render whose
+# bytes move with the browser. That leaves the artifact a visitor actually sees
+# asserted nowhere, so a branch that regenerates the HTML and never runs the
+# capture passes every stage while shipping an image with the old counts.
+#
+# The two files move together or the image is stale, so their last-touching
+# commit is the same commit. Comparing the branch's file list instead would pass
+# any branch that touched both anywhere, including one that regenerated the HTML
+# alone in a later commit. Both absent resolves to two empty strings and passes,
+# which is correct for a tree that carries neither.
+assert_hero_pair() {
+  local html_commit png_commit
+  html_commit=$(git -C "$PROJECT_ROOT" log -1 --format=%H -- assets/hero.html)
+  png_commit=$(git -C "$PROJECT_ROOT" log -1 --format=%H -- assets/hero.png)
+  [ "$html_commit" = "$png_commit" ]
+}
+
 assert_no_drift() {
   local paths=$1
   local err_msg=$2
@@ -141,6 +158,7 @@ main() {
   log_step "Hero"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-hero.sh" "Hero regen failed"
   assert_no_drift "assets/hero.html" "Hero counts drifted. Run bun run check, then aitk capture assets/hero.html, and commit assets/hero.html with assets/hero.png."
+  run_check "assert_hero_pair" "Hero HTML and image last moved in different commits, so the image may be stale. Run aitk capture assets/hero.html and commit both files together."
   log_info "Hero clean"
 
   log_step "Skill references"
