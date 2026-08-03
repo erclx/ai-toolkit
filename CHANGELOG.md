@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/erclx/aitk/compare/v0.30.1...v0.31.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** scope three target-facing skills with a requirement file ([#760](https://github.com/erclx/aitk/issues/760)) ([971186d](https://github.com/erclx/aitk/commit/971186ddc5d806f887e8f5250d420eb6729d7bcc))
+
 ## [0.30.1](https://github.com/erclx/aitk/compare/v0.30.0...v0.30.1) (2026-08-03)
 
 
