@@ -158,6 +158,15 @@ describe('measureEntry', () => {
     ).toEqual(['#632', '#634', '2026-08-02'])
   })
 
+  it('should leave a date in frontmatter unreported', () => {
+    // A diagram entry stamps `verified` with a short SHA and an ISO date, so
+    // the frontmatter strip is what keeps the field a record of the last check
+    // rather than a marker the report asks a reader to go and settle.
+    const source = `---\ntitle: Components\nverified: 7b1107ac 2026-08-02\n---\n\n# Components\n\nThe boundary holds three layers.\n`
+
+    expect(measureEntry('components.md', source).provenance).toEqual([])
+  })
+
   it('should leave a version pinned inside a fenced block unreported', () => {
     const source = `${FRONTMATTER}# CI\n\n\`\`\`bash\nbunx -y aitk@v1.2.3 --since 2026-01-01\n\`\`\`\n`
 
