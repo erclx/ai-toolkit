@@ -53,9 +53,10 @@ names one per line.
 Each entry also carries `requirement`, whether the folder holds a sibling
 `REQUIREMENT.md`. Every skill is meant to carry one, so a `false` is a gap to
 close rather than a recorded exemption, and the flag answers which skills are
-missing theirs without a caller listing the directory itself. Nothing gates the
-rule yet, which is why the flag is worth reading against the shipped corpus after
-a merge.
+missing theirs without a caller listing the directory itself. `aitk claude skills
+audit` gates that rule across both corpora, so read this flag for the state of
+the shipped catalog and the audit for whether a working tree conforms. Its
+surface is in `skills-audit.md`.
 
 ## Non-interactive examples
 
