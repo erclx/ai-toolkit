@@ -1,11 +1,11 @@
 ---
 title: Audits
-description: The context audit, the comment census, and the board validator, the three commands that measure rather than install
+description: The context audit, the skill audit, the comment census, and the board validator, the four commands that measure rather than install
 ---
 
 # Audits
 
-`aitk context audit`, `aitk comments scan`, and `aitk tasks validate` are the commands that read a tree and report on it instead of writing into one. None installs anything, and only one check across the three gates a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
+`aitk context audit`, `aitk claude skills audit`, `aitk comments scan`, and `aitk tasks validate` are the commands that read a tree and report on it instead of writing into one. None installs anything, and two checks across the four gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
 
 Both split their engine by reason to change rather than by size. `src/comments/` separates the counting pass (`scan.ts`), the history sampler (`trend.ts`), and the vocabulary loader (`vocabulary.ts`), because counting, sampling, and rule reading are three reasons to change. `src/context/` separates the folder contract (`folders.ts`), the structural measures (`audit.ts`), cited-path resolution (`citations.ts`), and index-to-sibling comparison (`index-drift.ts`), because the contract, the checkpoints, the exclusion set, and the catalog format each move on their own and only `citations.ts` gates anything.
 
@@ -39,6 +39,16 @@ The length and depth measures both count rendered lines at 80 columns, and the p
 The depth check exempts two run shapes for opposite reasons, and only one of them is about navigability. A peer list is excused because it is already skimmable, and a table because the checkpoint's remedy does not exist: a heading dropped inside one splits the table rather than the run. The exemption tests whether the run is a table rather than whether it holds one, so a table between paragraphs still reports and a heading breaks it at the seam. It applies to both corpora, which cost one finding in `docs/` and none in `.claude/context/`, where no table currently forms a run past the checkpoint.
 
 The two checkpoints share a unit because they sit in one section of the standard and a reader compares them, so `renderedHeight` serves both rather than length keeping a source count of its own. Their exclusions still differ, since the run measure skips a fence so an example cannot break the run around it and the file measure has no run to protect. Excluding fences from the file measure was weighed and dropped, because the corpus entry it would serve runs 20 percent fenced and stays past the checkpoint either way. Nothing here sets a line width, so each section's legend states the one the report used rather than leaving the number unreproducible.
+
+## The skill audit
+
+`aitk claude skills audit` measures both skill corpora against `standards/skill.md`, gating on one check and reporting six, which is the split the context audit set. Requirement presence is the fact and the rest are judgments. The gate exists because the standard required `REQUIREMENT.md` with nothing reading the rule, the shape three open issues already record.
+
+Every measure traces to a stated line, so the report carries no rule of its own. Tracing each `Must` to a stated gap is the rule in that standard worth the most, and it needs a verdict per skill, so it is named as unmeasured rather than approximated by a count. The report names its blind spots on every run, since a list of what passed reads as a verdict on the whole standard.
+
+The audit reads raw frontmatter rather than `listSkills`, which prefers the folder name over the declared one and can never surface a disagreement between them. The two also resolve their root differently. The listing reads its own install root and the audit reads the cwd, which is what lets a branch be measured by the checkout running it.
+
+The first run found nothing, which is the expected outcome rather than a broken check. Every mechanical rule passed across both corpora the day it shipped, so its value is the regression it stops. A preventive check reads as broken unless the report states what it measured.
 
 ## The comment census
 

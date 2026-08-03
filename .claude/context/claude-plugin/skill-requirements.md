@@ -9,9 +9,9 @@ Every skill folder carries `REQUIREMENT.md` beside `SKILL.md`, stating the gaps 
 
 The unit is the skill rather than the family. A single file covering the whole `git-*` family or the ship chain would state a boundary no one body could be checked against, and the boundaries worth writing down are the ones between siblings.
 
-Which skills carry the file is a fact `aitk claude skills list --json` reports as `requirement` per entry. Read coverage from the command rather than from a count written here. Nothing gates the rule, so the command is the only reading of coverage there is, and a count in prose goes stale the moment a skill is added.
+Which skills carry the file is a fact two commands report. `aitk claude skills list --json` carries `requirement` per entry across the shipped corpus, and `aitk claude skills audit` measures presence across both corpora and fails on an absence. Read coverage from either rather than from a count written here, which goes stale the moment a skill is added.
 
-The command reads the shipped corpus rather than the cwd, which is what makes it useless for verifying a branch. A dev-linked `aitk` resolves its project root from its own source, so it reports `main` no matter which worktree runs it. Verify a batch by walking `claude/skills/*/` for the file, and keep the command for confirming the state of `main` after a merge.
+The two resolve their root differently, and the difference decides which one answers a question. The listing reads the shipped corpus rather than the cwd, so a dev-linked `aitk` reports `main` no matter which worktree runs it, which is what makes it useless for verifying a branch. The audit reads the directory it is pointed at, defaulting to the cwd, so it measures the tree in hand. `verify.sh` runs it under `--requirements-only` on every push, which is the enforcement the rule went without while the standard required the file.
 
 ## The admission test that was replaced
 

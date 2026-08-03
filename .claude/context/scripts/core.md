@@ -10,7 +10,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 ## The catalog
 
 - `bootstrap.sh`, run as `bun run bootstrap`: installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent and re-runnable
-- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the skill-path, plugin-boundary, and context-citation guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
+- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the skill-path, plugin-boundary, context-citation, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
 - `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then verify
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
 - `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context
@@ -32,7 +32,7 @@ The test strips every inherited `GIT_*` variable before building its fixtures. G
 ### Stage gotchas
 
 - `check-skill-paths.sh` scans `claude/skills/**` after `regen-skill-references.sh` has written into it, so a failure lands against a generated copy the author cannot edit in place. The message names `standards/bundled/` for that reason. `assert_no_drift` is scoped by folder glob and has the same shape, flagging a hand-authored file with a message about regenerated files.
-- The context-citation stage is the one stage in `verify.sh` that calls TypeScript. It invokes `bun src/cli.ts` rather than `aitk`, because a globally installed `aitk` resolves to the main checkout no matter which worktree is running and the gate would then measure the wrong tree. Every stage above it is pure bash by construction, so a bun startup on every push is new cost this stage introduced.
+- Two stages in `verify.sh` call TypeScript, context citations and the skill-requirement gate directly below it. Each invokes `bun src/cli.ts` rather than `aitk`, because a globally installed `aitk` resolves to the main checkout no matter which worktree is running and the gate would then measure the wrong tree. Every stage above the pair is pure bash by construction, so the bun startup on every push is cost the citation stage introduced and the one below it reuses. A later TypeScript stage belongs beside them rather than higher up, which is what keeps that split readable.
 - `check-plugin-boundary.sh` collects violations and passes on an empty collection, so a missing `claude/` or a missing `realpath` would report the boundary clean or blame a leak for an absent tool. Both are guarded up front and exit 1 naming the cause. Anything added to that walk needs the same treatment, since a producer that fails and a tree that is clean both arrive as zero rows.
 
 See `.claude/context/scripts/framing.md` for how UI framing crosses the exec boundary these stages sit on.
