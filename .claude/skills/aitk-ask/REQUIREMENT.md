@@ -7,7 +7,7 @@ description: Scope boundary for answering a question about this repository from 
 
 ## Gap
 
-Without this skill, a session answering a question about this toolkit greps the repository and reconstructs the answer from source, lands on a file that mentions the term rather than the one that owns the subject, sources a target-facing answer from internal narrative written for a different reader, and returns it with no path a reader can check.
+Without this skill, a session answering a question about this toolkit greps the repository and reconstructs the answer from source, lands on a file that mentions the term rather than the one that owns the subject, sources a target-facing answer from internal narrative written for a different reader, spends a repository-wide sweep on an answer worth four lines, and returns it with no path a reader can check.
 
 Reconstruction from source is the failure that reads best and is worth least. It reports what the code currently does, which is not what the repository documents, and it arrives with no owner, so a reader who acts on it has no file to correct when it turns out to be wrong.
 

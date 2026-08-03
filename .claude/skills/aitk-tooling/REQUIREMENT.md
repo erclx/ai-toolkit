@@ -16,7 +16,6 @@ The manifest failures are silent by construction. An unquoted script key and a m
 - Run the stack's end-to-end verify before calling a config, seed, or manifest change done, since scaffolding fresh is what separates a plausible config from a working one
 - Ship only what differs from the parent layer, because a config duplicated for no reason drifts against the file it was copied from
 - Port a `base` config change to the repository root as a delta, preserving the local overrides there, since the toolkit runs on its own base tooling
-- Place a dictionary term in the narrowest layer that needs it, so no word is defined twice across the chain
 
 ## Must not
 

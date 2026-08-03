@@ -9,7 +9,7 @@ description: Scope boundary for reusable prompts, the placement test that decide
 
 Without this skill, a session files a snippet by what its topic sounds like rather than by who invokes it, adds a prompt run once per project to a catalog every session pays to list, gives a snippet frontmatter or a fill-in placeholder it does not carry, and renames a slug while presets keep naming the old one.
 
-Placement by topic is the one with a recorded cost. `v9.4` moved a whole category to `internal/` on the strength of its subject, which put runbooks out of reach of the target projects whose role those runbooks describe. The files were correct and unreachable, and nothing failed, since a snippet the plugin does not ship produces no error anywhere.
+Placement by topic is the one with a recorded cost. A whole category once moved to `internal/` on the strength of its subject, which put orchestrator runbooks out of reach of the target projects running that role. The files were correct and unreachable, and nothing failed, since a snippet the plugin does not ship produces no error anywhere.
 
 ## Must
 

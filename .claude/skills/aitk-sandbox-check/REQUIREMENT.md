@@ -7,7 +7,7 @@ description: Scope boundary for the ship-time pairing audit, and what separates 
 
 ## Gap
 
-Without this skill, a branch ships a changed skill whose scenario still exercises the body it had before, a verification run measures an arm nobody chose, a run launched from a worktree provisions against the main checkout, and an item ships unverified with no record of what stopped it.
+Without this skill, a branch ships a changed skill whose scenario still exercises the body it had before, a verification run measures an arm nobody chose, a run launched from a worktree provisions against the main checkout, a second scenario provisioned beside the first destroys it and leaves the run reading a tree the previous scenario built, and an item ships unverified with no record of what stopped it.
 
 Every one of these returns without complaint. A stale pairing reports nothing because the scenario still passes against the old behavior, and a run on the wrong arm prints a verdict in the same shape a correct one does. The branch then carries a verification receipt covering something other than what it changed, which is worse than carrying none, because the receipt is what a reviewer reads instead of checking.
 
@@ -18,7 +18,6 @@ Every one of these returns without complaint. A stale pairing reports nothing be
 - Invoke the worktree-local script, because the globally installed `aitk` resolves to the main checkout and would run main's scenarios against this branch
 - Provision one scenario and queue the rest, since a single directory per root means the second provision destroys the first
 - Name exactly one gate when an item ships without a live run, so an affordable run and an impossible one do not read the same
-- Report the verdict as it returned, including `unchecked`, which means the arm asserted nothing
 
 ## Must not
 

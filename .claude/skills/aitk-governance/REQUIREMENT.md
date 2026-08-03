@@ -7,7 +7,7 @@ description: Scope boundary for the rule catalog and its stacks, and where a rul
 
 ## Gap
 
-Without this skill, a session writes a rule straight into `.claude/rules/` where the next check deletes it, adds a source rule no stack names so it installs into nothing, picks a number outside its band so the number stops stating the domain, and widens a rule without committing the regenerated copy.
+Without this skill, a session writes a rule straight into `.claude/rules/` where the next check deletes it, adds a source rule no stack names so it installs into nothing, picks a number outside its band so the number stops stating the domain, widens a rule without committing the regenerated copy, and lands a gov-specific sync change in the engine three other domains inherit.
 
 The registration failure is the one that passes every gate. A rule sitting in `governance/rules/` under a correct number and a correct shape looks landed, and the drift assertion agrees, because the consumed copy still matches what the record resolves to. Nothing reports that the record names it nowhere, so the rule reaches no target and no session ever loads it.
 
