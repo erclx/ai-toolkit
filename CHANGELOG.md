@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.2](https://github.com/erclx/aitk/compare/v0.35.1...v0.35.2) (2026-08-03)
+
+
+### Bug Fixes
+
+* **skills:** scope pull request lookups to an open head ([#783](https://github.com/erclx/aitk/issues/783)) ([caa322b](https://github.com/erclx/aitk/commit/caa322b24bdff76dc3593717a3297c6d3a438a88))
+
 ## [0.35.1](https://github.com/erclx/aitk/compare/v0.35.0...v0.35.1) (2026-08-03)
 
 
