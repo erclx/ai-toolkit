@@ -3,7 +3,6 @@ import type { Command } from 'commander'
 import {
   BULLET_CHECKPOINT,
   type EntryReport,
-  type FolderSections,
   governsContent,
   LENGTH_CHECKPOINT,
   measureFolders,
@@ -13,6 +12,7 @@ import {
   RENDER_WIDTH,
   REQUIRED_SECTIONS,
   RUN_CHECKPOINT,
+  type SectionFinding,
 } from '@/context/audit'
 import { auditCitations, type CitationReport } from '@/context/citations'
 import {
@@ -258,18 +258,16 @@ function reportCitations(report: ScannedCitations): void {
 }
 
 /**
- * Reports per folder rather than per entry, and states the reach on every run
- * for the reason the provenance report does.
+ * Names the path each finding belongs to, which is an entry in the folder named
+ * under `.claude/` and the folder itself in a domain split across one. States
+ * the reach on every run for the reason the provenance report does.
  *
- * A sibling satisfies a required section, so the entry declaring it is not what
- * a reader acts on. What they act on is which folder is short of one and which
- * one it is, and the folder is also the only place a fix can be judged. This
- * prints ahead of the four readability measures because a missing section asks
- * whether the entry is the right shape at all, which precedes asking whether it
- * has grown too long.
+ * This prints ahead of the four readability measures because a missing section
+ * asks whether the entry is the right shape at all, which precedes asking
+ * whether it has grown too long.
  */
 function reportSections(
-  missing: readonly FolderSections[],
+  missing: readonly SectionFinding[],
   folders: readonly AuditedFolder[],
 ): void {
   logStep('Sections')
@@ -286,18 +284,18 @@ function reportSections(
     `Covers .claude/${PROVENANCE_FOLDER}/ alone, whose standard requires ${REQUIRED_SECTIONS.join(' and ')}.`,
   )
   logInfo(
-    'A heading at any level counts, and one entry answers for its whole folder.',
+    'A heading at any level counts. Each entry answers for itself, except in a domain split across a folder, where a sibling answers for the rest.',
   )
 
   if (missing.length === 0) {
-    logInfo('Every folder declares each required section.')
+    logInfo('Every entry declares each required section.')
     return
   }
 
-  logWarn(`${plural(missing.length, 'folder')} short a required section`)
+  logWarn(`${plural(missing.length, 'path')} short a required section`)
   pipeOutput(
     missing
-      .map((folder) => `${folder.rel}  missing: ${folder.missing.join(', ')}`)
+      .map((found) => `${found.rel}  missing: ${found.missing.join(', ')}`)
       .join('\n'),
   )
 }

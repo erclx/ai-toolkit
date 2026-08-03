@@ -168,10 +168,14 @@ export interface EntryReport {
   readonly sections: readonly string[]
 }
 
-export interface FolderSections {
-  /** Repo-relative folder path, matching the `rel` a report line carries. */
+export interface SectionFinding {
+  /**
+   * Repo-relative path of whatever owes the sections: the entry itself in the
+   * folder named under `.claude/`, and the folder in a domain split across
+   * one, since the split folder's entries answer for each other.
+   */
   readonly rel: string
-  /** Required sections no entry in the folder declares, never empty. */
+  /** Required sections the path above does not declare, never empty. */
   readonly missing: readonly string[]
 }
 
@@ -548,42 +552,53 @@ export function governsContent(folder: AuditedFolder): boolean {
 }
 
 /**
- * Rolls the per-entry declarations up to the folder that has to satisfy them.
+ * Names what does not declare the sections the standard requires.
  *
- * A required section is answered by any one entry rather than by each of them.
- * Three folders here split a domain across files and carry the overview and the
- * layout in a sibling named for them, so a per-file rule would report every
- * other child of all three and teach its reader to skip the whole check.
+ * Which unit answers depends on what the folder is. A split folder's entries
+ * describe one domain between them and carry the overview and the layout in a
+ * sibling named for them, so any one of them answers and a per-file rule there
+ * would report every other child of all three shipped splits. The entries of
+ * the folder named under `.claude/` are one domain each, so each answers for
+ * itself. Rolling those up too was the first shape of this check, and it let a
+ * single sibling stand in for thirteen domains it says nothing about.
  *
- * The judgment sits in the caller because it needs the folder's other entries,
- * which `measureFolders` holds and `measureEntry` does not. A folder with no
- * entries of its own is a split parent holding an index and subfolders, and it
- * has nothing to require a section of.
+ * The judgment sits in the caller because the split case needs the folder's
+ * other entries, which `measureFolders` holds and `measureEntry` does not. A
+ * folder with no entries of its own is a split parent holding an index and
+ * subfolders, and it has nothing to require a section of.
  *
  * The standard sanctions omitting `## Layout` from a domain owning no paths,
- * which no measure can tell from an entry that forgot it. A folder whose only
- * domain is that shape therefore reports, which is a reason this judgment is
- * printed rather than gated on.
+ * which no measure can tell from an entry that forgot it. An entry of that
+ * shape therefore reports, which is a reason this is printed and never gated on.
  */
 export function missingSections(
   root: string,
   folders: readonly AuditedFolder[],
   entries: readonly EntryReport[],
-): FolderSections[] {
+): SectionFinding[] {
   const byRel = new Map(entries.map((entry) => [entry.rel, entry]))
-  const findings: FolderSections[] = []
+  const findings: SectionFinding[] = []
+
+  const shortOf = (declared: readonly string[]): string[] =>
+    REQUIRED_SECTIONS.filter((name) => !declared.includes(name))
 
   for (const folder of folders) {
     if (!governsContent(folder) || folder.entries.length === 0) continue
 
-    const declared = new Set(
-      folder.entries.flatMap(
-        (path) => byRel.get(relative(root, path))?.sections ?? [],
-      ),
-    )
-    const missing = REQUIRED_SECTIONS.filter((name) => !declared.has(name))
+    const reports = folder.entries
+      .map((path) => byRel.get(relative(root, path)))
+      .filter((entry) => entry !== undefined)
 
-    if (missing.length > 0) findings.push({ rel: folder.rel, missing })
+    if (folder.nested) {
+      const missing = shortOf(reports.flatMap((entry) => entry.sections))
+      if (missing.length > 0) findings.push({ rel: folder.rel, missing })
+      continue
+    }
+
+    for (const entry of reports) {
+      const missing = shortOf(entry.sections)
+      if (missing.length > 0) findings.push({ rel: entry.rel, missing })
+    }
   }
 
   return findings

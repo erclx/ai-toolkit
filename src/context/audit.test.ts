@@ -455,26 +455,41 @@ describe('missingSections', () => {
     )
   }
 
-  it('should report both sections when no entry declares either', async () => {
+  it('should report both sections against the entry declaring neither', async () => {
     seedFolder('.claude/context', {
       'ci.md': '# CI\n\n## Triggers\n\nOn every push.\n',
     })
 
-    expect(await missingIn('.claude/context')).toEqual(['Overview', 'Layout'])
+    expect(await missingIn('.claude/context/ci.md')).toEqual([
+      'Overview',
+      'Layout',
+    ])
   })
 
-  it('should report the one section the folder is short of', async () => {
+  it('should report the one section the entry is short of', async () => {
     seedFolder('.claude/context', {
       'ci.md': '# CI\n\n## Overview\n\nOwns the workflow.\n',
     })
 
-    expect(await missingIn('.claude/context')).toEqual(['Layout'])
+    expect(await missingIn('.claude/context/ci.md')).toEqual(['Layout'])
   })
 
-  it('should leave a folder declaring every required section unreported', async () => {
+  it('should leave an entry declaring every required section unreported', async () => {
     seedFolder('.claude/context', { 'ci.md': CONFORMING })
 
-    expect(await missingIn('.claude/context')).toEqual([])
+    expect(await missingIn('.claude/context/ci.md')).toEqual([])
+  })
+
+  it('should hold each entry of the named folder to the sections itself', async () => {
+    // The named folder's entries are one domain each, so a conforming sibling
+    // answers for nothing. Rolling this folder up let one entry stand in for
+    // every other domain beside it.
+    seedFolder('.claude/context', {
+      'ci.md': CONFORMING,
+      'web.md': '# Web\n\n## Overview\n\nOwns the client.\n',
+    })
+
+    expect(await missingIn('.claude/context/web.md')).toEqual(['Layout'])
   })
 
   it('should accept a split folder where one sibling carries the sections', async () => {
@@ -485,6 +500,19 @@ describe('missingSections', () => {
     })
 
     expect(await missingIn('.claude/context/scripts')).toEqual([])
+  })
+
+  it('should report a split folder against the folder rather than its entries', async () => {
+    seedFolder('.claude/context', { 'ci.md': CONFORMING })
+    seedFolder('.claude/context/scripts', {
+      'lib.md': '# Lib\n\n## Decisions\n\nOne concern a file.\n',
+    })
+
+    expect(await missingIn('.claude/context/scripts')).toEqual([
+      'Overview',
+      'Layout',
+    ])
+    expect(await missingIn('.claude/context/scripts/lib.md')).toEqual([])
   })
 
   it('should leave a split parent carrying no entries of its own unreported', async () => {
@@ -499,6 +527,6 @@ describe('missingSections', () => {
       'components.md': '# Components\n\n## Components\n\nThree layers.\n',
     })
 
-    expect(await missingIn('.claude/diagrams')).toEqual([])
+    expect(await missingIn('.claude/diagrams/components.md')).toEqual([])
   })
 })

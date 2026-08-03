@@ -132,10 +132,11 @@ seed_drift() {
   rm .claude/context/web.md
 }
 
-# A flat folder short of both sections beside a split one carrying them in the
-# sibling named for them. The required-section rule is answered per folder
-# rather than per file, so an arm seeding only the first would pass while the
-# exemption that keeps three shipped folders quiet went unmeasured.
+# Three shapes the required-section rule reads differently. A short entry in the
+# named folder reports, a conforming sibling beside it answers for itself alone,
+# and a split folder is answered by the one sibling named for the sections. An
+# arm seeding only the first would pass while both halves of the unit rule went
+# unmeasured.
 seed_short_sections() {
   mkdir -p .claude/context/scripts
 
@@ -149,8 +150,26 @@ subtitle: Per-domain narrative loaded on demand
 
 Per-domain narrative loaded on demand
 
+- [CI](ci.md): An entry declaring both required sections
 - [Short](short.md): An entry declaring neither required section
 INDEX
+
+  cat <<'ENTRY' >.claude/context/ci.md
+---
+title: CI
+description: An entry declaring both required sections
+---
+
+# CI
+
+## Overview
+
+Owns the workflow that gates a merge.
+
+## Layout
+
+- `.github/workflows/` owns the workflow definitions
+ENTRY
 
   cat <<'ENTRY' >.claude/context/short.md
 ---
@@ -217,7 +236,7 @@ stage_setup() {
   log_info "clean         : a conforming folder reports no findings and exits 0"
   log_info "stale         : an unresolved citation fails the gate with exit 2"
   log_info "illustration  : fence, fixture, and marker exclusions hold"
-  log_info "sections      : a folder short of both reports, a split one does not"
+  log_info "sections      : a short entry reports, a sibling does not answer for it"
   log_info "depth         : a long run reports and a peer list is exempt"
   log_info "tables        : a growing catalog reports, a fixed table does not"
   log_info "drift         : index and siblings disagree in both directions"
@@ -259,7 +278,8 @@ stage_setup() {
     seed_short_sections
     log_step "Running: aitk context audit"
     run_audit
-    log_info "Expect: .claude/context missing Overview and Layout"
+    log_info "Expect: short.md alone reported, missing Overview and Layout"
+    log_info "Expect: ci.md beside it answers for itself and does not cover short.md"
     log_info "Expect: .claude/context/scripts silent, its overview.md carries both"
     log_info "Expect: exit 0, since a missing section reports rather than gates"
     ;;
