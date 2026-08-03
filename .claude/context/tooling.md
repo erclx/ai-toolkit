@@ -53,6 +53,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Non-`.txt` seeds are copy-once. To re-seed a structured file, delete it and sync again.
 - Config copies must preserve an existing destination's mode, not the source's. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy that applied the source mode would strip the executable bit on the `web` and `astro` chains. `cp` kept the destination mode and `copyPreservingMode` in `src/copy.ts` reproduces that. It sits at the top level rather than in `src/tooling/` because the sync engine needs the same guarantee.
 - `Bun.Glob` skips dotfiles unless `dot: true` is set. Tooling configs are almost entirely dotfiles, so omitting it matches 4 of 14 files in `base` and fails silently.
+- The base stack seeds `.claude/context/index.md` beside its entries, and `tooling/claude/seeds/` ships a byte-identical copy. Neither installer overwrites an existing file, so whichever runs first wins and matching frontmatter keeps the outcome the same. Without the base copy the tree carries no index, and `resolveFolders` skips a folder lacking one, so the shipped entries were not auditable.
 - Per-stack `ci.md` and `development.md` seeds are not shipped, because seeds are user-owned and never overwritten. Stack references carry `## CI docs (extend)` sections telling the agent which rows to append instead.
 
 ## Manifest authoring

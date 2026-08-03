@@ -5,7 +5,14 @@ description: Local dev workflow, scripts, and husky hooks
 
 # Development
 
-Local dev workflow for this project.
+## Overview
+
+Owns how the project runs on a developer machine: installing the toolchain, the scripts that verify a change, and the git hooks that run them before a commit or a push leaves. CI calls the same scripts from a workflow, which is the CI entry's subject.
+
+## Layout
+
+- `scripts/` owns the shell scripts the package scripts below call
+- `.husky/` owns the git hooks
 
 ## Setup
 
