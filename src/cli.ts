@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { Command } from 'commander'
 import { register as init } from '@/commands/init'
 import { register as sandbox } from '@/commands/sandbox'
@@ -20,6 +22,7 @@ import { register as transcripts } from '@/commands/transcripts'
 import { register as tasks } from '@/commands/tasks'
 import { register as comments } from '@/commands/comments'
 import { register as context } from '@/commands/context'
+import { PROJECT_ROOT } from '@/exec'
 
 const GREY = '\x1b[0;90m'
 const WHITE = '\x1b[1;37m'
@@ -87,10 +90,26 @@ function showHelp(): void {
   console.log(lines.join('\n'))
 }
 
+/**
+ * Read at runtime rather than inlined, because a literal here is a second place
+ * the version lives and it stopped tracking `package.json` at `0.1.0`. The
+ * release tool writes one file and this follows it. `package.json` ships in
+ * every npm tarball regardless of the `files` list, so the read resolves from a
+ * registry install as well as from a clone.
+ */
+function readVersion(): string {
+  try {
+    const raw = readFileSync(join(PROJECT_ROOT, 'package.json'), 'utf8')
+    return (JSON.parse(raw) as { version?: string }).version ?? 'unknown'
+  } catch {
+    return 'unknown'
+  }
+}
+
 const program = new Command()
 program
   .name('aitk')
-  .version('0.1.0')
+  .version(readVersion())
   .enablePositionalOptions()
   .helpOption(false)
 program.action(() => showHelp())

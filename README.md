@@ -21,7 +21,7 @@ claude plugin install aitk@aitk
 
 ![Adding the aitk marketplace and installing the plugin in Claude Code](assets/install.png)
 
-The skills land as `/aitk:<name>`. If your session was already open, run `/reload-plugins` to pick them up. Updates arrive on release, so a push to this repo won't reach your installed copy.
+The skills land as `/aitk:<name>`. If your session was already open, run `/reload-plugins` to pick them up.
 
 Several skills call the `aitk` CLI to read catalogs and run installs, and the plugin doesn't put it on your path. Install it from the registry.
 
@@ -30,6 +30,20 @@ bun install --global @erclx/aitk
 ```
 
 [Bun](https://bun.sh) is the CLI runtime and has to be on your path first. Confirm the install by resolving `aitk --help`.
+
+## Update
+
+Nothing refreshes on its own. Claude Code ships auto-update off for third-party marketplaces, so an installed copy serves whatever version it was installed at until you refresh it.
+
+```bash
+claude plugin marketplace update aitk
+claude plugin update aitk@aitk
+bun install --global @erclx/aitk
+```
+
+The first two update the skills, the third updates the CLI, and they move independently. Restart Claude Code, or run `/reload-plugins`, to pick the skills up.
+
+To stop doing this by hand, turn auto-update on once under `/plugin` in the Marketplaces tab. Confirm what you are running with `aitk --version` and `claude plugin list`.
 
 ## Why
 
