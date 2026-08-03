@@ -13,7 +13,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "happy-path" "prose-only"
+  select_or_route_scenario "Which scenario?" "happy-path" "prose-informational" "prose-executable"
 
   log_step "Configuring autoship environment ($ANCHOR_REPO)"
 
@@ -112,7 +112,7 @@ EOF
     log_info "         then captures session memory and runs Propose over the pen"
     log_info "         receipt at .claude/review/memory-review-<slug>.md; Apply is NOT run"
     ;;
-  "prose-only")
+  "prose-informational")
     cat <<'EOF' >package.json
 {
   "name": "sandbox-autoship-prose",
@@ -174,12 +174,95 @@ None identified.
 None identified.
 EOF
 
-    log_step "Scenario ready: autoship prose-only diff"
+    log_step "Scenario ready: autoship informational prose diff"
     log_info "Context: feat/expand-intro branch with a plan that touches only docs/intro.md"
     log_info "Action:  /claude-autoship"
-    log_info "Expect:  implements prose update, verify passes, REVIEW IS SKIPPED (prose-only diff), PR opened as draft"
+    log_info "Expect:  implements prose update, verify passes, REVIEW IS SKIPPED, PR opened as draft"
+    log_info "         docs/ is outside every behavior path, so both classifier tests pass"
     log_info "         autoship Step 5 should print the skip rationale rather than invoking claude-review"
     log_info "         pen is empty, so capture and Propose no-op and the fourth output line is omitted"
+    ;;
+  "prose-executable")
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-autoship-skill",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "echo 'format ok'"
+  }
+}
+EOF
+
+    cat <<'EOF' >CLAUDE.md
+# My App
+
+Service repo carrying its own project-local skills.
+
+## Commands
+
+- `bun run check`: format check
+EOF
+
+    mkdir -p docs
+    cat <<'EOF' >docs/intro.md
+# Intro
+
+Project overview goes here.
+EOF
+
+    mkdir -p .claude/skills/deploy-check
+    cat <<'EOF' >.claude/skills/deploy-check/SKILL.md
+---
+name: deploy-check
+description: Verifies a release candidate before promotion. Use when asked to "check the deploy" or "verify the candidate".
+---
+
+# Deploy check
+
+## Step 1: read the candidate
+
+Read the tag the release job wrote.
+
+## Step 2: report
+
+Report the tag and stop. Do not promote.
+EOF
+
+    git add . && git commit --allow-empty -m "feat(project): initial service layout" --no-verify -q
+    git push --force origin HEAD:main
+
+    git push origin --delete feat/tighten-deploy-check -q 2>/dev/null || true
+    git checkout -b feat/tighten-deploy-check -q
+
+    mkdir -p .claude/plans .claude/review
+
+    cat <<'EOF' >.claude/plans/feature-tighten-deploy-check.md
+# Feature: tighten the deploy-check skill
+
+Give `deploy-check` a stop condition when no tag resolves, so the skill reports the miss rather than reading an empty value as a pass.
+
+**Files to touch:**
+
+- `.claude/skills/deploy-check/SKILL.md`: add the stop condition to Step 1
+
+**Risks:**
+
+None identified.
+
+**Questions:**
+
+None identified.
+EOF
+
+    log_step "Scenario ready: autoship executable prose diff"
+    log_info "Context: feat/tighten-deploy-check branch with a plan touching only a SKILL.md body"
+    log_info "Action:  /claude-autoship"
+    log_info "Expect:  implements the stop condition, verify passes, REVIEW RUNS, PR opened as draft"
+    log_info "         the diff is all markdown, so the extension test passes and the path test fails"
+    log_info "         .claude/skills/ is a behavior path, so Step 5 must invoke claude-review"
+    log_info "         a skipped review here is the defect this arm exists to catch"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
