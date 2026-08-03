@@ -31,5 +31,5 @@ Placement by topic is the one with a recorded cost. A whole category once moved 
 ## Out of scope
 
 - What a snippet is, its invocation channels, and its authoring conventions, which the bundled snippets standard states
-- Creating a snippet inside a target project, which the shipped `create-standard` skill does after resolving which surface it is writing to
+- Creating a snippet inside a target project, which the shipped `create-snippet` skill does after resolving which surface it is writing to
 - Skills, which carry frontmatter and load on a description match rather than on an explicit invocation: `aitk-claude`
