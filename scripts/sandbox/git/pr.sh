@@ -73,10 +73,13 @@ EOF
       --head feat/slugify \
       --base main | grep -oE '[0-9]+$')
 
+    # `-d` deletes the branch and switches back to main itself, so the checkout is
+    # a no-op on current gh and the delete finds nothing left to remove. Both stay
+    # tolerant rather than assuming which half gh already did.
     gh pr close "$stale_pr" -d -c "closed to stage the reused name" >/dev/null
 
     git checkout main -q
-    git branch -D feat/slugify >/dev/null
+    git branch -D feat/slugify >/dev/null 2>&1 || true
     git reset --hard origin/main -q
 
     git checkout -b feat/slugify -q

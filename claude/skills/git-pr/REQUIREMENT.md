@@ -20,7 +20,7 @@ A lookup that resolves by head branch alone carries its own failure. A branch na
 - Scan the title and body for banned characters and internal phase labels as an explicit step, on top of reading the prose standard
 - Detect an open pull request and edit it in place, so a follow-up push keeps the body in sync instead of failing
 - Scope that detection to an open pull request on the current head, so a reused branch name never resolves to a merged one
-- Resolve the pull request once and reuse what that resolution returned, since a second lookup is the same defect one step later
+- Resolve the pull request once and reuse what that resolution returned, so the number recorded never depends on how a lookup ranks two pull requests sharing a head
 
 ## Must not
 

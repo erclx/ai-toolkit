@@ -102,7 +102,7 @@ printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 
 ### Record the number on the task
 
-Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again, since a second lookup reintroduces the state-blind read the final command exists to avoid.
+Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. A head branch that carried an earlier pull request now has two, and a second `gh pr view` would pick between them by a precedence rule nothing here states. Reading what created or edited the pull request needs no such rule.
 
 Find the task by reading `.claude/tasks/` at the main worktree root, resolved with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. The board is shared scratch, so a linked worktree writing to its own `pwd` creates a second board nothing reads.
 
