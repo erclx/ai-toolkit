@@ -57,7 +57,8 @@ Owns the markdown docs defining developer workflow conventions. They install int
 
 - `install --only <names>` selects, and the selection expands to the transitive closure of what those standards cite, so a subset cannot land a dangling reference. Warning and shipping anyway was the alternative and leaves a broken target behind a message nobody reads. Closure lives in `src/standards/closure.ts` rather than inside `planInstall`, which keeps the listing verb a lister.
 - The dependency is parsed from the prose, since a backticked filename is the only place a standard names a sibling. Every candidate resolves case-exactly against the flat root, dropping a fenced example, a target's own `.claude/ARCHITECTURE.md`, and a bundled standard install never copies. Matching the listing rather than probing the filesystem is load-bearing, since a case-insensitive volume resolves `SKILL.md` onto `skill.md`.
-- The measured reduction is near zero. The graph is strongly connected, so `slug.md` is the only standard citing nothing and installing alone, every other single name reaches fourteen of fifteen, and `standard.md` reaches all fifteen. The flag installs a leaf, not a slice. Whether the corpus over-cites is the separate question, and it sits on the task board rather than in this branch.
+- A citation inside the `Does not govern:` list is a handoff rather than a dependency, and the closure stops at it. That entry says the sibling owns a concern this standard does not, so a caller who declined that concern does not need the file. It is reported as an unresolved pointer instead, which is what lets the caller add the name deliberately.
+- Splitting the two citation classes is what makes the flag useful. Following both, the mean closure over a single name was 14.1 of 15 and only `slug.md` landed alone, because nearly all the corpus density sits in those scope lists. Following dependencies alone, the mean is 1.4 and the largest is `publish.md` at 3. The same measurement is the reason the corpus needs no de-citing pass.
 - A selection is an option rather than a positional. `install [target]` already ships, so a leading `[selection]` would read `aitk standards install ../app` as a standard name. Snippets took the positional because its category argument came first from the start.
 - An unknown name fails the run rather than being warned and dropped, unlike `--skip` on `aitk init`. A dropped name silently omits a standard the caller asked for and computes the closure over the wrong set.
 
@@ -105,7 +106,7 @@ Flags and arguments live in `docs/agents/scripting.md`. `--json` emits `{standar
 
 ```bash
 aitk standards install ../my-app                # copies all standards into .claude/standards/
-aitk standards install --only slug ../my-app    # copies one, plus what it cites
+aitk standards install --only slug ../my-app    # copies one, plus what it depends on
 aitk standards sync ../my-app                   # diffs what is already present
 ```
 

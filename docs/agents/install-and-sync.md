@@ -51,18 +51,24 @@ standard fails the run with exit 1 rather than being dropped, because a typo
 would otherwise omit a standard silently and compute the closure over the wrong
 set. `aitk init --standards <selection>` passes the same value through.
 
-The selection expands to the standards it cites, so nothing lands with a
+The selection expands to the standards it depends on, so nothing lands with a
 dangling reference. A citation is a backticked filename in a standard's body,
 resolved case-exactly against the flat `standards/` root, which is what drops a
 citation naming a target's own `.claude/ARCHITECTURE.md` or a bundled standard
 install never copies. Whatever the expansion adds is listed under its own step
 in the output.
 
-Reduction is smaller than the flag suggests. The citation graph is strongly
-connected, so of the fifteen standards only `slug.md` cites nothing and installs
-alone. Every other single name reaches fourteen, and `standard.md` reaches all
-fifteen. Treat the flag as a way to install one leaf standard, not as a way to
-take a slice of the corpus.
+A citation inside a standard's `Does not govern:` list is a handoff rather than
+a dependency, and the closure stops at it. That entry names a concern a sibling
+owns and this standard does not, so a caller who did not ask for that concern
+does not need the file. Each one is reported under a `Scope handoffs not
+installed` step, naming what to add to `--only` if the project wants it after
+all.
+
+That split is what keeps a selection to a slice. Nearly all the citation density
+in the corpus sits inside those scope lists, so following them pulls the whole
+corpus in behind any single name. Following dependencies alone, a single name
+lands between one and three of the fifteen.
 
 ## Governance regen
 

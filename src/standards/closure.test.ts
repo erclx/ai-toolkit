@@ -64,37 +64,94 @@ describe('citedStandards', () => {
   const available = new Set(['prose.md', 'skill.md', 'versioning.md'])
 
   it('should read a backticked sibling citation', () => {
-    expect(citedStandards('See `prose.md` for voice.', available)).toEqual([
-      'prose.md',
-    ])
+    expect(
+      citedStandards('See `prose.md` for voice.', available).cited,
+    ).toEqual(['prose.md'])
   })
 
   it('should resolve a path-prefixed citation by its basename', () => {
     expect(
-      citedStandards('`standards/versioning.md` governs it.', available),
+      citedStandards('`standards/versioning.md` governs it.', available).cited,
     ).toEqual(['versioning.md'])
   })
 
   it('should drop a citation that names no installable standard', () => {
     expect(
-      citedStandards('`.claude/ARCHITECTURE.md` holds it.', available),
+      citedStandards('`.claude/ARCHITECTURE.md` holds it.', available).cited,
     ).toEqual([])
   })
 
   it('should drop a citation differing only in case', () => {
-    expect(citedStandards('Write `SKILL.md` at the root.', available)).toEqual(
+    expect(
+      citedStandards('Write `SKILL.md` at the root.', available).cited,
+    ).toEqual([])
+  })
+
+  it('should ignore a filename written without backticks', () => {
+    expect(citedStandards('See prose.md for voice.', available).cited).toEqual(
       [],
     )
   })
 
-  it('should ignore a filename written without backticks', () => {
-    expect(citedStandards('See prose.md for voice.', available)).toEqual([])
-  })
-
   it('should report each sibling once', () => {
     expect(
-      citedStandards('`prose.md` and again `prose.md`.', available),
+      citedStandards('`prose.md` and again `prose.md`.', available).cited,
     ).toEqual(['prose.md'])
+  })
+
+  it('should delegate a citation inside the does-not-govern list', () => {
+    const body = [
+      '## Scope',
+      '',
+      'Governs a thing.',
+      '',
+      'Does not govern:',
+      '',
+      '- Voice and punctuation: `prose.md`',
+      '',
+      '## Shape',
+      '',
+      'Write it well.',
+    ].join('\n')
+
+    const citations = citedStandards(body, available)
+
+    expect(citations.cited).toEqual([])
+    expect(citations.delegated).toEqual(['prose.md'])
+  })
+
+  it('should resume citing after the list ends at the next heading', () => {
+    const body = [
+      'Does not govern:',
+      '',
+      '- Voice and punctuation: `prose.md`',
+      '',
+      '## Shape',
+      '',
+      'Read `versioning.md` before tagging.',
+    ].join('\n')
+
+    const citations = citedStandards(body, available)
+
+    expect(citations.cited).toEqual(['versioning.md'])
+    expect(citations.delegated).toEqual(['prose.md'])
+  })
+
+  it('should keep a name cited outside the list as a dependency', () => {
+    const body = [
+      'Does not govern:',
+      '',
+      '- Voice and punctuation: `prose.md`',
+      '',
+      '## Rules',
+      '',
+      '`prose.md` holds the character bans. Read it at scan time.',
+    ].join('\n')
+
+    const citations = citedStandards(body, available)
+
+    expect(citations.cited).toEqual(['prose.md'])
+    expect(citations.delegated).toEqual([])
   })
 })
 
@@ -252,5 +309,60 @@ describe('selectStandards', () => {
     expect(result.selection.files.map((file) => file.name)).toEqual([
       'prose.md',
     ])
+  })
+
+  it('should not expand on a does-not-govern handoff', async () => {
+    const available = await makeCorpus({
+      'skill.md': 'Does not govern:\n\n- Voice: `prose.md`\n',
+      'prose.md': '# prose\n',
+    })
+
+    const result = selectStandards(available, 'skill')
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.selection.files.map((file) => file.name)).toEqual([
+      'skill.md',
+    ])
+    expect(result.selection.added).toEqual([])
+  })
+
+  it('should report a handoff that did not land as unresolved', async () => {
+    const available = await makeCorpus({
+      'skill.md': 'Does not govern:\n\n- Voice: `prose.md`\n',
+      'prose.md': '# prose\n',
+    })
+
+    const result = selectStandards(available, 'skill')
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.selection.unresolved).toEqual(['prose.md'])
+  })
+
+  it('should not report a handoff the caller also selected', async () => {
+    const available = await makeCorpus({
+      'skill.md': 'Does not govern:\n\n- Voice: `prose.md`\n',
+      'prose.md': '# prose\n',
+    })
+
+    const result = selectStandards(available, 'skill,prose')
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.selection.unresolved).toEqual([])
+  })
+
+  it('should report no handoffs for the all selection', async () => {
+    const available = await makeCorpus({
+      'skill.md': 'Does not govern:\n\n- Voice: `prose.md`\n',
+      'prose.md': '# prose\n',
+    })
+
+    const result = selectStandards(available, 'all')
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.selection.unresolved).toEqual([])
   })
 })

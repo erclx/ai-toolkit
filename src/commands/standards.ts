@@ -103,12 +103,19 @@ async function runInstall(target: string, selection: string): Promise<number> {
     return 1
   }
 
-  const { files, requested, added } = result.selection
+  const { files, requested, added, unresolved } = result.selection
   for (const name of requested) logInfo(join(STANDARDS_REL, name))
 
   if (added.length > 0) {
     logStep(`Added by citation (${added.length})`)
     for (const name of added) logInfo(join(STANDARDS_REL, name))
+  }
+
+  if (unresolved.length > 0) {
+    logStep(`Scope handoffs not installed (${unresolved.length})`)
+    for (const name of unresolved) logWarn(name)
+    logInfo('Each names a concern these standards do not govern. Add a name')
+    logInfo('to --only if the project needs that standard as well.')
   }
 
   const shouldInstall = await select({
