@@ -77,7 +77,7 @@ Then run Steps 4 through 8. Step 3 is the only one this skips, because it is the
 Three of the steps that follow write, so each earns the reach separately:
 
 - Steps 4 and 5 stub against the diff. These are why the skip is not a stop. A session that changed no docs is exactly when an uncovered surface or diagram kind goes unnoticed.
-- Step 7 rewrites context entries against the diff. The Diff baseline section above already groups it with Steps 4 and 5 as a scoped-set step, so a quiet session is no different from any other for it.
+- Step 7 rewrites context entries against the diff and against the facts `claude-memory-capture` routed. The Diff baseline section above groups its diff half with Steps 4 and 5 as a scoped-set step, so a quiet session is no different from any other for it. The routed half reads a named file and runs whatever the diff shows.
 - Step 8 reads the board rather than the session. Its board-wide scan exists to clear a plan an earlier run stranded, and a run that stops at Step 2 can never reach one.
 
 This changes which steps the skill reaches. It does not widen what any of them reads. Steps 4, 5, and 7 still take the same scoped set the Diff baseline section defines, and that section's rule is about the input a write is handed rather than about which writes run.
@@ -201,7 +201,17 @@ Do not edit `CLAUDE.md` inline. Every `CLAUDE.md` change goes through the show-d
 
 ## Step 7: refresh context entries
 
-Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries. When the baseline is unusable, scope it to the working tree and untracked files, and skip it only when that set is empty, reporting `⚠ No diff to scope against. Skipped the context refresh.`
+Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
+
+Two sources feed this step, the same split Step 2 runs on. The diff carries what the repository changed. The routed facts carry what the session learned, which a diff cannot show.
+
+**Routed facts.** Derive `<slug>` per `.claude/standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root. `claude-memory-capture` writes it, one H2 per target entry naming the path, with the fact underneath. Fold each fact into the entry its heading names, then delete the handoff file so a later run does not fold it twice.
+
+This half is not diff-scoped and must not be. A gotcha a session hit while working is exactly the fact the diff never shows, and scoping it to changed files would drop the entries worth keeping. The handoff is a named input rather than a scan, so the reach stays bounded to what capture decided.
+
+Skip this half silently when the file is absent, which is every run where nothing routed.
+
+**The diff.** When the baseline is unusable, scope this half to the working tree and untracked files, and skip it only when that set is empty, reporting `⚠ No diff to scope against. Skipped the context refresh.` The routed half still runs, since it reads a file rather than a diff.
 
 Reuse the diff from the baseline above, names and content both. For each existing `.claude/context/<domain>.md`:
 
@@ -213,6 +223,10 @@ Do not create new entries automatically. New entries are a deliberate decision: 
 Write each updated entry immediately. Output one line per file:
 
 `✅ Context: .claude/context/<domain>.md`
+
+Add a line naming the handoff when one was consumed:
+
+`🧹 Folded: .claude/.tmp/memory-routing/<slug>.md`
 
 The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 

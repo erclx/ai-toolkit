@@ -13,7 +13,7 @@ Read these in parallel, skipping any that do not exist:
 
 - `.claude/tasks/index.md`: the backlog, one line per task. Read this before any individual task file.
 - `.claude/plans/*.md`: execution detail for in-progress tasks
-- `.claude/memory/MEMORY.md` and any memory files relevant to the top backlog item
+- `.claude/memory/index.md` and any memory files relevant to the top backlog item
 
 Then read only the task files the summary needs, typically the top one. Do not read the whole folder.
 
@@ -33,4 +33,4 @@ Output three sections:
 
 End with one line: `Start with: <first Up next item>` and note whether it has a linked plan.
 
-Do not offer to remove entries. A completed task is archived out of `.claude/tasks/` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume.
+Do not offer to remove entries. A completed task is archived out of `.claude/tasks/` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the plan lifecycle rule in `CLAUDE.md`. Memory is updated only when a recorded fact becomes wrong, never on resume. A domain fact reaches a session through `.claude/context/`, which `claude-memory-capture` routes to and the three-tier model loads on demand, so the memory folder read here is the residue no context entry owns.

@@ -14,26 +14,29 @@ Run `git diff --cached --name-only 2>/dev/null` to check for staged files. If ou
 
 ## Sequence
 
-1. Invoke `aitk:claude-docs` to sync internal planning docs against session decisions
-2. Invoke `aitk:docs-sync` to sync public docs against changes since main
-3. Run `git add -A` to stage any files the sync skills wrote
-4. Invoke `aitk:git-stage` to group staged changes and commit by concern
-5. Invoke `aitk:git-branch` to rename branch to match conventional format
-6. Invoke `aitk:git-pr` to push branch and open pull request
-7. After the PR opens, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
-8. Invoke `aitk:claude-memory-capture` to extract durable patterns from the session into `.claude/memory/`
-9. If `claude-memory-capture` wrote or updated at least one entry this session, invoke `aitk:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If capture wrote nothing, skip this step.
+1. Invoke `aitk:claude-memory-capture` to route what this session learned to the context entries that own it and write the residue to `.claude/memory/`
+2. Invoke `aitk:claude-docs` to sync internal planning docs against session decisions, folding in the routed facts
+3. Invoke `aitk:docs-sync` to sync public docs against changes since main
+4. Run `git add -A` to stage any files the sync skills wrote
+5. Invoke `aitk:git-stage` to group staged changes and commit by concern
+6. Invoke `aitk:git-branch` to rename branch to match conventional format
+7. Invoke `aitk:git-pr` to push branch and open pull request
+8. After the PR opens, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop the sequence and report the failing check with its URL. Do not auto-fix. This step may output on failure, the one exception to the no-text-between-steps rule.
+9. If step 1 wrote or updated at least one memory file, invoke `aitk:claude-memory-review` scoped to those entries to propose fixes while session context is fresh. If the pen got nothing, skip this step.
+
+Capture leads the sequence because a routed fact lands in a context entry, which is a tracked file. Running it after the pull request opens leaves that edit off the branch entirely, so the fact reaches nothing. Memory files are gitignored either way, which is what hid the ordering while capture wrote only those.
 
 Stop at the Propose phase. Do not run Apply. Promoting an entry to `CLAUDE.md` or a skill body ships as its own change, separate from this feature.
 
 ## After completion
 
-Output up to three lines:
+Output up to four lines:
 
 ```plaintext
 ✅ Shipped
+<N facts routed to context entries>
 <N memories captured in .claude/memory/>
 <Memory proposal at .claude/review/memory-review-<slug>.md>
 ```
 
-Omit the second and third lines if `claude-memory-capture` wrote nothing this session, since no captures means no scoped review and no proposal.
+Omit the second line if nothing routed. Omit the third and fourth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal.
