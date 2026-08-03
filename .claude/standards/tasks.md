@@ -48,7 +48,33 @@ Readiness is three groups under fixed headings, `## Run now`, `## Up next`, and 
 - `## Up next`: a written plan exists, and the task either collides with something running or waits on another task to land. The blocker column names which.
 - `## Needs a plan`: everything else. The task has no plan, or the plan it carries no longer describes the work.
 
-Each group fixes its own columns, which follow from the test above it rather than from preference. `## Run now` carries `Task`, `Touches`, and `Plan`, since neither half of its test is checkable without the last two. `## Up next` carries `Task`, `Touches`, and `Waiting on`, the last naming whether a collision or a dependency holds it. `## Needs a plan` carries `Task` and `Waiting on` alone, because a task with no plan has no bounded file set to state.
+Each group fixes its own columns, which follow from the test above it rather than from preference. Neither half of the `## Run now` test is checkable without the file set and the plan sitting beside the task. The blocker column under `## Up next` names whether a collision or a dependency holds the row. `## Needs a plan` states no file set at all, because a task with no plan has no bounded one to state. A group with no rows keeps its heading and its header row.
+
+```markdown
+---
+title: Priority
+description: One line on what the board covers
+---
+
+# Priority
+
+## Run now
+
+| Task                            | Touches                 | Plan                                 |
+| ------------------------------- | ----------------------- | ------------------------------------ |
+| [vXX.Y <slug>](vXX.Y-<slug>.md) | <what the task touches> | [<slug>](../plans/feature-<slug>.md) |
+
+## Up next
+
+| Task | Touches | Waiting on |
+| ---- | ------- | ---------- |
+
+## Needs a plan
+
+| Task                            | Waiting on                              |
+| ------------------------------- | --------------------------------------- |
+| [vXX.Y <slug>](vXX.Y-<slug>.md) | <the collision or the task it waits on> |
+```
 
 The tests live here so the board does not carry them. Writing them as a sentence under each heading produces the paragraph the rule above deletes, and a criterion with no home gets restated from memory every time the board is touched.
 
