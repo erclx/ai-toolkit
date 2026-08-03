@@ -63,4 +63,4 @@ The command fetches one URL per run. Curated-channel batch mode, where a channel
 
 ## Related
 
-- `agents.md`: CLI flags and invocation contract for `aitk transcripts`
+- `docs/agents/commands.md`: CLI flags and invocation contract for `aitk transcripts`

@@ -8,7 +8,7 @@ category: Agent surface
 
 How a project outside this repo consumes the toolkit across its lifecycle. Three phases: scaffold once, add a domain later when a new need appears, and sync when the upstream toolkit moves.
 
-This doc stays at the narrative layer. For command flags and JSON shapes, see [agents](agents.md). For per-domain mechanics, see each `.claude/context/<domain>.md`.
+This doc stays at the narrative layer. For command flags and JSON shapes, see [agents](agents/index.md). For per-domain mechanics, see each `.claude/context/<domain>.md`.
 
 ## Getting the skills
 
@@ -179,7 +179,7 @@ Sync also refuses a target whose working tree is dirty, so commit or stash befor
 
 ## Related
 
-- [agents](agents.md): CLI flags, exit codes, and JSON output shapes
+- [agents](agents/index.md): CLI flags, exit codes, and JSON output shapes
 - [AI workflow](ai-workflow.md): feature-development loop inside a toolkit-managed project
 - [tooling](../.claude/context/tooling.md), [governance](../.claude/context/governance.md), [claude plugin](../.claude/context/claude-plugin/index.md), [indexes](../.claude/context/indexes.md), [snippets](../.claude/context/snippets.md), [standards](../.claude/context/standards.md): per-domain mechanics
 - [sandbox](../.claude/context/sandbox/index.md): scenario catalog for verifying domain flows

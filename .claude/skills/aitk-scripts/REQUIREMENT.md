@@ -32,4 +32,4 @@ The last two are the expensive ones. Both return green, so neither reports that 
 
 - Auditing which changed skills and scripts lack a paired scenario edit at ship time: `aitk-sandbox-check`. This skill authors and runs a scenario, that one reports whether the pairing held.
 - Bash style and the authoring contract for a script, which the shipped `bash-script` and `cli-script` skills hold
-- The stream and output contract each CLI command owes, which `docs/agents.md` specifies
+- The stream and output contract each CLI command owes, which `docs/agents/output-shape.md` specifies

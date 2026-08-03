@@ -118,7 +118,7 @@ snapshot_root() {
 # from surviving sandbox state, but `max_turns` reads the envelope and
 # `write_scope` reads the writes list, both of which die with the temp files.
 #
-# Writes to stderr and disk only, since `docs/agents.md` makes stdout the data
+# Writes to stderr and disk only, since `docs/agents/output-shape.md` makes stdout the data
 # contract, so a failure here warns and lets the verdict print regardless.
 record_run() {
   local target="$1"
@@ -257,7 +257,7 @@ main() {
 
   # The envelope stays on stdout so existing readers keep working, with the
   # verdict merged in. An agent reads the verdict here rather than parsing the
-  # framed stderr, per the stream contract in `docs/agents.md`. A run that
+  # framed stderr, per the stream contract in `docs/agents/output-shape.md`. A run that
   # returned output that does not parse still emits its verdict rather than both
   # to a jq error, since a silent stdout would read as a run that never happened.
   #

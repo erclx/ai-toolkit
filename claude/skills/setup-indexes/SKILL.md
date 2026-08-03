@@ -145,4 +145,4 @@ Replace bracketed values with the values from this run. Drop the "Folders bootst
 ## Reference
 
 - `.claude/context/indexes.md`: system rationale, frontmatter contract, when to adopt
-- `docs/agents.md`: `aitk indexes regen` flags, exit codes, JSON shape
+- `docs/agents/indexes.md`: `aitk indexes regen` flags, exit codes, JSON shape

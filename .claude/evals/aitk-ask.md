@@ -11,7 +11,7 @@ Run each prompt in a fresh session. Invoke with `/aitk-ask <question>`. Judge by
 ## 2. docs/ hit, CLI surface
 
 - **Prompt:** `/aitk-ask what CLI commands does the toolkit expose?`
-- **Expected source:** `docs/agents.md`
+- **Expected source:** `docs/agents/commands.md`
 - **Shape:** names the agent surface doc, lists at most a couple examples.
 
 ## 3. wiki/ hit, Claude Code concept

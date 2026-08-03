@@ -45,4 +45,4 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 
 ## CLI
 
-The command surface and its flags live in `docs/agents.md`. That file is the canonical invocation contract for agents.
+The command surface and its flags live in `docs/agents/`. That folder is the canonical invocation contract for agents.

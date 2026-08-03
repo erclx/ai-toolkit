@@ -36,7 +36,7 @@ Read these from the project root on both paths, skipping any that do not exist:
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
-On the source path, also read the UI surfaces matched in Step 1 plus `docs/agents.md` and `docs/index.md` for output shape or framing rules already documented.
+On the source path, also read the UI surfaces matched in Step 1 plus `docs/agents/output-shape.md` and `docs/index.md` for output shape or framing rules already documented.
 
 On the greenfield path, also read `.claude/ARCHITECTURE.md` for platform, tech stack, and surface type. Do not scan `src/`, stylesheets, or UI modules. Step 1 already established they hold nothing.
 

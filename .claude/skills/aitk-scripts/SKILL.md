@@ -47,6 +47,6 @@ After editing install or sync code (`manage-*.sh`, `src/tooling/`):
 ## Reference
 
 - `.claude/context/scripts/index.md`: structure, file inventory, core scripts, lib responsibilities
-- `docs/agents.md`: output shape and stream contract for every CLI command
+- `docs/agents/output-shape.md`: output shape and stream contract for every CLI command
 - `.claude/context/sandbox/index.md`: sandbox system, hook pattern, provisioning flow, scenario catalog
 - `claude/skills/bash-script/`: bash style rules and the interactive-script authoring contract
