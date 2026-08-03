@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.33.0](https://github.com/erclx/aitk/compare/v0.32.0...v0.33.0) (2026-08-03)
+
+
+### Features
+
+* **skill:** cover the unread skill tail and report presence in the catalog ([#771](https://github.com/erclx/aitk/issues/771)) ([36fda6a](https://github.com/erclx/aitk/commit/36fda6aa6a6eaf5c012c2c8c892604f97927337a))
+* **standards:** show the task board's shape as a copyable template ([#767](https://github.com/erclx/aitk/issues/767)) ([a8b8a9e](https://github.com/erclx/aitk/commit/a8b8a9e75509e2a200d085db7c9b37a55daccc4e))
+
+
+### Bug Fixes
+
+* **context:** narrow the provenance check to the folder its rule governs ([#768](https://github.com/erclx/aitk/issues/768)) ([9f3a9a7](https://github.com/erclx/aitk/commit/9f3a9a790ec1ed7b685c4c3391b9046255dd6c71))
+
 ## [0.32.0](https://github.com/erclx/aitk/compare/v0.31.0...v0.32.0) (2026-08-03)
 
 
