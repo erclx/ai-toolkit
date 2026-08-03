@@ -5,6 +5,7 @@
 
 ### Features
 
+* **claude:** add the board write method, output shape, and handoff ([#806](https://github.com/erclx/aitk/issues/806)) ([9b9114a](https://github.com/erclx/aitk/commit/9b9114a440d63a1c8fc72a48f9c4eef853f2979b))
 * **context:** exempt a run of table rows from the depth checkpoint ([#805](https://github.com/erclx/aitk/issues/805)) ([083e9b5](https://github.com/erclx/aitk/commit/083e9b53e4eef2adba92317d1761975fb65041f8))
 
 ## [0.40.0](https://github.com/erclx/aitk/compare/v0.39.0...v0.40.0) (2026-08-03)
