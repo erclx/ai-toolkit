@@ -12,18 +12,29 @@ Surfaces drift between the toolkit's current seed docs and what was installed in
 - If the `aitk` CLI is not on PATH, stop: `❌ aitk CLI not found. Install the toolkit first.`
 - If no `.claude/` directory exists at the project root, stop: `❌ No .claude/ directory found. Run aitk claude init first.`
 
-## Step 1: read toolkit sources
+## Step 1: read toolkit sources and the drift report
 
-Run both in parallel from the project root:
+Run all three in parallel from the project root:
 
 ```bash
 aitk claude seeds list --json 2>/dev/null
 aitk standards list --json 2>/dev/null
+aitk sync --check . --json 2>/dev/null
 ```
 
 Seeds emit an array of `{name, source, target, content}`. Standards emit `{standards: [{name, description, target, content}]}`. In both cases `target` is the path relative to the project root where the file installs. Merge the two into one list of entries tagged by source (`seed` or `standard`).
 
 If the target project has no `.claude/standards/` directory, skip the standards stage silently.
+
+### Narrow the set by attribution
+
+The report is what separates a file the project edited from one the toolkit moved on without it. Read `seeds.entries` for seed paths and `domains[].entries` for standards, then drop from the merged list every entry the report attributes as `stale`. A stale file matches a version the toolkit published, so it carries no edits to lose and `aitk standards sync` takes it whole. Section-merging it is work with no decision behind it.
+
+Keep every seed regardless of state. `CLAUDE.md` is the file a project edits most, and its `drifted` verdict is the case this skill exists for.
+
+Record the dropped standards as one line in the scope table rather than as rows: `<n> standards stale, taken by aitk standards sync`.
+
+Fall back to the appearance heuristic in step 3 when the report cannot attribute, which is `historyUnavailable` set on the relevant section or the command failing outright. Say so in the summary block, because a fallback audit reports guesses rather than facts.
 
 ## Step 2: read installed copies
 
@@ -41,8 +52,9 @@ For each seed file present in both sides, parse the body into a preamble (everyt
 - **Toolkit-only section** (present in source, absent in target): candidate to **Add**.
 - **Target-only section** (present in target, absent in source): preserve, never propose removal. These are user customizations.
 - **Drifted section** (present in both, content differs): candidate to **Update**.
-  - If the target version looks customized (extra bullets, project-specific paths, filled-in placeholders), call it out as **Customized**. Default action: skip, record in the scope table only, never numbered.
-  - If the target version looks like the original toolkit version with the toolkit having moved on, call it out as **Stale**. Default action: propose update.
+  - Read the file's verdict from the report rather than judging it by eye. `drifted` means the content matches no version the toolkit ever published, so the project wrote it: call it **Customized**, default to skip, record in the scope table only, never numbered.
+  - `stale` at the file level means the toolkit moved and the project did not, so any section differing inside it is **Stale**. Default action: propose update.
+  - Only when the report could not attribute the file, judge by appearance: a version carrying extra bullets, project-specific paths, or filled-in placeholders reads as **Customized**, and one reading like the original toolkit text reads as **Stale**. Mark every verdict reached this way as unverified in the proposal.
 
 The user judges intent. The skill makes the judgment legible.
 
