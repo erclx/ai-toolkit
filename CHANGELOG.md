@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.0](https://github.com/erclx/aitk/compare/v0.44.0...v0.45.0) (2026-08-03)
+
+
+### Features
+
+* **claude:** add 'skills audit' measuring both skill corpora ([#815](https://github.com/erclx/aitk/issues/815)) ([1c66e70](https://github.com/erclx/aitk/commit/1c66e707af304d245e9ce325fec52e490fb0f9d0))
+
 ## [0.44.0](https://github.com/erclx/aitk/compare/v0.43.0...v0.44.0) (2026-08-03)
 
 
