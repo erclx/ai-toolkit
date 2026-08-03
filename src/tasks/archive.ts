@@ -8,10 +8,12 @@ const ARCHIVE_DIR = join('.claude', '.tmp', 'task-archive')
 const PLANS_DIR = join('.claude', 'plans')
 
 /**
- * Generated and hand-maintained siblings that sit on the board without being
- * tasks. The post-merge hook skips the same two names.
+ * Siblings that sit on the board without being tasks: the generated index, the
+ * hand-maintained ordering, and the pre-compaction session map. `validate`
+ * reads the same list, so neither verb can count a sibling as a task the other
+ * does not.
  */
-const RESERVED_STEMS = ['index', 'priority'] as const
+export const RESERVED_STEMS = ['index', 'priority', 'session'] as const
 
 export const ARCHIVE_REFUSALS = [
   'no-board',

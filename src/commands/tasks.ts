@@ -3,19 +3,33 @@ import { $ } from 'bun'
 import type { Command } from 'commander'
 import { type ArchiveOutcome, archiveTask } from '@/tasks/archive'
 import {
+  type Finding,
+  type ValidateOutcome,
+  validateBoard,
+} from '@/tasks/validate'
+import {
   intro,
   logAdd,
   logError,
   logInfo,
   logRemove,
   logStep,
+  logWarn,
   outro,
   pipeOutput,
 } from '@/ui'
 
+/** Returned when the board carries a finding, which is the gating result. */
+const EXIT_FINDINGS = 2
+
 interface ArchiveCommandOptions {
   readonly json?: boolean
   readonly pullRequest?: string
+  readonly root?: string
+}
+
+interface ValidateCommandOptions {
+  readonly json?: boolean
   readonly root?: string
 }
 
@@ -71,6 +85,105 @@ export function register(program: Command): void {
     .action(async (task: string | undefined, opts: ArchiveCommandOptions) => {
       process.exitCode = await runArchive(task, opts)
     })
+
+  tasks
+    .command('validate')
+    .description(
+      'Report what each board row claims against what the tree holds',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Checks:',
+        '  every Run now row points at a plan file that resolves',
+        '  every row maps to a task file and every task file to a row',
+        '  no task carries more than one row',
+        '  no two Run now rows touch the same file',
+        '',
+        'Exit codes:',
+        '  0  every check passed',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  the board carries at least one finding',
+        '',
+        'It reports and never writes. A row is a claim about readiness, so a',
+        'session fixes the row the report names.',
+        '',
+        'Examples:',
+        '  aitk tasks validate',
+        '  aitk tasks validate --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: ValidateCommandOptions) => {
+      process.exitCode = await runValidate(opts)
+    })
+}
+
+async function runValidate(opts: ValidateCommandOptions): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await validateBoard(root)
+
+  return reportValidation(outcome, opts.json ?? false, root)
+}
+
+function reportValidation(
+  outcome: ValidateOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: outcome.reason, message: outcome.message })}\n`,
+      )
+      return 1
+    }
+
+    intro('aitk tasks validate')
+    logStep('Refused')
+    logError(outcome.message)
+    outro()
+    return 1
+  }
+
+  if (!emitJson) {
+    intro('aitk tasks validate')
+    logStep('Board')
+    logInfo(
+      `${outcome.rows} row(s) across the readiness groups, ${outcome.tasks} task file(s)`,
+    )
+
+    logStep(outcome.findings.length === 0 ? 'Clean' : 'Findings')
+    if (outcome.findings.length === 0) {
+      logInfo('every row resolves, maps one to one, and touches its own files')
+    } else {
+      for (const finding of outcome.findings) logWarn(describe(finding))
+    }
+    outro()
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        rows: outcome.rows,
+        tasks: outcome.tasks,
+        findings: outcome.findings,
+      })}\n`,
+    )
+  }
+
+  return outcome.findings.length > 0 ? EXIT_FINDINGS : 0
+}
+
+function describe(finding: Finding): string {
+  const scope = finding.group ? `${finding.group}: ` : ''
+  return `${scope}${finding.subject} ${finding.message}`
 }
 
 async function runArchive(
