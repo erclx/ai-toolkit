@@ -12,6 +12,7 @@ import {
   type Seed,
 } from '@/claude/seeds'
 import { listSeeds, readSeedContents } from '@/claude/seeds-list'
+import { listSkills } from '@/claude/skills-list'
 import {
   planSettings,
   readSettings,
@@ -39,6 +40,11 @@ const GREY = '\x1b[0;90m'
 const NC = '\x1b[0m'
 
 interface SeedsListOptions {
+  readonly json?: boolean
+  readonly names?: boolean
+}
+
+interface SkillsListOptions {
   readonly json?: boolean
   readonly names?: boolean
 }
@@ -129,6 +135,42 @@ export function register(program: Command): void {
     )
     .action(async (opts: SeedsListOptions) => {
       process.exitCode = await runSeedsList(opts)
+    })
+
+  const skills = claude
+    .command('skills')
+    .description('Plugin skill catalog (list)')
+    .argument('[subcommand]', "Only 'list' is supported")
+    .helpOption('-h, --help', 'Show this help message')
+    .action((subcommand: string | undefined) => {
+      intro('aitk claude')
+      logError(
+        subcommand === undefined
+          ? "Missing subcommand. Use 'list'."
+          : `Unknown subcommand: ${subcommand}. Use 'list'.`,
+      )
+      outro()
+      process.exitCode = 1
+    })
+
+  skills
+    .command('list')
+    .description('List the plugin skills shipped under claude/skills/')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit JSON with name and description')
+    .option('--names', 'Only list skill names, one per line')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Notes:',
+        '  Internal skills under .claude/skills/ are excluded, since they',
+        '  never install into a target project.',
+        '',
+      ].join('\n'),
+    )
+    .action((opts: SkillsListOptions) => {
+      process.exitCode = runSkillsList(opts)
     })
 }
 
@@ -343,6 +385,30 @@ async function runSeedsList(opts: SeedsListOptions): Promise<number> {
   logStep('Seed docs')
   for (const listing of listings) {
     logInfo(`${listing.target} ${GREY}← ${listing.source}${NC}`)
+  }
+  outro()
+  return 0
+}
+
+function runSkillsList(opts: SkillsListOptions): number {
+  const listings = listSkills(PROJECT_ROOT)
+
+  if (opts.json) {
+    process.stdout.write(`${JSON.stringify({ skills: listings })}\n`)
+    return 0
+  }
+
+  if (opts.names) {
+    process.stdout.write(
+      listings.map((listing) => listing.name).join('\n') + '\n',
+    )
+    return 0
+  }
+
+  intro('aitk claude')
+  logStep('Plugin skills')
+  for (const listing of listings) {
+    logInfo(listing.name)
   }
   outro()
   return 0

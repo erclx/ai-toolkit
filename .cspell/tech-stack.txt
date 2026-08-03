@@ -46,11 +46,13 @@ monkeypatch
 mypy
 nameref
 namerefs
+nbsp
 nextjs
 noopener
 noreferrer
 nothrow
 noto
+nowrap
 nullglob
 numpy
 nvmrc
@@ -89,7 +91,9 @@ tanstack
 tavily
 threadpool
 tldraw
+tmpl
 tolower
+topbar
 toupper
 tsconfig
 uv
