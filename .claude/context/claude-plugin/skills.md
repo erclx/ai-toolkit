@@ -9,11 +9,28 @@ description: The plugin skill catalog, the shell-out pattern, and the workflow v
 
 Plugin skills live in `claude/skills/` and are auto-discovered from the plugin root, whether that root is a marketplace install or a `--plugin-dir` pointed at a checkout. No registration needed, folder presence is enough. Each skill is a kebab-case folder containing `SKILL.md`.
 
-A skill folder may also carry `REQUIREMENT.md` beside `SKILL.md`, stating the gaps that skill exists to close so a proposed change has something to be argued against. It is authoring context for whoever maintains the skill. Claude Code loads `SKILL.md` as the entry and never reads the sibling, and `src/sync/check.ts` leaves `claude/skills/` out of the synced sources because skills load live from the plugin directory rather than being copied, so the file reaches no target session and costs no tokens there. `governance/rules/claude/570-skill.md` fires on both filenames and carries the consult-first bullet. Eighteen skills carry one, covering the whole `git-*` family and the five-skill ship chain, which is what settled the unit as the skill rather than the family.
+A skill folder may also carry `REQUIREMENT.md` beside `SKILL.md`, stating the gaps that skill exists to close so a proposed change has something to be argued against. It is authoring context for whoever maintains the skill. Claude Code loads `SKILL.md` as the entry and never reads the sibling, and `src/sync/check.ts` leaves `claude/skills/` out of the synced sources because skills load live from the plugin directory rather than being copied, so the file reaches no target session and costs no tokens there. `governance/rules/claude/570-skill.md` fires on both filenames and carries the consult-first bullet. Twenty-one skills carry one, covering the whole `git-*` family and the five-skill ship chain, which is what settled the unit as the skill rather than the family.
 
 The admission test was replaced and the coverage spread is the reason. None of the eight internal skills carry one while the path-scoped rule globs that tree, so the gate binds nothing there. `standards/skill.md` had said the file was worth writing when a skill's scope was arguable rather than obvious, which correctly exempts most of the corpus and makes a coverage push an argument with the criterion it was meant to satisfy. The standard now names the second purpose the file already served, compressed orientation over a body that is procedural by design, and admits a skill when a reader cannot recover what it is for from the body alone.
 
 Skills that perform a one-time structural move of an existing project into a newer toolkit layout use the `migration-*` prefix (`migration-claude-md`, `migration-context`, `migration-standards`). Add new one-shot relocations to this family. Recurring reconciliation tools like `claude-seed-sync` are not migrations and stay outside it.
+
+### Requirement coverage
+
+Coverage is selective by design, so an uncovered skill needs a stated reason rather than silence. The verdicts below are what make an exemption checkable, since a skill nobody read and a skill the criterion turned down look identical from outside.
+
+The `setup-*` and `migration-*` families were read as one batch because a shared prefix contests scope by construction. Each verdict names what the body left open, or what it already closed.
+
+- `setup-init` carries one. It orchestrates a chain whose pieces four siblings each perform, and its body accounts for two of them, leaving index bootstrap and plugin provisioning unresolved against the chain.
+- `setup-gov` carries one. It names no sibling anywhere, so nothing in it settles whether a step from the wider onboarding chain belongs here or in `setup-init`.
+- `migration-context` carries one. It proposes into the same `.claude/context/` folder `migration-claude-md` writes, and neither body states which runs first, which turns a legitimate move into a skipped conflict when the order is wrong.
+- `setup-indexes` carries none. Its scope block, its `.claude/snippets/` exclusion, and its opt-in maintenance note each ship with the reason behind them.
+- `setup-plugins` carries none. Machine scope against project scope is its edge, stated in the description and again in the body with the reason.
+- `setup-verify` carries none. Its `## Out of scope` section names three exclusions with a reason each, and hands the first to `project-commands`.
+- `migration-claude-md` carries none. Its description names `migration-context` as the owner of `docs/` files, and its closing rule bans execution outright.
+- `migration-standards` carries none. It reads the root folders neither sibling touches, and its toolkit-owned against author-owned split ships with the reason it exists.
+
+Length did not discriminate. The longest body in the batch was turned down and the second shortest admitted.
 
 ### Catalog
 
