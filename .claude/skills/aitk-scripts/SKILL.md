@@ -5,11 +5,11 @@ description: CLI entry point, bash scripts, sandbox scenarios, and lib functions
 
 # Scripts
 
-Read `.claude/context/scripts.md` for structure, file inventory, and lib responsibilities before editing.
+Read `.claude/context/scripts/index.md` for structure, file inventory, and lib responsibilities before editing.
 
 ## Lib rules
 
-- Each lib file owns one concern. Read `.claude/context/scripts.md` for responsibilities before adding or modifying.
+- Each lib file owns one concern. Read `.claude/context/scripts/lib.md` for responsibilities before adding or modifying.
 - Never duplicate logic that already exists in `lib/`. When adding a function, check if any existing script duplicates the logic and consolidate.
 
 ## Sandbox pattern
@@ -46,7 +46,7 @@ After editing install or sync code (`manage-*.sh`, `src/tooling/`):
 
 ## Reference
 
-- `.claude/context/scripts.md`: structure, file inventory, core scripts, lib responsibilities
+- `.claude/context/scripts/index.md`: structure, file inventory, core scripts, lib responsibilities
 - `docs/agents.md`: output shape and stream contract for every CLI command
 - `.claude/context/sandbox/index.md`: sandbox system, hook pattern, provisioning flow, scenario catalog
 - `claude/skills/bash-script/`: bash style rules and the interactive-script authoring contract
