@@ -419,7 +419,9 @@ describe('measureFolders', () => {
     const heavy = `- ${'word '.repeat(BULLET_CHECKPOINT / 2)}\n`
     seed('docs', 'agents.md', `${NARRATED}\n${heavy}`)
 
-    const { folders } = await resolveFolders(root, ['docs'])
+    const { folders } = await resolveFolders(root, ['docs'], {
+      canResolveAtRoot: true,
+    })
     const [entry] = await measureFolders(root, folders)
 
     expect(entry.rel).toBe('docs/agents.md')
@@ -430,7 +432,9 @@ describe('measureFolders', () => {
   it('should still measure a root folder for length', async () => {
     seed('docs', 'agents.md', '# X\n')
 
-    const { folders } = await resolveFolders(root, ['docs'])
+    const { folders } = await resolveFolders(root, ['docs'], {
+      canResolveAtRoot: true,
+    })
     const [entry] = await measureFolders(root, folders)
 
     expect(entry.lines).toBeGreaterThan(0)

@@ -20,15 +20,8 @@ export const DEFAULT_FOLDERS: readonly string[] = [
 /** The base every folder in the default list sits under. */
 const CLAUDE_BASE = '.claude'
 
-/**
- * Bases a requested name is looked for under, in order.
- *
- * `.claude/` wins a name both carry, since every folder the default list names
- * sits there and a project holding a root folder under the same name is the
- * rarer case. The scope line prints the resolved path, so a caller reads which
- * base was taken rather than inferring it.
- */
-const SEARCH_BASES: readonly string[] = [CLAUDE_BASE, '.']
+/** The project root, reached only by a name the caller asked for. */
+const ROOT_BASE = '.'
 
 export interface AuditedFolder {
   /**
@@ -112,11 +105,21 @@ export interface FolderResolution {
   readonly missing: readonly string[]
 }
 
+export interface ResolveOptions {
+  /**
+   * Whether a name may resolve at the project root when `.claude/` does not
+   * carry it. False for the default list, which names three folders a project
+   * is expected to hold under `.claude/` and nowhere else.
+   */
+  readonly canResolveAtRoot?: boolean
+}
+
 function locate(
   root: string,
   name: string,
+  bases: readonly string[],
 ): { readonly dir: string; readonly base: string } | undefined {
-  for (const base of SEARCH_BASES) {
+  for (const base of bases) {
     const dir = resolve(root, base, name)
     if (existsSync(`${dir}/${INDEX_FILE}`)) return { dir, base }
   }
@@ -135,6 +138,12 @@ function locate(
  * lets a root folder be walked at all, since a name at the project root sits
  * beside `node_modules` and a build output.
  *
+ * The project root is reached only when the caller opts in, so a target holding
+ * a root `wireframes/` is not audited against a standard it never adopted by
+ * the mere act of running the command. `.claude/` still wins a name carried by
+ * both, and the scope line prints the resolved path so a caller reads which
+ * base was taken rather than inferring it.
+ *
  * Nothing above this asks where a folder came from. A name that resolves at the
  * root is measured by every rule that generalizes and gated out of the rules a
  * single standard carries, which `governsContent` decides from the name.
@@ -142,12 +151,14 @@ function locate(
 export async function resolveFolders(
   root: string,
   names: readonly string[] = DEFAULT_FOLDERS,
+  { canResolveAtRoot = false }: ResolveOptions = {},
 ): Promise<FolderResolution> {
+  const bases = canResolveAtRoot ? [CLAUDE_BASE, ROOT_BASE] : [CLAUDE_BASE]
   const folders: AuditedFolder[] = []
   const missing: string[] = []
 
   for (const name of names) {
-    const found = locate(root, name)
+    const found = locate(root, name, bases)
     if (!found) {
       missing.push(name)
       continue

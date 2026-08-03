@@ -388,7 +388,7 @@ aitk context audit --folder docs
 
 Scope defaults to `context`, `diagrams`, and `wireframes`, and a folder the project does not carry is skipped rather than reported. A domain that outgrew one file and split into `<domain>/` is audited as its own folder, so a split entry measures at the same grain as a flat one.
 
-A name passed to `--folder` resolves under `.claude/` first and at the project root second, which is what puts `docs/` and any later corpus in reach of the same engine. The scope line prints the resolved path, so a project carrying both spellings reads which one was taken. The JSON record carries the base per folder as `folders[].base`.
+A name passed to `--folder` resolves under `.claude/` first and at the project root second, which is what puts `docs/` and any later corpus in reach of the same engine. The root base is reached only by a name the caller passes, so the default list still resolves under `.claude/` alone and a project holding a root `wireframes/` is not audited against a standard it never adopted. The scope line prints the resolved path, so a project carrying both spellings reads which one was taken. The JSON record carries the base per folder as `folders[].base`.
 
 A run where no requested name resolves refuses, whichever list it read. Naming the absent ones narrows to `--folder`, since a project carrying one of the three default folders is the ordinary case and a name it never asked for is not a typo. The JSON record carries those names as `unresolvedFolders`.
 

@@ -120,10 +120,16 @@ async function runAudit(
 
   if (typeof names === 'string') return refuse(names, gateOnly)
 
-  const { folders, missing } = await resolveFolders(root, names)
+  // The root base is opt-in. A target carrying a root `wireframes/` would
+  // otherwise be audited against a standard it never adopted, on a bare run
+  // that named nothing.
+  const named = opts.folder !== undefined
+  const { folders, missing } = await resolveFolders(root, names, {
+    canResolveAtRoot: named,
+  })
   if (folders.length === 0) {
     return refuse(
-      `No audited folder found under .claude/ or the project root. Looked for: ${names.join(', ')}.`,
+      `No audited folder found ${named ? 'under .claude/ or the project root' : 'under .claude/'}. Looked for: ${names.join(', ')}.`,
       gateOnly,
     )
   }
@@ -132,7 +138,7 @@ async function runAudit(
   // silent. A name passed by hand that resolves nowhere is a typo, and the run
   // measuring the names that did resolve reads as a pass against a folder it
   // never opened.
-  const unresolved = opts.folder ? missing : []
+  const unresolved = named ? missing : []
 
   // The gate runs one check. Letting it exit 0 against a scope it could not
   // build reports a pass on nothing measured, which is the outcome a gate is

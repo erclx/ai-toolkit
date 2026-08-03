@@ -91,17 +91,36 @@ describe('resolveFolders', () => {
   it('should resolve a named folder at the project root', async () => {
     seed('docs', ['agents.md'])
 
-    const { folders } = await resolveFolders(ROOT, ['docs'])
+    const { folders } = await resolveFolders(ROOT, ['docs'], {
+      canResolveAtRoot: true,
+    })
 
     expect(folders.map((folder) => folder.rel)).toEqual(['docs'])
     expect(folders[0].base).toBe('.')
+  })
+
+  it('should leave a root folder unresolved without the opt-in', async () => {
+    seed('docs', ['agents.md'])
+
+    const { folders, missing } = await resolveFolders(ROOT, ['docs'])
+
+    expect(folders).toEqual([])
+    expect(missing).toEqual(['docs'])
+  })
+
+  it('should skip a root folder carrying a default name on a default run', async () => {
+    seed('wireframes', ['login.md'])
+
+    expect((await resolveFolders(ROOT)).folders).toEqual([])
   })
 
   it('should audit a split domain under a root folder', async () => {
     seed('docs', ['agents.md'])
     seed('docs/reference', ['cli.md'])
 
-    const { folders } = await resolveFolders(ROOT, ['docs'])
+    const { folders } = await resolveFolders(ROOT, ['docs'], {
+      canResolveAtRoot: true,
+    })
 
     expect(folders.map((folder) => folder.rel)).toEqual([
       'docs',
@@ -113,7 +132,9 @@ describe('resolveFolders', () => {
     seed('.claude/docs', ['agents.md'])
     seed('docs', ['agents.md'])
 
-    const { folders } = await resolveFolders(ROOT, ['docs'])
+    const { folders } = await resolveFolders(ROOT, ['docs'], {
+      canResolveAtRoot: true,
+    })
 
     expect(folders.map((folder) => folder.rel)).toEqual(['.claude/docs'])
   })
@@ -158,7 +179,9 @@ describe('presentNames', () => {
   it('should omit a folder resolved at the project root', async () => {
     seed('docs', ['agents.md'])
 
-    const { folders } = await resolveFolders(ROOT, ['docs'])
+    const { folders } = await resolveFolders(ROOT, ['docs'], {
+      canResolveAtRoot: true,
+    })
 
     expect(presentNames(folders)).toEqual([])
   })
