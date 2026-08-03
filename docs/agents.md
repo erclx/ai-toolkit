@@ -80,7 +80,7 @@ Full help: `aitk <command> --help`.
 | `aitk transcripts <url>` | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                          |
 | `aitk tasks archive`     | Move a shipped task off the board, clear its ordering row, and regenerate the index            |
 | `aitk comments scan`     | Measure comment density by language and comment kind, with a trend recomputed from git         |
-| `aitk context audit`     | Report entry length, depth, cited-path resolution, and index drift in the context folders      |
+| `aitk context audit`     | Report entry length, depth, cited-path resolution, provenance, and index drift                 |
 | `aitk capture [source]`  | Render HTML capture sources to PNG, toolkit-only and absent from an installed package          |
 
 ### Domain commands
@@ -387,13 +387,15 @@ aitk context audit --folder context,diagrams
 
 Scope defaults to `context`, `diagrams`, and `wireframes`, and a folder the project does not carry is skipped rather than reported. A domain that outgrew one file and split into `<domain>/` is audited as its own folder, so a split entry measures at the same grain as a flat one.
 
-Exit codes are `0` for a clean run, `1` for a refusal, and `2` for an unresolved citation. Only the citation check sets a failing code. Length, depth, table, and index findings print and return `0`, because each is a judgment threshold and failing a push on one would make the check something to route around.
+Exit codes are `0` for a clean run, `1` for a refusal, and `2` for an unresolved citation. Only the citation check sets a failing code. Length, depth, table, provenance, and index findings print and return `0`, because each is a judgment and failing a push on one would make the check something to route around.
 
 ### What each check reports
 
 Length and depth quote their checkpoints from `.claude/standards/context.md`: roughly 150 lines for an entry, roughly 40 for a run of lines no heading breaks. Depth measures the longest such run rather than everything under one `##`, skips fenced blocks so a markdown example does not read as three headings, and exempts a run whose lines are all list items at one indent. Runs count blank lines, which the standard leaves open, so a hand reader who drops them lands a line or two lower. The report states the convention on every run.
 
 The table check reports a catalog that grows a row per shipped thing, not a table count. A fixed comparison table never reflows, so its size costs nothing. A table qualifies at six or more body rows whose first column mostly carries a path, command, or link, which is what separates a catalog from a comparison without reading the prose.
+
+The provenance check reports the markers narrating how a domain reached its shape rather than describing what it is: a date, a change number, or a release label. The standard admits a rejected alternative and the reasoning that killed it while refusing the provenance attached to it, so a marker names a line to read rather than a line to delete. Findings group by entry and sort left to right within a line, since what a reader acts on is which file to open. Fenced blocks are excluded, which keeps a pinned version in an install command from reading as a claim the entry makes.
 
 Index drift compares an index against its siblings in both directions. An entry the index does not link is invisible to a session choosing what to open, and a linked name resolving to nothing sends one to a path that opens nothing.
 

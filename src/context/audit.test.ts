@@ -125,4 +125,56 @@ describe('measureEntry', () => {
 
     expect(measureEntry('ci.md', source).catalogTables).toEqual([])
   })
+
+  it('should report a date narrating when a change landed', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe cap was 20 until 2026-07-30.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([
+      { line: 8, kind: 'date', text: '2026-07-30' },
+    ])
+  })
+
+  it('should report a change number narrating which pull request carried it', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe path moved under #668 and stayed.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([
+      { line: 8, kind: 'change', text: '#668' },
+    ])
+  })
+
+  it('should report a release label attached to a change', () => {
+    const source = `${FRONTMATTER}# CI\n\nEighteen skills have one as of v16.2.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([
+      { line: 8, kind: 'release', text: 'v16.2' },
+    ])
+  })
+
+  it('should report markers sharing a line left to right across kinds', () => {
+    const source = `${FRONTMATTER}# CI\n\nRuns on #632 and #634 landed 2026-08-02.\n`
+
+    expect(
+      measureEntry('ci.md', source).provenance.map((found) => found.text),
+    ).toEqual(['#632', '#634', '2026-08-02'])
+  })
+
+  it('should leave a version pinned inside a fenced block unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`bash\nbunx -y aitk@v1.2.3 --since 2026-01-01\n\`\`\`\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([])
+  })
+
+  it('should leave an entry stating only current shape unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe cap is 30, above the highest observed run.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([])
+  })
+
+  it('should order findings by the line carrying them', () => {
+    const source = `${FRONTMATTER}# CI\n\nShipped in #626.\n\nMeasured 2026-08-03.\n`
+
+    expect(
+      measureEntry('ci.md', source).provenance.map((found) => found.line),
+    ).toEqual([8, 10])
+  })
 })

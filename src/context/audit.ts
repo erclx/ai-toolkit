@@ -25,9 +25,33 @@ const TABLE_ROW = /^\s*\|/
 const TABLE_SEPARATOR = /^\s*\|[\s:|-]+\|\s*$/
 const NAMED_CELL = /`[^`]+`|\[[^\]]+\]\([^)]+\)/
 
+/**
+ * Spellings of how the domain reached its shape rather than what it is now.
+ *
+ * The standard admits a rejected alternative and its reasoning while refusing
+ * the provenance attached to it, and these three are what a session reaches for
+ * when it records the second: when a change landed, which change carried it,
+ * and which release labelled it. A marker is a judgment rather than a defect,
+ * so this is measured and reported and never gates.
+ */
+const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
+  { kind: 'date', pattern: /\b\d{4}-\d{2}-\d{2}\b/g },
+  { kind: 'change', pattern: /#\d{3,}\b/g },
+  { kind: 'release', pattern: /\bv\d+\.\d+(?:\.\d+)?\b/g },
+]
+
+export type ProvenanceKind = 'date' | 'change' | 'release'
+
 export interface TableFinding {
   readonly line: number
   readonly rows: number
+}
+
+export interface ProvenanceFinding {
+  readonly line: number
+  readonly kind: ProvenanceKind
+  /** The marker as written, so a report names what to go and look at. */
+  readonly text: string
 }
 
 export interface EntryReport {
@@ -37,6 +61,7 @@ export interface EntryReport {
   /** First line of the longest run, or 0 when the entry has no run at all. */
   readonly longestRunLine: number
   readonly catalogTables: readonly TableFinding[]
+  readonly provenance: readonly ProvenanceFinding[]
 }
 
 interface BodyLine {
@@ -191,6 +216,44 @@ function catalogTables(lines: readonly BodyLine[]): TableFinding[] {
   return findings
 }
 
+/**
+ * Finds the markers narrating a change rather than describing the domain.
+ *
+ * Fenced blocks are skipped for the same reason the table scan skips them: a
+ * sample command or a fixture inside an example is content the entry displays
+ * rather than a claim it makes, and a version pinned in an install line is the
+ * ordinary shape of one.
+ */
+function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
+  // Scanning one pattern at a time emits a line's markers grouped by kind, so
+  // the column is carried out of the match and sorted on. Without it a line
+  // holding a date and two change numbers reports them in an order the reader
+  // cannot find by scanning left to right.
+  const found: { finding: ProvenanceFinding; column: number }[] = []
+  let fenced = false
+
+  for (const line of lines) {
+    if (FENCE.test(line.text)) {
+      fenced = !fenced
+      continue
+    }
+    if (fenced) continue
+
+    for (const { kind, pattern } of PROVENANCE) {
+      for (const match of line.text.matchAll(pattern)) {
+        found.push({
+          finding: { line: line.number, kind, text: match[0] },
+          column: match.index,
+        })
+      }
+    }
+  }
+
+  return found
+    .sort((a, b) => a.finding.line - b.finding.line || a.column - b.column)
+    .map((each) => each.finding)
+}
+
 export function measureEntry(rel: string, source: string): EntryReport {
   const lines = bodyLines(source)
   const run = longestRun(lines)
@@ -201,6 +264,7 @@ export function measureEntry(rel: string, source: string): EntryReport {
     longestRun: run.length,
     longestRunLine: run.line,
     catalogTables: catalogTables(lines),
+    provenance: provenance(lines),
   }
 }
 
