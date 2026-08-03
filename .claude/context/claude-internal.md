@@ -29,18 +29,13 @@ Internal skills live in `.claude/skills/` and are toolkit-only. They are not ins
 
 ### Requirement coverage
 
-The rule that gates a skill edit globs `.claude/skills/**/REQUIREMENT.md`, so a skill without one leaves that gate binding nothing. Coverage is selective by design. A skill earns a requirement when a reader cannot recover from the body alone both the failures it prevents and the nearest thing it deliberately does not do, which `.claude/standards/skill.md` states. The verdicts were applied 2026-08-03 against the eight bodies as they stood, so a later audit checks a stated claim rather than re-deriving one.
+All eight internal skills carry a `REQUIREMENT.md`. Coverage is universal rather than selective, because the operator reads the corpus to decide whether a skill should exist at all, and a file present for some skills and absent for others cannot be scanned for that. An absence reads as a gap in the authoring rather than as a verdict that the body is already its own specification.
 
-- `aitk-claude` carries one. Its scope spans the plugin tree, the seed, and the context entries with no stated edge, and its claim on the Claude entries contests `aitk-standards`.
-- `aitk-scripts` carries one. Its instruction to run a scenario and judge the envelope contradicts the arm rules in `aitk-sandbox-check`, and neither body names the other.
-- `aitk-standards` carries one. The `docs/` half of its declared scope gets no guidance of its own, appearing once inside a prose instruction that names `standards/` beside it.
-- `aitk-ask` carries none. Its guards, its `## Do not` block, and the bounded escalation ladder state both halves.
-- `aitk-governance` carries none. Each bullet names the failure it prevents, and no internal sibling contests the source tree.
-- `aitk-sandbox-check` carries none. It is the longest internal body and still its own specification, with four deliberate exclusions under `## Do not`.
-- `aitk-snippets` carries none. Placement by invoker and the invocation-cadence test are its two stated exclusions.
-- `aitk-tooling` carries none. The `tooling/claude/` exclusion ships with its reason, and the body already reads as a list of observed failures.
+The earlier test earned a skill one only when a reader could not recover from the body alone both the failures it prevents and the nearest thing it deliberately does not do. That still describes what a working requirement answers, and it no longer decides which skills get one. Length never discriminated either way, since the 31-line skill earned one under it and the 191-line skill did not.
 
-Length did not discriminate. The 31-line skill earned one and the 191-line skill did not.
+The rule gating a skill edit globs `.claude/skills/**/REQUIREMENT.md`, so it now fires on every internal skill edit rather than on three of eight. That increase in what a session reads before editing is the accepted cost of the corpus being readable as a set.
+
+The plugin corpus under `claude/skills/` is still being covered a batch at a time, and `.claude/standards/skill.md` calls the file optional until that finishes.
 
 ### Sandbox check verification route
 
