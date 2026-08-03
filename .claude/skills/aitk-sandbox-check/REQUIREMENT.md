@@ -21,7 +21,7 @@ Every one of these returns without complaint. A stale pairing reports nothing be
 - Provision one scenario and queue the rest, since a single directory per root means the second provision destroys the first
 - Name exactly one gate when an item ships without a live run, so an affordable run and an impossible one do not read the same
 - Read the skill census before asking, so a recorded verdict is reported rather than re-decided, and reach it through the worktree-local entry point for the reason the provisioning command is worktree-local
-- Ask only where no verdict exists and a scenario could still be hiding under a name no spelling reaches, which is the one case a person has to settle
+- Ask where a scenario file sits at a path no spelling reaches, offering it rather than recording it, since the file proves a scenario exists and not that it exercises this skill
 - Report a verdict, an internal skill outside the census, and an answer given this run under separate labels, since collapsing them is the defect that made the prompt repeat
 
 ## Must not
