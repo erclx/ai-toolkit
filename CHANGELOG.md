@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.58.0](https://github.com/erclx/aitk/compare/v0.57.0...v0.58.0) (2026-08-04)
+
+
+### Features
+
+* **gov:** let a stack entry name a whole rule folder ([#854](https://github.com/erclx/aitk/issues/854)) ([5fbfd3a](https://github.com/erclx/aitk/commit/5fbfd3a0f86a7689f5192461c6fe7b1d9bdf4da6))
+
 ## [0.57.0](https://github.com/erclx/aitk/compare/v0.56.0...v0.57.0) (2026-08-04)
 
 
