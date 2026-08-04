@@ -3,10 +3,3 @@ names = [
     "align",
     "decision-help",
 ]
-
-[orchestrator]
-names = [
-    "claude/orchestrator-handoff",
-    "claude/orchestrator-resume",
-    "claude/orchestrator-sweep",
-]

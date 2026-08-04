@@ -1,3 +1,8 @@
+---
+title: Orchestrator sweep runbook
+description: The once-per-batch board sweep, plan re-verification, and where each merged finding goes
+---
+
 Sweep the board as orchestrator after merging. Run this once per batch of merges, before answering what to do next, because the surfaces that record what shipped are the ones nothing updates on its own.
 
 1. Pull into the main worktree rather than fetching. A fetch leaves the local branch behind, so `git log` reports a state that has not arrived. A repository that adds a post-merge hook to name archive candidates gets it on a pull and never on a fetch.

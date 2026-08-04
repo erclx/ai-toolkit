@@ -35,9 +35,7 @@ Then output the state of play so the human knows what to launch, review, and mer
 
 The roadmap is optional and this skill does not require it. It carries why a sequence is what it is, changes only when strategy changes, and is absent in a project whose scope has already shipped. Report what it says and name it as the source. Never assert an active version the file does not state, and say nothing about one when the file is missing.
 
-A compaction is a moment this skill cannot detect, so both sides of it are snippets the human fires. Before one, `@.claude/snippets/claude/orchestrator-handoff.md` writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. After one, `@.claude/snippets/claude/orchestrator-resume.md` reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
-
-Name `${CLAUDE_SKILL_DIR}/../../snippets/claude/<name>.md` as the fallback for any orchestrator snippet the project copy lacks. Snippets install by named bundle rather than wholesale, so a project that installed one bundle has the `.claude/snippets/` directory and none of these files, and the plugin ships the whole snippets folder beside `skills/`.
+A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do. On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
 ## Output
 
@@ -110,7 +108,7 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 
 ## Refilling the ready queue
 
-Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins. `@.claude/snippets/claude/orchestrator-sweep.md` fires this procedure after a batch of merges and adds the plan re-verification that a merge invalidates.
+Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.
 
 Open the sweep by invoking `aitk:claude-memory-capture`. Both other callers are ship-chain skills and this session never ships, so without this the session that receives every operator correction is the one session that records none. The sweep is the closest bounded moment this session has to a ship, and it already runs once per batch of merges, which beats an end-of-session moment a compaction can cut short.
 
