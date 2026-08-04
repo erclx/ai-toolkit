@@ -24,6 +24,7 @@ elif
 errexit
 excalidraw
 execa
+execve
 fastapi
 firecrawl
 flowchart

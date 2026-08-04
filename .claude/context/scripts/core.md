@@ -15,7 +15,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
 - `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context
 - `regen-indexes.sh`: thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI
-- `regen-hero.sh`: fills `assets/hero.html.tmpl` from five catalogs so no count on the README frame is hand-maintained. Clone-only, and it writes the HTML while `aitk capture` renders the image
+- `regen-hero.sh`: fills `assets/hero.html.tmpl` from five catalogs so no count on the README frame is hand-maintained. Clone-only, and it writes the HTML while `aitk capture` renders the image. The catalogs reach `bun --eval` as files under a `mktemp -d` rather than as environment variables, because Linux caps a single env entry at 131,072 bytes and `standards list --json` crossed it at 136,227 once two standards landed, up from 114,813. The failure is `execve` returning E2BIG, which reports `Argument list too long` and names no catalog, so it reads as a broken interpreter rather than as a payload that outgrew its channel. A file path is bounded whatever the catalogs grow to
 - `check-skill-paths.sh`: fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
 
