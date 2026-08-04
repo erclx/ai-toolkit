@@ -1,3 +1,8 @@
+---
+title: Orchestrator handoff runbook
+description: What to write to .claude/tasks/session.md before a compaction, and what to leave to the board
+---
+
 Write the pre-compact handoff as orchestrator. Do this before a compaction, because a compaction keeps conclusions and drops the reasoning that produced them, and no other file in the repository carries that reasoning.
 
 1. Resolve the main worktree root with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`. Write `.claude/tasks/session.md` under it.

@@ -15,6 +15,8 @@ The session also writes surfaces it is told only how to read. Refilling the queu
 
 Output drifts everywhere the contract stops. The specified shape covers invocation alone, so a sweep report, a board report, and an analysis each end in a decision the human owns and each buries it under the evidence they would have skipped. A compaction is the same failure one step earlier, since the file that survives it has a stated reader and no stated writer, and the session improvises what to save and loses the reasoning the board never held.
 
+The runbooks the session cannot run from memory fail on a third axis, which is where they are kept. A runbook reached by an installed path is a dependency on a channel this skill does not travel on, so a project holding the plugin and running no install follows the citation to nothing, and nothing reports the break because a missing file produces no error until someone opens the path. The three that cover the moments the loop cannot detect therefore have to ship inside the skill.
+
 ## Must
 
 - Read the priority file for execution order, since the index sorts by filename and states no order
@@ -28,7 +30,9 @@ Output drifts everywhere the contract stops. The specified shape covers invocati
 - Carry a plan pointer in the Plan column and a file set in the Touches column, so a row's readiness and disjointness claims stay checkable
 - Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
 - Lead a sweep report, a board report, and an analysis with the state, the open decisions, and the next action, keeping the evidence below them
-- Write the pre-compact handoff with what no other file carries, and name the snippet that reads it back
+- Write the pre-compact handoff with what no other file carries, and name the runbook that reads it back
+- Carry the handoff, resume, and sweep runbooks inside the skill, so every citation resolves for a project holding the plugin and nothing else
+- Read the handoff or the resume runbook when the human asks for that side of a compaction, since the request is the only signal available for a moment the loop cannot detect
 
 ## Must not
 
@@ -47,6 +51,7 @@ Output drifts everywhere the contract stops. The specified shape covers invocati
 - Priority file absent: report the queue and say the order is unrecorded rather than inferring it from the index
 - Roadmap absent: omit the roadmap line rather than asserting a version the file does not state
 - Roadmap present but never committed: report the date as uncommitted, since a blank reads as a formatting slip
+- This body dropped from a long session approaching a compaction: name the re-invocation and the runbook paths, since the routing lives in the body and a user-invoked skill routes nothing once it is gone
 
 ## Out of scope
 

@@ -1,3 +1,8 @@
+---
+title: Orchestrator resume runbook
+description: What to read back after a compaction, and how to treat a groundwork folder's three shelf lives
+---
+
 Resume as orchestrator after a compaction. Read the board and the groundwork behind the live work before answering anything, because a compaction summary keeps conclusions and drops the reasoning that produced them.
 
 1. Resolve the main worktree root with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`. Every path below resolves against it.
