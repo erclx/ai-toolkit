@@ -26,7 +26,7 @@ The `.claude/context/` folder ships only its `index.md` discovery anchor. The en
 
 ### PostToolUse hooks
 
-The seed `settings.json` ships five hook scripts across three blocks.
+The seed `settings.json` ships five hook scripts across three blocks. All five open with the bounded stdin read covered in `development.md`, so a hook run by hand refuses instead of blocking, and four stay byte-identical to their counterparts under `.claude/hooks/`.
 
 A PostToolUse hook pairs with `.claude/hooks/standards-audit.sh`, which greps markdown files for the em-dashes and semicolons named in `.claude/standards/markdown.md` and the closed-set banned words named in `.claude/standards/prose.md`, excludes fenced code blocks, and emits `additionalContext` so the agent self-corrects on the next turn. Scratch dirs `.claude/.tmp/`, `.claude/memory/`, `.claude/review/`, and `.claude/plans/` are skipped.
 
