@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.51.0](https://github.com/erclx/aitk/compare/v0.50.0...v0.51.0) (2026-08-04)
+
+
+### Features
+
+* **claude:** carry the orchestrator runbooks inside the skill ([#832](https://github.com/erclx/aitk/issues/832)) ([e9372d7](https://github.com/erclx/aitk/commit/e9372d7ef05520a44c96ac94a2bdbe0b7f8d6021))
+
 ## [0.50.0](https://github.com/erclx/aitk/compare/v0.49.0...v0.50.0) (2026-08-04)
 
 
