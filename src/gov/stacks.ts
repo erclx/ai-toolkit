@@ -1,5 +1,6 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { basename, join } from 'node:path'
+import { listRuleSourcePaths, rulesSourceDir } from '@/gov/install'
 
 export interface GovStack {
   readonly name: string
@@ -65,10 +66,32 @@ export function loadGovStack(
 }
 
 /**
+ * Expands one stack entry. An entry naming a directory under
+ * `governance/rules/` resolves to every rule inside it, sorted, and any other
+ * entry resolves to itself, so a folder and a slug reach the caller as one
+ * shape rather than two the caller has to tell apart.
+ *
+ * The directory wins over a rule file of the same name. They cannot collide
+ * while `standards/rule.md` requires a numeric prefix on a rule slug, since a
+ * band folder carries none.
+ */
+export function expandStackEntry(root: string, entry: string): string[] {
+  const dir = join(rulesSourceDir(root), entry)
+  if (!existsSync(dir) || !statSync(dir).isDirectory()) return [entry]
+
+  return [...new Bun.Glob('**/*.md').scanSync({ cwd: dir, onlyFiles: true })]
+    .sort()
+    .map((rel) => basename(rel, '.md'))
+}
+
+/**
  * Walks `extends` ancestors first, then the stack's own rules, deduped by
  * first appearance. Tooling's `resolveChain` returns full manifests nearest
  * first and carries `skipStack` truncation, so the two walks stay separate
  * rather than fitting one shape to both.
+ *
+ * Dedupe runs on expanded names rather than on the entries, so a stack naming
+ * a folder and an ancestor naming a rule inside it yield that rule once.
  */
 export function resolveRules(root: string, stack: string): RuleResolution {
   const rules: string[] = []
@@ -87,10 +110,12 @@ export function resolveRules(root: string, stack: string): RuleResolution {
       if (missing !== undefined) return missing
     }
 
-    for (const rule of loaded.rules) {
-      if (seen.has(rule)) continue
-      seen.add(rule)
-      rules.push(rule)
+    for (const entry of loaded.rules) {
+      for (const rule of expandStackEntry(root, entry)) {
+        if (seen.has(rule)) continue
+        seen.add(rule)
+        rules.push(rule)
+      }
     }
 
     return undefined
@@ -100,6 +125,30 @@ export function resolveRules(root: string, stack: string): RuleResolution {
   if (missingStack !== undefined) return { ok: false, missingStack }
 
   return { ok: true, rules }
+}
+
+/**
+ * Names every rule no stack reaches, sorted. A rule outside every stack still
+ * installs through `--add`, so this reports an opt-in library and an oversight
+ * alike and leaves telling them apart to the reader.
+ *
+ * A stack whose `extends` does not resolve contributes nothing rather than
+ * aborting the sweep, or one broken stack would report the whole catalog as
+ * unreferenced.
+ */
+export function unreferencedRules(root: string): string[] {
+  const reached = new Set<string>()
+
+  for (const stack of listGovStacks(root)) {
+    const resolution = resolveRules(root, stack)
+    if (!resolution.ok) continue
+    for (const rule of resolution.rules) reached.add(rule)
+  }
+
+  return listRuleSourcePaths(root)
+    .map((rel) => basename(rel, '.md'))
+    .filter((rule) => !reached.has(rule))
+    .sort()
 }
 
 /**
