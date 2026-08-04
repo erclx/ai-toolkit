@@ -49,6 +49,8 @@ Coverage follows the index-plus-entry contract, so it reaches seeded entries and
 
 The stage prints the entries it measured per root and warns on a root that measured none. A root can resolve an audited folder and hold no entry in it, which `tooling/claude/seeds` does today, so a single pass line over the set would report coverage of a tree nothing opened.
 
+It reads the exit code rather than pass against fail, since the two failing codes mean opposite things. A root carrying a `.claude/` that resolves no audited folder refuses at 1 and warns, while a seed short a required section gates at 2 and fails the push. A new stack seeding `.claude/` alone therefore reports what it is rather than a violation it does not have.
+
 ### Exempting a skeleton
 
 A seed that deliberately omits a required section sets `stub: true` in its frontmatter, and the section check then skips it. Every other measure still reads the file, since a stub is exempt from owing sections rather than from being well formed.

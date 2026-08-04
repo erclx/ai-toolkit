@@ -213,7 +213,7 @@ main() {
   # advisory for the reason the stage above leaves them so. A passing run stays
   # silent because the audit prints a frame that would nest inside this one.
   log_step "Seed standards"
-  local seed_roots seed_root seed_output seed_frame seed_entries seed_measured
+  local seed_roots seed_root seed_output seed_frame seed_entries seed_measured seed_status
   seed_roots=$(collect_seed_roots)
   if [ -z "$seed_roots" ]; then
     log_info "Skipped, no seed root carries .claude/"
@@ -223,13 +223,33 @@ main() {
       # `--json` puts the record on stdout and the frame on stderr, so the
       # passing run stays silent and the failing one is re-run for its frame
       # rather than parsed out of a stream this script would have to strip.
-      if ! seed_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate --json 2>/dev/null); then
+      seed_status=0
+      seed_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate --json 2>/dev/null) || seed_status=$?
+
+      # The audit separates 1 from 2 and they mean opposite things. 2 is a seed
+      # breaking the standard it seeds. 1 is the audit refusing, which a seed
+      # root carrying no audited folder produces, and reporting that as a
+      # violation sends a reader hunting one that does not exist. Discovery is
+      # what puts this in reach, since a new stack seeding `.claude/` alone
+      # arrives here with no edit to this script.
+      case $seed_status in
+      0) ;;
+      1)
+        log_warn "$seed_root: no audited folder under .claude/, nothing measured"
+        continue
+        ;;
+      *)
         # `|| true` because the re-run exits non-zero by construction, and
         # `set -e` would take the script down before log_error names the root.
         seed_frame=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate 2>&1 || true)
         echo "$seed_frame" | pipe_output
-        log_error "A seed breaks the standard governing the folder it seeds: $seed_root"
-      fi
+        if [ "$seed_status" -eq 2 ]; then
+          log_error "A seed breaks the standard governing the folder it seeds: $seed_root"
+        else
+          log_error "The seed audit exited $seed_status against $seed_root, which is neither a pass nor a finding."
+        fi
+        ;;
+      esac
 
       seed_entries=$(seed_entry_count "$seed_output")
       seed_measured=$((seed_measured + seed_entries))
