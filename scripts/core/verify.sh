@@ -116,6 +116,28 @@ assert_hero_pair() {
   [ "$html_commit" = "$png_commit" ]
 }
 
+# Whatever stacks the repo currently carries, so a new one is covered without an
+# edit here. A seed root holding no `.claude/` seeds nothing a standard governs.
+collect_seed_roots() {
+  local dir
+  for dir in "$PROJECT_ROOT"/tooling/*/seeds; do
+    [ -d "$dir/.claude" ] || continue
+    printf '%s\n' "${dir#"$PROJECT_ROOT"/}"
+  done
+}
+
+# Entries the audit actually measured, summed across the folders it resolved.
+# `--json` carries one `"entries":<n>` per folder object, and the top-level key
+# of that name holds an array, so the numeric match reaches folders alone.
+#
+# A root can resolve a folder and measure nothing in it, which is a passing gate
+# over an empty set. The stage prints this per root rather than reporting one
+# verdict for every root, or a tree nobody measured reads as a tree that passed.
+seed_entry_count() {
+  printf '%s' "$1" | grep -o '"entries":[0-9]\+' | grep -o '[0-9]\+' |
+    awk '{ total += $1 } END { print total + 0 }'
+}
+
 assert_no_drift() {
   local paths=$1
   local err_msg=$2
@@ -182,6 +204,67 @@ main() {
   log_step "Context citations"
   run_check "cd $PROJECT_ROOT && bun src/cli.ts context audit --citations-only" "A cited context path does not resolve. Run bun src/cli.ts context audit."
   log_info "Context citations resolve"
+
+  # The stage above audits this repository. Its seed tree ships into every
+  # scaffolded project, so a seed breaking the standard it seeds propagates
+  # instead of sitting still, and no rule path reaches the tree to report it.
+  # `--gate` fails on the two findings beside citations that are facts, a
+  # missing required section and index drift, and leaves the thresholds
+  # advisory for the reason the stage above leaves them so. A passing run stays
+  # silent because the audit prints a frame that would nest inside this one.
+  log_step "Seed standards"
+  local seed_roots seed_root seed_output seed_frame seed_entries seed_measured seed_status
+  seed_roots=$(collect_seed_roots)
+  if [ -z "$seed_roots" ]; then
+    log_info "Skipped, no seed root carries .claude/"
+  else
+    seed_measured=0
+    while IFS= read -r seed_root; do
+      # `--json` puts the record on stdout and the frame on stderr, so the
+      # passing run stays silent and the failing one is re-run for its frame
+      # rather than parsed out of a stream this script would have to strip.
+      seed_status=0
+      seed_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate --json 2>/dev/null) || seed_status=$?
+
+      # The audit separates 1 from 2 and they mean opposite things. 2 is a seed
+      # breaking the standard it seeds. 1 is the audit refusing, which a seed
+      # root carrying no audited folder produces, and reporting that as a
+      # violation sends a reader hunting one that does not exist. Discovery is
+      # what puts this in reach, since a new stack seeding `.claude/` alone
+      # arrives here with no edit to this script.
+      case $seed_status in
+      0) ;;
+      1)
+        log_warn "$seed_root: no audited folder under .claude/, nothing measured"
+        continue
+        ;;
+      *)
+        # `|| true` because the re-run exits non-zero by construction, and
+        # `set -e` would take the script down before log_error names the root.
+        seed_frame=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate 2>&1 || true)
+        echo "$seed_frame" | pipe_output
+        if [ "$seed_status" -eq 2 ]; then
+          log_error "A seed breaks the standard governing the folder it seeds: $seed_root"
+        else
+          log_error "The seed audit exited $seed_status against $seed_root, which is neither a pass nor a finding."
+        fi
+        ;;
+      esac
+
+      seed_entries=$(seed_entry_count "$seed_output")
+      seed_measured=$((seed_measured + seed_entries))
+
+      if [ "$seed_entries" -eq 0 ]; then
+        log_warn "$seed_root: no entry under an audited folder, nothing measured"
+      else
+        log_info "$seed_root: $seed_entries entries measured"
+      fi
+    done <<<"$seed_roots"
+
+    if [ "$seed_measured" -eq 0 ]; then
+      log_warn "No seed entry was measured. The stage covered nothing."
+    fi
+  fi
 
   # Presence of a required file is a fact, so it gates. The name, description,
   # folder, and requirement-section measures beside it report and are read from a

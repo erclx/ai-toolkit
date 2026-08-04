@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs'
-import { chmod } from 'node:fs/promises'
-import { join } from 'node:path'
+import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 import { copyPreservingMode } from '@/copy'
+import { rewritesOnInstall, stripSeedMarker } from '@/seed-marker'
 
 const SEEDS_DIR = join('tooling', 'claude', 'seeds')
 const CLAUDE_DIR = '.claude'
@@ -122,12 +123,25 @@ export function countByScope(seeds: readonly Seed[]): SeedCounts {
 /**
  * Copies each pending seed. Hooks get the executable bit the way `chmod +x`
  * granted it, added on top of whatever mode the destination already carried.
+ *
+ * A markdown seed is rewritten rather than copied, so the stub marker the seed
+ * gate reads does not reach the target. Every other seed copies byte for byte,
+ * which is what keeps the hook scripts and `settings.json` untouched.
  */
 export async function applySeeds(seeds: readonly Seed[]): Promise<string[]> {
   const applied: string[] = []
 
   for (const seed of seeds) {
-    await copyPreservingMode(seed.src, seed.dest)
+    if (rewritesOnInstall(seed.src)) {
+      await mkdir(dirname(seed.dest), { recursive: true })
+      await writeFile(
+        seed.dest,
+        stripSeedMarker(await readFile(seed.src, 'utf8')),
+      )
+    } else {
+      await copyPreservingMode(seed.src, seed.dest)
+    }
+
     if (seed.executable) await chmod(seed.dest, 0o755)
     applied.push(seed.applyLabel)
   }

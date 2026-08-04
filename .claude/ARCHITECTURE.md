@@ -44,6 +44,10 @@ A plugin skill reads a catalog through `aitk <domain> list --json`, matches it a
 
 A rule written in a standard fires only when a session reads it. The Claude Code hooks in `.claude/hooks/`, the husky hooks, and the drift stages in `bun run check` fire either way. The scratch-guard hook, the task-board index regen, and the consumed-copy drift assertion each replace an instruction that was already written down and already ignored. The cost is that an enforcement point is code with its own failure modes, so each one has to say what it does when its inputs are missing rather than reporting a pass.
 
+### Content that leaves the repository gates harder than content that stays
+
+The same finding fails a push against `tooling/*/seeds/` and only reports against `.claude/context/`. What moves it is the corpus rather than the measure: a seed is authored once and installed into every scaffolded project, so a defect there propagates, while a context entry is edited by the people who own it and a threshold failing their push teaches them to route around the stage. Widening the `paths` globs on the claude rules was the alternative and it is a nudge, since a rule loads only when a session opens the file, and the failure being closed is a seed nobody has touched in months. Gating a measure that carries a known false-positive class is what forces the escape hatch, so `stub: true` exempts a seed from the section check and both install paths strip it before a target sees it.
+
 ### A diagram folder per kind rather than one file
 
 `.claude/diagrams/` holds an entry per kind under a fixed filename, chosen over a single `DIAGRAMS.md`. The kinds drift at rates spanning roughly an order of magnitude, so a deploy change rewrites one entry and leaves the others untouched. Fixed filenames are what let a session refreshing a kind find the file it is meant to overwrite instead of writing a second entry beside it under a name of its own. A kind carrying a second question takes a suffixed name and repeats its category, which is how the folder reaches nine entries across five kinds.

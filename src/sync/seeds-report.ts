@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { relative } from 'node:path'
 import { planSeeds, type Seed } from '@/claude/seeds'
+import { rewritesOnInstall, stripSeedMarker } from '@/seed-marker'
 import { findInstalledOrigin, readHistoryIndex } from '@/sync/history'
 
 /**
@@ -106,6 +107,20 @@ function attribute(
   return false
 }
 
+/**
+ * Compares the target against what an install would write, not against the seed
+ * source. The two differ for a markdown seed carrying the stub marker, which the
+ * install strips, so comparing sources would report a file the target never
+ * touched as drifted for as long as the marker stays set.
+ */
 function sameContent(source: string, dest: string): boolean {
-  return readFileSync(source).equals(readFileSync(dest))
+  const installed = readFileSync(dest)
+
+  if (!rewritesOnInstall(source)) {
+    return readFileSync(source).equals(installed)
+  }
+
+  return (
+    stripSeedMarker(readFileSync(source, 'utf8')) === installed.toString('utf8')
+  )
 }

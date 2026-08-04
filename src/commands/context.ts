@@ -21,6 +21,7 @@ import {
   presentNames,
   resolveFolders,
 } from '@/context/folders'
+import { isGating } from '@/context/gate'
 import { auditIndexes, type FolderDrift } from '@/context/index-drift'
 import {
   frameError,
@@ -34,8 +35,8 @@ import {
   plural,
 } from '@/ui'
 
-/** Returned when an unresolved citation is found, which is the gating check. */
-const EXIT_UNRESOLVED = 2
+/** Returned when a gating finding is present. */
+const EXIT_GATE = 2
 
 /** A name of dots alone is `.` or `..`, both of which escape the audit root. */
 const FOLDER_NAME = /^(?!\.+$)[A-Za-z0-9._-]+$/
@@ -44,6 +45,7 @@ interface AuditCommandOptions {
   readonly json?: boolean
   readonly folder?: string
   readonly citationsOnly?: boolean
+  readonly gate?: boolean
 }
 
 export function register(program: Command): void {
@@ -65,17 +67,23 @@ export function register(program: Command): void {
       'Comma-separated folder names, resolved under .claude/ then the project root',
     )
     .option('--citations-only', 'Run the gating citation check alone')
+    .option(
+      '--gate',
+      'Also fail on a missing required section or index drift, the findings that are facts',
+    )
     .addHelpText(
       'after',
       [
         '',
         'Exit codes:',
-        '  0  the audit completed with every cited path resolving',
+        '  0  the audit completed with no gating finding',
         '  1  refused, with the reason on stderr',
-        '  2  a cited path did not resolve',
+        '  2  a gating finding is present',
         '',
-        'Only unresolved citations set a failing exit code. Section, length,',
-        'depth, bullet, table, provenance, and index findings are advisory.',
+        'An unresolved citation always gates. --gate widens the gate to the',
+        'other two findings that are facts rather than judgments: a missing',
+        'required section and index drift. Length, depth, bullet, table, and',
+        'provenance findings are thresholds and stay advisory under both.',
         '',
         'Examples:',
         '  aitk context audit',
@@ -83,6 +91,7 @@ export function register(program: Command): void {
         '  aitk context audit --citations-only',
         '  aitk context audit --folder context,diagrams',
         '  aitk context audit --folder docs',
+        '  aitk context audit tooling/base/seeds --gate',
         '',
       ].join('\n'),
     )
@@ -118,6 +127,17 @@ async function runAudit(
   const root = resolve(path ?? process.cwd())
   const names = parseFolders(opts.folder)
   const gateOnly = opts.citationsOnly ?? false
+  const widened = opts.gate ?? false
+
+  // `--citations-only` runs the citation check alone, so the two findings
+  // `--gate` adds are never measured. Honouring both would exit 0 on a seed
+  // short a required section, which is the pass a gate exists to prevent.
+  if (gateOnly && widened) {
+    return refuse(
+      '--citations-only runs the citation check alone, so --gate would widen the gate to findings the run never measures. Pass one.',
+      gateOnly,
+    )
+  }
 
   if (typeof names === 'string') return refuse(names, gateOnly)
 
@@ -213,7 +233,14 @@ async function runAudit(
     )
   }
 
-  return citations.unresolved.length > 0 ? EXIT_UNRESOLVED : 0
+  const gating = isGating({
+    unresolvedCitations: citations.unresolved.length,
+    sections,
+    drift,
+    widened,
+  })
+
+  return gating ? EXIT_GATE : 0
 }
 
 function refuse(message: string, gateOnly: boolean): number {

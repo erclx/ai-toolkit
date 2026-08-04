@@ -1,6 +1,6 @@
 ---
 title: Context audit
-description: Running the audit, its flags and folder scope, the exit codes, and the citation gate that is the only failing one
+description: Running the audit, its flags and folder scope, the exit codes, the citation gate, and the widened gate the seed stage runs
 ---
 
 # Context audit
@@ -13,6 +13,7 @@ aitk context audit --json
 aitk context audit --citations-only
 aitk context audit --folder context,diagrams
 aitk context audit --folder docs
+aitk context audit tooling/base/seeds --gate
 ```
 
 | Option             | Behavior                                                             |
@@ -20,6 +21,9 @@ aitk context audit --folder docs
 | `--json`           | Add a machine-readable record on stdout, keeping the frame           |
 | `--folder <list>`  | Comma-separated folder names (default: the three below)              |
 | `--citations-only` | Run the gating citation check alone, printing nothing when it passes |
+| `--gate`           | Fail on a missing required section or index drift as well            |
+
+`--citations-only` and `--gate` refuse together. The first runs the citation check alone, so the two findings the second adds are never measured, and a run honoring both would exit clean on a file short a required section.
 
 ## Folder scope
 
@@ -31,7 +35,36 @@ A run where no requested name resolves refuses, whichever list it read. Naming t
 
 ## Exit codes
 
-Exit codes are `0` for a clean run, `1` for a refusal, and `2` for an unresolved citation. Only the citation check sets a failing code. Required-section, length, depth, bullet weight, table, provenance, and index findings print and return `0`, because each is a judgment and failing a push on one would make the check something to route around.
+Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. Length, depth, bullet weight, table, and provenance findings print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around.
+
+Required-section and index findings sit between the two. Both are answerable from the file rather than weighed, so `--gate` promotes them to failing codes while a bare run leaves them advisory. The toolkit runs the bare form against itself and the widened form against the seed tree, described below.
+
+## The seed gate
+
+`bun run check` runs `--gate` against every `tooling/<stack>/seeds/` directory carrying a `.claude/` folder, discovered per run so a new stack is covered without a script edit. The seed tree installs into every scaffolded project, so a seed breaking the standard it seeds teaches the wrong shape to each one, and no rule path reaches the tree to report it.
+
+The widened gate is correct here and wrong at the project root. A seed is authored once and read by every target, while a context entry in a live project is edited under time pressure by the people who own it. A missing section in the first is a defect shipping outward, and in the second it is a threshold worth reporting and not worth blocking a push over.
+
+Coverage follows the index-plus-entry contract, so it reaches seeded entries and the indexes beside them. Seed files sitting directly under `.claude/`, currently `ARCHITECTURE.md`, `DESIGN.md`, and `REQUIREMENTS.md`, belong to no audited folder and stay outside it.
+
+The stage prints the entries it measured per root and warns on a root that measured none. A root can resolve an audited folder and hold no entry in it, which `tooling/claude/seeds` does today, so a single pass line over the set would report coverage of a tree nothing opened.
+
+It reads the exit code rather than pass against fail, since the two failing codes mean opposite things. A root carrying a `.claude/` that resolves no audited folder refuses at 1 and warns, while a seed short a required section gates at 2 and fails the push. A new stack seeding `.claude/` alone therefore reports what it is rather than a violation it does not have.
+
+### Exempting a skeleton
+
+A seed that deliberately omits a required section sets `stub: true` in its frontmatter, and the section check then skips it. Every other measure still reads the file, since a stub is exempt from owing sections rather than from being well formed.
+
+```markdown
+---
+title: Architecture
+stub: true
+---
+```
+
+Only `true` counts. A field holding anything else reads as a seed that meant to turn the exemption off, so a typo cannot silence the gate. Both install paths strip the field on the way into a target, which keeps toolkit bookkeeping out of a project whose own tooling would never read it. A block holding nothing else is dropped whole.
+
+The exemption exists because the section check has a false-positive class. A standard may sanction omitting a section, and no measure separates that from a file that forgot it, which is why the finding stays advisory everywhere the widened gate is not running. No seed sets the field today.
 
 ## The citation gate
 
