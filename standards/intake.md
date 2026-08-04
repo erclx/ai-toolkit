@@ -16,6 +16,7 @@ Governs an intake folder under `.claude/intake/<slug>/`: folder layout, the rese
 Does not govern:
 
 - One question measured in depth before anyone can plan against it: `groundwork.md`
+- The feature plan a promoted item feeds, and the inverted answer contract it keeps: `plan.md`
 - The task file promoting an item onto the board, and the origin line pointing back at the folder: `tasks.md`
 - Voice and word choice: `prose.md`
 - Headings, punctuation, and file references: `markdown.md`

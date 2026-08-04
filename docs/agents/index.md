@@ -18,6 +18,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project
 - [Output shape](output-shape.md): Two framed shapes every command renders into, how JSON and --names modes keep stdout clean, and the exit discipline that lets piped output drain
 - [Overview](overview.md): What this folder covers, the invocation rules every command inherits, and where domain behavior is documented instead
+- [Records](records.md): Validating the gitignored session records under .claude/, the per-kind checks, the refusal reasons, and why the root defaults to the main worktree
 - [Sandbox](sandbox.md): Scenario routing, the expectation scoring surface, and the coverage census over scenarios and skills
 - [Scripting](scripting.md): The runtime catalogs that replace hardcoded names, what each carries, and a headless invocation per domain
 - [Skill audit](skills-audit.md): Measuring both skill corpora against standards/skill.md, the checks it reads, and the requirement gate that is the only failing one

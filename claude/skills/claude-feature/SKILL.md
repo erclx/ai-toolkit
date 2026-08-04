@@ -35,33 +35,14 @@ Measure against the tree rather than recall. Grep for each construct the plan wi
 
 ## Step 3: build the plan
 
-Construct the plan with these sections:
+The section list, what each section holds, the suggested-and-answer contract, and the lifecycle are fixed by `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. Read it before writing the file and follow it rather than working the shape from memory.
 
-- **Summary:** three to five one-line bullets covering the goal, the main deliverables, and the key trade-off or decision. Aimed at humans scanning the plan, not agents executing it. Full mode only.
-- **Constraints:** durable rules the work must respect (patterns to reuse, surfaces not to touch, platform limits). Optional. Include when an orchestrator or prior context supplies them, omit the section otherwise. A constraint naming a surface to leave alone carries the distinction under Constraints below.
-- **Files to touch:** each file with a one-line reason
-- **Risks:** conflicts, coupling, or tricky spots. When the plan establishes a resource with more than one consumer, list the consumers and mark each read or write, because a policy stated over that resource has to hold for the writers and not just the consumer that prompted it. If none, use `None identified.`
-- **Questions:** numbered list of things to resolve before starting. Each carries a `- Suggested:` line and an `- Answer:` slot (see Suggestions below). If none, use `None identified.`
+What this skill adds on top of the standard:
 
-Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one. Small mode skips the summary since the plan is already short enough to scan in full.
-
-### Constraints
-
-A constraint naming a surface to leave alone forbids two different acts. Name which one, since a constraint carrying only the surface leaves the executing session to guess.
-
-- Forbid conforming the surface to whatever shape the change introduces. This is the act a scope constraint means, and it keeps the branch from growing a second concern.
-- Never forbid retargeting a pointer the change breaks. A rename, a split, or a deletion that leaves a citation behind ships a dangling reference, so fixing it is required work rather than scope creep.
-- Decide both acts for every surface the constraint names. Carving the distinction out for one file and leaving its siblings under the bare wording is how a plan ships one correct call beside one broken reference.
-
-### Suggestions
-
-Attach a `- Suggested:` line to every question, then an empty `- Answer:` slot below it. A blank answer means accept the suggestion at execution time. This makes the plan decision-ready in one pass, with no separate decision-help round.
-
-- Apply senior judgment: pick the best option and state it in one line with its reason or main tradeoff. No padding, no alternatives unless they change the pick.
+- Apply senior judgment to every `- Suggested:` line. Pick the best option and state it in one line with its reason or main tradeoff. No padding, no alternatives unless they change the pick.
 - Suggest a real default when best practice, the codebase, or prior context points to one.
-- When the answer hinges on the user's preference or their intent is unclear, write `- Suggested: needs your call, <why>` rather than fabricating a technical default.
-
-When three or more questions remain, keep chat output to the file pointer plus a short summary. Inline chat is fine when two or fewer remain.
+- Prefer `None identified.` over low-signal fillers. A small feature should produce a short plan, not a padded one.
+- When three or more questions remain, keep chat output to the file pointer plus a short summary. Inline chat is fine when two or fewer remain.
 
 ## Step 4: output
 
@@ -74,7 +55,7 @@ A consumer list is a `Risks` entry, which already forces Full. Establishing a re
 
 ### Small mode
 
-Output the plan to chat. Do not write a plan file.
+Output the plan to chat. Do not write a plan file. The markers match the standard's, so a plan that later grows into a file keeps the shape it was drafted in.
 
 ```markdown
 **Files to touch:**
@@ -98,37 +79,9 @@ Omit empty sections. Do not print `None identified.` in chat.
 
 Derive a 2-to-4-word kebab-case slug from the feature description. Write the full plan to `.claude/plans/feature-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist.
 
-File format:
+The file follows the template in `.claude/standards/plan.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every plan.
 
-```markdown
-# Feature: <short title>
-
-<feature description>
-
-## Summary
-
-- <one-line bullet covering the goal>
-- <one-line bullet covering the main deliverables>
-- <one-line bullet covering the key decision or trade-off>
-
-**Constraints:**
-
-- <durable rule the work must respect>
-
-**Files to touch:**
-
-- `path/to/file`: reason
-
-**Risks:**
-
-- <risk>
-
-**Questions:**
-
-1. <question>
-   - Suggested: <pick>, <reason or tradeoff>
-   - Answer:
-```
+Run `aitk records validate plans` after writing the file when the CLI is on PATH. It reports a section, a filename, or an answer slot that does not hold, and it writes nothing.
 
 Then output in chat:
 

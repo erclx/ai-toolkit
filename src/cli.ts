@@ -22,6 +22,7 @@ import { register as transcripts } from '@/commands/transcripts'
 import { register as tasks } from '@/commands/tasks'
 import { register as comments } from '@/commands/comments'
 import { register as context } from '@/commands/context'
+import { register as records } from '@/commands/records'
 import { PROJECT_ROOT } from '@/exec'
 
 const GREY = '\x1b[0;90m'
@@ -53,6 +54,7 @@ function showHelp(): void {
     `${GREY}│${NC}    tasks [cmd]        ${GREY}# Task board commands (archive)${NC}`,
     `${GREY}│${NC}    comments [cmd]     ${GREY}# Measure comment density and trend (scan)${NC}`,
     `${GREY}│${NC}    context [cmd]      ${GREY}# Report context folder health (audit)${NC}`,
+    `${GREY}│${NC}    records [cmd]      ${GREY}# Check session records under .claude/ (validate)${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
     `${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}`,
@@ -85,6 +87,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk tasks archive --pull-request 673 --json`,
     `${GREY}│${NC}    aitk comments scan src --json`,
     `${GREY}│${NC}    aitk context audit --json`,
+    `${GREY}│${NC}    aitk records validate plans`,
     `${GREY}└${NC}`,
   ]
   console.log(lines.join('\n'))
@@ -138,5 +141,6 @@ transcripts(program)
 tasks(program)
 comments(program)
 context(program)
+records(program)
 
 program.parse()
