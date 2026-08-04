@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.55.0](https://github.com/erclx/aitk/compare/v0.54.0...v0.55.0) (2026-08-04)
+
+
+### Features
+
+* **toolkit:** add a coverage gate and six unrelated small fixes ([#846](https://github.com/erclx/aitk/issues/846)) ([8b0ba3b](https://github.com/erclx/aitk/commit/8b0ba3b6c213a28c7c94cbb5c80d77eddb0b59f9))
+
+
+### Bug Fixes
+
+* **hooks:** bound the stdin read so a manual run refuses ([#844](https://github.com/erclx/aitk/issues/844)) ([953b2d5](https://github.com/erclx/aitk/commit/953b2d51ff5cd53020f886c69fc8027db0e262f9))
+
 ## [0.54.0](https://github.com/erclx/aitk/compare/v0.53.0...v0.54.0) (2026-08-04)
 
 
