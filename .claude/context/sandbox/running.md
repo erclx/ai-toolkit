@@ -44,11 +44,17 @@ The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd
 
 The envelope alone decides nothing. An arm can return `error=false` having written nothing and meeting none of its scenario's stated expectations, so a suite scoring on the envelope would count it as a pass. `run.sh` snapshots the tree before the session, diffs it after, and hands the result to `aitk sandbox check`, whose exit code becomes the run's outcome.
 
+### One tree, so runs serialize
+
+The sandbox path resolves to a single tree per machine, so two sessions running arms at once provision over each other. The second session's provisioning lands between the first's session and its verdict, and the first is then scored against a fixture it never staged. Nothing detects it. The reply half still passes, because the reply comes off the envelope the run produced, while every path, absence, and content assertion reads the tree that replaced it, so the arm reports a mixed verdict that looks like a skill defect rather than a collision. One `claude:migration-standards` run was lost this way on 2026-08-04, reporting five failures against a tree holding another scenario's anchor fixture.
+
+`AITK_SANDBOX_DIR` is the whole fix, pointing a run at a tree of its own under the home directory or the temp root, which is what `assert_sandbox_dir_safe` already admits. Parallel worktrees are the ordinary shape here, so a session running arms while another is open sets it rather than assuming the tree is its own. The `escapes` array reports the same class of interference from the other direction: it names any file that changed under the toolkit roots during the run, so a concurrent session writing shared session scratch at the main root appears there as an escape the sandbox session never made.
+
 ### The run record
 
 Every run also lands at `.claude/.tmp/sandbox-runs/<target>-<arm>-<timestamp>.json`, and `run.sh` logs the path on stderr. The file holds what stdout emitted plus a `writes` array. Both are needed to score a run again later: `aitk sandbox check` recovers the tree-based assertions from surviving sandbox state, but `max_turns` reads the envelope and `write_scope` reads the writes list, and the temp files carrying those are deleted at the end of the run.
 
-The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. Nothing prunes the folder, which makes it a scratch-lifecycle question rather than an oversight. It belongs with the other scratch catalogs whenever that track settles when a folder's contents expire.
+The record is gitignored scratch with no rotation, one file per run. Writing it is additive and stdout stays the data contract, so a failure to record warns and prints the verdict anyway. What that costs is the turn count, which is recoverable from nowhere else once the run's temp files are deleted, so an arm whose record failed to write cannot have its ceiling calibrated without paying for the run twice. `claude:toolkit-operator/fresh` is declared at the cap for that reason rather than from an observation. The warning sits on stderr among the framing, where a caller reading the tail of a passing run does not see it. Nothing prunes the folder, which makes it a scratch-lifecycle question rather than an oversight. It belongs with the other scratch catalogs whenever that track settles when a folder's contents expire.
 
 ### Turn budget
 

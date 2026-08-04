@@ -41,6 +41,8 @@ stage_fixtures claude docs drift 02-postgres
 
 The first two segments mirror the scenario's own path at `scripts/sandbox/<category>/<scenario>.sh`. Both are needed, since four scenario basenames repeat across categories (`claude`, `docs`, `review`, and `sync`) and `docs` is a category as well.
 
+`stage_toolkit_markdown` sits in the same library for the other source of staged content, the toolkit's own `standards/` and `snippets/` trees. An arm modelling a real install wants the files a target actually received, and a copy of them under `fixtures/` would drift from the source with nothing reporting it. It flattens, which is the part to keep: both `detectUnmigrated` and the sync engine match a target file to its source by basename against the flat domain root, so a file staged out of a source subfolder such as `bundled/` reads as project-authored and the arm asserts against a state it did not stage.
+
 Each stage splits into two optional subfolders. `create/` copies files in, making parent directories and overwriting whatever is there. `append/` concatenates onto a file the anchor or the injected seeds already provide, and fails when the target is missing, because an absent target means the upstream shape changed and the scenario's assumption is stale.
 
 Every stored file carries a `.fixture` suffix that the helper strips on copy. The suffix keeps the repository's own checks off the content, since an `index.md.fixture` is not an `index.md`. `aitk indexes regen` leaves it alone, and prettier, `shfmt`, and `shellcheck` skip it too. Without the suffix, a fixture that deliberately drifts from its sibling frontmatter gets normalized by `bun run check` and the state it models disappears.

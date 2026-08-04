@@ -164,6 +164,13 @@ to, with nothing at the path the current one reads. It carries `rootPath`,
 root reports zero entries for that domain and reads as clean, which is the most
 misleading state the report can produce. Route it to `migration-standards`.
 
+That skill reads this field rather than listing the folder itself, so the entry
+is the detection on both sides of the handoff and the two cannot disagree. The
+count is what makes the difference visible: it counts only files whose basename
+the toolkit ships, so a root folder holding the project's own documents beside
+the installed ones reports the installed subset, where a listing reports every
+file and proposes relocating the lot.
+
 `unmigrated` counts toward `--exit-code`, since running the relocation closes it.
 `superseded` and every seed state are excluded, for the reason `orphaned` already
 is: only the user can move content they wrote, so failing a job on it leaves the

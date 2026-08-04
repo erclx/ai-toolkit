@@ -1,0 +1,44 @@
+# What a correct `/aitk:toolkit-operator` run replies on a target whose installed
+# standards have fallen behind. Read by `aitk sandbox check`. Patterns use TOML
+# literal strings so a regex needs no backslash escaping.
+#
+# The arm scores the route a drifted domain takes. Both staged files are flat
+# toolkit standards, so the report attributes both as drift a sync could close
+# rather than as content the project authored.
+
+# A clean run cost 21 turns on 2026-08-04 against the default cap of 30. The
+# ceiling sits at the cap rather than at twice the observation, because a
+# truncated run reports one turn past its cap and a declaration above the cap
+# passes that assertion while every other one fails. The route continues into
+# `claude-seed-sync` once the sync refuses, which is where the turns go.
+max_turns = 30
+
+# The route, named as the command rather than as a skill, because this is the
+# one branch the operator runs itself. Its `## Execute` step requires the command
+# it ran to be reported, so the token is in the reply on any correct run.
+#
+# A domain sync is what separates this from the two routes beside it. A
+# drifted install is neither a fresh scaffold nor a root layout, and both of
+# those are reachable from the same report.
+reply = ["aitk standards sync"]
+
+# Prose the checker cannot assert, each with the reason it stays here.
+manual = [
+  "The reply does not route to `setup-init` or `migration-standards`. Semantic: a negative substring passes on every reply that phrases the wrong route differently",
+  "The diagnose phase named the drifted files before the route was taken. Semantic: the filenames come off the report rather than from the skill, so a reply that printed the report without deciding anything carries the same tokens",
+  "The sync ran under `AITK_NON_INTERACTIVE=1`. Unwired: the claim is about how a command was invoked, which the envelope does not carry",
+]
+
+# The marker survives, which is what proves the router left the managed file
+# alone. `aitk standards sync` declares a `refuse` policy for a headless run, so
+# a correct route reports the refusal and its hint rather than rewriting the
+# file. A run that stripped the marker either edited a managed file by hand,
+# which `## Boundaries` forbids outright, or forced the sync past a refusal the
+# adapter exists to hold.
+[[content]]
+path = ".claude/standards/architecture.md"
+pattern = '<!-- stale -->'
+
+[[content]]
+path = ".claude/standards/context.md"
+pattern = '<!-- stale -->'
