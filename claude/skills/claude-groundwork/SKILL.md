@@ -7,7 +7,7 @@ description: Opens and runs a numbered groundwork folder under `.claude/groundwo
 
 Groundwork gathers and weighs. A plan commits. A groundwork folder costs nothing to throw away, which is what makes it the right container for a question nobody has answered yet.
 
-Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file in the folder. It holds the reserved numbers, what each required file carries, the conventions, and the anti-patterns.
+Read `.claude/standards/groundwork.md` from the project root before writing any file in the folder, or `${CLAUDE_SKILL_DIR}/../../standards/groundwork.md` when the project does not have it. It holds the reserved numbers, the frontmatter and dating rules, what each required file carries, the conventions, and the anti-patterns. Do not work them from memory.
 
 ## Guards
 
@@ -65,19 +65,9 @@ Then read only what a live question needs. Do not read entire directories specul
 
 Do not dispatch subagents. A groundwork track is a conversation, and fanning out loses the reasoning that makes the folder worth keeping. A search too large to run inline is a finding that the question is too broad.
 
-## Open question format
+## Open questions in chat
 
-Every open question carries a lean, wherever it appears: inside a topic file, in `00-scope.md`, and in the chat output. A bare numbered list hands the reader a quiz and defers the judgment the track exists to inform.
-
-```markdown
-1. <question>
-   - Leaning: <where the evidence currently points>
-   - Overturned by: <the finding that would change it>
-```
-
-- `Leaning:` is weaker than a plan's `- Suggested:`. It records the current read on a question still open by definition, not a decision to accept by default at execution time.
-- Pair every lean with what would overturn it. A lean with no falsifier is an opinion.
-- On a measurement rather than a judgment, write `- Leaning: none, needs measuring` and drop the overturn line. A guess at a number is worse than an admission.
+The standard sets the open question format and requires it inside a topic file and in `00-scope.md`. Carry the same shape into the chat output, which sits outside the folder the standard governs. A bare numbered list hands the reader a quiz and defers the judgment the track exists to inform.
 
 ## Open mode
 
@@ -85,7 +75,7 @@ Every open question carries a lean, wherever it appears: inside a topic file, in
 2. Write `README.md` first. Writing it first forces the question of what the track is for.
 3. Write `01-current-state.md` by measuring now. Never carry a figure from a previous session or from recall without re-measuring it. Measure only what an open question in the folder needs. A number with no question attached is how groundwork turns into the work.
 4. Write `00-scope.md` when the track is large enough to run away. Skip it on a small track.
-5. Add topic files at `02` through `05` as the subject demands. Close each one with its open questions in the format above.
+5. Add topic files at `02` through `05` as the subject demands. Close each one with its open questions in the standard's format.
 6. Keep going. Revise, reframe, and take correction as the questions move. The folder is meant to be rewritten.
 
 ## Resume mode

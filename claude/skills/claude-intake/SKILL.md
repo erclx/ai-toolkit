@@ -7,7 +7,7 @@ description: Files a raw brain dump into a numbered intake folder under `.claude
 
 Intake dispositions many findings in breadth. A dump goes in, an inventory comes out, and every item carries a problem measured against the tree, one proposed fix, and a verdict. The item that turns out to be already settled is the highest-value output, and it is the one thing neither a plan nor a groundwork track has anywhere to put.
 
-Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file in the folder. It holds the numbering, the file map, the frontmatter, and the item template.
+Read `.claude/standards/intake.md` from the project root before writing any file in the folder, or `${CLAUDE_SKILL_DIR}/../../standards/intake.md` when the project does not have it. It holds the numbering, the file map, the frontmatter and dating rules, the item format, and the answer contract. Do not work them from memory.
 
 ## Routing
 
@@ -34,7 +34,7 @@ Using the wrong one fails in two shapes. Intake on a question that needs measuri
 - Reading is unrestricted inside the project. Measuring is the work.
 - Treat the folder as gitignored and unbacked. No check reaches its contents, so every rule stated here holds only while a session reads it.
 
-Nothing outside this body carries the floor, and no path-scoped rule can. The item format and the answer contract are heading for a standard covering this folder and a groundwork track together, which is queued rather than written.
+Nothing outside this body carries the write-scope floor, and no path-scoped rule can. A misrouted write lands on a path the folder's glob never matches, so the rule that ships beside the intake standard carries the item format and the answer contract instead, for a session editing the folder with this skill unloaded.
 
 ## Step 1: detect open or resume
 
@@ -71,7 +71,9 @@ Two heading levels is the right depth. A third means the cluster should have bee
 
 ## Step 5: disposition each item
 
-Write every item in the format below, in the cluster file its fix belongs to. Close each item with a verdict and an empty operator slot.
+Write every item in the standard's item format, in the cluster file its fix belongs to. Close each item with a verdict and an empty operator slot, and never fill that slot or read an empty one as agreement.
+
+Where an item's call is the operator's, pair it with a suggestion rather than a bare question. The toolkit's `decision-help` snippet writes the same shape for chat use, and the standard's item format is the whole spec.
 
 ## Step 6: write the index
 
@@ -80,40 +82,6 @@ Write `00-overview.md` last, once the clusters are filed and the counts are real
 Each open question in the index is a labeled markdown link to its owning item's heading anchor. The index points and the item owns, so no answer slot appears in the index. One question in two answerable places has no rule for which wins, and retrieval walks item headings, so an answer typed into the index is found by nothing and lost silently.
 
 Add `99-next-session.md` only where the pass ends holding context no cluster file carries, such as a dump half filed or a measurement that has to be redone. Write it self-contained, since the folder is unbacked and the conversation behind it compacts away.
-
-## Item format
-
-```markdown
-### N. Short title stating the defect
-
-- **Problem:** what is wrong today, stated against the tree and carrying a number or a file path
-- **Fix:** the one change proposed
-- **Worth it:** yes, later, or no, with the reason
-- **Open:** only where the call is the operator's
-- **Suggested:** the pick in one sentence, then the reason and the main tradeoff in one or two
-- **Overlaps:** the live board task that already owns this item
-- **You:**
-```
-
-- `Problem:`, `Fix:`, `Worth it:`, and the empty `You:` slot ship on every item. The other two are conditional.
-- `Suggested:` is required whenever `Open:` is present. A bare question invites a bare answer, and `ok` against two defensible options carries no information. Where the answer is the operator's preference rather than a technical call, say so in that form rather than inventing a default. The toolkit's `decision-help` snippet writes the same four-line shape for chat use, and the four lines above are the whole spec.
-- `Overlaps:` never replaces `Worth it:`. The items where a live board task might be the thing that is wrong are exactly the ones whose verdict matters most.
-
-## The answer contract
-
-`You:` belongs to the operator and ships empty on every item.
-
-Empty means unread. It never means agreement. Accepting a verdict is typed as one token, `- **You:** ok`.
-
-That inverts the plan file's contract, where a blank `- Answer:` means accept the suggestion, and the inversion is deliberate. A plan is read in one sitting with every question already surfaced in chat. An intake folder is read over weeks, so an empty slot is ambiguous between accepting the verdict and never having reached the item, and the second reading is far more likely. Acting on silence as consent ships a change nobody approved.
-
-Never fill a `You:` slot, and never infer a disposition from an empty one. On a resume pass, report unread items by count rather than deciding them.
-
-## Numbering
-
-Numbers are read order and nothing else. Reserve `00` for the index and carry the domain in every other filename, so `07-tooling.md` says what it holds before anyone opens it.
-
-Do not reserve mid-range numbers. Clusters differ per dump, so a contract over `06` would force every future intake into one dump's shape. `claude-groundwork` reserves its numbers because its shape is fixed, and that half of the convention does not transfer.
 
 ## Output
 
