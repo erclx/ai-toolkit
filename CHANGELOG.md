@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.47.0](https://github.com/erclx/aitk/compare/v0.46.1...v0.47.0) (2026-08-04)
+
+
+### Features
+
+* **snippets:** add admission tests and rebuild the catalog presets ([#825](https://github.com/erclx/aitk/issues/825)) ([2d422df](https://github.com/erclx/aitk/commit/2d422df4ad6734d4daeb299770065997505414ed))
+* **tasks:** add an 'Intake:' origin key and ignore .claude/intake/ ([#823](https://github.com/erclx/aitk/issues/823)) ([18f1c73](https://github.com/erclx/aitk/commit/18f1c73248f972eff1bc28dc44e31b86c8322a8d))
+
 ## [0.46.1](https://github.com/erclx/aitk/compare/v0.46.0...v0.46.1) (2026-08-03)
 
 
