@@ -23,6 +23,7 @@ A branch also goes stale from `main` moving rather than from anything the branch
 - Push before replying, so the comment never runs ahead of the code it describes
 - Map every finding to what changed, or to a one-line reason when it is a question or a conscious accept
 - Post the terminal comment only when the findings are addressed and every check passes
+- Say what the run actually did on a rebase-only pass, since a reply mapping findings and a terminal comment claiming they were addressed are both false on a pull request carrying none
 - Scan the reply for banned characters and internal phase labels before posting, since the comment leaves for the remote unchecked
 
 ## Must not

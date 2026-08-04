@@ -140,6 +140,15 @@ When step 5 rebased the branch, say so in the summary sentence and name which
 files were resolved by hand and which the regen rebuilt. The next review is a
 full pass rather than a delta, and the reader is owed the reason.
 
+A run the second guard sent straight to step 5 has no findings to map, so it
+takes a different body rather than an empty list. Open it with `## Rebase`, not
+`## Review response`, since nothing on the pull request is being responded to and
+that heading claims a review this run never read. State that the branch stopped
+merging, name what landed on `main`, name the files resolved by hand and those
+the regen rebuilt, and close the same way. The heading stays outside the
+`## Review` family so the close-out's equality test on the first line never
+matches it.
+
 Before posting, run the scan in `.claude/standards/publish.md`
 against the reply, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when
 the project does not have it. The hook skips `.claude/.tmp/`, so this scan is the
@@ -160,6 +169,14 @@ clear terminal state:
 gh pr comment <number> --body "✅ All review findings addressed, CI green."
 ```
 
+A rebase-only run addressed no finding, so it takes its own terminal comment
+rather than that one. Claiming findings were addressed on a pull request that
+carries none is false on a surface nothing else checks:
+
+```bash
+gh pr comment <number> --body "✅ Rebased onto origin/main, CI green. No review findings were open."
+```
+
 If any check fails, do not post the closing comment. Report the failing check
 so it can be fixed first. This is a resolution signal, not a formal approval,
 since the PR author cannot approve their own PR.
@@ -172,5 +189,13 @@ Addressed <N> findings on PR #<number>. Follow-up pushed.
 ```
 
 Omit the second line when the branch still merged. Name any finding left as a
-reply rather than a code change, with its one-line reason. Do not merge. Hand
-back to the orchestrator for re-review.
+reply rather than a code change, with its one-line reason.
+
+A rebase-only run drops the first line rather than reporting zero findings
+addressed, and leads with the rebase instead:
+
+```plaintext
+Rebased PR #<number> onto origin/main. <N> files resolved by hand, <N> rebuilt by the check.
+```
+
+Do not merge. Hand back to the orchestrator for re-review.
