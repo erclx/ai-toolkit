@@ -54,6 +54,12 @@ A rule written in a standard fires only when a session reads it. The Claude Code
 
 `scripts/eval/` asks whether a session that has never seen a standard can author a conforming artifact from that standard alone. It says nothing about whether the artifact is useful, which is a separate question with a separate design. No baseline arm and a sample of one are correct for the question asked, because failure is self-evident: a session that reads the standard and still writes the wrong shape has proved the standard failed to communicate its own central rule. The fixture extracts to `mktemp -d` outside this repository, since a fixture under the root inherits this project's `CLAUDE.md` through the ancestor chain and the session under test would arrive already knowing what the test measures.
 
+### A durable record is named for what it is, not for how long it lives
+
+`groundwork/`, `plans-archive/`, and `task-archive/` sit directly under `.claude/`, leaving `.tmp/` holding only what can be deleted without loss. All three are cited by task files months after they are written, so a folder announcing itself as temporary was the wrong container for the one thing in it nobody may delete. Gitignored is what these share with scratch, and gitignored means per-machine rather than disposable. `memory-archive/` stayed behind on the same test: nothing cites a retired memory, so it is an undo buffer for a bulk pass rather than a record a later session opens.
+
+Prefixing the other five surfaces with a dot to collapse the ignore file into one pattern was measured and declined: 486 occurrences across roughly 150 committed files, 43 of which ship to targets, against 80 across 26 for the move that shipped. It is a breaking rename for every installed target, and it hides the board a person opens daily. The ignore file therefore grows by three entries rather than shrinking, which is the accepted cost. `.tmp` is the only one of the six where hidden is the correct default.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing here reports the gap.

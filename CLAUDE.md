@@ -126,7 +126,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 - `.claude/tasks/` is gitignored local session scratch, one file per task. Edit freely. No staging or revert before commits.
 - Only create a task in `.claude/tasks/` for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
-- When a task needs execution detail beyond its own file, create a plan in `.claude/plans/` and link to it from the task's intro paragraph. Move the plan to `.claude/.tmp/plans-archive/` when the task ships. Never delete it.
+- When a task needs execution detail beyond its own file, create a plan in `.claude/plans/` and link to it from the task's intro paragraph. Move the plan to `.claude/plans-archive/` when the task ships. Never delete it.
 - Write the plan in the same session as the task file. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.
 

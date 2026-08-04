@@ -243,7 +243,7 @@ describe('archiveTask', () => {
 
   it('should accept a task pointing at an archived plan', async () => {
     const stem = await seedTask({
-      plan: '../.tmp/plans-archive/feature-trigger.md',
+      plan: '../plans-archive/feature-trigger.md',
     })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
@@ -252,7 +252,7 @@ describe('archiveTask', () => {
   })
 
   it('should not read a sibling of the plans folder as a live plan', async () => {
-    const stem = await seedTask({ plan: '../plans-archive/feature-trigger.md' })
+    const stem = await seedTask({ plan: '../plans-legacy/feature-trigger.md' })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
       ok: true,

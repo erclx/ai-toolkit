@@ -238,18 +238,18 @@ Sweep reviews this session consumed, and sweep plans across the whole board. Res
 
 Board-wide scope is the one place this sweep reaches past Step 3's rule against touching task files the session did not change. A board carrying a task that closed while an earlier run missed its archive is the defect this exists to clear, and skipping those tasks would preserve it. Reaching them is safe because the archive moves the plan and points the task at the new path, so a task from unrelated work ends up with a working pointer rather than a broken one.
 
-Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone. A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/.tmp/plans-archive/`, and the count then reads a citation that does not exist and archives nothing.
+Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone. A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/plans-archive/`, and the count then reads a citation that does not exist and archives nothing.
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
 A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.claude/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
 
-- Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/.tmp/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
+- Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
 - Target resolves inside `.claude/plans/` and at least one other task file cites it: leave the plan where it is and retarget nothing. Report the shared citation.
-- Target resolves inside `.claude/.tmp/plans-archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
+- Target resolves inside `.claude/plans-archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
 - Any other resolved target outside `.claude/plans/`: warn and skip.
 
-Write the retarget as a markdown link, `Plan: [feature-<slug>](../.tmp/plans-archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
+Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans-archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
 
 **Reviews.** Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result. If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 
@@ -257,7 +257,7 @@ Do not sweep `ui-checklist-*.md` (pending human verification) or `ux-audit-*.md`
 
 Output one line per file swept:
 
-- `📦 Archived: <path>` for a plan moved into `.claude/.tmp/plans-archive/`
+- `📦 Archived: <path>` for a plan moved into `.claude/plans-archive/`
 - `⏭ Kept: <path>, still cited by <task-file>` for a plan another live task shares
 - `🧹 Deleted: <path>` for a swept review
 

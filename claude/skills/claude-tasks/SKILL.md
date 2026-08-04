@@ -44,7 +44,7 @@ Write it immediately. Claude Code's tool permission dialog is the confirmation g
 
 ### Step 4: report unlinked origins
 
-Scan for work that has been decided and would otherwise be forgotten. List `.claude/.tmp/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
+Scan for work that has been decided and would otherwise be forgotten. List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
 
 Report rather than prompt. A track can be opened long after its task would have been written, so an offer to create one for each is noise on most runs.
 
@@ -106,7 +106,7 @@ Create:
 
 **Origin with no task:**
 
-- `.claude/.tmp/groundwork/<slug>/`: open, touched <date>
+- `.claude/groundwork/<slug>/`: open, touched <date>
 - #NNN: <issue title>
 ```
 
@@ -115,7 +115,7 @@ Omit the origin block when everything is linked.
 Archive, reporting the paths the command returned:
 
 ```plaintext
-📦 Archived: .claude/.tmp/task-archive/vXX.Y-<slug>.md
+📦 Archived: .claude/task-archive/vXX.Y-<slug>.md
 
 <ordering and index disposition in one line>
 ```

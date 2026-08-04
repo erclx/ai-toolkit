@@ -124,7 +124,7 @@ description: One line on what this task achieves
 # vX.Y: Title
 
 Plan: [feature-<slug>](../plans/feature-<slug>.md)
-Groundwork: [<slug>](../.tmp/groundwork/<slug>/)
+Groundwork: [<slug>](../groundwork/<slug>/)
 Intake: [<slug>](../intake/<slug>/)
 Issue: #NNN
 Pull request: #NNN
@@ -149,13 +149,13 @@ Every task names where it came from, through a `Plan:`, `Groundwork:`, `Intake:`
 
 A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track or an open issue that no task points at is work already decided and on its way to being forgotten. An intake folder is exempt from that direction, since it dispositions many items at once and most of them close without ever becoming a task.
 
-`Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/`, `../.tmp/groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
+`Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/`, `../groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
 
 Phase-label format and where labels may appear are governed by `standards/versioning.md`.
 
-`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../.tmp/plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it. One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
+`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it. A project that archived plans before the folder moved out of `.claude/.tmp/` holds closed tasks pointing at `../.tmp/plans-archive/`, and both forms resolve against the files each names, so leave those pointers where they are. Nothing migrates them, and a task retargeted without its plan moving leads nowhere. One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
-`Groundwork:` points at `../.tmp/groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
+`Groundwork:` points at `../groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
 
 `Intake:` points at `../intake/<slug>/`, the folder an intake pass fills. Use it rather than `Groundwork:`, because a groundwork track measures one question in depth while an intake dispositions many across a tree, and one key covering both loses which kind of pass produced the task. The line names the folder rather than an item inside it. A task routinely promotes several items at once, so an anchored line would name one and drop the rest, and the item numbers belong in that task's `## Findings`.
 
@@ -180,11 +180,11 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.claude/.tmp/task-archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
+Never delete a task file. A shipped task moves to `.claude/task-archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
 
 Two callers reach that command. The `claude-tasks` skill runs it inside a session, and the `post-merge` hook runs it unattended after a pull that merged the work. Both go through the command rather than moving the file themselves, so the two paths cannot drift into archiving differently. Every gate the command applies refuses with a non-zero exit rather than reporting, because a caller with nobody watching cannot act on a warning.
 
-One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/.tmp/plans-archive/` and stays gitignored, so an archived task does not start appearing in diffs. The cost is that scratch is unbacked, which is the same cost the plans archive already carries.
+One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/plans-archive/` and stays gitignored, so an archived task does not start appearing in diffs. The cost is that the folder is unbacked, which is the same cost the plans archive already carries.
 
 Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. The archive clears the task's row from `priority.md` itself, since a shipped task left in the ordering reads as ready to hand a worker. It leaves prose naming the task alone for a person to resolve.
 

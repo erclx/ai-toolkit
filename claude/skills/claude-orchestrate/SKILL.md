@@ -146,7 +146,7 @@ Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, 
 - Edit the file with the file-editing tool. A shell stream editor and an inline string replace both exit clean on a non-match, so a promotion that matched nothing leaves the board wrong with nothing reporting it, and the file-editing tool errors instead.
 - Put a pointer in the Plan column, never prose. `## Run now` claims a written plan covers every open outcome, and `claude-autoship` refuses at its guard when it follows the column and finds no plan, which spends a worker dispatch to learn what the row should have said.
 - Name the file set in the Touches column. The disjointness call in step 6 is only checkable later when the sets are written down rather than reasoned once and discarded.
-- Re-resolve every Plan pointer after anything archives a plan. `claude-docs` moves a plan to `.claude/.tmp/plans-archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.claude/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
+- Re-resolve every Plan pointer after anything archives a plan. `claude-docs` moves a plan to `.claude/plans-archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.claude/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
 - Read the file back after writing it, since the row that lands is the row a worker acts on.
 
 ## Parallelism
