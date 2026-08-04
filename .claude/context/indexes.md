@@ -30,6 +30,7 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 
 - Hand-written content in an auto-managed `index.md` is overwritten on the next regen. Set `auto: false` to keep prose.
 - A child folder whose `index.md` is missing `title` or `subtitle` is skipped with a warning rather than failing the walk.
+- A child folder carrying no `index.md` at all drops out of every catalog silently. `collectEntries` globs the folder's own `*.md` and never recurses, so the pages inside surface neither as parent entries nor as a sub-catalog line, and the regen reports success. Create the child index in the same change that creates the folder.
 - When a folder has both an overview file and a same-named subfolder, both entries appear.
 - Whole-repo walks with no positional paths never auto-stage.
 - A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` and `.claude/memory/` both depend on that asymmetry: `bun run check` cannot regenerate either, so a `PostToolUse` hook passes the changed path instead. Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit.
@@ -123,6 +124,8 @@ Per-domain narrative loaded on demand
 ```
 
 A folder that holds its own `index.md` is a child catalog. The parent links it so an agent reading the parent discovers the sub-catalog without opening files. Linking is recursive because each folder regenerates independently.
+
+Two trees in this repository nest. `.claude/context/` mixes flat entries with four child catalogs, and `wiki/` pushes every page into `claude/`, `tools/`, or `concepts/` so its root index carries sub-catalog lines alone.
 
 The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling file renders as `- [<title>](<filename>): <description>`. Each immediate subfolder that carries an `index.md` renders as `- [<child title>](<child>/index.md): <child subtitle>`, sorted among the sibling files by name rather than appended after them.
 

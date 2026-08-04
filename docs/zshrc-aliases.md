@@ -56,7 +56,7 @@ Use `clp` in any other repository where you want the toolkit skills available. W
 
 Use `cls` or `clps` to save Opus usage on routine sessions. Switch mid-session with `/model` to avoid restarting.
 
-Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for fan-out rules.
+Use `clw <name>` for features that will take more than one session. A worktree isolates the branch, the transcripts, and the `/resume` history. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for fan-out rules.
 
 Use `clc` to resume the last session without a picker. Use `clr` when you have several sessions and need to pick by name or recency. Outside the toolkit repo, `clpc` is the same shortcut as `clc` with the plugin loaded.
 

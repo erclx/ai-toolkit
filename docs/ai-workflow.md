@@ -76,7 +76,7 @@ Run one orchestrator at a time. The board is gitignored, so a second session rea
 
 Before a handoff, the orchestrator checks the plan against the tree rather than reading it: grep each construct it names and count the sites, confirm every phase label it cites is still open, and open each file it describes. A plan goes stale from whatever merged after it was written, and reading cannot catch that.
 
-`.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
+`.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
 A plan that ships is archived, never deleted. `aitk:claude-docs` moves it to `.claude/plans-archive/` and retargets the task file's `Plan:` line at the new location, so a completed task still leads to the reasoning behind it. Both folders are gitignored, which is why a deleted plan had no recovery path. A plan cited by more than one task stays put until the last of them closes, since moving it early would strand every other pointer.
 

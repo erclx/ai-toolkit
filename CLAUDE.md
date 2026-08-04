@@ -106,7 +106,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 - `src/`: TypeScript CLI entry point, commander subcommands, exec helper
 - `docs/`: consumer-facing reference (CLI surface, AI workflow, target-project integration, and the workflow method this repo runs on)
 - `scripts/`: bash domain scripts, core maintenance, sandbox, and prompt generation
-- `wiki/`: reference pages for tools and concepts owned outside this repo
+- `wiki/`: reference pages for tools and concepts owned outside this repo, split into `claude/`, `tools/`, and `concepts/` by who owns the subject
 
 ## Commands
 
@@ -147,15 +147,16 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Parallel sessions
 
-- Independent feature tracks can run concurrently in git worktrees. See `wiki/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
+- Independent feature tracks can run concurrently in git worktrees. See `wiki/claude/claude-worktrees.md` for the fan-out rules and which domains are safe to parallelize vs which must serialize.
 - Implementation work runs in a linked worktree. From the main worktree, enter one with `/claude-worktree` before editing tracked files for a feature.
 - Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
 - From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) resolves to the main worktree root.
 
 ## Wiki
 
-- Before answering a how-to question about an external tool or a Claude Code concept, scan `wiki/index.md` for a relevant page. Workflow method, shell environment, and target-project questions are answered from `docs/index.md` instead.
-- A page belongs in `wiki/` when its subject is owned by someone outside this repo. Content about how this repo works goes to `docs/`, `.claude/context/`, or a skill body. `wiki/rule-writing-vocabulary.md` is the one recorded exception.
+- Before answering a how-to question about an external tool or a Claude Code concept, scan `wiki/index.md`, then open the matching role catalog it links to reach the page titles. Workflow method, shell environment, and target-project questions are answered from `docs/index.md` instead.
+- A page belongs in `wiki/` when its subject is owned by someone outside this repo. Content about how this repo works goes to `docs/`, `.claude/context/`, or a skill body. `wiki/concepts/rule-writing-vocabulary.md` is the one recorded exception.
+- Place a new page by the same owner test that decides the folder: `wiki/claude/` when Anthropic owns the subject, `wiki/tools/` when another vendor does, `wiki/concepts/` when no single vendor does. The recorded exception sits in `wiki/concepts/`.
 - Every page closes its intro paragraph with a `Source:` sentence naming who owns the subject, so the test above is checkable by reading. Link the canonical page when one exists, and name the owner alone when the subject has no single URL.
 - Propose additions or corrections when you learn something not covered. Do not write to wiki files without confirmation.
 - When writing or updating wiki pages about Claude Code, use the `claude-code-guide` agent to fetch current information from official docs rather than relying on training knowledge

@@ -148,7 +148,7 @@ Always-on rules (core persona, testing, error handling) emit with no `paths:` ke
 
 ## How Claude Code loads rules
 
-`.claude/rules/*.md` discovers recursively at session start. Rules without a `paths:` field always apply, with the same priority as `CLAUDE.md`. Rules with `paths:` apply when Claude reads files matching the glob. See `wiki/claude-memory.md` for the loading-time details.
+`.claude/rules/*.md` discovers recursively at session start. Rules without a `paths:` field always apply, with the same priority as `CLAUDE.md`. Rules with `paths:` apply when Claude reads files matching the glob. See `wiki/claude/claude-memory.md` for the loading-time details.
 
 ## Adding a new rule
 
