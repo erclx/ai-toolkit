@@ -82,6 +82,17 @@ A standard failing these questions is non-conforming even when it satisfies ever
 
 ## Changing a standard
 
+### The checkpoint
+
+Answer all four before editing, and carry the answers into wherever the change is proposed. This section governs itself, so the next edit to this file answers them too.
+
+- What problem does this solve? Name the artifact that went wrong, rather than the improvement the change makes.
+- Which surface owns the rule today? A rule already stated somewhere moves or is cited, never restated in a second place.
+- What deterministic check catches a regression? Name it, or say none exists and the rule holds on reading alone.
+- What does this collide with? Name the sibling standard, rule, or template it contradicts, or state that nothing does.
+
+### What justifies a change
+
 - Change a standard on a failure, not on a finding. A finding is that the docs say X or a paper suggests Y. A failure is a conforming artifact that satisfied every shape rule and still missed the success criterion.
 - Park findings wherever the project tracks pending work, or in the standard's own backlog section when it tracks none. They are hypotheses to test, not instructions to apply.
 - Cite the failing artifact in the change that fixes it, so the next reader can tell which rules were paid for by evidence.
