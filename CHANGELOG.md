@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.48.0](https://github.com/erclx/aitk/compare/v0.47.0...v0.48.0) (2026-08-04)
+
+
+### Features
+
+* **review:** rebase a branch that went stale during review ([#824](https://github.com/erclx/aitk/issues/824)) ([db6be70](https://github.com/erclx/aitk/commit/db6be70250ce8f442ac8d6956a296ebbbf42a8bf))
+
 ## [0.47.0](https://github.com/erclx/aitk/compare/v0.46.1...v0.47.0) (2026-08-04)
 
 
