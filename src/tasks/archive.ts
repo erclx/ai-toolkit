@@ -4,7 +4,7 @@ import { join, relative, resolve, sep } from 'node:path'
 import { regenOne } from '@/indexes/regen'
 
 const TASKS_DIR = join('.claude', 'tasks')
-const ARCHIVE_DIR = join('.claude', '.tmp', 'task-archive')
+const ARCHIVE_DIR = join('.claude', 'task-archive')
 const PLANS_DIR = join('.claude', 'plans')
 
 /**
