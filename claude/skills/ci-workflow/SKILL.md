@@ -57,7 +57,7 @@ Before responding, verify:
 
 - `workflow_dispatch` is present alongside the primary trigger.
 - All actions pinned to major version tags, no `@latest` or `@main`.
-- A split gate gives static, unit, and build jobs no `needs` so they run in parallel, or a sub-two-minute gate stays one job.
+- A new pipeline folds static, unit, and build into one job, and a gate a run log put past two minutes gives them no `needs` so they run in parallel.
 - E2E uses `needs: build`. Release and deploy use `needs: e2e`.
 - Artifacts upload on `if: failure()` only with `retention-days: 7`.
 - Job names use emoji + title format.
