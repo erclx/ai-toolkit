@@ -19,6 +19,10 @@ esac
 # Read the closed-set word bans from the standard so the hook never carries a
 # second copy. Every "Do not use ... (`a`, `b`)" bullet contributes its
 # single-word backticked terms, which skips the multi-word and punctuation bans.
+#
+# The word bans sit in prose.md and the em-dash and semicolon bans in
+# markdown.md, so this parses the first and hardcodes the second. A "Do not use"
+# bullet added to markdown.md is parsed by nothing and enforces silently.
 standard="${CLAUDE_PROJECT_DIR:-.}/.claude/standards/prose.md"
 words=""
 if [ -f "$standard" ]; then
@@ -56,6 +60,6 @@ hits=$(awk -v words="$words" '
 
 [ -z "$hits" ] && exit 0
 
-msg=$(printf 'Standards-audit: prose.md violations in %s. Rewrite or restructure (do not lazy-swap).\n%s' "$file" "$hits")
+msg=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite or restructure (do not lazy-swap).\n%s' "$file" "$hits")
 
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'
