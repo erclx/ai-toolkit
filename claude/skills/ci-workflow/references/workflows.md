@@ -1,6 +1,6 @@
 # CI workflow template
 
-Copy this base template and adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed while preserving the parallel and gated structure.
+Copy this base template and adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed. A gate that runs under roughly two minutes collapses to the `static` job alone, per the granularity rule in the skill body. Past that, keep the parallel and gated structure across whatever jobs survive.
 
 ```yaml
 name: CI

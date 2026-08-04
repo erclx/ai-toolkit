@@ -22,11 +22,17 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 - Name jobs with emoji + title: `🛡️ Static Checks`, `🧪 Unit Tests`, `📦 Build Check`, `🎭 E2E Tests`, `🚀 Deploy`, `🔍 Code Quality`, `🏷️ Release`, `🔒 Security`.
 
+## Job granularity
+
+- Keep the whole gate in one job while it runs under roughly two minutes end to end. Each extra job repays checkout, dependency install, and toolchain setup before it reaches a stage, so a split at that duration costs more than the parallelism returns.
+- Read the duration from a recent run log. A run log answers the question, where repository size and stage count do not.
+- Split into parallel jobs once the gate runs past that, then apply the dependency rules below to the result.
+
 ## Job dependencies
 
 - Run independent jobs in parallel.
 - Use `needs` only when there is a data dependency (a job requires an artifact) or the job is prohibitively expensive relative to its gate.
-- Run static, unit, and build jobs in parallel.
+- Run static, unit, and build jobs in parallel once the gate is split.
 - Gate E2E on build, since it requires the built artifact.
 - Gate release and deploy on E2E.
 
@@ -42,7 +48,7 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Template
 
-Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed while preserving the parallel and gated structure.
+Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed, collapsing to one job or keeping the parallel and gated structure by the granularity rule above.
 
 ## Validation
 
@@ -50,7 +56,7 @@ Before responding, verify:
 
 - `workflow_dispatch` is present alongside the primary trigger.
 - All actions pinned to major version tags, no `@latest` or `@main`.
-- Static, unit, and build jobs have no `needs` and run in parallel.
+- A split gate gives static, unit, and build jobs no `needs` so they run in parallel, or a sub-two-minute gate stays one job.
 - E2E uses `needs: build`. Release and deploy use `needs: e2e`.
 - Artifacts upload on `if: failure()` only with `retention-days: 7`.
 - Job names use emoji + title format.
