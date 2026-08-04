@@ -72,7 +72,7 @@ Prefixing the other five surfaces with a dot to collapse the ignore file into on
 
 ## Risks / open questions
 
-- Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing here reports the gap.
+- Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects it. `migration-standards` tests for the field it reads and falls back when a binary predating it answers, which is a pattern the other skills could take rather than a check the repository runs.
 - A marketplace install is a cached copy, which is the same skew in the other direction. Someone who added the marketplace and never updated runs old skills against a current CLI. Neither direction is detected.
 - Every session pays for this file from the merge onward. No standard sets a length rule for it, so the working limit is a self-imposed 150 lines borrowed from the context-entry checkpoint, and nothing enforces it.
 - Rationale for six of these decisions also sits in `.claude/context/` entries. The duplication is deliberate while four of those entries are claimed by live tasks. The split to converge on is the decision and its rejected alternative here, with the mechanism detail staying in the entry.
