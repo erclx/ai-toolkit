@@ -16,7 +16,7 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 - Take the approved plan for the branch as the scope, and implement only what it describes
 - Give every step a stop condition, and leave the code on the branch and the receipts on disk at each one
 - Classify the changed-file list by path as well as by extension, so informational prose skips a code review with no signal on it and executable prose still reaches one
-- Stop on any critical or should-fix finding rather than acting on it
+- Split findings by origin, stopping on a critical or should-fix one the branch inherited and repairing one this run caused
 - Open the pull request as a draft, then watch continuous integration to a terminal state
 - Name the recovery for the stop it took, since the value of stopping is that the user knows where to resume
 
@@ -24,7 +24,9 @@ Review is the step that varies most. It gets skipped on a diff that needed one, 
 
 - Expand past the plan, refactor a neighbor, or touch a file outside it without reason
 - Loop on a failed verify. One fix attempt against the reported errors, then stop.
-- Fix a review finding or a failing check. Both stops are deliberate, since a green pull request reached by auto-fix hides what broke.
+- Fix an inherited review finding or a failing check. Both stops are deliberate, since a green pull request reached by auto-fix hides what broke.
+- Loop on a self-introduced finding. One repair pass, then stop, which is the bound a failed verify already carries.
+- Read the plan's file list as the boundary on a repair. It scopes what the run builds, and a finding this run caused is in reach wherever it landed.
 - Run the memory Apply phase. Promoting an entry changes how the agent operates and ships as its own change.
 - Read an empty changed-file list as prose-only. It satisfies that test vacuously and would route the branch past review instead of through it.
 - Read a markdown extension as evidence the change only informs. A skill body, a governance rule, and a standard are behavior written in prose.
