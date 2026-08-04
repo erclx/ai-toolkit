@@ -34,7 +34,7 @@ Using the wrong one fails in two shapes. Intake on a question that needs measuri
 - Reading is unrestricted inside the project. Measuring is the work.
 - Treat the folder as gitignored and unbacked. No check reaches its contents, so every rule stated here holds only while a session reads it.
 
-Nothing outside this body carries the floor, and a path-scoped rule cannot. A rule globbing `.claude/intake/**` loads when a session opens a file inside the folder, which is the case that is already correct, while a write that escapes the folder lands on a path that glob never matches. What such a rule could carry is the item format and the answer contract, for a session editing the folder with this skill unloaded, and that is a document-type convention a rule points at rather than restates. The standard it would point at does not exist yet and `claude-groundwork` carries the identical shape, so the pair is queued as its own change rather than settled here.
+Nothing outside this body carries the floor, and no path-scoped rule can. The item format and the answer contract are heading for a standard covering this folder and a groundwork track together, which is queued rather than written.
 
 ## Step 1: detect open or resume
 
