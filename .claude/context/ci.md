@@ -7,7 +7,7 @@ description: GitHub Actions workflow triggers and checks
 
 ## Overview
 
-Owns the GitHub Actions verification that gates pull requests into `main`, and the release automation that runs after one merges. CI runs every stage through one entry point, `bun run check:ci`. Two things differ from the local gate. Formatting is the first: the local run writes, CI asserts. Scope is the second: the local run gates shell, types, and tests on the changed-file set, while CI passes `--all` and runs them unconditionally. Two workflows exist, `verify.yml` and `release-please.yml`.
+Owns the GitHub Actions verification that gates pull requests into `main`, and the release automation that runs after one merges. CI runs every stage through one entry point, `bun run check:ci`. Three things differ from the local gate. Formatting is the first: the local run writes, CI asserts. Scope is the second: the local run gates shell, types, and tests on the changed-file set, while CI passes `--all` and runs them unconditionally. The plugin manifest stage is the third, skipping on a machine without the CLI and failing on a runner that should have installed it. Two workflows exist, `verify.yml` and `release-please.yml`.
 
 ## Layout
 
@@ -18,6 +18,8 @@ Owns the GitHub Actions verification that gates pull requests into `main`, and t
 ### The workflow surface
 
 The workflow calls one entry point instead of naming each stage as its own step. Named steps give better failure labels in the GitHub UI, but they had already drifted out of sync with the script once, leaving four stages enforced only by a pre-push hook that `git push --no-verify` skips. A single entry point cannot drift. The failing stage still appears in the step output, one click deeper.
+
+One job runs all of it, which is the carve-out `ci-workflow` states rather than an exemption this repository took. Recent runs land between 49 and 68 seconds, and each extra job would repay checkout, `bun install --frozen-lockfile`, and an apt install before reaching a stage, so a split buys three or four minutes of setup and no earlier signal. The skill conditions the carve-out on a gate under roughly two minutes, so this workflow splits when its own run log says to.
 
 The job name stays `🛡️ Static Checks` even though the job now runs the test suite. Required status checks resolve against the job name, so renaming it would break branch protection until the rule is updated to match.
 
@@ -32,6 +34,8 @@ CI is what makes a scoped local gate safe, and it is worth naming the path that 
 The push trigger exists to give the README's CI badge a default-branch run to report. A badge filtered to `main` reads `no status` while the workflow runs on pull requests alone, and an unfiltered one reports whichever branch happened to run last. The second cost is the useful one: a squash merge now runs the full gate against the merged result, which no pull request run observes.
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
+
+The runner installs the plugin CLI so the manifest stage gates rather than skips. The plugin is the toolkit's second delivery path, and while the binary was absent from the runner every manifest was validated on the author's machine alone, so a malformed one reached a marketplace install with no check between. `bun install -g @anthropic-ai/claude-code` lands the binary in the directory `setup-bun` already put on `PATH` and costs about three seconds against a gate measured in tens. Validation needs no credential, confirmed by running it under `env -i` with a fresh `HOME`, so this is an install step rather than a secret. The stage still skips on a machine without the CLI and fails instead when `CI` is set, because a silent skip on the runner would report the pass the stage exists to withhold.
 
 `check:install` stays out of CI. It is the slowest thing available and it is not in the local gate either, so adding it would widen the gate past parity.
 
@@ -74,25 +78,33 @@ Both gates name the event rather than testing the input alone. On a push the `in
 
 ## Checks
 
-Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched. One stage is the exception, and the table marks it.
+Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched. Two stages qualify that, and the table marks both.
 
-| Stage            | Command                                  | What it asserts                                         |
-| ---------------- | ---------------------------------------- | ------------------------------------------------------- |
-| Format check     | `bun run check:format`                   | prettier and shfmt are clean                            |
-| Indexes          | `scripts/core/regen-indexes.sh`          | no `index.md` was committed stale or left untracked     |
-| Consumed copies  | `scripts/core/regen-claude-copies.sh`    | `.claude/standards` and `.claude/snippets` match source |
-| Skill references | `scripts/core/regen-skill-references.sh` | bundled standards match their consumers                 |
-| Plugin manifests | `claude plugin validate --strict`        | every manifest is well-formed, author-side only         |
-| Spell            | `bun run check:spell`                    | cspell passes against dictionaries                      |
-| Shell            | `bun run check:shell`                    | shellcheck passes at warning level                      |
-| Types            | `bun run check:types`                    | `tsc --noEmit` passes against `src/`                    |
-| Tests            | `bun run test`                           | the vitest suite passes                                 |
+| Stage              | Command                                                  | What it asserts                                                                                    |
+| ------------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Format check       | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
+| Indexes            | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
+| Consumed copies    | `scripts/core/regen-claude-copies.sh`                    | `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules` match source      |
+| Hero               | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and the PNG beside it last moved in the same commit      |
+| Skill references   | `scripts/core/regen-skill-references.sh`                 | bundled standards match their consumers                                                            |
+| Skill paths        | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
+| Plugin boundary    | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
+| Context citations  | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                                  |
+| Seed standards     | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds, skipped per root carrying no `.claude/` |
+| Skill requirements | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                                      |
+| Plugin manifests   | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed, skipped when the tree carries none           |
+| Spelling           | `bun run check:spell`                                    | cspell passes against dictionaries                                                                 |
+| Shell              | `bun run check:shell`                                    | shellcheck passes at warning level                                                                 |
+| Types              | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                               |
+| Tests              | `bun run test`                                           | the vitest suite passes                                                                            |
 
-Plugin manifests is the one row CI does not enforce. It guards on the plugin CLI resolving on `PATH`, and the runner installs the JavaScript runtime and two shell tools and nothing else, so it reports a skip there and gates on the author's machine alone. Without the qualifier the table reads as the merge gate and credits CI with a check it never runs.
+Two rows can report a skip under `check:ci`, and both condition on discovery rather than on the environment: a seed root that carries no `.claude/` seeds nothing a standard governs, and a tree carrying no manifest has nothing to validate. Shell, types, and tests skip on the changed-file set locally and never in CI, which is what `--all` buys. Rebuild this table from the `log_step` calls in `verify.sh` rather than editing rows, since it once named half the stages and editing preserves whatever produced that. Nothing compares the two, so the next stage added leaves the table wrong again.
 
 ### The regeneration stages
 
-The three drift stages regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
+The four drift stages, Indexes, Consumed copies, Hero, and Skill references, regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
+
+Skill references asserts over `claude/skills/*/references`, and the pathspec is unquoted, so the shell expands it to every references folder before git sees it. The assertion therefore covers whatever sits in those folders rather than the generated files alone. `claude/skills/ci-workflow/references/workflows.md` is hand-authored and nothing regenerates it, so an edit to it fails the stage until it is committed, under a message naming a regeneration that never ran. Commit the file and the stage passes, since the assertion compares the working tree against HEAD.
 
 Regeneration runs in both modes, so `check:ci` writes to the working tree even though it never formats. Only the format stage changes behavior between modes.
 
