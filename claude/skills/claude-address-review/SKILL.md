@@ -48,7 +48,51 @@ Do not push a red follow-up.
 
 The fixes may have changed or added behavior that `.claude/` context entries, docs, or wireframes describe. Refresh them with the `claude-docs` skill, which maps the changed files to the entries that reference them and rewrites the stale sections. Do not reimplement that mapping here. When a fix adds a new capability with no existing entry, `claude-docs` flags it rather than creating one.
 
-## Step 5: push, then reply
+## Step 5: rebase a stale branch
+
+A branch goes stale from `main` moving rather than from anything the branch did,
+so test here rather than at the start. Fetch first. A stale local `origin/main`
+reports no conflict on a branch that has one.
+
+```bash
+git fetch origin main
+git merge-tree --write-tree origin/main HEAD
+```
+
+A zero exit means the branch still merges. Skip to step 6. A non-zero exit means
+it does not. Stash the fixes first when `git status --porcelain` reports
+anything, since a rebase refuses to run over a dirty tree, then rebase onto
+`origin/main` and restore them:
+
+```bash
+git stash push -u
+git rebase origin/main
+git stash pop
+```
+
+Pop only when the stash ran. On a clean tree, which is what a run whose findings
+were all conscious-accepts leaves behind, `git stash push` saves nothing and
+exits zero, so the pop restores an unrelated entry from an earlier session.
+
+Never merge `main` into the branch. The repository squash-merges, so a merge
+commit here reads as noise on the pull request.
+
+Resolve every conflict under these rules, which apply to a hunk from the rebase
+and a hunk from the stash pop alike:
+
+- Never take one side wholesale with `--ours` or `--theirs`. Both sides are valid content, so the drop is silent and passes every check.
+- Never resolve a generated file by hand. A file the project check rebuilds, such as an `index.md` carrying no `auto: false`, takes either side to clear the conflict and gets its real content from the regen below.
+- Where two branches wrote prose into one file, keep both sides and rewrite what the merge broke. A section that opens by counting what follows needs the count updated rather than the two versions concatenated.
+- When a hunk needs a decision the tree does not carry, stop rather than guessing, and name where the branch was left. The two sources recover differently. A hunk raised by the rebase takes `git rebase --abort`, which restores the old base: `❌ Conflict needs a decision at <file>. Branch left on its old base.` A hunk raised by the stash pop arrives after the rebase already landed, so no abort applies and the conflict stays in the tree: `❌ Conflict needs a decision at <file>. Branch rebased, fixes left conflicted in the tree.` A guess that compiles is the failure this stage would otherwise introduce, and either case reaches the operator as an ordinary finding on the next review pass.
+
+Both sides of every hunk sit in the conflict and `git log origin/main` names what
+landed, so the tree carries the context. Do not wait on the orchestrator for it.
+
+Re-run the project check after the rebase. It rebuilds the generated files and
+covers what the replayed commits broke, and step 6 commits the result alongside
+the fixes.
+
+## Step 6: push, then reply
 
 Push the fixes before posting the reply so the comment never runs ahead of the
 code it describes. Ship the fixes as a follow-up commit on the same branch with
@@ -56,7 +100,15 @@ the `git-followup` skill, invoked with `reply-owned` so it stages, commits,
 pushes, and refreshes the open PR body without posting its own comment. This
 skill owns the reply. Do not reimplement that flow here. For in-place fixes to
 files the PR body already covers, `git-followup` leaves the body untouched and
-the reply comment carries the fix log.
+the reply comment carries the fix log. A rebase in step 5 rewrote the branch, so
+that push is a force-push and `git-followup` resolves it from the tracking
+branch. Worker branches are single-owner here, which is what makes overwriting
+the remote safe.
+
+`git-followup` stops on an unchanged tree. A run that answered every finding as a
+conscious-accept and whose rebase left the generated files alone has nothing for
+it to commit, so the rebase would never reach the remote. Push that case directly
+with `git push --force-with-lease`, then post the reply below.
 
 Then write a summary reply to `.claude/.tmp/address-review/reply-<number>.md`
 mapping each finding to what changed, or to a one-line reason when it is a
@@ -72,6 +124,9 @@ review itself carries. Follow it with a one-line summary sentence, then one
 bullet per finding, each opening with the bolded finding identifier.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
 reads as an independent machine pass, not a human sign-off.
+When step 5 rebased the branch, say so in the summary sentence and name which
+files were resolved by hand and which the regen rebuilt. The next review is a
+full pass rather than a delta, and the reader is owed the reason.
 
 Before posting, run the scan in `.claude/standards/publish.md`
 against the reply, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when
@@ -82,7 +137,7 @@ only gate on the published reply. Post it to the PR:
 gh pr comment <number> --body-file .claude/.tmp/address-review/reply-<number>.md
 ```
 
-## Step 6: confirm resolution
+## Step 7: confirm resolution
 
 After the follow-up push, watch CI on the PR. Poll `gh pr checks <number>`
 until no check is pending, then read the final status. When every finding is
@@ -97,11 +152,13 @@ If any check fails, do not post the closing comment. Report the failing check
 so it can be fixed first. This is a resolution signal, not a formal approval,
 since the PR author cannot approve their own PR.
 
-## Step 7: output
+## Step 8: output
 
 ```plaintext
 Addressed <N> findings on PR #<number>. Follow-up pushed.
+<Rebased onto origin/main. <N> files resolved by hand, <N> rebuilt by the check.>
 ```
 
-Name any finding left as a reply rather than a code change, with its one-line
-reason. Do not merge. Hand back to the orchestrator for re-review.
+Omit the second line when the branch still merged. Name any finding left as a
+reply rather than a code change, with its one-line reason. Do not merge. Hand
+back to the orchestrator for re-review.
