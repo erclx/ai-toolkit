@@ -24,9 +24,10 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Job granularity
 
-- Keep the whole gate in one job while it runs under roughly two minutes end to end. Each extra job repays checkout, dependency install, and toolchain setup before it reaches a stage, so a split at that duration costs more than the parallelism returns.
-- Read the duration from a recent run log. A run log answers the question, where repository size and stage count do not.
-- Split into parallel jobs once the gate runs past that, then apply the dependency rules below to the result.
+- Start a new pipeline with the checks that share setup in one job: static analysis, unit tests, and build. A project with no run history has nothing to measure, and one job is the shape that costs least to reverse.
+- Keep them in one job while the gate runs under roughly two minutes end to end. Each extra job repays checkout, dependency install, and toolchain setup before it reaches a stage, so a split at that duration costs more than the parallelism returns.
+- Split once a run log puts the gate past that, then apply the dependency rules below. The run log is the revision trigger rather than the entry condition, since repository size and stage count answer nothing.
+- Give E2E, release, and deploy their own jobs from the start. Each carries a data dependency or a gate, so this rule never folds them into the check job.
 
 ## Job dependencies
 

@@ -1,6 +1,6 @@
 # CI workflow template
 
-Copy this base template and adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed. A gate that runs under roughly two minutes collapses to the `static` job alone, per the granularity rule in the skill body. Past that, keep the parallel and gated structure across whatever jobs survive.
+Copy this base template and adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed. A new pipeline folds `static`, `unit`, and `build` into the first job and splits them out once a run log puts the gate past roughly two minutes, per the granularity rule in the skill body. `e2e` and anything gated on it stay separate jobs at either size.
 
 ```yaml
 name: CI

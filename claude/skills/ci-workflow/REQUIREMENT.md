@@ -16,7 +16,7 @@ The rest are reproducibility failures that surface as flakes. An action pinned t
 ## Must
 
 - Gate a job only on a data dependency or on a cost that justifies the wait, and leave every other job parallel
-- Keep a gate under roughly two minutes in one job, and decide the split from a run log rather than from repository size
+- Start the checks that share setup in one job and split them only once a run log puts the gate past roughly two minutes
 - Pin every action to a tag that cannot cross a major version
 - Key a cache on the version string of the thing it caches
 - Give every workflow a manual trigger beside its primary one
