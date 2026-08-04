@@ -20,7 +20,7 @@ From the project root, read these together:
 
 - `docs/index.md`: one-line summary per consumer-facing reference (CLI surface, AI workflow, target-project integration, and the workflow method docs)
 - `.claude/context/index.md`: one-line summary per domain's internal narrative (how a domain is built, decisions, gotchas)
-- `wiki/index.md`: one-line summary per tool and concept reference
+- `wiki/index.md`: one line per role catalog, each holding the page summaries for the subjects it owns
 
 All three indexes are small. Parallel read avoids routing errors between consumer references, domain context, and wiki prose.
 
@@ -29,6 +29,8 @@ All three indexes are small. Parallel read avoids routing errors between consume
 Match the question against the one-line summaries in all three indexes. Pick the single most relevant file. Prefer `docs/` for CLI surface, target-project integration, and the workflow this repo runs on (AI workflow, operating model, design tiers, shell aliases). Prefer `.claude/context/` for how a specific domain is built (structure, decisions, gotchas). Prefer `wiki/` for Claude Code concepts and reference on tools owned outside this repo.
 
 If two entries look equally relevant, read both. Do not read more than two.
+
+A wiki match resolves one level down. Open the role catalog `wiki/index.md` names, then pick the page from its summaries. That read is part of routing rather than one of the two files.
 
 ## Step 3: answer
 
@@ -72,4 +74,4 @@ Do not guess. Do not read source files. Do not grep the whole repo.
 
 - Do not implement, edit, or run commands the answer describes
 - Do not paraphrase large sections. Quote one short phrase if useful and cite the file.
-- Do not chain multiple follow-up file reads past Step 2 + Step 4. One hop per escalation level.
+- Do not chain multiple follow-up file reads past Step 2 + Step 4. One hop per escalation level. A wiki role catalog is a routing read, so it does not count against the bound.

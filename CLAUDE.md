@@ -154,7 +154,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Wiki
 
-- Before answering a how-to question about an external tool or a Claude Code concept, scan `wiki/index.md` for a relevant page. Workflow method, shell environment, and target-project questions are answered from `docs/index.md` instead.
+- Before answering a how-to question about an external tool or a Claude Code concept, scan `wiki/index.md`, then open the matching role catalog it links to reach the page titles. Workflow method, shell environment, and target-project questions are answered from `docs/index.md` instead.
 - A page belongs in `wiki/` when its subject is owned by someone outside this repo. Content about how this repo works goes to `docs/`, `.claude/context/`, or a skill body. `wiki/concepts/rule-writing-vocabulary.md` is the one recorded exception.
 - Place a new page by the same owner test that decides the folder: `wiki/claude/` when Anthropic owns the subject, `wiki/tools/` when another vendor does, `wiki/concepts/` when no single vendor does. The recorded exception sits in `wiki/concepts/`.
 - Every page closes its intro paragraph with a `Source:` sentence naming who owns the subject, so the test above is checkable by reading. Link the canonical page when one exists, and name the owner alone when the subject has no single URL.
