@@ -35,7 +35,7 @@ One feature travels this path end to end.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 5. Worker addresses the findings with `claude-address-review`, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up.
 6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, and posts under `## Review closed` when it finds nothing open or under `## Review` when it does, so a reader learns the state from the heading. Repeat from step 5 until the review closes.
-7. The human reads the result and merges. A trailing worker that shares a seam with the merged branch rebases inside its own next `claude-address-review` run rather than waiting to be told.
+7. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
 
 There is no loop construct here. Each worker is a single build that halts at the
 PR. The merge stays a manual human gate. Reliability comes from the plan being
@@ -64,8 +64,10 @@ only what the follow-up added.
 A branch that stopped merging while the review was open is the worker's problem
 to close. `claude-address-review` rebases onto `origin/main` between the fixes
 and the push, so one force-push carries both and the reviewer reads one delta.
-The re-read costs a full pass rather than a delta, since the prior reviewed
-commit no longer reaches the head, and `claude-pr-review` detects that itself.
+The staleness test sits ahead of the no-findings guard, so a branch whose review
+closed clean and then went stale still rebases when the skill is invoked. The
+re-read costs a full pass rather than a delta, since the prior reviewed commit no
+longer reaches the head, and `claude-pr-review` detects that itself.
 
 The heading carries the state rather than the pass number. A pass with a finding
 takes `## Review` and a pass with none takes `## Review closed`, so a thread can

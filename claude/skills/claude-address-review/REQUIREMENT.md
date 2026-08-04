@@ -17,6 +17,8 @@ A branch also goes stale from `main` moving rather than from anything the branch
 - Handle each finding independently, so one unresolved item does not block the others
 - Verify before pushing, since a red follow-up costs the reviewer a second pass
 - Rebase onto `origin/main` when the branch no longer merges, after the findings are addressed and before the push, so one force-push carries both
+- Test staleness on every invocation, including one carrying no findings, since a branch goes stale from `main` moving rather than from anything the review said
+- Re-test once the fixes are commits, since the first test reads committed history and cannot see a fix that touches lines `main` moved
 - Rebuild a generated file through the project check rather than resolving its conflict by hand
 - Push before replying, so the comment never runs ahead of the code it describes
 - Map every finding to what changed, or to a one-line reason when it is a question or a conscious accept
@@ -37,7 +39,7 @@ A branch also goes stale from `main` moving rather than from anything the branch
 ## Guards
 
 - No open pull request for the current branch: stop
-- The pull request carries no review comments or threads: stop with a pass
+- The pull request carries no review comments or threads and the branch still merges: stop with a pass. A closed review says nothing about whether the branch still merges, so the staleness test decides this one rather than the finding count.
 - A conflict needing a decision the tree does not carry: stop with the branch left on its old base
 
 ## Out of scope

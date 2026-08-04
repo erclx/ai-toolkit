@@ -11,7 +11,7 @@ the PR from an independent session. This skill consumes them: fix, reply, push.
 ## Guards
 
 - If no open PR resolves for the current branch via `gh pr view`, stop: `❌ No open PR. Nothing to address.`
-- If the PR has no review comments or threads, stop: `✅ No review findings to address.`
+- If the PR has no review comments or threads, run step 5's staleness test before deciding. A branch that still merges stops here: `✅ No review findings to address.` One that does not skips steps 1 through 4 and runs step 5 onward, since a branch goes stale from `main` moving and a closed review says nothing about whether it still merges.
 - Fix findings. Do not merge.
 
 ## Step 1: pull the review findings and CI status
@@ -51,7 +51,8 @@ The fixes may have changed or added behavior that `.claude/` context entries, do
 ## Step 5: rebase a stale branch
 
 A branch goes stale from `main` moving rather than from anything the branch did,
-so test here rather than at the start. Fetch first. A stale local `origin/main`
+so the test runs on every invocation, including the one the second guard sends
+straight here with no findings to fix. Fetch first. A stale local `origin/main`
 reports no conflict on a branch that has one.
 
 ```bash
@@ -92,6 +93,11 @@ Re-run the project check after the rebase. It rebuilds the generated files and
 covers what the replayed commits broke, and step 6 commits the result alongside
 the fixes.
 
+`git merge-tree` reads committed history, so this test says nothing about the
+fixes still sitting in the working tree. A branch that merges clean as committed,
+whose fixes touch lines `main` moved, passes here and reaches the remote
+unmergeable. Step 6 re-runs the test once those fixes are commits.
+
 ## Step 6: push, then reply
 
 Push the fixes before posting the reply so the comment never runs ahead of the
@@ -109,6 +115,12 @@ the remote safe.
 conscious-accept and whose rebase left the generated files alone has nothing for
 it to commit, so the rebase would never reach the remote. Push that case directly
 with `git push --force-with-lease`, then post the reply below.
+
+Once the fixes are commits, re-run step 5's staleness test against the new head.
+A conflict that appears only now is one the fixes introduced against lines `main`
+moved, which the earlier test could not see. Rebase again under step 5's rules
+and force-push, then continue. The second push costs one extra force-push in a
+case that needs the fix and the sibling to touch the same lines.
 
 Then write a summary reply to `.claude/.tmp/address-review/reply-<number>.md`
 mapping each finding to what changed, or to a one-line reason when it is a
