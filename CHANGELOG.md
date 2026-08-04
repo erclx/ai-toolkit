@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.57.0](https://github.com/erclx/aitk/compare/v0.56.0...v0.57.0) (2026-08-04)
+
+
+### Features
+
+* **standards:** own the intake and groundwork folder formats ([#851](https://github.com/erclx/aitk/issues/851)) ([827bbbc](https://github.com/erclx/aitk/commit/827bbbc487cba96c709e76cd3c77edd46ad26db3))
+
 ## [0.56.0](https://github.com/erclx/aitk/compare/v0.55.0...v0.56.0) (2026-08-04)
 
 
