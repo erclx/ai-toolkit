@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.50.0](https://github.com/erclx/aitk/compare/v0.49.0...v0.50.0) (2026-08-04)
+
+
+### Features
+
+* **standards:** require a fenced template in document-type standards ([#830](https://github.com/erclx/aitk/issues/830)) ([1dafadd](https://github.com/erclx/aitk/commit/1dafadd0bd7123e2acf57cfc778594397b54ec5a))
+
 ## [0.49.0](https://github.com/erclx/aitk/compare/v0.48.0...v0.49.0) (2026-08-04)
 
 
