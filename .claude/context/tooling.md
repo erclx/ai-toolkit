@@ -46,6 +46,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Commit golden config changes with `--no-verify`. Lint-staged runs against the template files themselves, not project source.
 - In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped by the parser.
 - Each `[gitignore]` group must use single-line array syntax. Multi-line arrays parse as empty.
+- A `[gitignore]` group is restated verbatim in the stack's `reference.md`, and nothing compares the two. `src/tooling/manifest.ts` records `referenceFile` as a path and never reads its content, so a group edited in the manifest alone leaves the reference listing the old set and an agent following it gets the stale one. Edit both in the same change.
 - Injection runs `bun add -D`, so a manifest whose runtime is not `bun` must leave `[dependencies.dev]` empty and document a manual install step in its `reference.md`.
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
 - Syncing a monorepo subtree without `--skip base` re-drops husky per subtree. Git honors only one `core.hooksPath`, so the extra hook dirs silently break.
