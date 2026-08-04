@@ -12,11 +12,7 @@ use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
 }
 
-stage_setup() {
-  log_step "Configuring address-review environment ($ANCHOR_REPO)"
-
-  configure_sandbox_anchor_remote
-
+seed_base_tree() {
   find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
   printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n.claude/.tmp/\n' >.gitignore
@@ -28,7 +24,7 @@ stage_setup() {
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "echo 'lint ok' && echo 'typecheck ok'"
+    "check": "bash scripts/regen-index.sh && echo 'lint ok' && echo 'typecheck ok'"
   }
 }
 EOF
@@ -40,7 +36,31 @@ Task API. Route handlers live in `src/`.
 
 ## Commands
 
-- `bun run check`: lint and typecheck
+- `bun run check`: regenerate `.claude/context/index.md`, then lint and typecheck
+
+## Indexes
+
+- Never hand-edit `.claude/context/index.md`. `bun run check` regenerates it from sibling frontmatter.
+EOF
+
+  mkdir -p scripts
+  cat <<'EOF' >scripts/regen-index.sh
+#!/usr/bin/env bash
+set -e
+
+out=".claude/context/index.md"
+
+{
+  printf -- '---\ntitle: Context\ndescription: Per-domain narrative loaded on demand\n---\n\n# Context\n\n'
+  for entry in .claude/context/*.md; do
+    if [ "$entry" = "$out" ]; then
+      continue
+    fi
+    title=$(grep -m1 '^title: ' "$entry" | cut -d' ' -f2-)
+    description=$(grep -m1 '^description: ' "$entry" | cut -d' ' -f2-)
+    printf -- '- [%s](%s): %s\n' "$title" "$(basename "$entry")" "$description"
+  done
+} >"$out"
 EOF
 
   mkdir -p src
@@ -62,9 +82,10 @@ description: Task creation endpoint and handlers in src/tasks.ts
 Route handlers live in `src/tasks.ts`. `handleCreate` builds a task from the request body and returns it. No input validation runs before creation.
 EOF
 
-  git add . && git commit --allow-empty -m "feat(api): task list endpoint" --no-verify -q
-  git push --force origin HEAD:main
+  bash scripts/regen-index.sh
+}
 
+start_feature_branch() {
   git push origin --delete feat/create-endpoint -q 2>/dev/null || true
   git checkout -b feat/create-endpoint -q
 
@@ -79,6 +100,9 @@ export function handleCreate(body: { title: string }) {
 EOF
 
   git add . && git commit -m "feat(api): add create handler" --no-verify -q
+}
+
+open_pull_request() {
   git push --force origin HEAD -q
 
   pr_url=$(gh pr create --draft --title "feat(api): add create handler" \
@@ -87,13 +111,113 @@ EOF
 
   # Seed a review finding the worker must address.
   gh pr review "$pr_url" --comment \
-    --body "1 should-fix. src/tasks.ts: handleCreate does not reject an empty title. Add a guard before createTask." \
-    -q 2>/dev/null || log_info "Could not seed review; post one manually before testing."
+    --body "1 should-fix. src/tasks.ts: handleCreate does not reject an empty title. Add a guard before createTask." ||
+    log_info "Could not seed review; post one manually before testing."
+}
 
-  log_step "Scenario ready: worker addresses a posted PR review"
-  log_info "Context: open PR on feat/create-endpoint with one should-fix review finding posted"
-  log_info "Action:  /claude-address-review"
-  log_info "Expect:  reads the finding, adds the empty-title guard, verify passes"
-  log_info "         refreshes the now-stale .claude/context/api.md validation line"
-  log_info "         pushes a follow-up commit, then posts a summary reply comment, does NOT merge"
+stage_setup() {
+  log_info "findings : open PR with one should-fix finding, branch still merges"
+  log_info "stale    : same PR, plus a sibling merged into main the branch conflicts with"
+
+  select_or_route_scenario "Which scenario?" "findings" "stale"
+
+  log_step "Configuring address-review environment ($ANCHOR_REPO)"
+
+  configure_sandbox_anchor_remote
+
+  seed_base_tree
+
+  git add . && git commit --allow-empty -m "feat(api): task list endpoint" --no-verify -q
+  git push --force origin HEAD:main
+
+  base_commit=$(git rev-parse HEAD)
+
+  case "$SELECTED_OPTION" in
+  "findings")
+    start_feature_branch
+    open_pull_request
+
+    log_step "Scenario ready: worker addresses a posted PR review"
+    log_info "Context: open PR on feat/create-endpoint with one should-fix review finding posted"
+    log_info "Action:  /claude-address-review"
+    log_info "Expect:  reads the finding, adds the empty-title guard, verify passes"
+    log_info "         refreshes the now-stale .claude/context/api.md validation line"
+    log_info "         pushes a follow-up commit, then posts a summary reply comment, does NOT merge"
+    ;;
+  "stale")
+    start_feature_branch
+
+    cat <<'EOF' >.claude/context/handlers.md
+---
+title: Handlers
+description: Request shape each route handler in src/tasks.ts accepts
+---
+
+# Handlers
+
+`handleCreate` takes a body carrying a `title` and returns the created task.
+EOF
+
+    bash scripts/regen-index.sh
+
+    cat <<'EOF' >.claude/context/api.md
+---
+title: API
+description: Task creation endpoint and handlers in src/tasks.ts
+---
+
+# API
+
+Route handlers live in `src/tasks.ts`. `handleCreate` builds a task from the request body and returns it, under the request shape described in `handlers.md`. No input validation runs before creation.
+EOF
+
+    git add . && git commit -m "docs(context): record the handler request shape" --no-verify -q
+
+    open_pull_request
+
+    # The sibling lands on main after the PR opens, which is what makes the branch stale.
+    git checkout -q -B sibling "$base_commit"
+
+    cat <<'EOF' >.claude/context/limits.md
+---
+title: Limits
+description: Per-client request ceiling the task endpoints enforce
+---
+
+# Limits
+
+The task endpoints cap a client at 100 requests per minute.
+EOF
+
+    bash scripts/regen-index.sh
+
+    cat <<'EOF' >.claude/context/api.md
+---
+title: API
+description: Task creation endpoint and handlers in src/tasks.ts
+---
+
+# API
+
+Route handlers live in `src/tasks.ts`. `handleCreate` builds a task from the request body and returns it, behind the rate limiter described in `limits.md`. No input validation runs before creation.
+EOF
+
+    git add . && git commit -m "feat(api): rate limit the task endpoints" --no-verify -q
+    git push --force origin HEAD:main
+    git checkout feat/create-endpoint -q
+
+    log_step "Scenario ready: worker rebases a branch that went stale during review"
+    log_info "Context: open PR on feat/create-endpoint with one should-fix review finding posted"
+    log_info "  A sibling landed on main after the PR opened, touching the same two files"
+    log_info "  .claude/context/api.md conflicts and both sides are content worth keeping"
+    log_info "  .claude/context/index.md conflicts and bun run check rebuilds it"
+    log_info ""
+    log_info "Action:  /claude-address-review"
+    log_info "Expect:  addresses the finding first, then detects the branch no longer merges"
+    log_info "         rebases onto origin/main rather than merging main into the branch"
+    log_info "         keeps both the handler and rate-limit sentences in api.md"
+    log_info "         leaves index.md to bun run check, which lists api, handlers, and limits"
+    log_info "         force-pushes once and names the rebase in the reply comment"
+    ;;
+  esac
 }
