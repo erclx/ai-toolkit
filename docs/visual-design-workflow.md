@@ -18,7 +18,7 @@ The default. `.claude/DESIGN.md` holds visual intent as prose plus token tables 
 
 ### Seed shape
 
-The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template. The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
+The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template, and `.claude/standards/design.md` carries the same skeleton under `## Template`. The column headers and role names in either are the strings the renderer parses, so they stay verbatim while values and rows are the project's own. The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
 
 ### Tools
 
