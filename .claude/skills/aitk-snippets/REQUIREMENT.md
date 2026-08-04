@@ -13,8 +13,8 @@ Placement by topic is the one with a recorded cost. A whole category once moved 
 
 ## Must
 
-- Decide placement by who invokes the snippet, sending a prompt a target project would run to the shipped folder and one only this repository can run to `internal/`
-- Check invocation cadence before adding, keeping the catalog to prompts reached across sessions and leaving one-shot audit, migration, and bootstrap prompts out of it
+- Apply the bundled standard's cadence and audience tests rather than a second copy of them, since the shipped `create-snippet` skill reads that standard and reaches nothing written here
+- Map those tests onto this repository's three folders, sending a prompt a target project would run to a shipped folder and one only this repository can run to `internal/`
 - Update every preset naming a slug when that slug changes, since a preset resolves by name and a stale entry installs nothing
 - Keep `essentials` to what a session reaches for nearly every time, because it is what `aitk init` installs by default
 
