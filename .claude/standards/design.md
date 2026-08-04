@@ -37,3 +37,64 @@ Does not govern:
 ## Sections
 
 Use `## Personality`, `## Color`, `## Typography`, `## Spacing`, `## Borders`, `## Motion`, and `## Iconography`. The token tables carry fixed headers the renderer reads.
+
+## Template
+
+Column headers and role names are the strings the renderer parses. Change a value, add a row, or drop a row the project has no use for, and leave the headers as they are.
+
+```markdown
+# Design
+
+## Personality
+
+<one paragraph on voice, tone, and the feeling a user should have>
+
+## Color
+
+| Role       | Intent                        | Value |
+| ---------- | ----------------------------- | ----- |
+| background | page canvas                   |       |
+| surface    | cards, panels, raised blocks  |       |
+| text       | primary body text             |       |
+| muted      | secondary text, captions      |       |
+| accent     | links, primary action         |       |
+| success    | confirmations, positive state |       |
+| warning    | cautions, pending state       |       |
+| error      | failures, destructive action  |       |
+
+## Typography
+
+| Role    | Family | Weight | Size | Line height |
+| ------- | ------ | ------ | ---- | ----------- |
+| display |        |        |      |             |
+| heading |        |        |      |             |
+| body    |        |        |      |             |
+| label   |        |        |      |             |
+| code    |        |        |      |             |
+
+## Spacing
+
+| Step | Multiplier | Value |
+| ---- | ---------- | ----- |
+| xs   | 0.5        |       |
+| sm   | 1          |       |
+| md   | 2          |       |
+| lg   | 3          |       |
+| xl   | 5          |       |
+
+## Borders
+
+| Role    | Radius | Width | When used             |
+| ------- | ------ | ----- | --------------------- |
+| default |        |       | cards, inputs         |
+| pill    |        |       | tags, status chips    |
+| none    | 0      | 0     | edge-to-edge surfaces |
+
+## Motion
+
+<whether motion is used at all, and if so the default duration and easing>
+
+## Iconography
+
+<style, source library, and whether custom icons are allowed>
+```

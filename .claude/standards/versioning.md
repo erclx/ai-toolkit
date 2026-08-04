@@ -9,7 +9,7 @@ Two namespaces, kept separate.
 
 ## Scope
 
-Governs the two version namespaces, phase labels and semver tags, and which surfaces each may appear on. It is an attribute standard rather than a document-type one, so it applies wherever either namespace is written.
+Governs the two version namespaces, phase labels and semver tags, and which surfaces each may appear on. It is an attribute standard rather than a document-type one, so it applies wherever either namespace is written, and it carries no template because a label has no document to shape.
 
 Does not govern:
 

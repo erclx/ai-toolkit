@@ -91,3 +91,59 @@ A standard failing these questions is non-conforming even when it satisfies ever
 - When shown, label them `### Correct` and `### Incorrect` with an inline `# reason` on each entry
 - Keep to two or three entries. Show the pattern, not a catalog.
 - Keep each entry a short one-liner or command. Do not write multi-line correct and incorrect function blocks.
+
+## Template
+
+- Carry one fenced template of the document the standard governs, so an author copies a shape instead of reconstructing it from prose.
+- Bind this to a standard governing a document type. An attribute standard governs a scan, a string, or a label rather than a file, so it has no document to template and carries none.
+- State that exemption in the sentence declaring the standard an attribute standard. An exemption left to inference reads as an omission, and the next author writes a template that teaches nothing.
+- Place the template below the rules it satisfies, under a `## Template` heading or inside the section holding those rules. A reader arrives at it having already read what each part means.
+- Show the skeleton alone: every required section, one placeholder line for what each holds. A full worked document is a second document to maintain.
+- Write placeholders in angle brackets rather than copying a real document. A copied file goes stale, and its backticked filenames read as citations to anything parsing the standard.
+- Carry any header, key, or label a consuming tool parses verbatim. The template is the only place an author learns which strings are load-bearing, since prose calling them fixed does not say what they are.
+- Treat the template as authoritative where it and the prose disagree. An author copies the block, so a contradiction ships as the block, and naming the winner turns a drift into a visible defect rather than a silent one.
+
+````markdown
+---
+title: <Document type> reference
+description: <one line naming what this standard covers>
+---
+
+# <Document type> reference
+
+Applies to `<path/to/document>`. <One line on what the document is for and when it changes.>
+
+## Scope
+
+Governs `<path/to/document>`: <the aspects this standard sets>.
+
+Does not govern:
+
+- <excluded concern>: `<sibling>.md`
+- <excluded concern>: <the surface that owns it>
+
+## What a working <document type> looks like
+
+A <document type> works when <the task a reader completes from it alone>:
+
+- <question the document must answer>
+- <question the document must answer>
+
+A <document type> failing these is non-conforming even when it satisfies every shape rule below.
+
+## Frontmatter
+
+- `title` (required): <casing, and what it names>
+- `description` (required): <what the one line covers>
+
+## <Shape rule group>
+
+- <imperative rule, one concern per bullet>
+- <imperative rule, one concern per bullet>
+
+## Template
+
+```markdown
+<the skeleton of the governed document, placeholders throughout>
+```
+````

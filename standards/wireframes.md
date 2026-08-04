@@ -75,3 +75,38 @@ Reference the context entry from the wireframe by path when a reader needs the m
 
 - When a surface's layout or interaction changes, update its wireframe file in the same PR. A wireframe showing a defunct layout is worse than none.
 - The Behavior and Copy prose around an ASCII block is prose and follows `prose.md`. The fenced block itself is not, so a check scoped to prose is the wrong thing to rely on for what sits inside it.
+
+## Template
+
+One H2 per layout variant, each holding its own fence. A surface with a single layout carries one.
+
+````markdown
+---
+title: <Surface name>
+description: <when and where the surface appears>
+---
+
+# <Surface name>
+
+## <what triggers this variant>
+
+```plaintext
++------------------------------------------+
+| <region>                    ← <its role> |
++------------------------------------------+
+|                                          |
+| <region>                    ← <its role> |
+|                                          |
++------------------------------------------+
+```
+
+## Copy
+
+- <on-screen text, word for word>
+- <text the surface templates>: <marked so a reader does not read it as final>
+
+## Behavior
+
+- <what the visitor does, and what changes on screen>
+- <what each reachable state looks like>
+````
