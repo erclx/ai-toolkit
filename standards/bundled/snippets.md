@@ -24,7 +24,7 @@ A snippet is a short, focused prompt stored as a plain markdown file. Invoke one
 Two tests decide whether a prompt becomes a snippet, and both have to pass. Apply them when adding one and when auditing the catalog.
 
 - Cadence: a prompt invoked many times across sessions qualifies. A one-shot audit, migration, or bootstrap prompt does not, and belongs in notes outside the catalog.
-- Audience: a prompt the consuming project would invoke ships in `snippets/`. One only the authoring repository can run stays outside every installable folder.
+- Audience: a prompt the consuming project would invoke ships in `snippets/`. One only the authoring repository can run stays outside every installable folder, which is a rule for a repository that authors snippets for others rather than for one that only consumes them.
 
 A subfolder under `snippets/` names where a prompt is invoked rather than what it is about. A prompt that reads or writes the project's own files goes in a folder, and one carrying its whole context in the message goes at the root.
 
