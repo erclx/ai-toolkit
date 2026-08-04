@@ -26,7 +26,8 @@ export function register(program: Command): void {
         process.stderr.write(
           `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${opts.source} not found\n${GREY}└${NC}\n`,
         )
-        process.exit(1)
+        process.exitCode = 1
+        return
       }
       process.stderr.write(
         `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}Render design tokens${NC}\n`,
