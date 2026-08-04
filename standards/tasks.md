@@ -147,7 +147,7 @@ Why this task exists and what it depends on.
 
 Every task names where it came from, through a `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` line under the title. Include each only when the file, folder, or issue it names exists.
 
-A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track or an open issue that no task points at is work already decided and on its way to being forgotten.
+A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track or an open issue that no task points at is work already decided and on its way to being forgotten. An intake folder is exempt from that direction, since it dispositions many items at once and most of them close without ever becoming a task.
 
 `Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/`, `../.tmp/groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
 
