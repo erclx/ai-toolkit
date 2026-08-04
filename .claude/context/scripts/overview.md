@@ -11,8 +11,8 @@ Owns every bash script in the repo: the domain entry points behind each `aitk` c
 
 - `scripts/` owns `manage-sandbox.sh`, the only entry point in the folder. No other domain has a dispatcher
 - `scripts/core/` owns repo maintenance: bootstrap, verify, regen, snapshot, clean
-- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards`, `gov`, and `docs` keep only a list command there, `claude` keeps nothing, and `snippets` and `tooling` keep only authoring helpers
-- `scripts/gov/`, `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left
+- `scripts/<domain>/` owns the subcommands for that domain, one file per verb. `standards` and `docs` keep only a list command there, `claude` and `gov` keep nothing, and `snippets` and `tooling` keep only authoring helpers
+- `scripts/snippets/`, `scripts/standards/`, and `scripts/tooling/` hold verbs with no dispatcher above them. Their domains are TypeScript now and `src/commands/` routes into what is left. `gov` is the first domain to empty its folder outright
 - `scripts/eval/` owns the authoring harness and its ablation variants. It is not a verb and nothing dispatches to it, so it is invoked by path and never through `aitk`
 - `scripts/lib/` owns shared functions, sourced and never executed directly. `worktree.sh` is the one under test, via `src/worktree-repair.test.ts`
 - `scripts/sandbox/` owns scenario provisioning, covered in `.claude/context/sandbox/index.md`
