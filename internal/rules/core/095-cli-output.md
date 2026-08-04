@@ -8,9 +8,10 @@ paths:
 
 ## Process exit
 
-- Set `process.exitCode` and return from any command action that writes to stdout. Calling `process.exit()` there ends the process before the write drains and truncates piped output at the 64K pipe buffer.
+- Set `process.exitCode` and return from a command action. Calling `process.exit()` there ends the process before a stdout write drains and truncates piped output at the 64K pipe buffer.
 - Verify output through a pipe. Redirecting to a file hides the truncation, and the exit code is correct either way.
-- Confine `process.exit()` to a fail-fast path that has written to stderr alone, and reach for `process.exitCode` first even there.
+- Confine `process.exit()` to a helper with no caller to unwind through, such as a prompt inside a promise executor or a wrapper propagating a child process status. A command action always has a return path, so it never qualifies.
+- Throw from a validation helper typed `never` rather than exiting, and catch at the action that called it. The action owns the exit code, and the `never` return keeps the caller exhaustive to the compiler.
 
 ## Streams
 
