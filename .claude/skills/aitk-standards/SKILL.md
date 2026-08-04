@@ -1,6 +1,6 @@
 ---
 name: aitk-standards
-description: Standards system and docs. Use when editing files in `standards/` or `docs/`, including authoring conventions, install, and sync. Do not load this skill to read `prose.md`. Read it directly.
+description: Standards system and docs. Use when editing files in `standards/` or `docs/`, including authoring conventions, install, and sync. Do not load this skill to read `prose.md` or `markdown.md`. Read them directly.
 ---
 
 # Standards
@@ -9,7 +9,7 @@ Read `.claude/context/standards.md` for system overview and install vs sync befo
 
 ## Prose rules
 
-Read `.claude/standards/prose.md` before writing or editing any prose in `standards/` or `docs/`. It is the canonical voice and formatting reference.
+Read `.claude/standards/prose.md` and `.claude/standards/markdown.md` before writing or editing any prose in `standards/` or `docs/`. The first is the canonical voice and language reference. The second is the canonical formatting and punctuation reference.
 
 ## Cross-references
 
@@ -27,5 +27,6 @@ When adding a standard:
 ## Reference
 
 - `.claude/context/standards.md`: system overview, install vs sync, adding standards
-- `.claude/standards/prose.md`: full voice, structure, formatting, and language rules
+- `.claude/standards/prose.md`: voice, language, and frontmatter wording rules
+- `.claude/standards/markdown.md`: heading, list, code, punctuation, and file-reference rules
 - `.claude/standards/standard.md`: the meta-standard for a standard's shape, scope, and frontmatter

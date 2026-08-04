@@ -9,6 +9,7 @@ description: Audits changed markdown files against every authoring standard that
 
 - Resolve the base ref first, per Diff baseline below, then scope the file list exactly as Step 1 does, fallback included. If no markdown files changed, stop: `✅ No markdown changes to audit.` A guard that reads bare local `main`, or that skips the unusable-baseline fallback, passes the skill clean on a branch it never read.
 - If neither `.claude/standards/prose.md` nor `${CLAUDE_SKILL_DIR}/../../standards/prose.md` is present, stop: `❌ prose.md standard not found. Install toolkit standards first.` Test the file rather than the directory, since a project that installed standards before a given file existed keeps the directory without ever receiving that file.
+- Apply the same test to `markdown.md`, stopping with its own name. It carries the character bans and the formatting rules, so a run reaching only `prose.md` reports word choice against a clean file and calls the pass complete.
 
 ## Diff baseline
 
@@ -72,7 +73,7 @@ Read each applicable standard once. For each changed file, audit against every r
 - **Pattern rules**: grep the file for every token the standard bans. Grep is authoritative. Reading alone misses occurrences.
 - **Judgment rules**: check each rule in context against the standard that states it.
 
-Every changed markdown file gets the prose pattern pass, since `.claude/standards/prose.md` applies to all of them. Take the banned tokens from that standard at read time rather than from a list held here.
+Every changed markdown file gets the prose pattern pass, since `.claude/standards/prose.md` and `.claude/standards/markdown.md` both apply to all of them. Take the banned tokens from those standards at read time rather than from a list held here. The banned words sit in the first and the banned characters in the second, so a pass reading one file finds half the tokens.
 
 ## Step 4: report
 
@@ -81,8 +82,9 @@ Group findings by file with line references, naming the standard each one comes 
 ```markdown
 path/to/file.md
 
-- L12: `prose.md`, em dash in prose
-- L34: `prose.md`, semicolon used to join clauses
+- L12: `markdown.md`, em dash in prose
+- L34: `markdown.md`, semicolon used to join clauses
+- L51: `prose.md`, vague qualifier `simply`
 - L67: `context.md`, decision entry names no rejected alternative
 ```
 

@@ -23,7 +23,8 @@ Read in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: Memory section rules, including save thresholds and file format overrides
 - `.claude/memory/index.md`: existing index, to avoid duplicates
 - `.claude/context/index.md`: the domain catalog Step 3 routes against
-- `.claude/standards/prose.md`: prose conventions applied to memory file bodies
+- `.claude/standards/prose.md`: voice and banned words applied to memory file bodies
+- `.claude/standards/markdown.md`: punctuation and formatting applied to memory file bodies
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 

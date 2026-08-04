@@ -7,7 +7,8 @@ description: Creates a new standard file in `standards/` or `.claude/standards/`
 
 Creates one standard file. Read these files in parallel:
 
-- `.claude/standards/prose.md` from the project root: prose conventions for all generated text
+- `.claude/standards/prose.md` from the project root: voice and banned words for all generated text
+- `.claude/standards/markdown.md` from the project root: punctuation and formatting for all generated text
 - `.claude/standards/standard.md` from the project root: the meta-standard for shape, frontmatter, and structure
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
