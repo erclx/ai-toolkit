@@ -49,9 +49,15 @@ All three are gated on `isManagedTarget`, which reads a `.claude/` directory, a 
 
 An unmigrated domain counts as a marker because `detectUnmigrated` fires only on root files whose basename the toolkit ships, so it firing proves the toolkit installed there before the layout moved. Reading the two path markers alone split the report against itself: a root-layout target with neither marker rendered as unmanaged while the JSON still carried its unmigrated domain, and `toolkit-operator` reads the JSON, so the rendered half routed to install while the router routed to the relocation. An unmanaged target now returns every section empty rather than only suppressing the render, so no consumer can act on a finding the render withheld.
 
+### Seeds
+
 Seeds get their own reader in `src/sync/seeds-report.ts` rather than a `SyncAdapter`. Three things blocked the adapter. `listInstalled` globs `**/*.md` under one root while seeds span the target root for `CLAUDE.md`, `.claude/` for the rest, and include a `.json` and four `.sh` files. And `planSync` queues a copy for every non-matching file, which would overwrite `CLAUDE.md` wholesale and defeat the section merge `claude-seed-sync` exists to run. The reader reuses `readHistoryIndex` and `findInstalledOrigin` directly, because `recoverAttribution` is private to the engine and takes an adapter seeds have no way to supply. Seeds carry no stamp, so `customized` is unreachable and an unattributed difference stays `drifted`.
 
+### Superseded artifacts
+
 `collectSuperseded` in `src/sync/layout.ts` derives retired artifacts by pairing `SUBDIRS` from `src/claude/seeds.ts` against an uppercase-stem sibling. The existing `collectRetired` adapter hook was the wrong tool: it exists for `.claude/GOV.md`, a generated file, and the engine deletes whatever it returns. Deriving from the seed tree rather than a fixed filename list means a folder added later is covered without a code change, at the cost of missing a suffixed variant like `TASKS-ARCHIVE.md`.
+
+### Unmigrated domains
 
 `detectUnmigrated` covers the state that read as clean. `installedStampDomains` lists only domains whose install marker exists, so a project holding `standards/` at its root reported zero entries rather than a problem. It counts toward `--exit-code` because the relocation closes it, while superseded artifacts and seed drift are excluded for the reason `orphaned` already is.
 
