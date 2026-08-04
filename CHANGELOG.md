@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.53.0](https://github.com/erclx/aitk/compare/v0.52.0...v0.53.0) (2026-08-04)
+
+
+### Features
+
+* **standards:** split prose.md into prose and markdown halves ([#838](https://github.com/erclx/aitk/issues/838)) ([3f33fbc](https://github.com/erclx/aitk/commit/3f33fbce04431f399ab5d92c6880e4412f89bfc6))
+
 ## [0.52.0](https://github.com/erclx/aitk/compare/v0.51.0...v0.52.0) (2026-08-04)
 
 
