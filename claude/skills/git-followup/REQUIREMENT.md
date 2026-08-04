@@ -7,7 +7,7 @@ description: What the follow-up push is for, the gaps it closes, and how it spli
 
 ## Gap
 
-Without this skill, an edit made after a pull request is already open ships as a bare push. The body still describes the scope from before the edit, so a reviewer returning to the page reads a description the diff no longer matches. A reviewer who left comments gets no reply, and when a caller has already posted its own reply, a second one lands underneath it.
+Without this skill, an edit made after a pull request is already open ships as a bare push. The body still describes the scope from before the edit, so a reviewer returning to the page reads a description the diff no longer matches. A reviewer who left comments gets no reply, and when a caller has already posted its own reply, a second one lands underneath it. A caller that rebased the branch before handing over hits a rejected push, since the tracking branch no longer reaches the head.
 
 ## Must
 
@@ -16,6 +16,7 @@ Without this skill, an edit made after a pull request is already open ships as a
 - Sync the body when the new commit moves the scope, and the title when the shift makes it inaccurate
 - Reply on the pull request when it carries review comments, and scan that reply for the banned characters and internal phase labels before posting. The hook watches files and never sees a comment body on its way to the remote.
 - Suppress the reply when the caller owns it, and still run the push and the body sync
+- Force the push under a lease when the tracking branch no longer reaches the head, so a caller's rebase lands and a commit this session never read is not overwritten
 
 ## Must not
 
