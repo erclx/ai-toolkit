@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.54.0](https://github.com/erclx/aitk/compare/v0.53.0...v0.54.0) (2026-08-04)
+
+
+### Features
+
+* **claude:** add a claude-intake skill for filing a brain dump ([#841](https://github.com/erclx/aitk/issues/841)) ([1399393](https://github.com/erclx/aitk/commit/139939337db7fc162e8bb9011914a9822dc374e5))
+* **governance:** add four path-scoped rules and the layering checkpoint ([#842](https://github.com/erclx/aitk/issues/842)) ([e68146a](https://github.com/erclx/aitk/commit/e68146a050c72fdfb5b7a4cb29a73397d841c95e))
+
 ## [0.53.0](https://github.com/erclx/aitk/compare/v0.52.0...v0.53.0) (2026-08-04)
 
 
