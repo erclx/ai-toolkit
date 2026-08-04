@@ -37,3 +37,47 @@ Does not govern:
 ## Sections
 
 Use `## Personality`, `## Color`, `## Typography`, `## Spacing`, `## Borders`, `## Motion`, and `## Iconography`. The token tables carry fixed headers the renderer reads.
+
+## Template
+
+The column headers are the strings the renderer parses, read by exact key, so they stay verbatim. Row names are not. Each is slugged into the variable name it emits, which leaves a project free to rename a row, add one, or drop one it has no use for.
+
+```markdown
+# Design
+
+## Personality
+
+<one paragraph on voice, tone, and the feeling a user should have>
+
+## Color
+
+| Role   | Intent           | Value   |
+| ------ | ---------------- | ------- |
+| <role> | <what it is for> | <value> |
+
+## Typography
+
+| Role   | Family   | Weight   | Size   | Line height |
+| ------ | -------- | -------- | ------ | ----------- |
+| <role> | <family> | <weight> | <size> | <height>    |
+
+## Spacing
+
+| Step   | Multiplier   | Value   |
+| ------ | ------------ | ------- |
+| <step> | <multiplier> | <value> |
+
+## Borders
+
+| Role   | Radius   | Width   | When used   |
+| ------ | -------- | ------- | ----------- |
+| <role> | <radius> | <width> | <when used> |
+
+## Motion
+
+<whether motion is used at all, and if so the default duration and easing>
+
+## Iconography
+
+<style, source library, and whether custom icons are allowed>
+```

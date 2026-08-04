@@ -122,3 +122,31 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 - That watch samples thinly. It sees the one or two paths an entry happened to cite and nothing else, so a change elsewhere leaves the entry looking current. `verified` is what covers the gap, and an entry whose date sits far behind the branch is due a read whether or not anything flagged it.
 - The explanation paragraphs around a Mermaid block are prose and follow `prose.md`. The fenced block itself is not, which is why a check scoped to prose is the wrong thing to rely on for what sits inside it.
 - The punctuation bans still apply to node and subgraph labels, and nothing checks them there. An em dash in a label passes every gate the repository has, so read the labels before shipping the entry.
+
+## Template
+
+The filename and the `category` value both come from Entry kinds and are fixed per kind. A stub nobody has drawn yet carries `TODO: never verified` in place of the SHA and date. The node names and labels inside the fence are placeholders, written bare because Mermaid reads an angle bracket as markup.
+
+````markdown
+---
+title: <what the entry answers>
+description: <which question it settles and which source signal drives it>
+category: <the kind, verbatim from Entry kinds>
+verified: <short-sha> <YYYY-MM-DD>
+---
+
+# <what the entry answers>
+
+```mermaid
+flowchart TB
+    accTitle: what the diagram answers
+    accDescr: the structure in one sentence for a reader who cannot see the render
+
+    a[first part] --> b[second part]
+    b --> c[third part]
+```
+
+<One paragraph leading with what the diagram shows.>
+
+<One paragraph on why this shape was chosen and what was rejected, where the choice was non-obvious. Name one or two code paths the reader can open.>
+````
