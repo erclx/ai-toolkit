@@ -3,10 +3,18 @@
 # Regenerates .claude/memory/index.md after a memory file changes.
 #
 # The memory folder is gitignored, so the whole-repo walk in `bun run check`
-# drops it and never regenerates this index. A positional path bypasses that
-# filter, which makes this hook the only trigger that reaches the folder.
+# drops it and never regenerates this index. Naming the file as a positional
+# argument to `aitk indexes regen` below bypasses that filter, which makes this
+# hook the only trigger that reaches the folder.
 
-input=$(cat)
+# Claude Code sends a payload and closes stdin. A bare read with nothing feeding
+# it blocks forever and holds the session open, so the read is bounded. `read`
+# rather than `timeout cat`, which macOS does not ship.
+IFS= read -r -d '' -t 2 input
+[ -n "$input" ] || {
+  printf '%s reads a Claude Code hook payload on stdin and cannot be run by hand.\n' "${0##*/}" >&2
+  exit 1
+}
 
 tool=$(printf '%s' "$input" | jq -r '.tool_name // empty')
 case "$tool" in

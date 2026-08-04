@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-input=$(cat)
+# Claude Code sends a payload and closes stdin. A bare read with nothing feeding
+# it blocks forever and holds the session open, so the read is bounded. `read`
+# rather than `timeout cat`, which macOS does not ship.
+IFS= read -r -d '' -t 2 input
+[ -n "$input" ] || {
+  printf '%s reads a Claude Code hook payload on stdin and cannot be run by hand.\n' "${0##*/}" >&2
+  exit 1
+}
+
 file=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_response.filePath // empty')
 
 file="${file//\\//}"
