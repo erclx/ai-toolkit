@@ -1,6 +1,6 @@
 ---
 title: Skill review paths
-description: The roadmap gate that stopped an unsourced version claim, and the two-pass model a pull request review posts under
+description: The roadmap gate that stopped an unsourced version claim, the two-pass model a pull request review posts under, and the rebase stage the worker's return leg carries
 ---
 
 # Skill review paths
@@ -34,3 +34,21 @@ Deriving it also decides what a close-out reads. `gh pr view --json reviews` ret
 The heading is the half a reader sees without opening anything, so it reports state rather than pass number. `## Review` covers every pass carrying a finding and `## Review closed` is reserved for one carrying none, so the state comes off the most recent comment rather than off a label on a kind of pass. A close-out does not close the pull request, which is why the rule reads the latest heading rather than promising the closed one is last. Coupling it to the pass number instead was measured wrong on two reviews in five, since twenty-one of fifty-three close-outs reported an open finding under a heading asserting closure. `claude-address-review` nests `## Review response` under the first of those, so a thread reads as opened, answered, still open, closed.
 
 Sharing a prefix across that family is why the detection matches the first line for equality rather than testing a prefix. A prefix test also accepts `## Review response`, and it happened to be safe only because `claude-address-review` posts through `gh pr comment`, which lands in `.comments` and never in `.reviews`. Nothing recorded that dependency, so the close-out would have started scoping to the worker's reply the day that skill switched to posting a review. An equality test costs the same and owes nothing to a sibling's choice of command.
+
+## The rebase stage
+
+`claude-address-review` gained a stage between the doc refresh and the push, because a branch that answered every finding still stopped merging once a sibling landed first. No worker skill mentioned rebasing at all, so the return leg closed the review and handed back a branch nobody could merge. Detection needed no new surface, since the orchestrator's poll already reports `CONFLICT` on the transition rather than only when the head moves.
+
+The stage sits after the fixes rather than before them so one force-push carries both, which is also what keeps the reviewer reading a single delta. It tests with `git fetch origin main` followed by `git merge-tree --write-tree`, chosen over `gh pr view --json mergeable` because that field returns `UNKNOWN` exactly when a poll asks.
+
+The test runs ahead of the no-findings guard rather than inside the fix path. Placing it at step 5 alone put it behind a guard that stops with a pass when the pull request carries no comments, and a branch goes stale from `main` moving rather than from anything the review said, so the case the stage exists for was the one shape it could not reach. The guard now decides on the test rather than on the finding count, and a run carrying no findings skips to the rebase.
+
+Opening that path meant the three steps behind it stopped being true. The reply maps each finding to what changed, the terminal comment says every finding was addressed, and the output line counts them, all against a pull request carrying none. Each gets a rebase-only form rather than an empty list, and the reply takes a `## Rebase` heading rather than `## Review response`, since the second claims a review the run never read and would sit under a `## Review` that does not exist. The heading also stays outside that family so the close-out's first-line equality test cannot match it.
+
+It also runs twice. `git merge-tree` reads committed history and the fixes are uncommitted at step 5, so a branch that merges clean as committed, whose fixes touch lines `main` moved, passes the first test and reaches the remote unmergeable. The second run sits after `git-followup` commits, and it costs an extra force-push only in that narrow case. The fixes are uncommitted by then, so the stage stashes before the rebase and pops after, and the resolution rules cover hunks from both. Both halves are conditional on a dirty tree, since a run answering every finding as a conscious-accept leaves nothing to stash and an unconditional pop would restore an unrelated entry from an earlier session. That same run has no commit for `git-followup` to carry either, which is why the push leg names a direct force-push for it.
+
+The rules are stated where the stage runs, which is what makes it safe. A wholesale `--ours` or `--theirs` drops one side silently and passes every check, since both sides are valid content, and a generated file merged by hand produces a diff the next regen discards. Half of the live case was exactly that, two `index.md` files carrying no `auto: false`. The other half was authoring rather than merging, an entry that opens by counting what follows and now had to count three, which is why the worker owns this and the orchestrator cannot.
+
+No comment channel was built for it, decided 2026-08-04. Both sides of every hunk sit in the conflict, `main` is what the operator approved, and `git log origin/main` names what landed, so a per-conflict comment would restate the diff and add a surface the worker waits on. A hunk the tree does not settle stops instead and reaches the operator as an ordinary finding on the next pass, which holds only because the stage forbids guessing rather than leaving it to judgment.
+
+`git-followup` absorbed the consequence at its push, forcing under a lease when the tracking branch no longer reaches the head. Its plain `git push` was rejected on a rewritten branch, so the stage would have dead-ended one step past the resolution it exists to perform. The re-read is already covered above, since the close-out's ancestry test falls back to a full pass on exactly this branch shape.

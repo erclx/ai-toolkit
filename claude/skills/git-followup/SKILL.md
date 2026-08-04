@@ -22,7 +22,7 @@ its own reply, so skip the comment in step 6. The push and body sync still run.
 1. Run `git status` to confirm the changes are intentional
 2. Run `git add -A` to stage every change
 3. Invoke `aitk:git-commit` to generate one conventional commit from the staged diff
-4. Run `git push` to the tracking branch
+4. Run `git push` to the tracking branch. When `git merge-base --is-ancestor @{u} HEAD` exits non-zero, a caller rewrote the branch and a plain push is rejected, so push with `--force-with-lease` instead. The lease is what stops the force from overwriting a commit this session never read.
 5. Check for existing review comments: `gh api 'repos/{owner}/{repo}/pulls/<number>/comments' --jq 'length'`, resolving `<number>` from `gh pr view --json number`.
 6. When invoked with `reply-owned`, skip this step's comment: the caller posts the reply. Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first running the scan in `.claude/standards/publish.md` against it, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it, since the hook does not see an inline comment body. If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
 
