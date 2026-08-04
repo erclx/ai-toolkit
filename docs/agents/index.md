@@ -12,7 +12,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Command catalog](commands.md): Every project-level command and every domain subcommand, plus the shape each domain exposes
 - [Comments](comments.md): Comment density by language and kind, the two structural exclusions, and how the degradation sweep finds its vocabulary
 - [Context audit checks](context-audit-checks.md): What each non-gating check reports, the unit each checkpoint is measured in, and which folders each check reaches
-- [Context audit](context-audit.md): Running the audit, its flags and folder scope, the exit codes, and the citation gate that is the only failing one
+- [Context audit](context-audit.md): Running the audit, its flags and folder scope, the exit codes, the citation gate, and the widened gate the seed stage runs
 - [Docs](docs.md): How aitk docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
 - [Indexes](indexes.md): Flags, exit codes, and JSON shape for aitk indexes regen, plus when it auto-stages what it rewrote
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project

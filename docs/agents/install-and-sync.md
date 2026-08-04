@@ -144,6 +144,12 @@ needs a stamp and seeds carry none, so a file history cannot attribute stays
 `drifted`. Reconcile the section with `claude-seed-sync`, which merges one
 section at a time rather than replacing a file the project edits.
 
+A markdown seed installs rewritten rather than copied, since the `stub: true`
+marker the toolkit's own seed gate reads is stripped on the way in. The
+comparison above runs against what the install would write, so a marked seed a
+target never touched still reports `matching`. Every other seed copies byte for
+byte.
+
 `superseded` names a file a newer seed folder replaced, such as `.claude/TASKS.md`
 against the `.claude/tasks/` that now ships. The entry carries `replacedBy` and
 nothing else, and the file is never deleted, since the content belongs to the
