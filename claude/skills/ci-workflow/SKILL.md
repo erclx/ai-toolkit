@@ -20,7 +20,7 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Job naming
 
-- Name jobs with emoji + title: `🛡️ Static Checks`, `🧪 Unit Tests`, `📦 Build Check`, `🎭 E2E Tests`, `🚀 Deploy`, `🔍 Code Quality`, `🏷️ Release`, `🔒 Security`.
+- Name jobs with emoji + title: `🛡️ Checks`, `🛡️ Static Checks`, `🧪 Unit Tests`, `📦 Build Check`, `🎭 E2E Tests`, `🚀 Deploy`, `🔍 Code Quality`, `🏷️ Release`, `🔒 Security`.
 
 ## Job granularity
 
@@ -49,7 +49,7 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Template
 
-Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed, collapsing to one job or keeping the parallel and gated structure by the granularity rule above.
+Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed. The template already carries the folded shape, and the split beside it applies once the granularity rule above calls for it.
 
 ## Validation
 
