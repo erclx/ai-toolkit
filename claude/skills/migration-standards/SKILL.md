@@ -24,7 +24,15 @@ Keep the two listings as separate commands. `ls` labels its output with a `dir:`
 
 ### When the report is unavailable
 
-Fall back to `ls standards/*.md` and `ls snippets/` when `aitk` is not on `PATH` or the command exits non-zero. Say in the output that the counts are unfiltered, because a root folder can hold project-authored files the report would have excluded and the fallback counts every one of them.
+Fall back to `ls standards/*.md` and `ls snippets/` on any of three conditions. Say in the output that the counts are unfiltered, because a root folder can hold project-authored files the report would have excluded and the fallback counts every one of them.
+
+- `aitk` is not on `PATH`
+- The command exits non-zero
+- The report parses and carries no `unmigrated` key at all
+
+The third is the one that decides whether this skill works for the projects it exists for. `unmigrated` reached a release in `0.46.0`, and a CLI older than that exits zero with a well-formed report that never mentions the field. Reading an absent key as an empty list sends the run down the nothing-to-relocate branch and reports a clean layout to a project whose every domain sits at the root, which is a silent false negative where the unfiltered count is a visible imprecision.
+
+An absent key and an empty array are different states, so test for the key rather than for emptiness. A current CLI reporting `"unmigrated": []` has looked and found nothing, and falling back there would trade a correct answer for a listing that proposes moving whatever the folder happens to hold.
 
 Do not fall back on `historyUnavailable`. That field reports failed attribution on a domain or on `seeds`, and `unmigrated` is a filesystem read carrying no attribution of its own, so a report that cannot date a file still detects the layout correctly.
 
@@ -33,7 +41,7 @@ Do not fall back on `historyUnavailable`. That field reports failed attribution 
 - If `.claude/standards/` already holds `.md` files, mark standards as "already relocated" and skip its move.
 - If `.claude/snippets/` already holds `.md` files, mark snippets as "already relocated" and skip its move.
 - If `git status` is not clean, add a TODO line telling the user to commit or stash first. `git mv` on a dirty tree mixes the move with unrelated changes.
-- If a root folder holds files and no domain names it in `unmigrated`, propose nothing for it. The content is the project's own, and moving it under `.claude/` puts project files where a sync walks.
+- If a root folder holds files and no domain names it in a report that carried the key, propose nothing for it. The content is the project's own, and moving it under `.claude/` puts project files where a sync walks. This reads a present key alone. A report with no `unmigrated` key never reaches here, since Step 1 sends it to the fallback.
 
 ## Step 3: find author-owned inbound references
 
