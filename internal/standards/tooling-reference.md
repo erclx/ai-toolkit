@@ -1,6 +1,6 @@
 ---
 title: Tooling stack reference
-description: Shape and content rules for tooling stack reference docs
+description: Shape and content rules for tooling stack reference docs, and the manifest symmetry the reference owes
 ---
 
 # Tooling stack reference
@@ -8,6 +8,17 @@ description: Shape and content rules for tooling stack reference docs
 ## Overview
 
 A stack reference records the explicit decisions a tooling stack makes, so a reader knows what the stack chose without opening every config. It lives at `tooling/<stack>/reference.md` and installs into a target as `.claude/tooling/<stack>.md` via `aitk tooling ref`. Nothing generates it, so it is written by hand and kept current by hand.
+
+## The manifest pair
+
+The reference and `tooling/<stack>/manifest.toml` are one decision recorded twice, and nothing compares them. `src/tooling/manifest.ts` holds `referenceFile` as a path and never reads what is behind it, so a manifest edited alone leaves the reference stating the old set and an agent following the reference gets the stale answer.
+
+The symmetry runs in both directions, and the direction that breaks is the manifest moving first. A reader arrives here because they touched one of the two files, not because they set out to keep the pair aligned.
+
+- Edit both files in the same change. Neither one is the source the other derives from.
+- Restate every `[gitignore]` group verbatim. This is the group that has drifted, because a group reads as a config detail rather than as a documented decision.
+- Record a `[scripts]` key in the `## CLI` table when the stack introduces a command.
+- Document the manual install step when `runtime` is not `bun`, since injection runs `bun add -D` and such a manifest leaves `[dependencies.dev]` empty.
 
 ## Content
 
