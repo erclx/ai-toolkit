@@ -13,12 +13,14 @@ export const SEED_STUB_FIELD = 'stub'
 /**
  * Whether an install rewrites this seed rather than copying it byte for byte.
  *
- * Only markdown carries frontmatter, so only markdown can hold the marker.
- * Every install path and the drift report ask this one question, or the report
- * compares a marked source against a stripped target and reads a seed nobody
- * touched as drifted.
+ * This answers what the caller branches on and not whether the file holds a
+ * marker, which is `isStubSeed` reading content. Only markdown carries
+ * frontmatter, so only markdown can hold one, and the extension decides the
+ * copy path without opening the file. Every install path and the drift report
+ * ask this one question, or the report compares a marked source against a
+ * stripped target and reads a seed nobody touched as drifted.
  */
-export function carriesSeedMarker(src: string): boolean {
+export function rewritesOnInstall(src: string): boolean {
   return src.endsWith('.md')
 }
 

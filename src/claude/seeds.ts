@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { copyPreservingMode } from '@/copy'
-import { carriesSeedMarker, stripSeedMarker } from '@/seed-marker'
+import { rewritesOnInstall, stripSeedMarker } from '@/seed-marker'
 
 const SEEDS_DIR = join('tooling', 'claude', 'seeds')
 const CLAUDE_DIR = '.claude'
@@ -132,7 +132,7 @@ export async function applySeeds(seeds: readonly Seed[]): Promise<string[]> {
   const applied: string[] = []
 
   for (const seed of seeds) {
-    if (carriesSeedMarker(seed.src)) {
+    if (rewritesOnInstall(seed.src)) {
       await mkdir(dirname(seed.dest), { recursive: true })
       await writeFile(
         seed.dest,

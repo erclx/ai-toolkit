@@ -47,6 +47,8 @@ The widened gate is correct here and wrong at the project root. A seed is author
 
 Coverage follows the index-plus-entry contract, so it reaches seeded entries and the indexes beside them. Seed files sitting directly under `.claude/`, currently `ARCHITECTURE.md`, `DESIGN.md`, and `REQUIREMENTS.md`, belong to no audited folder and stay outside it.
 
+The stage prints the entries it measured per root and warns on a root that measured none. A root can resolve an audited folder and hold no entry in it, which `tooling/claude/seeds` does today, so a single pass line over the set would report coverage of a tree nothing opened.
+
 ### Exempting a skeleton
 
 A seed that deliberately omits a required section sets `stub: true` in its frontmatter, and the section check then skips it. Every other measure still reads the file, since a stub is exempt from owing sections rather than from being well formed.

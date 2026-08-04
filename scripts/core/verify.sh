@@ -126,6 +126,18 @@ collect_seed_roots() {
   done
 }
 
+# Entries the audit actually measured, summed across the folders it resolved.
+# `--json` carries one `"entries":<n>` per folder object, and the top-level key
+# of that name holds an array, so the numeric match reaches folders alone.
+#
+# A root can resolve a folder and measure nothing in it, which is a passing gate
+# over an empty set. The stage prints this per root rather than reporting one
+# verdict for every root, or a tree nobody measured reads as a tree that passed.
+seed_entry_count() {
+  printf '%s' "$1" | grep -o '"entries":[0-9]\+' | grep -o '[0-9]\+' |
+    awk '{ total += $1 } END { print total + 0 }'
+}
+
 assert_no_drift() {
   local paths=$1
   local err_msg=$2
@@ -201,18 +213,37 @@ main() {
   # advisory for the reason the stage above leaves them so. A passing run stays
   # silent because the audit prints a frame that would nest inside this one.
   log_step "Seed standards"
-  local seed_roots seed_root seed_output
+  local seed_roots seed_root seed_output seed_frame seed_entries seed_measured
   seed_roots=$(collect_seed_roots)
   if [ -z "$seed_roots" ]; then
     log_info "Skipped, no seed root carries .claude/"
   else
+    seed_measured=0
     while IFS= read -r seed_root; do
-      if ! seed_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate 2>&1); then
-        echo "$seed_output" | pipe_output
+      # `--json` puts the record on stdout and the frame on stderr, so the
+      # passing run stays silent and the failing one is re-run for its frame
+      # rather than parsed out of a stream this script would have to strip.
+      if ! seed_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate --json 2>/dev/null); then
+        # `|| true` because the re-run exits non-zero by construction, and
+        # `set -e` would take the script down before log_error names the root.
+        seed_frame=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate 2>&1 || true)
+        echo "$seed_frame" | pipe_output
         log_error "A seed breaks the standard governing the folder it seeds: $seed_root"
       fi
+
+      seed_entries=$(seed_entry_count "$seed_output")
+      seed_measured=$((seed_measured + seed_entries))
+
+      if [ "$seed_entries" -eq 0 ]; then
+        log_warn "$seed_root: no entry under an audited folder, nothing measured"
+      else
+        log_info "$seed_root: $seed_entries entries measured"
+      fi
     done <<<"$seed_roots"
-    log_info "Seeds conform"
+
+    if [ "$seed_measured" -eq 0 ]; then
+      log_warn "No seed entry was measured. The stage covered nothing."
+    fi
   fi
 
   # Presence of a required file is a fact, so it gates. The name, description,

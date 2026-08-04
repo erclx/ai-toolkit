@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { relative } from 'node:path'
 import { planSeeds, type Seed } from '@/claude/seeds'
-import { carriesSeedMarker, stripSeedMarker } from '@/seed-marker'
+import { rewritesOnInstall, stripSeedMarker } from '@/seed-marker'
 import { findInstalledOrigin, readHistoryIndex } from '@/sync/history'
 
 /**
@@ -116,7 +116,7 @@ function attribute(
 function sameContent(source: string, dest: string): boolean {
   const installed = readFileSync(dest)
 
-  if (!carriesSeedMarker(source)) {
+  if (!rewritesOnInstall(source)) {
     return readFileSync(source).equals(installed)
   }
 

@@ -10,7 +10,7 @@ import {
 import { dirname, join } from 'node:path'
 import { $ } from 'bun'
 import { copyPreservingMode } from '@/copy'
-import { carriesSeedMarker, stripSeedMarker } from '@/seed-marker'
+import { rewritesOnInstall, stripSeedMarker } from '@/seed-marker'
 import { mergeSections, pruneSections } from '@/tooling/gitignore'
 import { ancestorsFirst, listFiles, type Manifest } from '@/tooling/manifest'
 import {
@@ -52,7 +52,7 @@ export async function injectConfigs(
  * carries frontmatter, and every other seed copies byte for byte.
  */
 async function writeSeed(src: string, dest: string): Promise<void> {
-  if (!carriesSeedMarker(src)) {
+  if (!rewritesOnInstall(src)) {
     await copyFile(src, dest)
     return
   }
