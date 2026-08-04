@@ -46,8 +46,10 @@ Help skips the banner. The `Usage:` line sits directly on `├`. Help writes to 
 
 ## Process exit
 
-A command action that writes to stdout sets `process.exitCode` and returns. Calling `process.exit()` there ends the process before the write drains, which truncates piped output at the 64K pipe buffer while still reporting the right exit code. Redirecting to a file hides the truncation, so it surfaces only through a pipe, which is what a check has to use to catch it.
+A command action sets `process.exitCode` and returns. Calling `process.exit()` there ends the process before a stdout write drains, which truncates piped output at the 64K pipe buffer while still reporting the right exit code. Redirecting to a file hides the truncation, so it surfaces only through a pipe, which is what a check has to use to catch it.
 
-A fail-fast path that has written to stderr alone may still call `process.exit()`, and several do. The truncation has nothing to cut there, so the ban is scoped to the stream it protects rather than applied to every exit.
+The rule reaches an error path that writes to stderr alone, where the truncation has nothing to cut. Scoping it to the stdout writers was the alternative and it makes the floor depend on a detail that moves, since an action grows a stdout write long after its error branches are written. An action always has a return path, so the requirement costs it a line.
+
+The exit belongs to a helper that has no caller to unwind through. A prompt inside a promise executor and a wrapper propagating a child process status both qualify, and neither can hand a value back to a caller expecting one. A validation helper called from an action does not: it throws from a `never` return, which keeps its caller exhaustive to the compiler while the action catches and owns the code.
 
 Diagnostics reach stderr in every mode, including `--json`. Name the file and the field that failed, because a JSON record carries an action and a reason and an operator reading stderr alone sees neither.

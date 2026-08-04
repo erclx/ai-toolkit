@@ -42,7 +42,7 @@ export function register(program: Command): void {
         process.stderr.write(
           `${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,
         )
-        process.exit(1)
+        process.exitCode = 1
       }
     })
 }

@@ -60,12 +60,14 @@ export function register(program: Command): void {
         frameError(
           'No feedback on stdin. Pipe a markdown block: pbpaste | aitk feedback',
         )
-        process.exit(1)
+        process.exitCode = 1
+        return
       }
       const body = (await readStdin()).trim()
       if (!body) {
         frameError('Empty feedback body. Provide a markdown block on stdin.')
-        process.exit(1)
+        process.exitCode = 1
+        return
       }
 
       if (opts.github) {
@@ -83,7 +85,8 @@ export function register(program: Command): void {
           frameError(
             'gh unavailable and no toolkit source to fall back to. Install gh, or file it at https://github.com/erclx/aitk/issues/new',
           )
-          process.exit(1)
+          process.exitCode = 1
+          return
         }
         process.stderr.write(
           `${YELLOW}! gh unavailable, wrote local scratch instead${NC}\n`,
@@ -94,7 +97,8 @@ export function register(program: Command): void {
         frameError(
           'Local scratch needs the toolkit source. Re-run with --github to open an issue instead.',
         )
-        process.exit(1)
+        process.exitCode = 1
+        return
       }
 
       const filePath = writeLocal(body)

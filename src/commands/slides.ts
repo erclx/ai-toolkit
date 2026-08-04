@@ -36,35 +36,39 @@ export function register(program: Command): void {
         mirror?: string
         open?: boolean
       }) => {
-        const sourcePath = resolve(process.cwd(), opts.source)
-        const outDir = resolve(process.cwd(), opts.out)
-        if (!existsSync(sourcePath)) {
-          fail(`${opts.source} not found`)
-        }
-        const variant = parseVariant(opts.variant)
-        const mirror = resolveMirror(opts.mirror)
-        intro('Render slides')
-        const result = await renderSlidesDoc(sourcePath, outDir, {
-          variant,
-          mirror,
-        })
-        process.stderr.write(
-          `${GREY}│${NC} ${GREEN}✓${NC} ${result.slideCount} slides\n${GREY}│${NC} ${GREEN}✓${NC} ${result.pptxPath}\n`,
-        )
-        if (result.mirrorPath) {
+        try {
+          const sourcePath = resolve(process.cwd(), opts.source)
+          const outDir = resolve(process.cwd(), opts.out)
+          if (!existsSync(sourcePath)) {
+            fail(`${opts.source} not found`)
+          }
+          const variant = parseVariant(opts.variant)
+          const mirror = resolveMirror(opts.mirror)
+          intro('Render slides')
+          const result = await renderSlidesDoc(sourcePath, outDir, {
+            variant,
+            mirror,
+          })
           process.stderr.write(
-            `${GREY}│${NC} ${GREEN}✓${NC} mirrored to ${result.mirrorPath}\n`,
+            `${GREY}│${NC} ${GREEN}✓${NC} ${result.slideCount} slides\n${GREY}│${NC} ${GREEN}✓${NC} ${result.pptxPath}\n`,
           )
+          if (result.mirrorPath) {
+            process.stderr.write(
+              `${GREY}│${NC} ${GREEN}✓${NC} mirrored to ${result.mirrorPath}\n`,
+            )
+          }
+          if (opts.open) {
+            const target = result.mirrorPath ?? result.pptxPath
+            const opened = await openDeck(target)
+            const mark = opened ? `${GREEN}✓${NC}` : `${RED}✗${NC}`
+            process.stderr.write(
+              `${GREY}│${NC} ${mark} ${opened ? 'opened' : 'could not open'} ${target}\n`,
+            )
+          }
+          outro()
+        } catch (error) {
+          reportFailure(error)
         }
-        if (opts.open) {
-          const target = result.mirrorPath ?? result.pptxPath
-          const opened = await openDeck(target)
-          const mark = opened ? `${GREEN}✓${NC}` : `${RED}✗${NC}`
-          process.stderr.write(
-            `${GREY}│${NC} ${mark} ${opened ? 'opened' : 'could not open'} ${target}\n`,
-          )
-        }
-        outro()
       },
     )
 
@@ -98,9 +102,27 @@ function resolveMirror(value: string | undefined): string | undefined {
   return mirror ? resolve(process.cwd(), mirror) : undefined
 }
 
+/**
+ * Carries a fail-fast message from a validation helper to the action that
+ * called it. `fail` has to keep its `never` return, since that is what makes
+ * `parseVariant` exhaustive to the compiler, and a helper deep in the call
+ * stack cannot set `process.exitCode` and unwind on its own.
+ */
+class SlidesError extends Error {}
+
 function fail(message: string): never {
+  throw new SlidesError(message)
+}
+
+/**
+ * `src/cli.ts` calls `program.parse()` without awaiting it, so a rejected
+ * action promise reaches no handler and Bun prints a stack trace. Every action
+ * that calls `fail` catches at its own boundary.
+ */
+function reportFailure(error: unknown): void {
+  if (!(error instanceof SlidesError)) throw error
   process.stderr.write(
-    `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,
+    `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${error.message}\n${GREY}└${NC}\n`,
   )
-  process.exit(1)
+  process.exitCode = 1
 }
