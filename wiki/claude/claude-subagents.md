@@ -37,7 +37,7 @@ Three cases justify a subagent. If none apply, a same-session step is cheaper an
 
 The subagent must not inherit reasoning from the caller. Code review is the canonical case. An implementer's context biases the reviewer toward rationalizing the approach already on the page. A cold subagent starts from the diff and the standards and sees the code the way a new reviewer would.
 
-The [claude-autoship skill](../claude/skills/claude-autoship/SKILL.md) uses this pattern in step 5: it spawns a subagent to invoke `aitk:claude-review` so the review cannot absorb implementation context from the same session.
+The [claude-autoship skill](../../claude/skills/claude-autoship/SKILL.md) uses this pattern in step 5: it spawns a subagent to invoke `aitk:claude-review` so the review cannot absorb implementation context from the same session.
 
 ### Context isolation
 
@@ -68,4 +68,4 @@ Fan out only when the work earns it. Each spawned subagent pays its own startup 
 
 - [Claude Code skills](claude-skills.md) for the `context: fork` frontmatter fields
 - [Claude Code hooks](claude-hooks.md) for `SubagentStart` and `SubagentStop` events
-- [Community skills and plugins](community-skills.md) for third-party patterns like `subagent-driven-development`
+- [Community skills and plugins](../tools/community-skills.md) for third-party patterns like `subagent-driven-development`

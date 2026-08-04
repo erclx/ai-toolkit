@@ -25,7 +25,7 @@ A separate repo, [anthropics/claude-code-security-review](https://github.com/ant
 
 ### obra/superpowers
 
-[Jesse Vincent's](https://github.com/obra/superpowers) methodology-first skill library, accepted into the official Claude plugins marketplace. Standouts are `systematic-debugging` (four-phase hypothesis, evidence, test, repeat), `root-cause-tracing` (forces investigation over patch-and-move-on), and `subagent-driven-development` (parallel subagents with two-stage review, see [Claude Code subagents](claude-subagents.md)). Opinionated and token-heavy. Adapt the patterns, not the prose.
+[Jesse Vincent's](https://github.com/obra/superpowers) methodology-first skill library, accepted into the official Claude plugins marketplace. Standouts are `systematic-debugging` (four-phase hypothesis, evidence, test, repeat), `root-cause-tracing` (forces investigation over patch-and-move-on), and `subagent-driven-development` (parallel subagents with two-stage review, see [Claude Code subagents](../claude/claude-subagents.md)). Opinionated and token-heavy. Adapt the patterns, not the prose.
 
 ### wshobson/agents
 
@@ -67,7 +67,7 @@ Install with `npx impeccable skills install`, per project. The bundled scripts r
 
 ### Claude Design
 
-Anthropic's first-party design product at [claude.ai/design](https://claude.ai/design) covers the same slot as Stitch for Claude subscribers and adds a direct Claude Code handoff bundle. Included in Pro, Max, Team, and Enterprise plans. See [Claude Design](claude-design.md) for capabilities, limits, and when to pick it over Figma or Excalidraw.
+Anthropic's first-party design product at [claude.ai/design](https://claude.ai/design) covers the same slot as Stitch for Claude subscribers and adds a direct Claude Code handoff bundle. Included in Pro, Max, Team, and Enterprise plans. See [Claude Design](../claude/claude-design.md) for capabilities, limits, and when to pick it over Figma or Excalidraw.
 
 ### Google Stitch and DESIGN.md
 

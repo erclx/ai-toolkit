@@ -7,7 +7,7 @@ description: Anthropic's hosted design product, its capabilities, and how it han
 
 [Claude Design](https://claude.ai/design) is Anthropic's first-party design product from the Anthropic Labs team. It turns text prompts and uploaded references into prototypes, wireframes, mockups, pitch decks, and one-pagers, then packages the result as a handoff bundle that Claude Code consumes in a single instruction. Released 2026-04-17 and powered by Opus 4.7. Source: Anthropic, which builds and hosts the product.
 
-This page covers what Claude Design does, how to use it, and how it fits alongside Claude Code. For where it sits in the broader design tier framework, see [visual design workflow](../docs/visual-design-workflow.md).
+This page covers what Claude Design does, how to use it, and how it fits alongside Claude Code. For where it sits in the broader design tier framework, see [visual design workflow](../../docs/visual-design-workflow.md).
 
 ## Status
 
@@ -126,7 +126,7 @@ Pick Claude Design when:
 Skip Claude Design when:
 
 - A dedicated designer owns the source of truth in Figma, Figma's MCP and Code to Canvas round-trip better
-- The workflow needs an agent to draw on a canvas and read back what it drew, use Excalidraw with `mcp_excalidraw` instead, see [visual wireframes](visual-wireframes.md)
+- The workflow needs an agent to draw on a canvas and read back what it drew, use Excalidraw with `mcp_excalidraw` instead, see [visual wireframes](../tools/visual-wireframes.md)
 - The project is CLI-only or backend-only, prose in `DESIGN.md` is enough
 - Output needs to live outside Anthropic's ecosystem for licensing or vendor reasons
 
@@ -143,7 +143,7 @@ Skip Claude Design when:
 
 Claude Design's per-action cost makes it a ceiling tool. On a Max 5x plan, one full design system plus one artifact through to handoff and exports lands near 55 percent of the weekly Claude Design quota. That caps usable cycles at roughly two per week. Daily iteration needs a cheaper companion to handle the bulk of prompt-to-prototype work.
 
-Direct comparison against [Stitch](stitch.md) on the same landing-page prompt with no uploads:
+Direct comparison against [Stitch](../tools/stitch.md) on the same landing-page prompt with no uploads:
 
 |                           | Claude Design                                       | Stitch                                        |
 | ------------------------- | --------------------------------------------------- | --------------------------------------------- |
@@ -153,12 +153,12 @@ Direct comparison against [Stitch](stitch.md) on the same landing-page prompt wi
 | Agent addressable         | No MCP, no API                                      | MCP at `stitch.googleapis.com/mcp`            |
 | Handoff to Claude Code    | URL pointing to a gzipped tarball with chat history | Export to coding agents, details vary by mode |
 
-Reach for Claude Design when codebase extraction or the richly annotated handoff tarball is the whole point. Use Stitch when visual iteration is agent-driven or frequent. For projects that only need prose design docs, the toolkit's tier 0 is still enough, see [visual design workflow](../docs/visual-design-workflow.md).
+Reach for Claude Design when codebase extraction or the richly annotated handoff tarball is the whole point. Use Stitch when visual iteration is agent-driven or frequent. For projects that only need prose design docs, the toolkit's tier 0 is still enough, see [visual design workflow](../../docs/visual-design-workflow.md).
 
 ## References
 
 - [Introducing Claude Design by Anthropic Labs](https://www.anthropic.com/news/claude-design-anthropic-labs)
 - [TechCrunch launch coverage](https://techcrunch.com/2026/04/17/anthropic-launches-claude-design-a-new-product-for-creating-quick-visuals/)
 - [VentureBeat on the Figma comparison](https://venturebeat.com/technology/anthropic-just-launched-claude-design-an-ai-tool-that-turns-prompts-into-prototypes-and-challenges-figma)
-- [Visual design workflow](../docs/visual-design-workflow.md): tier framework that places Claude Design against Figma, Stitch, and Excalidraw
-- [Community skills and plugins](community-skills.md): third-party design skills and adjacent integrations
+- [Visual design workflow](../../docs/visual-design-workflow.md): tier framework that places Claude Design against Figma, Stitch, and Excalidraw
+- [Community skills and plugins](../tools/community-skills.md): third-party design skills and adjacent integrations

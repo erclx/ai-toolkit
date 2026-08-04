@@ -5,7 +5,7 @@ description: Curated list of MCP servers with rankings and install notes
 
 # Community MCP servers
 
-Notable MCP servers worth installing with Claude Code. For the protocol itself, transports, scopes, and setup, see [Claude Code MCP](claude-mcp.md). Figures and maintenance notes are a snapshot from 2026-04-16 and drift fast. Re-verify before adding to a production config. Source: the maintainers of each listed server, none of them this repo.
+Notable MCP servers worth installing with Claude Code. For the protocol itself, transports, scopes, and setup, see [Claude Code MCP](../claude/claude-mcp.md). Figures and maintenance notes are a snapshot from 2026-04-16 and drift fast. Re-verify before adding to a production config. Source: the maintainers of each listed server, none of them this repo.
 
 ## At a glance
 
