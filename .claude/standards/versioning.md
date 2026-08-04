@@ -16,7 +16,8 @@ Does not govern:
 - The format of a phase label, which is project-specific by the rule below
 - Task filenames and board layout: `tasks.md`
 - Commit subject, branch name, and pull request title format: `commit.md`, `branch.md`, and `pr.md`
-- Voice, punctuation, and formatting in any text carrying a label: `prose.md`
+- Voice and word choice in any text carrying a label: `prose.md`
+- Punctuation and formatting in any text carrying a label: `markdown.md`
 
 ## Phase labels
 

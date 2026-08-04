@@ -7,10 +7,11 @@ description: Creates a new snippet file in `snippets/` or `.claude/snippets/`. U
 
 Creates one snippet file. Read these files in parallel:
 
-- `.claude/standards/prose.md` from the project root: prose conventions for all generated text
+- `.claude/standards/prose.md` from the project root: voice and banned words for all generated text
+- `.claude/standards/markdown.md` from the project root: punctuation and formatting for all generated text
 - `${CLAUDE_SKILL_DIR}/references/snippets.md`: authoring conventions, invocation channels, use patterns
 
-Read `${CLAUDE_SKILL_DIR}/../../standards/prose.md` instead when the project does not have it.
+Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Guards
 

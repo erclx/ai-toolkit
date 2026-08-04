@@ -57,7 +57,7 @@ export function parseVocabulary(markdown: string): string[] | undefined {
  *
  * Reading the list out of the rule rather than hardcoding it is what keeps one
  * definition when the rule installs into a target, the same way
- * `.claude/hooks/standards-audit.sh` reads its bans out of `prose.md`.
+ * `.claude/hooks/standards-audit.sh` reads its word bans out of `prose.md`.
  */
 export async function loadVocabulary(root: string): Promise<Vocabulary> {
   for (const ruleRoot of RULE_ROOTS) {

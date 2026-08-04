@@ -49,7 +49,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 ## After editing
 
 - Update the corresponding skill body in `.claude/skills/`. Load `aitk-claude` and follow `.claude/standards/skill.md` conventions.
-- Update per-domain narrative in `.claude/context/<X>.md` (follow `.claude/standards/context.md`) and any affected consumer docs in `docs/`. Load `aitk-standards` and follow `.claude/standards/prose.md`.
+- Update per-domain narrative in `.claude/context/<X>.md` (follow `.claude/standards/context.md`) and any affected consumer docs in `docs/`. Load `aitk-standards` and follow `.claude/standards/prose.md` and `.claude/standards/markdown.md`.
 
 ## Conventions
 
@@ -133,7 +133,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 ## Memory
 
 - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`.
-- Follow `.claude/standards/prose.md` when writing memory file content.
+- Follow `.claude/standards/prose.md` and `.claude/standards/markdown.md` when writing memory file content.
 - A fact about a domain goes to that domain's `.claude/context/` entry, not to memory. `claude-memory-capture` routes it there through `.claude/.tmp/memory-routing/<slug>.md` and `claude-docs` folds it in. Memory keeps only what no context entry owns, which in practice is feedback about how to work.
 - Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
 - Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.

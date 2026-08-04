@@ -7,7 +7,8 @@ description: Rewrites stale `README.md` and `docs/*.md` sections based on change
 
 Read these files from the project root in parallel:
 
-- `.claude/standards/prose.md`: prose conventions for all generated text
+- `.claude/standards/prose.md`: voice and banned words for all generated text
+- `.claude/standards/markdown.md`: punctuation and formatting for all generated text
 - `.claude/standards/readme.md`: README structure, required sections, and content rules
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.

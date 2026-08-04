@@ -97,7 +97,7 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
-- Follow `.claude/standards/prose.md` for all edits.
+- Follow `.claude/standards/prose.md` and `.claude/standards/markdown.md` for all edits.
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 

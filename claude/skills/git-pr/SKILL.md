@@ -11,7 +11,8 @@ Read these files in parallel:
 
 - `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
 - `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
-- `.claude/standards/prose.md` from the project root: prose conventions for all generated text
+- `.claude/standards/prose.md` from the project root: voice and banned words for all generated text
+- `.claude/standards/markdown.md` from the project root: punctuation and formatting for all generated text
 - `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
