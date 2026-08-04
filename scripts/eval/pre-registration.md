@@ -1,5 +1,9 @@
 # Pre-registration
 
+> Frozen record, written before either run. It quotes paths and rules as they stood on the run date, so a
+> path inside it that no longer resolves is the record working rather than drift. Do not retarget it in a
+> sweep and do not rewrite what it claims. A prose pass over this file destroys what it is for.
+
 Written before either run. Fixes what counts as a hit so a miss cannot be reinterpreted afterward.
 
 Held outside both fixture roots on purpose. Neither test session can read this file, since each runs with its cwd set to the `feedwatch/` directory inside its own arm.

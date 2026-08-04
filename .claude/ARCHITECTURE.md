@@ -58,7 +58,7 @@ A rule written in a standard fires only when a session reads it. The Claude Code
 
 `groundwork/`, `plans-archive/`, and `task-archive/` sit directly under `.claude/`, leaving `.tmp/` holding only what can be deleted without loss. All three are cited by task files months after they are written, so a folder announcing itself as temporary was the wrong container for the one thing in it nobody may delete. Gitignored is what these share with scratch, and gitignored means per-machine rather than disposable. `memory-archive/` stayed behind on the same test: nothing cites a retired memory, so it is an undo buffer for a bulk pass rather than a record a later session opens.
 
-Prefixing the other five surfaces with a dot to collapse the ignore file into one pattern was measured and declined: 486 occurrences across roughly 150 committed files, 43 of which ship to targets, against 81 across 27 for the move that shipped. It is a breaking rename for every installed target, and it hides the board a person opens daily. The ignore file therefore grows by three entries rather than shrinking, which is the accepted cost. `.tmp` is the only one of the six where hidden is the correct default.
+Prefixing the other five surfaces with a dot to collapse the ignore file into one pattern was measured and declined: 486 occurrences across roughly 150 committed files, 43 of which ship to targets, against 80 across 26 for the move that shipped. It is a breaking rename for every installed target, and it hides the board a person opens daily. The ignore file therefore grows by three entries rather than shrinking, which is the accepted cost. `.tmp` is the only one of the six where hidden is the correct default.
 
 ## Risks / open questions
 
