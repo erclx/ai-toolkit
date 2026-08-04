@@ -129,7 +129,7 @@ The task board is a folder of one file per task, which is what keeps two concurr
 
 `.claude/memory/` carries the same shape and now the same mechanism. Its entries take `title`, `description`, and a sentence-case `category`, so the shared renderer groups the catalog by kind, and `.claude/hooks/memory-index.sh` regenerates `index.md` on every write. The folder was a hand-appended `MEMORY.md` before, and it had drifted to more rows than files.
 
-A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, archived rather than deleted the way the plan and task records are. Deletion was never safe here: the folder is gitignored, so a wrong call in a bulk pass over a folder this size has nothing to recover from.
+A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, the one archive that stayed under the scratch tree the other three left. Nothing cites a retired memory the way a task file cites a plan or a groundwork track, and a phase label derives from the task archive while no surface reads this one, so it is an undo buffer for a bulk pass rather than a record a later session opens. Deletion was never safe here: the folder is gitignored, so a wrong call over a folder this size has nothing to recover from.
 
 A plan that ships moves to `.claude/plans-archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.
 
