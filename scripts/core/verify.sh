@@ -116,6 +116,16 @@ assert_hero_pair() {
   [ "$html_commit" = "$png_commit" ]
 }
 
+# Whatever stacks the repo currently carries, so a new one is covered without an
+# edit here. A seed root holding no `.claude/` seeds nothing a standard governs.
+collect_seed_roots() {
+  local dir
+  for dir in "$PROJECT_ROOT"/tooling/*/seeds; do
+    [ -d "$dir/.claude" ] || continue
+    printf '%s\n' "${dir#"$PROJECT_ROOT"/}"
+  done
+}
+
 assert_no_drift() {
   local paths=$1
   local err_msg=$2
@@ -182,6 +192,28 @@ main() {
   log_step "Context citations"
   run_check "cd $PROJECT_ROOT && bun src/cli.ts context audit --citations-only" "A cited context path does not resolve. Run bun src/cli.ts context audit."
   log_info "Context citations resolve"
+
+  # The stage above audits this repository. Its seed tree ships into every
+  # scaffolded project, so a seed breaking the standard it seeds propagates
+  # instead of sitting still, and no rule path reaches the tree to report it.
+  # `--gate` fails on the two findings beside citations that are facts, a
+  # missing required section and index drift, and leaves the thresholds
+  # advisory for the reason the stage above leaves them so. A passing run stays
+  # silent because the audit prints a frame that would nest inside this one.
+  log_step "Seed standards"
+  local seed_roots seed_root seed_output
+  seed_roots=$(collect_seed_roots)
+  if [ -z "$seed_roots" ]; then
+    log_info "Skipped, no seed root carries .claude/"
+  else
+    while IFS= read -r seed_root; do
+      if ! seed_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts context audit "$seed_root" --gate 2>&1); then
+        echo "$seed_output" | pipe_output
+        log_error "A seed breaks the standard governing the folder it seeds: $seed_root"
+      fi
+    done <<<"$seed_roots"
+    log_info "Seeds conform"
+  fi
 
   # Presence of a required file is a fact, so it gates. The name, description,
   # folder, and requirement-section measures beside it report and are read from a
