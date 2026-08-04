@@ -19,6 +19,14 @@ Does not govern:
 - Skill folders and skill frontmatter: `skill.md`
 - Cross-domain behavior rules, which live in `CLAUDE.md` at the project root
 
+## Whether a skill belongs behind the rule
+
+A rule fires on a path match with no decision from the session, which is what makes it a floor. Every bullet is one directive and nothing else, so an invariant needing procedure, worked cases, or a branch on project state has no room in the body.
+
+Run the two-part test in reverse before calling the rule finished. The rule already holds what fires on a path edit and ships silently when violated. Ask what a session still needs past the directive, and give that to a skill the rule points at, because a rule that grows a procedure has become a skill body wearing rule frontmatter.
+
+Write both when both apply. A rule stating the directive and a skill stating how to carry it out are one invariant at two depths rather than two copies of it, and `skill.md` carries the same checkpoint for a session arriving from the other side. Nothing checks either one.
+
 ## Location
 
 - Rules live at `.claude/rules/<subdirectory>/<n>-<slug>.md`

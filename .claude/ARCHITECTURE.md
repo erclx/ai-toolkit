@@ -28,6 +28,10 @@ Toolkit-internal content lives under `internal/`, a tree nothing inside `claude/
 
 Context splits three ways: `CLAUDE.md` and this file load eagerly, `.claude/rules/` load on glob match, and `.claude/context/<domain>.md` is read on demand. One large `CLAUDE.md` was the starting point and grows without bound. Nested `CLAUDE.md` files below the cwd were the other candidate, and they load cheaply but announce nothing, so a session never learns they exist. The `index.md` catalog is what the third tier buys, since it lists every entry up front and a session picks what it needs before touching the domain.
 
+### A two-part test decides which tier a fact belongs in
+
+A fact goes to `.claude/rules/` when it fires on a specific path being edited and violating it ships silently, and to a context entry or a skill body otherwise. Recording it in the entry's `## Gotchas` was the alternative, and that is exactly where the manifest-to-reference symmetry already sat unread while `#823` edited the manifest and shipped a stale reference. Eager loading does not substitute either, since the fenced-diff protocol for this file lived in `CLAUDE.md` and was therefore in context for every session, and a worker on `#828` still edited without it, because a rule delivered at session start competes with the whole file while a glob-matched rule arrives attached to the action. The test rejects most of what it is run over, which is the point, because a rule per gotcha rebuilds the unbounded `CLAUDE.md` the tiers exist to prevent.
+
 ### Skills call the CLI and never reimplement it
 
 A plugin skill reads a catalog through `aitk <domain> list --json`, matches it against project context, then executes the CLI under `AITK_NON_INTERACTIVE=1`. No skill hardcodes a rule, stack, or snippet name. Restating CLI logic in a skill body was the alternative, and it puts one behavior in two places that ship on different cadences. Every domain therefore owes a `list` verb with `--json`, which is a standing constraint on the CLI rather than on the skills.
