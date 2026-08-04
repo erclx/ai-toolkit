@@ -2,11 +2,11 @@ import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, resolve } from 'node:path'
 import type { Command } from 'commander'
-import { registerPassThroughVerbs } from '@/commands/pass-through'
 import { PROJECT_ROOT } from '@/exec'
 import { createGovAdapter } from '@/gov/adapter'
 import { regenConsumedRules } from '@/gov/consumed'
 import { hasStandards, installRules, lookupRules } from '@/gov/install'
+import { buildGovCatalog, describeRule, describeStack } from '@/gov/list'
 import { buildRulesPayload, listRuleFiles } from '@/gov/payload'
 import {
   govStackExists,
@@ -34,14 +34,18 @@ const NC = '\x1b[0m'
 const PAYLOAD_REL = join('.claude', '.tmp', 'gov', 'rules.md')
 const RULES_REL = join('.claude', 'rules')
 
-const PASS_THROUGH_VERBS = ['list'] as const
-
 interface InstallOptions {
   readonly add?: string
 }
 
 interface RegenOptions {
   readonly root?: string
+}
+
+interface ListOptions {
+  readonly stacks?: boolean
+  readonly rules?: boolean
+  readonly json?: boolean
 }
 
 export function register(program: Command): void {
@@ -119,7 +123,78 @@ export function register(program: Command): void {
       process.exitCode = await runRegen(opts)
     })
 
-  registerPassThroughVerbs(gov, 'gov', PASS_THROUGH_VERBS)
+  gov
+    .command('list')
+    .description('Emit the catalog of stacks and rules')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--stacks', 'Only list stacks')
+    .option('--rules', 'Only list rules')
+    .option('--json', 'Emit machine-readable JSON')
+    .action((opts: ListOptions) => {
+      process.exitCode = runList(opts)
+    })
+}
+
+/**
+ * Both selectors absent means both sections, which is the bash default. Naming
+ * both is the same as naming neither rather than an error, since the two flags
+ * read as filters and a caller passing both is asking for everything.
+ */
+function selectedSections(opts: ListOptions): {
+  stacks: boolean
+  rules: boolean
+} {
+  const stacks = opts.stacks === true
+  const rules = opts.rules === true
+  if (stacks === rules) return { stacks: true, rules: true }
+  return { stacks, rules }
+}
+
+/**
+ * `JSON.stringify` replaces a `printf` that interpolated a description into a
+ * JSON string literal through a hand-rolled escaper, so a rule carrying a
+ * character that escaper missed emitted output a consuming skill could not
+ * parse.
+ *
+ * `unreferenced` rides the same payload rather than taking a flag of its own.
+ * The verify stage and a skill asking what a stack leaves out read one call,
+ * and the key is additive, so a consumer reading `stacks` or `rules` is
+ * untouched by it.
+ */
+function runList(opts: ListOptions): number {
+  const catalog = buildGovCatalog(PROJECT_ROOT)
+  const sections = selectedSections(opts)
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ...(sections.stacks ? { stacks: catalog.stacks } : {}),
+        ...(sections.rules ? { rules: catalog.rules } : {}),
+        unreferenced: catalog.unreferenced,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk gov list')
+
+  if (sections.stacks) {
+    logStep('Stacks')
+    for (const entry of catalog.stacks) logInfo(describeStack(entry))
+  }
+
+  if (sections.rules) {
+    logStep('Rules')
+    for (const entry of catalog.rules) logInfo(describeRule(entry))
+  }
+
+  if (catalog.unreferenced.length > 0) {
+    logStep('Reached by no stack')
+    for (const rule of catalog.unreferenced) logInfo(rule)
+  }
+
+  outro()
+  return 0
 }
 
 /**
