@@ -41,6 +41,8 @@ If the two commands differ, the session is already in a linked worktree. Continu
 
 Read `.claude/plans/feature-<slug>.md` at the main worktree root. This file is the scope for this run.
 
+Its sections and its answer contract are fixed by `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. A blank `- Answer:` accepts the `- Suggested:` line above it, so an unanswered question is a decision this run executes rather than a reason to stop.
+
 ## Step 2: implement
 
 Implement only what the plan describes. Do not expand scope. Do not refactor neighbors. Do not touch files outside the plan's "Files to touch" list without reason.
