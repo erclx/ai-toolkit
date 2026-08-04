@@ -16,6 +16,7 @@ Governs a groundwork track under `.claude/groundwork/<slug>/`: folder layout, re
 Does not govern:
 
 - A dump of many findings filed by domain, each carrying its own verdict: `intake.md`
+- The feature plan a closed track feeds, and the contract its answer slots keep: `plan.md`
 - The task file a closing track writes, and the origin line pointing back at the folder: `tasks.md`
 - Voice and word choice: `prose.md`
 - Headings, punctuation, and file references: `markdown.md`

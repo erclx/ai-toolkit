@@ -15,6 +15,7 @@ Governs the task board under `.claude/tasks/`: folder layout, filenames, frontma
 
 Does not govern:
 
+- The plan file a task cites, its sections, and its answer contract: `plan.md`
 - Phase-label format and which surfaces a label may appear on: `versioning.md`
 - Sequencing across versions and why the order is what it is: `roadmap.md`
 - Architectural reasoning that outlives a task: `architecture.md`
