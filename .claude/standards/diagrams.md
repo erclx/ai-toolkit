@@ -125,7 +125,7 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 
 ## Template
 
-The filename and the `category` value both come from Entry kinds and are fixed per kind. A stub nobody has drawn yet carries `TODO: never verified` in place of the SHA and date.
+The filename and the `category` value both come from Entry kinds and are fixed per kind. A stub nobody has drawn yet carries `TODO: never verified` in place of the SHA and date. The node names and labels inside the fence are placeholders, written bare because Mermaid reads an angle bracket as markup.
 
 ````markdown
 ---
@@ -139,11 +139,11 @@ verified: <short-sha> <YYYY-MM-DD>
 
 ```mermaid
 flowchart TB
-    accTitle: <what the diagram answers>
-    accDescr: <the structure in one sentence for a reader who cannot see the render>
+    accTitle: what the diagram answers
+    accDescr: the structure in one sentence for a reader who cannot see the render
 
-    a[<short label>] --> b[<short label>]
-    b --> c[<short label>]
+    a[first part] --> b[second part]
+    b --> c[third part]
 ```
 
 <One paragraph leading with what the diagram shows.>

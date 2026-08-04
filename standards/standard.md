@@ -100,6 +100,7 @@ A standard failing these questions is non-conforming even when it satisfies ever
 - Place the template below the rules it satisfies, under a `## Template` heading or inside the section holding those rules. A reader arrives at it having already read what each part means.
 - Show the skeleton alone: every required section, one placeholder line for what each holds. A full worked document is a second document to maintain.
 - Write placeholders in angle brackets rather than copying a real document. A copied file goes stale, and its backticked filenames read as citations to anything parsing the standard.
+- Switch to a bare word where the fenced language reads `<` as syntax of its own, as Mermaid and HTML do, and say in the line above the fence that the names are placeholders. A template that does not parse in its own language teaches a shape the author cannot run.
 - Carry any header, key, or label a consuming tool parses verbatim. The template is the only place an author learns which strings are load-bearing, since prose calling them fixed does not say what they are.
 - Treat the template as authoritative where it and the prose disagree. An author copies the block, so a contradiction ships as the block, and naming the winner turns a drift into a visible defect rather than a silent one.
 

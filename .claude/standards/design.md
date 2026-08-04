@@ -40,7 +40,7 @@ Use `## Personality`, `## Color`, `## Typography`, `## Spacing`, `## Borders`, `
 
 ## Template
 
-Column headers and role names are the strings the renderer parses. Change a value, add a row, or drop a row the project has no use for, and leave the headers as they are.
+The column headers are the strings the renderer parses, read by exact key, so they stay verbatim. Row names are not. Each is slugged into the variable name it emits, which leaves a project free to rename a row, add one, or drop one it has no use for.
 
 ```markdown
 # Design
@@ -51,44 +51,27 @@ Column headers and role names are the strings the renderer parses. Change a valu
 
 ## Color
 
-| Role       | Intent                        | Value |
-| ---------- | ----------------------------- | ----- |
-| background | page canvas                   |       |
-| surface    | cards, panels, raised blocks  |       |
-| text       | primary body text             |       |
-| muted      | secondary text, captions      |       |
-| accent     | links, primary action         |       |
-| success    | confirmations, positive state |       |
-| warning    | cautions, pending state       |       |
-| error      | failures, destructive action  |       |
+| Role   | Intent           | Value   |
+| ------ | ---------------- | ------- |
+| <role> | <what it is for> | <value> |
 
 ## Typography
 
-| Role    | Family | Weight | Size | Line height |
-| ------- | ------ | ------ | ---- | ----------- |
-| display |        |        |      |             |
-| heading |        |        |      |             |
-| body    |        |        |      |             |
-| label   |        |        |      |             |
-| code    |        |        |      |             |
+| Role   | Family   | Weight   | Size   | Line height |
+| ------ | -------- | -------- | ------ | ----------- |
+| <role> | <family> | <weight> | <size> | <height>    |
 
 ## Spacing
 
-| Step | Multiplier | Value |
-| ---- | ---------- | ----- |
-| xs   | 0.5        |       |
-| sm   | 1          |       |
-| md   | 2          |       |
-| lg   | 3          |       |
-| xl   | 5          |       |
+| Step   | Multiplier   | Value   |
+| ------ | ------------ | ------- |
+| <step> | <multiplier> | <value> |
 
 ## Borders
 
-| Role    | Radius | Width | When used             |
-| ------- | ------ | ----- | --------------------- |
-| default |        |       | cards, inputs         |
-| pill    |        |       | tags, status chips    |
-| none    | 0      | 0     | edge-to-edge surfaces |
+| Role   | Radius   | Width   | When used   |
+| ------ | -------- | ------- | ----------- |
+| <role> | <radius> | <width> | <when used> |
 
 ## Motion
 
