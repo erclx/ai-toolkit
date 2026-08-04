@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.49.0](https://github.com/erclx/aitk/compare/v0.48.0...v0.49.0) (2026-08-04)
+
+
+### Features
+
+* **claude:** move the durable record folders out of .tmp ([#828](https://github.com/erclx/aitk/issues/828)) ([9b277a6](https://github.com/erclx/aitk/commit/9b277a6715bbb7a7da0abcd531ef1dc74fefd44b))
+
 ## [0.48.0](https://github.com/erclx/aitk/compare/v0.47.0...v0.48.0) (2026-08-04)
 
 
