@@ -91,7 +91,7 @@ RULE
     ;;
   "list")
     log_step "Running: aitk gov list"
-    exec "$PROJECT_ROOT/scripts/gov/list.sh"
+    exec bun "$PROJECT_ROOT/src/cli.ts" gov list
     ;;
   "regen")
     log_step "Running: aitk gov regen --root regen/"

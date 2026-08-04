@@ -3,10 +3,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  expandStackEntry,
   listGovStacks,
   loadGovStack,
   mergeExtraRules,
   resolveRules,
+  unreferencedRules,
 } from '@/gov/stacks'
 
 let root: string
@@ -15,6 +17,12 @@ function seedStack(name: string, body: string): void {
   const dir = join(root, 'governance', 'stacks')
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, `${name}.toml`), body)
+}
+
+function seedRule(folder: string, name: string): void {
+  const dir = join(root, 'governance', 'rules', folder)
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(join(dir, `${name}.md`), `# ${name}\n`)
 }
 
 beforeEach(() => {
@@ -93,6 +101,95 @@ describe('resolveRules', () => {
       ok: true,
       rules: ['010-b', '000-a'],
     })
+  })
+})
+
+describe('expandStackEntry', () => {
+  it('should expand a folder entry to every rule inside it, sorted', () => {
+    seedRule('core', '010-b')
+    seedRule('core', '000-a')
+
+    expect(expandStackEntry(root, 'core')).toEqual(['000-a', '010-b'])
+  })
+
+  it('should return a rule slug unchanged', () => {
+    seedRule('core', '000-a')
+
+    expect(expandStackEntry(root, '000-a')).toEqual(['000-a'])
+  })
+
+  it('should return an entry naming neither a folder nor a rule unchanged', () => {
+    expect(expandStackEntry(root, 'ghost')).toEqual(['ghost'])
+  })
+
+  it('should reach a rule nested below the folder', () => {
+    seedRule(join('core', 'deep'), '020-c')
+
+    expect(expandStackEntry(root, 'core')).toEqual(['020-c'])
+  })
+})
+
+describe('resolveRules with folder entries', () => {
+  it('should resolve a stack naming a folder to the rules in it', () => {
+    seedRule('core', '000-a')
+    seedRule('core', '010-b')
+    seedStack('base', 'extends = ""\nrules = ["core"]\n')
+
+    expect(resolveRules(root, 'base')).toEqual({
+      ok: true,
+      rules: ['000-a', '010-b'],
+    })
+  })
+
+  it('should resolve a stack mixing a folder entry with a slug entry', () => {
+    seedRule('core', '000-a')
+    seedRule('claude', '500-c')
+    seedRule('lib', '300-d')
+    seedStack('base', 'extends = ""\nrules = ["core", "500-c"]\n')
+    seedStack('node', 'extends = "base"\nrules = ["300-d"]\n')
+
+    expect(resolveRules(root, 'node')).toEqual({
+      ok: true,
+      rules: ['000-a', '500-c', '300-d'],
+    })
+  })
+
+  it('should yield a rule once when a folder entry and a slug entry both reach it', () => {
+    seedRule('core', '000-a')
+    seedRule('core', '010-b')
+    seedStack('base', 'extends = ""\nrules = ["000-a"]\n')
+    seedStack('node', 'extends = "base"\nrules = ["core"]\n')
+
+    expect(resolveRules(root, 'node')).toEqual({
+      ok: true,
+      rules: ['000-a', '010-b'],
+    })
+  })
+})
+
+describe('unreferencedRules', () => {
+  it('should name a rule no stack reaches', () => {
+    seedRule('core', '000-a')
+    seedRule('lib', '300-orphan')
+    seedStack('base', 'extends = ""\nrules = ["core"]\n')
+
+    expect(unreferencedRules(root)).toEqual(['300-orphan'])
+  })
+
+  it('should count a rule reached through a folder entry as referenced', () => {
+    seedRule('core', '000-a')
+    seedRule('core', '010-b')
+    seedStack('base', 'extends = ""\nrules = ["core"]\n')
+
+    expect(unreferencedRules(root)).toEqual([])
+  })
+
+  it('should skip a stack whose parent does not resolve rather than reporting every rule', () => {
+    seedRule('core', '000-a')
+    seedStack('base', 'extends = ""\nrules = ["core"]\n')
+    seedStack('broken', 'extends = "ghost"\nrules = []\n')
+
+    expect(unreferencedRules(root)).toEqual([])
   })
 })
 

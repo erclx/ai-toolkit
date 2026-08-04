@@ -12,15 +12,22 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 ## Layout
 
 - `governance/rules/` owns the source rules, organized into one subfolder per numbering band
-- `governance/stacks/` owns stack definitions as toml, each declaring an optional extends chain and a flat rules list
+- `governance/stacks/` owns stack definitions as toml, each declaring an optional extends chain and a rules list whose entries name either a rule or a whole rule folder
 - `internal/rules/` owns rules that govern toolkit authoring alone, installed into this repo's copy and shipped to no target
 - `internal/governance.toml` records which stack and extras this repo consumes, and `src/gov/consumed.ts` produces the copy from it
 - `src/sync/engine.ts` owns the shared sync engine every domain runs on
 - `src/gov/` owns the gov half: the adapter that feeds the engine, and the rules payload builder behind `build`
-- `scripts/gov/` owns the list entry point, the one verb still on bash
-- `src/gov/` owns the stack reader, the rule lookup, and the install copy
+- `src/gov/` owns the stack reader, the rule lookup, the catalog behind `list`, and the install copy
 
 ## Decisions
+
+### A stack entry names a rule or a folder
+
+- `expandStackEntry` in `src/gov/stacks.ts` resolves one entry. A name matching a directory under `governance/rules/` yields every rule inside it, and anything else yields itself, so a folder and a slug leave the resolver as one shape. Dedupe runs on the expanded names, which is what lets a stack name a folder while an ancestor names a rule inside it without installing that rule twice.
+- `base` takes `core` and `claude` whole. Those two folders were enumerated one rule at a time and the list was always exactly the folder, so adding a rule needed a second edit nothing prompted. Every other stack stays enumerated, because taking three of six rule folders is a selection a folder entry cannot express.
+- The consequence is that both folders are now opt-out. A rule authored into `governance/rules/claude/` ships to every `base` consumer by existing, so the decision moved from the stack file to whether the file belongs in that folder.
+- The install output is where the flat list is paid back. `runInstall` expands before printing, so the operator still reads every rule name even though the stack file no longer carries them.
+- `--add` takes rule names alone and does not expand a folder. The extras flag layers onto a resolved stack rather than defining one, and a folder there has no case behind it yet. An unknown name still warns rather than aborting, so `--add core` is loud rather than silent.
 
 ### Rule sources and install
 
@@ -63,7 +70,8 @@ One candidate passes both halves and is deferred. A child folder carrying no `in
 ### Numbering bands
 
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
-- `internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, so two sources numbering into one folder cannot collide silently. The core band is already full at every ten, which is what forces the split rather than leaving it to convention.
+- `internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, so two sources numbering into one folder cannot collide silently. The core band is already full at every ten, which is what forces the split rather than leaving it to convention. `standards/rule.md` states the division as a rule an authoring session reads, since a target project splitting its own rules against an installed set faces the same collision. Nothing checks it in either place.
+- The leading digit restates the folder in every rule, so what the number uniquely supplies is read order rather than routing. Nothing precedence-orders rules at load, which is why the band-to-folder mapping was left alone when folder entries landed: renumbering would reach every installed target and buy nothing.
 
 | Range     | Domain                                                                                                                                           |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -80,6 +88,8 @@ One candidate passes both halves and is deferred. A child folder carrying no `in
 - `aitk gov install` and `aitk gov sync` refuse to run against the toolkit root, because a target's rules are the operator's to edit. `aitk gov regen` runs against it on purpose, since the destination there is produced output rather than someone's working copy. Editing `.claude/rules/` by hand is pointless either way, as the next `bun run check` overwrites it from the source.
 - A widened source rule now fails `bun run check` until the copy is committed, which is the miss that shipped a stale copy to a release. The regen propagates the change and the drift assertion turns the resulting diff into a failure. A rule matching nothing still does not error, so the gate catches the stale copy rather than the dead glob.
 - `--add` extras are deduped against the stack's resolved rules. Rules already in the stack are no-ops. Unknown rule names warn but do not abort install.
+- The `Unreferenced rules` stage in `scripts/core/verify.sh` reports rules no stack reaches and never fails. Its two standing findings, `260-shadcn` and `320-tanstack-query`, are opt-in libraries this repository ships on purpose, so a gate there would fail every push over the deliberate case. `GOV_EXPECTED_UNREFERENCED` in that script holds the pair, and a third rule arriving reads as new against it. Reconsider failing once a third appears and the pattern is either a library set or an accident.
+- A rule authored under `governance/rules/` in a folder no stack names installs for nobody. Folder entries close that for `core` and `claude` alone, since the other four folders are still enumerated per stack.
 - `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts. The payload builder moved to `src/gov/payload.ts` and frontmatter stripping to `src/frontmatter.ts`, which `docs` shares.
 - The degradation sweep matches on comment text, so a comment naming a term as an example reads as a hit. The matcher's own doc comment in `src/comments/scan.ts` is the standing case. Read a hit before treating it as a defect.
 - Projects that previously installed `.cursor/rules/` from this toolkit retain those files. Sync no longer touches them. Run `rm -rf .cursor/rules/` to clean up if Cursor is no longer in use.
@@ -90,16 +100,16 @@ Rules install per-file at `.claude/rules/<subdir>/<rule>.md` with subdirectories
 
 ## Stacks
 
-Each stack declares an optional `extends` chain and a flat `rules` list. The chain resolves recursively, so `react` resolves through `node` to `base` and the full deduplicated set installs.
+Each stack declares an optional `extends` chain and a `rules` list. An entry names a rule or a whole rule folder. The chain resolves recursively, so `react` resolves through `node` to `base` and the full deduplicated set installs.
 
-| Stack            | Extends | Rules                                                                                                                                                   |
-| ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base`           | -       | 000–090 core rules, 500–591 claude authoring (prose, markdown, context, wireframes, canonical docs, tasks, skills, readme, rule and standard authoring) |
-| `node`           | base    | 100-typescript                                                                                                                                          |
-| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness                        |
-| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                                                      |
-| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                                                |
-| `python-fastapi` | python  | 220-fastapi                                                                                                                                             |
+| Stack            | Extends | Rules                                                                                                                            |
+| ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `base`           | -       | the `core/` and `claude/` folders whole, which is every core rule plus every claude authoring rule                               |
+| `node`           | base    | 100-typescript                                                                                                                   |
+| `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
+| `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
+| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                         |
+| `python-fastapi` | python  | 220-fastapi                                                                                                                      |
 
 ## CLI
 
@@ -109,9 +119,11 @@ Each stack declares an optional `extends` chain and a flat `rules` list. The cha
 | `aitk gov sync`    | Update installed rules in target, clean up stale `.claude/GOV.md` |
 | `aitk gov build`   | Concatenate installed rules into `.claude/.tmp/gov/rules.md`      |
 | `aitk gov regen`   | Rebuild this repo's own `.claude/rules/` from its record          |
-| `aitk gov list`    | Emit catalog of stacks and rules                                  |
+| `aitk gov list`    | Emit catalog of stacks, rules, and rules no stack reaches         |
 
-Flags, arguments, and JSON shapes live in `docs/agents/index.md`. `install`, `sync`, and `build` are TypeScript and carry real commander option surfaces, so a mistyped flag fails with a suggestion. `list` still execs bash. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there chose a whole stack for the caller.
+Flags, arguments, and JSON shapes live in `docs/agents/index.md`. Every verb is TypeScript and carries a real commander option surface, so a mistyped flag fails with a suggestion. `list` migrated when folder entries landed: its bash matched a rules array against `"[0-9]{3}-[a-z0-9-]+"`, so a folder entry matched nothing and `base` would have reported zero rules to `setup-gov`, which dedupes `--add` extras against that list. Expanding in bash beside the resolver would have put the same rule in two languages. Commands that write files require confirmation before running, and `AITK_NON_INTERACTIVE=1` resolves each confirm prompt to its first option. The stack picker is the exception and refuses headlessly, since defaulting there chose a whole stack for the caller.
+
+`gov list --json` carries `unreferenced` alongside `stacks` and `rules`, on every invocation rather than behind a flag. The verify stage and a session asking what a stack leaves out read one call, and the key is additive, so a consumer reading either of the other two is untouched.
 
 ## Workflow
 
@@ -164,7 +176,9 @@ Always-on rules (core persona, testing, error handling) emit with no `paths:` ke
 
 ## Adding a new rule
 
-Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed. To include it in a stack, add it to the `rules` array in the relevant `governance/stacks/*.toml` file.
+Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed.
+
+A rule added to `core/` or `claude/` reaches every `base` consumer with no stack edit, because `base` names both folders whole. A rule in any other folder needs its name in the `rules` array of the relevant `governance/stacks/*.toml`, and the `Unreferenced rules` stage reports it until that happens.
 
 ## Project-local rules
 
@@ -172,9 +186,16 @@ Target projects author their own rules that the toolkit does not ship. The `crea
 
 ## Adding a stack
 
-Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.md`) in the `rules` array. No build step needed.
+Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names (without `.md`) in the `rules` array, or a folder name under `governance/rules/` to take that folder whole. No build step needed.
 
 ```toml
 extends = "node"
 rules = ["200-react", "250-tailwind"]
+```
+
+Take a folder whole only when the stack wants every rule in it now and every rule added to it later. A stack selecting some of a folder stays enumerated, since the list is what records that the omission was a decision.
+
+```toml
+extends = ""
+rules = ["core", "claude"]
 ```

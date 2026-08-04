@@ -32,6 +32,37 @@ export function ruleSubdir(src: string, rulesRoot: string): string {
 }
 
 /**
+ * Lists every rule source path under `governance/rules/`, relative to it and
+ * sorted, so a caller walking the tree and a caller resolving one name read the
+ * same order.
+ */
+export function listRuleSourcePaths(root: string): string[] {
+  const rulesRoot = rulesSourceDir(root)
+  if (!existsSync(rulesRoot)) return []
+
+  return [
+    ...new Bun.Glob('**/*.md').scanSync({ cwd: rulesRoot, onlyFiles: true }),
+  ].sort()
+}
+
+/**
+ * Maps each rule name to its source file. First path wins, so a name appearing
+ * in two subdirectories resolves deterministically rather than by whichever
+ * entry the filesystem yielded first.
+ */
+function indexRuleSources(root: string): Map<string, string> {
+  const rulesRoot = rulesSourceDir(root)
+  const byName = new Map<string, string>()
+
+  for (const rel of listRuleSourcePaths(root)) {
+    const name = rel.slice(rel.lastIndexOf('/') + 1, -'.md'.length)
+    if (!byName.has(name)) byName.set(name, join(rulesRoot, rel))
+  }
+
+  return byName
+}
+
+/**
  * Finds each rule's source file by name across the `governance/rules/`
  * subfolders. A rule with no source is reported rather than dropped, matching
  * the `(source not found, skipping)` warning the bash printed.
@@ -41,21 +72,7 @@ export function lookupRules(
   rules: readonly string[],
 ): RuleLookup {
   const rulesRoot = rulesSourceDir(root)
-  const byName = new Map<string, string>()
-
-  const relPaths = existsSync(rulesRoot)
-    ? [
-        ...new Bun.Glob('**/*.md').scanSync({
-          cwd: rulesRoot,
-          onlyFiles: true,
-        }),
-      ].sort()
-    : []
-
-  for (const rel of relPaths) {
-    const name = rel.slice(rel.lastIndexOf('/') + 1, -'.md'.length)
-    if (!byName.has(name)) byName.set(name, join(rulesRoot, rel))
-  }
+  const byName = indexRuleSources(root)
 
   const found: RuleSource[] = []
   const missing: string[] = []

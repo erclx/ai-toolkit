@@ -33,6 +33,15 @@ Write both when both apply. A rule stating the directive and a skill stating how
 - Subdirectories group by domain: `core/`, `lang/`, `framework/`, `lib/`, `ui/`, `claude/`
 - `<n>` is a number in the subdirectory's band and `<slug>` is a one-to-three-word kebab topic
 - Scaffold a rule with a number that collides with neither the project's rules nor any installed shared rule set
+- Give every rule a numeric prefix. A bare-word filename reads as a folder name where a stack names its rules, so a rule without one is unreachable from a stack entry.
+
+## Two sources numbering into one folder
+
+A shared rule set and a project's own rules land in the same installed folder and draw from the same band, so the two need a division or they collide. Divide the band by source rather than by topic: one source takes the top of each band and the other takes the gaps between the tens. A rule set that ships to targets should take the tens, since it is the source a project cannot renumber.
+
+The collision this prevents is silent. Two rules that resolve to the same `<n>-<slug>` path leave one file in the installed folder, and neither the install nor the session that reads it reports which source lost. Nothing checks the division, so it holds only while both sources follow it.
+
+State the division where the rule sources are described, not in the rules themselves. A rule states its own topic, and a numbering convention spanning two sources belongs to whatever documents the pair.
 
 ## Frontmatter
 

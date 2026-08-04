@@ -11,15 +11,15 @@ What a skill or script reads to discover names at runtime, and how each domain i
 
 Use these to discover what's available instead of hardcoding names.
 
-| Command                          | Returns                                       |
-| -------------------------------- | --------------------------------------------- |
-| `aitk tooling list --json`       | Stacks, extends chain, dep and script counts  |
-| `aitk snippets list --json`      | Presets and categories with their slugs       |
-| `aitk standards list --json`     | Standards docs and the paths each governs     |
-| `aitk gov list --json`           | Governance stacks and rule sets               |
-| `aitk claude seeds list --json`  | Seed doc sources with content                 |
-| `aitk claude skills list --json` | Plugin skills, descriptions, requirement flag |
-| `aitk docs list --json`          | Consumer docs plus per-domain context         |
+| Command                          | Returns                                              |
+| -------------------------------- | ---------------------------------------------------- |
+| `aitk tooling list --json`       | Stacks, extends chain, dep and script counts         |
+| `aitk snippets list --json`      | Presets and categories with their slugs              |
+| `aitk standards list --json`     | Standards docs and the paths each governs            |
+| `aitk gov list --json`           | Governance stacks, rule sets, and unreferenced rules |
+| `aitk claude seeds list --json`  | Seed doc sources with content                        |
+| `aitk claude skills list --json` | Plugin skills, descriptions, requirement flag        |
+| `aitk docs list --json`          | Consumer docs plus per-domain context                |
 
 ### Catalog fields
 
@@ -39,6 +39,18 @@ array rather than skipping the standard behind it.
 listing and the install cannot disagree. It now reports
 `.claude/context/index.md`, which `init` has always installed and the listing
 never named, and it emits the project-level `CLAUDE.md` last rather than first.
+
+`aitk gov list` reports each stack's rules already expanded. A stack entry names
+either a rule or a whole rule folder under `governance/rules/`, and the folder
+form reaches this listing as the rules it stands for rather than as the folder
+name. A consumer deduping `--add` extras against a stack therefore reads the same
+set the install writes, whichever form the stack file uses.
+
+It also carries `unreferenced`, the rules no stack reaches, on every invocation
+rather than behind a flag. These install only through `--add`, so the key answers
+what a stack leaves out without a caller resolving every stack itself. The key is
+present alongside `stacks` and `rules` and survives `--stacks` or `--rules`
+narrowing the other two.
 
 ### The skills catalog
 
