@@ -13,6 +13,11 @@ WRITE="${VERIFY_WRITE:-true}"
 SCOPED=true
 CHANGED_FILES=""
 
+# Scenarios declaring no expectation, taken from `aitk sandbox coverage` against a
+# clean tree. Raising it is a deliberate edit that says which scenario shipped
+# unarmed and why.
+SANDBOX_UNDECLARED_CEILING=47
+
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
 }
@@ -136,6 +141,13 @@ collect_seed_roots() {
 seed_entry_count() {
   printf '%s' "$1" | grep -o '"entries":[0-9]\+' | grep -o '[0-9]\+' |
     awk '{ total += $1 } END { print total + 0 }'
+}
+
+# One numeric summary key out of a coverage report. The per-scenario objects carry
+# neither key this is called with, so the match reaches the top level alone and
+# the caller does not depend on the order the keys are emitted in.
+sandbox_summary_field() {
+  printf '%s' "$2" | grep -o "\"$1\":[0-9]\+" | grep -o '[0-9]\+'
 }
 
 assert_no_drift() {
@@ -273,6 +285,34 @@ main() {
   log_step "Skill requirements"
   run_check "cd $PROJECT_ROOT && bun src/cli.ts claude skills audit --requirements-only" "A skill folder carries no REQUIREMENT.md. Run bun src/cli.ts claude skills audit."
   log_info "Skill requirements present"
+
+  # `aitk sandbox coverage` moves only when a person runs it, so a scenario added
+  # with no expectation ships unnoticed. The gate is an absolute count of
+  # undeclared scenarios rather than a ratio or a floor under the declared count.
+  # A floor under the declared count passes the case this exists to catch, since
+  # adding an unarmed scenario leaves that number where it was. A ratio moves
+  # when a scenario is legitimately deleted, and this ceiling does not: deleting
+  # an unarmed scenario lowers it and deleting an armed one leaves it alone.
+  log_step "Sandbox coverage"
+  local coverage_output coverage_status=0 total armed undeclared
+  coverage_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts sandbox coverage --json 2>/dev/null) || coverage_status=$?
+  if [ "$coverage_status" -ne 0 ]; then
+    log_warn "Skipped, the scenario tree did not report"
+  else
+    # `|| x=""` on both, because a grep that matches nothing exits non-zero and
+    # errexit would take the script down at the assignment, before the guard
+    # below could name what went missing.
+    total=$(sandbox_summary_field totalScenarios "$coverage_output") || total=""
+    armed=$(sandbox_summary_field armedScenarios "$coverage_output") || armed=""
+    if [ -z "$total" ] || [ -z "$armed" ]; then
+      log_error "The coverage report carried no scenario totals, so the stage measured nothing. Run bun src/cli.ts sandbox coverage --json."
+    fi
+    undeclared=$((total - armed))
+    if [ "$undeclared" -gt "$SANDBOX_UNDECLARED_CEILING" ]; then
+      log_error "$undeclared of $total scenarios declare no expectation, over the ceiling of $SANDBOX_UNDECLARED_CEILING. Declare expectations on the new scenario, or raise SANDBOX_UNDECLARED_CEILING in this script and say which scenario shipped unarmed."
+    fi
+    log_info "$armed of $total scenarios declare expectations, $undeclared undeclared against a ceiling of $SANDBOX_UNDECLARED_CEILING"
+  fi
 
   # The plugin is the second delivery path and this is the only stage gating it,
   # so the skip below is for a contributor's machine rather than for the merge
