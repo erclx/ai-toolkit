@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.59.0](https://github.com/erclx/aitk/compare/v0.58.0...v0.59.0) (2026-08-04)
+
+
+### Features
+
+* **standards:** own the plan file format and check it from the CLI ([#853](https://github.com/erclx/aitk/issues/853)) ([9be912d](https://github.com/erclx/aitk/commit/9be912dd610fe36a24d729969432753d781049a0))
+
 ## [0.58.0](https://github.com/erclx/aitk/compare/v0.57.0...v0.58.0) (2026-08-04)
 
 
