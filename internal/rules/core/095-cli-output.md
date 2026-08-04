@@ -8,8 +8,9 @@ paths:
 
 ## Process exit
 
-- Set `process.exitCode` in a command action. Never call `process.exit()`, which ends the process before an async stdout write drains and truncates piped output at the 64K pipe buffer.
+- Set `process.exitCode` and return from any command action that writes to stdout. Calling `process.exit()` there ends the process before the write drains and truncates piped output at the 64K pipe buffer.
 - Verify output through a pipe. Redirecting to a file hides the truncation, and the exit code is correct either way.
+- Confine `process.exit()` to a fail-fast path that has written to stderr alone, and reach for `process.exitCode` first even there.
 
 ## Streams
 
