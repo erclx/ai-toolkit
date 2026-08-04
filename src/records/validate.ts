@@ -139,6 +139,50 @@ const PLAN_REQUIRED: readonly PlanSection[] = [
   'Questions',
 ]
 
+const FENCE = /^(`{3,}|~{3,})/
+
+/**
+ * Drops every fenced block, so a quoted template is not read as content. A plan
+ * showing the shape it writes puts real-looking bullets and headings inside a
+ * fence, and scanning them reports the example rather than the plan.
+ *
+ * A closing fence has to match the opening character and be at least as long,
+ * which is what keeps a ```` block holding a ``` example from closing early. An
+ * unterminated fence swallows the rest of the document, which under-reports a
+ * malformed file rather than reporting its remainder as content.
+ */
+export function linesOutsideFences(text: string): string[] {
+  const kept: string[] = []
+  let fence: string | undefined
+
+  for (const line of text.split('\n')) {
+    const match = FENCE.exec(line.trim())
+
+    if (fence) {
+      const closes =
+        match && match[1][0] === fence[0] && match[1].length >= fence.length
+      if (closes) fence = undefined
+      continue
+    }
+
+    if (match) {
+      fence = match[1]
+      continue
+    }
+
+    kept.push(line)
+  }
+
+  return kept
+}
+
+/**
+ * A line standing alone as a bold label or an H2, whatever it names. A plan is
+ * free to carry a section of its own, so the split has to see one to close the
+ * section above it.
+ */
+const MARKER_LINE = /^(?:##[ \t]+(.+?)|\*\*(.+?):\*\*)[ \t]*$/
+
 /**
  * A section opens as a bold label or as an H2 and both count. The corpus writes
  * `Summary` as a heading and the other four as bold labels, and roughly a fifth
@@ -147,7 +191,7 @@ const PLAN_REQUIRED: readonly PlanSection[] = [
  * them to skip the output.
  */
 export function sectionMarker(line: string): PlanSection | undefined {
-  const match = /^(?:##[ \t]+(.+?)|\*\*(.+?):\*\*)[ \t]*$/.exec(line.trim())
+  const match = MARKER_LINE.exec(line.trim())
   if (!match) return undefined
 
   const name = match[1] ?? match[2]
@@ -163,11 +207,13 @@ export function splitPlanSections(text: string): Map<string, string[]> {
   const sections = new Map<string, string[]>()
   let current: string | undefined
 
-  for (const line of text.split('\n')) {
-    const marker = sectionMarker(line)
-    if (marker) {
-      current = marker
-      sections.set(marker, [])
+  for (const line of linesOutsideFences(text)) {
+    // Any marker-shaped line closes the section above it, and only a recognized
+    // one opens a section. A plan carrying a label of its own would otherwise
+    // collect its bullets into whichever section came before.
+    if (MARKER_LINE.test(line.trim())) {
+      current = sectionMarker(line)
+      if (current) sections.set(current, [])
       continue
     }
 
@@ -250,7 +296,7 @@ export function checkPlan(name: string, text: string): Finding[] {
     )
   }
 
-  const lines = text.split('\n')
+  const lines = linesOutsideFences(text)
 
   if (!lines.some((line) => PLAN_TITLE.test(line))) {
     findings.push(
@@ -438,7 +484,7 @@ export function checkItems(
   const findings: Finding[] = []
   const items: { heading: string; labels: string[] }[] = []
 
-  for (const line of text.split('\n')) {
+  for (const line of linesOutsideFences(text)) {
     if (ITEM_HEADING.test(line)) {
       items.push({ heading: line.trim().replace(/^###[ \t]+/, ''), labels: [] })
       continue

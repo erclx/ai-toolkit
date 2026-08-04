@@ -37,6 +37,8 @@ The item check skips `00-overview.md` and `99-next-session.md`, since neither ho
 
 A plan section opens as a bold label or as an H2 and the check counts both, naming the standard's spelling when it reports one missing. The corpus splits roughly four to one between the two forms, so failing the variant would report nearly every plan on a rule that costs a reader nothing.
 
+A section runs to the next marker-shaped line whatever it names, so a plan carrying a label of its own closes the section above it rather than collecting into it. Fenced blocks are dropped before any of this, since a plan showing the shape it writes puts real-looking bullets and headings inside a fence.
+
 ### Exit codes and refusals
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one record carries a finding. A `reason` field carries which gate fired: `no-folder` when the kind's directory does not exist, and `unknown-kind` when the argument names no published kind.

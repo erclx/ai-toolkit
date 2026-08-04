@@ -12,6 +12,7 @@ import {
   readQuestions,
   type RecordKind,
   recordsDir,
+  linesOutsideFences,
   preferredMarker,
   splitPlanSections,
   validateRecords,
@@ -112,6 +113,27 @@ describe('splitPlanSections', () => {
     expect([...heading.keys()]).toEqual(['Risks'])
   })
 
+  it('should close a section on a label it does not recognize', () => {
+    const sections = splitPlanSections(
+      [
+        '**Files to touch:**',
+        '',
+        '- `a.ts`: a reason',
+        '',
+        '**Decisions to record:**',
+        '',
+        '- a bullet that belongs to no section',
+        '',
+      ].join('\n'),
+    )
+
+    expect(sections.get('Files to touch')).toEqual([
+      '',
+      '- `a.ts`: a reason',
+      '',
+    ])
+  })
+
   it('should not open a section on a deeper heading of the same name', () => {
     const sections = splitPlanSections(
       ['## Summary', '', '### Risks', '', '- nested', ''].join('\n'),
@@ -128,6 +150,24 @@ describe('splitPlanSections', () => {
     )
 
     expect(sections.has('Risks')).toBe(false)
+  })
+})
+
+describe('linesOutsideFences', () => {
+  it('should drop a fenced block and keep what surrounds it', () => {
+    const kept = linesOutsideFences(
+      ['before', '```markdown', '- `a.ts`', '```', 'after'].join('\n'),
+    )
+
+    expect(kept).toEqual(['before', 'after'])
+  })
+
+  it('should not close a longer fence on a shorter one inside it', () => {
+    const kept = linesOutsideFences(
+      ['````markdown', '```md', 'inner', '```', '````', 'after'].join('\n'),
+    )
+
+    expect(kept).toEqual(['after'])
   })
 })
 
@@ -239,6 +279,37 @@ describe('checkPlan', () => {
     const body = conformingPlan().replace(
       '- `standards/plan.md`: the sections and the answer contract',
       '- `standards/plan.md`: 73',
+    )
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should not report bullets under a label the plan invented', () => {
+    const body = conformingPlan().replace(
+      '- `standards/plan.md`: the sections and the answer contract',
+      [
+        '- `standards/plan.md`: the sections and the answer contract',
+        '',
+        '**Decisions to record:**',
+        '',
+        '- Two delivery paths, copy through the CLI and load through the plugin',
+      ].join('\n'),
+    )
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should not report bullets inside a fenced example', () => {
+    const body = conformingPlan().replace(
+      '- `standards/plan.md`: the sections and the answer contract',
+      [
+        '- `standards/plan.md`: the sections and the answer contract',
+        '',
+        '```markdown',
+        '- Outcome: what will be true when this is done',
+        '- Silence is agreement',
+        '```',
+      ].join('\n'),
     )
 
     expect(checkPlan('feature-a-b.md', body)).toEqual([])
