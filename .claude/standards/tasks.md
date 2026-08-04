@@ -125,6 +125,7 @@ description: One line on what this task achieves
 
 Plan: [feature-<slug>](../plans/feature-<slug>.md)
 Groundwork: [<slug>](../.tmp/groundwork/<slug>/)
+Intake: [<slug>](../intake/<slug>/)
 Issue: #NNN
 Pull request: #NNN
 
@@ -144,17 +145,19 @@ Why this task exists and what it depends on.
 
 ## Origin
 
-Every task names where it came from, through a `Plan:`, `Groundwork:`, or `Issue:` line under the title. Include each only when the file, folder, or issue it names exists.
+Every task names where it came from, through a `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` line under the title. Include each only when the file, folder, or issue it names exists.
 
-A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track or an open issue that no task points at is work already decided and on its way to being forgotten.
+A task with no origin is either lost context or work nobody decided to do. The invariant runs both ways, and the second direction is the one that bites: a groundwork track or an open issue that no task points at is work already decided and on its way to being forgotten. An intake folder is exempt from that direction, since it dispositions many items at once and most of them close without ever becoming a task.
 
-`Plan:` and `Groundwork:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/` and `../.tmp/groundwork/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
+`Plan:`, `Groundwork:`, and `Intake:` name their target as a markdown link whose text is the file or folder stem, so the line resolves on a ctrl-click the way `priority.md` rows already do. Write the path relative to `.claude/tasks/`, which makes it `../plans/`, `../.tmp/groundwork/`, and `../intake/`. A path written from the project root renders as a link and resolves to nothing in an editor rooted at the project. `Issue:` stays a bare `#NNN`, since an issue number is not a path and a full URL would write the remote into a gitignored file.
 
 Phase-label format and where labels may appear are governed by `standards/versioning.md`.
 
 `Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../.tmp/plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it. One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
 `Groundwork:` points at `../.tmp/groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
+
+`Intake:` points at `../intake/<slug>/`, the folder an intake pass fills. Use it rather than `Groundwork:`, because a groundwork track measures one question in depth while an intake dispositions many across a tree, and one key covering both loses which kind of pass produced the task. The line names the folder rather than an item inside it. A task routinely promotes several items at once, so an anchored line would name one and drop the rest, and the item numbers belong in that task's `## Findings`.
 
 `Pull request:` records which pull request carries the task's work, as a bare `#NNN` the way `Issue:` does. It is not an origin, so a task without one is well-formed. `git-pr` writes it when a pull request opens, which is the one step that always runs whether the chain drives it or a person does.
 

@@ -36,7 +36,7 @@ Do not derive the label from a version file. `.claude/standards/versioning.md` p
 
 Write `.claude/tasks/vXX.Y-<slug>.md` following the format in `.claude/standards/tasks.md`. Include a link line only when the file or folder it names exists. A link to a plan nobody has written yet is the broken pointer the archive rules exist to prevent.
 
-Write `Plan:` and `Groundwork:` as markdown links relative to `.claude/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
+Write `Plan:`, `Groundwork:`, and `Intake:` as markdown links relative to `.claude/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
 
 Never write a `Pull request:` line here. `git-pr` adds it when a pull request opens, and a number guessed at create time points at someone else's work.
 

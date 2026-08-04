@@ -109,7 +109,7 @@ Write the `number` the final command printed onto the task the branch is closing
 
 Find the task by reading `.claude/tasks/` at the main worktree root, resolved with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. The board is shared scratch, so a linked worktree writing to its own `pwd` creates a second board nothing reads.
 
-Confirm the match against the task's `Plan:` line, which names the plan this branch implemented. A branch name does not derive a plan slug and a plan slug does not derive a branch, so neither one alone identifies the task. Add `Pull request: #NNN` under the existing `Plan:`, `Groundwork:`, or `Issue:` lines when the task carries no such line, and correct the number in place when it does.
+Confirm the match against the task's `Plan:` line, which names the plan this branch implemented. A branch name does not derive a plan slug and a plan slug does not derive a branch, so neither one alone identifies the task. Add `Pull request: #NNN` under the existing `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines when the task carries no such line, and correct the number in place when it does.
 
 Skip this silently in three cases: no `.claude/tasks/` folder, no task whose `Plan:` line matches, or more than one match. One task, one pull request, so a second match is a misfile that a guessed write would compound. A wrong match archives the wrong task unattended once the branch merges.
 
