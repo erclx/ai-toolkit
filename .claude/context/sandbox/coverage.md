@@ -35,7 +35,7 @@ The two arms cover different things, and the split follows what already has a te
 
 Three fixture properties are load-bearing:
 
-- The create board runs v01.0 through v03.0 with no gaps, which is what forces v04.0 and puts the proposed label under an assertion. The slug stays free, so the arm pins the label through the reply fragment `.claude/tasks/v04.0-` and leaves the rest to the run.
+- The create board runs three consecutive versions with no gaps, which is what forces the next one and puts the proposed label under an assertion. The slug stays free, so the arm pins the label through a `.claude/tasks/` reply fragment carrying the forced version and leaves the rest to the run.
 - The archive task carries a `Pull request:` line and its `Plan:` line already points into `.claude/plans-archive/`. The first satisfies the skill's work-reached-main check without staging a remote, and the second clears the `plan-unswept` gate. A board missing either exercises a refusal, and a `paths` entry over the source file still holds because nothing moved.
 - `priority.md` puts the archived task's row first and the control's second. An `absent` entry cannot express a removed table row, so the arm pins the separator line and the row that follows it, and a run that left the row in place pushes the control down and fails the match.
 
@@ -57,9 +57,13 @@ A skill reports one of three verdicts. `asserted` means an arm paired to it decl
 
 The denominators disagree on purpose. Eight of 54 skills are asserted where ten of 57 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
+### Pairing a scenario to a skill
+
 Pairing tries two spellings, `<category>-<command>` first and bare `<command>` second. The first alone reaches 29 skills, and the fallback is what pairs `claude/setup-init.sh` to `setup-init` rather than to a `claude-setup-init` that does not exist. Stating one spelling while shipping two is what let the earlier audit report a paired skill as unpaired, so the rule lives in `skillForScenario` and this paragraph describes code rather than substituting for it.
 
 The census counts `claude/skills/`, not `.claude/skills/`. The second holds toolkit-internal skills that reach no target, and folding them in would inflate a denominator meant to describe what ships.
+
+### The ship-time audit
 
 The ship-time pairing audit reads it. `aitk-sandbox-check` used to prompt whenever its own `<category>/<rest>.sh` split found no file, and the answer was a per-run label that reached nothing, so the next branch touching the same skill asked again. It now resolves the skill here first, taking the `scenarios` entry as the pairing and the verdict as the report.
 
