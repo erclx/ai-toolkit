@@ -13,7 +13,7 @@ max_turns = 30
 # cannot tell a move from a delete, so asserting only the absence would report
 # green on a run that lost the file. Archive behavior landed in #619.
 paths = [
-  ".claude/.tmp/plans-archive/feature-postgres-migration.md",
+  ".claude/plans-archive/feature-postgres-migration.md",
   ".claude/plans/feature-some-old-plan.md",
 ]
 
@@ -38,4 +38,4 @@ pattern = '^- \[x\] Outcome: tasks persist in Postgres'
 
 [[content]]
 path = ".claude/tasks/v01.0-postgres-migration.md"
-pattern = '^Plan: \[feature-postgres-migration\]\(\.\./\.tmp/plans-archive/feature-postgres-migration\.md\)'
+pattern = '^Plan: \[feature-postgres-migration\]\(\.\./plans-archive/feature-postgres-migration\.md\)'
