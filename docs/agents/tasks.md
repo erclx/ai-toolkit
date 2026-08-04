@@ -7,7 +7,7 @@ description: Selecting a shipped task by stem or pull request, the refusal reaso
 
 ## Archive
 
-`aitk tasks archive` moves a shipped task from `.claude/tasks/` into `.claude/.tmp/task-archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.
+`aitk tasks archive` moves a shipped task from `.claude/tasks/` into `.claude/task-archive/`, drops its row from `priority.md`, and regenerates the board index. The three run as one unit, so the attended and unattended callers cannot archive differently.
 
 Name the task by its filename stem, or by the pull request it carries:
 

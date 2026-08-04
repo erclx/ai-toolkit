@@ -31,6 +31,8 @@ A run that costs money leaves two records, split by what each costs to keep.
 
 Retention is additive. A failure to write either record warns and the verdict still prints, and a row whose retention failed records its output cell as `none` rather than naming a directory nothing wrote.
 
+`pre-registration.md` and each `result-*.md` are frozen evidence rather than maintained prose. The result document opens with a banner refusing edits to its machine-derived blocks and its first-person text, and the pre-registration states it was written before either run so a miss cannot be reinterpreted afterward. Both therefore quote paths, seed bullets, and rules as they stood on the run date. A repository-wide sweep excludes them, and a path inside one that no longer resolves is the record doing its job rather than drift to repair.
+
 ### The `Subject` column
 
 A `Subject` commit an ablation pair regenerates from gets a pushed tag under `eval/`, and an ordinary run does not. Rows pointing at a commit that lives on one local branch and nothing else are one branch cleanup or one lost disk away from losing the entry point while the content stays committed. A tag survives that deletion, and the `eval/` prefix keeps it clear of the `v*` release tags. `run.sh` does not create the ref, so the next ablation can recreate the same state, which is accepted on the same grounds the citation check was cut.
