@@ -21,6 +21,14 @@ What the gate reads is a section's presence rather than a shipped flag. `standar
 
 `## Distribution` stays outside the trigger set. The standard tells a project shipping to outside consumers to include that section from the start, so a greenfield project carries it before a single feature ships and a gate reading it would stop the loop at step one while asserting a scope was sequenced that never was. The cost is that a project whose only later scope is that section passes the gate, which this repository is, since the distribution work landed here without the requirements pass that would have named a section freely. Both remaining gaps under-fire rather than stop wrongly, which is the direction a guard reading a convention should fail in.
 
+## Asserting a routing decision
+
+A router is reviewable only through what it says. `toolkit-operator` writes nothing by design, so the local pass and the pull request pass both read a body claiming a route and neither can tell whether the route fires. The drift report it reads shipped with three sandbox arms and was confirmed against six real targets, while the router consuming that report had never been executed by anything, and the ship report still read as though the update path were proven.
+
+The `reply` expectation is what closes it. It reads `result` off the envelope `max_turns` already reads, so scoring a route costs nothing beyond the run, and the token worth pinning is the name of the skill or command the route hands to. Five arms were using it before the router shipped, `claude/setup-init/fresh` among them, so the mechanism was in place and the arms written for the report asserted only the file it produced.
+
+Pinning phrasing is the cost, and it is why every route pin is paired. A reply naming `migration-standards` in a sentence declining to route still passes, so each arm carries a `manual` entry stating the negative a substring cannot express, and the arms whose skills may execute nothing assert the tree as well: the root layout is still at the root and nothing appeared under `.claude/`. Where a handoff may legitimately continue into the skill it names, as a fresh target's does into `setup-init`, no tree assertion is declared at all, since none separates the router doing the work from the router routing to something that does it. The arms themselves are catalogued in `.claude/context/sandbox/coverage.md`.
+
 ## The review two-pass model
 
 `claude-pr-review` reads that same roadmap path and asserts nothing from it, so it carries no defect to fix there. Its read informs a review comment, and the body sits inside a rewrite's file set where an edit would have bought a rebase for no behavior change.

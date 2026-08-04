@@ -9,6 +9,14 @@ description: The CLI shell-out pattern every skill follows, the core.bare repair
 
 Plugin skills that shell out to the CLI follow a consistent pattern: read the toolkit catalog via `aitk <domain> list --json`, match against project context, then execute the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. Claude Code's tool permission dialog is the single confirmation gate. Skills never reimplement CLI logic or hardcode rule, stack, or snippet names. `setup-gov` is the reference.
 
+### Reading a report rather than rediscovering
+
+`migration-standards` extends the pattern past the catalog. Its detection now comes from the `unmigrated` array in `aitk sync --check --json`, where it used to list `standards/` and `snippets/` with `ls`. The two answer different questions. A listing counts every markdown file in the folder, and a project that keeps its own docs at `standards/` has that folder proposed for relocation under `.claude/`, where a sync then walks files nobody installed. `detectUnmigrated` claims a root folder only when it holds a file whose basename the toolkit ships, so the count the proposal reports is the toolkit-owned subset.
+
+Reading the same report the router read is the other half of it. `toolkit-operator` routes here off `unmigrated`, so a skill rediscovering by its own rule can disagree with the report that sent the session to it, and the disagreement surfaces as a proposal the operator's own diagnosis does not support.
+
+The `ls` path stays as the fallback, on the trigger that `aitk` is off `PATH` or the command exits non-zero, and the body says the counts are unfiltered when it fires. The fallback deliberately does not key on `historyUnavailable`, which was the shape borrowed from `claude-seed-sync` when the change was planned. That field reports failed attribution on a domain or on `seeds`, and `unmigrated` is a filesystem read carrying no attribution at all, so keying on it would drop a correct detection whenever an unrelated half of the report could not be dated.
+
 ### Repairing `core.bare`
 
 `claude-worktree` repairs `core.bare` at two points rather than one. Claude Code's entry tool writes the flag into the parent repository's shared config and its exit tool never restores it, which leaves every later command in the main worktree failing for want of a work tree while the files sit untouched on disk. The linked worktree keeps working, so the session that caused the damage is the one least likely to see it. Repairing only after entry would still admit a repository broken by an earlier session, so the skill reads the flag in Step 1 beside the main-root resolution and repairs before entering, then repeats the repair in Step 5. Both writes are guarded on the flag actually being set, since the entry tool does not set it every time and an unconditional repair would rewrite the config on runs where nothing broke.
