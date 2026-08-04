@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.56.0](https://github.com/erclx/aitk/compare/v0.55.0...v0.56.0) (2026-08-04)
+
+
+### Features
+
+* **claude:** read the drift report in migration-standards and arm both ([#847](https://github.com/erclx/aitk/issues/847)) ([667f6db](https://github.com/erclx/aitk/commit/667f6db5171d8d64b873c972bf4f6d85dba05d34))
+
 ## [0.55.0](https://github.com/erclx/aitk/compare/v0.54.0...v0.55.0) (2026-08-04)
 
 
