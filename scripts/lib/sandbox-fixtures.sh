@@ -78,6 +78,27 @@ append_from_fixtures() {
   done < <(list_fixture_files "$source_dir")
 }
 
+# Stages the first `count` markdown files the toolkit ships for a domain into
+# `dest`, flattening any source subfolder. Source rather than fixture tree,
+# because an arm modelling a real install wants the files a target actually
+# received and a copy under `fixtures/` would drift from them silently.
+#
+# The flattening is load-bearing rather than incidental. Both `detectUnmigrated`
+# and the sync engine match a target file to its source by basename against the
+# flat domain root, so a file lifted out of a source subfolder such as `bundled/`
+# has no flat sibling and reads as project-authored. An arm staging one claims a
+# drift or an unmigrated domain it did not stage.
+stage_toolkit_markdown() {
+  local src="$1"
+  local dest="$2"
+  local count="$3"
+
+  mkdir -p "$dest"
+  while IFS= read -r file; do
+    cp "$file" "$dest/$(basename "$file")"
+  done < <(find "$src" -maxdepth 1 -type f -name "*.md" ! -name "index.md" | sort | head -n "$count")
+}
+
 # Stages one step of a scenario arm into the sandbox working directory.
 # Scenarios call this once per step so their own git operations stay between
 # the steps, where they are visible.
