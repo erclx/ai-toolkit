@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.52.0](https://github.com/erclx/aitk/compare/v0.51.0...v0.52.0) (2026-08-04)
+
+
+### Features
+
+* **seeds:** gate the seed tree against the standards it seeds ([#833](https://github.com/erclx/aitk/issues/833)) ([0de5848](https://github.com/erclx/aitk/commit/0de58482c9350916cb40d49f065898f45ed86830))
+
 ## [0.51.0](https://github.com/erclx/aitk/compare/v0.50.0...v0.51.0) (2026-08-04)
 
 
