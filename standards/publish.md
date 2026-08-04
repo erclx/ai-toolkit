@@ -11,7 +11,8 @@ Governs the scan an author runs against finished text on its way out, and the re
 
 Does not govern:
 
-- Which characters are banned, and the voice and formatting the text is written in: `prose.md`
+- Which characters are banned, and the formatting the text carries: `markdown.md`
+- The voice and word choice the text is written in: `prose.md`
 - The phase-label rule and the table of surfaces each namespace may appear on: `versioning.md`
 - Which gap a given surface has, and what it publishes through, which that surface names for itself
 
@@ -23,7 +24,7 @@ Run the scan as an explicit step against the finished text. Having read the unde
 
 ## Banned characters
 
-`prose.md` holds the character bans. Read it at scan time rather than working them from memory, then scan the drafted text and rewrite each occurrence.
+`markdown.md` holds the character bans and `prose.md` holds the banned words. Read both at scan time rather than working them from memory, then scan the drafted text and rewrite each occurrence.
 
 Restructure the sentence rather than substituting the character. A semicolon swapped for a period leaves both clauses in the order the semicolon chose, which is the shape the ban exists to remove.
 

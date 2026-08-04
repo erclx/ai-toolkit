@@ -11,7 +11,8 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Context entry reference](context.md): Shape and content rules for .claude/context/<domain>.md entries
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
 - [Diagram reference](diagrams.md): Shape and content rules for .claude/diagrams/<kind>.md files
-- [Prose reference](prose.md): Voice, structure, formatting, and language rules for reference markdown
+- [Markdown reference](markdown.md): Headings, paragraph and list structure, code spans, punctuation, emphasis, and file references
+- [Prose reference](prose.md): Voice, language, and frontmatter wording for reference markdown
 - [Publish reference](publish.md): Scan run against finished text leaving through a channel no automated check covers
 - [Readme reference](readme.md): Readme voice, structure, and content conventions
 - [Requirements reference](requirements.md): Shape and content rules for .claude/REQUIREMENTS.md

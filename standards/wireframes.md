@@ -17,7 +17,8 @@ Does not govern:
 
 - Tokens, typography, spacing, and the rest of the visual system: `design.md`
 - The mechanism behind a surface: `context.md`
-- Voice, punctuation, and formatting in wireframe prose: `prose.md`
+- Voice and word choice in wireframe prose: `prose.md`
+- Punctuation and formatting in wireframe prose: `markdown.md`
 
 ## What a working wireframe looks like
 
@@ -74,7 +75,7 @@ Reference the context entry from the wireframe by path when a reader needs the m
 ## Maintenance
 
 - When a surface's layout or interaction changes, update its wireframe file in the same PR. A wireframe showing a defunct layout is worse than none.
-- The Behavior and Copy prose around an ASCII block is prose and follows `prose.md`. The fenced block itself is not, so a check scoped to prose is the wrong thing to rely on for what sits inside it.
+- The Behavior and Copy prose around an ASCII block is prose and follows `prose.md` and `markdown.md`. The fenced block itself is not, so a check scoped to prose is the wrong thing to rely on for what sits inside it.
 
 ## Template
 

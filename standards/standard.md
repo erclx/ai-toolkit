@@ -17,7 +17,8 @@ Governs each authored standard under `standards/`: its stated jurisdiction, succ
 
 Does not govern:
 
-- The voice, punctuation, and formatting a standard is written in: `prose.md`
+- The voice and word choice a standard is written in: `prose.md`
+- The punctuation and formatting a standard is written in: `markdown.md`
 - The shape of any artifact a standard governs, which is that standard's own subject
 
 ## What a working standard looks like
