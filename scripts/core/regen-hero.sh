@@ -45,14 +45,34 @@ for payload in "$SKILLS_JSON" "$GOV_JSON" "$STANDARDS_JSON" "$SNIPPETS_JSON" "$T
   fi
 done
 
-export SKILLS_JSON GOV_JSON STANDARDS_JSON SNIPPETS_JSON TOOLING_JSON
+# The catalogs reach the eval as files rather than as environment entries. Linux
+# caps a single env string at 128KB, and the standards payload crossed it, which
+# fails the exec with E2BIG before any stage can report a stale count. A file
+# path is bounded whatever the catalogs grow to.
+PAYLOAD_DIR="$(mktemp -d)"
+trap 'rm -rf "$PAYLOAD_DIR"' EXIT
+
+printf '%s' "$SKILLS_JSON" >"$PAYLOAD_DIR/skills.json"
+printf '%s' "$GOV_JSON" >"$PAYLOAD_DIR/gov.json"
+printf '%s' "$STANDARDS_JSON" >"$PAYLOAD_DIR/standards.json"
+printf '%s' "$SNIPPETS_JSON" >"$PAYLOAD_DIR/snippets.json"
+printf '%s' "$TOOLING_JSON" >"$PAYLOAD_DIR/tooling.json"
+
+export PAYLOAD_DIR
 export TEMPLATE OUTPUT LISTED PROJECT_ROOT
 
 bun --eval '
-const {
-  SKILLS_JSON, GOV_JSON, STANDARDS_JSON, SNIPPETS_JSON, TOOLING_JSON,
-  TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT,
-} = process.env
+const { readFileSync } = require("node:fs")
+
+const { PAYLOAD_DIR, TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT } = process.env
+
+const payload = (name) => readFileSync(PAYLOAD_DIR + "/" + name + ".json", "utf8")
+
+const SKILLS_JSON = payload("skills")
+const GOV_JSON = payload("gov")
+const STANDARDS_JSON = payload("standards")
+const SNIPPETS_JSON = payload("snippets")
+const TOOLING_JSON = payload("tooling")
 
 const listed = Number(LISTED)
 const skills = JSON.parse(SKILLS_JSON).skills.map((entry) => entry.name)

@@ -105,7 +105,7 @@ stage_setup() {
   log_info "decline : one-file change already decided in .claude/tasks/"
   log_info ""
   log_info "Invoke the prefixed form. The dev-skill injection copies SKILL.md alone,"
-  log_info "so the unprefixed copy cannot resolve references/folder-format.md."
+  log_info "so the unprefixed copy cannot resolve the bundled standards/groundwork.md."
   log_info "Launch with: claude --plugin-dir <worktree-root>/claude --model sonnet"
 
   select_or_route_scenario "Which scenario?" "open" "resume" "decline"
@@ -171,11 +171,17 @@ EOF
 
     mkdir -p .claude/groundwork/tooling-drift
     cat <<'EOF' >.claude/groundwork/tooling-drift/README.md
+---
+title: Tooling drift
+description: Whether the three packages should share a tooling preset, and how far their configs have drifted
+date: 2026-07-20
+---
+
 # Tooling drift
 
 Groundwork phase. Nothing here is a feature plan.
 
-Whether the three packages should share a tooling preset. Opened 2026-07-20.
+Whether the three packages should share a tooling preset.
 
 ## Why
 

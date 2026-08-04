@@ -63,6 +63,12 @@ That leaves `fresh` reachable only from a real run. A standalone `aitk sandbox c
 
 All four passed on 2026-08-04, which is the first time either skill was executed by anything. Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both are declared at the cap rather than above an observation for that reason. The `fresh` run is the one whose turn count is not recorded, since `record_run` failed to write it and the envelope went with it.
 
+### The groundwork arms assert nothing and refuse the bare prompt
+
+`scripts/sandbox/fixtures/claude/groundwork/` does not exist, so every `claude:groundwork` arm returns `state: unchecked` with nothing asserted and a verdict from it confirms only that the session completed.
+
+The scenario also cannot be driven by the bare `/aitk:claude-groundwork` prompt the ship-time check specifies. The skill's first guard refuses a missing topic and returns in under four seconds without creating a folder, so the run reports success having exercised nothing past the guard. Each arm names its intended prompt on its own `Action:` line and has to be driven with that topic to reach the creation path. A scenario whose skill guards on an argument is the general case this names, and the check's no-argument rule is what a caller has to override for it.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
