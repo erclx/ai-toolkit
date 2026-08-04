@@ -14,6 +14,7 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 - If no topic is given, stop: `❌ No topic. Name what needs measuring.`
 - Apply the qualifying test in open mode alone, after Step 1 resolves the mode and before the folder is created. Two of these three must hold: the current state is not known, more than one approach is live, and committing wrong costs more than a day of measuring. When one or fewer holds, stop: `❌ Already decided enough to plan. Run /claude-feature instead.`
 - Resume and close are exempt from the test above. A track that has already been measured fails it by definition, since its current state is now known and its approaches have narrowed, so applying the test to either mode refuses the folder that same test admitted.
+- A refused topic that is a broad dump rather than one question routes to `claude-intake`, not to the planning skill the stop names. Intake dispositions many findings in breadth from what the repository already holds, and one folder holding dozens of unrelated threads is what forcing them past this guard produces.
 - Do not pause for approval between steps. The write scope below is what makes that safe.
 
 ## Write scope

@@ -1,0 +1,24 @@
+export function runBuild(args: string[]) {
+  let outDir = 'dist'
+  let minify = false
+
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] === '--out') {
+      outDir = args[i + 1] ?? 'dist'
+      i += 1
+    }
+    if (args[i] === '--minify') {
+      minify = true
+    }
+  }
+
+  if (outDir === '') {
+    throw new Error('build failed: --out needs a directory')
+  }
+
+  console.log(`building into ${outDir}`)
+
+  if (minify) {
+    console.log('minifying')
+  }
+}

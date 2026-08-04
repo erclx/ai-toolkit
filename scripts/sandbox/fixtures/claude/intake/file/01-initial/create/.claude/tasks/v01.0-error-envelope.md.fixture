@@ -1,0 +1,11 @@
+---
+title: 'v01.0: Give every command one error envelope'
+description: Replace bare thrown strings with a typed error the CLI renders once
+---
+
+# v01.0: Give every command one error envelope
+
+Each command throws a bare `Error` with a prefixed message, so the CLI has no way to tell a usage failure from a runtime one and every command spells the prefix itself.
+
+- [ ] Outcome: a typed error carries a code and a message, and the CLI renders it in one place
+- [ ] Outcome: no command constructs its own error prefix

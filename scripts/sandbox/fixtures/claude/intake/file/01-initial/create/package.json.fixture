@@ -1,0 +1,11 @@
+{
+  "name": "sandbox-intake",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": { "sbx": "src/cli.ts" },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  }
+}

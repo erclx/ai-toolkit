@@ -1,0 +1,14 @@
+
+# Sandbox CLI
+
+Small build-and-serve CLI. One binary, two commands, no framework.
+
+## Conventions
+
+- Data goes to stdout. Logs and diagnostics go to stderr, so a piped run stays clean.
+- Every command lives in `src/commands/` and exports one `run<Name>` function.
+
+## Commands
+
+- `bun run lint`: eslint over `src`
+- `bun run typecheck`: tsc with no emit
