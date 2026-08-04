@@ -55,7 +55,7 @@ A consumer list is a `Risks` entry, which already forces Full. Establishing a re
 
 ### Small mode
 
-Output the plan to chat. Do not write a plan file. The standard governs the written file, so the bold labels below are chat formatting rather than a second spelling of the section list.
+Output the plan to chat. Do not write a plan file. The markers match the standard's, so a plan that later grows into a file keeps the shape it was drafted in.
 
 ```markdown
 **Files to touch:**

@@ -47,18 +47,19 @@ A plan carries no frontmatter. Its filename is the whole of its identity, so a f
 
 The document opens with `# Feature: <short title>` and one paragraph stating what is being built and why now. The sections below follow in this order.
 
-| Section             | Holds                                                                     | Required      |
-| ------------------- | ------------------------------------------------------------------------- | ------------- |
-| `## Summary`        | three to five one-line bullets: the goal, the deliverables, the trade-off | Always        |
-| `## Constraints`    | durable rules the work must respect                                       | When supplied |
-| `## Files to touch` | each file with a one-line reason                                          | Always        |
-| `## Risks`          | conflicts, coupling, and the tricky spots                                 | Always        |
-| `## Questions`      | numbered open decisions, each with a suggestion and an answer slot        | Always        |
+| Section               | Holds                                                                     | Required      |
+| --------------------- | ------------------------------------------------------------------------- | ------------- |
+| `## Summary`          | three to five one-line bullets: the goal, the deliverables, the trade-off | Always        |
+| `**Constraints:**`    | durable rules the work must respect                                       | When supplied |
+| `**Files to touch:**` | each file with a one-line reason                                          | Always        |
+| `**Risks:**`          | conflicts, coupling, and the tricky spots                                 | Always        |
+| `**Questions:**`      | numbered open decisions, each with a suggestion and an answer slot        | Always        |
 
-- Open each section with an H2 heading spelled exactly as the table gives it. A bold label standing in for a heading reads the same to a person and is invisible to anything walking the document by structure.
-- Write `None identified.` under a required section with nothing to report rather than dropping the heading. A dropped section and an unconsidered one read identically.
+- Write each marker as the table gives it. `Summary` opens the prose a reader scans, so it takes an H2, and the four that follow are labels over lists rather than sections of prose.
+- A section written in the other spelling is still that section. `## Risks` and `**Risks:**` name one thing, and a plan carrying either has stated its risks, so neither reads as an omission. Write the table's form in a new plan and leave an existing plan's spelling alone.
+- Write `None identified.` under a required section with nothing to report rather than dropping the marker. A dropped section and an unconsidered one read identically.
 - Aim `## Summary` at a person scanning the plan, not at the session executing it. The other sections carry what execution needs.
-- Give every `## Files to touch` entry a backticked path and a reason after a colon. A bare path states scope and not intent, and the reason is what an executing session checks its edit against.
+- Give every `**Files to touch:**` entry a backticked path and something said about it. A bare path states scope and not intent, and the reason is what an executing session checks its edit against. Lead with the path or lead with a label carrying the path, whichever reads better for the entry.
 - State every count and every claim about the tree as measured during the pass that wrote the plan. A figure carried in from a summary or an earlier session is the most common way a plan ships the wrong scope.
 - Prefer a short plan over a padded one. A section filled to look thorough costs the reader the same attention as one that matters.
 
@@ -124,19 +125,19 @@ This contract inverts the one an intake folder keeps, where an empty slot means 
 - <one-line bullet covering the main deliverables>
 - <one-line bullet covering the key decision or trade-off>
 
-## Constraints
+**Constraints:**
 
 - <durable rule the work must respect>
 
-## Files to touch
+**Files to touch:**
 
 - `<path/to/file>`: <reason>
 
-## Risks
+**Risks:**
 
 - <conflict, coupling, or tricky spot>
 
-## Questions
+**Questions:**
 
 1. <question>
    - Suggested: <pick>, <reason or tradeoff>

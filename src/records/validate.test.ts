@@ -12,6 +12,7 @@ import {
   readQuestions,
   type RecordKind,
   recordsDir,
+  preferredMarker,
   splitPlanSections,
   validateRecords,
 } from '@/records/validate'
@@ -40,15 +41,15 @@ function conformingPlan(): string {
     '',
     '- The goal',
     '',
-    '## Files to touch',
+    '**Files to touch:**',
     '',
     '- `standards/plan.md`: the sections and the answer contract',
     '',
-    '## Risks',
+    '**Risks:**',
     '',
     'None identified.',
     '',
-    '## Questions',
+    '**Questions:**',
     '',
     '1. Which check reaches a gitignored folder?',
     '   - Suggested: a validate verb, since it reports without writing',
@@ -96,11 +97,19 @@ describe('splitPlanSections', () => {
     const sections = splitPlanSections(conformingPlan())
 
     expect([...sections.keys()]).toEqual([
-      '## Summary',
-      '## Files to touch',
-      '## Risks',
-      '## Questions',
+      'Summary',
+      'Files to touch',
+      'Risks',
+      'Questions',
     ])
+  })
+
+  it('should key the heading and bold spellings to one section', () => {
+    const bold = splitPlanSections('**Risks:**\n\n- one\n')
+    const heading = splitPlanSections('## Risks\n\n- one\n')
+
+    expect([...bold.keys()]).toEqual(['Risks'])
+    expect([...heading.keys()]).toEqual(['Risks'])
   })
 
   it('should not open a section on a deeper heading of the same name', () => {
@@ -108,7 +117,24 @@ describe('splitPlanSections', () => {
       ['## Summary', '', '### Risks', '', '- nested', ''].join('\n'),
     )
 
-    expect(sections.has('## Risks')).toBe(false)
+    expect(sections.has('Risks')).toBe(false)
+  })
+
+  it('should not open a section on a bold phrase inside a bullet', () => {
+    const sections = splitPlanSections(
+      ['## Summary', '', '- carries a **Risks:** mention inline', ''].join(
+        '\n',
+      ),
+    )
+
+    expect(sections.has('Risks')).toBe(false)
+  })
+})
+
+describe('preferredMarker', () => {
+  it('should name Summary as a heading and the rest as bold labels', () => {
+    expect(preferredMarker('Summary')).toBe('## Summary')
+    expect(preferredMarker('Files to touch')).toBe('**Files to touch:**')
   })
 })
 
@@ -140,11 +166,14 @@ describe('checkPlan', () => {
   })
 
   it('should report a missing required section', () => {
-    const body = conformingPlan().replace('## Risks\n\nNone identified.\n', '')
+    const body = conformingPlan().replace(
+      '**Risks:**\n\nNone identified.\n',
+      '',
+    )
     const findings = checkPlan('feature-a-b.md', body)
 
     expect(kinds(findings)).toEqual(['section-missing'])
-    expect(findings[0].subject).toBe('## Risks')
+    expect(findings[0].subject).toBe('**Risks:**')
   })
 
   it('should report a missing Feature heading', () => {
@@ -186,6 +215,44 @@ describe('checkPlan', () => {
     )
 
     expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should accept an entry naming two files before one shared reason', () => {
+    const body = conformingPlan().replace(
+      '- `standards/plan.md`: the sections and the answer contract',
+      '- `a/SKILL.md` and `b/SKILL.md`: the same citation',
+    )
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should accept a reason carrying the path rather than leading with it', () => {
+    const body = conformingPlan().replace(
+      '- `standards/plan.md`: the sections and the answer contract',
+      '- Context assembly: the tier table in `.claude/context/model.md`',
+    )
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should accept a terse numeric annotation as a reason', () => {
+    const body = conformingPlan().replace(
+      '- `standards/plan.md`: the sections and the answer contract',
+      '- `standards/plan.md`: 73',
+    )
+
+    expect(checkPlan('feature-a-b.md', body)).toEqual([])
+  })
+
+  it('should report an entry naming a file and saying nothing about it', () => {
+    const body = conformingPlan().replace(
+      '- `standards/plan.md`: the sections and the answer contract',
+      '- `standards/plan.md`',
+    )
+
+    expect(kinds(checkPlan('feature-a-b.md', body))).toEqual([
+      'entry-unreasoned',
+    ])
   })
 
   it('should report a files-to-touch entry with no reason', () => {

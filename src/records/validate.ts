@@ -103,35 +103,68 @@ async function listFolders(dir: string): Promise<string[]> {
 
 const PLAN_NAME = /^feature-[a-z0-9]+(-[a-z0-9]+)*\.md$/
 const PLAN_TITLE = /^#[ \t]+Feature:[ \t]+\S/
-const TOUCH_ENTRY = /^-[ \t]+`[^`]+`[ \t]*:[ \t]*\S/
+/**
+ * An entry names a file and says something about it. Both halves are tested as
+ * facts rather than as a syntax: a backticked span anywhere, and prose left over
+ * once the spans are removed.
+ *
+ * Requiring the path to lead and the reason to follow a colon was the first
+ * shape and it reported 80 of 178 archived plans. The corpus writes
+ * `- Label: prose naming a path` as often as `- path: reason`, and both name the
+ * file and say why, so the stricter rule measured a house style rather than a
+ * defect.
+ */
+function statesReason(entry: string): boolean {
+  if (!/`[^`]+`/.test(entry)) return false
+
+  const prose = entry.replace(/`[^`]*`/g, '').replace(/^-[ \t]*/, '')
+  return /[A-Za-z0-9]/.test(prose)
+}
 const QUESTION_ITEM = /^\d+[a-z]?\.[ \t]+\S/
 
-/**
- * Every marker that opens a plan section. The split matches the whole line
- * rather than a prefix, so a heading of the same name nested deeper does not
- * open a top-level section.
- */
 const PLAN_SECTIONS = [
-  '## Summary',
-  '## Constraints',
-  '## Files to touch',
-  '## Risks',
-  '## Questions',
+  'Summary',
+  'Constraints',
+  'Files to touch',
+  'Risks',
+  'Questions',
 ] as const
 
-const PLAN_REQUIRED = [
-  '## Summary',
-  '## Files to touch',
-  '## Risks',
-  '## Questions',
-] as const
+type PlanSection = (typeof PLAN_SECTIONS)[number]
+
+const PLAN_REQUIRED: readonly PlanSection[] = [
+  'Summary',
+  'Files to touch',
+  'Risks',
+  'Questions',
+]
+
+/**
+ * A section opens as a bold label or as an H2 and both count. The corpus writes
+ * `Summary` as a heading and the other four as bold labels, and roughly a fifth
+ * of it swaps one for the other. Reporting the variant would fail nearly every
+ * plan present on the rule a reader is least served by, which is what teaches
+ * them to skip the output.
+ */
+export function sectionMarker(line: string): PlanSection | undefined {
+  const match = /^(?:##[ \t]+(.+?)|\*\*(.+?):\*\*)[ \t]*$/.exec(line.trim())
+  if (!match) return undefined
+
+  const name = match[1] ?? match[2]
+  return PLAN_SECTIONS.find((entry) => entry === name)
+}
+
+/** The spelling a finding names, which is the one the standard's template ships. */
+export function preferredMarker(section: PlanSection): string {
+  return section === 'Summary' ? '## Summary' : `**${section}:**`
+}
 
 export function splitPlanSections(text: string): Map<string, string[]> {
   const sections = new Map<string, string[]>()
   let current: string | undefined
 
   for (const line of text.split('\n')) {
-    const marker = PLAN_SECTIONS.find((entry) => line.trim() === entry)
+    const marker = sectionMarker(line)
     if (marker) {
       current = marker
       sections.set(marker, [])
@@ -233,33 +266,31 @@ export function checkPlan(name: string, text: string): Finding[] {
         finding(
           'section-missing',
           name,
-          marker,
+          preferredMarker(marker),
           'is required and the plan carries no such section.',
         ),
       )
     }
   }
 
-  for (const line of sections.get('## Files to touch') ?? []) {
+  for (const line of sections.get('Files to touch') ?? []) {
     const trimmed = line.trim()
     if (!trimmed.startsWith('- ') || trimmed === `- ${NONE_IDENTIFIED}`)
       continue
 
-    if (!TOUCH_ENTRY.test(trimmed)) {
+    if (!statesReason(trimmed)) {
       findings.push(
         finding(
           'entry-unreasoned',
           name,
           shorten(trimmed),
-          'states no backticked path with a reason after a colon.',
+          'names no file, or names one and says nothing about it.',
         ),
       )
     }
   }
 
-  findings.push(
-    ...checkQuestionContract(name, sections.get('## Questions') ?? []),
-  )
+  findings.push(...checkQuestionContract(name, sections.get('Questions') ?? []))
 
   return findings
 }
