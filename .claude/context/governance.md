@@ -37,7 +37,17 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 ### Rules that route to a standard
 
 - `510-context` carries a write-time policy alongside its read-time one, so editing a domain leaves its context entry conforming. It ships in `base.toml` to every consumer, so each write-time bullet states an outcome of the edit rather than a backlog to drain, which is the only phrasing that also reads correctly in a project with no entries yet.
-- Every standard that governs a file path carries a rule routing to it, so an edit loads the standard without the matching skill being invoked. `595-tooling-reference` is toolkit-local and is authored under `internal/rules/claude/`, because `internal/standards/tooling-reference.md` governs a surface a target never authors and shipping the route would point at a path no install creates. It sits in `internal/` rather than `governance/rules/` so location enforces the boundary, the same way the internal standards and snippets do.
+- Every standard that governs a file path carries a rule routing to it, so an edit loads the standard without the matching skill being invoked. `595-tooling-reference` is toolkit-local and is authored under `internal/rules/claude/`, because `internal/standards/tooling-reference.md` governs a surface a target never authors and shipping the route would point at a path no install creates. It sits in `internal/` rather than `governance/rules/` so location enforces the boundary, the same way the internal standards and snippets do. It globs `manifest.toml` alongside `reference.md`, because a rule protecting a symmetry has to fire from either side and the manifest is the side that moves first.
+
+### Rules as the floor under skills
+
+A rule fires on a path match with no decision from the session and a skill fires on invocation or a description match, so the rule is the floor and the skill is the depth. `standards/rule.md` and `standards/skill.md` each carry the checkpoint pointing at the other, and both ship to targets. Nothing checks either one, which is accepted, since the checkpoint is a judgment prompt rather than an invariant.
+
+The two-part test decides what crosses. Does the invariant fire when a specific path is edited, and does violating it ship silently? Run over the 75 `## Gotchas` bullets, the six domain skill bodies, and `CLAUDE.md`'s behavior list, it promoted four rules and widened one, which is the filter working rather than failing. Most of the pool is orientation and fails the first half, and a second group fails the second half because `bun run check` already gates it.
+
+A rejection is recorded by which half failed rather than by judgment. The init gate's asserted-path requirement fails the first half, since the trigger is adding a domain and no glob matches that. The husky re-drop on a monorepo subtree fails it for the same reason, firing when a command runs rather than when a path is edited. The stale-copy failure on a widened source rule fails the second half, since that gate is closed and loud.
+
+One candidate passes both halves and is deferred. A child folder carrying no `index.md` drops out of every catalog silently, and closing it means widening `510-context`, which ships to every `base` consumer and would carry an invariant about a system a target may not run. It needs a shipped rule and a stack decision, which is the deferral `claude/skills/` already took.
 
 ### This repository's own rules
 
@@ -52,6 +62,7 @@ Owns the rules that steer AI agents working in a project. Source rules live here
 ### Numbering bands
 
 - Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
+- `internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, so two sources numbering into one folder cannot collide silently. The core band is already full at every ten, which is what forces the split rather than leaving it to convention.
 
 | Range     | Domain                                                                                                                                           |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |

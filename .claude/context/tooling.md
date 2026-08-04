@@ -47,10 +47,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 
 ### Manifest syntax
 
-- In `[scripts]`, both key and value must use double quotes. Unquoted keys are silently skipped by the parser.
-- Each `[gitignore]` group must use single-line array syntax. Multi-line arrays parse as empty.
-- A `[gitignore]` group is restated verbatim in the stack's `reference.md`, and nothing compares the two. `src/tooling/manifest.ts` records `referenceFile` as a path and never reads its content, so a group edited in the manifest alone leaves the reference listing the old set and an agent following it gets the stale one. Edit both in the same change.
-- Injection runs `bun add -D`, so a manifest whose runtime is not `bun` must leave `[dependencies.dev]` empty and document a manual install step in its `reference.md`.
+- The syntax invariants and the manifest-to-reference symmetry moved to `internal/rules/claude/595-tooling-reference.md`, which globs `tooling/*/manifest.toml` alongside `tooling/*/reference.md` so an edit to either side loads both. `.claude/internal/standards/tooling-reference.md` carries the symmetry in prose. The `#823` drift is what widened that glob, since the rule previously matched the reference alone and the manifest is the side that moves first.
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
 
 ### Sync and layering
@@ -58,7 +55,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Syncing a monorepo subtree without `--skip base` re-drops husky per subtree. Git honors only one `core.hooksPath`, so the extra hook dirs silently break.
 - `--skip base` relies on the layer boundary holding: repo-root-once configs live in `base`, per-root configs live in `web` and the adapters. Moving a per-root config into `base` would break the split.
 - Non-`.txt` seeds are copy-once. To re-seed a structured file, delete it and sync again.
-- Config copies must preserve an existing destination's mode, not the source's. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy that applied the source mode would strip the executable bit on the `web` and `astro` chains. `cp` kept the destination mode and `copyPreservingMode` in `src/copy.ts` reproduces that. It sits at the top level rather than in `src/tooling/` because the sync engine needs the same guarantee.
+- Preserving a destination's mode moved to `internal/rules/core/096-operator-files.md`. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy applying the source mode would strip the executable bit on the `web` and `astro` chains. `copyPreservingMode` in `src/copy.ts` is the implementation, sitting at the top level rather than in `src/tooling/` because the sync engine needs the same guarantee.
 - `Bun.Glob` skips dotfiles unless `dot: true` is set. Tooling configs are almost entirely dotfiles, so omitting it matches 4 of 14 files in `base` and fails silently.
 
 ### Seed ownership
