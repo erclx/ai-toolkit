@@ -9,10 +9,14 @@ description: Why the root-to-.claude relocation ships as git mv commands the use
 
 Without this skill, a project whose rules cite `.claude/standards/` while the files sit at the root gets fixed by hand, and the hand fix loses what version control was holding. A plain `mv` breaks the rename chain, so every relocated standard reads as a delete beside an unrelated add and its history stops at the move.
 
+A fourth failure comes before those three, from deciding what is unmigrated by listing the folder. A root `standards/` can hold the project's own docs and nothing the toolkit ever installed, and a listing cannot tell the two apart, so the skill proposes moving project files under `.claude/` where a sync walks them. The drift report already answers this, counting only files whose basename the toolkit ships, and it is the same report `toolkit-operator` reads to route here.
+
 Three failures follow from acting without looking first. A move onto an existing `.claude/standards/` copy overwrites the files already installed there, which is the case the relocation was supposed to be unnecessary for. A `git mv` on a dirty tree lands the relocation in the same commit as unrelated work, so neither can be reviewed or reverted alone. And a session that rewrites every inbound reference spends its effort on toolkit-owned rules and skills, which the next sync overwrites, while the author-owned lines that actually break go unmentioned.
 
 ## Must
 
+- Take the set of domains to relocate from `aitk sync --check --json`, and report its filtered count rather than a folder listing
+- Keep the listing as the fallback for a target where `aitk` is absent or the command fails, and say that its counts are unfiltered
 - Detect an existing copy under `.claude/` and skip that folder's move rather than merging into it
 - Read the working tree state and require it clean before the moves, since the relocation has to be revertible on its own
 - Propose `git mv` so history follows each file
