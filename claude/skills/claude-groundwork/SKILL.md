@@ -1,6 +1,6 @@
 ---
 name: claude-groundwork
-description: Opens and runs a numbered groundwork folder under `.claude/.tmp/groundwork/<slug>/` for a topic that has to be measured before it can be planned. Detects open, resume, and close from the folder itself. Use when asked to "research X", "dig into X", "work out what we should do about X", "measure this before we commit", or "open a groundwork folder". Do NOT use to write a feature plan or to implement. That is `claude-feature`.
+description: Opens and runs a numbered groundwork folder under `.claude/groundwork/<slug>/` for a topic that has to be measured before it can be planned. Detects open, resume, and close from the folder itself. Use when asked to "research X", "dig into X", "work out what we should do about X", "measure this before we commit", or "open a groundwork folder". Do NOT use to write a feature plan or to implement. That is `claude-feature`.
 ---
 
 # Claude groundwork
@@ -18,9 +18,9 @@ Read `${CLAUDE_SKILL_DIR}/references/folder-format.md` before writing any file i
 
 ## Write scope
 
-- Write only inside `.claude/.tmp/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
+- Write only inside `.claude/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
 - One exception, at close only: write one task file recording what the track concluded.
-- A second exception, for experiments: write a fixture a spike needs under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/.tmp/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
+- A second exception, for experiments: write a fixture a spike needs under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Every claim about a source outside the project carries a link to it. A source found and not read is listed as a lead and is never cited.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
@@ -39,11 +39,11 @@ Record method, result, measured cost, and caveats in `08-spikes.md`. Reach for a
 
 ## Step 1: detect the mode
 
-List `.claude/.tmp/groundwork/` from the project root and match the topic against the tracks already there before deriving anything. A resume pass rarely phrases the topic the way the folder was named, so a fresh slug derived from the wording would miss a live track and restart it.
+List `.claude/groundwork/` from the project root and match the topic against the tracks already there before deriving anything. A resume pass rarely phrases the topic the way the folder was named, so a fresh slug derived from the wording would miss a live track and restart it.
 
-Never match against `.claude/.tmp/` itself. That directory is scratch shared with every other skill, so a topic matched there lands on a folder that was never a track.
+Never match against `.claude/` itself. That directory holds every other workflow surface, so a topic matched there lands on a folder that was never a track.
 
-With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `ts-migration` over `migration-research`. Then route on `.claude/.tmp/groundwork/<slug>/`:
+With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `ts-migration` over `migration-research`. Then route on `.claude/groundwork/<slug>/`:
 
 - Folder absent: open
 - Folder present without `06-decision.md`: resume
@@ -80,7 +80,7 @@ Every open question carries a lean, wherever it appears: inside a topic file, in
 
 ## Open mode
 
-1. Create `.claude/.tmp/groundwork/<slug>/`.
+1. Create `.claude/groundwork/<slug>/`.
 2. Write `README.md` first. Writing it first forces the question of what the track is for.
 3. Write `01-current-state.md` by measuring now. Never carry a figure from a previous session or from recall without re-measuring it. Measure only what an open question in the folder needs. A number with no question attached is how groundwork turns into the work.
 4. Write `00-scope.md` when the track is large enough to run away. Skip it on a small track.
@@ -111,12 +111,12 @@ Emit the full relative path from the project root for every file written or upda
 Open and resume:
 
 ```plaintext
-📂 Opened .claude/.tmp/groundwork/<slug>/
+📂 Opened .claude/groundwork/<slug>/
 
 **Written:**
 
-- `.claude/.tmp/groundwork/<slug>/README.md`
-- `.claude/.tmp/groundwork/<slug>/01-current-state.md`
+- `.claude/groundwork/<slug>/README.md`
+- `.claude/groundwork/<slug>/01-current-state.md`
 
 **Open questions:**
 
@@ -130,12 +130,12 @@ Use `📂 Resumed` in place of `📂 Opened` on a resume pass.
 Close:
 
 ```plaintext
-✅ Closed .claude/.tmp/groundwork/<slug>/
+✅ Closed .claude/groundwork/<slug>/
 
 **Written:**
 
-- `.claude/.tmp/groundwork/<slug>/06-decision.md`
-- `.claude/.tmp/groundwork/<slug>/07-next-session.md`
+- `.claude/groundwork/<slug>/06-decision.md`
+- `.claude/groundwork/<slug>/07-next-session.md`
 
 **Uncited external claims:** <count, or none>
 
