@@ -13,7 +13,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 - Every domain has a `list` command with `--json` so skills read catalogs at runtime. Never hardcode names in skills.
 - Extend existing commands with flags over creating bespoke variants. Prefer `--add` and similar composition over stack explosion.
 - The toolkit is the source of truth. Authoring happens here, target projects consume via install and sync.
-- Skills detect and call the CLI. They do not reimplement CLI logic.
+- Skills detect and call the CLI. They do not reimplement CLI logic. A session reading toolkit state prefers a CLI verb over its own inspection wherever one exists, since the verb is the surface under test and a hand-rolled read of the same files is not.
 - This repo is behavior-heavy. Planning and review are the work here, so a higher supervision ratio than a typical app repo is expected.
 - Toolkit surfaces stay general-purpose. Map to external-tool schemas in a thin sync adapter rather than adopting them as the canonical shape.
 - Toolkit-internal content (runbooks, dev helpers) is authored under `internal/`, never inside an installable surface. A filter in code covers only the entry points that run code, and the plugin reaches `standards/` and `snippets/` through symlinks an installer dereferences with nothing in the path to filter. Location is what enforces the boundary. `scripts/core/check-plugin-boundary.sh` fails on any file the plugin ships that resolves under `internal/`.

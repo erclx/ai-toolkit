@@ -67,6 +67,16 @@ The frame carries no version number. `package.json` is bumped on `main` by the r
 
 `assets/hero.html` is in `.prettierignore` because the stage and the formatter would otherwise both own it and serialize it differently. The Format stage runs first and rewrites the file, the Hero stage rewrites it back, and the drift assert then reports against whichever version was committed last. The pre-push hook reformats and asks for the result to be committed as `style(<scope>):`, which is exactly the path that would commit the formatter's version and deadlock the stage. One writer per generated file is the rule the entry beside it already applies to the release tooling.
 
+## Sandbox coverage
+
+`aitk sandbox coverage` reports which scenarios declare expectations, and until this stage existed the number moved only when someone thought to run it. The Sandbox coverage stage reads the same report and gates on it, so a scenario added with no expectation fails a push rather than sitting undeclared.
+
+The gate is `SANDBOX_UNDECLARED_CEILING` in `scripts/core/verify.sh`, an absolute count of scenarios declaring nothing, pinned at what a clean run reported when the stage landed. A floor under the declared count was the obvious shape and it passes the case the stage exists for, since adding an unarmed scenario leaves the declared count where it was. A ratio moves when a scenario is legitimately deleted. The ceiling does neither: deleting an unarmed scenario lowers it, and deleting an armed one leaves it alone.
+
+Raising the number is a deliberate edit, which is the point. A branch shipping an unarmed scenario has to say in the diff which one and why, rather than watching a percentage drift down over several merges with no single commit responsible.
+
+A coverage command that exits non-zero fails the stage under CI and warns on a contributor's machine. The scenario tree ships in the checkout, so a runner that cannot read it has a broken command rather than an absent tree, and taking the skip there would report the pass the stage exists to withhold. That is the split Manifest validation below already draws for an absent `claude` binary, and a warning inside a green run is read by nobody.
+
 ## Manifest validation
 
 The Plugin manifests stage runs `claude plugin validate --strict` over every plugin and marketplace manifest the repository carries. It always runs, because a manifest edit is not the only thing that invalidates one and the whole stage costs about a third of a second.

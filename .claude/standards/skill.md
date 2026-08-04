@@ -22,6 +22,17 @@ Does not govern:
 - The transform from a branch name to a slug a skill carries in a filename: `slug.md`
 - The domain conventions a skill cites, each of which belongs to the standard that owns it
 
+## Changing a skill
+
+Answer all four before editing, and carry the answers into wherever the change is proposed.
+
+- What problem does this solve? Name the run that went wrong, rather than the improvement the change makes.
+- Which surface owns the rule today? A rule already stated in a standard, a governance rule, or a sibling skill is cited or moved, never restated in the body.
+- What deterministic check catches a regression? Name it, or say none exists and the step holds on a session reading it.
+- What does this collide with? Name the sibling skill, rule, or requirement it contradicts, or state that nothing does.
+
+The second question is the one that decides between a body and a rule, which the next section tests in two parts.
+
 ## Whether a rule belongs beside the skill
 
 A skill fires when a session invokes it or its description matches the request. A path-scoped rule fires when a session reads a file matching its glob, with no decision from the session at all. The two are layers rather than alternatives, so the rule is the floor and the skill is the depth.

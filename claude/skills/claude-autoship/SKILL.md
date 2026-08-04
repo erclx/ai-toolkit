@@ -90,12 +90,15 @@ The list covers this toolkit's authoring layout and the layout it installs, whic
 
 ## Step 6: evaluate findings
 
-Skip this step when Step 5 skipped review. Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Parse the summary line (`X critical, Y should-fix, Z minor`):
+Skip this step when Step 5 skipped review. Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
 
-- Any critical or should-fix count greater than zero, stop: `❌ Review found non-minor issues. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
-- Zero critical and zero should-fix, continue. The minor findings stay in the on-disk review receipt. Fold any a reviewer needs into the PR's `## Technical Context`. Do not add a separate review-notes section to the PR body.
+- **This run caused it, at any severity.** Fix it, re-run the Step 3 verify commands, re-read the fixed file against what the finding claimed, and continue. Do not report it as a stop and do not offer the fix as a choice, which is the same stop wearing a proposal.
+- **It predates this run, critical or should-fix.** Stop: `❌ Review found non-minor issues that predate this run. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
+- **It predates this run, minor only.** Continue. The minor findings stay in the on-disk review receipt. Fold any a reviewer needs into the PR's `## Technical Context`. Do not add a separate review-notes section to the PR body.
 
-Do not auto-fix findings. The stop here is deliberate.
+Read origin as causation rather than authorship. Staleness this run induced in a file it never opened is a finding it caused, and the plan's "Files to touch" list scopes what the run builds rather than what it may repair.
+
+Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
 
 ## Step 7: ship
 
@@ -151,5 +154,6 @@ Every stop point leaves recoverable state. The user resumes manually from the ap
 | Branch collision on worktree entry | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
 | Verify fails                       | Read logs, fix manually, run `/git-ship`                                                                                                       |
 | UI checklist                       | Verify visually, run `/git-ship`                                                                                                               |
-| Review findings                    | Fix findings, run `/git-ship`                                                                                                                  |
+| Inherited review findings          | Fix findings, run `/git-ship`                                                                                                                  |
+| Self-introduced finding survived   | Read the receipt for what the one repair pass left open, fix it, run `/git-ship`                                                               |
 | git-ship fails                     | Inspect hook or remote error, run again                                                                                                        |

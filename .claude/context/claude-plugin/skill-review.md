@@ -58,3 +58,11 @@ The rules are stated where the stage runs, which is what makes it safe. A wholes
 No comment channel was built for it. Both sides of every hunk sit in the conflict, `main` is what the operator approved, and `git log origin/main` names what landed, so a per-conflict comment would restate the diff and add a surface the worker waits on. A hunk the tree does not settle stops instead and reaches the operator as an ordinary finding on the next pass, which holds only because the stage forbids guessing rather than leaving it to judgment.
 
 `git-followup` absorbed the consequence at its push, forcing under a lease when the tracking branch no longer reaches the head. Its plain `git push` was rejected on a rewritten branch, so the stage would have dead-ended one step past the resolution it exists to perform. The re-read is already covered above, since the close-out's ancestry test falls back to a full pass on exactly this branch shape.
+
+## The origin split at Step 6
+
+`claude-autoship` Step 6 splits findings by origin before it reads severity. A critical or should-fix finding the branch inherited stops the chain, and one this run caused is repaired in place at any severity, bounded at a single pass the way Step 3 bounds verify. Severity alone was the original test and it read "Do not auto-fix findings", which is the sentence twelve recorded runs stopped on while holding defects nobody else had shipped. Each cost a round trip to hand back work the same session had created moments earlier.
+
+Origin is causation rather than authorship, which is the half that decides the hard cases. Staleness a run induces in a file it never opened is its own, so the test reaches a sibling skill body left wrong by a change to the origin-key set. The plan's file list is not the boundary either. It scopes what a run builds, and reading it as a review boundary is scope discipline applied to the wrong question, which is how one run gated a fix on the file it landed in rather than on who caused it.
+
+An offer to fix is a stop however it is worded. Naming a finding self-inflicted in the report and closing on a menu of resolutions leaves the operator holding the work, so the step forbids presenting the repair as a choice and the receipt records the fix as landed.
