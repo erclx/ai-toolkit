@@ -27,6 +27,7 @@ Does not govern:
 ## Paragraphs and lists
 
 - Use prose by default. Reserve bullets for discrete, unrelated items.
+- Keep paragraphs to four sentences or fewer. Split longer blocks at the next logical boundary.
 - Keep bullets tight. If a bullet needs more than a couple of sentences, it belongs in prose.
 - Use dashes (`-`) not asterisks (`*`) for bulleted lists
 - Do not end single-sentence or fragment bullets with a period. Use periods when a bullet has two or more sentences.

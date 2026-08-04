@@ -29,7 +29,6 @@ Does not govern:
 - Use substantive connectives where flow matters, but never add words solely for rhythm. Terse reference prose needs no padding.
 - Be direct on established facts. Hedge on genuinely uncertain claims.
 - Assume developer-level technical knowledge. Skip hand-holding explanations.
-- Keep paragraphs to four sentences or fewer. Split longer blocks at the next logical boundary.
 - Front-load key information in each paragraph. Keep paragraphs concise and scannable.
 - Every sentence must provide new information. Cut redundant context.
 
