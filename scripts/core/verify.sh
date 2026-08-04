@@ -297,6 +297,9 @@ main() {
   local coverage_output coverage_status=0 total armed undeclared
   coverage_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts sandbox coverage --json 2>/dev/null) || coverage_status=$?
   if [ "$coverage_status" -ne 0 ]; then
+    if [ "${CI:-false}" = true ]; then
+      log_error "bun src/cli.ts sandbox coverage --json exited $coverage_status. The scenario tree ships in the checkout, so a run that does not report is a broken command rather than an absent tree, and skipping would report the pass this stage exists to withhold."
+    fi
     log_warn "Skipped, the scenario tree did not report"
   else
     # `|| x=""` on both, because a grep that matches nothing exits non-zero and

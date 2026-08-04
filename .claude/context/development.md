@@ -75,6 +75,8 @@ The gate is `SANDBOX_UNDECLARED_CEILING` in `scripts/core/verify.sh`, an absolut
 
 Raising the number is a deliberate edit, which is the point. A branch shipping an unarmed scenario has to say in the diff which one and why, rather than watching a percentage drift down over several merges with no single commit responsible.
 
+A coverage command that exits non-zero fails the stage under CI and warns on a contributor's machine. The scenario tree ships in the checkout, so a runner that cannot read it has a broken command rather than an absent tree, and taking the skip there would report the pass the stage exists to withhold. That is the split Manifest validation below already draws for an absent `claude` binary, and a warning inside a green run is read by nobody.
+
 ## Manifest validation
 
 The Plugin manifests stage runs `claude plugin validate --strict` over every plugin and marketplace manifest the repository carries. It always runs, because a manifest edit is not the only thing that invalidates one and the whole stage costs about a third of a second.
