@@ -1,6 +1,12 @@
 [essentials]
 names = [
+    "align",
     "decision-help",
-    "compact-summary",
-    "step-by-step",
+]
+
+[orchestrator]
+names = [
+    "claude/orchestrator-handoff",
+    "claude/orchestrator-resume",
+    "claude/orchestrator-sweep",
 ]

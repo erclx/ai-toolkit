@@ -13,8 +13,8 @@ Read `.claude/context/snippets.md` for system overview, categories, and structur
 - Plain markdown only. No YAML frontmatter.
 - No user fill-in placeholders. If a value depends on context, the user adds it after invocation.
 - Use `aitk snippets create` to add a snippet. To add manually: create a `.md` file in the correct folder.
-- Placement follows who invokes a snippet rather than what its topic sounds like. One a target project would invoke goes in `snippets/claude/`, and one only this repository can run goes in `internal/snippets/`, which the plugin never ships.
-- Before adding a snippet, check invocation cadence. Prompts invoked many times across sessions belong in `snippets/`. One-shot-per-project audit, migration, or bootstrap prompts go to external notes.
+- Admission and placement follow the cadence and audience tests in `standards/bundled/snippets.md`. Read them before adding a snippet or judging one already in the catalog.
+- Those tests land here as three folders. `snippets/` holds what a target invokes with no project files behind it, `snippets/claude/` what reads or writes a project's own files, and `internal/snippets/` what only this repository runs, which the plugin never ships.
 
 ## Presets
 
@@ -23,6 +23,7 @@ Read `.claude/context/snippets.md` for system overview, categories, and structur
 - `essentials` is the default `aitk init` install. Keep it tight: only snippets the user reaches for in nearly every session.
 - Slugs may include a folder prefix (`claude/feature-recap`). They resolve to `.claude/snippets/<slug>.md` on install.
 - New presets append a section to `snippets.toml` and nothing else. `aitk snippets list` resolves them at runtime, so the context entry holds no preset row.
+- Changing which slugs `essentials` carries means re-checking the snippets path asserted in `scripts/core/install-check.sh`. It names one slug the default preset installs, and dropping that slug fails `bun run check:install` on a correct install.
 
 ## Sync checklist
 

@@ -8,7 +8,7 @@ consumers: create-snippet
 
 ## Scope
 
-Governs a snippet file: what one is for, how it is invoked, and the structure of its body.
+Governs a snippet file: what one is for, whether a prompt qualifies as one, how it is invoked, and the structure of its body.
 
 Does not govern:
 
@@ -18,6 +18,17 @@ Does not govern:
 ## What a snippet is
 
 A snippet is a short, focused prompt stored as a plain markdown file. Invoke one to insert a prepared instruction into any AI chat without retyping it. Each snippet covers one purpose. If a prompt needs headers or multiple goals, use a system prompt instead.
+
+## Admission
+
+Two tests decide whether a prompt becomes a snippet, and both have to pass. Apply them when adding one and when auditing the catalog.
+
+- Cadence: a prompt invoked many times across sessions qualifies. A one-shot audit, migration, or bootstrap prompt does not, and belongs in notes outside the catalog.
+- Audience: a prompt the consuming project would invoke ships in `snippets/`. One only the authoring repository can run stays outside every installable folder, which is a rule for a repository that authors snippets for others rather than for one that only consumes them.
+
+A subfolder under `snippets/` names where a prompt is invoked rather than what it is about. A prompt that reads or writes the project's own files goes in a folder, and one carrying its whole context in the message goes at the root.
+
+Overlapping a skill that does the same job is not disqualifying on its own. A snippet fires when a person asks for it by name and a skill fires on a description match, so the two coexist when those paths differ and the outputs do. Record the reason where the project keeps its decisions, or drop the snippet.
 
 ## Invocation channels
 
