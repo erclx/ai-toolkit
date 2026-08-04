@@ -1,6 +1,6 @@
 ---
 title: Output shape
-description: The two framed shapes every command renders into, and how JSON and --names modes keep stdout clean
+description: Two framed shapes every command renders into, how JSON and --names modes keep stdout clean, and the exit discipline that lets piped output drain
 ---
 
 # Output shape
@@ -43,3 +43,11 @@ Help skips the banner. The `Usage:` line sits directly on `├`. Help writes to 
 ## JSON and `--names` modes
 
 `--json` and `--names` keep stdout clean and machine-readable. The frame still renders on stderr (open, banner, close) so the stream discipline is consistent across modes. Consumers that only read stdout see pure data.
+
+## Process exit
+
+A command action that writes to stdout sets `process.exitCode` and returns. Calling `process.exit()` there ends the process before the write drains, which truncates piped output at the 64K pipe buffer while still reporting the right exit code. Redirecting to a file hides the truncation, so it surfaces only through a pipe, which is what a check has to use to catch it.
+
+A fail-fast path that has written to stderr alone may still call `process.exit()`, and several do. The truncation has nothing to cut there, so the ban is scoped to the stream it protects rather than applied to every exit.
+
+Diagnostics reach stderr in every mode, including `--json`. Name the file and the field that failed, because a JSON record carries an action and a reason and an operator reading stderr alone sees neither.

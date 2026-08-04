@@ -22,6 +22,14 @@ Does not govern:
 - The transform from a branch name to a slug a skill carries in a filename: `slug.md`
 - The domain conventions a skill cites, each of which belongs to the standard that owns it
 
+## Whether a rule belongs beside the skill
+
+A skill fires when a session invokes it or its description matches the request. A path-scoped rule fires when a session reads a file matching its glob, with no decision from the session at all. The two are layers rather than alternatives, so the rule is the floor and the skill is the depth.
+
+Run the two-part test over what the body states before calling the skill finished. Does the invariant fire when a specific path is edited, and does violating it ship silently? An invariant passing both halves belongs in a rule as well, because a session that never invoked the skill still edits that path and needs the floor under it. An invariant failing either half stays here, which is most of a body, since procedure and orientation are what a rule cannot carry.
+
+Write that rule to the shape `rule.md` sets and leave the procedure here, since the two carry one invariant at two depths rather than two copies of it. Nothing checks the split. The checkpoint is a judgment prompt rather than an invariant, so it ships as prose with no gate behind it, and a skill that skips it fails silently in the same way the invariants it is meant to catch do.
+
 ## Skill types
 
 Pick the type before writing. It decides the body shape.

@@ -16,7 +16,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Docs](docs.md): How aitk docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
 - [Indexes](indexes.md): Flags, exit codes, and JSON shape for aitk indexes regen, plus when it auto-stages what it rewrote
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project
-- [Output shape](output-shape.md): The two framed shapes every command renders into, and how JSON and --names modes keep stdout clean
+- [Output shape](output-shape.md): Two framed shapes every command renders into, how JSON and --names modes keep stdout clean, and the exit discipline that lets piped output drain
 - [Overview](overview.md): What this folder covers, the invocation rules every command inherits, and where domain behavior is documented instead
 - [Sandbox](sandbox.md): Scenario routing, the expectation scoring surface, and the coverage census over scenarios and skills
 - [Scripting](scripting.md): The runtime catalogs that replace hardcoded names, what each carries, and a headless invocation per domain

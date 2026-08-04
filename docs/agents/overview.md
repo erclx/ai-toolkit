@@ -15,7 +15,7 @@ See `CLAUDE.md` design principles. They apply to every command in this folder.
 
 ## Where to start
 
-- `output-shape.md`: the stream contract every command renders into, which is what a caller parsing stdout depends on
+- `output-shape.md`: the stream contract every command renders into and the exit discipline behind it, which is what a caller parsing stdout depends on
 - `commands.md`: the full command catalog, project-level and per-domain
 - `scripting.md`: the runtime catalogs that replace hardcoded names, plus headless invocation examples
 

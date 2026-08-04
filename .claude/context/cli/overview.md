@@ -29,8 +29,8 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 
 ### Wiring and output
 
-- Set `process.exitCode` in a command action. Calling `process.exit()` ends the process before an async stdout write drains, which silently truncates piped output at the 64K pipe buffer while still reporting the right exit code. Redirecting to a file hides it, so this only shows up through a pipe.
-- Diagnostics belong on stderr in every mode, including `--json`. A JSON record carries an action and a reason, not the file and field that failed, so an error is invisible to an operator unless stderr also gets it.
+- Exit and stream discipline moved to `internal/rules/core/095-cli-output.md`, which globs `src/**/*.ts` so it loads on an edit here rather than waiting to be looked up. It holds the `process.exitCode` requirement and the stderr-in-every-mode rule.
+- Seven command actions still call `process.exit()`, one in `design.ts`, four in `feedback.ts`, one in `slides.ts`, and one in `transcripts.ts`. Every one is a fail-fast path that has written to stderr alone, which is why the rule permits the shape rather than banning it outright and shipping a floor the tree breaks. `slides.ts` is the one that resists conversion, since `fail` is typed `never` and both callers lean on that for narrowing.
 - `Bun.Glob` has no exclude option. A walker that must skip vendored trees filters scanned paths by segment, and forgetting to leaves the skip silently absent wherever `git check-ignore` is unavailable.
 - A bare positional and a subcommand coexist on one command: `aitk docs list` resolves to the subcommand and `aitk docs agents` falls through to the positional. This is what preserves the bash shorthand where any non-verb argument means `get`. A doc named after a verb would be shadowed, which the bash `case` did too.
 - A topic resolves against two spellings, `<dir>/<topic>.md` and `<dir>/<topic>/index.md`, so a domain that outgrows one file keeps the name its callers already type. The file wins when both exist, and a folder with no `index.md` resolves to nothing because the catalog is what reaches the sub-areas. Both listers pin their own depth, so a split domain needs a folder pass added to each.
@@ -40,8 +40,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 
 - `src/wiki/` scaffolds `.claude/wiki/` in a target and reports a root `wiki/` left by an older scaffold rather than migrating it. A move is a decision the operator owns, since the two roots can both hold pages.
 - Porting a guard means porting its side effects. The bash `guard_root` ran `cd "$target"`, which validated the target existed as a by-product of resolving it. A port that reproduces only the stated purpose drops that check, and `mkdir -p` downstream then scaffolds a typo'd path into a new tree.
-- Writing a file through `mktemp` then `mv` replaces it rather than editing it, so the destination inherits the temp file's mode. `merge_user_setting` did this to `~/.claude/settings.json` and silently tightened a 644 file to 600 on every run. Editing a file the operator owns means reading its mode first and restoring it after the write, which is what `writeSettings` does.
-- Rewriting a config an operator hand-maintains at a different indent width is a diff they did not ask for. `detectIndent` reads the existing width and `serializeSettings` writes it back, so only the changed keys show up in the diff.
+- Preserving a destination's mode and indent width moved to `internal/rules/core/096-operator-files.md`, which globs `src/**/*.ts`. `writeSettings` is the live implementation of the mode half, after `merge_user_setting` silently tightened `~/.claude/settings.json` from 644 to 600 on every run, and `detectIndent` plus `serializeSettings` are the indent half.
 
 ## CLI
 

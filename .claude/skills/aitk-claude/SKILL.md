@@ -51,14 +51,10 @@ When modifying a skill:
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
 - Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
 
-When modifying the CLAUDE.md seed:
+When modifying either CLAUDE.md:
 
-- Check the root `CLAUDE.md` for drift. Rules that govern both target projects and the toolkit itself should stay mirrored.
+- The root file and its seed are paired by `internal/rules/claude/596-claude-md.md`, which globs both and fires on an edit to either without this skill being loaded. It holds the edit protocol and the mirroring split.
 - The seed's "Context" section defines the three-tier context model (always-loaded / path-scoped lazy / on-demand lookup at `.claude/context/`). Keep the section coherent with the same model in `.claude/context/context-model.md`.
-
-When modifying the root CLAUDE.md:
-
-- Check `tooling/claude/seeds/CLAUDE.md` for a mirror. Project-agnostic rules like behavior, scope discipline, worktree gotchas, and scratch structure belong in both. Toolkit-specific rules like the domain skill table, wiki policy, and tool-agnosticism stay at root only.
 
 ## Reference
 
