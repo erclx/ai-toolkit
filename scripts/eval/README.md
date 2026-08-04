@@ -45,7 +45,7 @@ The runner copies the live `standards/<name>.md` in at run time rather than usin
 
 The standards arms copy one document into the fixture and judge one produced file. The seed arm differs on both counts.
 
-It installs through the real CLI, `aitk claude init` followed by `aitk standards install`, rather than copying `tooling/claude/seeds/` across. Copying would skip the executable bit on the four hooks and the `settings.json` merge that registers them, which is a third of the seed and a state no project is ever in. The second call is needed because `claude init` installs no standards while the seed's Markdown section cites `.claude/standards/prose.md` and the standards-audit hook reads that same file to build its word list.
+It installs through the real CLI, `aitk claude init` followed by `aitk standards install`, rather than copying `tooling/claude/seeds/` across. Copying would skip the executable bit on the four hooks and the `settings.json` merge that registers them, which is a third of the seed and a state no project is ever in. The second call is needed because `claude init` installs no standards while the standards-audit hook it registers reads `.claude/standards/prose.md` to build its word list. Absent that file the word list is empty and the hook passes every banned word, so the arm would measure a check that had quietly stopped checking.
 
 The CLI runs by path, never as the globally linked `aitk`. `PROJECT_ROOT` resolves from the CLI's own source directory, so a global binary installs the main checkout's seed and silently ignores the edits under test.
 
