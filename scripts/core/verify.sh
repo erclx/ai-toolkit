@@ -274,8 +274,16 @@ main() {
   run_check "cd $PROJECT_ROOT && bun src/cli.ts claude skills audit --requirements-only" "A skill folder carries no REQUIREMENT.md. Run bun src/cli.ts claude skills audit."
   log_info "Skill requirements present"
 
+  # The plugin is the second delivery path and this is the only stage gating it,
+  # so the skip below is for a contributor's machine rather than for the merge
+  # gate. A runner installs the CLI as a workflow step, which makes an absent
+  # binary there a broken workflow, and skipping would report a pass for every
+  # manifest on the way to a marketplace install.
   log_step "Plugin manifests"
   if ! command -v claude >/dev/null 2>&1; then
+    if [ "${CI:-false}" = true ]; then
+      log_error "claude is not installed. CI installs it before this stage, so read the Install Plugin CLI step in .github/workflows/verify.yml."
+    fi
     log_info "Skipped, claude is not installed"
   else
     local manifests manifest

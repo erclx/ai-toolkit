@@ -20,14 +20,21 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Job naming
 
-- Name jobs with emoji + title: `🛡️ Static Checks`, `🧪 Unit Tests`, `📦 Build Check`, `🎭 E2E Tests`, `🚀 Deploy`, `🔍 Code Quality`, `🏷️ Release`, `🔒 Security`.
+- Name jobs with emoji + title: `🛡️ Checks`, `🛡️ Static Checks`, `🧪 Unit Tests`, `📦 Build Check`, `🎭 E2E Tests`, `🚀 Deploy`, `🔍 Code Quality`, `🏷️ Release`, `🔒 Security`.
+
+## Job granularity
+
+- Start a new pipeline with the checks that share setup in one job: static analysis, unit tests, and build. A project with no run history has nothing to measure, and one job is the shape that costs least to reverse.
+- Keep them in one job while the gate runs under roughly two minutes end to end. Each extra job repays checkout, dependency install, and toolchain setup before it reaches a stage, so a split at that duration costs more than the parallelism returns.
+- Split once a run log puts the gate past that, then apply the dependency rules below. The run log is the revision trigger rather than the entry condition, since repository size and stage count answer nothing.
+- Give E2E, release, and deploy their own jobs from the start. Each carries a data dependency or a gate, so this rule never folds them into the check job.
 
 ## Job dependencies
 
 - Run independent jobs in parallel.
 - Use `needs` only when there is a data dependency (a job requires an artifact) or the job is prohibitively expensive relative to its gate.
-- Run static, unit, and build jobs in parallel.
-- Gate E2E on build, since it requires the built artifact.
+- Run static, unit, and build jobs in parallel once the gate is split.
+- Gate E2E on whichever job uploads the build artifact, since it consumes that artifact. That job is the folded check job in a new pipeline and the separate build job once the gate is split.
 - Gate release and deploy on E2E.
 
 ## Artifacts
@@ -42,7 +49,7 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 
 ## Template
 
-Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed while preserving the parallel and gated structure.
+Load `${CLAUDE_SKILL_DIR}/references/workflows.md` for the base workflow template. Adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed. The template already carries the folded shape, and the split beside it applies once the granularity rule above calls for it.
 
 ## Validation
 
@@ -50,8 +57,8 @@ Before responding, verify:
 
 - `workflow_dispatch` is present alongside the primary trigger.
 - All actions pinned to major version tags, no `@latest` or `@main`.
-- Static, unit, and build jobs have no `needs` and run in parallel.
-- E2E uses `needs: build`. Release and deploy use `needs: e2e`.
+- A new pipeline folds static, unit, and build into one job, and a gate a run log put past two minutes gives them no `needs` so they run in parallel.
+- Every name in a `needs` matches a job declared in the same file. E2E names the artifact producer, release and deploy name E2E.
 - Artifacts upload on `if: failure()` only with `retention-days: 7`.
 - Job names use emoji + title format.
 - Deploy, publish, and release jobs carry a placeholder step and a named handoff, never a guessed deploy command.

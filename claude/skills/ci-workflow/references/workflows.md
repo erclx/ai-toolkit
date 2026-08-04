@@ -1,6 +1,6 @@
 # CI workflow template
 
-Copy this base template and adapt it to the project's stack, test commands, and build output. Add or remove jobs as needed while preserving the parallel and gated structure.
+Copy this base template and adapt it to the project's stack, test commands, and build output. It carries the shape a new pipeline starts in, with the checks that share setup in one job, per the granularity rule in the skill body. `e2e` and anything gated on it stay separate jobs at either size.
 
 ```yaml
 name: CI
@@ -12,6 +12,52 @@ on:
     branches: [main]
   workflow_dispatch:
 
+jobs:
+  checks:
+    name: '🛡️ Checks'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun run test
+      - run: bun run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+  e2e:
+    name: '🎭 E2E Tests'
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+      - run: bun run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-results
+          path: test-results/
+          retention-days: 7
+```
+
+## Splitting the check job
+
+Apply this once a run log puts the gate past roughly two minutes, never before. Each job below repays checkout, dependency install, and toolchain setup before it reaches a stage, which is the cost the duration has to cover. Replace the `checks` job above with these three and point `e2e` at `needs: build`.
+
+```yaml
 jobs:
   static:
     name: '🛡️ Static Checks'
@@ -49,26 +95,4 @@ jobs:
         with:
           name: build-output
           path: dist/
-
-  e2e:
-    name: '🎭 E2E Tests'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install --frozen-lockfile
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: dist/
-      - run: bun run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: e2e-results
-          path: test-results/
-          retention-days: 7
 ```
