@@ -351,7 +351,10 @@ if [ "$arm" = seed ]; then
 else
   mkdir -p "$fixture/.claude/standards" "$fixture/$(dirname "$dest")"
   cp "$REPO_ROOT/standards/$standard" "$fixture/.claude/standards/$standard"
+  # Both halves, since a standard under test cites whichever governs it and a
+  # missing half leaves the citation dangling in the arm rather than in the repo.
   cp "$REPO_ROOT/standards/prose.md" "$fixture/.claude/standards/prose.md"
+  cp "$REPO_ROOT/standards/markdown.md" "$fixture/.claude/standards/markdown.md"
 fi
 
 # acceptEdits alone treats paths under .claude/ as sensitive and refuses them,
