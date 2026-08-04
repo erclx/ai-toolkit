@@ -35,6 +35,14 @@ Which location is right follows from who benefits. A commit style specific to on
 
 The rules this argument produces fire when a skill is being written, so they live in `.claude/skills/aitk-claude/SKILL.md` rather than here.
 
+## Three entry points, split by what a question costs
+
+`claude-intake`, `claude-groundwork`, and `claude-feature` are the front doors, and one question routes between them. Can the item be answered by reading the repository today? Yes goes to intake at the cost of a session grepping, no goes to groundwork at the cost of runs and days, and already-decided goes to the planning skill. The test runs per item, since a dump of forty findings typically holds one that needs measuring and routing the whole dump on its worst item buys a folder nobody can close.
+
+Intake is a skill rather than a mode inside either neighbor. A mode gives one skill two purposes and its `REQUIREMENT.md` two subjects, which is the collision the requirement file exists to prevent. A snippet was the other candidate and carries no read contract, so it cannot orient against the board or measure against the tree, and those two steps are what the one run that exists turned on. Groundwork's qualifying guard refuses a breadth pass outright, so the guard now names intake as the destination rather than sending a refused dump to the planning skill.
+
+The pass that produced the skill also measured the ratio. Of 58 items carrying a verdict, exactly one qualified as groundwork, and the eight that resolved to already-settled are the output neither neighbor has anywhere to put. One convention was dropped rather than lifted: an empty operator slot in an intake folder means unread, where a plan file's blank answer means accept. A plan is read in one sitting and an intake folder is read over weeks, so silence there is far more likely to mean nobody reached the item.
+
 ## What a skill carries
 
 A file a skill body cites has to arrive by the channel the skill itself travels on. Skills load live from the plugin root while standards, snippets, and governance rules are copied by an `aitk` command, so a body naming an installed path is a dependency crossing that boundary and resolves only for a project that ran the matching install. Nothing reports the break, because an unresolved path produces no error until a session opens it.
