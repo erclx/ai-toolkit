@@ -34,7 +34,7 @@ Generate GitHub Actions workflow files for CI pipelines. Enforce parallel job ex
 - Run independent jobs in parallel.
 - Use `needs` only when there is a data dependency (a job requires an artifact) or the job is prohibitively expensive relative to its gate.
 - Run static, unit, and build jobs in parallel once the gate is split.
-- Gate E2E on build, since it requires the built artifact.
+- Gate E2E on whichever job uploads the build artifact, since it consumes that artifact. That job is the folded check job in a new pipeline and the separate build job once the gate is split.
 - Gate release and deploy on E2E.
 
 ## Artifacts
@@ -58,7 +58,7 @@ Before responding, verify:
 - `workflow_dispatch` is present alongside the primary trigger.
 - All actions pinned to major version tags, no `@latest` or `@main`.
 - A new pipeline folds static, unit, and build into one job, and a gate a run log put past two minutes gives them no `needs` so they run in parallel.
-- E2E uses `needs: build`. Release and deploy use `needs: e2e`.
+- Every name in a `needs` matches a job declared in the same file. E2E names the artifact producer, release and deploy name E2E.
 - Artifacts upload on `if: failure()` only with `retention-days: 7`.
 - Job names use emoji + title format.
 - Deploy, publish, and release jobs carry a placeholder step and a named handoff, never a guessed deploy command.
