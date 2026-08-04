@@ -12,6 +12,7 @@ node_modules/
 
 # Claude
 .claude/.tmp
+.claude/intake/
 .claude/memory/
 .claude/plans/
 .claude/review/
