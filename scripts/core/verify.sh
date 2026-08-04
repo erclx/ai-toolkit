@@ -18,6 +18,12 @@ CHANGED_FILES=""
 # unarmed and why.
 SANDBOX_UNDECLARED_CEILING=47
 
+# Rules no stack reaches, space separated and sorted the way `aitk gov list`
+# emits them. Both are opt-in libraries a project may not want, so they are
+# recorded here rather than in a config file: the list is what a reader compares
+# a new arrival against, and a config file would absorb the arrival silently.
+GOV_EXPECTED_UNREFERENCED="260-shadcn 320-tanstack-query"
+
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
 }
@@ -207,6 +213,55 @@ main() {
   log_step "Plugin boundary"
   run_check "bash $PROJECT_ROOT/scripts/core/check-plugin-boundary.sh" "Plugin ships toolkit-internal content."
   log_info "Plugin boundary clean"
+
+  # A stack entry naming a rule folder takes every rule in it, which is what
+  # stops a new rule from needing a second edit to reach a target. The failure
+  # it leaves open is a rule authored into a folder no stack names, which
+  # installs for nobody and reports nothing on its own.
+  #
+  # This reports and never fails. Both standing findings are opt-in libraries
+  # this repository ships on purpose, so gating would fail every push over the
+  # deliberate case and teach a reader to route around the stage. Revisit when a
+  # third appears and the pattern is either a library set or an accident.
+  log_step "Unreferenced rules"
+  local gov_json gov_status=0 unreferenced
+  gov_json=$(cd "$PROJECT_ROOT" && bun src/cli.ts gov list --json 2>/dev/null) || gov_status=$?
+  if [ "$gov_status" -ne 0 ] || [ -z "$gov_json" ]; then
+    log_warn "Skipped, the governance catalog did not report"
+  else
+    # `bun --eval` rather than a grep, because the key holds an array of names
+    # and the numeric matches the stages above use reach a scalar alone.
+    #
+    # The `ok:` sentinel carries success rather than the exit code, because
+    # `bun --eval` reading piped stdin exits 0 even when the script throws.
+    # Measured on Bun 1.3.14: the same throw exits 1 with no pipe attached. A
+    # payload that parses as text but not as JSON would therefore print nothing
+    # and exit clean, and empty already means every rule is reached, so reading
+    # the exit code would report a broken catalog as a clean sweep. A missing
+    # or non-array key takes the same branch, since a stage that cannot measure
+    # should say so rather than claim the sweep found nothing.
+    local reported
+    reported=$(printf '%s' "$gov_json" | bun --eval '
+      try {
+        const data = JSON.parse(require("node:fs").readFileSync(0, "utf8"))
+        if (!Array.isArray(data.unreferenced)) throw new Error("no field")
+        console.log("ok:" + data.unreferenced.join(" "))
+      } catch {
+        console.log("unreadable:")
+      }
+    ')
+    unreferenced="${reported#ok:}"
+    if [ "${reported%%:*}" != "ok" ]; then
+      log_warn "Skipped, the governance catalog carried no readable unreferenced list"
+    elif [ -z "$unreferenced" ]; then
+      log_info "Every rule is reached by a stack"
+    elif [ "$unreferenced" = "$GOV_EXPECTED_UNREFERENCED" ]; then
+      log_info "Reached by no stack: $unreferenced (opt-in, install with --add)"
+    else
+      log_warn "Reached by no stack: $unreferenced"
+      log_warn "Expected: $GOV_EXPECTED_UNREFERENCED. Name the new rule in a stack, or update GOV_EXPECTED_UNREFERENCED in this script and say why it ships opt-in."
+    fi
+  fi
 
   # Only the citation half of the audit gates. Length, depth, table, and index
   # findings are judgment thresholds, and failing a push on one would make the

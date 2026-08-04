@@ -19,6 +19,12 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `check-skill-paths.sh`: fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
 
+## Reading a JSON payload in a stage
+
+`bun --eval` exits 0 when its script throws while stdin is a pipe, and exits 1 on the same throw with no pipe attached, measured on Bun 1.3.14. A stage piping a catalog into it and branching on `$?` therefore reads a parse failure as a success. A throw also prints nothing, so the empty output then reads as whichever clean result an empty string means in that stage, which is how a broken catalog reports as a clean sweep.
+
+Print a sentinel from inside the eval and branch on that instead. The `Unreferenced rules` stage prefixes `ok:` on success and `unreadable:` in a `catch`, which covers a payload that is not JSON and a payload missing the key on one path. The `stale` grep idiom the drift stages use does not reach here, since those match a scalar and this key holds an array of names.
+
 ## Verification
 
 CI runs every stage through `bun run check:ci`, which passes `--all`. The local run scopes shell, types, and tests to the changed-file set, so it is the weaker of the two. See `.claude/context/ci.md`.
