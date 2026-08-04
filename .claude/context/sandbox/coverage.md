@@ -13,7 +13,7 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Sixteen arms across nine scenarios out of 56 is 16 percent of scenarios, well under the 28 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
+Scenarios and arms count separately. Twenty-one arms across eleven scenarios out of 58 is 18 percent of scenarios, well under the 36 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one.
 
 Neither number weighs an arm by what it asserts. An arm can carry a single assertion over its own provisioning, such as `.claude/standards/skill.md` being absent, which is a claim about the fixture rather than about the skill under test. The count reads as scenarios reached rather than behavior covered, since nothing in it separates that arm from one asserting eleven things about a run, and a reader taking 15 percent as skill coverage is reading past what the declarations say plainly.
 
@@ -41,6 +41,14 @@ Three fixture properties are load-bearing:
 
 Neither arm asserts `.claude/tasks/index.md`. A hook regenerates it, so an assertion there would read hook behavior rather than the skill's. Both leave the main-worktree-root guard in `manual`: a standalone sandbox repository has no linked worktree, so `pwd` and the main root are one path and no run distinguishes them.
 
+### The intake arms
+
+`claude/intake.sh` is the clearest case the blast-radius rule selects. The folder it writes is gitignored in every target, so no check in this repository or in a consuming one ever reads its shape, and a run that files a dump into the wrong numbering leaves a record cited for weeks with nothing reporting the drift.
+
+The `file` arm pins the slug through the invocation rather than letting the run derive it. `paths` and `content` both match an exact path, so a slug taken from the dump's wording would leave every assertion naming a folder that may not exist. What that gives up is one line of the body against the whole of the folder shape, and the numbering still gets asserted, since the index links its cluster files and the pattern requires a two-digit number and a domain name in each link.
+
+The `route` arm asserts a refusal instead of an artifact. Its three `absent` entries name the three folders a wrong turn would create, which is what separates a decline from a run that quietly opened a groundwork track, and the reply pin catches a stop that refuses without naming where the question goes. Whether the refusal turned on the question needing measurement or on the prompt being short is the part no assertion reaches, so it sits in `manual`.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
@@ -55,7 +63,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Eight of 54 skills are asserted where ten of 57 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
+The denominators disagree on purpose. Nine of 55 skills are asserted where eleven of 58 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
 ### Pairing a scenario to a skill
 

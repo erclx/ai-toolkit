@@ -1,0 +1,7 @@
+const LEVELS = ['debug', 'info', 'warn', 'error'] as const
+
+export type Level = (typeof LEVELS)[number]
+
+export function log(level: Level, message: string) {
+  process.stderr.write(`[${level}] ${message}\n`)
+}

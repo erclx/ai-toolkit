@@ -1,0 +1,19 @@
+import { runBuild } from './commands/build.ts'
+import { runServe } from './commands/serve.ts'
+
+export function main(argv: string[]) {
+  const command = argv[2]
+
+  if (command === 'build') {
+    runBuild(argv.slice(3))
+    return
+  }
+
+  if (command === 'serve') {
+    runServe(argv.slice(3))
+    return
+  }
+
+  console.log('usage: sbx <build|serve> [options]')
+  process.exit(1)
+}

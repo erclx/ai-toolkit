@@ -1,0 +1,8 @@
+
+# Sandbox CLI
+
+Single-command build CLI. One file, no framework, no argument parser.
+
+## Conventions
+
+- Data goes to stdout. Logs and diagnostics go to stderr.
