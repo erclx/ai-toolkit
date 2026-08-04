@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
 import type { AuditedFolder } from '@/context/folders'
+import { isStubSeed } from '@/seed-marker'
 
 /** Checkpoints quoted from `standards/context.md`. Neither is a cap. */
 export const LENGTH_CHECKPOINT = 150
@@ -166,6 +167,12 @@ export interface EntryReport {
    * is `missingSections`, since one entry answers for its siblings.
    */
   readonly sections: readonly string[]
+  /**
+   * Whether the file declares itself a skeleton, which excludes it from the
+   * section check alone. Every other measure still reads it, since a stub is
+   * exempt from owing sections rather than from being well formed.
+   */
+  readonly stub: boolean
 }
 
 export interface SectionFinding {
@@ -544,6 +551,7 @@ export function measureEntry(
     provenance: governsContent ? provenance(lines) : [],
     heavyBullets: governsContent ? heavyBullets(lines) : [],
     sections: governsContent ? declaredSections(lines) : [],
+    stub: isStubSeed(source),
   }
 }
 
@@ -615,9 +623,15 @@ export function missingSections(
   for (const folder of folders) {
     if (!governsContent(folder) || folder.entries.length === 0) continue
 
+    // A stub owes no sections, so it is dropped before either branch rather
+    // than inside them. Leaving one in the split-folder aggregate would let a
+    // skeleton answer for the siblings that do owe the sections.
     const reports = folder.entries
       .map((path) => byRel.get(relative(root, path)))
       .filter((entry) => entry !== undefined)
+      .filter((entry) => !entry.stub)
+
+    if (reports.length === 0) continue
 
     if (folder.nested) {
       const missing = shortOf(reports.flatMap((entry) => entry.sections))

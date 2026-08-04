@@ -65,6 +65,20 @@ describe('buildSeedsReport', () => {
     expect(stateOf('CLAUDE.md', entriesOf())).toBe('drifted')
   })
 
+  it('should report a stub-marked seed installed stripped as matching', () => {
+    writeSeed('CLAUDE.md', '---\ntitle: Project\nstub: true\n---\n\nbody\n')
+    write(TARGET, 'CLAUDE.md', '---\ntitle: Project\n---\n\nbody\n')
+
+    expect(stateOf('CLAUDE.md', entriesOf())).toBe('matching')
+  })
+
+  it('should still report an edited stub-marked seed as drifted', () => {
+    writeSeed('CLAUDE.md', '---\ntitle: Project\nstub: true\n---\n\nbody\n')
+    write(TARGET, 'CLAUDE.md', '---\ntitle: Project\n---\n\nproject body\n')
+
+    expect(stateOf('CLAUDE.md', entriesOf())).toBe('drifted')
+  })
+
   it('should classify a seed under .claude alongside the root one', () => {
     writeSeed(join('.claude', 'REQUIREMENTS.md'), 'seed body\n')
     write(TARGET, join('.claude', 'REQUIREMENTS.md'), 'seed body\n')

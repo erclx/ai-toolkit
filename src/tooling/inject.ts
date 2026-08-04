@@ -10,6 +10,7 @@ import {
 import { dirname, join } from 'node:path'
 import { $ } from 'bun'
 import { copyPreservingMode } from '@/copy'
+import { carriesSeedMarker, stripSeedMarker } from '@/seed-marker'
 import { mergeSections, pruneSections } from '@/tooling/gitignore'
 import { ancestorsFirst, listFiles, type Manifest } from '@/tooling/manifest'
 import {
@@ -45,6 +46,21 @@ export async function injectConfigs(
 }
 
 /**
+ * Writes a seed to a target that does not have it, dropping the stub marker on
+ * the way. The marker is toolkit bookkeeping read by the seed gate, so a target
+ * receiving it would carry a field its own tooling never reads. Only markdown
+ * carries frontmatter, and every other seed copies byte for byte.
+ */
+async function writeSeed(src: string, dest: string): Promise<void> {
+  if (!carriesSeedMarker(src)) {
+    await copyFile(src, dest)
+    return
+  }
+
+  await writeFile(dest, stripSeedMarker(await readFile(src, 'utf8')))
+}
+
+/**
  * Copies a seed when the target lacks it. When the target already has one and
  * the seed is a `.txt` word list, missing lines are appended and the file is
  * re-sorted. Every other existing file is left untouched.
@@ -53,7 +69,7 @@ async function mergeSeedFile(src: string, dest: string): Promise<void> {
   await mkdir(dirname(dest), { recursive: true })
 
   if (!existsSync(dest)) {
-    await copyFile(src, dest)
+    await writeSeed(src, dest)
     return
   }
 
