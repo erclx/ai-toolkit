@@ -44,6 +44,7 @@ One session works for most features. Prefer splitting across two sessions only w
 
 Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
+- When the input is a pile of findings rather than one feature, invoke `aitk:claude-intake` first. It files the dump into `.claude/intake/<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled. The routing test is whether the repository can answer an item today, so a session grepping handles the yes and the next bullet handles the no.
 - When the current state is unmeasured and more than one approach is live, invoke `aitk:claude-groundwork` first. It opens a track folder under `.claude/groundwork/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled. A track may run experiments to settle a question, writing a fixture it reads itself under `.claude/.tmp/groundwork-fixtures/<slug>/` and spawning up to three billed headless runs before it asks. A fixture a headless run is pointed at sits outside the repository, since a session started under the project root inherits that project's `CLAUDE.md` and rules and would measure them instead of the arm.
 - Invoke `aitk:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
@@ -131,6 +132,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 
 | Skill                        | When to use                                                                                                          |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `aitk:claude-intake`         | File a brain dump into an inventory under `.claude/intake/`, one item per finding with a verdict                     |
 | `aitk:claude-groundwork`     | Before a plan is warranted, measure an unknown in a track folder under `.claude/groundwork/`                         |
 | `aitk:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                            |
 | `aitk:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                     |
