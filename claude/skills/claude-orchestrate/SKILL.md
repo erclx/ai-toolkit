@@ -37,6 +37,8 @@ The roadmap is optional and this skill does not require it. It carries why a seq
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do. On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
+That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The two runbooks sit at `references/orchestrator-handoff.md` and `references/orchestrator-resume.md` inside this skill's own folder, so a person who knows their plugin root opens either one directly and follows it without this skill loaded at all.
+
 ## Output
 
 ```plaintext

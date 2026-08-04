@@ -51,6 +51,7 @@ The runbooks the session cannot run from memory fail on a third axis, which is w
 - Priority file absent: report the queue and say the order is unrecorded rather than inferring it from the index
 - Roadmap absent: omit the roadmap line rather than asserting a version the file does not state
 - Roadmap present but never committed: report the date as uncommitted, since a blank reads as a formatting slip
+- This body dropped from a long session approaching a compaction: name the re-invocation and the runbook paths, since the routing lives in the body and a user-invoked skill routes nothing once it is gone
 
 ## Out of scope
 
