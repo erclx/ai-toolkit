@@ -94,12 +94,14 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 ## The loop
 
 1. Own the roadmap while a scope exists to sequence. Capture a needed draft or resequence of `.claude/ROADMAP.md` in the plan or a task file, naming the MVP list in `.claude/REQUIREMENTS.md` as the source, so a worker runs `claude-roadmap` in its branch and the tracked edit ships in a PR rather than dirtying main. Stop owning it once that list has shipped, since later work then arrives as discrete items rather than as versions.
-2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. A constraint supplied from here that names a surface to leave alone states which of two acts it forbids, and the rule governing that is Step 3 of `claude-feature` under Constraints.
+2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. Every plan written from here also carries a constraint per track in flight, which the paragraph below this list states.
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
 5. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
 6. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate. Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. It routes a moved or answered pull request straight to a re-review and reports an opened one without acting, which keeps every first pass a batched judgment this session triggers.
 7. Close the loop. After the worker runs `claude-address-review`, re-review if needed, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
+
+A plan written here is written against a tree several branches are already changing, so it names the file set of every track in flight as a constraint, one set per track, read from the Touches column of that track's row. State for each set which of the two acts it forbids, per Constraints in `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. A bare path list leaves the worker guessing, which is how a plan ends up forbidding the repair of a citation the change broke.
 
 ## Boundaries
 
@@ -114,7 +116,13 @@ The tracked-file boundary collides with `CLAUDE.md`, which says to handle a smal
 
 ## Refilling the ready queue
 
-Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.
+Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge, whenever the ready list thins, and whenever a wave is in flight with fewer unclaimed plans than there are workers building. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.
+
+The third trigger reaches a window the first two cannot. A session with three workers mid-build has merged nothing and has watched its ready list sit still, so both reactive triggers stay silent across the one stretch where planning costs the session nothing, and the wave finishes into an empty `## Run now`. Nothing starts this pass, in the way nothing starts the review poll, so it holds only while the session applies it.
+
+It counts unclaimed plans against workers rather than reading the reserve in step 4, which is sized for one worker finishing and falls short of a wave landing together. A plan a worker has already taken serves nobody who finishes next, so counting it is what lets the queue read full while it is about to empty. How many to write forward past that floor is the parallelism call rather than a count of free slots, and `## Parallelism` below states what binds it.
+
+### Running the refill
 
 1. Run `gh pr list --state open` and `git log --oneline -8`. Report any pull request whose review has not been posted and stop for that one first.
 2. For each pull request merged since the last sweep, place every finding it produced. Route a finding that changes a rule to the standard or rule that states it, one that changes another task to that task's Findings, and one that overturns a groundwork lean to that folder marked answered. Never leave a finding in a pull request thread alone.
@@ -122,7 +130,7 @@ Keep enough planned, non-conflicting tasks available that a free worker never wa
 4. Read `.claude/tasks/priority.md` and count entries under its `## Run now` heading that carry a written plan. Keep one in reserve beyond what is running.
 5. Promote by whether a task establishes functionality rather than by age. Prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
 6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint.
-7. Write a plan for each newly promoted task with `claude-feature`, then report:
+7. Write a plan for each newly promoted task with `claude-feature`, carrying the in-flight constraint that The loop above states, then report:
 
 ```plaintext
 Capture: owed since <the last handoff, or session start when none has run>

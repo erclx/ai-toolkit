@@ -11,6 +11,10 @@ Without this skill, the session holding the cross-feature picture starts buildin
 
 The queue fails in both directions. It empties and a free worker waits, or it fills with whatever is oldest rather than with what establishes a mechanism. A plan handed over unverified is the quiet one, since it goes stale from whatever merged after it was written, and a worker that trusts its account of the tree builds against a shape that no longer exists. A second orchestrator makes all of this unrecoverable, because the board is gitignored and neither session can read the other's writes.
 
+Refilling on a merge and on a thinning ready list leaves the window between them unwatched. A wave mid-build has merged nothing and has moved no rows, so both conditions stay silent across the whole build and the wave finishes into an empty queue, which lands planning on the critical path directly after the stretch where it would have cost nothing.
+
+Writing those plans against the tree alone is the second half, since several branches are already changing the shape a plan describes. A plan carrying a bare path list rather than a constraint per in-flight track leaves the worker guessing which act each path forbids, which is the dangling citation the rule against bare paths already exists to prevent.
+
 The session also writes surfaces it is told only how to read. Refilling the queue promotes and demotes rows in the priority file with no stated method, so a session invents one, and an inline rewrite exits clean when it matches nothing and leaves the board wrong with nothing reporting it. A row carrying prose where a plan pointer belongs costs a worker dispatch, because the ship chain refuses at its guard after the worktree is already open. A plan archived from a worker's own branch strands the pointer the board still carries, and the row reads as correct until someone follows it.
 
 The ban on writing at all fails on a different axis, which is that nothing enforces it and a session weighs proportionality against it. A one-line prose correction found while orchestrating satisfies the root instruction to handle a small edit immediately and violates this rule, and a session given no statement of which one wins takes the smaller apparent cost and authors the change. That removes the independent pass the repository built to catch what a self-review misses, and the vantage does not come back, since no later session can review the change without re-deriving the context that produced it. A correction no open task owns has nowhere to go either, so the route matters as much as the ban.
@@ -30,6 +34,8 @@ The session also records nothing of what it learns. Both other callers of memory
 - Place every finding a merged pull request produced against the surface that owns it
 - Date the roadmap line from that file's last commit, so an old sequence reads as old
 - Keep one planned, non-conflicting task in reserve beyond what is running
+- Refill the queue while a wave is still building, rather than on a merge and a thinning list alone, since neither of those fires across the window planning costs nothing
+- Carry a constraint naming each in-flight track's file set in every plan written from here, stating per set which of the two acts it forbids, since a bare path list leaves a broken citation in place
 - Write the priority file with an editing tool that errors on a non-match, since the board is where a silent failure costs a dispatch
 - Carry a plan pointer in the Plan column and a file set in the Touches column, so a row's readiness and disjointness claims stay checkable
 - Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
