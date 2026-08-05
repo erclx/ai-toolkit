@@ -107,35 +107,7 @@ Skip this step silently when `.claude/wireframes/` does not exist or has no surf
 
 Reuse the diff from the baseline above and filter for UI-affecting paths. UI-affecting paths are framework-dependent. Default heuristic: any file under a `components/`, `features/`, `pages/`, `app/`, `routes/`, or `screens/` folder, plus any `*.tsx`, `*.jsx`, `*.vue`, or `*.svelte` file anywhere in the diff.
 
-For each UI-affecting path, derive a candidate surface slug from the file's basename and parent folder (e.g. `web/src/features/mock/MockDemoStrip.tsx` → `mock-demo-strip` or `mock`). Cross-reference against the surface files in `.claude/wireframes/`:
-
-- **Contradicted sections:** when a surface file exists for a path in the diff and the diff renames or removes a literal string that appears in the wireframe prose (e.g. provider name, button label, copy string), output a one-line report entry and stop. Do not auto-rewrite prose. Operator resolves.
-- **Uncovered surfaces:** when a UI-affecting path has no matching surface file by slug, write `.claude/wireframes/<slug>.md` with this stub:
-
-  ```markdown
-  ---
-  title: <Slug as title case>
-  description: TODO: describe the surface.
-  ---
-
-  # <Slug as title case>
-
-  TODO: describe when and where this surface appears.
-
-  ## Behavior
-
-  - TODO
-  ```
-
-  Skip the write when the slug would collide with an existing file (different surface, same slug). Surface the collision in the report instead.
-
-Output one line per finding:
-
-- `⚠ Wireframe drift in .claude/wireframes/<surface>.md: <contradicted string>`
-- `📝 Stubbed: .claude/wireframes/<surface>.md`
-- `⚠ Slug collision: <slug> matches existing <existing-surface>.md, review and rename`
-
-If the sweep finds nothing, skip silently.
+Skip silently when the filter leaves nothing, which is every branch touching no UI. Otherwise read `${CLAUDE_SKILL_DIR}/references/wireframe-sweep.md` for the slug derivation, the two findings it reports, the stub it writes, and the output lines.
 
 ## Step 5: diagram staleness sweep
 
@@ -147,49 +119,7 @@ Follow `.claude/standards/diagrams.md` for the marker fields this step writes, o
 
 Both findings key on something literally entering or leaving the tree. Anything looser fires on ordinary feature work and rebuilds the ignored warning this sweep replaced.
 
-**Contradicted entries.** For each entry, collect the backticked code paths its explanation cites. When a cited path is in the diff as a delete or a rename and no longer exists in the tree, append a `stale` key to that entry's frontmatter naming the path:
-
-```yaml
-stale: 'src/gov/install.ts no longer exists'
-```
-
-Append that key alone. Never edit `verified`, `title`, `description`, or `category`, and never touch the body. When the entry already carries `stale`, extend the existing line rather than adding a second key.
-
-**Uncovered kinds.** The standard fixes one source signal per kind. Stub a kind when the diff adds its signal file and no entry covers that kind. The trigger is the signal appearing, never a file under it changing, so a branch editing a component folder that `components.md` already covers produces nothing here.
-
-| Signal added by the diff                                                                                           | Kind stubbed when absent |
-| ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| `.claude/REQUIREMENTS.md`                                                                                          | `system-context.md`      |
-| `.claude/ARCHITECTURE.md`                                                                                          | `components.md`          |
-| A deploy or infrastructure config (`Dockerfile`, `.github/workflows/*`, `vercel.json`, `fly.toml`, `compose.yaml`) | `deployment.md`          |
-
-Leave `request-flow.md` and `data-pipeline.md` out. Neither has a source signal a diff can point at, so a rule covering them would guess at when they went stale.
-
-Write the stub at `.claude/diagrams/<kind>.md`:
-
-```markdown
----
-title: <Kind as title case>
-description: 'TODO: name the question this entry settles.'
-category: <the category the standard fixes for this kind>
-verified: 'TODO: never verified'
----
-
-# <Kind as title case>
-
-TODO: draw this. `<signal path>` entered the tree with no entry covering this kind.
-
-Run `/claude-diagram <kind>` to replace the stub.
-```
-
-No mermaid fence. An empty stub is visible debt that reaches review through the branch diff, while a generated diagram nobody rendered is invisible debt that reads as verified. A fence here invites the next session to fill it in without a render.
-
-Output one line per finding:
-
-- `⚠ Diagram stale: .claude/diagrams/<kind>.md cites <path>, which left the tree`
-- `📝 Stubbed: .claude/diagrams/<kind>.md`
-
-If the sweep finds nothing, skip silently. An ordinary change that adds no signal and deletes no cited path produces no output at all.
+Past the skip above, read `${CLAUDE_SKILL_DIR}/references/diagram-sweep.md` for the two findings, the signal table deciding an uncovered kind, the stub it writes, and the output lines. Both tests need the cited paths and the signal list that file carries, so the folder check is the only one the body can settle on its own.
 
 ## Step 6: flag CLAUDE.md drift
 
