@@ -314,12 +314,19 @@ function narration(
     // the bullets around it are two lists and the second has no antecedent
     // above it. A block indented under its bullet stays inside the item.
     //
-    // The opening delimiter decides for every line of the block. Reading each
-    // line instead ends the run on a blank line inside an indented fence, which
-    // has no indentation to read, and on a content line at column zero, which
-    // CommonMark permits because only the fence's own indent is stripped. Both
-    // are missed findings rather than false ones, so no corpus count moves when
-    // this is wrong.
+    // The first delimiter of a contiguous fenced run decides for every line of
+    // it. Reading each line instead ends the run on a blank line inside an
+    // indented fence, which has no indentation to read, and on a content line
+    // at column zero, which CommonMark permits since only the fence's own
+    // indent is stripped.
+    //
+    // Two blocks with nothing between them are one such run, so the second
+    // inherits the first's answer and an unindented block behind an indented
+    // one leaves a run standing that should have ended. Telling them apart
+    // needs the closing delimiter, which `BodyLine` does not carry, and parsing
+    // one here would be the second fence walker this repository consolidated
+    // away after its first pair disagreed. That fix belongs in
+    // `src/markdown/scan.ts` rather than in a copy of it.
     if (line.fenced) {
       if (fenceInsideList === undefined) {
         fenceInsideList = INSIDE_LIST.test(line.text)
