@@ -18,6 +18,7 @@ import {
   stackExists,
 } from '@/tooling/manifest'
 import { scan, type ScanResult } from '@/tooling/scan'
+import { recordToolingChain } from '@/tooling/stamp'
 import { intro, logAdd, logInfo, logStep, logWarn, outro, select } from '@/ui'
 
 const GREEN = '\x1b[0;32m'
@@ -219,6 +220,7 @@ async function runSync(
   report(result, includeReferences)
 
   if (result.totalChanges === 0) {
+    await stampChain(prepared.chain, prepared.target)
     outro()
     process.stderr.write(`${GREEN}✓ Everything up to date${NC}\n`)
     return 0
@@ -255,9 +257,33 @@ async function runSync(
     await applyReferences(prepared.chain, prepared.target, pending)
   }
 
+  await stampChain(prepared.chain, prepared.target)
+
   outro()
   process.stderr.write(`${GREEN}✓ Tooling sync complete${NC}\n`)
   return 0
+}
+
+/**
+ * Writes the chain after the copies land, so a partial apply that throws leaves
+ * the previous record rather than a claim the target does not meet.
+ */
+async function stampChain(chain: Manifest[], target: string): Promise<void> {
+  const recorded = await recordToolingChain(
+    PROJECT_ROOT,
+    target,
+    chain,
+    new Date(),
+  )
+
+  if (recorded) {
+    logInfo(`Recorded chain: ${chain.map((entry) => entry.name).join(' < ')}`)
+    return
+  }
+
+  logWarn(
+    'Workspace root: no chain recorded. Tooling reports unmeasured because the answer differs per package.',
+  )
 }
 
 async function runInject(
@@ -288,6 +314,15 @@ async function runInject(
     await injectManifest(prepared.chain, prepared.target)
   } else if (opts.gitignore) {
     await injectGitignore(prepared.chain, prepared.target)
+  }
+
+  // Only a whole-stack inject records the chain. A flag-scoped run installs one
+  // category, and a chain recorded from it would send the report scanning for
+  // configs and deps the caller never asked to install. The claude stack is
+  // excluded here rather than in `prepare`, which is what keeps `aitk claude`
+  // able to drive injection while its stack stays out of the tooling record.
+  if (applyAll && !isStackExcluded(stack)) {
+    await stampChain(prepared.chain, prepared.target)
   }
 
   if (framed) outro()
