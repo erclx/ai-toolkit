@@ -22,13 +22,14 @@ Load a domain doc with `aitk docs <topic>` only when the intent touches that dom
 
 Run `aitk sync --check . --json` before routing. It reports what a target is behind on across every surface, so the intent comes from the project state rather than from the user having to know it already. Skip only when the user named a single operation to run.
 
-Read five fields off the report and carry each to `## Route`:
+Read six fields off the report and carry each to `## Route`:
 
 - `unmigrated`: a domain sitting at the root layout with nothing under `.claude/`. The most urgent finding, because that domain reports no drift of its own while being entirely behind
 - `superseded`: a file a newer seed folder replaced. Report it and stop. No command moves it, since the content is the project's own
 - `seeds`: entries are `matching`, `stale`, `drifted`, or `missing`. Anything but `matching` needs the seed handoff
 - `domains[].entries`: per-file `stale`, `customized`, `stranded`, and `orphaned` as before
 - `historyUnavailable` on a domain or on `seeds`: attribution failed, so treat every difference as unverified and say so rather than reporting a file as untouched
+- `tooling`: read `measured` first. Every count under it is zero when it is false, which is an absence of measurement rather than a measured zero. Past that, `chain` names the stacks the install resolved, nearest first, and `counts.gitignore` counts the managed ignore entries the target is missing.
 
 State what the report found in one line per finding before acting on any of it.
 
@@ -45,7 +46,29 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 - Seed or standards drift in `CLAUDE.md` or `.claude/` preambles: hand off to `claude-seed-sync`
 - Install one snippet, standard, or rule: run the domain `install` command
 - Sync one domain or every installed domain: run `aitk <domain> sync` or `aitk sync`
+- Fix only the ignore entries of the installed stack: run `aitk tooling inject --gitignore <stack>`
 - Browse what is available: run `aitk <domain> list`
+
+That row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false one splits three ways. Report tooling as unmeasured in each, name the cause, and run nothing, since the zero counts underneath are unmeasured rather than clean:
+
+- An empty `chain` at a workspace root, which carries `pnpm-workspace.yaml` or a `workspaces` key in `package.json`: no chain is recorded there by design, since one would guess at what the packages hold. Name `aitk tooling sync <stack> <path>` against a package.
+- An empty `chain` anywhere else: no tooling install is recorded, so name `aitk tooling sync` as the command that records one rather than asking the user for a stack.
+- A `chain` carrying names: this toolkit no longer ships those stacks. Name them, since injecting would write against a retired name.
+
+On a measured report, take `<stack>` from the first name in `tooling.chain`, which records the stack nearest the target. Inject re-resolves that leaf's own chain, so a target whose recorded chain is shorter receives the entries from the layer its install skipped. Say so before running it.
+
+### Audits
+
+Four audits measure a surface without changing it. Offer the ones whose surface the target carries, list them together, and let the user pick. Run none of them unasked, and never treat a finding as a reason to abandon the operation the user asked for, since each reports judgments beside facts.
+
+- `.claude/context/` present: offer `aitk context audit`
+- A record folder present under `.claude/`, one of `plans`, `groundwork`, `intake`, or `memory`: offer `aitk records validate <kind>` for each one found
+- Markdown that git lists: offer `aitk markdown audit`
+- TypeScript or shell source present: offer `aitk comments scan`
+
+An audit offered against a surface the target lacks reports an empty run as a finding, which is the same defect as never offering it at all. Check the surface before naming the command.
+
+The markdown row is the one every target satisfies, since a project with no markdown is not one this reaches. Its condition is stated so the four rows read alike, and the row needs no gate beyond it.
 
 ## Execute
 
@@ -54,6 +77,13 @@ For operations this skill runs directly:
 - Read the catalog first with `aitk <domain> list --json`, then match against project context
 - Run the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. The tool permission dialog is the confirmation gate.
 - Report the command run and what changed. Emit the full relative path for any file written.
+- Re-run `aitk sync --check . --json` after any operation that wrote, and compare it against the report `## Diagnose` read before acting
+- Report the fields that moved and name the write that moved each one. Do not restate the second report, since the value sits in the difference alone.
+- State a field that moved the wrong way and leave it for the user to decide on. The re-check reports and never repairs.
+
+A write can leave a target worse in a field the write never named, which stays silent while the operation itself succeeds. The re-check is what makes that visible, so it runs before the operation is reported as done.
+
+The comparison needs the earlier report. When `## Diagnose` was skipped because the user named a single operation, say the write ran with no baseline rather than describing the target from scratch, which would attribute differences another session made to this run.
 
 ## Boundaries
 

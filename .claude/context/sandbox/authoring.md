@@ -51,6 +51,12 @@ Stage numbering carries ordering, not identity. A stage exists because a commit 
 
 `scripts/sandbox/fixtures/anchor/create/` is the one tree outside the four-segment layout. It belongs to no single scenario, since all nine anchor scenarios provision from it, so `stage_anchor_tree` calls `create_from_fixtures` directly rather than going through `stage_fixtures`. It holds the minimum a scenario reads: `utils.js`, which `git/{pr,issue,followup}.sh` append to, plus a `.gitignore` matching what `init_empty_sandbox` writes. Three of the nine wipe the tree before staging their own and two overwrite what they need, so growing this fixture is warranted only when a scenario reads a file that is missing.
 
+### Rewriting a file provisioning already wrote
+
+`init_empty_sandbox` writes a `.gitignore` holding `.claude/.tmp/` and `node_modules` before `stage_setup` runs, so a scenario modelling ignore-entry drift is rewriting a file it did not create. Truncating that file drops both entries beside the ones the arm meant to strip, and a session that installs anything inside the sandbox then has `node_modules` tracked. Copy the file before the write that dirties it and restore the copy afterwards, which removes exactly what the write added and hardcodes nothing about what provisioning put there. Restating the two entries inline works until provisioning gains a third.
+
+The same shape covers any file the harness seeds and a scenario has to modify. A rewrite from a remembered baseline drifts the moment the baseline moves, and nothing reports it, since the arm still provisions and still asserts.
+
 ### Keeping a stage coherent
 
 A stage must leave the tree coherent with what the scenario claims it staged. `02-postgres` on the `claude/docs` `drift` arm replaced `src/db.ts` alone, moving `createTask` to `(title, userId)` and returning `rows[0]`, while `src/routes/tasks.ts` stayed at its `01-initial` content calling `createTask(title)` and reading `result.lastInsertRowid`. The commit message said the migration shipped and the route did not compile against the module it imported.

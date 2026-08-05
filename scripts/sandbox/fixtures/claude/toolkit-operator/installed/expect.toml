@@ -10,7 +10,9 @@
 # ceiling sits at the cap rather than at twice the observation, because a
 # truncated run reports one turn past its cap and a declaration above the cap
 # passes that assertion while every other one fails. The route continues into
-# `claude-seed-sync` once the sync refuses, which is where the turns go.
+# `claude-seed-sync` once the sync refuses, which is where the turns go. The
+# re-check after the write adds a pass on top of that 21, so a truncation here
+# is a signal to split the arm rather than to raise a ceiling already at the cap.
 max_turns = 30
 
 # The route, named as the command rather than as a skill, because this is the
@@ -27,6 +29,8 @@ manual = [
   "The reply does not route to `setup-init` or `migration-standards`. Semantic: a negative substring passes on every reply that phrases the wrong route differently",
   "The diagnose phase named the drifted files before the route was taken. Semantic: the filenames come off the report rather than from the skill, so a reply that printed the report without deciding anything carries the same tokens",
   "The sync ran under `AITK_NON_INTERACTIVE=1`. Unwired: the claim is about how a command was invoked, which the envelope does not carry",
+  "The run re-checked the target after the sync and reported the difference against the report it read in `## Diagnose`. Semantic: a reply restating the second report in full carries every token a comparison would",
+  "The re-check named the two staged files as what its own write moved, and claimed nothing about a file it did not touch. Semantic: the distinction is between two readings of the same field, which no substring separates",
 ]
 
 # The marker survives, which is what proves the router left the managed file
