@@ -77,7 +77,7 @@ Run one orchestrator at a time. The board is gitignored, so a second session rea
 
 Before a handoff, the orchestrator checks the plan against the tree rather than reading it: grep each construct it names and count the sites, confirm every phase label it cites is still open, and open each file it describes. A plan goes stale from whatever merged after it was written, and reading cannot catch that.
 
-`.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. A session inside a worktree reads them directly and writes them through the shell, since the file-editing tools refuse any path outside the worktree they are isolated to. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
+`.claude/plans/`, `.claude/review/`, and `.claude/memory/` all resolve at the main worktree root, so artifacts created in any session are visible from any sibling worktree. A session inside a worktree reads them directly and writes them through the shell, since the file-editing tools refuse a main-root path. See [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for the full rule and the domain-level fan-out guidance.
 
 The plan's shape is fixed by `.claude/standards/plan.md`: the section list, the filename, the lifecycle, and the contract its questions keep. Every question carries a `- Suggested:` line and an empty `- Answer:` slot, and a blank answer accepts the suggestion at execution time. That default is what makes a plan decision-ready in one pass, and it is the opposite of the contract an intake folder keeps, where an empty slot means nobody reached the item.
 
