@@ -35,7 +35,7 @@ The session also records nothing of what it learns. Both other callers of memory
 - Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
 - Lead a sweep report, a board report, and an analysis with the state, the open decisions, and the next action, keeping the evidence below them
 - Write the pre-compact handoff with what no other file carries, and name the runbook that reads it back
-- Capture what the session learned at the handoff rather than in the merge sweep, and have the sweep report the debt, since a capture per batch of merges bills the operator a wait while nothing ships
+- Capture what the session learned at the handoff rather than in the merge sweep, and have the sweep report the debt dated from the last handoff, since a capture per batch of merges bills the operator a wait while nothing ships and an undated row reads the same however long the debt has run
 - Carry every runbook the session cannot run from memory inside the skill, so each citation resolves for a project holding the plugin and nothing else
 - State which rule wins where the tracked-file ban collides with the root instruction on small edits, and where a correction no open task owns goes
 - State the review trigger as a recurring prompt rather than as one client's command, since the runbook ships to targets running whatever client they run

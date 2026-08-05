@@ -125,7 +125,7 @@ Keep enough planned, non-conflicting tasks available that a free worker never wa
 7. Write a plan for each newly promoted task with `claude-feature`, then report:
 
 ```plaintext
-Capture: owed, paid by the pre-compact handoff runbook
+Capture: owed since <the last handoff, or session start when none has run>
 Findings placed: <finding> → <destination>
 Archived: <task>
 Promoted: <task>, touches <surfaces>, parallel with <task> because <disjoint sets>
@@ -133,7 +133,7 @@ Serialized: <task> behind <task>, both write <file>
 Ready now: <tasks with plans, and what each waits on>
 ```
 
-The capture row states a standing debt rather than a per-run result. Running capture from here costs the operator a pass between merges while nothing ships, so the row names the moment that pays it and leaves the timing to them. `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` holds the step.
+The capture row states a standing debt rather than a per-run result. Running capture from here costs the operator a pass between merges while nothing ships, so the row leaves the timing to them and dates the debt, since a capture owed for twenty minutes and one owed all day want different answers and undated text reads the same either way. `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` holds the step that pays it.
 
 That block is the detail. Lead the reply with the three slots under Every later turn above, so the human reads what they own before the evidence for it.
 
