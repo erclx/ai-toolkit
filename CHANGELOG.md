@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.62.1](https://github.com/erclx/aitk/compare/v0.62.0...v0.62.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* **orchestrate:** close the tracked-file exception, widen the poll loop ([#862](https://github.com/erclx/aitk/issues/862)) ([45d7a91](https://github.com/erclx/aitk/commit/45d7a9132be4afcf5d673638327096a23d4ca7f8))
+
 ## [0.62.0](https://github.com/erclx/aitk/compare/v0.61.0...v0.62.0) (2026-08-05)
 
 
