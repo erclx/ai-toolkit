@@ -5,10 +5,10 @@
 # correctly in the few files that assert or explain that set.
 #
 # An `overrides` entry in `cspell.json` scopes this dictionary to those files by
-# name rather than loading it repo-wide. Loading it everywhere would let the
-# whole tree spell-approve the words the audit exists to flag, which trades a
-# failing push for an advisory line, since the audit gates nothing. A file that
-# needs one of these words is added to that entry.
+# name rather than loading it repo-wide. Both surfaces gate a push, so loading it
+# everywhere would spell-approve across the whole tree the words the ban gate
+# still fails on, leaving the two to disagree about one word. A file that needs
+# one of these words is added to that entry.
 analyse
 behaviour
 colour
