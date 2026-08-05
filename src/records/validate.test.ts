@@ -460,7 +460,7 @@ describe('checkMemory', () => {
     )
     const findings = checkMemory('project-scope-glob.md', entry(fields, RULE))
 
-    expect(kinds(findings)).toEqual(['title-missing'])
+    expect(kinds(findings)).toEqual(['title-is-slug'])
   })
 
   it('should report a rule-bearing body carrying no How to apply line', () => {

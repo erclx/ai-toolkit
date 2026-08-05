@@ -27,6 +27,7 @@ export type ValidateRefusal = (typeof VALIDATE_REFUSALS)[number]
 export const FINDING_KINDS = [
   'name-malformed',
   'title-missing',
+  'title-is-slug',
   'section-missing',
   'entry-unreasoned',
   'suggestion-missing',
@@ -622,10 +623,13 @@ export function checkMemory(name: string, text: string): Finding[] {
     )
   }
 
+  // Its own kind rather than `title-missing`, which means an absent heading on a
+  // plan. One kind covering both leaves a caller filtering the JSON unable to
+  // tell a record with no title from one whose title is its own slug.
   if (readField(frontmatter, 'title') === name.replace(/\.md$/, '')) {
     findings.push(
       finding(
-        'title-missing',
+        'title-is-slug',
         name,
         name,
         'is titled with its own filename, so the catalog renders a slug where the rule belongs.',
