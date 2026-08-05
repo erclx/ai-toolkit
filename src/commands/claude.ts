@@ -689,5 +689,7 @@ function reportUnmeasured(): void {
   logInfo(
     'Whether each Must traces to a stated gap, whether a gap reads as an observed failure rather than an intent, and whether a description routes.',
   )
-  logInfo('The 5,000-word body ceiling is mechanical and still absent here.')
+  logInfo(
+    'The 150-line body checkpoint is mechanical and still absent here, and it would print a count rather than a defect.',
+  )
 }

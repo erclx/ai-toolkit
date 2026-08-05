@@ -188,7 +188,7 @@ Without this skill, a session <observed failure>, <observed failure>.
 - Move a catalog, a table of cases, or a format spec running past roughly 15 lines to `references/`. Procedure prose stays, since a session sent to a reference for its own steps pays two reads for one job.
 - Name the branch that skips a block before moving it. Body lines are paid on every invocation and a reference only when the body sends the session to it, so a block every run dereferences costs a read and saves nothing.
 - Keep the trigger, the skip condition, and the guard in the body. A run that never reaches the block has to decide that without opening the reference.
-- Give a reference two skills read its own copy under each, generated from the single source per `## Path resolution`. Never point one skill at a sibling skill's folder.
+- Never point one skill at a sibling skill's folder for a reference both read. Each skill carries its own copy under `references/`, generated rather than hand-copied by the rule in `## Path resolution`.
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Link to `references/` files explicitly so Claude knows to load them
 
