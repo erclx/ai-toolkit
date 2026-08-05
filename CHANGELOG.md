@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.67.0](https://github.com/erclx/aitk/compare/v0.66.1...v0.67.0) (2026-08-05)
+
+
+### Features
+
+* **sync:** record the tooling stack chain in the install stamp ([#887](https://github.com/erclx/aitk/issues/887)) ([0c951cd](https://github.com/erclx/aitk/commit/0c951cdad3dc76b5b77eb1833827d1ad80b87181))
+
+
+### Bug Fixes
+
+* **worktree:** make the entered branch pass the guards downstream ([#884](https://github.com/erclx/aitk/issues/884)) ([af08494](https://github.com/erclx/aitk/commit/af084942b2b15bdc603cb09adc203c5353b1a8eb))
+
 ## [0.66.1](https://github.com/erclx/aitk/compare/v0.66.0...v0.66.1) (2026-08-05)
 
 
