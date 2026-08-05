@@ -1,0 +1,17 @@
+# British spellings `aitk markdown audit` reports as findings.
+#
+# These are not approved project vocabulary. They are the closed set the audit
+# derives from the examples in `standards/prose.md`, and they have to spell
+# correctly in the few files that assert or explain that set.
+#
+# An `overrides` entry in `cspell.json` scopes this dictionary to those files by
+# name rather than loading it repo-wide. Loading it everywhere would let the
+# whole tree spell-approve the words the audit exists to flag, which trades a
+# failing push for an advisory line, since the audit gates nothing. A file that
+# needs one of these words is added to that entry.
+analyse
+behaviour
+colour
+organise
+recognise
+summarise

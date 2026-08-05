@@ -1,0 +1,183 @@
+/**
+ * A fence opens on a run of three or more backticks or tildes and closes on a
+ * run of the same character at least as long. Length matters: a ```` block
+ * displaying a ``` example closes on neither of the inner delimiters, and a
+ * walker toggling on any run reads the second inner fence as an opening and
+ * inverts the rest of the file.
+ */
+const FENCE = /^(`{3,}|~{3,})/
+
+/** Anchored at position 0, so a `---` block inside a fenced template is body. */
+const FRONTMATTER = /^---\n[\s\S]*?\n---\n?/
+
+/**
+ * Inline code, a link destination, and an autolink, the three spans holding
+ * text a reader is shown rather than told.
+ *
+ * The bans this masking serves are stated with backticked examples, so a
+ * standard quoting its own banned character would report itself without it. A
+ * link destination is masked because a query string carries a semicolon that no
+ * rewrite of the sentence can remove.
+ */
+const CODE_SPAN = /(`+)(?:(?!\1).)*\1/g
+const LINK_DESTINATION = /\]\([^)]*\)/g
+const AUTOLINK = /<[^>\s]+>/g
+
+export interface BodyLine {
+  readonly number: number
+  readonly text: string
+  /** True on a fence delimiter and on every line between one pair. */
+  readonly fenced: boolean
+}
+
+export type BanKind = 'character' | 'word' | 'spelling'
+
+export interface BanFinding {
+  readonly line: number
+  readonly column: number
+  readonly kind: BanKind
+  /** The term as the standard states it, so a report names what to look up. */
+  readonly term: string
+}
+
+export interface BanSets {
+  readonly characters: readonly string[]
+  readonly words: readonly string[]
+  readonly spellings: readonly string[]
+}
+
+/**
+ * Marks which lines sit inside a fence without dropping them.
+ *
+ * Each measure excludes a fence for its own reason and needs a different
+ * response. The depth measure skips a fenced line so an example cannot break
+ * the run around it, bullet folding treats one as a break so a bullet does not
+ * absorb the block below it, and the ban scan ignores it outright. Returning
+ * the mark rather than a filtered list is what lets one walk serve all three.
+ */
+function markFences(texts: readonly string[], offset: number): BodyLine[] {
+  const lines: BodyLine[] = []
+  let fence: string | undefined
+
+  for (const [index, text] of texts.entries()) {
+    const match = FENCE.exec(text.trim())
+    let fenced = false
+
+    if (fence) {
+      fenced = true
+      const closes =
+        match && match[1][0] === fence[0] && match[1].length >= fence.length
+      if (closes) fence = undefined
+    } else if (match) {
+      fenced = true
+      fence = match[1]
+    }
+
+    lines.push({ number: offset + index + 1, text, fenced })
+  }
+
+  return lines
+}
+
+/**
+ * Drops the frontmatter while keeping every surviving line's original number,
+ * so a finding points at the line an editor opens rather than at an offset into
+ * the body.
+ */
+export function bodyLines(source: string): BodyLine[] {
+  const match = source.match(FRONTMATTER)
+  const offset = match ? match[0].split('\n').length - 1 : 0
+
+  return markFences(
+    source
+      .slice(match ? match[0].length : 0)
+      .replace(/\n$/, '')
+      .split('\n'),
+    offset,
+  )
+}
+
+/**
+ * Drops every fenced block from raw text, frontmatter included as content.
+ *
+ * The record validators read whole files whose frontmatter is part of what they
+ * check, so this walks the source as given rather than through `bodyLines`.
+ */
+export function linesOutsideFences(text: string): string[] {
+  return markFences(text.split('\n'), 0)
+    .filter((line) => !line.fenced)
+    .map((line) => line.text)
+}
+
+/** Blanks a span while holding its width, so a column stays where it was. */
+function blank(match: string): string {
+  return ' '.repeat(match.length)
+}
+
+/**
+ * Replaces displayed spans with spaces of equal width.
+ *
+ * Equal width is what keeps a reported column pointing at the character an
+ * editor puts the cursor on, which a plain deletion would shift left by
+ * everything masked ahead of it on the line.
+ */
+export function maskDisplayed(text: string): string {
+  return text
+    .replace(CODE_SPAN, blank)
+    .replace(LINK_DESTINATION, blank)
+    .replace(AUTOLINK, blank)
+}
+
+function escape(term: string): string {
+  return term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * Finds every banned term outside a fence, a code span, and a link.
+ *
+ * A word ban matches on word boundaries and either casing, since the standard
+ * states each in lowercase and bans the word rather than a spelling of it. This
+ * is what separates the check from the pattern that produced most of the
+ * intake's false positives: `exercises` and `promises` end in the banned
+ * suffix and are not the banned words, and a closed set never reaches them.
+ */
+export function scanBans(
+  lines: readonly BodyLine[],
+  bans: BanSets,
+): BanFinding[] {
+  const found: BanFinding[] = []
+
+  const patterns: { kind: BanKind; term: string; pattern: RegExp }[] = [
+    ...bans.words.map((term) => ({
+      kind: 'word' as const,
+      term,
+      pattern: new RegExp(`\\b${escape(term)}\\b`, 'gi'),
+    })),
+    ...bans.spellings.map((term) => ({
+      kind: 'spelling' as const,
+      term,
+      pattern: new RegExp(`\\b${escape(term)}\\b`, 'gi'),
+    })),
+  ]
+
+  for (const line of lines) {
+    if (line.fenced) continue
+    const text = maskDisplayed(line.text)
+
+    for (const term of bans.characters) {
+      let column = text.indexOf(term)
+      while (column !== -1) {
+        found.push({ line: line.number, column, kind: 'character', term })
+        column = text.indexOf(term, column + term.length)
+      }
+    }
+
+    for (const { kind, term, pattern } of patterns) {
+      for (const match of text.matchAll(pattern)) {
+        found.push({ line: line.number, column: match.index, kind, term })
+      }
+    }
+  }
+
+  return found.sort((a, b) => a.line - b.line || a.column - b.column)
+}

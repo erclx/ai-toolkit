@@ -1,8 +1,7 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { $ } from 'bun'
-import { gitEnv } from '@/git-env'
+import { listRepositoryFiles } from '@/git-files'
 
 /**
  * Suppresses citation checking for the source line carrying it.
@@ -82,33 +81,6 @@ export function collectCitations(
 }
 
 /**
- * Lists the files a citation can live in: tracked, plus untracked files git
- * does not ignore. The untracked half is what keeps a new entry's references
- * checked on the branch that adds it rather than one push later.
- *
- * Returns undefined when git cannot answer, which the caller reports rather
- * than smoothing into an empty list. An empty list resolves every one of its
- * zero citations, so a degraded git would otherwise turn the push gate into an
- * unconditional pass with output indistinguishable from a clean tree.
- */
-async function listFiles(root: string): Promise<string[] | undefined> {
-  const run = async (args: string[]): Promise<string[] | undefined> => {
-    const result = await $`git -C ${root} ${args}`
-      .env(gitEnv())
-      .quiet()
-      .nothrow()
-    if (result.exitCode !== 0) return undefined
-    return result.text().split('\n').filter(Boolean)
-  }
-
-  const tracked = await run(['ls-files'])
-  const untracked = await run(['ls-files', '--others', '--exclude-standard'])
-  if (!tracked || !untracked) return undefined
-
-  return [...new Set([...tracked, ...untracked])].sort()
-}
-
-/**
  * `unavailable` is a distinct state from a clean scan.
  *
  * Finding nothing and being unable to look mean opposite things, and only one
@@ -136,7 +108,7 @@ export async function auditCitations(
   folders: readonly string[],
 ): Promise<CitationReport> {
   const pattern = citationPattern(folders)
-  const listed = await listFiles(root)
+  const listed = await listRepositoryFiles(root)
   if (!listed) return { kind: 'unavailable' }
 
   const candidates = listed.filter((rel) => !isFixture(rel))

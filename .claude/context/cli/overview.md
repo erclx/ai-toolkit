@@ -24,6 +24,8 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/worktree.ts` owns `mainWorktreeRoot()`, which every shared-scratch verb resolves its root through. It sat duplicated in the tasks and records command files until a third caller was due
 - `src/comments/` owns the comment census, reasoned about in `.claude/context/cli/audits.md`
 - `src/context/` owns the context-folder audit, reasoned about alongside it
+- `src/markdown/` owns the attribute-standard audit, reasoned about alongside both, and the fence walker every other markdown reader now shares
+- `src/git-files.ts` owns `listRepositoryFiles()`, the tracked-plus-untracked listing the citation check and the markdown corpus both take their file set from
 - `src/capture/` owns the documentation capture render, the one folder under `src/` the package excludes
 
 ## Gotchas

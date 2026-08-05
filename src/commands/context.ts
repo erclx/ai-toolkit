@@ -1,17 +1,13 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import {
-  BULLET_CHECKPOINT,
   type EntryReport,
   governsContent,
   LENGTH_CHECKPOINT,
   measureFolders,
   missingSections,
-  PEER_BULLET_CHECKPOINT,
   PROVENANCE_FOLDER,
-  RENDER_WIDTH,
   REQUIRED_SECTIONS,
-  RUN_CHECKPOINT,
   type SectionFinding,
 } from '@/context/audit'
 import { auditCitations, type CitationReport } from '@/context/citations'
@@ -23,6 +19,7 @@ import {
 } from '@/context/folders'
 import { isGating } from '@/context/gate'
 import { auditIndexes, type FolderDrift } from '@/context/index-drift'
+import { RENDER_WIDTH } from '@/markdown/structure'
 import {
   frameError,
   intro,
@@ -57,7 +54,7 @@ export function register(program: Command): void {
   context
     .command('audit')
     .description(
-      'Report required sections, entry length, depth, bullet weight, citations, provenance, and index drift',
+      'Report required sections, entry length, citations, catalog tables, provenance, and index drift',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -82,8 +79,11 @@ export function register(program: Command): void {
         '',
         'An unresolved citation always gates. --gate widens the gate to the',
         'other two findings that are facts rather than judgments: a missing',
-        'required section and index drift. Length, depth, bullet, table, and',
-        'provenance findings are thresholds and stay advisory under both.',
+        'required section and index drift. Length, table, and provenance',
+        'findings are thresholds and stay advisory under both.',
+        '',
+        'Depth and bullet weight are stated over every markdown file rather',
+        'than over a context entry, so `aitk markdown audit` measures them.',
         '',
         'Examples:',
         '  aitk context audit',
@@ -192,8 +192,6 @@ async function runAudit(
     reportCitations(citations, cited)
     reportSections(sections, folders)
     reportLength(entries)
-    reportDepth(entries)
-    reportBullets(entries)
     reportTables(entries)
     reportProvenance(entries, folders)
     reportDrift(drift)
@@ -221,11 +219,7 @@ async function runAudit(
         indexDrift: drift,
         checkpoints: {
           lines: LENGTH_CHECKPOINT,
-          run: RUN_CHECKPOINT,
-          runCountsBlankLines: true,
           renderWidth: RENDER_WIDTH,
-          peerBullet: PEER_BULLET_CHECKPOINT,
-          bullet: BULLET_CHECKPOINT,
           provenanceFolder: PROVENANCE_FOLDER,
           requiredSections: REQUIRED_SECTIONS,
         },
@@ -395,7 +389,7 @@ function reportLength(entries: readonly EntryReport[]): void {
     `Entries measure rendered lines at ${RENDER_WIDTH} columns, counting frontmatter and fenced blocks.`,
   )
   logInfo(
-    'A reference-heavy entry therefore ranks by its examples, which the depth check excludes.',
+    'A reference-heavy entry therefore ranks by its examples, which the depth check in `aitk markdown audit` excludes.',
   )
 
   const over = entries
@@ -411,96 +405,6 @@ function reportLength(entries: readonly EntryReport[]): void {
   pipeOutput(
     over
       .map((entry) => `${entry.rel}  ${entry.lines} rendered lines`)
-      .join('\n'),
-  )
-}
-
-/**
- * Names the render width and the blank-line convention on every run.
- *
- * The standard settles heading level and fenced blocks and stops there, so a
- * hand reader who drops blank lines lands a line or two below this number.
- * Stating both is what keeps the two measurements reconcilable, and the width
- * matters more than the blank lines because a number counted in rendered lines
- * cannot be reproduced without it.
- */
-function reportDepth(entries: readonly EntryReport[]): void {
-  logStep('Depth')
-  logInfo(
-    `Runs measure rendered lines at ${RENDER_WIDTH} columns and count blank lines.`,
-  )
-  logInfo(
-    `Fenced blocks are excluded, and so are peer lists averaging under ${PEER_BULLET_CHECKPOINT} characters a bullet.`,
-  )
-  logInfo(
-    'A run that is entirely table rows is excluded too, since a heading inside a table splits the table rather than the run.',
-  )
-
-  const over = entries
-    .filter((entry) => entry.longestRun > RUN_CHECKPOINT)
-    .sort((a, b) => b.longestRun - a.longestRun)
-
-  if (over.length === 0) {
-    logInfo(`No run past the ${RUN_CHECKPOINT}-line checkpoint.`)
-    return
-  }
-
-  logWarn(`${over.length} past the ${RUN_CHECKPOINT}-line checkpoint`)
-  pipeOutput(
-    over
-      .map(
-        (entry) =>
-          `${entry.rel}:${entry.longestRunLine}  ${entry.longestRun} rendered lines unbroken`,
-      )
-      .join('\n'),
-  )
-}
-
-/**
- * Groups by entry, and states its reach on every run, for the reasons the
- * provenance report does both.
- *
- * Bullets past the checkpoint cluster in a handful of entries and the heaviest
- * entries carry them a dozen at a time, so a flat list of bullets buries the
- * entry holding one. What a reader acts on is which file to open.
- */
-function reportBullets(entries: readonly EntryReport[]): void {
-  logStep('Bullets')
-
-  logInfo(
-    'Covers every audited folder, since the rule is stated in the standard governing every markdown file.',
-  )
-  logInfo(
-    'Top-level bullets measure characters, folding in continuation lines.',
-  )
-  logInfo(
-    'Nested items and fenced blocks are excluded. Weight is a judgment, never a defect.',
-  )
-
-  const carrying = entries
-    .filter((entry) => entry.heavyBullets.length > 0)
-    .sort((a, b) => b.heavyBullets.length - a.heavyBullets.length)
-
-  if (carrying.length === 0) {
-    logInfo(`No bullet past the ${BULLET_CHECKPOINT}-character checkpoint.`)
-    return
-  }
-
-  const total = carrying.reduce(
-    (sum, entry) => sum + entry.heavyBullets.length,
-    0,
-  )
-  logWarn(
-    `${plural(total, 'bullet')} past the ${BULLET_CHECKPOINT}-character checkpoint across ${carrying.length} ${carrying.length === 1 ? 'entry' : 'entries'}`,
-  )
-  pipeOutput(
-    carrying
-      .map(
-        (entry) =>
-          `${entry.rel}  ${plural(entry.heavyBullets.length, 'bullet')}\n${entry.heavyBullets
-            .map((found) => `  :${found.line}  ${found.characters} characters`)
-            .join('\n')}`,
-      )
       .join('\n'),
   )
 }
