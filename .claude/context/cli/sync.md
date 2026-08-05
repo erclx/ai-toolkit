@@ -27,7 +27,12 @@ The folder splits by job: the git workflow across `target.ts`, `git.ts`, and `wo
 ## What the stamp covers
 
 - A missing or corrupt stamp degrades to the unattributed report rather than failing, which is the only path an unstamped target has.
-- Tooling is outside the stamp and `src/tooling/` never calls `planSync`, running its own inject and manifest machinery instead. Naming the domains a target has not stamped, rather than the domains the toolkit could stamp, is what tells an uncovered domain from a clean one.
+- Tooling is a stamp domain without being a scanned one. `src/tooling/` never calls `planSync`, so it records the stack chain it resolved instead of file hashes, and `SCANNED_DOMAINS` in `src/sync/check.ts` is the narrower list the adapter, source-path, and install-marker lookups are keyed on. Adding a fifth domain means deciding which of the two lists it joins.
+- The chain is ordered and stored whole rather than as a leaf name. A stack extends another, and a `--skip` run installs fewer layers than the leaf's chain reproduces, so the report loads the recorded stacks directly rather than re-resolving. Re-resolving would report drift against a layer the target deliberately does not carry.
+- `chain` is optional on `DomainStamp`, which keeps a stamp written before tooling joined the domains parsing rather than reading as corrupt and discarding the three records it does carry.
+- A workspace root records no chain. One chain written there is a guess at what its packages hold, and the report saying unmeasured is the true answer. The detection reads `workspaces` in `package.json` and `pnpm-workspace.yaml`, and lives in `src/tooling/stamp.ts` so `src/sync/` never learns what a workspace is.
+- Only a whole-stack install records. A flag-scoped `aitk tooling inject --gitignore` installs one category, and a chain recorded from it would send the report scanning for configs and deps the caller never asked for. The `claude` stack is excluded at that call site rather than in `prepare`, which is what keeps `aitk claude` able to drive injection.
+- Naming the domains a target has not stamped, rather than the domains the toolkit could stamp, is what tells an uncovered domain from a clean one.
 - The anchor sits per domain rather than at the top of the stamp. Domains sync independently, so one shared revision lets one domain's sync advance the commit another measures its upstream range from, dropping that domain's changes out of the read. Per-file attribution never sees it, because `attribute` compares hashes and never reads the anchor, which is what makes it fail quietly.
 - `covers` is derived from the domains actually recorded, never from the constant list of domains the engine can stamp. A compile-time constant claimed coverage of domains a target had never stamped, which is the ambiguity the field exists to remove.
 
@@ -77,4 +82,6 @@ The workflow is skipped when the target is not a git root, and the pull request 
 
 Each domain bounds its upstream read by its own anchor and its own toolkit source path, so `standards/` commits are measured from when standards last synced rather than from whatever synced most recently. Plugin skills under `claude/` are never copied into a target and load live, so they cannot go stale. New ones appear in a separate read-only section read from the oldest anchor across domains, since over-reporting a skill costs a line while measuring from the newest would hide one.
 
-The report closes by naming the domains a target has left unstamped, alongside the standing caveat that tooling is never stamped at all.
+Tooling renders its own section, and it prints whether it was measured before it prints any count. A target with no chain recorded produces the same zero a current target does, so naming the state is the whole reason the section exists. It stays out of `hasDrift` on exactly the seeds grounds, since a golden config is one a project is expected to edit and a job counting it stays red with no remedy. Being unmeasured is not the reason, because an unmeasured report carries zero changes and would pass a count either way.
+
+The report closes by naming the domains a target has left unstamped, which now includes tooling when nothing recorded a chain.

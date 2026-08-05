@@ -117,6 +117,29 @@ commits touching its own source path. The `covers` field names the domains a
 target has actually stamped, so a domain that was never stamped is legible
 rather than reading as a clean one.
 
+### Tooling
+
+Tooling records the stack chain an install resolved rather than per-file hashes,
+since `src/tooling/` runs its own inject machinery and has no walk to attribute.
+The chain is ordered nearest stack first, which is what a `--skip` run needs:
+recording the leaf alone would send the next report measuring against a layer the
+target deliberately does not carry. The report loads exactly those stacks, scans
+them the way `aitk tooling sync` would, and counts what differs per category
+under `tooling.counts`.
+
+`measured` is the field the section exists for. A target carrying no chain
+reports `measured: false`, which separates tooling nobody has ever looked at from
+tooling that is current. Both produce zero changes otherwise. Every target
+installed before the record shipped starts unmeasured and leaves on its next
+`aitk tooling sync`, since backfilling would mean inferring the chain from
+installed files, which is the guess the record replaces.
+
+A workspace root records nothing, because each package resolves its own chain and
+one written at the root would be that same guess. Run the check against a package
+to measure it. Tooling never counts toward `--exit-code`, on the grounds seeds
+are already excluded on, since it reports golden configs a project is expected to
+edit and a job counting those stays red with no remedy.
+
 ### Surfaces reported beside the domains
 
 Three sections sit outside the per-domain scan, because each names something
