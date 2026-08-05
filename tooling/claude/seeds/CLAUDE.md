@@ -73,11 +73,8 @@
 
 - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
 - A fact about a domain goes to that domain's `.claude/context/` entry, not to memory. `claude-memory-capture` routes it there and `claude-docs` folds it in. Memory keeps only what no context entry owns.
-- Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
-- Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.
-- Before creating a new memory file, check for an existing one on the same topic. Update rather than duplicate.
-- Give every entry `title`, `description`, and a sentence-case `category`. Never hand-edit `.claude/memory/index.md`. A hook regenerates it from sibling frontmatter.
-- Never delete a memory entry. `claude-memory-review` moves a retired one to `.claude/.tmp/memory-archive/`.
+- Never delete a memory entry. Retire one by moving it to `.claude/.tmp/memory-archive/`. A bulk retire runs through the shell, where no file edit fires a path-scoped rule, and the folder is gitignored with nothing to recover from.
+- Follow `.claude/standards/memory.md` for the filename and type prefix, the frontmatter, the body shape each type carries, and the lifecycle. Run `aitk records validate memory` to check the pen against it.
 
 ## Scratch
 

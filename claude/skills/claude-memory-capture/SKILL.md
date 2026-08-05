@@ -9,6 +9,8 @@ Scan the current session for patterns worth persisting, send each to the surface
 
 A fact about a domain belongs in that domain's context entry, which the three-tier model already loads on demand. Writing it to memory instead puts it in a folder nothing opens. Routing is therefore the point of this skill and the memory file is the fallback.
 
+The filename and its type prefix, the frontmatter, the body shape each type carries, and the lifecycle are fixed by `.claude/standards/memory.md`, or `${CLAUDE_SKILL_DIR}/../../standards/memory.md` when the project does not have it. Read it before writing an entry and follow it rather than working the shape from memory.
+
 ## Guards
 
 - All `.claude/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
@@ -20,7 +22,8 @@ A fact about a domain belongs in that domain's context entry, which the three-ti
 
 Read in parallel from the project root, skipping any that do not exist:
 
-- `CLAUDE.md`: Memory section rules, including save thresholds and file format overrides
+- `.claude/standards/memory.md`: the filename, frontmatter, body shape, and lifecycle every entry follows
+- `CLAUDE.md`: the project's write location and any rule it states over the folder
 - `.claude/memory/index.md`: existing index, to avoid duplicates
 - `.claude/context/index.md`: the domain catalog Step 3 routes against
 - `.claude/standards/prose.md`: voice and banned words applied to memory file bodies
@@ -30,14 +33,9 @@ Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the pro
 
 ## Step 2: classify candidates
 
-Scan the session and group candidate patterns into four types:
+Scan the session and group candidate patterns as `feedback`, `project`, `user`, or `reference`. What each type holds and what makes one fire are the Types table in `.claude/standards/memory.md`. Read the table and classify against it rather than against a recollection of the four names.
 
-- **feedback**: explicit user corrections, stated preferences, or non-obvious confirmations
-- **project**: decisions, initiatives, deadlines, or motivations not derivable from git or code
-- **user**: role, expertise, responsibilities, or working preferences
-- **reference**: pointers to external systems (dashboards, trackers, channels)
-
-Apply the save threshold: a feedback memory only fires on explicit user correction, or on a pattern that repeated twice in the session. First-occurrence slips are noise. Project, user, and reference memories fire on first disclosure.
+Scan the whole session rather than its last exchange. A rule the user stated early and you followed since reads as settled and is exactly the one no file records.
 
 ## Step 3: route what a context entry owns
 
@@ -65,25 +63,13 @@ For each remaining candidate, grep `.claude/memory/` for an existing file on the
 
 ## Step 5: write the residue
 
-For each new memory, write to `.claude/memory/<type>-<slug>.md` with this frontmatter:
+Write each remaining candidate to `.claude/memory/<type>-<slug>.md`, following the template and the shape rules in `.claude/standards/memory.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every entry.
 
-```markdown
----
-title: <one-line human title, as it should read in the index>
-description: <one-line description per .claude/standards/prose.md § Frontmatter descriptions>
-category: <Feedback|Project|User|Reference>
----
-
-<memory body>
-```
-
-`category` is the type in sentence case, which is what the index renderer groups on, while the filename keeps the lowercase `<type>-` prefix. A description opening with a backtick or a colon needs single quotes, or the frontmatter fails to parse and the index goes stale.
-
-Feedback and project bodies must be three lines: the rule or fact on one line, a `**Why:**` line naming the session signal, and a `**How to apply:**` line for when the rule fires next. Keep each line tight. No narrative.
-
-User and reference bodies are a single sentence each.
+Two of its rules are the ones a capture pass gets wrong under time pressure. State the rule rather than the incident that produced it, since the session ending is the only reader who has the narrative. Write the `title` as the rule itself, never as the filename stem.
 
 Do not edit the index. `.claude/memory/index.md` is generated from sibling frontmatter by a `PostToolUse` hook, the same way the task board's index is, so a hand-appended row is drift the next regeneration discards.
+
+Run `aitk records validate memory` when the writes are done and fix what it names. It reads the whole pen rather than this session's writes, so treat a finding on a carried entry as one to fix in place rather than as a reason to stop.
 
 ## Output
 

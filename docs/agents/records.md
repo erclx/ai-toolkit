@@ -7,10 +7,11 @@ description: Validating the gitignored session records under .claude/, the per-k
 
 ## Validate
 
-`aitk records validate <kind>` reports where a session record and the standard governing it disagree. The three kinds are `plans`, `groundwork`, and `intake`, each a gitignored folder under `.claude/`.
+`aitk records validate <kind>` reports where a session record and the standard governing it disagree. The four kinds are `plans`, `groundwork`, `intake`, and `memory`, each a gitignored folder under `.claude/`.
 
 ```bash
 aitk records validate plans
+aitk records validate memory
 aitk records validate intake --json
 ```
 
@@ -30,10 +31,13 @@ Nothing fires it automatically. The folders are gitignored, so the standards-aud
 | `plans`      | A filename that is not `feature-<slug>.md`, a missing `# Feature:` heading, a missing required section, a files-to-touch entry naming no file or saying nothing about one, and a question carrying no suggestion or no answer slot    |
 | `groundwork` | A track with no `README.md` or no `01-current-state.md`, a file missing `title` or `description`, a `README.md` with no `date` as `YYYY-MM-DD`, an unnumbered file, and a track holding a decision without its handoff or the reverse |
 | `intake`     | A dump with no `00-overview.md`, the same frontmatter and numbering checks, an item missing any of `Problem`, `Fix`, `Worth it`, or `You`, and an item carrying `Open` with no `Suggested`                                            |
+| `memory`     | A filename whose prefix names none of the four types, an entry missing `title`, `description`, or `category`, a `category` disagreeing with that prefix, a title repeating the filename, and a rule-bearing body missing a part       |
 
 The half-closed track is the groundwork check a reader cannot run by eye. A folder holding `06` without `07` reads as closed to anyone scanning filenames while the file a returning session actually opens is absent.
 
-The item check skips `00-overview.md` and `99-next-session.md`, since neither holds items and running it over the handoff would report every heading it carries.
+The item check skips `00-overview.md` and `99-next-session.md`, since neither holds items and running it over the handoff would report every heading it carries. The memory walk skips `index.md` for the same reason, since the catalog is generated from its siblings rather than authored as an entry.
+
+A memory `category` is compared against the sentence-case form of the filename prefix rather than checked field by field, so one finding covers a prefix outside the four types, a field disagreeing with the prefix, and a casing drift that would open a second group in the catalog. The body check runs on `feedback` and `project` entries alone, because a `user` or `reference` entry is a single sentence by design and has no rule to apply.
 
 A plan section opens as a bold label or as an H2 and the check counts both, naming the standard's spelling when it reports one missing. The corpus splits roughly four to one between the two forms, so failing the variant would report nearly every plan on a rule that costs a reader nothing.
 
@@ -51,4 +55,4 @@ Skills branch on the findings rather than on the exit code:
 aitk records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)"'
 ```
 
-For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/standards/groundwork.md`, and `.claude/standards/intake.md`.
+For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/standards/groundwork.md`, `.claude/standards/intake.md`, and `.claude/standards/memory.md`.
