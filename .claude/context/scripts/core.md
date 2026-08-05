@@ -10,7 +10,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 ## The catalog
 
 - `bootstrap.sh`, run as `bun run bootstrap`: installs deps, links the CLI globally, and appends the Claude Code aliases to `~/.zshrc`. Idempotent and re-runnable
-- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the skill-path, plugin-boundary, context-citation, seed-standards, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
+- `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the skill-path, plugin-boundary, seed-independence, context-citation, seed-standards, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
 - `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then verify
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
 - `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context
@@ -18,6 +18,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `regen-hero.sh`: fills `assets/hero.html.tmpl` from five catalogs so no count on the README frame is hand-maintained. Clone-only, and it writes the HTML while `aitk capture` renders the image. The catalogs reach `bun --eval` as files under a `mktemp -d` rather than as environment variables, because Linux caps a single env entry at 131,072 bytes and `standards list --json` crossed it at 136,227 once two standards landed, up from 114,813. The failure is `execve` returning E2BIG, which reports `Argument list too long` and names no catalog, so it reads as a broken interpreter rather than as a payload that outgrew its channel. A file path is bounded whatever the catalogs grow to
 - `check-skill-paths.sh`: fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
+- `check-seed-independence.sh`: walks the `.md` under every root `collect_seed_roots` discovers and fails on the literal token `aitk`, so seed prose a target reads as instruction about itself never names a binary that target may not have
 
 ## What the hero frame chooses and what it samples
 
