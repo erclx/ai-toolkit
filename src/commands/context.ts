@@ -238,10 +238,14 @@ async function runAudit(
           renderWidth: RENDER_WIDTH,
           provenanceFolder: PROVENANCE_FOLDER,
           requiredSections: REQUIRED_SECTIONS,
-          // Carries the sets themselves rather than a loaded flag, so a record
-          // showing no finding says which terms were looked for.
-          narration:
-            narration.kind === 'loaded'
+          // Three states rather than two, so a record showing no finding says
+          // which terms were looked for. The key is absent when the run never
+          // scanned, which is `--citations-only`, and null when it scanned and
+          // no rule published both headings. Collapsing the first into null
+          // reports an absent rule against a run that never opened one.
+          narration: gateOnly
+            ? undefined
+            : narration.kind === 'loaded'
               ? {
                   source: narration.source,
                   pronouns: narration.pronouns,

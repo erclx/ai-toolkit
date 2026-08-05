@@ -229,6 +229,42 @@ describe('measureEntry', () => {
     ])
   })
 
+  it('should keep the run across a blank line inside a loose list', () => {
+    // Markdown reads two bullets around a blank line as one loose list, so a
+    // run that broke there would leave the shape reachable by spacing bullets.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 10, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
+  it('should leave a passive of use behind a copula unreported', () => {
+    // `is used to resolve` is the passive of `use`, not the past habitual the
+    // verb set means, and no other set term appears in the bullet.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- That glob is used to resolve the folder it scans.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should report the past habitual standing on its own', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- That glob used to resolve the folder it scans.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 9, pronoun: 'That', verb: 'used to' },
+    ])
+  })
+
+  it('should still report a copula that is itself a listed verb', () => {
+    // The guard rejects a verb sitting behind a copula, and `was` opening the
+    // clause is not behind one, so a passive past still reports through it.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- This was replaced by the observed maximum.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 9, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
   it('should end the run at a heading between two lists', () => {
     const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n## Gotchas\n\n- This was raised once and holds.\n`
 

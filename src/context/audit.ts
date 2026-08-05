@@ -256,6 +256,22 @@ function escape(term: string): string {
 }
 
 /**
+ * Copulas that turn the verb behind them into a present-tense passive.
+ *
+ * `used to` is the term this exists for, since `is used to resolve the folder`
+ * is the passive of `use` rather than the past habitual the set means. This
+ * list is English grammar rather than corpus vocabulary, so it stays in code
+ * while the two tunable sets stay in the rule, and a rule publishing two of
+ * three headings would be a fourth absent state to carry for no tuning anyone
+ * wants.
+ *
+ * What it costs is the perfect passive. `has been superseded` narrates a
+ * supersession and is rejected with the rest, which is a recall gap taken
+ * knowingly on the trade this check already makes everywhere else.
+ */
+const COPULA = ['is', 'are', 'be', 'been', 'being', 'was', 'were']
+
+/**
  * Finds the bullets narrating a decision the bullet above them replaced.
  *
  * The signal is structural rather than lexical, and the corpus is what decides
@@ -270,10 +286,16 @@ function escape(term: string): string {
  *
  * The pronoun is matched cased and anchored, since a mid-sentence `this` is a
  * determiner rather than a back-reference. The verb is matched uncased anywhere
- * in the bullet, since the tense is what carries the signal wherever it sits.
- * Displayed spans are masked so a term quoted in backticks is not read as prose
- * the entry writes, and fenced blocks are skipped for the reason the scans
- * above skip them.
+ * in the bullet, since the tense is what carries the signal wherever it sits,
+ * and rejected behind a `COPULA` for the reason stated there. Displayed spans
+ * are masked so a term quoted in backticks is not read as prose the entry
+ * writes, and fenced blocks are skipped for the reason the scans above skip
+ * them.
+ *
+ * A blank line does not end the run. Markdown reads two bullets around one as a
+ * single loose list, so breaking there would leave the shape reachable by
+ * anyone who spaced their bullets out. What ends a run is content that is
+ * neither a bullet nor indented under one.
  */
 function narration(
   lines: readonly BodyLine[],
@@ -286,11 +308,7 @@ function narration(
 
   for (const line of lines) {
     if (line.fenced) continue
-
-    if (line.text.trim() === '') {
-      following = false
-      continue
-    }
+    if (line.text.trim() === '') continue
 
     const bullet = line.text.match(TOP_BULLET)
     if (!bullet) {
@@ -310,7 +328,10 @@ function narration(
       )
       const verb = pronoun
         ? terms.verbs.find((term) =>
-            new RegExp(`\\b${escape(term)}\\b`, 'i').test(text),
+            new RegExp(
+              `(?<!\\b(?:${COPULA.join('|')})\\s+)\\b${escape(term)}\\b`,
+              'i',
+            ).test(text),
           )
         : undefined
 
