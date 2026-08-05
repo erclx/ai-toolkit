@@ -45,6 +45,8 @@ Every `Does not govern:` entry names an owner, and an entry with no owner is cut
 
 A scope statement stays silent on a section the standard holds but should not own. Claiming it makes the statement false the moment the section moves, and the visible mismatch is the evidence that moves it.
 
+A statement enumerating the parts of the artifact it governs carries the same list the shape rules carry, so a part added to one is added to both or the standard contradicts itself. `skill.md` names the skill folder's contents in its scope sentence and again under `## Structure`, and the eval sibling reached the second while the first still claimed five parts. Nothing compares the two, since the citation stage verifies that a path resolves rather than that two sentences agree, so the second enumeration is the cost of naming parts in a statement whose job is naming owners.
+
 `prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
 
 ## How the scope statement is parsed

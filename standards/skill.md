@@ -11,7 +11,7 @@ Skills give Claude Code domain-specific constraints and rules inline, so it can 
 
 ## Scope
 
-Governs a skill folder under `skills/` as one artifact: `SKILL.md`, its sibling `REQUIREMENT.md`, and the bundled reference, script, and asset folders beside them.
+Governs a skill folder under `skills/` as one artifact: `SKILL.md`, its siblings `REQUIREMENT.md` and `EVAL.md`, and the bundled reference, script, and asset folders beside them.
 
 Does not govern:
 
@@ -88,7 +88,9 @@ allowed-tools: <tools required>
 
 ## Structure
 
-- Skill is a folder named in kebab-case containing `SKILL.md` (required), `REQUIREMENT.md` (required), `scripts/` (optional), `references/` (optional), `assets/` (optional)
+- Skill is a folder named in kebab-case containing `SKILL.md` (required), `REQUIREMENT.md` (required), `EVAL.md` (optional), `scripts/` (optional), `references/` (optional), `assets/` (optional)
+- Name a file sitting directly in the skill folder in capitals and a bundled folder in lowercase, so the parts a reader opens are distinct from the ones a skill loads
+- `EVAL.md` holds prompts and a judging rubric a person runs by hand, so a skill carrying one needs no runner beside it
 - `SKILL.md` must start with YAML frontmatter between `---` delimiters
 - No `README.md` inside the skill folder
 - No spaces, capitals, or underscores in folder or skill name
