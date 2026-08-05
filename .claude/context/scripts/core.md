@@ -19,6 +19,14 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `check-skill-paths.sh`: fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
 
+## What the hero frame chooses and what it samples
+
+`regen-hero.sh` no longer samples the skills column. It carries a `FEATURED_SKILLS` list of ten chosen names, because the even step lands on the entries closest to commodity and on none of the workflow the toolkit exists to carry. The run fails when a chosen name is absent from the catalog or when the list is not exactly `LISTED` long, so renaming or retiring a shipped skill breaks the Hero stage until the list is updated. The length assert is not decoration: `SKILL_MORE` counts down from `LISTED` rather than from the number of names rendered, so a list of any other length prints a remainder wrong by the difference.
+
+The rules column still samples, but only over rules a stack names. A rule no stack reaches is opt-in behind `--add`, and featuring one advertises an entry an ordinary `aitk gov install` never delivers. The standards column samples the whole catalog, because three of the top four cited standards already appear and a second hand-kept list buys one swap for the same staleness. Every count and every `+N more` reads the whole catalog either way, so curation governs which names appear and nothing else.
+
+The command count in the stats row reads `grep -c '^import { register as ' src/cli.ts`, since the commands have no `--json` catalog and `--help` is hand-authored ASCII that drifts from what is registered. A command added without that import shape leaves the frame's count low and nothing reports it.
+
 ## Reading a JSON payload in a stage
 
 `bun --eval` exits 0 when its script throws while stdin is a pipe, and exits 1 on the same throw with no pipe attached, measured on Bun 1.3.14. A stage piping a catalog into it and branching on `$?` therefore reads a parse failure as a success. A throw also prints nothing, so the empty output then reads as whichever clean result an empty string means in that stage, which is how a broken catalog reports as a clean sweep.
