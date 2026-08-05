@@ -35,7 +35,7 @@ export const RENDER_WIDTH = 80
 export const PEER_BULLET_CHECKPOINT = 130
 
 /**
- * Characters a bullet carries before it holds more than the decision itself.
+ * Characters a top-level bullet carries before its overflow belongs in prose.
  *
  * Unlike the peer-list checkpoint above, this corpus has no gap behind the
  * number. Bullet weight decays smoothly from a median near 170 with the
@@ -106,20 +106,15 @@ const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
  * folder, because a threshold on how far a reader travels generalizes across
  * entry types while a rule about what an entry may say does not.
  *
- * Bullet weight sat on this side of the split until `standards/markdown.md`
- * took the rule, and the reach was conditional on exactly that. Whether the
- * remedy is actionable is what decided it: moving an incident out of a bullet
- * and keeping the decision means nothing in a folder whose entries carry no
- * decisions, so the escalation named was an attribute standard owning the rule
- * across document types rather than a wider reach without an owner. That owner
- * now states the checkpoint over every markdown file and states the remedy as
- * sending the overflow to prose, which any entry type can act on, so the
- * measure reaches every audited folder and the incident half of the remedy
- * stays where the entries carrying decisions are.
+ * What gates here is a rule only this standard states. Bullet weight does not,
+ * since `standards/markdown.md` owns that checkpoint across document types and
+ * its remedy sends the overflow to prose, which any entry type can act on.
+ * `standards/context.md` specializes that remedy for an entry carrying
+ * decisions, and specializing a rule narrows the advice rather than the measure.
  *
  * Restating the exclusion in the sibling standards was the alternative for what
- * remains here. It duplicates one knowledge item across three surfaces, which
- * the root instruction file forbids, and pointing is not available because the
+ * gates here. It duplicates one knowledge item across three surfaces, which the
+ * root instruction file forbids, and pointing is not available because the
  * surface they would point at is the one disclaiming them.
  */
 export const PROVENANCE_FOLDER = 'context'
