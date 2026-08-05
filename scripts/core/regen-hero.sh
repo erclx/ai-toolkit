@@ -19,6 +19,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 TEMPLATE="$PROJECT_ROOT/assets/hero.html.tmpl"
 OUTPUT="$PROJECT_ROOT/assets/hero.html"
+CLI_ENTRY="$PROJECT_ROOT/src/cli.ts"
 LISTED=10
 
 # `bun src/cli.ts` rather than `aitk`, since a globally linked binary resolves to
@@ -29,6 +30,20 @@ catalog() {
 
 if [ ! -f "$TEMPLATE" ]; then
   echo "regen-hero: missing template at $TEMPLATE" >&2
+  exit 1
+fi
+
+# The commands have no `--json` catalog to read, so the count comes from the
+# registration block in the CLI entry point, which is the one place a command is
+# added. `--help` is hand-authored ASCII and would drift from what is registered.
+if [ ! -f "$CLI_ENTRY" ]; then
+  echo "regen-hero: missing CLI entry point at $CLI_ENTRY" >&2
+  exit 1
+fi
+
+COMMAND_COUNT="$(grep -c '^import { register as ' "$CLI_ENTRY" || true)"
+if [ "${COMMAND_COUNT:-0}" -eq 0 ]; then
+  echo "regen-hero: no command registrations found in $CLI_ENTRY, refusing to write a zeroed hero" >&2
   exit 1
 fi
 
@@ -59,12 +74,12 @@ printf '%s' "$SNIPPETS_JSON" >"$PAYLOAD_DIR/snippets.json"
 printf '%s' "$TOOLING_JSON" >"$PAYLOAD_DIR/tooling.json"
 
 export PAYLOAD_DIR
-export TEMPLATE OUTPUT LISTED PROJECT_ROOT
+export TEMPLATE OUTPUT LISTED PROJECT_ROOT COMMAND_COUNT
 
 bun --eval '
 const { readFileSync } = require("node:fs")
 
-const { PAYLOAD_DIR, TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT } = process.env
+const { PAYLOAD_DIR, TEMPLATE, OUTPUT, LISTED, PROJECT_ROOT, COMMAND_COUNT } = process.env
 
 const payload = (name) => readFileSync(PAYLOAD_DIR + "/" + name + ".json", "utf8")
 
@@ -79,7 +94,13 @@ const skills = JSON.parse(SKILLS_JSON).skills.map((entry) => entry.name)
 const gov = JSON.parse(GOV_JSON)
 // Rule names carry a numeric prefix that orders the load, not the identity a
 // reader knows them by, so the frame shows the slug alone.
-const rules = gov.rules.map((entry) => entry.name.replace(/^\d+-/, ""))
+const slug = (entry) => entry.name.replace(/^\d+-/, "")
+const rules = gov.rules.map(slug)
+// A rule no stack names is opt-in behind `--add`, so featuring one advertises
+// an entry no ordinary `aitk gov install` delivers. The column samples the
+// stack-reached subset while its count and remainder describe the whole catalog.
+const stacked = new Set(gov.stacks.flatMap((stack) => stack.rules))
+const deliveredRules = gov.rules.filter((entry) => stacked.has(entry.name)).map(slug)
 const standards = JSON.parse(STANDARDS_JSON).standards.map((entry) => entry.name)
 const snippets = new Set(
   JSON.parse(SNIPPETS_JSON).categories.flatMap((category) => category.entries),
@@ -89,19 +110,61 @@ const toolingStacks = JSON.parse(TOOLING_JSON).stacks
 const escape = (value) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
-// Even spacing across the sorted catalog rather than its first N. The skill
-// names are prefixed by domain, so an alphabetical head returns eight
-// `claude-*` entries and reads as a narrower catalog than the one that ships.
+// Even spacing across the sorted catalog rather than its first N, so a column
+// whose names share a prefix does not read as a narrower catalog than the one
+// that ships. Rules and standards sample. Skills do not, because the even step
+// lands on the entries closest to commodity and on none of the workflow the
+// toolkit exists to carry.
 const sample = (names) => {
   if (names.length <= listed) return names
   const step = names.length / listed
   return Array.from({ length: listed }, (_, i) => names[Math.floor(i * step)])
 }
 
-const entries = (names) =>
-  sample(names)
+// The first seven are the method and exist nowhere else. The last three are
+// recognizable on sight and are what keeps a column of chosen names from
+// reading as an all-`claude-` catalog, which is the failure the sampler above
+// was written against.
+const FEATURED_SKILLS = [
+  "claude-feature",
+  "claude-groundwork",
+  "claude-intake",
+  "claude-orchestrate",
+  "claude-autoship",
+  "claude-pr-review",
+  "claude-tasks",
+  "git-ship",
+  "setup-init",
+  "systematic-debugging",
+]
+
+// A chosen name is maintained by hand where a sample never goes stale, so a
+// rename has to fail the run rather than quietly shrink the column. This is
+// what makes the trade acceptable.
+//
+// The length is asserted because the `+N more` figure below counts down from
+// `listed` rather than from what this returns, so a list of any other length
+// renders a remainder that is wrong by the difference.
+const featured = (names, chosen) => {
+  if (chosen.length !== listed) {
+    console.error(`regen-hero: ${chosen.length} featured skills, expected ${listed}`)
+    process.exit(1)
+  }
+  const catalog = new Set(names)
+  const missing = chosen.filter((name) => !catalog.has(name))
+  if (missing.length > 0) {
+    console.error(`regen-hero: featured skills missing from the catalog: ${missing.join(", ")}`)
+    process.exit(1)
+  }
+  return chosen
+}
+
+const markup = (names) =>
+  names
     .map((name) => `            <div class="entry">${escape(name)}</div>`)
     .join("\n")
+
+const entries = (names) => markup(sample(names))
 
 const remaining = (names) => String(Math.max(0, names.length - listed))
 
@@ -111,6 +174,7 @@ const remaining = (names) => String(Math.max(0, names.length - listed))
 for (const [label, list] of [
   ["skills", skills], ["rules", rules], ["standards", standards],
   ["snippets", [...snippets]], ["tooling stacks", toolingStacks], ["gov stacks", gov.stacks],
+  ["stack-delivered rules", deliveredRules],
 ]) {
   if (list.length === 0) {
     console.error(`regen-hero: the ${label} catalog is empty, refusing to write a zeroed hero`)
@@ -125,8 +189,9 @@ const values = {
   SNIPPET_COUNT: String(snippets.size),
   GOV_STACK_COUNT: String(gov.stacks.length),
   TOOLING_STACK_COUNT: String(toolingStacks.length),
-  SKILL_ENTRIES: entries(skills),
-  RULE_ENTRIES: entries(rules),
+  COMMAND_COUNT: String(Number(COMMAND_COUNT)),
+  SKILL_ENTRIES: markup(featured(skills, FEATURED_SKILLS)),
+  RULE_ENTRIES: entries(deliveredRules),
   STANDARD_ENTRIES: entries(standards),
   SKILL_MORE: remaining(skills),
   RULE_MORE: remaining(rules),

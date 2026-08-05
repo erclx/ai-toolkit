@@ -6,7 +6,7 @@
 
 One source for your repos' AI conventions. Install once, sync everywhere.
 
-![The aitk catalog, listing skills, governance rules, and standards with the count each ships and a sample of their names](assets/hero.png)
+![The aitk catalog, listing skills, governance rules, and standards with the count each ships, the workflow skills named, and a sample of the rule and standard names](assets/hero.png)
 
 If you work across more than one repository and your AI setup has started to drift between them, this is for you. The counts above are read from the catalogs when the image is built, so they're what the repo actually ships today.
 
