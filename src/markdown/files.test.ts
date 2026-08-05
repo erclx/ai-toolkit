@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import { resolveMarkdown } from '@/markdown/files'
 
 describe('resolveMarkdown', () => {
@@ -10,7 +11,10 @@ describe('resolveMarkdown', () => {
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'aitk-markdown-'))
-    execSync('git init --quiet', { cwd: root })
+    // A git hook exports GIT_DIR into every process it runs, and it takes
+    // precedence over `cwd`, so an inherited environment initializes the
+    // repository somewhere other than the fixture and every case reads empty.
+    execSync('git init --quiet', { cwd: root, env: gitEnv() })
     mkdirSync(join(root, 'docs'), { recursive: true })
     writeFileSync(join(root, 'README.md'), '# R\n')
     writeFileSync(join(root, 'docs', 'one.md'), '# One\n')
