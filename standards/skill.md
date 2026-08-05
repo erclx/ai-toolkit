@@ -184,7 +184,11 @@ Without this skill, a session <observed failure>, <observed failure>.
 
 ### Progressive disclosure
 
-- Keep `SKILL.md` under 5,000 words. Move detailed docs to `references/`.
+- Look at a body once it passes 150 lines. The number prompts a look rather than gating a build, so nothing enforces it and a body carrying nothing but procedure stays whole at any length.
+- Move a catalog, a table of cases, or a format spec running past roughly 15 lines to `references/`. Procedure prose stays, since a session sent to a reference for its own steps pays two reads for one job.
+- Name the branch that skips a block before moving it. Body lines are paid on every invocation and a reference only when the body sends the session to it, so a block every run dereferences costs a read and saves nothing.
+- Keep the trigger, the skip condition, and the guard in the body. A run that never reaches the block has to decide that without opening the reference.
+- Give a reference two skills read its own copy under each, generated from the single source per `## Path resolution`. Never point one skill at a sibling skill's folder.
 - Use progressive disclosure: `SKILL.md` for core instructions, `references/` for detail, `scripts/` for deterministic operations
 - Link to `references/` files explicitly so Claude knows to load them
 
