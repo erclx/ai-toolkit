@@ -32,7 +32,7 @@
 
 ## Commands
 
-- Run `bun run check` before committing. Full script reference in `.claude/context/development.md`.
+- Run `bun run check` before committing. Full script reference in the development entry under `.claude/context/`.
 
 ## Output
 

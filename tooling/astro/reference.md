@@ -12,7 +12,7 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 2. Add React integration: `bunx astro add react`. Do not use `astro add tailwind`. That command installs the v3 integration. Tailwind v4 arrives via the web manifest.
 3. Install web tooling: `aitk tooling sync web .`
 4. Install astro adapter: `aitk tooling sync astro .`
-5. Extend `.claude/context/ci.md` and `.claude/context/development.md` per the web reference's extend sections plus the astro rows below.
+5. Extend `.claude/context/ci.md` and `.claude/context/development.md` per the web reference's extend sections plus the astro rows below. <!-- audit-ignore-citations -->
 6. Run `bun run lint:fix` then `bun run check`.
 
 ## What ships as golden configs
