@@ -37,7 +37,7 @@ A run where no requested name resolves refuses, whichever list it read. Naming t
 
 ## Exit codes
 
-Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. Length, table, and provenance findings print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around.
+Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. Length, table, provenance, and narration findings print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around. Narration is the weakest of the four, since whether two bullets share a subject is a call the measure approximates from structure alone, and one of the shapes it matches is the rejected alternative the standard asks an entry to keep.
 
 Required-section and index findings sit between the two. Both are answerable from the file rather than weighed, so `--gate` promotes them to failing codes while a bare run leaves them advisory. The toolkit runs the bare form against itself and the widened form against the seed tree, described below.
 

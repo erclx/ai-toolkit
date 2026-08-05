@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
 import type { AuditedFolder } from '@/context/folders'
-import { type BodyLine, bodyLines } from '@/markdown/scan'
+import type { NarrationTerms } from '@/context/narration'
+import { type BodyLine, bodyLines, maskDisplayed } from '@/markdown/scan'
 import { renderedHeight } from '@/markdown/structure'
 import { isStubSeed } from '@/seed-marker'
 
@@ -46,6 +47,10 @@ const TABLE_ROW = /^\s*\|/
 const TABLE_SEPARATOR = /^\s*\|[\s:|-]+\|\s*$/
 const NAMED_CELL = /`[^`]+`|\[[^\]]+\]\([^)]+\)/
 
+const TOP_BULLET = /^-\s+(.+)$/
+/** Any indented line, which is a nested bullet or a wrapped continuation. */
+const INSIDE_LIST = /^\s+\S/
+
 /**
  * Spellings of how the domain reached its shape rather than what it is now.
  *
@@ -63,6 +68,12 @@ const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
 
 /**
  * The folder whose standard carries the exclusion above.
+ *
+ * Three measures narrow here rather than one: provenance, the required
+ * sections, and the superseded-decision narration. The name is the first of
+ * them because it was the first, and it stays because renaming a constant the
+ * JSON record publishes as `checkpoints.provenanceFolder` breaks every consumer
+ * reading that field for a gain of one word.
  *
  * `standards/context.md` opens its scope by handing diagrams and wireframes to
  * `diagrams.md` and `wireframes.md`, so a marker reported in either would cite
@@ -98,6 +109,14 @@ export interface ProvenanceFinding {
   readonly text: string
 }
 
+export interface NarrationFinding {
+  readonly line: number
+  /** The opening that points back at the bullet above. */
+  readonly pronoun: string
+  /** The past-tense verb that turns the back-reference into a narration. */
+  readonly verb: string
+}
+
 export interface EntryReport {
   readonly rel: string
   /**
@@ -116,6 +135,12 @@ export interface EntryReport {
   readonly catalogTables: readonly TableFinding[]
   /** Empty for an entry no standard bans a change narrative in. */
   readonly provenance: readonly ProvenanceFinding[]
+  /**
+   * Empty outside the governed folder, and empty on a run whose caller loaded
+   * no term sets. The report distinguishes the two from the vocabulary itself,
+   * since an empty list here is silent about which one produced it.
+   */
+  readonly narration: readonly NarrationFinding[]
   /**
    * Required sections this entry declares, in the standard's order, and empty
    * outside the folder whose standard names them. What the folder is short of
@@ -226,6 +251,128 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
     .map((each) => each.finding)
 }
 
+function escape(term: string): string {
+  return term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * Copulas that turn the verb behind them into a present-tense passive.
+ *
+ * `used to` is the term this exists for, since `is used to resolve the folder`
+ * is the passive of `use` rather than the past habitual the set means. This
+ * list is English grammar rather than corpus vocabulary, so it stays in code
+ * while the two tunable sets stay in the rule, and a rule publishing two of
+ * three headings would be a fourth absent state to carry for no tuning anyone
+ * wants.
+ *
+ * What it costs is the perfect passive. `has been superseded` narrates a
+ * supersession and is rejected with the rest, which is a recall gap taken
+ * knowingly on the trade this check already makes everywhere else.
+ */
+const COPULA = ['is', 'are', 'be', 'been', 'being', 'was', 'were']
+
+/**
+ * Finds the bullets narrating a decision the bullet above them replaced.
+ *
+ * The signal is structural rather than lexical, and the corpus is what decides
+ * that. The terms carrying clean signal for a supersession are too rare to
+ * catch anything, and the one term that would have caught the known case is
+ * `now`, which appears 57 times across 24 entries in correct present-tense
+ * prose. What separates the shape instead is a bullet pointing back at its
+ * sibling and putting the sibling's design in the past: an opening pronoun with
+ * no antecedent of its own, plus a past-tense verb, plus a bullet above it to
+ * refer to. Precision is the whole value, so recall is the accepted exposure
+ * and a narration written as a single bullet is not reached.
+ *
+ * The pronoun is matched cased and anchored, since a mid-sentence `this` is a
+ * determiner rather than a back-reference. The verb is matched uncased anywhere
+ * in the bullet, since the tense is what carries the signal wherever it sits,
+ * and rejected behind a `COPULA` for the reason stated there. Displayed spans
+ * are masked so a term quoted in backticks is not read as prose the entry
+ * writes, and fenced blocks are skipped for the reason the scans above skip
+ * them.
+ *
+ * A blank line does not end the run. Markdown reads two bullets around one as a
+ * single loose list, so breaking there would leave the shape reachable by
+ * anyone who spaced their bullets out. What ends a run is content that is
+ * neither a bullet nor indented under one, which the fenced branch below has to
+ * answer for itself because a fenced line is skipped before that test.
+ */
+function narration(
+  lines: readonly BodyLine[],
+  terms: NarrationTerms,
+): NarrationFinding[] {
+  if (terms.pronouns.length === 0 || terms.verbs.length === 0) return []
+
+  const findings: NarrationFinding[] = []
+  let following = false
+  let fenceInsideList: boolean | undefined
+
+  for (const line of lines) {
+    // A fenced line is never a bullet, but an unindented block still ends the
+    // run. CommonMark reads a fence at column zero as interrupting the list, so
+    // the bullets around it are two lists and the second has no antecedent
+    // above it. A block indented under its bullet stays inside the item.
+    //
+    // The first delimiter of a contiguous fenced run decides for every line of
+    // it. Reading each line instead ends the run on a blank line inside an
+    // indented fence, which has no indentation to read, and on a content line
+    // at column zero, which CommonMark permits since only the fence's own
+    // indent is stripped.
+    //
+    // Two blocks with nothing between them are one such run, so the second
+    // inherits the first's answer and an unindented block behind an indented
+    // one leaves a run standing that should have ended. Telling them apart
+    // needs the closing delimiter, which `BodyLine` does not carry, and parsing
+    // one here would be the second fence walker this repository consolidated
+    // away after its first pair disagreed. That fix belongs in
+    // `src/markdown/scan.ts` rather than in a copy of it.
+    if (line.fenced) {
+      if (fenceInsideList === undefined) {
+        fenceInsideList = INSIDE_LIST.test(line.text)
+      }
+      if (!fenceInsideList) following = false
+      continue
+    }
+
+    fenceInsideList = undefined
+
+    if (line.text.trim() === '') continue
+
+    const bullet = line.text.match(TOP_BULLET)
+    if (!bullet) {
+      // A nested bullet and a wrapped continuation both sit inside the list, so
+      // neither ends the run. Anything else does, which is what keeps a bullet
+      // opening the list under a heading from reading as a reply to the last
+      // bullet of the list before it.
+      if (!INSIDE_LIST.test(line.text)) following = false
+      continue
+    }
+
+    const text = maskDisplayed(bullet[1])
+
+    if (following) {
+      const pronoun = terms.pronouns.find((term) =>
+        new RegExp(`^${escape(term)}\\b`).test(text),
+      )
+      const verb = pronoun
+        ? terms.verbs.find((term) =>
+            new RegExp(
+              `(?<!\\b(?:${COPULA.join('|')})\\s+)\\b${escape(term)}\\b`,
+              'i',
+            ).test(text),
+          )
+        : undefined
+
+      if (pronoun && verb) findings.push({ line: line.number, pronoun, verb })
+    }
+
+    following = true
+  }
+
+  return findings
+}
+
 /**
  * Finds which required sections the entry declares.
  *
@@ -264,6 +411,7 @@ export function measureEntry(
   rel: string,
   source: string,
   governsContent = true,
+  terms?: NarrationTerms,
 ): EntryReport {
   const lines = bodyLines(source)
 
@@ -275,6 +423,7 @@ export function measureEntry(
       .reduce((sum, text) => sum + renderedHeight(text), 0),
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
+    narration: governsContent && terms ? narration(lines, terms) : [],
     sections: governsContent ? declaredSections(lines) : [],
     stub: isStubSeed(source),
   }
@@ -291,6 +440,7 @@ export function measureEntry(
 export async function measureFolders(
   root: string,
   folders: readonly AuditedFolder[],
+  terms?: NarrationTerms,
 ): Promise<EntryReport[]> {
   const reports: EntryReport[] = []
 
@@ -301,6 +451,7 @@ export async function measureFolders(
           relative(root, path),
           await readFile(path, 'utf8'),
           governsContent(folder),
+          terms,
         ),
       )
     }
