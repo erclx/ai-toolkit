@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.69.0](https://github.com/erclx/aitk/compare/v0.68.0...v0.69.0) (2026-08-05)
+
+
+### Features
+
+* **orchestrate:** plan the next wave while the current one builds ([#893](https://github.com/erclx/aitk/issues/893)) ([34fdcf3](https://github.com/erclx/aitk/commit/34fdcf38442462f7f3edd7aff67b69ddbcfa90c2))
+
 ## [0.68.0](https://github.com/erclx/aitk/compare/v0.67.0...v0.68.0) (2026-08-05)
 
 
