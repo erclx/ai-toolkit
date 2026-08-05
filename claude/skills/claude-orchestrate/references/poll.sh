@@ -23,11 +23,19 @@ mkdir -p "$STATE_DIR"
 STATE="$STATE_DIR/baseline.txt"
 touch "$STATE"
 
+# The base branch is read rather than assumed, since this ships to projects that
+# do not all call it `main`. A wrong base is not a visible failure: merge-tree
+# reports every pull request as conflicted against a ref that does not resolve.
+BASE_REF="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
+if [ -z "$BASE_REF" ]; then
+  BASE_REF="origin/$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null || echo main)"
+fi
+BASE_BRANCH="${BASE_REF#origin/}"
+
 # These four strings are owned elsewhere and pinned here. `claude-pr-review`
 # writes `## Review` and `## Review closed`, and `claude-address-review` writes
-# `## Review response` and `## Rebase`. Both skills ship to targets while this
-# script stays internal, so a heading added there breaks a test here that no
-# check reaches across.
+# `## Review response` and `## Rebase`. All three surfaces ship separately, so a
+# heading added in either skill breaks a test here that no check reaches across.
 #
 # Both families match on the first line alone so the two tests stay symmetric.
 # The reply family carries `## Rebase` because a run sent straight to the rebase
@@ -64,7 +72,7 @@ carry_forward() {
 
 snapshot() {
   local numbers n payload head prior resp merges
-  git fetch -q origin main 2>/dev/null || true
+  git fetch -q origin "$BASE_BRANCH" 2>/dev/null || true
 
   # A failed list reaches the caller as no open pull requests, and that reports
   # every tracked one as GONE. It is a louder wrong answer than the one this
@@ -97,16 +105,16 @@ snapshot() {
 
     # `gh pr view --json mergeable` reports UNKNOWN until GitHub finishes
     # computing it, which is exactly when a poll asks. merge-tree answers
-    # locally against the main this machine has, so it never returns UNKNOWN.
+    # locally against the base this machine has, so it never returns UNKNOWN.
     git fetch -q origin "pull/$n/head" 2>/dev/null || true
     if ! git cat-file -e "${head}^{commit}" 2>/dev/null ||
-      ! git rev-parse --verify -q origin/main >/dev/null; then
+      ! git rev-parse --verify -q "$BASE_REF" >/dev/null; then
       # merge-tree exits non-zero on a ref it cannot resolve as well as on a
       # real conflict, and the two are indistinguishable from its status. Both
       # sides are checked, because an unresolvable base reports every pull
       # request as conflicted rather than one, which is the louder half.
       merges=unknown
-    elif git merge-tree --write-tree origin/main "$head" >/dev/null 2>&1; then
+    elif git merge-tree --write-tree "$BASE_REF" "$head" >/dev/null 2>&1; then
       merges=clean
     else
       merges=conflict
@@ -138,7 +146,7 @@ while read -r n head prior resp merges; do
       # rather than printed where a verdict belongs.
       echo "OPENED    #$n at ${head:0:7}"
     else
-      echo "OPENED    #$n at ${head:0:7}, $merges against main"
+      echo "OPENED    #$n at ${head:0:7}, $merges against $BASE_BRANCH"
     fi
     CHANGED=1
     continue
@@ -147,10 +155,10 @@ while read -r n head prior resp merges; do
   old_resp=$(echo "$old" | cut -d' ' -f4)
   old_merges=$(echo "$old" | cut -d' ' -f5)
 
-  # A conflict arrives from main moving, not from the branch, so it is reported
-  # on the transition rather than only when the head changes.
+  # A conflict arrives from the base moving, not from the branch, so it is
+  # reported on the transition rather than only when the head changes.
   if [ "$merges" = conflict ] && [ "$old_merges" != conflict ]; then
-    echo "CONFLICT  #$n no longer merges into main"
+    echo "CONFLICT  #$n no longer merges into $BASE_BRANCH"
     CHANGED=1
   fi
 

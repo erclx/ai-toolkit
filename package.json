@@ -19,7 +19,6 @@
     "tsconfig.json",
     "!scripts/sandbox",
     "!scripts/eval",
-    "!scripts/orchestrate",
     "!src/capture",
     "!**/*.test.ts"
   ],
@@ -30,7 +29,7 @@
     "check:spell": "cspell '**' '.*/**' '.*' --no-progress --color --show-context",
     "format": "prettier --write --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --write --indent 2 scripts/ tooling/",
     "check:format": "prettier --check --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --diff --indent 2 scripts/ tooling/",
-    "check:shell": "find scripts tooling .claude/hooks -name '*.sh' -exec shellcheck --severity=warning {} +",
+    "check:shell": "find scripts tooling claude .claude/hooks -name '*.sh' -exec shellcheck --severity=warning {} +",
     "check:types": "tsc --noEmit",
     "check:install": "./scripts/core/install-check.sh",
     "test": "bun --bun vitest run",

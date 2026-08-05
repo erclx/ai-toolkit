@@ -37,6 +37,8 @@ The roadmap is optional and this skill does not require it. It carries why a seq
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do. On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
+The review trigger takes the same shape. `references/orchestrator-poll.md` holds the loop prompt and the condition under which the poll runs, and `references/poll.sh` beside it is what the prompt invokes. Nothing starts or stops that loop on its own, so the condition holds only while a session applies it.
+
 That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/aitk:claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The two runbooks sit at `references/orchestrator-handoff.md` and `references/orchestrator-resume.md` inside this skill's own folder, so a person who knows their plugin root opens either one directly and follows it without this skill loaded at all.
 
 ## Output
@@ -96,7 +98,7 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
 4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
 5. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
-6. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate.
+6. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate. Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. It routes a moved or answered pull request straight to a re-review and reports an opened one without acting, which keeps every first pass a batched judgment this session triggers.
 7. Close the loop. After the worker runs `claude-address-review`, re-review if needed, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
 
 ## Boundaries
