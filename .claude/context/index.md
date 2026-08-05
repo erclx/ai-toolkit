@@ -21,6 +21,6 @@ Per-domain narrative loaded on demand
 - [Scripts](scripts/index.md): Bash entry points and the migration boundary, repo maintenance, UI framing across the exec boundary, the shared lib surface, and the eval harness. Start with overview.
 - [Slides](slides.md): SLIDES.md source shape, layout catalog, render command, draft skill
 - [Snippets](snippets.md): Reusable prompt snippets for Claude and Gemini
-- [Standards](standards.md): Authoring conventions synced to projects
+- [Standards](standards/index.md): Authoring conventions synced to projects, the scope model every standard declares, the template and lifecycle rules, the per-standard decisions, and install and sync. Start with overview.
 - [Tooling](tooling.md): Stacks, configs, seeds, references, manifests
 - [Transcripts](transcripts.md): Fetch YouTube transcripts with metadata frontmatter into any repo

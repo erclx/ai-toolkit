@@ -125,7 +125,7 @@ Per-domain narrative loaded on demand
 
 A folder that holds its own `index.md` is a child catalog. The parent links it so an agent reading the parent discovers the sub-catalog without opening files. Linking is recursive because each folder regenerates independently.
 
-Two trees in this repository nest. `.claude/context/` mixes flat entries with four child catalogs, and `wiki/` pushes every page into `claude/`, `tools/`, or `concepts/` so its root index carries sub-catalog lines alone.
+Two trees in this repository nest. `.claude/context/` mixes flat entries with five child catalogs, and `wiki/` pushes every page into `claude/`, `tools/`, or `concepts/` so its root index carries sub-catalog lines alone.
 
 The H1 mirrors the `title`. The lead paragraph mirrors the `subtitle`. Each sibling file renders as `- [<title>](<filename>): <description>`. Each immediate subfolder that carries an `index.md` renders as `- [<child title>](<child>/index.md): <child subtitle>`, sorted among the sibling files by name rather than appended after them.
 

@@ -1,0 +1,58 @@
+---
+title: Authoring
+description: The canonical template rule and where it stops, the meta-standard's placement, the lifecycle of a change, and how to add a standard
+---
+
+# Authoring
+
+The meta-standard `standards/standard.md` governs itself, so it is both the rule and the worked example. What it asks of an author is a fenced template where the document type has one, a success criterion above the shape rules, and a failing artifact behind any change to either.
+
+## The canonical template
+
+A standard governing a document type carries one fenced template of that document, and an attribute standard carries none. The rule lives in `standards/standard.md` under `## Template`, and `standard.md` governs itself, so it carries the template it demands. A paragraph describing a shape is advisory and a fenced block is something a check can compare against.
+
+The rule generalizes a section four standards already had rather than inventing one. `architecture.md`, `requirements.md`, and `bundled/roadmap.md` carried `## Template`, and `tasks.md` carried the same block inside `## File format`. Both placements stay legal, since a template beside the rules it satisfies is one read and a fixed heading would have moved the `tasks.md` block away from them.
+
+The binding condition is what keeps the rule honest. `publish.md`, `slug.md`, and `versioning.md` govern a scan, a string, and a label, so a template would have had nothing to show. Each names its own exemption in the sentence declaring it an attribute standard, which is the both-sides rule applied to a claim that would otherwise be a silence.
+
+The template outranks the prose where they disagree. An author copies the block, so a contradiction ships as the block whatever the prose says, and naming the winner makes the drift a defect a reader can see rather than one that resolves differently per session.
+
+## Where the template rule stops
+
+`standards/index.md` is out of scope despite reading as a standard with no template. It is the generated catalog of the folder, rewritten by `scripts/core/regen-indexes.sh`, so a template added there is deleted by the next `bun run check`. The intake counted files in the folder rather than authored standards, which is why the finding said eight and the corpus holds seven.
+
+`design.md` is the case that paid for the rule. It said the token tables carry fixed headers the renderer reads and never said what they are, so an author had to open `src/design/parse.ts` and `src/design/render.ts` to recover them. The shape rule therefore asks any standard for the headers and labels a tool parses, verbatim, which is the general form of that failure.
+
+A template and a seed hold different things for the same document, which is what keeps them from drifting. `standards/design.md` carries headers and placeholder rows, and `tooling/claude/seeds/.claude/DESIGN.md` carries the starting roles a scaffolded project receives.
+
+The template first copied the seed row for row, which made the role names a second source with nothing comparing them and broke the placeholder rule two files away.
+
+Only the headers are load-bearing, since `src/design/render.ts` reads those by exact key and slugs every row name into the variable it emits.
+
+## The meta-standard in the flat root
+
+The meta-standard sits in the flat root rather than `standards/bundled/`. As a fan-out source it reaches the `create-standard` skill alone, which leaves an author editing an existing standard nothing to work against and targets no installed copy for a rule to cite. The flat root installs it, indexes it, and gives `591-standard-authoring` a path that resolves in the toolkit and in every target.
+
+The rule's glob is recursive, so the six files under `standards/bundled/` are governed by the same shape rules, which the alternative left with no shape governance at all.
+
+## Changing a standard
+
+`standards/standard.md` carries two rules about a standard's own lifecycle, distinct from the shape rules governing what it contains.
+
+A standard states a success criterion, near the top and above the shape rules. Specifying structure exhaustively and success nowhere leaves nothing to argue a proposed change against, so the standard gets edited on whichever input arrived most recently.
+
+`standards/context.md` was the first to gain one, as `## What a working entry looks like`. `standards/skill.md` gained the second under `## Requirement`, scoped to the requirement file rather than the skill, because writing eight of them is the work that exercised it.
+
+A standard then changes on a failure rather than on a finding. A finding is that the vendor docs say X or a paper suggests Y, and it goes to the task board as a hypothesis. A failure is an artifact that satisfied every shape rule and still missed the criterion, and it edits the standard. The change cites the failing artifact.
+
+`scripts/eval/` is how a failure gets produced on demand. It extracts a synthetic fixture outside the repo, copies the live standard in, and asks a headless session to author against it.
+
+Running outside the repo is the load-bearing part: a fixture under the repo loads this project's `CLAUDE.md` through the ancestor chain, and the session under test arrives already knowing what the test is trying to measure. Writes under `.claude/` stay blocked even with `--permission-mode acceptEdits`, so the artifact comes back in the final message and stdout is what gets judged.
+
+## Authoring a new standard
+
+Follow `standards/standard.md`. It is the meta-standard: the success criterion, the scope rules, the frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It governs itself, so it is also the worked example. `591-standard-authoring` routes any edit under `standards/` or `.claude/standards/` to it.
+
+Create the `.md` file in `standards/` with `title` and `description` frontmatter, then run `bun run check` to regenerate the consumed copy and commit it.
+
+The `create-standard` skill resolves its write surface at either location: `standards/` at the root when present (the toolkit repo), otherwise `.claude/standards/` (a target project).

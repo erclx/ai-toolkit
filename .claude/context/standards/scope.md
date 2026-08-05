@@ -1,0 +1,60 @@
+---
+title: Scope model
+description: Which tree a standard lives in, what its scope statement declares, when a standard splits, and how the statement is parsed
+---
+
+# Scope model
+
+A standard answers two questions before it answers anything about its own shape: which of the three authoring trees it belongs in, and what jurisdiction it claims once it is there. Both are checkable from outside the file, which is why the parser reading the scope statement constrains how that statement is written.
+
+## Which tree a standard lives in
+
+The root is the authoring source and `.claude/standards/` is a generated consumed copy, so rules, skills, and seeds cite `.claude/standards/X.md` and the path resolves identically here and in every target. That mirrors the `governance/rules/` to `.claude/rules/` split. Standards are uniform across every project, with no stack variation and no extends chain, so nothing resolves at install time.
+
+A convention governing a surface only the toolkit has lives in `internal/standards/`, a tree no CLI entry point and no plugin symlink reads. A filter at each entry point was the alternative, and it cannot see a symlink an installer dereferences. Location is what enforces the boundary, so nothing has to remember to exclude it.
+
+A convention consumed by a specific skill rather than authored by a project lives in `standards/bundled/`. Each carries a `consumers:` field, and the fan-out copies it into every listed skill's `references/`, so the skill works in a project that never ran `aitk standards install`.
+
+A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md` and `standards/slug.md` are the two, each cited from every body that runs it. Both take a one-word name, which is what every other installable standard carries.
+
+A subfolder was not available for them, since install and the sync adapter walk the flat root only. A combined `procedures.md` was the other candidate and recreates the aggregation at a new address.
+
+## What a standard declares
+
+A standard states its rule and never what enforces it here. These files install into projects whose hooks, scratch paths, and skill catalogs are their own, so a rule justified by this repository's audit hook or illustrated with this catalog's output filenames is wrong in a target and nothing reports it. Name the general condition and let the consuming surface name its own case.
+
+The rule lives in `standards/standard.md` under `## Scoping rules`, routed to every standards edit by `591-standard-authoring`, because a decision recorded here governs nothing an author reads while editing. Audit the whole corpus for a violation of it rather than the files that prompted it, since a pass scoped to one plan's file list leaves the rest reading clean.
+
+Every standard declares its own jurisdiction in a `## Scope` section, above the shape rules. A standard that specifies shape exhaustively and jurisdiction nowhere cannot refuse a rule, so a rule with no obvious owner lands in whichever standard sits nearest and the corpus grows by annexation.
+
+No single step has to look wrong for a standard to reach a second owner's rules, which is why the statement is what a step fails against. A sibling `REQUIREMENT.md` per standard was the alternative and it restates what a standard already is, since a standard is a specification and a skill body is not.
+
+A scope statement declares its boundaries from both sides. A yield, an exemption, or a handoff written into one standard alone is never read by the standard on the other side of it, which is how `prose.md` came to grant a voice yield that only two of its four eligible siblings ever claimed. Both halves are cheap to write and only the pair is checkable.
+
+## When a standard splits
+
+A standard splits when one half is machine-checkable and the other is a read a session either performs or does not. `prose.md` held both and shipped as one advisory file, so `markdown.md` now takes the headings, lists, code spans, punctuation, emphasis, and file references, and `prose.md` keeps voice, language, and frontmatter wording.
+
+Scoping the audit tighter inside one file was the alternative and it leaves the enforceable rules reading as advice, which is the defect. The seam costs a citation split across 79 files and a hook that reads one half while enforcing a rule stated in the other, named in both standards and in the hook rather than papered over.
+
+## The scope statement
+
+A jurisdiction exclusion is not a content exclusion. `## Scope` names a concern an owner outside this standard holds, and `## What does not go in` names what does not belong inside the document. Eight standards carried the second under two spellings and none carried the first, so only the bullets naming an owner moved up. Merging the two puts a boundary claim where no sibling will read it.
+
+Every `Does not govern:` entry names an owner, and an entry with no owner is cut rather than written. The owner is usually a sibling standard and may be another surface, a coding rule, a project policy, or the code itself. An entry excluding something no standard was going to claim is padding that makes the list look thorough and settles nothing.
+
+A scope statement stays silent on a section the standard holds but should not own. Claiming it makes the statement false the moment the section moves, and the visible mismatch is the evidence that moves it.
+
+`prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
+
+## How the scope statement is parsed
+
+The scope statement is read by machine as well as by a person, which is what costs an author the two shape rules `standards/standard.md` now carries about it. The path goes in backticks in the first sentence, anchored deep enough to resolve from a project root, and an attribute standard says in that sentence that it governs an attribute.
+
+Publishing the declaration was the alternative to widening the audit's hardcoded mapping, which bound three document types out of thirteen. The cost is that rewording a Governs line can break a consumer with no error in front of it, which is why an unreadable statement emits an empty array rather than a guess.
+
+`standard.md` names `standards/` rather than `.claude/standards/`, so the declaration matches the authoring root and the installed copy alike.
+
+Every backticked token in that first sentence is read as a path, and the `*` resolution for an attribute standard fires only when the sentence carries none. A field name or a file extension backticked there is published as the standard's jurisdiction, so a consumer mapping a changed file through `appliesTo` matches nothing and reports the file clean.
+
+`prose.md` and `markdown.md` both shipped that way for one commit, emitting `title,description` and `.md`. An attribute standard therefore keeps its first sentence free of backticks and names the identifiers it governs in a later one.
