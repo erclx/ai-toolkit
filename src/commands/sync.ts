@@ -3,9 +3,13 @@ import { join } from 'node:path'
 import type { Command } from 'commander'
 import { cliPath, cliRun } from '@/cli-run'
 import { PROJECT_ROOT } from '@/exec'
-import { buildCheckReport, type CheckReport, hasDrift } from '@/sync/check'
+import {
+  buildCheckReport,
+  type CheckReport,
+  hasDrift,
+  SCANNED_DOMAINS,
+} from '@/sync/check'
 import { createGitRunner, createPullRequestOpener, hasGh } from '@/sync/git'
-import { STAMP_DOMAINS } from '@/sync/stamp'
 import {
   detectDomains,
   installedDomains,
@@ -159,8 +163,12 @@ function renderCheck(report: CheckReport): void {
   }
 
   outro()
+  // Scanned domains only. Tooling renders a section on every managed target, so
+  // naming it here repeats what that section already said under a second
+  // remedy, where a scanned domain nobody installed has no section at all and
+  // this line is the only place it appears.
   const unmigrated = report.unmigrated.map((entry) => entry.domain)
-  const uncovered = STAMP_DOMAINS.filter(
+  const uncovered = SCANNED_DOMAINS.filter(
     (domain) => !report.covers.includes(domain) && !unmigrated.includes(domain),
   )
   if (uncovered.length === 0) return

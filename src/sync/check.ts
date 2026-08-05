@@ -28,13 +28,13 @@ import { scan } from '@/tooling/scan'
  * being one of these, because `src/tooling/` never calls `planSync`, so the
  * three lookups below have no entry to offer it.
  */
-const SCANNED_DOMAINS = [
+export const SCANNED_DOMAINS = [
   'standards',
   'snippets',
   'governance',
 ] as const satisfies readonly StampDomain[]
 
-type ScannedDomain = (typeof SCANNED_DOMAINS)[number]
+export type ScannedDomain = (typeof SCANNED_DOMAINS)[number]
 
 /**
  * The toolkit path whose commits change what each domain holds. `claude/skills/`

@@ -27,7 +27,7 @@ The folder splits by job: the git workflow across `target.ts`, `git.ts`, and `wo
 ## What the stamp covers
 
 - A missing or corrupt stamp degrades to the unattributed report rather than failing, which is the only path an unstamped target has.
-- Tooling is a stamp domain without being a scanned one. `src/tooling/` never calls `planSync`, so it records the stack chain it resolved instead of file hashes, and `SCANNED_DOMAINS` in `src/sync/check.ts` is the narrower list the adapter, source-path, and install-marker lookups are keyed on. Adding a fifth domain means deciding which of the two lists it joins.
+- Tooling is a stamp domain without being a scanned one. `src/tooling/` never calls `planSync`, so it records the stack chain it resolved instead of file hashes, and `SCANNED_DOMAINS` in `src/sync/check.ts` is the narrower list the adapter, source-path, and install-marker lookups are keyed on, and the closing unstamped line reads it too. Adding a fifth domain means deciding which of the two lists it joins.
 - The chain is ordered and stored whole rather than as a leaf name. A stack extends another, and a `--skip` run installs fewer layers than the leaf's chain reproduces, so the report loads the recorded stacks directly rather than re-resolving. Re-resolving would report drift against a layer the target deliberately does not carry.
 - `chain` is optional on `DomainStamp`, which keeps a stamp written before tooling joined the domains parsing rather than reading as corrupt and discarding the three records it does carry.
 - A workspace root records no chain. One chain written there is a guess at what its packages hold, and the report saying unmeasured is the true answer. The detection reads `workspaces` in `package.json` and `pnpm-workspace.yaml`, and lives in `src/tooling/stamp.ts` so `src/sync/` never learns what a workspace is.
@@ -84,4 +84,4 @@ Each domain bounds its upstream read by its own anchor and its own toolkit sourc
 
 Tooling renders its own section, and it prints whether it was measured before it prints any count. A target with no chain recorded produces the same zero a current target does, so naming the state is the whole reason the section exists. It stays out of `hasDrift` on exactly the seeds grounds, since a golden config is one a project is expected to edit and a job counting it stays red with no remedy. Being unmeasured is not the reason, because an unmeasured report carries zero changes and would pass a count either way.
 
-The report closes by naming the domains a target has left unstamped, which now includes tooling when nothing recorded a chain.
+The report closes by naming the scanned domains a target has left unstamped. Tooling is excluded there despite being a stamp domain, because its section renders on every managed target and a second mention states one fact under two remedies. A scanned domain nobody installed has no section at all, which is what the closing line is for.
