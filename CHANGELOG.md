@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.63.2](https://github.com/erclx/aitk/compare/v0.63.1...v0.63.2) (2026-08-05)
+
+
+### Bug Fixes
+
+* **skills:** route main-root writes that worktree isolation refuses ([#870](https://github.com/erclx/aitk/issues/870)) ([ff8520f](https://github.com/erclx/aitk/commit/ff8520f3cd87d98ef887d0b6910bc765aa5a7b53))
+
 ## [0.63.1](https://github.com/erclx/aitk/compare/v0.63.0...v0.63.1) (2026-08-05)
 
 
