@@ -7,7 +7,7 @@ description: What the standards audit is for, the gaps it closes, and the fixing
 
 ## Gap
 
-Without this skill, markdown ships unchecked against the authoring standards it was written under. A session that just wrote prose does not reopen the standard it was meant to follow, banned punctuation survives because it reads fine, and the mapping from a file to the standards governing it gets re-derived by guess on every pass.
+Without this skill, markdown ships unchecked against the authoring standards it was written under. A session fresh from writing prose does not reopen the standard it was meant to follow, banned punctuation survives because it reads fine, and the mapping from a file to the standards governing it gets re-derived by guess on every pass.
 
 ## Must
 

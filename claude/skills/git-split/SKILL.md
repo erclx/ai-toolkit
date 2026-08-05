@@ -56,7 +56,7 @@ Run these commands in parallel to gather git context:
 
 **All <total> commits accounted for.**
 
-- For the primary concern (the current branch), show `<current_branch> → <new_name>` only when renaming. Show just `<current_branch>` if the existing name already matches the concern.
+- For the primary concern (the current branch), show `<current_branch> → <new_name>` only when renaming. Show `<current_branch>` alone if the existing name already matches the concern.
 - For stacked mode, list rows in merge order: branches based on `main` first, then each layer above. For independent mode, list the primary concern first.
 
 If Mode is Stacked, append this line to the preview:

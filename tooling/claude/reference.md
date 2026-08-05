@@ -53,11 +53,11 @@ A project installed before the diagram surface became a folder still holds `.cla
 
 ## CLI
 
-| Command             | What it does                                                                                                                |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `aitk claude init`  | Seeds `.claude/` workflow docs, updates `.gitignore`                                                                        |
-| `aitk claude sync`  | Reconciles `.gitignore` against the manifest. Reports seeded file status.                                                   |
-| `aitk claude setup` | Installs user-level config to `~/.claude/`: statusline, attribution, and permission allows or denies. Run once per machine. |
+| Command             | What it does                                                                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `aitk claude init`  | Seeds `.claude/` workflow docs, updates `.gitignore`                                                                                                 |
+| `aitk claude sync`  | Reconciles `.gitignore` against the manifest. Reports seeded file status.                                                                            |
+| `aitk claude setup` | Installs user-level config to `~/.claude/`: statusline, attribution, and the `permissions.allow` and `permissions.deny` lists. Run once per machine. |
 
 ## CLAUDE.md
 
