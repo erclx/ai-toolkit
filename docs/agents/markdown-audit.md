@@ -90,6 +90,8 @@ Measured across 444 files with the paragraph checkpoint at 600: 8 word hits, no 
 
 A count written into prose goes stale against the corpus it describes, and nothing compares the two. The paragraph figure recorded when the masking fix shipped was already wrong by twelve one release later, which is why the standard states the rule and this page carries the numbers.
 
+A standard sits inside the corpus this verb measures, so rewriting a rule can breach the rule beside it. A rewrite of the paragraph weight bullet landed at 539 characters against the bullet checkpoint stated two lines below it, in the authoring copy and the consumed one alike. Neither the drift stage nor the test suite reads that, so run the verb over a standard after editing one.
+
 Masking took 7 of the weight-only paragraphs the checkpoint reported at 400 and 4 of the 44 files under their checkpoints, and no bullet at all. The first corpus triage put those at 31 paragraphs and 2 bullets, and neither reproduces: a code span is walked around, so a backticked path holding an angle-bracket placeholder keeps the width the page gives it, and both bullets the triage counted were that shape.
 
 ## What it does not cover
