@@ -36,7 +36,7 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 ## Guards
 
 - An intent matching a deep flow hands off rather than running a shallow version of it, since a partial scaffold is harder to recover from than none
-- An ignore-only fix with no recorded stack chain names the sync that records one and stops, rather than asking the user for a stack name
+- An ignore-only fix on an unmeasured tooling report stops and names the cause, whether that is no install recorded or recorded stacks the toolkit no longer ships. Neither case asks the user to supply a stack name, and neither reads the zero counts under an unmeasured report as a clean target.
 - A re-check with no earlier report to compare against says the write ran without a baseline, rather than describing the target from scratch
 
 ## Out of scope

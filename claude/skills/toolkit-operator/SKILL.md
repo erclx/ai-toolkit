@@ -29,7 +29,7 @@ Read six fields off the report and carry each to `## Route`:
 - `seeds`: entries are `matching`, `stale`, `drifted`, or `missing`. Anything but `matching` needs the seed handoff
 - `domains[].entries`: per-file `stale`, `customized`, `stranded`, and `orphaned` as before
 - `historyUnavailable` on a domain or on `seeds`: attribution failed, so treat every difference as unverified and say so rather than reporting a file as untouched
-- `tooling`: `chain` names the stacks the install resolved, nearest first, and `counts.gitignore` is how many managed ignore entries the target is missing. Both feed the ignore-only row.
+- `tooling`: read `measured` first. Every count under it is zero when it is false, which is an absence of measurement rather than a measured zero. Past that, `chain` names the stacks the install resolved, nearest first, and `counts.gitignore` counts the managed ignore entries the target is missing.
 
 State what the report found in one line per finding before acting on any of it.
 
@@ -49,7 +49,9 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 - Fix only the ignore entries of the installed stack: run `aitk tooling inject --gitignore <stack>`
 - Browse what is available: run `aitk <domain> list`
 
-Take `<stack>` from the first name in `tooling.chain` on the report, which records the stack nearest the target. An empty chain means no tooling install is recorded, so name `aitk tooling sync` as the command that records one rather than asking the user to supply a stack. Inject re-resolves that leaf's own chain, so a target whose recorded chain is shorter receives the entries from the layer its install skipped. Say so before running it.
+That row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false `measured` with an empty `chain` records no tooling install, so name `aitk tooling sync` as the command that records one rather than asking the user for a stack. A false `measured` with a chain in it means this toolkit no longer ships the recorded stacks, so report tooling as unmeasured, name those stacks, and run nothing, since an ignore count of zero there is unmeasured rather than clean and injecting would write against a retired name.
+
+On a measured report, take `<stack>` from the first name in `tooling.chain`, which records the stack nearest the target. Inject re-resolves that leaf's own chain, so a target whose recorded chain is shorter receives the entries from the layer its install skipped. Say so before running it.
 
 ### Audits
 
@@ -61,6 +63,8 @@ Four audits measure a surface without changing it. Offer the ones whose surface 
 - TypeScript or shell source present: offer `aitk comments scan`
 
 An audit offered against a surface the target lacks reports an empty run as a finding, which is the same defect as never offering it at all. Check the surface before naming the command.
+
+The markdown row is the one every target satisfies, since a project with no markdown is not one this reaches. Its condition is stated so the four rows read alike, and the row needs no gate beyond it.
 
 ## Execute
 
