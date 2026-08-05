@@ -6,6 +6,7 @@ import {
   mkdtempSync,
   readdirSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -69,22 +70,13 @@ const pathWithoutAitk = (): string =>
     .filter((dir) => dir !== '' && !existsSync(join(dir, 'aitk')))
     .join(delimiter)
 
-// The degradation branch needs a PATH carrying neither runner, and the hook
-// reads its payload through `jq` before it reaches that branch. A PATH without
-// `jq` sends the run down the no-file exit instead, which is also silent, so
-// the test would pass against the wrong branch. Keeping the directories that
-// hold `jq` alone is what separates the two.
-const pathWithJqAlone = (): string =>
+/** First match on the caller's PATH, which the fixture links rather than copies. */
+const findOnPath = (name: string): string | undefined =>
   (process.env.PATH ?? '')
     .split(delimiter)
-    .filter(
-      (dir) =>
-        dir !== '' &&
-        existsSync(join(dir, 'jq')) &&
-        !existsSync(join(dir, 'bun')) &&
-        !existsSync(join(dir, 'aitk')),
-    )
-    .join(delimiter)
+    .filter((dir) => dir !== '')
+    .map((dir) => join(dir, name))
+    .find((path) => existsSync(path))
 
 // Omitting the payload leaves stdin open with nothing written and no EOF, which
 // is the descriptor the hang came from. Closing it instead would exercise the
@@ -136,10 +128,28 @@ beforeAll(() => {
     join(project, 'indexed'),
     join(project, 'src'),
     join(fixture, 'bin'),
+    join(fixture, 'bin-no-runner'),
     join(fixture, 'no-source'),
     join(fixture, 'elsewhere/tmp'),
   ]) {
     mkdirSync(dir, { recursive: true })
+  }
+
+  // The degradation branch needs a PATH carrying neither runner, and it still
+  // has to carry what the run itself depends on: `bash` to spawn the hook, and
+  // `jq`, which the hook reads its payload through before it reaches that
+  // branch. Missing either takes the run somewhere silent for an unrelated
+  // reason, which would pass the case against the wrong branch.
+  //
+  // Linking both into a directory of its own is what holds all of that at
+  // once, the way the runner stubs beside it do. Filtering the caller's PATH
+  // for a directory holding `jq` and no runner was the alternative, and it
+  // reads machine provisioning rather than behavior: a machine carrying `bun`
+  // in `/usr/bin` leaves no directory qualifying and the case fails on its own
+  // guard.
+  for (const name of ['bash', 'jq'] as const) {
+    const found = findOnPath(name)
+    if (found) symlinkSync(found, join(fixture, 'bin-no-runner', name))
   }
 
   // The toolkit's standards-audit reads its findings out of a `markdown audit
@@ -344,13 +354,12 @@ describe('.claude/hooks/standards-audit.sh runner', () => {
   it.concurrent(
     'should stay silent when the machine carries neither runner',
     async ({ expect }) => {
-      // An empty PATH would send the run down the no-file exit, which is
-      // silent for a reason this test is not about.
-      const path = pathWithJqAlone()
-      expect(
-        path,
-        'no PATH entry carries jq without a runner beside it',
-      ).not.toBe('')
+      // The linked dependencies and nothing else, so neither runner resolves
+      // whatever the machine carries. A missing link would take the run
+      // somewhere silent for a reason this test is not about.
+      const path = join(fixture, 'bin-no-runner')
+      expect(existsSync(join(path, 'bash')), 'no bash found to link').toBe(true)
+      expect(existsSync(join(path, 'jq')), 'no jq found to link').toBe(true)
 
       const result = await run(hook, payload(), path)
 
