@@ -42,3 +42,9 @@ They live in `standards/` rather than `standards/bundled/` because the fan-out s
 The split between the two surfaces is what keeps the citation honest. The standard owns the procedure and the body owns the trigger, since both the moment a scan runs and the text it runs against vary per skill. The empty-branch case splits the same way, carrying three legitimate answers across the catalogue: fall back to `latest`, stop, or fall through to another source. A body that cites without stating its own case reads as if the default applied to it.
 
 Nothing detects a body that restates a procedure instead of citing it. `assert_no_drift` covers generated copies and a hand-written restatement is not generated, so the guarantee is only that a single definition exists to correct.
+
+### The main-root convention loses to worktree isolation
+
+Several bodies resolve shared session scratch at the main worktree root, including `claude-review` writing its findings file, `claude-memory-capture` writing the routing handoff, and `claude-memory-review` reading its receipt. A session pinned to a linked worktree cannot honor that. Claude Code refuses any write whose path resolves outside the worktree and names the worktree copy as the destination, so the instruction and the guard disagree and the guard wins.
+
+What survives is the case where one session writes and reads both, which is every ordinary ship chain, since the files land under the worktree's own `.claude/` and the same session finds them there. What breaks is the case the convention exists for, where a later session at the main root opens what a worker left behind and finds nothing. A skill citing the main root therefore states a destination it cannot reach from the only place its callers run, and no stage reports the miss, because a write redirected by the guard still succeeds.
