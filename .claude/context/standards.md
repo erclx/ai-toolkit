@@ -104,6 +104,8 @@ Owns the markdown docs defining developer workflow conventions. They install int
 - The catalog refresh runs on every completed sync, including one that found no drift, because a standard the toolkit stopped shipping goes stale in the catalog without changing any file the walk compares. It does not run when the headless refusal fires or the prompt is cancelled, since neither completed.
 - A standard missing `title` or `description` makes the regen fail. Sync reports it, finishes, and exits 0, so one malformed file cannot block the rest of the sync. The bash exited 1 here through `set -e`, after the file writes had already landed, so the tree was the same either way and only the exit code differed.
 - `bun run check` regenerates both the consumed copy and the skill-reference fan-out, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches.
+- A standard sits inside the corpus `aitk markdown audit` measures, so a rewritten rule can break the rule beside it. The paragraph weight bullet in `markdown.md` was rewritten to 539 characters against the 400-character bullet checkpoint two lines below it, and the authoring copy and the consumed one both reported. Neither the drift stage nor the test suite reads that, so run the audit over the standard after editing one.
+- A raw corpus count written into a standard goes stale and nothing compares it against the corpus. The paragraph checkpoint sentence carried 344 where the measure had reached 486, and the figure moved again by twelve inside a single release. State the property the rule turns on and leave the count to the operator reference, which a person reads rather than a parser.
 
 ## Changing a standard
 
