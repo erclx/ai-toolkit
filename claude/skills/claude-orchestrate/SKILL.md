@@ -35,7 +35,7 @@ Then output the state of play so the human knows what to launch, review, and mer
 
 The roadmap is optional and this skill does not require it. It carries why a sequence is what it is, changes only when strategy changes, and is absent in a project whose scope has already shipped. Report what it says and name it as the source. Never assert an active version the file does not state, and say nothing about one when the file is missing.
 
-A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do. On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
+A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do. On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It captures what the session learned, then writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
 The review trigger takes the same shape. `references/orchestrator-poll.md` holds the loop prompt and the condition under which the poll runs, and `scripts/poll.sh` is what the prompt invokes. A session holding a recurring-prompt scheduler starts and cancels that loop itself, and no hook or check does, so the condition holds only while whoever holds the loop applies it.
 
@@ -116,10 +116,6 @@ The tracked-file boundary collides with `CLAUDE.md`, which says to handle a smal
 
 Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge and whenever the ready list thins. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.
 
-Open the sweep by invoking `aitk:claude-memory-capture`. Both other callers are ship-chain skills and this session never ships, so without this the session that receives every operator correction is the one session that records none. The sweep is the closest bounded moment this session has to a ship, and it already runs once per batch of merges, which beats an end-of-session moment a compaction can cut short.
-
-Capture is told this session does not commit, so it skips routing and writes memory files alone. A routed fact lands in a context entry, which is a tracked file, and Boundaries below forbids writing one from here. That is the correct split rather than a limitation: a domain fact belongs to the task that owns the surface and goes in that task's Findings, while what this session produces is feedback about how to work, which is exactly the class the memory folder keeps.
-
 1. Run `gh pr list --state open` and `git log --oneline -8`. Report any pull request whose review has not been posted and stop for that one first.
 2. For each pull request merged since the last sweep, place every finding it produced. Route a finding that changes a rule to the standard or rule that states it, one that changes another task to that task's Findings, and one that overturns a groundwork lean to that folder marked answered. Never leave a finding in a pull request thread alone.
 3. Archive what closed. A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive. A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
@@ -129,13 +125,15 @@ Capture is told this session does not commit, so it skips routing and writes mem
 7. Write a plan for each newly promoted task with `claude-feature`, then report:
 
 ```plaintext
-Captured: <memory file> (<type>), or "nothing worth capturing"
+Capture: owed since <the last handoff, or session start when none has run>
 Findings placed: <finding> → <destination>
 Archived: <task>
 Promoted: <task>, touches <surfaces>, parallel with <task> because <disjoint sets>
 Serialized: <task> behind <task>, both write <file>
 Ready now: <tasks with plans, and what each waits on>
 ```
+
+The capture row states a standing debt rather than a per-run result. Running capture from here costs the operator a pass between merges while nothing ships, so the row leaves the timing to them and dates the debt, since a capture owed for twenty minutes and one owed all day want different answers and undated text reads the same either way. `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` holds the step that pays it.
 
 That block is the detail. Lead the reply with the three slots under Every later turn above, so the human reads what they own before the evidence for it.
 
