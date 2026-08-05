@@ -85,6 +85,7 @@ Each reason has one resolution and none of them is to archive around it:
 - `plan-unswept`: stop and route to `claude-docs`, which owns the plans sweep and the last-live-citation rule. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
 - `ambiguous`: two tasks name one pull request, which is the misfile `.claude/standards/tasks.md` rules out. Resolve the citation by hand, since no sweep repairs it.
 - `no-match`: the stem or number names nothing on the board. Check the name against the listed stems.
+- `bad-input`: the command line was wrong rather than the board. Read the message, fix the arguments, and run it again. Nothing on the board needs repair, which is what separates this from the two above.
 
 Do not move a plan from this skill. `claude-docs` owns that move. Two skills relocating the same file drift into relocating it differently.
 

@@ -491,7 +491,7 @@ async function runArchive(
     return report(
       {
         ok: false,
-        reason: 'ambiguous',
+        reason: 'bad-input',
         message: 'Name a task or a pull request, not both.',
         detail: [],
       },
@@ -504,7 +504,7 @@ async function runArchive(
     return report(
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message:
           'No task named. Pass a filename stem or --pull-request <number>.',
         detail: [],
@@ -520,7 +520,7 @@ async function runArchive(
     return report(
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message: `Not a pull request number: ${opts.pullRequest}`,
         detail: [],
       },

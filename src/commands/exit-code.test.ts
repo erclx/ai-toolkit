@@ -256,6 +256,16 @@ describe('command action exit codes', () => {
     expect(JSON.parse(result.stdout).reason).toBe('bad-input')
   })
 
+  it('should refuse naming both a stem and a pull request as bad-input', async () => {
+    const result = await runCli(
+      ['tasks', 'archive', 'v1-task', '--pull-request', '5', '--json'],
+      { cwd: workDir },
+    )
+
+    expect(result.exitCode).toBe(1)
+    expect(JSON.parse(result.stdout).reason).toBe('bad-input')
+  })
+
   it('should refuse naming both a task and a plan as bad-input', async () => {
     const result = await runCli(
       ['tasks', 'pull-request', '5', 'v1-task', '--plan', 'x', '--json'],

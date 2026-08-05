@@ -15,6 +15,12 @@ const PLANS_DIR = join('.claude', 'plans')
  */
 export const RESERVED_STEMS = ['index', 'priority', 'session'] as const
 
+/**
+ * `bad-input` describes the command line rather than the board, which is the
+ * split `record.ts` draws for the same reason. A caller naming two selectors
+ * answered as `ambiguous` sends a session to repair a task citation that is
+ * fine, so the three task verbs answer one mistake one way.
+ */
 export const ARCHIVE_REFUSALS = [
   'no-board',
   'no-match',
@@ -22,6 +28,7 @@ export const ARCHIVE_REFUSALS = [
   'no-outcomes',
   'open-outcomes',
   'plan-unswept',
+  'bad-input',
 ] as const
 
 export type ArchiveRefusal = (typeof ARCHIVE_REFUSALS)[number]
