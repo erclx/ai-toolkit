@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.70.0](https://github.com/erclx/aitk/compare/v0.69.0...v0.70.0) (2026-08-05)
+
+
+### Features
+
+* **operator:** route the four audits and re-check after a write ([#894](https://github.com/erclx/aitk/issues/894)) ([b9aae23](https://github.com/erclx/aitk/commit/b9aae23bc12ac9246be82027b8b514203d1d541f))
+* **sync:** report what a target holds that no live catalog claims ([#895](https://github.com/erclx/aitk/issues/895)) ([ac3a0d3](https://github.com/erclx/aitk/commit/ac3a0d3942fcb024c1a77f0a3a97eefe5afd66d6))
+
 ## [0.69.0](https://github.com/erclx/aitk/compare/v0.68.0...v0.69.0) (2026-08-05)
 
 
