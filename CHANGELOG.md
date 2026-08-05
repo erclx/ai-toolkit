@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.65.0](https://github.com/erclx/aitk/compare/v0.64.1...v0.65.0) (2026-08-05)
+
+
+### Features
+
+* **context:** report a decision narrated beside its replacement ([#875](https://github.com/erclx/aitk/issues/875)) ([f76ff17](https://github.com/erclx/aitk/commit/f76ff17e2b4232fc57663a1f75cfc3853d5ce1d1))
+
 ## [0.64.1](https://github.com/erclx/aitk/compare/v0.64.0...v0.64.1) (2026-08-05)
 
 
