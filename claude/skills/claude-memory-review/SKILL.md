@@ -88,41 +88,7 @@ Rules that resist crisp one-line phrasing default to **Retire** over promote. Ne
 
 Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
 
-Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline.
-
-Structure: a summary block at the top, a legend, then one H2 per numbered item. Number items across all actions so the user can reference them by number. Fuse the status, action, and target into each H2. Put the memory filename on its own line, a one-line Why, the rewritten rule inline in a fenced `diff` block prefixed with `+` so reviewers see the additions in green, and a `Decision:` slot for the user. Do not include a `Take:` slot in the template. Discuss inserts one directly under `Decision:` only when responding to a question item. Status starts as 📝 pending for every item at proposal time.
-
-````plaintext
-# Memory review: <slug>
-
-**Pending:** <all numbers>
-
-Legend: ✅ applied · ⏭ skipped · 📦 retired · 🤝 handed off · 📝 pending
-
-How to respond: fill in `Decision:` per item (`apply`, `skip`, `defer`, or a question with `?`), then re-ping the skill. Say "discuss" for question rounds, "apply" to commit. Chat shortcut: `all`, `none`, or a list of numbers.
-
-## 1. 📝 Promote → `<target>`
-
-`<memory-file>`
-
-Why: <one-line pulled from the memory's Why>
-
-```diff
-+ <rewritten rule text>
-```
-
-Decision:
-
-## 2. 📝 Retire
-
-`<memory-file>`
-
-Reason: <one-line reason>
-
-Decision:
-````
-
-For Hand off items, the body is a pointer to the governance target instead of a rewritten rule: `aitk-governance` and `.claude/standards/rule.md` in the toolkit repo, or the `create-rule` skill in a target project. For Retire items, skip the rewrite block. Every item gets a `Decision:` slot regardless of action. `Take:` is added only when a question response is needed.
+Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline. Read `${CLAUDE_SKILL_DIR}/references/receipt-format.md` for the file structure, the item template, and how each action type varies the body. The four phases below rewrite items inside an existing receipt rather than authoring one, so none of them opens it.
 
 Tell the user `✅ Wrote proposal to .claude/review/memory-review-<slug>.md`. Ask them to fill in `Decision:` per item, then re-ping with "discuss" for question rounds or "apply" to commit.
 

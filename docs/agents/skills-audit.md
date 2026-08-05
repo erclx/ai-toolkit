@@ -40,7 +40,7 @@ A body whose frontmatter does not parse reports as declaring neither field rathe
 
 ## What it leaves alone
 
-The report names its own blind spots on every run, including the run where everything passed. Whether each `Must` traces to a stated gap is the rule in that standard worth the most and no parser reads it. Whether a gap states an observed failure rather than an intent, and whether a description routes, are the same kind of judgment. The 5,000-word body ceiling is mechanical and still absent here.
+The report names its own blind spots on every run, including the run where everything passed. Whether each `Must` traces to a stated gap is the rule in that standard worth the most and no parser reads it. Whether a gap states an observed failure rather than an intent, and whether a description routes, are the same kind of judgment. The 150-line body checkpoint is the one mechanical rule still absent here, and adding it would print a count rather than a defect, since the standard makes it a prompt to look with nothing enforcing it.
 
 A check with no rule behind it prints an opinion as a defect, which is where the list stops.
 
