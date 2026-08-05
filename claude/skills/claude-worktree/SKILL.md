@@ -43,14 +43,21 @@ Try each source in order. Stop at the first match.
 
 Validate the result: letters, digits, dots, underscores, dashes only, max 64 chars (`/` separators are also allowed). If the derived name violates the rule, sanitize by replacing invalid chars with `-` and truncating. Show the sanitized name in the preview before invoking.
 
+Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it. A name from a plan takes the type that plan's own work carries, read off its `## Summary` and `**Files to touch:**` lines. Every other case takes `feat`, which covers a name from a branch, a name from the user, and a plan whose lines settle nothing. Draw the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/references/branch.md`.
+
+A wrong type is cheap. `git-branch` renames to conventional format later in the same chain and runs ahead of `git-pr`, so a `feat/` written over a fix is corrected before any pull request opens.
+
 ## Step 3: preview
 
 Output exactly:
 
 ```plaintext
 Worktree: .claude/worktrees/<name>/
-Source: <plan|branch|user>
+Branch:   <type>/<name>
+Source:   <plan|branch|user>
 ```
+
+Step 2 resolved `<type>`. Show it, since it is the one part of the entry the user cannot read off the name they supplied.
 
 ## Step 4: enter
 
@@ -58,13 +65,17 @@ Call `EnterWorktree` with `name: "<name>"`. Claude Code's tool permission dialog
 
 ## Step 5: align the branch name and repair the shared config
 
-`EnterWorktree` creates a branch named `worktree-<name>`, which diverges from `<name>` and breaks downstream slug derivation in `claude-autoship` and any skill that reads `git branch --show-current`. Rename it to match:
+`EnterWorktree` creates a branch named `worktree-<name>`, which diverges from `<name>` and breaks downstream slug derivation in `claude-autoship` and any skill that reads `git branch --show-current`. A bare `<name>` fixes that and fails the branch-format guard in `git-pr`, which requires `<type>/<description>`. Rename to the conventional form, which satisfies both:
 
 ```bash
-git branch -m worktree-<name> <name>
+git branch -m worktree-<name> <type>/<name>
 ```
 
-Before renaming, guard against a collision: if `git show-ref --verify --quiet refs/heads/<name>` succeeds, the target branch already exists. Stop: `❌ Branch <name> already exists. Resolve manually before continuing.` Do not delete the existing branch.
+The slug transform drops a leading type segment, so `<name>` is what every downstream derivation reads back out of the typed branch. See `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it.
+
+Before renaming, guard against a collision: if `git show-ref --verify --quiet refs/heads/<type>/<name>` succeeds, the target branch already exists. Stop: `❌ Branch <type>/<name> already exists. Resolve manually before continuing.` Do not delete the existing branch.
+
+That guard fires on the tier 1 and tier 4 sources whenever the branch the session entered from is already conventional, since the name derived from it resolves back onto that branch. Stopping is the answer there. The concern already has a branch, git refuses a second one under the same name, and the bare-name rename this replaces only deferred the same collision to the `git-branch` step.
 
 Skip the rename if the worktree was entered via `path` rather than `name`, since the branch already exists under its own identity.
 

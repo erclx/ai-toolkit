@@ -8,30 +8,31 @@ use_config() {
 }
 
 stage_setup() {
-  log_info "matched-plan : branch feat/foo + matching plan, skill picks feat-foo without prompting"
+  log_info "matched-plan : branch foo + matching plan, skill picks foo without prompting"
   log_info "multi-plan   : default branch + two plans, skill falls to tier 3 and asks which plan"
-  log_info "branch-only  : branch feat/bar + no plans, skill uses feat-bar"
-  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only"
+  log_info "branch-only  : branch bar + no plans, skill uses bar"
+  log_info "typed-branch : branch feat/baz + matching plan, rename target collides and the skill stops"
+  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch"
 
   mkdir -p .claude/plans
 
   case "$SELECTED_OPTION" in
   "matched-plan")
-    cat <<'EOF' >.claude/plans/feature-feat-foo.md
-# Feature: feat-foo
+    cat <<'EOF' >.claude/plans/feature-foo.md
+# Feature: foo
 
 Stub plan seeded for the matched-plan tier. Exercises name derivation when the current branch has a same-name plan file.
 EOF
 
-    git add . && git commit -m "feat(plans): seed feat-foo plan" --no-verify -q
-    git checkout -b feat/foo -q
+    git add . && git commit -m "feat(plans): seed foo plan" --no-verify -q
+    git checkout -b foo -q
 
     log_step "Scenario ready: matched-plan tier (Step 2, tier 1)"
-    log_info "Branch: feat/foo"
-    log_info "Plan:   .claude/plans/feature-feat-foo.md"
+    log_info "Branch: foo"
+    log_info "Plan:   .claude/plans/feature-foo.md"
     log_info "Action:  /aitk:claude-worktree"
-    log_info "Expect:  skill derives feat-foo from tier 1, no prompt"
-    log_info "         worktree at .claude/worktrees/feat-foo/, branch feat-foo post-rename"
+    log_info "Expect:  skill derives foo from tier 1, no prompt"
+    log_info "         worktree at .claude/worktrees/foo/, branch feat/foo post-rename"
     ;;
   "multi-plan")
     cat <<'EOF' >.claude/plans/feature-alpha.md
@@ -56,14 +57,32 @@ EOF
     log_info "         respond with alpha or bravo to pick the slug"
     ;;
   "branch-only")
-    git checkout -b feat/bar -q
+    git checkout -b bar -q
 
     log_step "Scenario ready: branch-only tier (Step 2, tier 4)"
-    log_info "Branch: feat/bar"
+    log_info "Branch: bar"
     log_info "Plans:  none"
     log_info "Action:  /aitk:claude-worktree"
-    log_info "Expect:  skill falls to tier 4 and uses feat-bar"
-    log_info "         worktree at .claude/worktrees/feat-bar/, branch feat-bar post-rename"
+    log_info "Expect:  skill falls to tier 4 and uses bar"
+    log_info "         worktree at .claude/worktrees/bar/, branch feat/bar post-rename"
+    ;;
+  "typed-branch")
+    cat <<'EOF' >.claude/plans/feature-baz.md
+# Feature: baz
+
+Stub plan seeded for the collision arm. The branch executing it already exists under its conventional name.
+EOF
+
+    git add . && git commit -m "feat(plans): seed baz plan" --no-verify -q
+    git checkout -b feat/baz -q
+
+    log_step "Scenario ready: rename collision (Step 5)"
+    log_info "Branch: feat/baz"
+    log_info "Plan:   .claude/plans/feature-baz.md"
+    log_info "Action:  /aitk:claude-worktree"
+    log_info "Expect:  slug transform drops the type, so tier 1 derives baz"
+    log_info "         rename target feat/baz already exists, so Step 5 stops"
+    log_info "         the existing branch is left alone"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

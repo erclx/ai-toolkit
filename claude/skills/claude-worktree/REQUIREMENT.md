@@ -1,13 +1,13 @@
 ---
 name: claude-worktree
-description: Why worktree entry is wrapped rather than called directly, covering name derivation, the branch rename downstream slugs depend on, and the shared-config repair
+description: Why worktree entry is wrapped rather than called directly, covering name derivation, the conventional branch rename the ship chain depends on, and the shared-config repair
 ---
 
 # Claude worktree requirement
 
 ## Gap
 
-Without this skill, the user names the worktree by hand, and a name matching no plan breaks every slug derived from it afterward. The entry tool then creates the branch as `worktree-<name>`, which diverges from the name the folder carries, so the ship chain looks for a plan file under a slug that does not exist and stops with nothing wrong except the name.
+Without this skill, the user names the worktree by hand, and a name matching no plan breaks every slug derived from it afterward. The entry tool then creates the branch as `worktree-<name>`, which diverges from the name the folder carries, so the ship chain looks for a plan file under a slug that does not exist and stops with nothing wrong except the name. Correcting that to the bare name leaves the branch carrying no type, which `git-pr` refuses on format, so the same run stops a second time with the work already done and uncommitted.
 
 Entry also writes the bare flag into the shared config, which strands the main worktree. Every command run there fails while the files sit untouched on disk, and the linked worktree keeps working, so nothing surfaces until the operator returns to the main checkout and finds the repository broken. A rename onto a branch that already exists is the third failure, and it is the one that destroys work rather than blocking it.
 
@@ -16,7 +16,8 @@ Entry also writes the bare flag into the shared config, which strands the main w
 - Derive the name from the plan matched to the current branch, falling through the ordered sources rather than picking
 - Validate and sanitize the derived name against what the entry tool accepts
 - Preview the resolved name and which source produced it before entering
-- Rename the created branch to match the worktree name, so downstream slug derivation resolves
+- Rename the created branch to a conventional `<type>/<name>`, so the pull request guard accepts it and the slug transform still reads `<name>` back out
+- Take the type from the plan the name came from, and default to `feat` when a branch or the user supplied it
 - Read the bare flag before writing it, and repair it on both sides of entry
 - Announce the repair only when a write actually happened
 
