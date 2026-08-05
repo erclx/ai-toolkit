@@ -65,7 +65,7 @@ When features are independent, run them in parallel instead of sequentially. Use
 
 - Create a worktree per feature, then start a Claude Code session in each
 - Invoke `aitk:claude-feature` in each session. Plans land at the main worktree root as `.claude/plans/feature-<slug>.md`, one per feature, no collisions. Small features stay in chat and skip the file.
-- Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files at the main worktree root (`review-<branch>.md`, `ui-checklist-<branch>.md`), so parallel sessions do not overwrite each other
+- Implement, verify, and review each feature independently. `claude-review` and `claude-ui-test` write per-branch files at the main worktree root (`review-<slug>.md`, `ui-checklist-<slug>.md`), so parallel sessions do not overwrite each other. The slug is the branch name with any leading type segment dropped, so `feat/jwt-expiration` and the plan at `feature-jwt-expiration.md` meet on one name
 - Ship each worktree separately with `aitk:git-ship`
 - For full autonomy per worktree, invoke `aitk:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 

@@ -1,6 +1,6 @@
 ---
 title: Shared skill procedures
-description: The CLI shell-out pattern every skill follows, the core.bare repair carried at two points, and the procedures defined once in standards and cited from each body
+description: The CLI shell-out pattern every skill follows, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
 ---
 
 # Shared skill procedures
@@ -24,6 +24,18 @@ That skew is the general shape rather than one skill's problem. A skill reaches 
 `claude-worktree` repairs `core.bare` at two points rather than one. Claude Code's entry tool writes the flag into the parent repository's shared config and its exit tool never restores it, which leaves every later command in the main worktree failing for want of a work tree while the files sit untouched on disk. The linked worktree keeps working, so the session that caused the damage is the one least likely to see it. Repairing only after entry would still admit a repository broken by an earlier session, so the skill reads the flag in Step 1 beside the main-root resolution and repairs before entering, then repeats the repair in Step 5. Both writes are guarded on the flag actually being set, since the entry tool does not set it every time and an unconditional repair would rewrite the config on runs where nothing broke.
 
 `scripts/core/verify.sh` carries the same repair as a second line of defense, sourced from `scripts/lib/worktree.sh` and run ahead of every stage because the flag breaks the git reads that scope the run. Nothing forces worktree entry through the skill, and one occurrence hit an operator whose session never entered a worktree at all. A git hook cannot serve here, because the corrupted command aborts before any hook runs. Both call sites confirm the repository's common dir is named `.git` before writing, which separates the defect from a genuinely bare repository that keeps its objects at the root and would be broken by the repair. The skill states the upstream issue inline rather than pointing at `wiki/claude/claude-worktrees.md`, since a shipped skill runs where no `wiki/` path resolves and `check-skill-paths.sh` fails the build on one.
+
+### The branch worktree entry hands to the ship chain
+
+`claude-worktree` renames the entered branch to `<type>/<name>` rather than to the bare `<name>`. Two consumers pull in opposite directions on that string. Slug derivation wants the plan's own slug, since `claude-autoship` finds the plan from the branch and stops when the two spellings differ, and `git-pr` guards on `<type>/<description>` and refuses anything without a type. The bare name satisfied the first and failed the second, mid-chain, with the work already done and uncommitted. `standards/slug.md` absorbed the difference by dropping a leading type segment before it replaces slashes, so one branch answers both and no consumer had to learn a second spelling.
+
+That amendment repairs a break nothing had reported. `git-branch` renames to conventional format at the ship step, so every branch reaching `git-pr` was already typed and every slug derived after that point already carried a `feat-` the plan folder has never used. The chain survived it because `git-pr` reuses the plan filename a caller read earlier instead of re-deriving, which is a dodge rather than a fix.
+
+Entering from a branch that is already conventional stops on the collision. The name derives back onto the branch the session came from, git refuses a second branch under it, and the type default cannot invent a distinct one. The bare-name rename this replaces carried the same collision to `git-branch`, which has no check of its own, so the stop moves the failure to the step that can still describe it.
+
+Both collision tests sit in Step 2, ahead of the entry call, because the typed name turns a rare stop into a common one and a stop after entry leaves a worktree built with the session inside it. Neither read needs a worktree. The directory test earns its place beside the branch test rather than duplicating it: two branches differing only in type are distinct refs that collapse onto one slug, so `feat/foo` and `fix/foo` reach one `.claude/worktrees/foo/` and only the directory read sees it. That is the collision `standards/slug.md` records as the cost of dropping the type, and it now has the one guard that can catch it.
+
+`git-followup` sits at the other end of the same entry. Its upstream guard read a missing tracking ref as a branch that had never been pushed, and a worktree branch has been measured carrying an open pull request without one, so the guard refused over a state the pull request disproves. The open-pull-request test is the guard now, and the push leg sets the ref with `git push -u origin HEAD` when none resolves. Refusing a branch with no pull request stays, since that is the split from `git-ship` rather than an accident of where the branch came from.
 
 ### Bundled references
 
