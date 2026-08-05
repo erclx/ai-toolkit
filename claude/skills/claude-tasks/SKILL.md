@@ -12,9 +12,10 @@ Read `.claude/standards/tasks.md` from the project root before writing any file,
 ## Guards
 
 - Resolve the board at the main worktree root, not `pwd`. Run `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` outside a git repo. Every read and write below resolves against that root. The board is gitignored scratch shared across worktrees, so a linked worktree writing to its own `pwd` creates a second board nothing else reads.
+- From a linked worktree the file-editing tools refuse that root, so a new task file goes out through `Bash` as a plain single command carrying a heredoc. Archiving already runs through `aitk tasks archive`, which resolves the root in-process. Marking an outcome shipped is `claude-docs` and runs through `aitk tasks outcome`. See Worktrees in `CLAUDE.md`.
 - If `.claude/tasks/` does not exist at that root, stop: `❌ No .claude/tasks/ board. Run aitk claude init to set it up.`
 - Route on the request rather than on a flag. Creating names work that does not exist yet, archiving names a task file already on the board. If the request fits neither, stop: `❌ Ambiguous. Say whether to create a task or archive one.`
-- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter after a write. Do not run the regen command directly.
+- Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter after a write. Do not run the regen command directly, except after a shell write from a linked worktree: the hook matches `Write|Edit|MultiEdit` and nothing fires on `Bash`, so that one case regenerates explicitly with `aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/tasks/index.md`.
 
 ## Create
 
@@ -84,6 +85,7 @@ Each reason has one resolution and none of them is to archive around it:
 - `plan-unswept`: stop and route to `claude-docs`, which owns the plans sweep and the last-live-citation rule. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
 - `ambiguous`: two tasks name one pull request, which is the misfile `.claude/standards/tasks.md` rules out. Resolve the citation by hand, since no sweep repairs it.
 - `no-match`: the stem or number names nothing on the board. Check the name against the listed stems.
+- `bad-input`: the command line was wrong rather than the board. Read the message, fix the arguments, and run it again. Nothing on the board needs repair, which is what separates this from the two above.
 
 Do not move a plan from this skill. `claude-docs` owns that move. Two skills relocating the same file drift into relocating it differently.
 

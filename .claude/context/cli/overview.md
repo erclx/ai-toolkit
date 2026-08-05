@@ -20,7 +20,8 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/init/` owns the `aitk init` option surface, the preview and count, the domain step list, and the partial-failure runner
 - `src/docs/` and `src/wiki/` own the two read-only domains, which reach for no shared engine because neither syncs into a target
 - `src/claude/` owns seed planning, the gitignore preview, and the user settings merge
-- `src/tasks/` owns the task-board archive, the one domain whose primary caller is a git hook rather than a person
+- `src/tasks/` owns the task-board archive, the one domain whose primary caller is a git hook rather than a person, and the two record verbs a skill reaches for when worktree isolation refuses its own write
+- `src/worktree.ts` owns `mainWorktreeRoot()`, which every shared-scratch verb resolves its root through. It sat duplicated in the tasks and records command files until a third caller was due
 - `src/comments/` owns the comment census, reasoned about in `.claude/context/cli/audits.md`
 - `src/context/` owns the context-folder audit, reasoned about alongside it
 - `src/capture/` owns the documentation capture render, the one folder under `src/` the package excludes

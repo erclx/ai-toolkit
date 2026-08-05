@@ -1,6 +1,6 @@
 ---
 title: Tasks
-description: Selecting a shipped task by stem or pull request, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
+description: Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
 ---
 
 # Tasks
@@ -22,7 +22,9 @@ aitk tasks archive --pull-request 673 --json
 | `--json`             | Emit a machine-readable record on stdout                     |
 | `--root <path>`      | Board root, defaulting to the main worktree                  |
 
-Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a warning, because `.husky/post-merge` calls this with nobody watching. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, `no-outcomes`, `open-outcomes`, or `plan-unswept`.
+Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a warning, because `.husky/post-merge` calls this with nobody watching. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, `no-outcomes`, `open-outcomes`, `plan-unswept`, or `bad-input`.
+
+`bad-input` covers a malformed command line, which all three task verbs answer the same way. It is separate from `ambiguous` and `no-match` because those describe the board, and a caller that passed two selectors would otherwise be sent to repair a task citation that is fine.
 
 The board is shared scratch at the main worktree root, so `--root` defaults to the first entry of `git worktree list` rather than the working directory. A linked worktree archives against the same board every other session reads.
 
@@ -31,6 +33,53 @@ Skills branch on the reason rather than on the exit code:
 ```bash
 aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .reason end'
 ```
+
+## Pull request
+
+`aitk tasks pull-request` records the number a branch's pull request carries onto the task that branch closes. It adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already holds, and corrects the number in place when the line exists.
+
+Name the task by its filename stem, or by the plan its `Plan:` line points at:
+
+```bash
+aitk tasks pull-request 673 v28.1-trigger-escalation
+aitk tasks pull-request 673 --plan worktree-scratch-routing --json
+```
+
+| Option          | Behavior                                           |
+| --------------- | -------------------------------------------------- |
+| `--plan <slug>` | Select the task whose `Plan:` line names this plan |
+| `--json`        | Emit a machine-readable record on stdout           |
+| `--root <path>` | Board root, defaulting to the main worktree        |
+
+A plan is matched on the token both spellings share, so `worktree-scratch-routing`, `feature-worktree-scratch-routing`, and `.claude/plans/feature-worktree-scratch-routing.md` all select the same task. The `action` field reports `added`, `corrected`, or `unchanged`, which makes a rerun against the same number safe.
+
+Exit codes: `0` recorded, `1` refused. The `reason` field carries `no-board`, `no-match`, or `ambiguous`. `git-pr` skips silently on those three, because each is a case where a guessed write would archive the wrong task once the branch merges.
+
+A malformed argument refuses as `bad-input` instead, which sits outside that set on purpose. `git-pr` derives the number by slicing whatever `gh pr create` printed, so a non-numeric value is reachable, and folding it into the swallowed set would lose the number with nothing reporting it.
+
+## Outcome
+
+`aitk tasks outcome` marks outcomes `[x]` on a task by their position in its outcome list, counting every checkbox in file order from 1.
+
+```bash
+aitk tasks outcome v28.1-trigger-escalation --close 1 --close 3
+aitk tasks outcome --plan worktree-scratch-routing --close 2 --json
+```
+
+| Option               | Behavior                                           |
+| -------------------- | -------------------------------------------------- |
+| `--close <position>` | Outcome to mark `[x]`, 1-based, repeatable         |
+| `--plan <slug>`      | Select the task whose `Plan:` line names this plan |
+| `--json`             | Emit a machine-readable record on stdout           |
+| `--root <path>`      | Board root, defaulting to the main worktree        |
+
+An outcome already closed comes back under `alreadyClosed` rather than refusing, so a rerun against the same positions changes nothing. A position past the end of the list refuses as `out-of-range`, since a caller counting wrong should hear about it rather than mark a neighbor.
+
+Positions skip fenced blocks. A checkbox inside a sample a task displays is not an outcome the task claims, and counting one would shift every position after it. `aitk tasks archive` reads the list through the same walker, so the two verbs cannot disagree about which checkboxes are outcomes.
+
+Exit codes: `0` closed, `1` refused. The `reason` field adds `no-outcomes`, `out-of-range`, and `bad-input` to the three above.
+
+Both verbs exist because the write is an edit inside a file that already exists. `Edit` and `Write` refuse a main-root path from a linked worktree, and a shell stream editor is banned for in-place edits, so a verb resolving the board root in-process is the only route a skill body has. Creating a whole file needs no verb, because a heredoc through `Bash` writes it safely.
 
 ## Validate
 

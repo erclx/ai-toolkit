@@ -103,6 +103,16 @@ describe('readOutcomes', () => {
       'Outcome: shipped',
     ])
   })
+
+  it('should ignore a checkbox inside a fenced block', () => {
+    const text =
+      '```markdown\n- [ ] Outcome: a sample\n```\n- [x] Outcome: real\n'
+
+    expect(readOutcomes(text)).toEqual({
+      open: [],
+      closed: ['Outcome: real'],
+    })
+  })
 })
 
 describe('readPullRequest', () => {

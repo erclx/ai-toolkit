@@ -230,4 +230,49 @@ describe('command action exit codes', () => {
     expect(result.exitCode).toBe(0)
     expect(existsSync(join(workDir, 'dark-deck', 'SLIDES.pptx'))).toBe(true)
   })
+
+  /**
+   * `git-pr` swallows the board-state refusals and reports every other one, so
+   * a malformed argument landing in the swallowed set would lose the pull
+   * request number with nothing saying so. These pin the reason rather than the
+   * exit code, which the two classes share.
+   */
+  it('should refuse a non-numeric pull request number as bad-input', async () => {
+    const result = await runCli(
+      ['tasks', 'pull-request', 'not-a-number', '--plan', 'x', '--json'],
+      { cwd: workDir },
+    )
+
+    expect(result.exitCode).toBe(1)
+    expect(JSON.parse(result.stdout).reason).toBe('bad-input')
+  })
+
+  it('should refuse an outcome call naming no position as bad-input', async () => {
+    const result = await runCli(['tasks', 'outcome', '--plan', 'x', '--json'], {
+      cwd: workDir,
+    })
+
+    expect(result.exitCode).toBe(1)
+    expect(JSON.parse(result.stdout).reason).toBe('bad-input')
+  })
+
+  it('should refuse naming both a stem and a pull request as bad-input', async () => {
+    const result = await runCli(
+      ['tasks', 'archive', 'v1-task', '--pull-request', '5', '--json'],
+      { cwd: workDir },
+    )
+
+    expect(result.exitCode).toBe(1)
+    expect(JSON.parse(result.stdout).reason).toBe('bad-input')
+  })
+
+  it('should refuse naming both a task and a plan as bad-input', async () => {
+    const result = await runCli(
+      ['tasks', 'pull-request', '5', 'v1-task', '--plan', 'x', '--json'],
+      { cwd: workDir },
+    )
+
+    expect(result.exitCode).toBe(1)
+    expect(JSON.parse(result.stdout).reason).toBe('bad-input')
+  })
 })

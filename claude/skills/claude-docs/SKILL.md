@@ -88,7 +88,7 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 
 **`.claude/tasks/`**
 
-- Mark completed outcomes `[x]` in place in the task's own file. Do not move or archive the file.
+- Mark completed outcomes `[x]` in the task's own file through `aitk tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. The verb resolves the board at the main worktree root in-process, which is the route because this is an edit inside an existing file and the file-editing tools refuse that path from a linked worktree. Do not move or archive the file.
 - Write a newly identified task as its own file, following `.claude/standards/tasks.md` for the filename and frontmatter.
 - Do not touch task files this session did not change.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it.
@@ -163,6 +163,8 @@ The base lint-staged config runs `aitk indexes regen` on every committed `*.md`,
 ## Step 8: sweep consumed scratch
 
 Sweep reviews this session consumed, and sweep plans across the whole board. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+
+Every move and delete below is a shell operation, so send each as a plain single `Bash` command rather than joining a `mkdir -p` to the `mv` with `&&`, which is refused as compound from a linked worktree. The one edit inside an existing file is the `Plan:` retarget, and no verb covers it: read the task file and write it back whole with a heredoc, which the file-editing tools refuse from a linked worktree and no shell stream editor may do.
 
 **Plans.** Scan every file in `.claude/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target. The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file. The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `.claude/standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
 

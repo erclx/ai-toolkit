@@ -1,4 +1,3 @@
-import { $ } from 'bun'
 import type { Command } from 'commander'
 import {
   type Finding,
@@ -8,6 +7,7 @@ import {
   validateRecords,
 } from '@/records/validate'
 import { intro, logError, logInfo, logStep, logWarn, outro } from '@/ui'
+import { mainWorktreeRoot } from '@/worktree'
 
 /** Returned when a record carries a finding, which is the gating result. */
 const EXIT_FINDINGS = 2
@@ -15,23 +15,6 @@ const EXIT_FINDINGS = 2
 interface ValidateCommandOptions {
   readonly json?: boolean
   readonly root?: string
-}
-
-/**
- * The session-record folders are shared scratch at the main worktree root, and
- * `git worktree list` puts that root first. Trusting the working directory would
- * validate a linked worktree's empty folder and report it clean.
- */
-async function mainWorktreeRoot(): Promise<string> {
-  const result = await $`git worktree list --porcelain`.quiet().nothrow()
-  if (result.exitCode !== 0) return process.cwd()
-
-  const line = result.stdout
-    .toString()
-    .split('\n')
-    .find((entry) => entry.startsWith('worktree '))
-
-  return line ? line.slice('worktree '.length).trim() : process.cwd()
 }
 
 export function register(program: Command): void {

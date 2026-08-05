@@ -1,7 +1,14 @@
 import { relative } from 'node:path'
-import { $ } from 'bun'
 import type { Command } from 'commander'
 import { type ArchiveOutcome, archiveTask } from '@/tasks/archive'
+import {
+  type CloseOutcome,
+  closeOutcomes,
+  type PullRequestOutcome,
+  type RecordRefused,
+  type RecordSelector,
+  recordPullRequest,
+} from '@/tasks/record'
 import {
   type Finding,
   type ValidateOutcome,
@@ -18,6 +25,7 @@ import {
   outro,
   pipeOutput,
 } from '@/ui'
+import { mainWorktreeRoot } from '@/worktree'
 
 /** Returned when the board carries a finding, which is the gating result. */
 const EXIT_FINDINGS = 2
@@ -33,22 +41,17 @@ interface ValidateCommandOptions {
   readonly root?: string
 }
 
-/**
- * The board is shared scratch at the main worktree root, and `git worktree
- * list` puts that root first. A pull inside a linked worktree fires the same
- * hook, so trusting the working directory would write a second board nothing
- * else reads.
- */
-async function mainWorktreeRoot(): Promise<string> {
-  const result = await $`git worktree list --porcelain`.quiet().nothrow()
-  if (result.exitCode !== 0) return process.cwd()
+interface PullRequestCommandOptions {
+  readonly json?: boolean
+  readonly plan?: string
+  readonly root?: string
+}
 
-  const line = result.stdout
-    .toString()
-    .split('\n')
-    .find((entry) => entry.startsWith('worktree '))
-
-  return line ? line.slice('worktree '.length).trim() : process.cwd()
+interface OutcomeCommandOptions {
+  readonly close?: readonly string[]
+  readonly json?: boolean
+  readonly plan?: string
+  readonly root?: string
 }
 
 export function register(program: Command): void {
@@ -121,6 +124,298 @@ export function register(program: Command): void {
     .action(async (opts: ValidateCommandOptions) => {
       process.exitCode = await runValidate(opts)
     })
+
+  tasks
+    .command('pull-request')
+    .description('Record a pull request number on the task a branch closes')
+    .argument('<number>', 'Pull request number, without the #')
+    .argument('[task]', 'Task filename stem, as in v28.1-trigger-escalation')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--plan <slug>', 'Select the task whose Plan line names this plan')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the line was added, corrected, or already correct',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'It adds Pull request: #NNN under the origin lines the task carries,',
+        'and corrects the number in place when the line exists. The board is',
+        'shared scratch, so a linked worktree records against the same board.',
+        '',
+        'Examples:',
+        '  aitk tasks pull-request 673 v28.1-trigger-escalation',
+        '  aitk tasks pull-request 673 --plan worktree-scratch-routing --json',
+        '',
+      ].join('\n'),
+    )
+    .action(
+      async (
+        number: string,
+        task: string | undefined,
+        opts: PullRequestCommandOptions,
+      ) => {
+        process.exitCode = await runPullRequest(number, task, opts)
+      },
+    )
+
+  tasks
+    .command('outcome')
+    .description('Mark outcomes closed on a task by their position')
+    .argument('[task]', 'Task filename stem, as in v28.1-trigger-escalation')
+    .helpOption('-h, --help', 'Show this help message')
+    .option(
+      '--close <position>',
+      'Outcome to mark [x], 1-based, repeatable',
+      collectPosition,
+      [] as string[],
+    )
+    .option('--plan <slug>', 'Select the task whose Plan line names this plan')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  every named outcome is closed',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'Positions count every outcome checkbox in file order, starting at 1.',
+        'An outcome already closed is reported rather than refused, so a rerun',
+        'against the same positions is safe.',
+        '',
+        'Examples:',
+        '  aitk tasks outcome v28.1-trigger-escalation --close 1 --close 3',
+        '  aitk tasks outcome --plan worktree-scratch-routing --close 2 --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (task: string | undefined, opts: OutcomeCommandOptions) => {
+      process.exitCode = await runOutcome(task, opts)
+    })
+}
+
+function collectPosition(value: string, previous: string[]): string[] {
+  return [...previous, value]
+}
+
+/**
+ * Both record verbs name a task the same two ways, and naming it neither way or
+ * both ways is the same refusal in each. Both are `bad-input` rather than
+ * `ambiguous` or `no-match`, since those two describe the board and these
+ * describe the command line that reached it.
+ */
+function selectorFor(
+  task: string | undefined,
+  plan: string | undefined,
+): RecordSelector | RecordRefused {
+  if (task && plan) {
+    return {
+      ok: false,
+      reason: 'bad-input',
+      message: 'Name a task or a plan, not both.',
+      detail: [],
+    }
+  }
+
+  if (task) return { kind: 'stem', stem: task }
+  if (plan) return { kind: 'plan', plan }
+
+  return {
+    ok: false,
+    reason: 'bad-input',
+    message: 'No task named. Pass a filename stem or --plan <slug>.',
+    detail: [],
+  }
+}
+
+async function runPullRequest(
+  number: string,
+  task: string | undefined,
+  opts: PullRequestCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const selector = selectorFor(task, opts.plan)
+
+  if ('ok' in selector) {
+    return reportRecord(
+      'aitk tasks pull-request',
+      selector,
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  if (!/^\d+$/.test(number)) {
+    return reportRecord(
+      'aitk tasks pull-request',
+      {
+        ok: false,
+        reason: 'bad-input',
+        message: `Not a pull request number: ${number}`,
+        detail: [],
+      },
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await recordPullRequest(root, selector, Number(number))
+
+  return reportPullRequest(outcome, emitJson, root)
+}
+
+async function runOutcome(
+  task: string | undefined,
+  opts: OutcomeCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const selector = selectorFor(task, opts.plan)
+
+  if ('ok' in selector) {
+    return reportRecord('aitk tasks outcome', selector, emitJson, process.cwd())
+  }
+
+  const raw = opts.close ?? []
+
+  if (raw.length === 0) {
+    return reportRecord(
+      'aitk tasks outcome',
+      {
+        ok: false,
+        reason: 'bad-input',
+        message: 'No outcome named. Pass --close <position>.',
+        detail: [],
+      },
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const invalid = raw.filter((value) => !/^\d+$/.test(value))
+
+  if (invalid.length > 0) {
+    return reportRecord(
+      'aitk tasks outcome',
+      {
+        ok: false,
+        reason: 'bad-input',
+        message: `Not an outcome position: ${invalid.join(', ')}`,
+        detail: invalid,
+      },
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await closeOutcomes(root, selector, raw.map(Number))
+
+  return reportOutcome(outcome, emitJson, root)
+}
+
+function reportRecord(
+  title: string,
+  refused: RecordRefused,
+  emitJson: boolean,
+  root: string,
+): number {
+  // The framed branch below already reaches stderr through logError, so the
+  // bare write is what keeps the JSON mode from reporting the reason on stdout
+  // alone.
+  if (emitJson) {
+    process.stderr.write(`${refused.message}\n`)
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: false,
+        root,
+        reason: refused.reason,
+        message: refused.message,
+        detail: refused.detail,
+      })}\n`,
+    )
+    return 1
+  }
+
+  intro(title)
+  logStep('Refused')
+  logError(refused.message)
+  if (refused.detail.length > 0) pipeOutput(refused.detail.join('\n'))
+  outro()
+
+  return 1
+}
+
+function reportPullRequest(
+  outcome: PullRequestOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    return reportRecord('aitk tasks pull-request', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        task: outcome.stem,
+        path: relative(root, outcome.path),
+        pullRequest: outcome.number,
+        action: outcome.action,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk tasks pull-request')
+  logStep(outcome.action === 'unchanged' ? 'Already recorded' : 'Recorded')
+  logInfo(`${outcome.stem} names pull request #${outcome.number}`)
+  if (outcome.action !== 'unchanged') logAdd(relative(root, outcome.path))
+  outro()
+
+  return 0
+}
+
+function reportOutcome(
+  outcome: CloseOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    return reportRecord('aitk tasks outcome', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        task: outcome.stem,
+        path: relative(root, outcome.path),
+        closed: outcome.closed,
+        alreadyClosed: outcome.alreadyClosed,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk tasks outcome')
+  logStep(outcome.closed.length > 0 ? 'Closed' : 'Nothing to close')
+
+  for (const closed of outcome.closed) logAdd(closed)
+  for (const already of outcome.alreadyClosed) logInfo(`${already} (already)`)
+
+  if (outcome.closed.length > 0) logInfo(relative(root, outcome.path))
+  outro()
+
+  return 0
 }
 
 async function runValidate(opts: ValidateCommandOptions): Promise<number> {
@@ -196,7 +491,7 @@ async function runArchive(
     return report(
       {
         ok: false,
-        reason: 'ambiguous',
+        reason: 'bad-input',
         message: 'Name a task or a pull request, not both.',
         detail: [],
       },
@@ -209,7 +504,7 @@ async function runArchive(
     return report(
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message:
           'No task named. Pass a filename stem or --pull-request <number>.',
         detail: [],
@@ -225,7 +520,7 @@ async function runArchive(
     return report(
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message: `Not a pull request number: ${opts.pullRequest}`,
         detail: [],
       },

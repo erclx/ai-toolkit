@@ -1,0 +1,23 @@
+import { $ } from 'bun'
+
+/**
+ * Resolves the root every shared-scratch folder lives under. `git worktree
+ * list` puts the main worktree first, and trusting the working directory
+ * instead would write a second board nothing else reads, or validate a linked
+ * worktree's empty folder and report it clean.
+ *
+ * A caller reaching this from a linked worktree is the case it exists for: the
+ * file-editing tools refuse a main-root path there, so a verb resolving the
+ * root in-process is the route a skill body has.
+ */
+export async function mainWorktreeRoot(): Promise<string> {
+  const result = await $`git worktree list --porcelain`.quiet().nothrow()
+  if (result.exitCode !== 0) return process.cwd()
+
+  const line = result.stdout
+    .toString()
+    .split('\n')
+    .find((entry) => entry.startsWith('worktree '))
+
+  return line ? line.slice('worktree '.length).trim() : process.cwd()
+}

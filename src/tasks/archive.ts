@@ -15,6 +15,12 @@ const PLANS_DIR = join('.claude', 'plans')
  */
 export const RESERVED_STEMS = ['index', 'priority', 'session'] as const
 
+/**
+ * `bad-input` describes the command line rather than the board, which is the
+ * split `record.ts` draws for the same reason. A caller naming two selectors
+ * answered as `ambiguous` sends a session to repair a task citation that is
+ * fine, so the three task verbs answer one mistake one way.
+ */
 export const ARCHIVE_REFUSALS = [
   'no-board',
   'no-match',
@@ -22,6 +28,7 @@ export const ARCHIVE_REFUSALS = [
   'no-outcomes',
   'open-outcomes',
   'plan-unswept',
+  'bad-input',
 ] as const
 
 export type ArchiveRefusal = (typeof ARCHIVE_REFUSALS)[number]
@@ -61,6 +68,26 @@ export function archiveDir(root: string): string {
   return join(root, ARCHIVE_DIR)
 }
 
+export const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
+
+/**
+ * Marks the lines sitting inside a fenced block, the fence delimiters included.
+ * A checkbox in a sample a task displays is not an outcome the task claims, and
+ * counting one shifts every position after it. Every reader of the outcome list
+ * shares this so none of them can disagree about what the list holds.
+ */
+export function fenceMask(lines: readonly string[]): boolean[] {
+  let inside = false
+
+  return lines.map((line) => {
+    if (/^\s*(?:```|~~~)/.test(line)) {
+      inside = !inside
+      return true
+    }
+    return inside
+  })
+}
+
 /**
  * Splits a task's outcome list by checkbox state. The board format puts every
  * outcome at the top level of `## Outcomes`, so an anchored match is enough and
@@ -69,9 +96,13 @@ export function archiveDir(root: string): string {
 export function readOutcomes(text: string): TaskOutcomes {
   const open: string[] = []
   const closed: string[] = []
+  const lines = text.split('\n')
+  const fenced = fenceMask(lines)
 
-  for (const line of text.split('\n')) {
-    const match = /^- \[([ xX])\] ?(.*)$/.exec(line)
+  for (const [index, line] of lines.entries()) {
+    if (fenced[index]) continue
+
+    const match = OUTCOME_PATTERN.exec(line)
     if (!match) continue
 
     const [, box, body] = match
@@ -157,7 +188,7 @@ function isLivePlan(target: string, dir: string, root: string): boolean {
   )
 }
 
-async function listTaskStems(dir: string): Promise<string[]> {
+export async function listTaskStems(dir: string): Promise<string[]> {
   const entries = await readdir(dir)
   const reserved: readonly string[] = RESERVED_STEMS
 

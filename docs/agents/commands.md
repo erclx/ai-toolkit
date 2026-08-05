@@ -27,6 +27,8 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk feedback`            | Write toolkit feedback from stdin to `.claude/review/`, or open a GitHub issue with `--github` |
 | `aitk transcripts <url>`   | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                          |
 | `aitk tasks archive`       | Move a shipped task off the board, clear its ordering row, and regenerate the index            |
+| `aitk tasks pull-request`  | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)       |
+| `aitk tasks outcome`       | Mark outcomes `[x]` on a task by position, repeating `--close` (`--json`)                      |
 | `aitk tasks validate`      | Report board rows whose plan, task file, group, or file set does not hold (`--json`)           |
 | `aitk records validate`    | Report a session record against the standard governing it, per kind (`--json`)                 |
 | `aitk comments scan`       | Measure comment density by language and comment kind, with a trend recomputed from git         |
