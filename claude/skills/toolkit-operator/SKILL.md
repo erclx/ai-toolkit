@@ -49,7 +49,11 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 - Fix only the ignore entries of the installed stack: run `aitk tooling inject --gitignore <stack>`
 - Browse what is available: run `aitk <domain> list`
 
-That row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false `measured` with an empty `chain` records no tooling install, so name `aitk tooling sync` as the command that records one rather than asking the user for a stack. A false `measured` with a chain in it means this toolkit no longer ships the recorded stacks, so report tooling as unmeasured, name those stacks, and run nothing, since an ignore count of zero there is unmeasured rather than clean and injecting would write against a retired name.
+That row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false one splits three ways. Report tooling as unmeasured in each, name the cause, and run nothing, since the zero counts underneath are unmeasured rather than clean:
+
+- An empty `chain` at a workspace root, which carries `pnpm-workspace.yaml` or a `workspaces` key in `package.json`: no chain is recorded there by design, since one would guess at what the packages hold. Name `aitk tooling sync <stack> <path>` against a package.
+- An empty `chain` anywhere else: no tooling install is recorded, so name `aitk tooling sync` as the command that records one rather than asking the user for a stack.
+- A `chain` carrying names: this toolkit no longer ships those stacks. Name them, since injecting would write against a retired name.
 
 On a measured report, take `<stack>` from the first name in `tooling.chain`, which records the stack nearest the target. Inject re-resolves that leaf's own chain, so a target whose recorded chain is shorter receives the entries from the layer its install skipped. Say so before running it.
 
