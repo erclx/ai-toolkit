@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.63.1](https://github.com/erclx/aitk/compare/v0.63.0...v0.63.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* **claude:** correct the worktree rule for main-root scratch writes ([#865](https://github.com/erclx/aitk/issues/865)) ([2dd6483](https://github.com/erclx/aitk/commit/2dd648373983f3d677accb7a37f6ce4aca4719a5))
+
 ## [0.63.0](https://github.com/erclx/aitk/compare/v0.62.1...v0.63.0) (2026-08-05)
 
 
