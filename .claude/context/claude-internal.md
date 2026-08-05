@@ -80,6 +80,14 @@ Being gitignored also puts the citations these artifacts carry outside every che
 
 Three runbooks under `claude/skills/claude-orchestrate/references/` cover the moments the model cannot detect on its own. `orchestrator-sweep.md` triggers the queue refill after a batch of merges. `orchestrator-handoff.md` writes `.claude/tasks/session.md` before a compaction with what no other artifact carries, and `orchestrator-resume.md` reads it back afterwards alongside the board and the groundwork behind the live work. They ship inside the skill because a runbook the skill cites has to resolve for a project holding the plugin and running no install, and the human fires the two compaction sides by asking for them once the skill is loaded. The routing lives in the body and the skill is user-invoked, so a long session that has dropped the body routes nothing, which is why the body names re-invocation and the two runbook paths as the recovery.
 
+### The review trigger
+
+`scripts/orchestrate/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand. It routes a moved or answered pull request to a narrow re-review and reports an opened one and stops, which automates detection and leaves the judgment where it was. `.claude/groundwork/review-automation/06-decision.md` records why the reviewing half stays manual: a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
+
+The prompt that drives it and the condition under which it runs sit in `internal/snippets/pr-poll.md`, not beside the three runbooks above. Those ship because a skill citing them has to resolve in a target, and this one names a script no target installs, which is the class `scripts/core/check-skill-paths.sh` exists to catch. Nothing enforces the start and stop condition, so a session that reads the snippet is the whole mechanism.
+
+The script is tracked and its baseline is not. State lives at `.claude/.tmp/pr-poll/baseline.txt` under the main worktree root, resolved through `git worktree list` rather than through the script's own folder, so a poll started from a linked worktree reads what one started from main wrote.
+
 ### Phase label containment
 
 Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles or bodies, review comments, issues, commit messages, or git tags. What catches a leak on the way out is the scan in `.claude/standards/publish.md`, which reads the label rule from `.claude/standards/versioning.md` beside it. See that file for the rules and the why.
