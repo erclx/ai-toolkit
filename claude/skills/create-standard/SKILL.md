@@ -28,5 +28,5 @@ Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the pro
 
 Emit the full path on its own line.
 
-- Root surface: this is the toolkit's authoring source. Remind the user to run `bun run check` to regenerate the consumed copy under `.claude/`. That pass also regenerates the `standards/index.md` entry, and the user adds a row to the standards table in `.claude/context/standards.md`.
+- Root surface: this is the toolkit's authoring source. Remind the user to run `bun run check` to regenerate the consumed copy under `.claude/`. That pass also regenerates the `standards/index.md` entry, and the user adds a row to the standards table in `.claude/context/standards/overview.md`.
 - `.claude/` surface: the file is project-local. `aitk standards sync` leaves it alone, since sync only updates filenames it recognizes from the toolkit. Remind the user to copy it to the toolkit repo, under `standards/<slug>.md`, if it should ship to every project.

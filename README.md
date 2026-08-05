@@ -63,7 +63,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 
 - [Claude Code plugin](.claude/context/claude-plugin/index.md): skills for planning, review, docs sync, and the git ship chain
 - [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
-- [Standards](.claude/context/standards.md): shared authoring conventions, synced to projects
+- [Standards](.claude/context/standards/index.md): shared authoring conventions, synced to projects
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
 - [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill and its two paths, render command
