@@ -19,6 +19,7 @@
     "tsconfig.json",
     "!scripts/sandbox",
     "!scripts/eval",
+    "!scripts/orchestrate",
     "!src/capture",
     "!**/*.test.ts"
   ],
