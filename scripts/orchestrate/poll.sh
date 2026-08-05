@@ -23,12 +23,17 @@ mkdir -p "$STATE_DIR"
 STATE="$STATE_DIR/baseline.txt"
 touch "$STATE"
 
-# Both heading families match on the first line alone so the two tests stay
-# symmetric. The reply family carries `## Rebase` alongside `## Review
-# response`, because a run sent straight to the rebase step posts under a
-# heading deliberately kept outside the `## Review` family. Widening one of
-# these without the other is what left the reply test narrow before, so anyone
-# adding a third heading edits it here beside its sibling.
+# These four strings are owned elsewhere and pinned here. `claude-pr-review`
+# writes `## Review` and `## Review closed`, and `claude-address-review` writes
+# `## Review response` and `## Rebase`. Both skills ship to targets while this
+# script stays internal, so a heading added there breaks a test here that no
+# check reaches across.
+#
+# Both families match on the first line alone so the two tests stay symmetric.
+# The reply family carries `## Rebase` because a run sent straight to the rebase
+# step posts under a heading deliberately kept outside the `## Review` family.
+# Widening one family without the other is what left the reply test narrow, so
+# a fifth heading is added here beside its sibling.
 JQ_LAST_REVIEWED_HEAD='
   [ .reviews[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")

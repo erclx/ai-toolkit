@@ -84,7 +84,9 @@ Three runbooks under `claude/skills/claude-orchestrate/references/` cover the mo
 
 `scripts/orchestrate/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand. It routes a moved or answered pull request to a narrow re-review and reports an opened one and stops, which automates detection and leaves the judgment where it was. `.claude/groundwork/review-automation/06-decision.md` records why the reviewing half stays manual: a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
 
-The prompt that drives it and the condition under which it runs sit in `internal/snippets/pr-poll.md`, not beside the three runbooks above. Those ship because a skill citing them has to resolve in a target, and this one names a script no target installs, which is the class `scripts/core/check-skill-paths.sh` exists to catch. Nothing enforces the start and stop condition, so a session that reads the snippet is the whole mechanism.
+The prompt that drives it and the condition under which it runs sit in `internal/snippets/pr-poll.md`, not beside the three runbooks above. Those ship because a skill citing them has to resolve in a target, and this one names a script no target installs, so a shipped runbook citing it would resolve for nobody.
+
+Nothing checks that placement. `scripts/core/check-skill-paths.sh` bans a single pattern, `wiki/`, and a citation of `scripts/orchestrate/poll.sh` inside a skill body passes it clean, so the rule holds only while a session applies the reasoning. The start and stop condition is unenforced the same way, which makes a session reading the snippet the whole mechanism for both.
 
 The script is tracked and its baseline is not. State lives at `.claude/.tmp/pr-poll/baseline.txt` under the main worktree root, resolved through `git worktree list` rather than through the script's own folder, so a poll started from a linked worktree reads what one started from main wrote.
 

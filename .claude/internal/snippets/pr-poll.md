@@ -15,6 +15,7 @@ The poll is session-scoped and dies with the session that started it. Restart it
 
 - MOVED or RESPONSE on a pull request I have already reviewed: run the aitk:claude-pr-review skill on it immediately, narrow pass. Re-reviews read prior..head and gain nothing from waiting.
 - OPENED, or a pull request with no prior review pass: report it and stop. First passes wait for the operator, because reading several together is what surfaces cross-PR findings.
+- SEEN: report it and stop. A pass already covers that head, whether it arrived out of band or before the poll first saw the pull request, so no review follows.
 - CONFLICT: report it and stop. The branch owner rebases, not this session.
 - GONE: report it, then sweep the board by invoking the aitk:claude-orchestrate skill and following its queue-refill sweep.
 - A line starting `poll:`: report it verbatim and treat that pull request as unread this run. It is a failed query, not a state.
@@ -30,3 +31,5 @@ Every classification line names a pull request and a state. A line starting `pol
 The script exits non-zero and classifies nothing when the open pull request list itself fails to load. That case would otherwise report every tracked pull request as merged, so the baseline is left untouched and the run says so.
 
 Stop if `scripts/orchestrate/poll.sh` does not exist, which means the tree is not a toolkit checkout. The baseline it keeps lives at `.claude/.tmp/pr-poll/baseline.txt` under the main worktree root and is per-machine, so a first run against a board already in flight reports each open pull request once before it settles.
+
+Delete `.claude/.tmp/pr-poll/poll.sh` on any machine that ran the poll before it was tracked. That path is gitignored, so no change to this repository removes it, and a loop still naming it polls the stale copy and reports the defects this version fixed without erroring. The baseline beside it is current and stays.
