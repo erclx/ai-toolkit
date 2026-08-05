@@ -18,6 +18,7 @@ import {
   SYNC_DOMAINS,
   type SyncDomain,
 } from '@/sync/target'
+import type { UnclaimedFolder } from '@/sync/reverse'
 import { runGitWorkflow } from '@/sync/workflow'
 import { resolveTarget } from '@/target'
 import {
@@ -263,11 +264,7 @@ function renderUnclaimed(report: CheckReport): void {
   }
 
   for (const entry of notable) {
-    logWarn(
-      entry.attribution === 'dropped'
-        ? `${entry.rel}/ (dropped upstream${sinceSuffix(entry.since)}, ${entry.files} files)`
-        : `${entry.rel}/ (unattributed, ${entry.files} files)`,
-    )
+    logWarn(`${entry.rel}/ (${describeUnclaimed(entry)})`)
   }
 
   logInfo(
@@ -275,8 +272,21 @@ function renderUnclaimed(report: CheckReport): void {
   )
 }
 
-function sinceSuffix(since: string | undefined): string {
-  return since === undefined ? '' : ` at ${since.slice(0, 7)}`
+/**
+ * State first, then the count, then where the content came from. The revision
+ * is the commit that published the content the target still holds, never the
+ * one that dropped the folder, so it takes a clause of its own. Suffixed onto
+ * `dropped upstream` it reads as the date of the drop, and an operator running
+ * `git show` on it lands on the commit that added the folder.
+ */
+function describeUnclaimed(entry: UnclaimedFolder): string {
+  const state =
+    entry.attribution === 'dropped' ? 'dropped upstream' : 'unattributed'
+  const counted = `${state}, ${entry.files} files`
+
+  if (entry.since === undefined) return counted
+
+  return `${counted}, content published at ${entry.since.slice(0, 7)}`
 }
 
 /**
