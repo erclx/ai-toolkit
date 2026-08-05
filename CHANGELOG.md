@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.61.0](https://github.com/erclx/aitk/compare/v0.60.0...v0.61.0) (2026-08-05)
+
+
+### Features
+
+* **orchestrate:** ship the review poll inside the orchestrate skill ([#857](https://github.com/erclx/aitk/issues/857)) ([9bdb67e](https://github.com/erclx/aitk/commit/9bdb67e47efac16061cd229f626a9e6cc3b0cf67))
+
 ## [0.60.0](https://github.com/erclx/aitk/compare/v0.59.0...v0.60.0) (2026-08-05)
 
 
