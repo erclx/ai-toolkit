@@ -37,7 +37,7 @@ The roadmap is optional and this skill does not require it. It carries why a seq
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do. On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
-The review trigger takes the same shape. `references/orchestrator-poll.md` holds the loop prompt and the condition under which the poll runs, and `scripts/poll.sh` is what the prompt invokes. Nothing starts or stops that loop on its own, so the condition holds only while a session applies it.
+The review trigger takes the same shape. `references/orchestrator-poll.md` holds the loop prompt and the condition under which the poll runs, and `scripts/poll.sh` is what the prompt invokes. A session holding a recurring-prompt scheduler starts and cancels that loop itself, and no hook or check does, so the condition holds only while whoever holds the loop applies it.
 
 That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/aitk:claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The two runbooks sit at `references/orchestrator-handoff.md` and `references/orchestrator-resume.md` inside this skill's own folder, so a person who knows their plugin root opens either one directly and follows it without this skill loaded at all.
 
@@ -107,8 +107,10 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
 - Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR.
-- Do not edit tracked files from this session. Record a change identified while orchestrating against the task that owns it, so it ships from that task's branch and lands in a pull request.
+- Do not edit tracked files from this session, at any size. The boundary offers no proportionality exception and nothing enforces it.
 - Do not hand a worker anything but a plan, since scope lives there. A plan carries exact diffs only when they are already known, otherwise it states the scope and the open questions and lets the worker write the diff.
+
+The tracked-file boundary collides with `CLAUDE.md`, which says to handle a small edit immediately without a task entry, and this rule wins wherever the two meet. A session that writes a change cannot review it independently afterwards and no later session recovers that vantage, which is the separation `claude-pr-review` exists to supply. Record a change identified while orchestrating against the task that owns it, fold one no task owns into the next task touching the same surface, and file a task only when no such task exists or is expected. Run `claude-review` when the boundary is crossed anyway, since a branch-diff pass is not independent and is the only check a self-authored change can get.
 
 ## Refilling the ready queue
 
