@@ -1,0 +1,13 @@
+# British spellings `aitk markdown audit` reports as findings.
+#
+# These are not approved project vocabulary. They are the closed set the audit
+# derives from the examples in `standards/prose.md`, and they have to spell
+# correctly where that set is asserted, illustrated, or explained. Keeping them
+# out of `project-terms.txt` is what stops the spell checker from reading them
+# as words this repository writes.
+analyse
+behaviour
+colour
+organise
+recognise
+summarise

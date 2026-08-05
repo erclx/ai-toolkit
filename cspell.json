@@ -13,9 +13,14 @@
       "name": "tech-stack",
       "path": "./.cspell/tech-stack.txt",
       "addWords": true
+    },
+    {
+      "name": "banned-spellings",
+      "path": "./.cspell/banned-spellings.txt",
+      "addWords": false
     }
   ],
-  "dictionaries": ["project-terms", "tech-stack"],
+  "dictionaries": ["project-terms", "tech-stack", "banned-spellings"],
   "ignoreRegExpList": ["/'[0-9A-Fa-f]{6}'/g"],
   "ignorePaths": [".cspell/**", "tooling/**", ".git/**"]
 }
