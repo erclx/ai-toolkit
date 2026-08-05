@@ -88,6 +88,12 @@ Rewriting all five is what settled them, over adding an exemption path. An exemp
 
 A code span was the first answer for the quoted anti-pattern and it was wrong. The ban scan walks around a code span, so backticking the quotation clears the report, but `markdown.md` reserves code spans for commands, API names, file paths, and identifiers, and a quoted utterance is none of those. Dropping the qualifier reaches the same zero without spending a rule to get there. The collision itself is structural rather than a property of the sentences it was found in, since writing the task and the plan for this change each reproduced it.
 
+### Why the ban gate reads one rule set for every path
+
+`aitk context audit` tiers by path, failing a push against a seed tree and reporting against a context entry, and it carries the `stub: true` exemption for a section a standard sanctions omitting. `aitk markdown audit` has neither half. Every markdown file git lists is measured the same way, and nothing under `src/markdown/` reads an exemption marker.
+
+Tiering fits a structural measure because a checkpoint is a judgment, and a seed leaving the repository is where a judgment is worth failing a push over. A closed set has no such gradient. A banned character is as wrong in a context entry as in a seed a target installs, so a per-path tier would rank the tree its own authors read most as the tree where a violation counts least. Adding that tiering is the change this record exists to decline.
+
 ## The skill audit
 
 `aitk claude skills audit` measures both skill corpora against `standards/skill.md`, gating on one check and reporting six, which is the split the context audit set. Requirement presence is the fact and the rest are judgments. The gate exists because the standard required `REQUIREMENT.md` with nothing reading the rule, the shape three open issues already record.
