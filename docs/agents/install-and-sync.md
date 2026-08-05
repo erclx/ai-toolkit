@@ -142,11 +142,11 @@ edit and a job counting those stays red with no remedy.
 
 ### Surfaces reported beside the domains
 
-Three sections sit outside the per-domain scan, because each names something
+Four sections sit outside the per-domain scan, because each names something
 that walk cannot see. None of them produces a change, and no sync command
 applies any of them.
 
-All three report only against a toolkit-managed target, which is one carrying a
+All four report only against a toolkit-managed target, which is one carrying a
 `.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
 report says so through `managed` in the JSON and routes an unmanaged directory to
 `aitk init`. Seeds are why the gate exists, since they enumerate from the toolkit
@@ -158,6 +158,8 @@ only on root files the toolkit ships and a project in the old layout is one the
 toolkit installed. When `managed` is false every section comes back empty rather
 than the render alone going quiet, so a consumer reading `--json` never acts on a
 finding the rendered half withheld.
+
+#### Seeds, superseded artifacts, and unmigrated domains
 
 `seeds` classifies every seed the toolkit ships against the target's copy, as
 `matching`, `stale`, `drifted`, or `missing`. `missing` has no per-domain
@@ -194,10 +196,56 @@ the toolkit ships, so a root folder holding the project's own documents beside
 the installed ones reports the installed subset, where a listing reports every
 file and proposes relocating the lot.
 
+#### The reverse walk
+
+`reverse` is the one section built by walking the target rather than the
+catalog. Every other surface enumerates toolkit-owned keys and asks whether the
+target matches, so a folder the toolkit deleted appears in none of them. It
+carries `unclaimed`, `migrations`, and `historyUnavailable`.
+
+`unclaimed` names a folder the target holds at a top-level path the toolkit once
+shipped and has since deleted. The candidate roots come from the toolkit's own
+history rather than from a list, so a root dropped later is covered without a
+code change. Scoping to those roots is what keeps the walk useful: walking the
+whole tree reports every project folder as unclaimed, which is true and says
+nothing.
+
+Each entry carries `rel`, a file count, and an `attribution` of `dropped`,
+`project`, or `unattributed`. A dropped folder and one the project wrote are the
+same bytes at the same path, so the verdict is traced from history rather than
+guessed from the filesystem.
+
+Content matching a version the toolkit published reads as `dropped` and carries
+the `since` commit that published it. Names the toolkit shipped holding content
+it never published read as `unattributed`, which is a state in its own right
+rather than a soft yes. No overlap at all reads as `project`, and the render
+drops those while the JSON keeps them.
+
+Only files whose path the toolkit once held are hashed, so a project folder
+colliding on a retired name costs the walk no reads. The cost is that a file the
+toolkit shipped and the target renamed goes unmatched, the same limit the
+`unmigrated` count carries.
+
+`migrations` names a proposal-only skill with a live case in this target, which
+is the treatment `unmigrated` already gives `migration-standards`. It fires on a
+`CLAUDE.md` past 250 lines for `migration-claude-md`, and on a `docs/` folder
+holding markdown with no populated `.claude/context/` for `migration-context`.
+Each entry carries the skill name and the measurement behind it, so a consumer
+can check the proposal before running it. Without the field both skills are
+documented and unreachable from any report.
+
+#### What counts toward the gate
+
 `unmigrated` counts toward `--exit-code`, since running the relocation closes it.
 `superseded` and every seed state are excluded, for the reason `orphaned` already
 is: only the user can move content they wrote, so failing a job on it leaves the
 job red with no mechanical remedy.
+
+The whole `reverse` section is excluded on the same grounds, and more strongly.
+Every entry in it is a judgment about a file the project may own, and one of its
+three verdicts is a labelled unknown by design. The unmigrated detection shipped
+that exact false positive once, failing a push with no action that cleared it,
+so this section reports and gates nothing.
 
 ## Bootstrap
 

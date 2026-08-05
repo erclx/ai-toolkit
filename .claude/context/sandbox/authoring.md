@@ -29,6 +29,12 @@ log_info "sync/    : stale .claude/rules/ present"
 log_info "list     : read-only catalog dump, no target needed"
 ```
 
+### Reading git history from a scenario
+
+A scenario reading git history through a pipeline ending in an early exit fails on output it actually read. Scenario files run under `set -o pipefail`, so a `grep -m 1` matching the first line closes the pipe while git is still writing, and the command substitution returns git's SIGPIPE status rather than the match. Take the whole listing through a process substitution with a `while read` loop and `break`, which pipefail does not observe.
+
+The failure is timing-dependent, which is what makes it worth writing down. The same pipeline run by hand in an interactive shell returns the match and exits 0, because git finishes writing before grep exits, and it fails inside the provisioning run where it matters. `infra:drift` carries both reads in the shape that survives.
+
 ## Fixtures
 
 A scenario's file content lives under `scripts/sandbox/fixtures/<category>/<scenario>/<arm>/<stage>/`, and `stage_fixtures` from `lib/sandbox-fixtures.sh` copies one stage into the sandbox. The scenario keeps its own git operations between the calls, so the script holds logic and the tree holds content.
