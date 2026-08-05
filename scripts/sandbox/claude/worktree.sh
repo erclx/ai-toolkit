@@ -11,7 +11,7 @@ stage_setup() {
   log_info "matched-plan : branch foo + matching plan, skill picks foo without prompting"
   log_info "multi-plan   : default branch + two plans, skill falls to tier 3 and asks which plan"
   log_info "branch-only  : branch bar + no plans, skill uses bar"
-  log_info "typed-branch : branch feat/baz + matching plan, rename target collides and the skill stops"
+  log_info "typed-branch : branch feat/baz + matching plan, target collides and the skill stops before entry"
   select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch"
 
   mkdir -p .claude/plans
@@ -76,13 +76,13 @@ EOF
     git add . && git commit -m "feat(plans): seed baz plan" --no-verify -q
     git checkout -b feat/baz -q
 
-    log_step "Scenario ready: rename collision (Step 5)"
+    log_step "Scenario ready: target collision (Step 2)"
     log_info "Branch: feat/baz"
     log_info "Plan:   .claude/plans/feature-baz.md"
     log_info "Action:  /aitk:claude-worktree"
     log_info "Expect:  slug transform drops the type, so tier 1 derives baz"
-    log_info "         rename target feat/baz already exists, so Step 5 stops"
-    log_info "         the existing branch is left alone"
+    log_info "         target feat/baz already exists, so Step 2 stops"
+    log_info "         no worktree is created and the existing branch is left alone"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

@@ -47,6 +47,17 @@ Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto 
 
 A wrong type is cheap. `git-branch` renames to conventional format later in the same chain and runs ahead of `git-pr`, so a `feat/` written over a fix is corrected before any pull request opens.
 
+Then test both names the entry is about to claim. Neither read needs a worktree, and a stop after Step 4 leaves one built with the session sitting inside it, so both belong here rather than beside the rename:
+
+- Branch. `git show-ref --verify --quiet refs/heads/<type>/<name>` succeeding means the ref exists. Stop: `❌ Branch <type>/<name> already exists. Resolve manually before continuing.`
+- Directory. `<main-root>/.claude/worktrees/<name>/` existing means an earlier entry claimed the name. Stop: `❌ Worktree .claude/worktrees/<name>/ already exists. Resolve manually before continuing.`
+
+Leave both in place. Resolving either automatically risks the wrong one.
+
+The two tests catch different collisions. The branch test misses the one `.claude/standards/slug.md` records, where two branches differing only in type collapse onto one name: `feat/foo` and `fix/foo` are distinct refs and reach one directory. The directory test is the only read that sees it.
+
+The branch test fires on the tier 1 and tier 4 sources whenever the branch the session started on is already conventional, since a name derived from that branch resolves back onto it. Stopping is the answer there. The concern already has a branch, git refuses a second under the same name, and the bare-name rename this replaces only carried the collision forward to the `git-branch` step.
+
 ## Step 3: preview
 
 Output exactly:
@@ -73,9 +84,7 @@ git branch -m worktree-<name> <type>/<name>
 
 The slug transform drops a leading type segment, so `<name>` is what every downstream derivation reads back out of the typed branch. See `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it.
 
-Before renaming, guard against a collision: if `git show-ref --verify --quiet refs/heads/<type>/<name>` succeeds, the target branch already exists. Stop: `❌ Branch <type>/<name> already exists. Resolve manually before continuing.` Do not delete the existing branch.
-
-That guard fires on the tier 1 and tier 4 sources whenever the branch the session entered from is already conventional, since the name derived from it resolves back onto that branch. Stopping is the answer there. The concern already has a branch, git refuses a second one under the same name, and the bare-name rename this replaces only deferred the same collision to the `git-branch` step.
+Step 2 already cleared the target name, so the rename runs unguarded here. Do not repeat the test. A ref created between the two points is a second session racing this one, which a re-read narrows rather than closes.
 
 Skip the rename if the worktree was entered via `path` rather than `name`, since the branch already exists under its own identity.
 

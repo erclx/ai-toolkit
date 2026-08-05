@@ -18,6 +18,7 @@ Entry also writes the bare flag into the shared config, which strands the main w
 - Preview the resolved name and which source produced it before entering
 - Rename the created branch to a conventional `<type>/<name>`, so the pull request guard accepts it and the slug transform still reads `<name>` back out
 - Take the type from the plan the name came from, and default to `feat` when a branch or the user supplied it
+- Test the target branch and the target directory before entering, so a stop costs no worktree
 - Read the bare flag before writing it, and repair it on both sides of entry
 - Announce the repair only when a write actually happened
 
@@ -25,7 +26,7 @@ Entry also writes the bare flag into the shared config, which strands the main w
 
 - Pick between plans when more than one could match. Ask.
 - Enter on a name inferred from session context without confirmation
-- Delete or overwrite a branch that already carries the target name
+- Delete or overwrite a branch or a worktree directory that already carries the target name
 - Rename when the worktree was entered by path, since that branch already has its own identity
 - Invoke the exit path, which is the user's call
 
@@ -33,7 +34,8 @@ Entry also writes the bare flag into the shared config, which strands the main w
 
 - Already inside a linked worktree: stop rather than nesting
 - Not a git repository and no creation hook configured: stop
-- Target branch already exists: stop and leave it alone, since resolving it automatically risks the wrong branch
+- Target branch already exists: stop before entering and leave it alone, since resolving it automatically risks the wrong branch
+- Target worktree directory already exists: stop before entering, which is the only read that sees two branches differing by type collapsing onto one name
 
 ## Out of scope
 
