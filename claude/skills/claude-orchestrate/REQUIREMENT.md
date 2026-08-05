@@ -13,9 +13,11 @@ The queue fails in both directions. It empties and a free worker waits, or it fi
 
 The session also writes surfaces it is told only how to read. Refilling the queue promotes and demotes rows in the priority file with no stated method, so a session invents one, and an inline rewrite exits clean when it matches nothing and leaves the board wrong with nothing reporting it. A row carrying prose where a plan pointer belongs costs a worker dispatch, because the ship chain refuses at its guard after the worktree is already open. A plan archived from a worker's own branch strands the pointer the board still carries, and the row reads as correct until someone follows it.
 
+The ban on writing at all fails on a different axis, which is that nothing enforces it and a session weighs proportionality against it. A one-line prose correction found while orchestrating satisfies the root instruction to handle a small edit immediately and violates this rule, and a session given no statement of which one wins takes the smaller apparent cost and authors the change. That removes the independent pass the repository built to catch what a self-review misses, and the vantage does not come back, since no later session can review the change without re-deriving the context that produced it. A correction no open task owns has nowhere to go either, so the route matters as much as the ban.
+
 Output drifts everywhere the contract stops. The specified shape covers invocation alone, so a sweep report, a board report, and an analysis each end in a decision the human owns and each buries it under the evidence they would have skipped. A compaction is the same failure one step earlier, since the file that survives it has a stated reader and no stated writer, and the session improvises what to save and loses the reasoning the board never held.
 
-The runbooks the session cannot run from memory fail on a third axis, which is where they are kept. A runbook reached by an installed path is a dependency on a channel this skill does not travel on, so a project holding the plugin and running no install follows the citation to nothing, and nothing reports the break because a missing file produces no error until someone opens the path. The three that cover the moments the loop cannot detect therefore have to ship inside the skill.
+The runbooks the session cannot run from memory fail on a third axis, which is where they are kept. A runbook reached by an installed path is a dependency on a channel this skill does not travel on, so a project holding the plugin and running no install follows the citation to nothing, and nothing reports the break because a missing file produces no error until someone opens the path. Every one of them therefore has to ship inside the skill, the three covering the moments the loop cannot detect and the fourth holding the review trigger. That fourth one fails on an axis of its own, since it names one client's command as the way to start the loop, so a session holding a different recurring-prompt scheduler reaches no path and a client without that command reaches none either, and the file ships to every target holding the plugin.
 
 ## Must
 
@@ -31,12 +33,14 @@ The runbooks the session cannot run from memory fail on a third axis, which is w
 - Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
 - Lead a sweep report, a board report, and an analysis with the state, the open decisions, and the next action, keeping the evidence below them
 - Write the pre-compact handoff with what no other file carries, and name the runbook that reads it back
-- Carry the handoff, resume, and sweep runbooks inside the skill, so every citation resolves for a project holding the plugin and nothing else
+- Carry every runbook the session cannot run from memory inside the skill, so each citation resolves for a project holding the plugin and nothing else
+- State which rule wins where the tracked-file ban collides with the root instruction on small edits, and where a correction no open task owns goes
+- State the review trigger as a recurring prompt rather than as one client's command, since the runbook ships to targets running whatever client they run
 - Read the handoff or the resume runbook when the human asks for that side of a compaction, since the request is the only signal available for a moment the loop cannot detect
 
 ## Must not
 
-- Implement a feature or edit any tracked file from this session
+- Implement a feature or edit any tracked file from this session, at any size, since the ban offers no proportionality exception
 - Merge. Recommend merge or changes and leave the gate to the human.
 - Spawn worker sessions with agents, since every build is meant to be an independent steerable stream
 - Hand a worker anything but a plan, because scope lives there
