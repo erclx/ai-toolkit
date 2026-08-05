@@ -1,0 +1,36 @@
+# What a correct `/aitk:toolkit-operator` run replies on a target carrying two of
+# the four audit surfaces. Read by `aitk sandbox check`. Patterns use TOML
+# literal strings so a regex needs no backslash escaping.
+#
+# The arm scores the condition on each offer rather than the offer itself. A
+# reply naming all four audits passes a check that only looks for the two the
+# target can answer, so the withheld one is what separates a conditioned route
+# from a list of every command the CLI registers.
+
+# The reply lists commands rather than running them, so the run costs less than
+# the routes that execute. The ceiling sits at the default cap, because a
+# truncated run reports one turn past its cap and a declaration above the cap
+# passes that assertion while every other one fails.
+max_turns = 30
+
+# The two audits whose surface the fixture staged. Named as commands, since
+# `## Route` states the offer as the command a user picks.
+reply = ["aitk context audit", "aitk records validate"]
+
+# Prose the checker cannot assert, each with the reason it stays here.
+manual = [
+  "The reply does not offer `aitk comments scan`. Semantic: a negative substring passes on every reply that phrases the withheld offer differently, including one that never considered it",
+  "The offer names `plans` as the record kind and no other. Semantic: the fixture stages one of the four record folders, and a reply naming every kind has skipped the per-folder condition while still carrying the command token",
+  "The audits were offered rather than run. Unwired: the envelope carries the reply, not whether a command executed, so an audit fired unasked reads the same as one listed",
+  "No audit finding was treated as a reason to stop. Semantic: the fixture stages a context entry short of the required sections, and a run that reports the finding as a blocker phrases it differently every time",
+]
+
+# The staged surfaces survive. An audit reads and never writes, so a run that
+# changed either file ran something other than the audit it offered.
+[[content]]
+path = ".claude/context/billing.md"
+pattern = 'Subscriptions renew nightly'
+
+[[content]]
+path = ".claude/plans/feature-invoice-retry.md"
+pattern = 'Retry a timed-out renewal once'
