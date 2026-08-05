@@ -5,12 +5,13 @@ import {
   linesOutsideFences,
   maskDisplayed,
   scanBans,
+  visibleText,
 } from '@/markdown/scan'
 
 const BANS: BanSets = {
   characters: ['—', ';'],
   words: ['simply', 'leverage', 'just'],
-  spellings: ['organise', 'colour'],
+  spellings: ['organise', 'colour', 'behaviour'],
 }
 
 function scan(source: string) {
@@ -93,6 +94,51 @@ describe('maskDisplayed', () => {
   })
 })
 
+describe('visibleText', () => {
+  it('should reduce a link to the anchor text a reader is shown', () => {
+    expect(visibleText('See [the docs](https://x.test/a/b/c) now.')).toBe(
+      'See the docs now.',
+    )
+  })
+
+  it('should drop a link destination whose opening bracket wrapped away', () => {
+    expect(visibleText('](https://x.test/a) closes it.')).toBe(' closes it.')
+  })
+
+  it('should drop an autolink whole', () => {
+    expect(visibleText('Read <https://x.test/a/b> today.')).toBe('Read  today.')
+  })
+
+  it('should keep a placeholder inside a code span, brackets and all', () => {
+    // The autolink pattern reaches into a backticked path and takes the angle
+    // brackets out of the middle of it, which counts less than the page shows.
+    const text = 'See `.claude/context/<domain>.md` for it.'
+
+    expect(visibleText(text)).toBe(text)
+  })
+
+  it('should keep link syntax a code span is quoting rather than rendering', () => {
+    const text = 'Write `[label](target)` in the file.'
+
+    expect(visibleText(text)).toBe(text)
+  })
+
+  it('should still drop a link that sits after a code span', () => {
+    expect(visibleText('Run `aitk` then [the entry](docs/a.md) next.')).toBe(
+      'Run `aitk` then the entry next.',
+    )
+  })
+
+  it('should keep an inline code span, which a reader reads', () => {
+    // The ban scan blanks a code span so a standard quoting its own banned
+    // character does not report itself. A backticked path is still text on the
+    // page, so discounting it here would under-report a paragraph full of them.
+    expect(visibleText('Open `src/markdown/scan.ts` next.')).toBe(
+      'Open `src/markdown/scan.ts` next.',
+    )
+  })
+})
+
 describe('scanBans', () => {
   it('should report a banned character', () => {
     expect(terms('A clause; another.\n')).toEqual([';'])
@@ -115,6 +161,34 @@ describe('scanBans', () => {
   it('should not report a banned word inside a longer one', () => {
     // `just` sits inside `adjustment`, which a substring match would report.
     expect(terms('The adjustment held.\n')).toEqual([])
+  })
+
+  it('should not report a banned word ending a hyphenated compound', () => {
+    // A word boundary sits after a hyphen, so `\b` reported `just` out of
+    // `auto-just`. A compound is one word to the reader who wrote it.
+    expect(terms('The auto-just setting held.\n')).toEqual([])
+  })
+
+  it('should not report a banned word opening a hyphenated compound', () => {
+    expect(terms('The just-in-time path held.\n')).toEqual([])
+  })
+
+  it('should still report a banned word standing on its own', () => {
+    // The boundary is tightened either side, so the plain hit has to survive it.
+    expect(terms('Just run it.\n')).toEqual(['just'])
+  })
+
+  it('should report a banned spelling inside a hyphenated compound', () => {
+    // A word ban reads a compound as the one word it is, and a spelling ban
+    // targets the orthography sitting inside it. `behaviour-driven` is the
+    // usual spelling of BDD and the likeliest route a British spelling takes in.
+    expect(terms('We run behaviour-driven development.\n')).toEqual([
+      'behaviour',
+    ])
+  })
+
+  it('should report a banned spelling opening a hyphenated compound', () => {
+    expect(terms('A colour-blind palette.\n')).toEqual(['colour'])
   })
 
   it('should report nothing inside frontmatter', () => {

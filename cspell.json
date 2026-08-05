@@ -28,7 +28,9 @@
       "filename": [
         "src/markdown/bans.test.ts",
         "src/markdown/scan.test.ts",
-        ".claude/context/cli/audits.md"
+        "src/markdown/scan.ts",
+        ".claude/context/cli/audits.md",
+        "docs/agents/markdown-audit.md"
       ],
       "dictionaries": ["banned-spellings"]
     }

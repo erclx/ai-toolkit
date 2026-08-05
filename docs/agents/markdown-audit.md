@@ -41,13 +41,21 @@ Deriving the spellings rather than pattern-matching a suffix is what keeps `exer
 
 Frontmatter, fenced blocks, inline code spans, and link destinations are excluded. Without the code-span exclusion each standard would report its own backticked examples, and without the link exclusion a semicolon in a query string would report as prose no rewrite can fix.
 
+A banned word is bounded on a word character or a hyphen either side. A plain word boundary sits after a hyphen, so a banned word ending a hyphenated compound reported from inside one, and a compound is a single word to the reader who wrote it.
+
+A banned spelling keeps the plain word boundary, hyphens included. The two bans target different things: a word ban targets the word, so reading a compound as one word is correct, while a spelling ban targets the orthography inside it, which sits in `behaviour-driven` as plainly as it sits alone.
+
 Two ban shapes stay unmeasured and the report says so on every run. A phrase ban carries a placeholder standing in for the rest of the sentence, so no literal match reaches it, and every rule under `## Voice` is a judgment. A report listing hits without naming those would read as a verdict on the whole standard.
 
 ### Bullets, paragraphs, and depth
 
 Bullet weight and depth are the checks that moved off `aitk context audit`, unchanged in what they measure. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run of lines no heading breaks reports past roughly 40 rendered lines, measured at 80 columns, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows.
 
-The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: measured across 2906 paragraphs, 344 sit inside four sentences and past 400 characters, and the heaviest runs 1159 characters in two. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+Every weight and depth measure counts the text a reader is shown. A link reduces to its anchor text and an autolink drops whole, since no reader is shown either destination. A backticked path stays counted, which is where these measures part from the ban scan above: that one blanks a code span so a standard quoting its own banned character does not report itself, and discounting the same span here would under-report a paragraph carrying several. One file holds both span sets and each answers its own question.
+
+A code span is walked around rather than through, so a path quoting link or angle-bracket syntax keeps the width the page gives it. Masking inside one takes back the decision to count it, and the placeholders this toolkit writes are where that shows.
+
+The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: measured across 3374 paragraphs, 486 sit inside four sentences and past 400 characters, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
 
 The paragraph weight and the bullet weight are the same number today because the two shapes measure one population, sharing a median near 170 characters with no gap behind either candidate. They are separate checkpoints in the standard and separate patterns in the parser, so retuning one leaves the other where it is.
 
@@ -59,7 +67,9 @@ Exit codes are `0` for a completed run and `1` for a refusal. Every finding repo
 
 A banned character is a fact rather than a judgment, which is the test that would ordinarily make it gate. What holds it back is that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order is to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change. Bullet, paragraph, and depth weight are judgments and stay advisory under any later gate.
 
-Measured across 443 files on the day this shipped: 9 word hits, no character or spelling hits, 109 heavy bullets, 610 heavy paragraphs, and 42 files carrying a run past the depth checkpoint. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
+Measured across 444 files once the weight measures moved to visible text: 8 word hits, no character or spelling hits, 119 heavy bullets, 615 heavy paragraphs, and 40 files carrying a run past the depth checkpoint. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
+
+Masking took 7 of the 493 weight-only paragraphs and 4 of the 44 files under their checkpoints, and no bullet at all. The first corpus triage put those at 31 paragraphs and 2 bullets, and neither reproduces: a code span is walked around, so a backticked path holding an angle-bracket placeholder keeps the width the page gives it, and both bullets the triage counted were that shape.
 
 ## What it does not cover
 
