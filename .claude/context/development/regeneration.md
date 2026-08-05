@@ -11,6 +11,8 @@ Two stages regenerate a tracked artifact and then assert it did not move. Regene
 
 The Consumed copies stage runs `scripts/core/regen-claude-copies.sh` and then asserts no drift across `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules`.
 
+The assert reads the unstaged diff, so the first `bun run check` after an edit to any of the four authoring surfaces reports its own regeneration as drift and exits red. Stage the rewritten copy and run again. The failure message asks for a commit while staging is what clears the stage, which is the distinction a ship chain needs, since it regenerates before the step that groups its commits. `verification.md` records the same shape for the Indexes and Skill references stages.
+
 Three of the four are whole-directory mirrors. `.claude/rules/` is not, because the toolkit authors 38 rules and consumes 22 of them, and installing the framework and ui rules here would fire a React rule on a fixture this repository writes. It resolves through `aitk gov regen` instead, which reads the stack named in `internal/governance.toml` and installs it with the same machinery `aitk gov install` uses for a target.
 
 The producer clears `.claude/rules/` before installing, so a rule dropped from the record disappears rather than lingering as an unsourced file. That is also why `internal/rules/` exists: a rule governing toolkit authoring alone needs a source somewhere outside `governance/rules/`, which ships to every target. The internal mirror excludes `internal/rules/` so those rules land at one path rather than two.
