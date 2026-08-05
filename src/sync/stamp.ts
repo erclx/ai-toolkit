@@ -5,10 +5,16 @@ import { dirname, join, sep } from 'node:path'
 import { execa } from 'execa'
 
 /**
- * Domains the stamp can attribute. Tooling runs its own inject and manifest
- * machinery rather than the sync engine, so it is absent by design.
+ * Domains the stamp can record. The first three attribute file by file through
+ * the sync engine. Tooling runs its own inject and manifest machinery, so it
+ * records the stack chain it resolved instead and carries no file hashes.
  */
-export const STAMP_DOMAINS = ['standards', 'snippets', 'governance'] as const
+export const STAMP_DOMAINS = [
+  'standards',
+  'snippets',
+  'governance',
+  'tooling',
+] as const
 
 export type StampDomain = (typeof STAMP_DOMAINS)[number]
 
@@ -31,6 +37,13 @@ export interface DomainStamp {
   readonly commit?: string
   readonly syncedAt: string
   readonly files: DomainHashes
+  /**
+   * Stack names the install resolved, nearest stack first. Present only for
+   * tooling. An ordered chain rather than the leaf name, because a stack that
+   * extends another cannot be reinstalled from its leaf alone, and a `--skip`
+   * run installs fewer layers than the leaf's own chain would reproduce.
+   */
+  readonly chain?: readonly string[]
 }
 
 export interface Stamp {
@@ -92,6 +105,15 @@ export function stampedHashes(
 }
 
 /**
+ * The stack chain tooling last installed. An empty result is the state every
+ * target predating the tooling record sits in, and the report reads it as
+ * unmeasured rather than as clean.
+ */
+export function stampedChain(stamp: Stamp | undefined): readonly string[] {
+  return stamp?.domains.tooling?.chain ?? []
+}
+
+/**
  * Replaces one domain's record and leaves the others untouched, because domains
  * install and sync independently but share the one file.
  */
@@ -101,13 +123,41 @@ export async function writeStamp(
   hashes: DomainHashes,
   now: Date,
 ): Promise<void> {
+  await putDomain(target, source, { files: sortKeys(hashes) }, now)
+}
+
+/**
+ * Records what tooling installed. `files` stays empty because `src/tooling/`
+ * never runs the sync engine, so there is no per-file attribution to store and
+ * the chain is the whole record.
+ */
+export async function writeChainStamp(
+  target: string,
+  toolkitRoot: string,
+  chain: readonly string[],
+  now: Date,
+): Promise<void> {
+  await putDomain(
+    target,
+    { domain: 'tooling', toolkitRoot },
+    { files: {}, chain: [...chain] },
+    now,
+  )
+}
+
+async function putDomain(
+  target: string,
+  source: StampSource,
+  payload: Pick<DomainStamp, 'files' | 'chain'>,
+  now: Date,
+): Promise<void> {
   const previous = readStamp(target)
   const commit = await toolkitCommit(source.toolkitRoot)
 
   const record: DomainStamp = {
     ...(commit === undefined ? {} : { commit }),
     syncedAt: now.toISOString(),
-    files: sortKeys(hashes),
+    ...payload,
   }
 
   const domains = sortDomains({
@@ -187,14 +237,24 @@ function isStamp(value: unknown): value is Stamp {
   )
 }
 
+/**
+ * `chain` is optional, which is what keeps a stamp written before tooling
+ * joined the domains readable rather than parsing as corrupt and discarding
+ * the three records it does carry.
+ */
 function isDomainStamp(value: unknown): value is DomainStamp {
   if (!isRecord(value) || !isRecord(value.files)) return false
   if (typeof value.syncedAt !== 'string') return false
   if (value.commit !== undefined && typeof value.commit !== 'string') {
     return false
   }
+  if (value.chain !== undefined && !isStringArray(value.chain)) return false
 
   return Object.values(value.files).every((hash) => typeof hash === 'string')
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  buildToolingReport,
   type CheckReport,
   countStates,
   hasDrift,
@@ -10,8 +11,10 @@ import {
   isManagedTarget,
   parseNewSkills,
   parseUpstream,
+  type ToolingReport,
 } from '@/sync/check'
 import type { ScanEntry } from '@/sync/engine'
+import { readStamp, type Stamp, stampPath } from '@/sync/stamp'
 
 let TARGET: string
 
@@ -32,11 +35,28 @@ function buildReport(
         upstream: [],
       },
     ],
+    tooling: unmeasuredTooling(),
     seeds: { entries: [], historyUnavailable: false },
     superseded: [],
     unmigrated: [],
     newSkills: [],
     ...overrides,
+  }
+}
+
+function unmeasuredTooling(): ToolingReport {
+  return {
+    measured: false,
+    chain: [],
+    counts: {
+      configs: 0,
+      seeds: 0,
+      scripts: 0,
+      deps: 0,
+      gitignore: 0,
+      references: 0,
+    },
+    changes: 0,
   }
 }
 
@@ -46,6 +66,133 @@ beforeEach(() => {
 
 afterEach(() => {
   rmSync(TARGET, { recursive: true, force: true })
+})
+
+describe('buildToolingReport', () => {
+  let TOOLKIT: string
+
+  /** A stack carrying one config, which is the smallest thing `scan` can compare. */
+  function writeStack(name: string, extend?: string): void {
+    const dir = join(TOOLKIT, 'tooling', name)
+    mkdirSync(join(dir, 'configs'), { recursive: true })
+    writeFileSync(
+      join(dir, 'manifest.toml'),
+      extend === undefined ? '[stack]\n' : `[stack]\nextends = "${extend}"\n`,
+    )
+    writeFileSync(join(dir, 'configs', `${name}.config.json`), `${name}\n`)
+  }
+
+  function stampChain(chain: readonly string[]): Stamp | undefined {
+    mkdirSync(join(TARGET, '.claude'), { recursive: true })
+    writeFileSync(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['tooling'],
+        domains: {
+          tooling: { commit: 'abc1234', syncedAt: 'then', files: {}, chain },
+        },
+      }),
+    )
+    return readStamp(TARGET)
+  }
+
+  beforeEach(() => {
+    TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-check-toolkit-'))
+  })
+
+  afterEach(() => {
+    rmSync(TOOLKIT, { recursive: true, force: true })
+  })
+
+  it('should report unmeasured when no stamp exists', () => {
+    const report = buildToolingReport(TOOLKIT, TARGET, undefined)
+
+    expect(report.measured).toBe(false)
+    expect(report.chain).toEqual([])
+  })
+
+  it('should report unmeasured when the stamp covers other domains only', () => {
+    mkdirSync(join(TARGET, '.claude'), { recursive: true })
+    writeFileSync(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['standards'],
+        domains: { standards: { syncedAt: 'then', files: {} } },
+      }),
+    )
+
+    expect(
+      buildToolingReport(TOOLKIT, TARGET, readStamp(TARGET)).measured,
+    ).toBe(false)
+  })
+
+  it('should report unmeasured when the toolkit no longer ships the chain', () => {
+    const stamp = stampChain(['retired-stack'])
+
+    expect(buildToolingReport(TOOLKIT, TARGET, stamp).measured).toBe(false)
+  })
+
+  /**
+   * The render reads the chain to decide which of the two unmeasured causes to
+   * name. Dropping it here would report a recorded chain as none recorded.
+   */
+  it('should keep the recorded chain when the toolkit no longer ships it', () => {
+    const stamp = stampChain(['retired-stack'])
+
+    expect(buildToolingReport(TOOLKIT, TARGET, stamp).chain).toEqual([
+      'retired-stack',
+    ])
+  })
+
+  it('should report measured with no changes when the target matches', () => {
+    writeStack('base')
+    writeFileSync(join(TARGET, 'base.config.json'), 'base\n')
+
+    const report = buildToolingReport(TOOLKIT, TARGET, stampChain(['base']))
+
+    expect(report.measured).toBe(true)
+    expect(report.changes).toBe(0)
+    expect(report.counts.configs).toBe(0)
+  })
+
+  it('should count a config the target is missing', () => {
+    writeStack('base')
+
+    const report = buildToolingReport(TOOLKIT, TARGET, stampChain(['base']))
+
+    expect(report.measured).toBe(true)
+    expect(report.counts.configs).toBe(1)
+    expect(report.changes).toBe(1)
+  })
+
+  it('should carry the anchor the install recorded', () => {
+    writeStack('base')
+
+    const report = buildToolingReport(TOOLKIT, TARGET, stampChain(['base']))
+
+    expect(report.commit).toBe('abc1234')
+    expect(report.syncedAt).toBe('then')
+  })
+
+  /**
+   * The recorded chain is the truth of what was installed. Re-resolving from
+   * the leaf would pull `base` back in and report its config as missing, which
+   * is drift against a layer the run deliberately skipped.
+   */
+  it('should scan only the recorded stacks, not the leaf extends chain', () => {
+    writeStack('base')
+    writeStack('vite-react', 'base')
+    writeFileSync(join(TARGET, 'vite-react.config.json'), 'vite-react\n')
+
+    const report = buildToolingReport(
+      TOOLKIT,
+      TARGET,
+      stampChain(['vite-react']),
+    )
+
+    expect(report.chain).toEqual(['vite-react'])
+    expect(report.counts.configs).toBe(0)
+  })
 })
 
 describe('installedStampDomains', () => {

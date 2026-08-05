@@ -13,32 +13,47 @@ import {
 import { buildSeedsReport, type SeedsReport } from '@/sync/seeds-report'
 import {
   readStamp,
-  STAMP_DOMAINS,
   type Stamp,
+  stampedChain,
   stampedCommit,
   type StampDomain,
 } from '@/sync/stamp'
 import { createStandardsAdapter } from '@/standards/adapter'
 import { isDirectory } from '@/target'
+import { loadManifest } from '@/tooling/manifest'
+import { scan } from '@/tooling/scan'
+
+/**
+ * Domains the sync engine walks file by file. Tooling is a stamp domain without
+ * being one of these, because `src/tooling/` never calls `planSync`, so the
+ * three lookups below have no entry to offer it.
+ */
+const SCANNED_DOMAINS = [
+  'standards',
+  'snippets',
+  'governance',
+] as const satisfies readonly StampDomain[]
+
+type ScannedDomain = (typeof SCANNED_DOMAINS)[number]
 
 /**
  * The toolkit path whose commits change what each domain holds. `claude/skills/`
  * is deliberately absent: skills load live from the plugin directory, so they
  * never go stale and belong in the read-only section instead.
  */
-const SYNCED_SOURCES: Record<StampDomain, string> = {
+const SYNCED_SOURCES: Record<ScannedDomain, string> = {
   standards: 'standards/',
   snippets: 'snippets/',
   governance: 'governance/rules/',
 }
 
-const ADAPTERS: Record<StampDomain, (root: string) => SyncAdapter> = {
+const ADAPTERS: Record<ScannedDomain, (root: string) => SyncAdapter> = {
   standards: createStandardsAdapter,
   snippets: createSnippetsAdapter,
   governance: createGovAdapter,
 }
 
-const INSTALL_MARKERS: Record<StampDomain, readonly string[]> = {
+const INSTALL_MARKERS: Record<ScannedDomain, readonly string[]> = {
   standards: ['.claude', 'standards'],
   snippets: ['.claude', 'snippets'],
   governance: ['.claude', 'rules'],
@@ -54,7 +69,7 @@ export interface StateCounts {
 }
 
 export interface DomainReport {
-  readonly domain: StampDomain
+  readonly domain: ScannedDomain
   readonly stamped: boolean
   /** This domain's own anchor, not the target's most recent sync. */
   readonly commit?: string
@@ -74,11 +89,60 @@ export interface UpstreamCommit {
   readonly subject: string
 }
 
+/** Pending changes per category, from the same scan `aitk tooling sync` reads. */
+export interface ToolingCounts {
+  readonly configs: number
+  readonly seeds: number
+  readonly scripts: number
+  readonly deps: number
+  readonly gitignore: number
+  readonly references: number
+}
+
+/**
+ * Tooling's own section. `measured` is the field the report exists for: without
+ * it a target that never installed tooling and a target whose tooling is current
+ * both render as zero changes, which is a claim rather than an absence of one.
+ */
+export interface ToolingReport {
+  readonly measured: boolean
+  /**
+   * Stack names the install resolved, nearest first. Carried even when the
+   * report is unmeasured, so a chain naming stacks this toolkit no longer ships
+   * stays distinguishable from a target that recorded none.
+   */
+  readonly chain: readonly string[]
+  readonly commit?: string
+  readonly syncedAt?: string
+  readonly counts: ToolingCounts
+  readonly changes: number
+}
+
+const UNMEASURED_TOOLING: ToolingReport = {
+  measured: false,
+  chain: [],
+  counts: {
+    configs: 0,
+    seeds: 0,
+    scripts: 0,
+    deps: 0,
+    gitignore: 0,
+    references: 0,
+  },
+  changes: 0,
+}
+
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
   /** False when the target is not a toolkit project, so every section stays empty. */
   readonly managed: boolean
   readonly domains: readonly DomainReport[]
+  /**
+   * Reported beside the domains rather than as one of them, because tooling
+   * carries no per-file entries and no upstream range, so it fills almost none
+   * of `DomainReport`.
+   */
+  readonly tooling: ToolingReport
   /**
    * Reported beside the domains rather than as one of them, because seeds carry
    * no stamp and produce no change. See `@/sync/seeds-report`.
@@ -89,10 +153,56 @@ export interface CheckReport {
   readonly newSkills: readonly string[]
 }
 
-export function installedStampDomains(target: string): StampDomain[] {
-  return STAMP_DOMAINS.filter((domain) =>
+export function installedStampDomains(target: string): ScannedDomain[] {
+  return SCANNED_DOMAINS.filter((domain) =>
     isDirectory(join(target, ...INSTALL_MARKERS[domain])),
   )
+}
+
+/**
+ * Reads the chain the install recorded and scans against those stacks rather
+ * than re-resolving from the leaf. A run that passed `--skip` installed fewer
+ * layers than the leaf's own chain reproduces, so re-resolving would report
+ * drift against a layer the target deliberately does not carry.
+ *
+ * A recorded stack the toolkit no longer ships resolves to nothing, and a chain
+ * where none resolve reads as unmeasured. Scanning the survivors would measure
+ * against a chain neither side agrees on.
+ */
+export function buildToolingReport(
+  toolkitRoot: string,
+  target: string,
+  stamp: Stamp | undefined,
+): ToolingReport {
+  const chain = stampedChain(stamp)
+  const manifests = chain
+    .map((name) => loadManifest(toolkitRoot, name))
+    .filter((manifest) => manifest !== undefined)
+
+  if (manifests.length === 0) return { ...UNMEASURED_TOOLING, chain }
+
+  const result = scan(manifests, target, { includeReferences: true })
+  const record = stamp?.domains.tooling
+
+  return {
+    measured: true,
+    chain,
+    commit: record?.commit,
+    syncedAt: record?.syncedAt,
+    counts: {
+      configs: result.configs.filter((entry) => entry.state !== 'matching')
+        .length,
+      seeds: result.seeds.filter((entry) => entry.state === 'missing').length,
+      scripts: result.scripts.filter((entry) => entry.state !== 'matching')
+        .length,
+      deps: result.deps.filter((entry) => entry.state === 'missing').length,
+      gitignore: result.gitignore.filter((entry) => entry.state === 'missing')
+        .length,
+      references: result.references.filter((entry) => entry.state === 'pending')
+        .length,
+    },
+    changes: result.totalChanges,
+  }
 }
 
 /**
@@ -143,6 +253,11 @@ export function countStates(entries: readonly ScanEntry[]): StateCounts {
  * the user can move content they wrote, so failing a job on it leaves the job
  * red with no mechanical remedy. Seeds are excluded on the same grounds, since
  * every seed a project edits would otherwise fail the check forever.
+ *
+ * Tooling is excluded on exactly the seeds grounds: a golden config is one the
+ * project is expected to edit, so a job counting it stays red with no remedy.
+ * Being unmeasured is not what excludes it, since an unmeasured report carries
+ * zero changes and would pass a count either way.
  */
 export function hasDrift(report: CheckReport): boolean {
   if (report.unmigrated.length > 0) return true
@@ -186,6 +301,7 @@ export async function buildCheckReport(
       covers: [],
       managed,
       domains: [],
+      tooling: UNMEASURED_TOOLING,
       seeds: { entries: [], historyUnavailable: false },
       superseded: [],
       unmigrated: [],
@@ -197,6 +313,7 @@ export async function buildCheckReport(
     covers: stamp?.covers ?? [],
     managed,
     domains,
+    tooling: buildToolingReport(toolkitRoot, target, stamp),
     seeds: buildSeedsReport(toolkitRoot, target),
     superseded: collectSuperseded(target),
     unmigrated,
@@ -208,7 +325,7 @@ async function buildDomainReport(
   toolkitRoot: string,
   target: string,
   stamp: Stamp | undefined,
-  domain: StampDomain,
+  domain: ScannedDomain,
 ): Promise<DomainReport> {
   const plan = planSync(ADAPTERS[domain](toolkitRoot), target)
   const record = stamp?.domains[domain]
