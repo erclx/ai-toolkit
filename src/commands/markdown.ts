@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { type BanReport, banReport, loadStandards } from '@/markdown/bans'
 import { resolveMarkdown } from '@/markdown/files'
+import { isGating } from '@/markdown/gate'
 import { type BanFinding, bodyLines, scanBans } from '@/markdown/scan'
 import {
   type Checkpoints,
@@ -19,6 +20,8 @@ import {
   pipeOutput,
   plural,
 } from '@/ui'
+
+const EXIT_GATE = 2
 
 interface AuditCommandOptions {
   readonly json?: boolean
@@ -39,7 +42,7 @@ export function register(program: Command): void {
   markdown
     .command('audit')
     .description(
-      'Report the character bans, the word bans, and bullet, paragraph, and depth weight',
+      'Fail on a banned character, word, or spelling, and report bullet, paragraph, and depth weight',
     )
     .argument(
       '[path...]',
@@ -52,12 +55,18 @@ export function register(program: Command): void {
       [
         '',
         'Exit codes:',
-        '  0  the audit completed',
+        '  0  the audit completed with no gating finding',
         '  1  refused, with the reason on stderr',
+        '  2  a banned character, word, or spelling is present',
         '',
-        'Every finding reports and none gates. A banned character is a fact and',
-        'will gate once the corpus has been measured and fixed, which is the',
-        'follow-up rather than this command.',
+        'A ban hit is a fact and gates unconditionally. Bullet, paragraph, and',
+        'depth weight are judgments a reader settles, so all three report and',
+        'none of them fails a run.',
+        '',
+        'Rewrite the sentence carrying a hit rather than swapping the token for',
+        'a near-synonym. A code span clears the report and is the answer only',
+        'where the token is genuinely an identifier under discussion, which is',
+        'what markdown.md reserves the span for.',
         '',
         'Bans and checkpoints are read from markdown.md and prose.md, resolved',
         'under .claude/standards/ then standards/. No folder has to resolve and',
@@ -156,7 +165,12 @@ async function runAudit(
     )
   }
 
-  return 0
+  const gating = isGating({
+    bans: reports.flatMap((report) => report.bans),
+    structure: reports.map((report) => report.structure),
+  })
+
+  return gating ? EXIT_GATE : 0
 }
 
 function refuse(message: string): number {
@@ -218,6 +232,13 @@ function reportBans(reports: readonly FileReport[], bans: BanReport): void {
 
   const total = carrying.reduce((sum, report) => sum + report.bans.length, 0)
   logWarn(`${plural(total, 'hit')} across ${plural(carrying.length, 'file')}`)
+  logWarn('This fails the run. Every other check below reports.')
+  logInfo(
+    'Rewrite the sentence rather than swapping the token for a near-synonym.',
+  )
+  logInfo(
+    'A code span clears the report and is the answer only where the token is genuinely an identifier under discussion, which is what markdown.md reserves the span for.',
+  )
   pipeOutput(
     carrying
       .map(
