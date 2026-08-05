@@ -20,7 +20,17 @@
       "addWords": false
     }
   ],
-  "dictionaries": ["project-terms", "tech-stack", "banned-spellings"],
+  "dictionaries": ["project-terms", "tech-stack"],
   "ignoreRegExpList": ["/'[0-9A-Fa-f]{6}'/g"],
-  "ignorePaths": [".cspell/**", "tooling/**", ".git/**"]
+  "ignorePaths": [".cspell/**", "tooling/**", ".git/**"],
+  "overrides": [
+    {
+      "filename": [
+        "src/markdown/bans.test.ts",
+        "src/markdown/scan.test.ts",
+        ".claude/context/cli/audits.md"
+      ],
+      "dictionaries": ["banned-spellings"]
+    }
+  ]
 }

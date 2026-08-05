@@ -139,6 +139,7 @@ async function runAudit(
           run: checkpoints.run,
           peerBullet: checkpoints.peerBullet,
           bullet: checkpoints.bullet,
+          paragraph: checkpoints.paragraph,
           sentences: checkpoints.sentences,
           renderWidth: checkpoints.renderWidth,
           fellBack: checkpoints.fellBack,
@@ -278,9 +279,9 @@ function reportBullets(
 /**
  * States both halves of the checkpoint on every run.
  *
- * The standard caps sentences and nothing caps their length, so a report naming
- * only the sentence count would leave a reader unable to tell why a two-
- * sentence paragraph is listed.
+ * The standard states a sentence cap and a weight, and a report naming only the
+ * first would leave a reader unable to tell why a two-sentence paragraph is
+ * listed.
  */
 function reportParagraphs(
   reports: readonly FileReport[],
@@ -288,10 +289,10 @@ function reportParagraphs(
 ): void {
   logStep('Paragraphs')
   logInfo(
-    `Prose paragraphs report past ${checkpoints.sentences} sentences or past ${checkpoints.bullet} characters.`,
+    `Prose paragraphs report past ${checkpoints.sentences} sentences or past ${checkpoints.paragraph} characters.`,
   )
   logInfo(
-    'The standard states the first. The second is the bullet checkpoint, which the two populations share a median with.',
+    'The standard states both. Weight matches the bullet checkpoint today and moves independently of it.',
   )
   logInfo(
     'Bullets, headings, tables, quotes, and fenced blocks each end a paragraph, so a bullet is measured once.',

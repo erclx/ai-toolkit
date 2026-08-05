@@ -47,7 +47,9 @@ Two ban shapes stay unmeasured and the report says so on every run. A phrase ban
 
 Bullet weight and depth are the checks that moved off `aitk context audit`, unchanged in what they measure. A top-level bullet reports past roughly 400 characters with continuation lines folded in and nested items left out. A run of lines no heading breaks reports past roughly 40 rendered lines, measured at 80 columns, skipping fenced blocks and exempting a flat peer list averaging under 130 characters a bullet and a run that is entirely table rows.
 
-The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences and nothing caps their length, so the rule as written is satisfied by writing fewer and longer ones. Measured across 2906 paragraphs, 344 sit inside four sentences and past 400 characters, and the heaviest runs 1159 characters in two, so a sentence count alone ships a check every one of them passes. Weight reuses the bullet checkpoint rather than introducing a second number, because the two populations share a median near 170 characters with no gap behind either candidate.
+The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: measured across 2906 paragraphs, 344 sit inside four sentences and past 400 characters, and the heaviest runs 1159 characters in two. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+
+The paragraph weight and the bullet weight are the same number today because the two shapes measure one population, sharing a median near 170 characters with no gap behind either candidate. They are separate checkpoints in the standard and separate patterns in the parser, so retuning one leaves the other where it is.
 
 A bullet, a heading, a table row, a blockquote, a blank line, and a fence each end a paragraph, so a heavy bullet is reported by the bullet check alone and never counted twice.
 

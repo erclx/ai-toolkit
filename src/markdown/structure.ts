@@ -45,6 +45,7 @@ export const DEFAULT_CHECKPOINTS = {
   run: 40,
   peerBullet: 130,
   bullet: 400,
+  paragraph: 400,
   sentences: 4,
   renderWidth: 80,
 } as const
@@ -63,6 +64,7 @@ export interface Checkpoints {
   readonly run: number
   readonly peerBullet: number
   readonly bullet: number
+  readonly paragraph: number
   readonly sentences: number
   readonly renderWidth: number
   /** Names that fell back, so the report can say which number is not the standard's. */
@@ -95,6 +97,7 @@ const PATTERNS: Record<CheckpointName, RegExp> = {
   run: /Past roughly (\d+) rendered lines/,
   peerBullet: /averaging under roughly (\d+) characters/,
   bullet: /Past roughly (\d+) characters in one top-level bullet/,
+  paragraph: /Past roughly (\d+) characters in one paragraph/,
   sentences: /Keep paragraphs to ([a-z]+|\d+) sentences or fewer/,
   renderWidth: /wrapping each source line at (\d+) columns/,
 }
@@ -128,6 +131,7 @@ export function parseCheckpoints(markdown: string): Checkpoints {
     run: read('run'),
     peerBullet: read('peerBullet'),
     bullet: read('bullet'),
+    paragraph: read('paragraph'),
     sentences: read('sentences'),
     renderWidth: read('renderWidth'),
     fellBack,
@@ -323,13 +327,16 @@ function countSentences(text: string): number {
 /**
  * Finds the prose paragraphs past either half of the standard's checkpoint.
  *
- * The rule as written caps sentences and nothing caps their length, so it is
- * satisfied by writing fewer and longer ones. Measured across 2906 paragraphs,
- * 344 sit inside four sentences and past the bullet checkpoint and the heaviest
- * runs 1159 characters in two, so a sentence count alone ships a check every
- * one of them passes. Weight reuses the bullet number rather than introducing a
- * second: the two populations share a median near 170 characters with no gap
- * behind either candidate, so a number measured for one transfers to the other.
+ * Both halves are stated in the standard and both are read from it. The weight
+ * half was added there rather than borrowed from the bullet checkpoint, which
+ * governs a different construct: one number feeding both would move the
+ * paragraph rule whenever the bullet rule was changed, and an author reading
+ * the sentence cap would find no weight rule to read at all.
+ *
+ * The two numbers coincide today because paragraph and bullet weight measure
+ * one population, sharing a median near 170 characters with no gap behind
+ * either candidate. They are separate checkpoints regardless, so either moves
+ * without dragging the other.
  *
  * A paragraph is a run of consecutive prose lines. A heading, a list item, a
  * table row, a blockquote, a blank line, and a fence each end one, so a bullet
@@ -349,7 +356,7 @@ export function heavyParagraphs(
 
       if (
         sentences > checkpoints.sentences ||
-        text.length > checkpoints.bullet
+        text.length > checkpoints.paragraph
       ) {
         findings.push({
           line: block[0].number,

@@ -20,6 +20,7 @@ const PARAGRAPH_BULLET = 394
 const CHECKPOINTS: Checkpoints = { ...DEFAULT_CHECKPOINTS, fellBack: [] }
 const RUN_CHECKPOINT = CHECKPOINTS.run
 const BULLET_CHECKPOINT = CHECKPOINTS.bullet
+const PARAGRAPH_CHECKPOINT = CHECKPOINTS.paragraph
 
 function measure(source: string) {
   return measureStructure('ci.md', bodyLines(source), CHECKPOINTS)
@@ -91,6 +92,7 @@ describe('parseCheckpoints', () => {
       'run',
       'peerBullet',
       'bullet',
+      'paragraph',
       'sentences',
       'renderWidth',
     ])
@@ -255,18 +257,30 @@ describe('heavyParagraphs', () => {
   })
 
   it('should report a short-sentence-count paragraph past the weight checkpoint', () => {
-    const source = `${FRONTMATTER}# CI\n\n${sentences(2, BULLET_CHECKPOINT)}\n`
+    const source = `${FRONTMATTER}# CI\n\n${sentences(2, PARAGRAPH_CHECKPOINT)}\n`
 
-    // The rule as written caps sentences alone, so it is satisfied by writing
-    // fewer and longer ones. The heaviest paragraph measured across the corpus
-    // ran 1159 characters in two sentences and passed every sentence count.
+    // A sentence cap alone is satisfied by writing fewer and longer ones. The
+    // heaviest paragraph measured across the corpus ran 1159 characters in two
+    // sentences and passed every sentence count.
     const [found] = measure(source).heavyParagraphs
     expect(found.sentences).toBe(2)
-    expect(found.characters).toBeGreaterThan(BULLET_CHECKPOINT)
+    expect(found.characters).toBeGreaterThan(PARAGRAPH_CHECKPOINT)
+  })
+
+  it('should measure weight against its own checkpoint rather than the bullet one', () => {
+    const lowered: Checkpoints = { ...CHECKPOINTS, paragraph: 120 }
+    const source = `${FRONTMATTER}# CI\n\n${sentences(2, 80)}\n`
+
+    // The two numbers coincide in the standard today, so only a run where they
+    // differ shows which one the paragraph measure actually reads.
+    expect(measure(source).heavyParagraphs).toEqual([])
+    expect(
+      measureStructure('ci.md', bodyLines(source), lowered).heavyParagraphs,
+    ).toHaveLength(1)
   })
 
   it('should fold the lines of a wrapped paragraph into one measure', () => {
-    const half = 'w'.repeat(Math.ceil(BULLET_CHECKPOINT / 2))
+    const half = 'w'.repeat(Math.ceil(PARAGRAPH_CHECKPOINT / 2))
     const source = `${FRONTMATTER}# CI\n\n${half}\n${half}\n`
 
     expect(measure(source).heavyParagraphs).toHaveLength(1)
