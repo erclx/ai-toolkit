@@ -17,9 +17,15 @@ Owns the markdown docs defining developer workflow conventions. They install int
 
 ## Gotchas
 
-- The entry is a folder on the sub-area condition rather than on length. `standards/context.md` splits a domain at three or more sub-areas that do not fit cleanly in one file, and the scope model, authoring, the per-standard decisions, and install and sync are four that do not, with the overview and the command surface a fifth. Length is what raised the question and answers nothing by itself.
-- A split buys relief rather than compliance. Every sub-file arrived under the 150-line checkpoint, which is better than the sub-area grouping guaranteed, since the groups are uneven and the largest of them lands on the checkpoint exactly. Most oversized context entries elsewhere are already sub-files of a domain that split, so treat the headroom here as the thing to defend rather than as proof the checkpoint is settled. Read `aitk context audit` for the live per-file numbers rather than recording them here, since a figure written into prose goes stale on the next edit and the audit does not.
-- A sibling domain asking the same question applies the condition against its own tree rather than inheriting this outcome. Deciding a split for an entry nobody has measured is the failure the question exists to catch.
+### Why the entry is a folder
+
+The entry is a folder on the sub-area condition rather than on length. `standards/context.md` splits a domain at three or more sub-areas that do not fit cleanly in one file, and the scope model, authoring, the per-standard decisions, and install and sync are four that do not, with the overview and the command surface a fifth. Length is what raised the question and answers nothing by itself.
+
+A split buys relief rather than compliance. Every sub-file arrived under the 150-line checkpoint, which is better than the sub-area grouping guaranteed, since the groups are uneven and the largest of them lands on the checkpoint exactly.
+
+Most oversized context entries elsewhere are already sub-files of a domain that split, so treat the headroom here as the thing to defend rather than as proof the checkpoint is settled. Read `aitk context audit` for the live per-file numbers rather than recording them here, since a figure written into prose goes stale on the next edit and the audit does not.
+
+A sibling domain asking the same question applies the condition against its own tree rather than inheriting this outcome. Deciding a split for an entry nobody has measured is the failure the question exists to catch.
 
 ## Standards
 
