@@ -3,13 +3,11 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
-  BULLET_CHECKPOINT,
   CATALOG_ROW_CHECKPOINT,
+  LENGTH_CHECKPOINT,
   measureEntry,
   measureFolders,
   missingSections,
-  RENDER_WIDTH,
-  RUN_CHECKPOINT,
 } from '@/context/audit'
 import { resolveFolders } from '@/context/folders'
 
@@ -72,112 +70,6 @@ describe('measureEntry', () => {
     expect(measureEntry('ci.md', source).lines).toBe(22)
   })
 
-  it('should report the longest run of lines no heading breaks', () => {
-    const source = `${FRONTMATTER}# CI\n\n${prose(60)}\n\n## Layout\n\n${prose(5)}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should point at the first non-blank line of the longest run', () => {
-    const source = `${FRONTMATTER}# CI\n\n${prose(60)}\n`
-
-    expect(measureEntry('ci.md', source).longestRunLine).toBe(8)
-  })
-
-  it('should let a heading of any level break a run', () => {
-    const half = prose(30)
-    const source = `${FRONTMATTER}# CI\n\n${half}\n\n#### Seam\n\n${half}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeLessThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should not count a heading that is markdown inside a fenced block', () => {
-    const source = `${FRONTMATTER}# CI\n\n${prose(20)}\n\n\`\`\`markdown\n## Not a real heading\n\n### Nor this\n\`\`\`\n\n${prose(20)}\n`
-
-    // The fence neither breaks the run nor adds to it, so the two prose
-    // stretches measure as the single run a reader scrolls through.
-    expect(measureEntry('ci.md', source).longestRun).toBe(43)
-  })
-
-  it('should exempt a run whose lines are all list items at one level', () => {
-    const source = `${FRONTMATTER}# CI\n\n${bullets(60)}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBe(0)
-  })
-
-  it('should count a wrapped line as the rows it renders', () => {
-    const source = `${FRONTMATTER}# CI\n\n${'x'.repeat(RENDER_WIDTH * 3)}\n`
-
-    // The blank line after the heading is one row and the long line is three.
-    expect(measureEntry('ci.md', source).longestRun).toBe(4)
-  })
-
-  it('should exempt a flat catalog of short peers', () => {
-    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(PEER_COUNT, CATALOG_BULLET)}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBe(0)
-  })
-
-  it('should report paragraph bullets at the count the catalog is exempt at', () => {
-    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(PEER_COUNT, PARAGRAPH_BULLET)}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should report a bullet block whose source lines stay under the checkpoint', () => {
-    const source = `${FRONTMATTER}# CI\n\n${weightedBullets(15, PARAGRAPH_BULLET)}\n`
-
-    // Fifteen bullets and a blank line are sixteen source lines, so only the
-    // rendered measure reaches the checkpoint.
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should end the exemption when the list nests a second level', () => {
-    const source = `${FRONTMATTER}# CI\n\n${bullets(30)}\n${bullets(30, '  ')}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should end the exemption when prose is mixed into the list', () => {
-    const source = `${FRONTMATTER}# CI\n\n${bullets(30)}\nA sentence between them.\n${bullets(30)}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should exempt a run whose lines are all table rows', () => {
-    const source = `${FRONTMATTER}# CI\n\n${table(catalogRows(45))}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBe(0)
-  })
-
-  it('should end the table exemption when prose sits either side of it', () => {
-    const source = `${FRONTMATTER}# CI\n\n${prose(2)}\n\n${table(catalogRows(45))}\n\n${prose(2)}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
-  it('should refuse the table exemption to piped lines carrying no delimiter', () => {
-    const source = `${FRONTMATTER}# CI\n\n${catalogRows(45).join('\n')}\n`
-
-    expect(measureEntry('ci.md', source).longestRun).toBeGreaterThan(
-      RUN_CHECKPOINT,
-    )
-  })
-
   it('should report a table whose rows name artifacts as a growing catalog', () => {
     const source = `${FRONTMATTER}# CI\n\n${table(catalogRows(CATALOG_ROW_CHECKPOINT))}\n`
 
@@ -206,53 +98,6 @@ describe('measureEntry', () => {
     const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${table(catalogRows(CATALOG_ROW_CHECKPOINT))}\n\`\`\`\n`
 
     expect(measureEntry('ci.md', source).catalogTables).toEqual([])
-  })
-
-  it('should report a top-level bullet past the character checkpoint', () => {
-    const source = `${FRONTMATTER}# CI\n\n${bullet(BULLET_CHECKPOINT + 1)}\n`
-
-    expect(measureEntry('ci.md', source).heavyBullets).toEqual([
-      { line: 8, characters: BULLET_CHECKPOINT + 1 },
-    ])
-  })
-
-  it('should leave a bullet at the checkpoint unreported', () => {
-    const source = `${FRONTMATTER}# CI\n\n${bullet(BULLET_CHECKPOINT)}\n`
-
-    expect(measureEntry('ci.md', source).heavyBullets).toEqual([])
-  })
-
-  it('should leave a nested bullet unreported', () => {
-    const source = `${FRONTMATTER}# CI\n\n- Parent\n  ${bullet(BULLET_CHECKPOINT + 1)}\n`
-
-    expect(measureEntry('ci.md', source).heavyBullets).toEqual([])
-  })
-
-  it('should ignore a bullet that is an example inside a fenced block', () => {
-    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${bullet(BULLET_CHECKPOINT + 1)}\n\`\`\`\n`
-
-    expect(measureEntry('ci.md', source).heavyBullets).toEqual([])
-  })
-
-  it('should fold a continuation line into the bullet it belongs to', () => {
-    const half = Math.ceil((BULLET_CHECKPOINT + 1) / 2)
-    const source = `${FRONTMATTER}# CI\n\n${bullet(half)}\n${'w'.repeat(half)}\n`
-
-    // Neither source line reaches the checkpoint on its own, so a wrapped
-    // bullet only reports once the two are measured as the one bullet they are.
-    expect(measureEntry('ci.md', source).heavyBullets).toEqual([
-      { line: 8, characters: half * 2 + 1 },
-    ])
-  })
-
-  it('should report a heavy bullet where no content standard claims the entry', () => {
-    const source = `${FRONTMATTER}# Components\n\n${bullet(BULLET_CHECKPOINT + 1)}\n`
-
-    // The checkpoint is stated over every markdown file, and the remedy it
-    // carries is sending the overflow to prose, which any entry type can act on.
-    expect(measureEntry('components.md', source, false).heavyBullets).toEqual([
-      { line: 8, characters: BULLET_CHECKPOINT + 1 },
-    ])
   })
 
   it('should report a date narrating when a change landed', () => {
@@ -370,14 +215,14 @@ describe('measureEntry', () => {
     expect(measureEntry('components.md', source, false).sections).toEqual([])
   })
 
-  it('should keep measuring length and depth outside the governed folder', () => {
+  it('should keep measuring length outside the governed folder', () => {
     const source = `${FRONTMATTER}# Components\n\n${prose(60)}\n`
 
     // Only the content rule narrows. A readability threshold generalizes
     // across entry types, so it keeps reaching every audited folder.
-    expect(
-      measureEntry('components.md', source, false).longestRun,
-    ).toBeGreaterThan(RUN_CHECKPOINT)
+    expect(measureEntry('components.md', source, false).lines).toBeGreaterThan(
+      LENGTH_CHECKPOINT / 3,
+    )
   })
 })
 
@@ -432,21 +277,19 @@ describe('measureFolders', () => {
     )
   })
 
-  it('should report a heavy bullet in a root folder and leave its marker alone', async () => {
-    const heavy = `- ${'word '.repeat(BULLET_CHECKPOINT / 2)}\n`
-    seed('docs', 'agents.md', `${NARRATED}\n${heavy}`)
+  it('should leave a marker in a root folder unreported', async () => {
+    seed('docs', 'agents.md', NARRATED)
 
     const { folders } = await resolveFolders(root, ['docs'], {
       canResolveAtRoot: true,
     })
     const [entry] = await measureFolders(root, folders)
 
-    // Bullet weight follows the standard governing every markdown file, so it
-    // reaches a folder whose entries the context standard disclaims. Provenance
-    // is still that standard's own rule and stops at its folder.
+    // Provenance is the context standard's own rule and stops at its folder.
+    // The attribute-tier measures reach `docs/` through `aitk markdown audit`,
+    // which needs no folder to resolve at all.
     expect(entry.rel).toBe('docs/agents.md')
     expect(entry.provenance).toEqual([])
-    expect(entry.heavyBullets).toHaveLength(1)
   })
 
   it('should still measure a root folder for length', async () => {

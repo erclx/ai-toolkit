@@ -1,50 +1,19 @@
 import { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
 import type { AuditedFolder } from '@/context/folders'
+import { type BodyLine, bodyLines } from '@/markdown/scan'
+import { renderedHeight } from '@/markdown/structure'
 import { isStubSeed } from '@/seed-marker'
 
 /**
- * Checkpoints quoted from the standard stating each. Neither is a cap.
+ * Checkpoint quoted from the standard stating it. It is not a cap.
  *
  * Entry length rests on one entry per domain, which is a domain fact, so
- * `standards/context.md` keeps it. Run depth reads the same over any markdown
- * file, so `standards/markdown.md` states it at the attribute tier.
+ * `standards/context.md` keeps it. Depth and bullet weight read the same over
+ * any markdown file, so they are stated at the attribute tier and measured by
+ * `aitk markdown audit` rather than here.
  */
 export const LENGTH_CHECKPOINT = 150
-export const RUN_CHECKPOINT = 40
-
-/**
- * Columns a source line wraps at when rendered.
- *
- * Nothing in this repository sets a line width and entries are authored one
- * line per bullet, so the rendered width is the viewer's rather than the file's.
- * The common terminal and diff width is the reproducible choice, and the report
- * legend states it so a reader can arrive at the same number by hand.
- */
-export const RENDER_WIDTH = 80
-
-/**
- * Characters a bullet averages before its list stops reading as a set of peers.
- *
- * The exemption below covers a flat catalog of one-liners and a stack of
- * paragraphs equally, and only the first is navigable. Measured across this
- * corpus the two shapes separate with nothing between roughly 100 and 170
- * characters a bullet, so the midpoint splits the population rather than a
- * continuum. It is a checkpoint like the two above, not a cap.
- */
-export const PEER_BULLET_CHECKPOINT = 130
-
-/**
- * Characters a top-level bullet carries before its overflow belongs in prose.
- *
- * Unlike the peer-list checkpoint above, this corpus has no gap behind the
- * number. Bullet weight decays smoothly from a median near 170 with the
- * steepest relative fall across this boundary and nothing resembling two
- * populations, so the number is a judgment where that one was a measurement.
- * A bullet that reads well past it means the number is wrong rather than the
- * rule, which is why this reports and never gates.
- */
-export const BULLET_CHECKPOINT = 400
 
 /**
  * A table this size or larger whose first column mostly names artifacts reads
@@ -72,11 +41,7 @@ const CATALOG_NAMED_RATIO = 0.6
  */
 export const REQUIRED_SECTIONS: readonly string[] = ['Overview', 'Layout']
 
-const FRONTMATTER = /^---\n[\s\S]*?\n---\n?/
-const FENCE = /^\s*(```|~~~)/
-const HEADING = /^#{1,6}\s/
 const HEADING_TEXT = /^#{1,6}\s+(.+?)\s*$/
-const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
 const TABLE_ROW = /^\s*\|/
 const TABLE_SEPARATOR = /^\s*\|[\s:|-]+\|\s*$/
 const NAMED_CELL = /`[^`]+`|\[[^\]]+\]\([^)]+\)/
@@ -126,12 +91,6 @@ export interface TableFinding {
   readonly rows: number
 }
 
-export interface BulletFinding {
-  readonly line: number
-  /** Weight as folded, so a report says how far past the checkpoint it sits. */
-  readonly characters: number
-}
-
 export interface ProvenanceFinding {
   readonly line: number
   readonly kind: ProvenanceKind
@@ -143,26 +102,20 @@ export interface EntryReport {
   readonly rel: string
   /**
    * Rendered lines across the whole file, counting frontmatter and fenced
-   * blocks. Both this and `longestRun` measure in the same unit, since the two
-   * checkpoints they feed sit in one section of the standard and a reader
-   * compares them.
+   * blocks. It shares `renderedHeight` with the depth checkpoint in
+   * `src/markdown/structure.ts`, since the two sit in one section of the
+   * standard and a reader compares them.
    *
-   * The exclusions differ on purpose. `longestRun` skips a fence so an example
-   * cannot break the run around it, and a file measure has no run to protect.
-   * Excluding fences here would change which entries report by one and would
-   * not reach the case that motivates it: the most fenced entry in the corpus
-   * runs 20 percent fenced and sits past the checkpoint either way.
+   * Fences are counted here and excluded there. The depth measure skips one so
+   * an example cannot break the run around it, and a file measure has no run to
+   * protect. Excluding them here would change which entries report by one and
+   * would not reach the case that motivates it: the most fenced entry in the
+   * corpus runs 20 percent fenced and sits past the checkpoint either way.
    */
   readonly lines: number
-  /** Rendered lines at `RENDER_WIDTH`, not source lines. */
-  readonly longestRun: number
-  /** First line of the longest run, or 0 when the entry has no run at all. */
-  readonly longestRunLine: number
   readonly catalogTables: readonly TableFinding[]
   /** Empty for an entry no standard bans a change narrative in. */
   readonly provenance: readonly ProvenanceFinding[]
-  /** Measured in every audited folder, since an attribute standard states it. */
-  readonly heavyBullets: readonly BulletFinding[]
   /**
    * Required sections this entry declares, in the standard's order, and empty
    * outside the folder whose standard names them. What the folder is short of
@@ -188,163 +141,6 @@ export interface SectionFinding {
   readonly missing: readonly string[]
 }
 
-interface BodyLine {
-  readonly number: number
-  readonly text: string
-}
-
-/**
- * Drops the frontmatter while keeping every surviving line's original number,
- * so a finding points at the line an editor opens rather than at an offset into
- * the body.
- */
-function bodyLines(source: string): BodyLine[] {
-  const match = source.match(FRONTMATTER)
-  const offset = match ? match[0].split('\n').length - 1 : 0
-
-  return source
-    .slice(match ? match[0].length : 0)
-    .replace(/\n$/, '')
-    .split('\n')
-    .map((text, index) => ({ number: offset + index + 1, text }))
-}
-
-/**
- * Reports whether a run is the peer list the standard exempts.
- *
- * Every non-blank line has to be a list item at one indent. Prose mixed into
- * the run or a nested level inside it ends the exemption, because either one
- * means the block is no longer a flat set a reader can skim. Bullet count says
- * nothing on its own, since a catalog of one-liners and a wall of paragraphs
- * reach the same count and read nothing alike, so the average bullet is what
- * decides whether the set is still skimmable.
- */
-function isScannablePeerList(run: readonly BodyLine[]): boolean {
-  const indents = new Set<number>()
-  let items = 0
-  let characters = 0
-
-  for (const line of run) {
-    const text = line.text.trim()
-    if (text === '') continue
-
-    const match = line.text.match(LIST_ITEM)
-    if (!match) return false
-    indents.add(match[1].length)
-    items++
-    characters += text.length
-  }
-
-  if (indents.size !== 1) return false
-
-  return characters / items < PEER_BULLET_CHECKPOINT
-}
-
-/**
- * Reports whether a run is a table, the second shape the checkpoint cannot fix.
- *
- * The peer list above is exempt because it is already navigable. A table is
- * exempt for the other reason: the remedy does not exist. A heading dropped
- * inside one splits the table into two tables rather than breaking the run, so
- * a catalog renders as an unbroken stretch by construction and no edit short of
- * rewriting it as a list clears the report.
- *
- * Every non-blank line has to be a row. A run holding a table between
- * paragraphs is genuinely mixed, and a heading breaks it at a seam either side,
- * so testing whether the run holds a table would hide the case the checkpoint
- * exists for.
- *
- * A delimiter is required rather than assumed, matching the table scan below. A
- * stack of lines opening with a pipe and no delimiter renders as paragraph text
- * and would otherwise earn the exemption on its punctuation.
- */
-function isTableRun(run: readonly BodyLine[]): boolean {
-  let separators = 0
-
-  for (const line of run) {
-    if (line.text.trim() === '') continue
-    if (!TABLE_ROW.test(line.text)) return false
-    if (TABLE_SEPARATOR.test(line.text)) separators++
-  }
-
-  return separators > 0
-}
-
-/**
- * Height a source line occupies once wrapped.
- *
- * A blank line renders as the gap it is rather than as nothing, which keeps it
- * the distance the source measure already counted it as.
- */
-function renderedHeight(text: string): number {
-  return Math.max(1, Math.ceil(text.length / RENDER_WIDTH))
-}
-
-/**
- * Measures the longest run of lines no heading breaks, in rendered lines.
- *
- * Fenced blocks are skipped rather than treated as breaks, per the standard:
- * they leave the count without ending the run, so prose either side of an
- * example still measures as the one stretch a reader scrolls through. Blank
- * lines do count, since the checkpoint is about how far a reader travels
- * between signposts and a blank line is distance like any other. A hand reader
- * measuring without them lands one or two lines lower, which the report legend
- * states.
- *
- * Height is what a reader travels, and source lines only stand in for it while
- * lines stay short. An entry authored one line per bullet puts a paragraph on
- * each, so a block of fifteen bullets measures as fifteen and renders past
- * sixty. Wrapping every line at a stated width is what closes that gap.
- */
-function longestRun(lines: readonly BodyLine[]): {
-  length: number
-  line: number
-} {
-  let longest = 0
-  let longestLine = 0
-  let run: BodyLine[] = []
-  let fenced = false
-
-  const close = (): void => {
-    // The reported line is the run's first non-blank one, since that is what an
-    // editor should open. A run of nothing but blank lines is the gap between
-    // two headings rather than a stretch a reader travels, so it never counts.
-    const first = run.find((line) => line.text.trim() !== '')
-
-    if (first && !isScannablePeerList(run) && !isTableRun(run)) {
-      const height = run.reduce(
-        (sum, line) => sum + renderedHeight(line.text),
-        0,
-      )
-
-      if (height > longest) {
-        longest = height
-        longestLine = first.number
-      }
-    }
-    run = []
-  }
-
-  for (const line of lines) {
-    if (FENCE.test(line.text)) {
-      fenced = !fenced
-      continue
-    }
-    if (fenced) continue
-
-    if (HEADING.test(line.text)) {
-      close()
-      continue
-    }
-
-    run.push(line)
-  }
-
-  close()
-
-  return { length: longest, line: longestLine }
-}
-
 function firstCell(row: string): string {
   return row.split('|').slice(1)[0] ?? ''
 }
@@ -357,20 +153,15 @@ function firstCell(row: string): string {
  * catalog that gains a row per artifact, and a first column carrying a path,
  * command, or link is what separates the two without reading the prose.
  */
-function catalogTables(lines: readonly BodyLine[]): TableFinding[] {
+function catalogTables(entry: readonly BodyLine[]): TableFinding[] {
   const findings: TableFinding[] = []
-  let fenced = false
+  const lines = entry.filter((line) => !line.fenced)
   let index = 0
 
   while (index < lines.length) {
     const line = lines[index]
 
-    if (FENCE.test(line.text)) {
-      fenced = !fenced
-      index++
-      continue
-    }
-    if (fenced || !TABLE_ROW.test(line.text)) {
+    if (!TABLE_ROW.test(line.text)) {
       index++
       continue
     }
@@ -403,60 +194,6 @@ function catalogTables(lines: readonly BodyLine[]): TableFinding[] {
 }
 
 /**
- * Finds the top-level bullets carrying more than a decision.
- *
- * A nested item is left out rather than folded into its parent, since the
- * checkpoint asks what one bullet carries and a child carries its own. Lines
- * continuing a bullet do fold in, so a heavy bullet cannot fall under the
- * checkpoint by being wrapped across two source lines. Fenced blocks are
- * skipped for the reason the scans above skip them: a sample an entry displays
- * is not a claim it makes.
- */
-function heavyBullets(lines: readonly BodyLine[]): BulletFinding[] {
-  const findings: BulletFinding[] = []
-  let open: BulletFinding | null = null
-  let fenced = false
-
-  const close = (): void => {
-    if (open && open.characters > BULLET_CHECKPOINT) findings.push(open)
-    open = null
-  }
-
-  for (const line of lines) {
-    if (FENCE.test(line.text)) {
-      fenced = !fenced
-      close()
-      continue
-    }
-    if (fenced) continue
-
-    const item = line.text.match(LIST_ITEM)
-    const text = line.text.trim()
-
-    if (item) {
-      close()
-      if (item[1].length === 0) {
-        open = { line: line.number, characters: text.length }
-      }
-      continue
-    }
-
-    if (text === '' || HEADING.test(line.text) || TABLE_ROW.test(line.text)) {
-      close()
-      continue
-    }
-
-    // The joining space a wrapped line would have carried, so folding two
-    // source lines measures what one unwrapped line would have.
-    if (open) open = { ...open, characters: open.characters + text.length + 1 }
-  }
-
-  close()
-
-  return findings
-}
-
-/**
  * Finds the markers narrating a change rather than describing the domain.
  *
  * Fenced blocks are skipped for the same reason the table scan skips them: a
@@ -470,14 +207,9 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
   // holding a date and two change numbers reports them in an order the reader
   // cannot find by scanning left to right.
   const found: { finding: ProvenanceFinding; column: number }[] = []
-  let fenced = false
 
   for (const line of lines) {
-    if (FENCE.test(line.text)) {
-      fenced = !fenced
-      continue
-    }
-    if (fenced) continue
+    if (line.fenced) continue
 
     for (const { kind, pattern } of PROVENANCE) {
       for (const match of line.text.matchAll(pattern)) {
@@ -510,14 +242,9 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
  */
 function declaredSections(lines: readonly BodyLine[]): string[] {
   const found = new Set<string>()
-  let fenced = false
 
   for (const line of lines) {
-    if (FENCE.test(line.text)) {
-      fenced = !fenced
-      continue
-    }
-    if (fenced) continue
+    if (line.fenced) continue
 
     const match = line.text.match(HEADING_TEXT)
     if (match && REQUIRED_SECTIONS.includes(match[1])) found.add(match[1])
@@ -539,7 +266,6 @@ export function measureEntry(
   governsContent = true,
 ): EntryReport {
   const lines = bodyLines(source)
-  const run = longestRun(lines)
 
   return {
     rel,
@@ -547,11 +273,8 @@ export function measureEntry(
       .replace(/\n$/, '')
       .split('\n')
       .reduce((sum, text) => sum + renderedHeight(text), 0),
-    longestRun: run.length,
-    longestRunLine: run.line,
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
-    heavyBullets: heavyBullets(lines),
     sections: governsContent ? declaredSections(lines) : [],
     stub: isStubSeed(source),
   }
