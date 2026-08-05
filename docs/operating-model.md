@@ -16,10 +16,10 @@ order, port collisions), see [Claude Code and git worktrees](../wiki/claude/clau
 
 The split is by vantage, not by capability. Both are Claude Code sessions.
 
-| Role         | Session                               | Owns                                           | Does not                             |
-| ------------ | ------------------------------------- | ---------------------------------------------- | ------------------------------------ |
-| Orchestrator | One warm, long-lived session          | Roadmap, planning, deep PR review, merge order | Edit tracked files, merge PRs        |
-| Worker       | One cold worktree session per feature | Implement, self-check, open PR                 | Question the plan, merge             |
+| Role         | Session                               | Owns                                           | Does not                      |
+| ------------ | ------------------------------------- | ---------------------------------------------- | ----------------------------- |
+| Orchestrator | One warm, long-lived session          | Roadmap, planning, deep PR review, merge order | Edit tracked files, merge PRs |
+| Worker       | One cold worktree session per feature | Implement, self-check, open PR                 | Question the plan, merge      |
 
 The orchestrator is worth asserting explicitly at the start of a session with
 `claude-orchestrate`, which loads the loop and its boundaries. It is framing and
