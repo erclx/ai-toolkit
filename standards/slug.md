@@ -16,9 +16,11 @@ Does not govern:
 
 ## The transform
 
-Run `git branch --show-current` and replace every `/` with `-`. The result is `<slug>`. Anything reading a branch-derived name uses this transform, so two surfaces cannot spell it differently.
+Run `git branch --show-current`. Drop a leading segment naming one of the types `branch.md` defines when a further segment follows it, then replace every remaining `/` with `-`. The result is `<slug>`. Anything reading a branch-derived name uses this transform, so two surfaces cannot spell it differently.
 
-A surface that persists output to a shared folder carries the slug in the filename, which is what keeps parallel worktrees from overwriting each other's output.
+The type comes off because a plan takes its slug from the concern it covers and the branch executing that plan carries the same slug behind a type prefix. Keeping the prefix sends every surface that finds a plan from a branch name looking for `feat-jwt-expiration`, which no plan is filed under. A first segment matching no type stays, so `spike/parser` still yields `spike-parser`.
+
+A surface that persists output to a shared folder carries the slug in the filename, which is what keeps parallel worktrees from overwriting each other's output. Two branches differing only in type collapse onto one slug. That collision reaches the worktree directory as well, since it takes its name from the same string, so the branch is not where it would first surface.
 
 ## An empty result
 
