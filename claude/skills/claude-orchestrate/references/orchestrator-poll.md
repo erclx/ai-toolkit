@@ -5,7 +5,7 @@ description: The review trigger, the condition under which it runs, and how to r
 
 Run the orchestrator's review trigger. The poll reports pull request movement and the session acts on what it reports. It reads only, and it never starts a first-pass review.
 
-`${CLAUDE_SKILL_DIR}/references/poll.sh` is the script. It needs `gh` authenticated against the remote and `jq` on the path, and it reads the base branch from `origin/HEAD` rather than assuming a name.
+`${CLAUDE_SKILL_DIR}/scripts/poll.sh` is the script. It needs `gh` authenticated against the remote and `jq` on the path, and it reads the base branch from `origin/HEAD` rather than assuming a name.
 
 ## When to run it
 
@@ -17,8 +17,10 @@ The poll is session-scoped and dies with the session that started it. Restart it
 
 ## The prompt
 
+Resolve `${CLAUDE_SKILL_DIR}/scripts/poll.sh` to an absolute path and paste that in place of `<POLL_SCRIPT>` below. The variable expands while this runbook renders and not in a `/loop` turn, which arrives as a standalone prompt, so a block carrying the variable reaches the session as a literal string and the run improvises a substitute.
+
 ```plaintext
-/loop 3m Poll GitHub for pull request movement by running the poll.sh beside this runbook in the claude-orchestrate skill, then act on what it reports.
+/loop 3m Poll GitHub for pull request movement by running <POLL_SCRIPT>, then act on what it reports.
 
 - MOVED or RESPONSE on a pull request I have already reviewed: run the aitk:claude-pr-review skill on it immediately, narrow pass. Re-reviews read prior..head and gain nothing from waiting.
 - OPENED, or a pull request with no prior review pass: report it and stop. First passes wait for the operator, because reading several together is what surfaces cross-PR findings.

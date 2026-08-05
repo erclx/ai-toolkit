@@ -29,9 +29,13 @@ Only `${CLAUDE_SKILL_DIR}` survives to the model. Measured across three probe sk
 
 ### The first executable in a skill
 
-`claude-orchestrate/references/poll.sh` is the only non-markdown file any skill ships, so a plugin that carried prose alone now carries code a target runs. Two stages had to reach it: `check:shell` globs `claude` alongside `scripts`, `tooling`, and `.claude/hooks`, and the boundary walk already covered it because that walk reads every file rather than every markdown file.
+`claude-orchestrate/scripts/poll.sh` is the only non-markdown file any skill ships, so a plugin that carried prose alone now carries code a target runs. It sits in `scripts/` rather than beside the runbook that invokes it, because `.claude/standards/skill.md` splits a skill folder by role and assigns `references/` to detail and `scripts/` to deterministic operations.
 
-A shipped script is not a shipped standard. It executes in a target's environment rather than being read there, so it takes its dependencies from that machine and its base branch from `origin/HEAD` rather than assuming `main`. A second script inherits the shellcheck coverage without a further edit, and inherits the obligation to assume nothing about the repository it lands in.
+Three stages had to reach a tree that had never held a shell file. `check:shell` globs `claude`, and so do both shfmt stages behind `format` and `check:format`. Adding it to the linter alone leaves the file checked and never formatted, which fails nothing while it happens to be clean and drifts silently on its next edit. The boundary walk needed no change, since it reads every file rather than every markdown file.
+
+A shipped script is not a shipped standard. It executes in a target's environment rather than being read there, so it takes its dependencies from that machine and its base branch from `origin/HEAD` rather than assuming `main`. A second script inherits all three stages without a further edit, and inherits the obligation to assume nothing about the repository it lands in.
+
+A runbook can cite it and a loop prompt cannot. `${CLAUDE_SKILL_DIR}` expands while a skill body renders, so a prompt pasted into a standalone turn carries the literal string instead of a path. A block a session is meant to paste therefore holds a placeholder and the prose above it says what to substitute.
 
 ### What a symlink costs
 
