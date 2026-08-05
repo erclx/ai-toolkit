@@ -116,9 +116,11 @@ The tracked-file boundary collides with `CLAUDE.md`, which says to handle a smal
 
 ## Refilling the ready queue
 
-Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge, whenever the ready list thins, and whenever a wave is in flight holding fewer ready plans than the reserve in step 4 requires. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.
+Keep enough planned, non-conflicting tasks available that a free worker never waits, and place the findings the last merge produced before promoting anything new. Run this after every merge, whenever the ready list thins, and whenever a wave is in flight with fewer unclaimed plans than there are workers building. `${CLAUDE_SKILL_DIR}/references/orchestrator-sweep.md` wraps this procedure for a batch of merges and adds the plan re-verification that a merge invalidates.
 
-The third trigger reaches a window the first two cannot. A session with three workers mid-build has merged nothing and has watched its ready list sit still, so both reactive triggers stay silent across the one stretch where planning costs the session nothing, and the wave finishes into an empty `## Run now`. Nothing starts this pass, in the way nothing starts the review poll, so it holds only while the session applies it. How many plans to write forward is the parallelism call rather than a count of free slots, and `## Parallelism` below states what binds it.
+The third trigger reaches a window the first two cannot. A session with three workers mid-build has merged nothing and has watched its ready list sit still, so both reactive triggers stay silent across the one stretch where planning costs the session nothing, and the wave finishes into an empty `## Run now`. Nothing starts this pass, in the way nothing starts the review poll, so it holds only while the session applies it.
+
+It counts unclaimed plans against workers rather than reading the reserve in step 4, which is sized for one worker finishing and falls short of a wave landing together. A plan a worker has already taken serves nobody who finishes next, so counting it is what lets the queue read full while it is about to empty. How many to write forward past that floor is the parallelism call rather than a count of free slots, and `## Parallelism` below states what binds it.
 
 ### Running the refill
 
