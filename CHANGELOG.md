@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.66.1](https://github.com/erclx/aitk/compare/v0.66.0...v0.66.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* **prose:** take the markdown ban corpus to zero ([#883](https://github.com/erclx/aitk/issues/883)) ([b459cbd](https://github.com/erclx/aitk/commit/b459cbd385e532275ee4ef2d64b1811f07ad1852))
+
 ## [0.66.0](https://github.com/erclx/aitk/compare/v0.65.1...v0.66.0) (2026-08-05)
 
 
