@@ -7,6 +7,8 @@ description: Reviews `.claude/memory/` and proposes per-entry actions (promote t
 
 This skill drives the full memory review lifecycle in five phases. Pick the phase from what the user said and whether a review receipt already exists at `<main-root>/.claude/review/memory-review-*.md`.
 
+What an entry looks like and why a retired one is moved rather than deleted are fixed by `.claude/standards/memory.md`, or `${CLAUDE_SKILL_DIR}/../../standards/memory.md` when the project does not have it. Read it before rewriting an entry, since a promotion rewrites the rule and a rewrite has to leave the entry conforming.
+
 | User intent                                                            | Phase     | Mutates                      |
 | ---------------------------------------------------------------------- | --------- | ---------------------------- |
 | "review memory", "promote memory", "sweep stale memories" (no receipt) | Propose   | review file only             |
@@ -68,7 +70,7 @@ For each in-scope entry (see Scope), pick one action:
 - **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. In the toolkit repo, point the user at `aitk-governance` and `.claude/standards/rule.md`, which own the source-of-truth rules under `governance/rules/`. In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
 - **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
 
-Retire is an archive, not a deletion. `.claude/memory/` is gitignored with no history behind it, and a first pass over a folder this size is a bulk judgment with no undo. A plan and a task both archive rather than delete for the same reason, and this costs one `mv` against an unrecoverable wrong call. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why it is cheap rather than free.
+Retire is an archive, not a deletion, which `.claude/standards/memory.md` states as the rule and this skill executes. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why the move is cheap rather than free.
 
 When two or more memories collapse into one rule on the same target, propose them as a single merged edit under the matching promote category. The consolidate case is a variant of promote, not a separate action.
 
