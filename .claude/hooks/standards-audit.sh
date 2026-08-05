@@ -24,50 +24,42 @@ esac
 
 [ -f "$file" ] || exit 0
 
-# Read the closed-set word bans from the standard so the hook never carries a
-# second copy. Every "Do not use ... (`a`, `b`)" bullet contributes its
-# single-word backticked terms, which skips the multi-word and punctuation bans.
+# The audit verb is the only parse of the ban rules, so the hook an author meets
+# at edit time and the stage that fails the push read one set. The awk this
+# replaces parsed the word bans out of prose.md, hardcoded the em-dash and
+# semicolon, and reached none of the spellings, so a British spelling passed
+# here and failed the push with nothing in between explaining the difference.
 #
-# The word bans sit in prose.md and the em-dash and semicolon bans in
-# markdown.md, so this parses the first and hardcodes the second. A "Do not use"
-# bullet added to markdown.md is parsed by nothing and enforces silently.
-standard="${CLAUDE_PROJECT_DIR:-.}/.claude/standards/prose.md"
-words=""
-if [ -f "$standard" ]; then
-  words=$(grep '^- Do not use ' "$standard" |
-    grep -o '`[^`]*`' |
-    tr -d '`' |
-    grep -x '[a-z][a-z]*' |
-    sort -u |
-    paste -sd '|' -)
+# The verb resolves the standards under its own cwd, so the project root is
+# named rather than inherited. The payload carries an absolute file path, which
+# is what lets the runner move without taking the argument out of reach.
+root="${CLAUDE_PROJECT_DIR:-.}"
+
+# A checkout carrying the CLI source runs that source, so this hook and the
+# push stage read one build. A globally installed binary lags a branch by
+# whatever has not been released, which puts a ban kind added in
+# `src/markdown/bans.ts` into the push and not into the edit.
+# `scripts/core/verify.sh` names the same reason for the same choice.
+#
+# A tree without the source falls back to the binary, and a machine with
+# neither degrades to no enforcement rather than a blocked edit, which is the
+# behavior this hook already carried for a missing standard.
+if [ -f "$root/src/cli.ts" ] && command -v bun >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && bun src/cli.ts markdown audit "$file" --json 2>/dev/null) || true
+elif command -v aitk >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
+else
+  exit 0
 fi
 
-hits=$(awk -v words="$words" '
-  BEGIN { if (words != "") banned = "(^|[^a-z])(" words ")([^a-z]|$)" }
-  /^```/ { in_code = !in_code; next }
-  in_code { next }
-  /—/ { print NR ": em-dash: " $0 }
-  /;/  { print NR ": semicolon: " $0 }
-  banned != "" {
-    prose = tolower($0)
-    gsub(/`[^`]*`/, "", prose)
-    found = ""
-    delete seen
-    while (match(prose, banned)) {
-      word = substr(prose, RSTART, RLENGTH)
-      gsub(/[^a-z]/, "", word)
-      if (word != "" && !(word in seen)) {
-        seen[word] = 1
-        found = found (found == "" ? "" : ", ") word
-      }
-      prose = substr(prose, RSTART + RLENGTH)
-    }
-    if (found != "") print NR ": banned word (" found "): " $0
-  }
-' "$file")
+# The record decides rather than the exit code, so a binary predating the gate
+# reports its findings here all the same. A refusal and an unparseable payload
+# both yield nothing, which is the same silence a clean file produces.
+hits=$(printf '%s' "$record" |
+  jq -r '.entries[]?.bans[]? | ":\(.line):\(.column + 1)  \(.kind)  \(.term)"' 2>/dev/null)
 
 [ -z "$hits" ] && exit 0
 
-msg=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite or restructure (do not lazy-swap).\n%s' "$file" "$hits")
+msg=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite the sentence (do not lazy-swap). A code span is the answer only where the token is genuinely an identifier under discussion.\n%s' "$file" "$hits")
 
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'

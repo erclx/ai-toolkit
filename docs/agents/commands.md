@@ -33,7 +33,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk records validate`    | Report a session record against the standard governing it, per kind (`--json`)                                            |
 | `aitk comments scan`       | Measure comment density by language and comment kind, with a trend recomputed from git                                    |
 | `aitk context audit`       | Report required sections, length, cited paths, catalog tables, provenance, superseded-decision narration, and index drift |
-| `aitk markdown audit`      | Report any markdown path against the character bans, word bans, and structural checkpoints                                |
+| `aitk markdown audit`      | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                    |
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                            |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                     |
 

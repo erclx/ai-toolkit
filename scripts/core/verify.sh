@@ -272,6 +272,40 @@ main() {
   run_check "cd $PROJECT_ROOT && bun src/cli.ts context audit --citations-only" "A cited context path does not resolve. Run bun src/cli.ts context audit."
   log_info "Context citations resolve"
 
+  # A banned character, word, or spelling is a fact rather than a threshold, so
+  # it fails the push while bullet, paragraph, and depth weight stay advisory
+  # for the reason the stage above leaves its own thresholds so.
+  #
+  # The whole corpus is measured rather than the changed files, because a
+  # `Do not use` bullet added to a standard bans a token retroactively and no
+  # file in the push that adds it was edited.
+  #
+  # `--json` sends the record to stdout and the frame to stderr, so a passing
+  # run stays silent and a failing one is re-run for its frame rather than
+  # parsed out of a stream this script would have to strip. `bun src/cli.ts`
+  # rather than `aitk` for the reason the stage above uses it.
+  log_step "Markdown bans"
+  local ban_status=0 ban_frame
+  (cd "$PROJECT_ROOT" && bun src/cli.ts markdown audit --json >/dev/null 2>&1) || ban_status=$?
+  case $ban_status in
+  0)
+    log_info "No banned character, word, or spelling"
+    ;;
+  1)
+    log_warn "Skipped, the markdown audit refused and measured nothing"
+    ;;
+  2)
+    # `|| true` because the re-run exits non-zero by construction, and `set -e`
+    # would take the script down before log_error names the remedy.
+    ban_frame=$(cd "$PROJECT_ROOT" && bun src/cli.ts markdown audit 2>&1 || true)
+    echo "$ban_frame" | pipe_output
+    log_error "Markdown prose carries a banned character, word, or spelling. Rewrite the sentence, and reach for a code span only where the token is genuinely an identifier under discussion."
+    ;;
+  *)
+    log_error "The markdown audit exited $ban_status, which is neither a pass nor a finding."
+    ;;
+  esac
+
   # The stage above audits this repository. Its seed tree ships into every
   # scaffolded project, so a seed breaking the standard it seeds propagates
   # instead of sitting still, and no rule path reaches the tree to report it.
