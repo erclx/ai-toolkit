@@ -292,7 +292,7 @@ function reportParagraphs(
     `Prose paragraphs report past ${checkpoints.sentences} sentences or past ${checkpoints.paragraph} characters.`,
   )
   logInfo(
-    'The standard states both. Weight matches the bullet checkpoint today and moves independently of it.',
+    'The standard states both, and weight moves independently of the bullet checkpoint.',
   )
   logInfo(
     'Bullets, headings, tables, quotes, and fenced blocks each end a paragraph, so a bullet is measured once.',
