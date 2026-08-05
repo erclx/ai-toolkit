@@ -11,7 +11,7 @@ The vite-react stack covers Vite + React + TypeScript projects: web apps and Chr
 1. Scaffold with `bunx create-vite@latest <name> --template react-ts` (web apps) or `bunx create-crxjs@latest` (Chrome extensions).
 2. Install base and web tooling: `aitk tooling sync web .`
 3. Install vite-react deps and configs: `aitk tooling sync vite-react .`
-4. Extend `.claude/context/ci.md` and `.claude/context/development.md` per the web reference's extend sections plus the vite-react rows below.
+4. Extend the `ci` and `development` context entries under `.claude/context/` per the web reference's extend sections plus the vite-react rows below.
 5. Run `bun run lint:fix` then `bun run check`.
 
 ## What ships as golden configs

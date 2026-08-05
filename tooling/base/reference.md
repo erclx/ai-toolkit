@@ -26,7 +26,7 @@ Seeds live in `tooling/base/seeds/`. Sync drops each once on first install and n
 - `.cspell/project-terms.txt` and `.cspell/tech-stack.txt`: one word per line, sorted alphabetically.
 - `.lintstagedrc`: the glob map below.
 - `.prettierignore`: created empty. Projects add their own entries.
-- `.claude/context/ci.md` and `.claude/context/development.md`: extend with project-specific commands, workflows, or deploy steps. Canonical rationale stays in this reference.
+- `.claude/context/`: extend the `ci` and `development` entries with project-specific commands, workflows, or deploy steps. Canonical rationale stays in this reference.
 
 ## Tool pairing
 

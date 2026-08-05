@@ -1,23 +1,31 @@
 ---
 name: project-commands
-description: Runs a command the project documents in `.claude/context/development.md` and stops there. Use when asked to "start the app", "start the dev server", "run the checks", "run the build", "spin it up", or "what commands does this project have". Do NOT use to confirm a change works in a running app, which needs verification past the launch. Do NOT use to deploy, publish, or release.
+description: Runs a command the project documents in its development context entry and stops there. Use when asked to "start the app", "start the dev server", "run the checks", "run the build", "spin it up", or "what commands does this project have". Do NOT use to confirm a change works in a running app, which needs verification past the launch. Do NOT use to deploy, publish, or release.
 ---
 
 # Project commands
 
-Read `.claude/context/development.md` from the project root, run the command the user named, report where it landed, and stop.
+Read the project's development context entry, run the command the user named, report where it landed, and stop.
 
 The value is the stop. A launch that continues into log inspection, browser checks, or unrelated defects is the failure this skill exists to avoid.
 
 ## Guards
 
-- Check that `.claude/context/development.md` exists before anything else. If it does not, stop: `❌ No .claude/context/development.md. This project has no documented dev loop.` Name the missing file and let the user decide. Do not read another file to reconstruct it, because a guess is worse than a stop when the user cannot see it was a guess.
+- Resolve the entry before anything else. Take the flat `development.md` under `.claude/context/` when it exists, and `.claude/context/development/overview.md` when the domain outgrew one file and split into a folder, which is where the `## Scripts` table lands in a split. Test both paths, then read one. If neither resolves, stop with the line below and let the user decide. Do not read another file to reconstruct it, because a guess is worse than a stop when the user cannot see it was a guess.
 - If the entry documents no command matching the request, stop and list what it does document. Do not infer a command from a filename or a framework.
 - If the resolved command has an effect that outlives the process and stopping it does not undo, print it for the user to run and stop. Deploying, publishing, releasing, migrating, and resetting are the common shapes, and the test is the effect rather than the name. A script called `infra:apply` or `promote` qualifies.
 
+The stop names the flat path in both cases, since a project carrying neither has no entry to point at and the flat one is where a project without a split keeps it:
+
+```plaintext
+❌ No .claude/context/development.md. This project has no documented dev loop.
+```
+
 ## Step 1: read the entry
 
-Read `.claude/context/development.md` from the project root, the whole entry rather than a named section. That file and no others. A second file is a discovery chain, and this skill has none.
+Read the path the guard resolved, from the project root, the whole entry rather than a named section. That file and no others. A second file is a discovery chain, and this skill has none. Testing two candidate paths is not one, since the test happens before any read and exactly one file is opened.
+
+A split domain keeps its other sub-area files out of reach on purpose. `overview.md` carries the run commands, and the siblings beside it cover verification stages, hooks, and scratch, none of which this skill runs.
 
 ## Step 2: resolve the command
 
@@ -67,7 +75,7 @@ One block per command when the request resolved to more than one.
 For a request with no command to run, list what the entry documents instead:
 
 ```plaintext
-📋 Documented in .claude/context/development.md
+📋 Documented in <the entry path the guard resolved>
 
 - `<command>`: <purpose as the entry states it>
 ```

@@ -19,7 +19,7 @@ session=$(printf '%s' "$input" | jq -r '
 [ "$session" = "SKIP" ] && exit 0
 [ -n "$session" ] || exit 0
 
-entry=".claude/context/development.md"
+entry=".claude/context/development/index.md"
 [ -f "${CLAUDE_PROJECT_DIR:-.}/$entry" ] || exit 0
 
 key=$(printf '%s' "$session" | tr -c 'A-Za-z0-9' '_')

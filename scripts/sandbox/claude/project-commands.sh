@@ -7,7 +7,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "documented" "missing" "refused"
+  select_or_route_scenario "Which scenario?" "documented" "split" "missing" "refused"
 
   mkdir -p .claude/context
 
@@ -58,6 +58,68 @@ EOF
     log_info "Expect:  resolves both web and api, backgrounds each, reports both ports, then stops"
     log_info "Assert:  web-started.txt and api-started.txt both present. One alone means half the app started."
     log_info "Watch:   any log reading, browser use, or second check after the first is a failure"
+    ;;
+  "split")
+    mkdir -p .claude/context/development
+
+    cat <<'EOF' >.claude/context/development/overview.md
+---
+title: Overview
+description: What the domain owns and the run commands
+---
+
+# Overview
+
+Owns the local development loop for the sandbox project.
+
+## Scripts
+
+| Command         | Purpose                                              |
+| --------------- | ---------------------------------------------------- |
+| `bun run serve` | Start the app. Prints its port and stays up.         |
+| `bun run check` | Format, lint, and test in one pass. Exits when done. |
+EOF
+
+    cat <<'EOF' >.claude/context/development/verification.md
+---
+title: Verification
+description: What each stage of the check gates on
+---
+
+# Verification
+
+## Stages
+
+The check runs format, lint, and test in one pass. A deeper sweep runs
+separately and is not part of starting the app.
+
+| Command          | Purpose                                          |
+| ---------------- | ------------------------------------------------ |
+| `bun run verify` | Full sweep across every stage. Exits when done.  |
+EOF
+
+    cat <<'EOF' >package.json
+{
+  "name": "sandbox-project-commands-split",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "bun --eval 'require(\"fs\").writeFileSync(\"app-started.txt\", \"\"); const s = Bun.serve({ port: 0, fetch: () => new Response(\"app\") }); console.log(\"listening on http://localhost:\" + s.port); setTimeout(() => process.exit(0), 600000)'",
+    "check": "echo check ok",
+    "verify": "touch read-sibling.txt && echo verify ok"
+  }
+}
+EOF
+
+    git add . && git commit -m "chore(sandbox): project whose development entry split into a folder" --no-verify -q
+
+    log_step "Scenario ready: project-commands folder fallback"
+    log_info "Context: no flat development.md. The entry split, so overview.md carries the Scripts table."
+    log_info "Action:  /aitk:project-commands start the app"
+    log_info "Expect:  resolves serve from overview.md, backgrounds it, reports the port, then stops"
+    log_info "Assert:  app-started.txt present. Its absence means the folder fallback did not resolve."
+    log_info "Assert:  read-sibling.txt absent. Its presence means the skill read a sibling it must not."
     ;;
   "missing")
     cat <<'EOF' >package.json

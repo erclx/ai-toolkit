@@ -105,7 +105,7 @@ beforeAll(() => {
 
   const project = join(fixture, 'project')
   for (const dir of [
-    join(project, '.claude/context'),
+    join(project, '.claude/context/development'),
     join(project, '.claude/memory'),
     join(project, '.claude/tasks'),
     join(project, 'indexed'),
@@ -120,7 +120,7 @@ beforeAll(() => {
   )
   writeFileSync(join(project, 'indexed/index.md'), '# Index\n')
   writeFileSync(
-    join(project, '.claude/context/development.md'),
+    join(project, '.claude/context/development/index.md'),
     'Dev commands.\n',
   )
   writeFileSync(join(project, '.claude/tasks/sample.md'), 'no frontmatter\n')

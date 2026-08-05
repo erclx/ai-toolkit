@@ -78,7 +78,7 @@ Under `## Running CI locally`, document that `bun run check:full` runs verify pl
 
 ## Development docs (extend)
 
-Extend `.claude/context/development.md` so the `## Scripts` table lists every web script. Stack adapters add their `dev`, `build`, `preview`, `typecheck` rows.
+Extend the `development` context entry under `.claude/context/` so the `## Scripts` table lists every web script. Stack adapters add their `dev`, `build`, `preview`, `typecheck` rows.
 
 Append rows:
 

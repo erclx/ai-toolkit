@@ -74,6 +74,10 @@ The citation check resolves every path into an audited folder that appears anywh
 
 Three exclusions keep it from firing on prose about paths. Fenced blocks are skipped in markdown, which covers a standard displaying a path as an example. Fixture and harness trees are skipped by location, covering sandbox scenarios that describe their own scratch tree, the eval harness naming its target project, and `*.test.ts`. A path into a folder the project does not carry is skipped, so a skill directing a reader to `.claude/wireframes/index.md` stays valid in a project that has wireframes and silent in one that does not.
 
-What remains is a sentence naming a hypothetical entry to show the shape of a name, which no syntax separates from a real reference. Append `<!-- audit-ignore-citations -->` to that source line. The marker suppresses citation checking for its own line only.
+Two cases remain, and no syntax separates either from a real reference. One is a sentence naming a hypothetical entry to show the shape of a name. The other is a line instructing a target project about its own tree, which resolves against the target rather than against this repository and passes here only while the two layouts agree. Splitting a seeded domain into a folder ends that agreement and turns every such line red at once.
+
+Append `<!-- audit-ignore-citations -->` to the source line in either case. The marker suppresses citation checking for its own line only.
+
+The marker itself stays out of anything that installs. A seed, a plugin skill body, and a stack reference all reach a target, so a marker there lands as toolkit bookkeeping in someone else's tree. Reword those lines to drop the path instead, and where a stop message has to spell it, move that message into a fenced block, which this check already skips.
 
 The pattern spells the `.claude/` prefix, so a folder resolved at the project root is measured by every other check and contributes nothing here. Widening it to a bare `docs/x.md` would match prose that references nothing, which is a separate decision from where entries come from. A run whose folders all resolved at the root says the check is out of scope rather than reporting that zero paths resolved, and the same run under `--citations-only` refuses, because a gate exiting clean on a scope it could not build is the failure the gate exists to catch.
