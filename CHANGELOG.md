@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.64.1](https://github.com/erclx/aitk/compare/v0.64.0...v0.64.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* **markdown:** stop reporting characters a reader never sees ([#874](https://github.com/erclx/aitk/issues/874)) ([ecd82bc](https://github.com/erclx/aitk/commit/ecd82bc2733306521ce1b87845cdb86c15d40115))
+
 ## [0.64.0](https://github.com/erclx/aitk/compare/v0.63.2...v0.64.0) (2026-08-05)
 
 
