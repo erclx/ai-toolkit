@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.66.0](https://github.com/erclx/aitk/compare/v0.65.1...v0.66.0) (2026-08-05)
+
+
+### Features
+
+* **seeds:** keep the toolkit CLI out of scaffolded instructions ([#881](https://github.com/erclx/aitk/issues/881)) ([e26c635](https://github.com/erclx/aitk/commit/e26c635750143025e47cc56ae5dd93b722f2e111))
+
 ## [0.65.1](https://github.com/erclx/aitk/compare/v0.65.0...v0.65.1) (2026-08-05)
 
 
