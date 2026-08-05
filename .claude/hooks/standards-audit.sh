@@ -30,14 +30,27 @@ esac
 # semicolon, and reached none of the spellings, so a British spelling passed
 # here and failed the push with nothing in between explaining the difference.
 #
-# A missing binary degrades to no enforcement rather than a blocked edit, which
-# is the behavior this hook already carried for a missing standard.
-command -v aitk >/dev/null 2>&1 || exit 0
-
 # The verb resolves the standards under its own cwd, so the project root is
 # named rather than inherited. The payload carries an absolute file path, which
-# is what lets the subshell move without taking the argument out of reach.
-record=$(cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
+# is what lets the runner move without taking the argument out of reach.
+root="${CLAUDE_PROJECT_DIR:-.}"
+
+# A checkout carrying the CLI source runs that source, so this hook and the
+# push stage read one build. A globally installed binary lags a branch by
+# whatever has not been released, which puts a ban kind added in
+# `src/markdown/bans.ts` into the push and not into the edit.
+# `scripts/core/verify.sh` names the same reason for the same choice.
+#
+# A tree without the source falls back to the binary, and a machine with
+# neither degrades to no enforcement rather than a blocked edit, which is the
+# behavior this hook already carried for a missing standard.
+if [ -f "$root/src/cli.ts" ] && command -v bun >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && bun src/cli.ts markdown audit "$file" --json 2>/dev/null) || true
+elif command -v aitk >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
+else
+  exit 0
+fi
 
 # The record decides rather than the exit code, so a binary predating the gate
 # reports its findings here all the same. A refusal and an unparseable payload

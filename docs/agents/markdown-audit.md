@@ -102,9 +102,11 @@ A hit the closed set cannot separate from correct prose is the case with no thir
 
 ### Where the rules are enforced
 
-Two surfaces read the ban sets and both go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, and the `Markdown bans` stage in `scripts/core/verify.sh` runs it across the whole corpus before a push. The hook parsed its own copy of the word bans in awk until the gate landed, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
+Four surfaces read the ban sets and two of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, and the `Markdown bans` stage in `scripts/core/verify.sh` runs it across the whole corpus before a push. The hook parsed its own copy of the word bans in awk until the gate landed, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
 
-The hook reads the findings out of the `--json` record rather than off the exit code, so a binary predating the gate still reports at edit time. A machine with no `aitk` on `PATH` gets no enforcement there rather than a blocked edit, and the push stage still holds.
+The other two read the standards directly and neither is a consolidation left half done. `claude/skills/claude-standards-audit/SKILL.md` greps the banned tokens agent-side, which is a session reading prose rather than a process it can shell out to, and it ships to every target. The seed copy of the hook keeps its awk, because a scaffolded project may carry no `aitk` and `scripts/core/check-seed-independence.sh` exists to catch seed content depending on the toolkit CLI. Both are the likelier place for the next drift, since nothing compares either against the verb.
+
+The hook prefers a checkout's own `src/cli.ts` over a globally installed binary, so it and the push stage read one build. A published binary lags a branch by whatever has not been released, which would put a ban kind added on the branch into the push and not into the edit. It reads its findings out of the `--json` record rather than off the exit code, so an older binary still reports where the fallback applies. A machine with neither runner gets no enforcement at edit time rather than a blocked edit, and the push stage still holds.
 
 The stage measures the whole corpus rather than the changed files. A `Do not use` bullet added to a standard bans a token retroactively, and no file in the push that adds the bullet was edited.
 
@@ -124,7 +126,7 @@ The other five were correct prose the closed set cannot separate from a violatio
 
 ### Why they were rewritten rather than exempted
 
-Rewriting all five is what settled them, over building an exemption path. An exemption has three consumers, `src/markdown/scan.ts` for the patterns, `src/markdown/bans.ts` for the sets, and `.claude/hooks/standards-audit.sh`, which greps its own copy of the word bans in awk. A mechanism landing in the verb and not the hook leaves an exempted line still failing on edit, which is the surface an author actually meets. Five sentences lost a small amount of naturalness and the count now means what it says.
+Rewriting all five is what settled them, over building an exemption path. An exemption has three consumers, `src/markdown/scan.ts` for the patterns, `src/markdown/bans.ts` for the sets, and `.claude/hooks/standards-audit.sh`, which held its own copy of the word bans in awk at that point. A mechanism landing in the verb and not the hook leaves an exempted line still failing on edit, which is the surface an author actually meets. Five sentences lost a small amount of naturalness and the count now means what it says.
 
 A code span was the first answer for the quoted anti-pattern and it was the wrong one. The ban scan walks around a code span, so backticking a quotation clears the report, and `## Code and identifiers` reserves the span for commands, API names, file paths, and identifiers, which a quoted utterance is none of. Spending one rule to satisfy another leaves the corpus no cleaner than dropping the qualifier does.
 
