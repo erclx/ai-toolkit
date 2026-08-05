@@ -193,7 +193,7 @@ async function runAudit(
     reportSections(sections, folders)
     reportLength(entries)
     reportDepth(entries)
-    reportBullets(entries, folders)
+    reportBullets(entries)
     reportTables(entries)
     reportProvenance(entries, folders)
     reportDrift(drift)
@@ -464,22 +464,11 @@ function reportDepth(entries: readonly EntryReport[]): void {
  * entries carry them a dozen at a time, so a flat list of bullets buries the
  * entry holding one. What a reader acts on is which file to open.
  */
-function reportBullets(
-  entries: readonly EntryReport[],
-  folders: readonly AuditedFolder[],
-): void {
+function reportBullets(entries: readonly EntryReport[]): void {
   logStep('Bullets')
 
-  const governed = folders.filter(governsContent)
-  if (governed.length === 0) {
-    logInfo(
-      `Out of scope. The rule is stated in the standard governing .claude/${PROVENANCE_FOLDER}/, and no audited folder is that one.`,
-    )
-    return
-  }
-
   logInfo(
-    `Covers .claude/${PROVENANCE_FOLDER}/ alone, since moving an incident out of a bullet needs a decision to keep.`,
+    'Covers every audited folder, since the rule is stated in the standard governing every markdown file.',
   )
   logInfo(
     'Top-level bullets measure characters, folding in continuation lines.',

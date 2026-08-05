@@ -3,7 +3,13 @@ import { relative } from 'node:path'
 import type { AuditedFolder } from '@/context/folders'
 import { isStubSeed } from '@/seed-marker'
 
-/** Checkpoints quoted from `standards/context.md`. Neither is a cap. */
+/**
+ * Checkpoints quoted from the standard stating each. Neither is a cap.
+ *
+ * Entry length rests on one entry per domain, which is a domain fact, so
+ * `standards/context.md` keeps it. Run depth reads the same over any markdown
+ * file, so `standards/markdown.md` states it at the attribute tier.
+ */
 export const LENGTH_CHECKPOINT = 150
 export const RUN_CHECKPOINT = 40
 
@@ -95,25 +101,26 @@ const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
  *
  * `standards/context.md` opens its scope by handing diagrams and wireframes to
  * `diagrams.md` and `wireframes.md`, so a marker reported in either would cite
- * a rule that entry's own standard routes elsewhere. The length, depth, and
- * table checkpoints are quoted from the same standard and keep reaching every
- * audited folder, because a threshold on how far a reader travels generalizes
- * across entry types while a rule about what an entry may say does not.
+ * a rule that entry's own standard routes elsewhere. The length and table
+ * checkpoints are quoted from the same standard and keep reaching every audited
+ * folder, because a threshold on how far a reader travels generalizes across
+ * entry types while a rule about what an entry may say does not.
  *
- * Bullet weight sits on this side of the split with provenance, which the
- * measure alone would not predict. What decides it is whether the remedy is
- * actionable: subdividing a run and splitting a file mean something in any
- * entry, while moving an incident out of a bullet and keeping the decision
- * means nothing in a folder whose entries carry no decisions to keep. No
- * diagram entry declares `## Decisions` or `## Gotchas`, so the scope of the
- * rule is what narrows the finding rather than the shape of the number.
+ * Bullet weight sat on this side of the split until `standards/markdown.md`
+ * took the rule, and the reach was conditional on exactly that. Whether the
+ * remedy is actionable is what decided it: moving an incident out of a bullet
+ * and keeping the decision means nothing in a folder whose entries carry no
+ * decisions, so the escalation named was an attribute standard owning the rule
+ * across document types rather than a wider reach without an owner. That owner
+ * now states the checkpoint over every markdown file and states the remedy as
+ * sending the overflow to prose, which any entry type can act on, so the
+ * measure reaches every audited folder and the incident half of the remedy
+ * stays where the entries carrying decisions are.
  *
- * Restating the exclusion in the sibling standards was the alternative. It
- * duplicates one knowledge item across three surfaces, which the root
- * instruction file forbids, and pointing is not available because the surface
- * they would point at is the one disclaiming them. Should a diagram entry ever
- * accumulate narration, the escalation is an attribute standard owning the rule
- * across document types, not restoring this reach without an owner.
+ * Restating the exclusion in the sibling standards was the alternative for what
+ * remains here. It duplicates one knowledge item across three surfaces, which
+ * the root instruction file forbids, and pointing is not available because the
+ * surface they would point at is the one disclaiming them.
  */
 export const PROVENANCE_FOLDER = 'context'
 
@@ -159,7 +166,7 @@ export interface EntryReport {
   readonly catalogTables: readonly TableFinding[]
   /** Empty for an entry no standard bans a change narrative in. */
   readonly provenance: readonly ProvenanceFinding[]
-  /** Empty for the same reason `provenance` is, and under the same folder. */
+  /** Measured in every audited folder, since an attribute standard states it. */
   readonly heavyBullets: readonly BulletFinding[]
   /**
    * Required sections this entry declares, in the standard's order, and empty
@@ -549,7 +556,7 @@ export function measureEntry(
     longestRunLine: run.line,
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
-    heavyBullets: governsContent ? heavyBullets(lines) : [],
+    heavyBullets: heavyBullets(lines),
     sections: governsContent ? declaredSections(lines) : [],
     stub: isStubSeed(source),
   }

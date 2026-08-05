@@ -245,14 +245,14 @@ describe('measureEntry', () => {
     ])
   })
 
-  it('should leave a heavy bullet unreported when no standard claims the content', () => {
+  it('should report a heavy bullet where no content standard claims the entry', () => {
     const source = `${FRONTMATTER}# Components\n\n${bullet(BULLET_CHECKPOINT + 1)}\n`
 
-    // The remedy is to move an incident out and keep the decision, which an
-    // entry type carrying no decisions has no way to act on.
-    expect(measureEntry('components.md', source, false).heavyBullets).toEqual(
-      [],
-    )
+    // The checkpoint is stated over every markdown file, and the remedy it
+    // carries is sending the overflow to prose, which any entry type can act on.
+    expect(measureEntry('components.md', source, false).heavyBullets).toEqual([
+      { line: 8, characters: BULLET_CHECKPOINT + 1 },
+    ])
   })
 
   it('should report a date narrating when a change landed', () => {
@@ -432,7 +432,7 @@ describe('measureFolders', () => {
     )
   })
 
-  it('should leave a marker and a heavy bullet in a root folder unreported', async () => {
+  it('should report a heavy bullet in a root folder and leave its marker alone', async () => {
     const heavy = `- ${'word '.repeat(BULLET_CHECKPOINT / 2)}\n`
     seed('docs', 'agents.md', `${NARRATED}\n${heavy}`)
 
@@ -441,9 +441,12 @@ describe('measureFolders', () => {
     })
     const [entry] = await measureFolders(root, folders)
 
+    // Bullet weight follows the standard governing every markdown file, so it
+    // reaches a folder whose entries the context standard disclaims. Provenance
+    // is still that standard's own rule and stops at its folder.
     expect(entry.rel).toBe('docs/agents.md')
     expect(entry.provenance).toEqual([])
-    expect(entry.heavyBullets).toEqual([])
+    expect(entry.heavyBullets).toHaveLength(1)
   })
 
   it('should still measure a root folder for length', async () => {
