@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.64.0](https://github.com/erclx/aitk/compare/v0.63.2...v0.64.0) (2026-08-05)
+
+
+### Features
+
+* **markdown:** add an audit reading the attribute standards by path ([#872](https://github.com/erclx/aitk/issues/872)) ([2f06f32](https://github.com/erclx/aitk/commit/2f06f323ccdfc364a16e16af62c83df8777f12bc))
+
 ## [0.63.2](https://github.com/erclx/aitk/compare/v0.63.1...v0.63.2) (2026-08-05)
 
 
