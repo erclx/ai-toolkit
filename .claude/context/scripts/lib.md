@@ -33,10 +33,13 @@ The divergence is latent on the current corpus. All 22 documents under `docs/` a
 
 ## `tooling.sh`
 
-Consumed by `scripts/tooling/{ref,verify,create}.sh` for discovery and name validation. `listStacks` in `src/tooling/manifest.ts` is the TypeScript equivalent, and it discovers by `manifest.toml` rather than by directory.
+Consumed by `scripts/tooling/{ref,verify,create}.sh` for discovery and name validation, and by `scripts/core/verify.sh` and `scripts/core/check-seed-independence.sh` for seed discovery. `listStacks` in `src/tooling/manifest.ts` is the TypeScript equivalent, and it discovers by `manifest.toml` rather than by directory.
 
 - `list_tooling_stacks`: emit names of every directory under `tooling/`, minus excluded
 - `is_tooling_stack_excluded`: return 0 if the name is in `TOOLING_STACK_EXCLUDE`, 1 otherwise
+- `collect_seed_roots`: emit every `tooling/*/seeds` directory holding a `.claude/`, relative to `PROJECT_ROOT`
+
+`collect_seed_roots` serves the two stages that measure seed content, Seed standards and Seed independence. Both discover through it rather than naming a stack, so one glob decides what a seed stage covers and a stack seeding `.claude/` later arrives covered with no edit to either caller.
 
 ## `frontmatter.sh`
 

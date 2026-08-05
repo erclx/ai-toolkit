@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+source "$PROJECT_ROOT/scripts/lib/tooling.sh"
+
+TOOLKIT_TOKEN="aitk"
+TOOLING_ROOT="$PROJECT_ROOT/tooling"
+
+# `find` writes to stderr and returns non-zero for a missing root, inside a
+# process substitution whose status nothing reads. Without this the walk covers
+# nothing and the check reports the seeds independent having never read one.
+if [ ! -d "$TOOLING_ROOT" ]; then
+  echo "No tooling root at ${TOOLING_ROOT#"$PROJECT_ROOT/"}, seed independence unverifiable." >&2
+  exit 1
+fi
+
+# An empty discovery is a real state rather than a broken walk, and the Seed
+# standards stage already reports it as a skip. Failing here would have the two
+# stages disagree about what the same condition means.
+seed_roots=$(collect_seed_roots)
+if [ -z "$seed_roots" ]; then
+  echo "No seed root carries .claude/, nothing to check." >&2
+  exit 0
+fi
+
+# Markdown alone. The seed tree also ships hooks that call the toolkit CLI on
+# purpose, each reporting a named stale-index warning when the binary is absent,
+# and scoping by extension leaves them outside this walk without an exemption
+# list that would have to be maintained against them.
+cited=""
+measured=0
+while IFS= read -r seed_root; do
+  while IFS= read -r file; do
+    measured=$((measured + 1))
+    while IFS= read -r hit; do
+      cited="$cited  ${file#"$PROJECT_ROOT/"}:$hit"$'\n'
+    done < <(grep -n "$TOOLKIT_TOKEN" "$file" || true)
+  done < <(find "$PROJECT_ROOT/$seed_root" -type f -name '*.md')
+done <<<"$seed_roots"
+
+if [ -n "$cited" ]; then
+  echo "Seed prose cites the toolkit CLI:" >&2
+  printf '%s' "$cited" >&2
+  echo "A scaffolded project may not have $TOOLKIT_TOKEN installed. State the capability the line needs rather than the binary that supplies it." >&2
+  exit 1
+fi
+
+if [ "$measured" -eq 0 ]; then
+  echo "No markdown under any seed root, nothing measured." >&2
+fi

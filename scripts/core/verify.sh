@@ -7,6 +7,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 source "$PROJECT_ROOT/scripts/lib/ui.sh"
 source "$PROJECT_ROOT/scripts/lib/worktree.sh"
+source "$PROJECT_ROOT/scripts/lib/tooling.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
 WRITE="${VERIFY_WRITE:-true}"
@@ -127,16 +128,6 @@ assert_hero_pair() {
   [ "$html_commit" = "$png_commit" ]
 }
 
-# Whatever stacks the repo currently carries, so a new one is covered without an
-# edit here. A seed root holding no `.claude/` seeds nothing a standard governs.
-collect_seed_roots() {
-  local dir
-  for dir in "$PROJECT_ROOT"/tooling/*/seeds; do
-    [ -d "$dir/.claude" ] || continue
-    printf '%s\n' "${dir#"$PROJECT_ROOT"/}"
-  done
-}
-
 # Entries the audit actually measured, summed across the folders it resolved.
 # `--json` carries one `"entries":<n>` per folder object, and the top-level key
 # of that name holds an array, so the numeric match reaches folders alone.
@@ -213,6 +204,15 @@ main() {
   log_step "Plugin boundary"
   run_check "bash $PROJECT_ROOT/scripts/core/check-plugin-boundary.sh" "Plugin ships toolkit-internal content."
   log_info "Plugin boundary clean"
+
+  # Seed prose is installed into every scaffolded project and read there as
+  # instruction about that project, so a line naming this repository's CLI hands
+  # a target a verb it may not be able to run. This gates for the reason the
+  # Seed standards stage below gates: a defect authored once propagates into
+  # every project scaffolded after it.
+  log_step "Seed independence"
+  run_check "bash $PROJECT_ROOT/scripts/core/check-seed-independence.sh" "Seed prose cites the toolkit CLI."
+  log_info "Seed prose cites no toolkit CLI"
 
   # A stack entry naming a rule folder takes every rule in it, which is what
   # stops a new rule from needing a second edit to reach a target. The failure
