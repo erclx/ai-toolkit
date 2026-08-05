@@ -101,7 +101,7 @@ export function readHistoryIndex(
  * caller's `relative()` output has to be converted before it can match a path
  * the log emitted.
  */
-function toRepoPath(path: string): string {
+export function toRepoPath(path: string): string {
   return path.split(sep).join('/')
 }
 

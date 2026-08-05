@@ -10,6 +10,11 @@ import {
   type SupersededEntry,
   type UnmigratedDomain,
 } from '@/sync/layout'
+import {
+  buildReverseReport,
+  emptyReverseReport,
+  type ReverseReport,
+} from '@/sync/reverse'
 import { buildSeedsReport, type SeedsReport } from '@/sync/seeds-report'
 import {
   readStamp,
@@ -151,6 +156,13 @@ export interface CheckReport {
   readonly superseded: readonly SupersededEntry[]
   readonly unmigrated: readonly UnmigratedDomain[]
   readonly newSkills: readonly string[]
+  /**
+   * The one section built by walking the target rather than the catalog. It
+   * reports beside `superseded`, `unmigrated`, and `newSkills` rather than
+   * absorbing them, because each of those already answers a narrower version of
+   * the same question correctly. See `@/sync/reverse`.
+   */
+  readonly reverse: ReverseReport
 }
 
 export function installedStampDomains(target: string): ScannedDomain[] {
@@ -258,6 +270,11 @@ export function countStates(entries: readonly ScanEntry[]): StateCounts {
  * project is expected to edit, so a job counting it stays red with no remedy.
  * Being unmeasured is not what excludes it, since an unmeasured report carries
  * zero changes and would pass a count either way.
+ *
+ * The reverse report is excluded because every entry in it is a judgment about
+ * a file the project may own. `detectUnmigrated` already shipped that exact
+ * false positive once, failing a push with no action that cleared it, and a
+ * walk that reports `unattributed` by design would repeat it.
  */
 export function hasDrift(report: CheckReport): boolean {
   if (report.unmigrated.length > 0) return true
@@ -306,6 +323,7 @@ export async function buildCheckReport(
       superseded: [],
       unmigrated: [],
       newSkills: [],
+      reverse: emptyReverseReport(),
     }
   }
 
@@ -318,6 +336,7 @@ export async function buildCheckReport(
     superseded: collectSuperseded(target),
     unmigrated,
     newSkills: await readNewSkills(toolkitRoot, anchors),
+    reverse: buildReverseReport(toolkitRoot, target),
   }
 }
 

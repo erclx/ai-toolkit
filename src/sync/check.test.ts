@@ -14,6 +14,7 @@ import {
   type ToolingReport,
 } from '@/sync/check'
 import type { ScanEntry } from '@/sync/engine'
+import { emptyReverseReport } from '@/sync/reverse'
 import { readStamp, type Stamp, stampPath } from '@/sync/stamp'
 
 let TARGET: string
@@ -40,6 +41,7 @@ function buildReport(
     superseded: [],
     unmigrated: [],
     newSkills: [],
+    reverse: emptyReverseReport(),
     ...overrides,
   }
 }
