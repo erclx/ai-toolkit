@@ -41,7 +41,9 @@ Deriving the spellings rather than pattern-matching a suffix is what keeps `exer
 
 Frontmatter, fenced blocks, inline code spans, and link destinations are excluded. Without the code-span exclusion each standard would report its own backticked examples, and without the link exclusion a semicolon in a query string would report as prose no rewrite can fix.
 
-A term is bounded on a word character or a hyphen either side. A plain word boundary sits after a hyphen, so a banned word ending a hyphenated compound reported from inside one, and a compound is a single word to the reader who wrote it.
+A banned word is bounded on a word character or a hyphen either side. A plain word boundary sits after a hyphen, so a banned word ending a hyphenated compound reported from inside one, and a compound is a single word to the reader who wrote it.
+
+A banned spelling keeps the plain word boundary, hyphens included. The two bans target different things: a word ban targets the word, so reading a compound as one word is correct, while a spelling ban targets the orthography inside it, which sits in `behaviour-driven` as plainly as it sits alone.
 
 Two ban shapes stay unmeasured and the report says so on every run. A phrase ban carries a placeholder standing in for the rest of the sentence, so no literal match reaches it, and every rule under `## Voice` is a judgment. A report listing hits without naming those would read as a verdict on the whole standard.
 
@@ -53,7 +55,7 @@ Every weight and depth measure counts the text a reader is shown. A link reduces
 
 A code span is walked around rather than through, so a path quoting link or angle-bracket syntax keeps the width the page gives it. Masking inside one takes back the decision to count it, and the placeholders this toolkit writes are where that shows.
 
-The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: measured across 3369 paragraphs, 487 sit inside four sentences and past 400 characters, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: measured across 3374 paragraphs, 486 sit inside four sentences and past 400 characters, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
 
 The paragraph weight and the bullet weight are the same number today because the two shapes measure one population, sharing a median near 170 characters with no gap behind either candidate. They are separate checkpoints in the standard and separate patterns in the parser, so retuning one leaves the other where it is.
 
@@ -67,7 +69,7 @@ A banned character is a fact rather than a judgment, which is the test that woul
 
 Measured across 444 files once the weight measures moved to visible text: 8 word hits, no character or spelling hits, 119 heavy bullets, 615 heavy paragraphs, and 40 files carrying a run past the depth checkpoint. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
 
-Masking took 6 of the 493 weight-only paragraphs and 4 of the 44 files under their checkpoints, and no bullet at all. The first corpus triage put those at 31 paragraphs and 2 bullets, and neither reproduces: a code span is walked around, so a backticked path holding an angle-bracket placeholder keeps the width the page gives it, and both bullets the triage counted were that shape.
+Masking took 7 of the 493 weight-only paragraphs and 4 of the 44 files under their checkpoints, and no bullet at all. The first corpus triage put those at 31 paragraphs and 2 bullets, and neither reproduces: a code span is walked around, so a backticked path holding an angle-bracket placeholder keeps the width the page gives it, and both bullets the triage counted were that shape.
 
 ## What it does not cover
 

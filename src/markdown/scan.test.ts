@@ -11,7 +11,7 @@ import {
 const BANS: BanSets = {
   characters: ['—', ';'],
   words: ['simply', 'leverage', 'just'],
-  spellings: ['organise', 'colour'],
+  spellings: ['organise', 'colour', 'behaviour'],
 }
 
 function scan(source: string) {
@@ -176,6 +176,19 @@ describe('scanBans', () => {
   it('should still report a banned word standing on its own', () => {
     // The boundary is tightened either side, so the plain hit has to survive it.
     expect(terms('Just run it.\n')).toEqual(['just'])
+  })
+
+  it('should report a banned spelling inside a hyphenated compound', () => {
+    // A word ban reads a compound as the one word it is, and a spelling ban
+    // targets the orthography sitting inside it. `behaviour-driven` is the
+    // usual spelling of BDD and the likeliest route a British spelling takes in.
+    expect(terms('We run behaviour-driven development.\n')).toEqual([
+      'behaviour',
+    ])
+  })
+
+  it('should report a banned spelling opening a hyphenated compound', () => {
+    expect(terms('A colour-blind palette.\n')).toEqual(['colour'])
   })
 
   it('should report nothing inside frontmatter', () => {

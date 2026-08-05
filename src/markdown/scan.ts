@@ -180,16 +180,32 @@ function escape(term: string): string {
 }
 
 /**
- * Bounds a term on a word character or a hyphen either side.
+ * Bounds a banned word on a word character or a hyphen either side.
  *
  * `\b` sits after a hyphen, so a banned word ending a hyphenated compound
  * reports from inside it: `allows` came back out of `auto-allows`. A compound
  * is one word to a reader, and the ban is on the word rather than on a morpheme
  * of it. Stripping hyphens before matching was the alternative and it joins the
  * compound into a token neither half reaches.
+ *
+ * A spelling ban takes `wordBoundary` instead. This is not that rule with a
+ * wider fence, since the two bans target different things.
  */
-function bounded(term: string): RegExp {
+function bannedWord(term: string): RegExp {
   return new RegExp(`(?<![\\w-])${escape(term)}(?![\\w-])`, 'gi')
+}
+
+/**
+ * Bounds a banned spelling on a word character alone, hyphens included.
+ *
+ * A word ban targets the word, so a compound reading as one word is correct.
+ * A spelling ban targets the orthography inside it, and a compound is exactly
+ * where the orthography still sits: `behaviour-driven` carries the banned
+ * spelling as plainly as `behaviour` does, and rejecting a hyphen here would
+ * leave the usual spelling of that phrase unreported.
+ */
+function bannedSpelling(term: string): RegExp {
+  return new RegExp(`\\b${escape(term)}\\b`, 'gi')
 }
 
 /**
@@ -211,12 +227,12 @@ export function scanBans(
     ...bans.words.map((term) => ({
       kind: 'word' as const,
       term,
-      pattern: bounded(term),
+      pattern: bannedWord(term),
     })),
     ...bans.spellings.map((term) => ({
       kind: 'spelling' as const,
       term,
-      pattern: bounded(term),
+      pattern: bannedSpelling(term),
     })),
   ]
 
