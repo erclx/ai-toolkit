@@ -18,6 +18,7 @@ import {
   SYNC_DOMAINS,
   type SyncDomain,
 } from '@/sync/target'
+import type { UnclaimedFolder } from '@/sync/reverse'
 import { runGitWorkflow } from '@/sync/workflow'
 import { resolveTarget } from '@/target'
 import {
@@ -162,6 +163,9 @@ function renderCheck(report: CheckReport): void {
     for (const name of report.newSkills) logInfo(name)
   }
 
+  renderUnclaimed(report)
+  renderMigrations(report)
+
   outro()
   // Scanned domains only. Tooling renders a section on every managed target, so
   // naming it here repeats what that section already said under a second
@@ -235,6 +239,71 @@ function renderSeeds(report: CheckReport): void {
   }
 
   logInfo('Run /aitk:claude-seed-sync to reconcile these section by section.')
+}
+
+/**
+ * Names the attribution before the count, the way the tooling section does. A
+ * dropped folder and a project-authored one are the same bytes at the same
+ * path, so the count alone is the one thing an operator cannot act on.
+ *
+ * A folder history proved the project owns is dropped from the render and kept
+ * in the JSON. Printing it costs a line on every run for a name collision no
+ * remedy closes, which is the bar this section had to clear to exist at all.
+ */
+function renderUnclaimed(report: CheckReport): void {
+  const { unclaimed, historyUnavailable } = report.reverse
+  const notable = unclaimed.filter((entry) => entry.attribution !== 'project')
+
+  if (notable.length === 0 && !historyUnavailable) return
+
+  logStep('No longer shipped by the toolkit')
+
+  if (historyUnavailable) {
+    logWarn('This toolkit has no git history, so nothing could be walked.')
+    return
+  }
+
+  for (const entry of notable) {
+    logWarn(`${entry.rel}/ (${describeUnclaimed(entry)})`)
+  }
+
+  logInfo(
+    'Decide what happens to these yourself. No sync command touches them.',
+  )
+}
+
+/**
+ * State first, then the count, then where the content came from. The revision
+ * is the commit that published the content the target still holds, never the
+ * one that dropped the folder, so it takes a clause of its own. Suffixed onto
+ * `dropped upstream` it reads as the date of the drop, and an operator running
+ * `git show` on it lands on the commit that added the folder.
+ */
+function describeUnclaimed(entry: UnclaimedFolder): string {
+  const state =
+    entry.attribution === 'dropped' ? 'dropped upstream' : 'unattributed'
+  const counted = `${state}, ${entry.files} files`
+
+  if (entry.since === undefined) return counted
+
+  return `${counted}, content published at ${entry.since.slice(0, 7)}`
+}
+
+/**
+ * The two proposal-only skills no other field reaches. `migration-standards`
+ * gets the same treatment from the unmigrated section above, which is the
+ * precedent this follows rather than a second spelling of it.
+ */
+function renderMigrations(report: CheckReport): void {
+  const { migrations } = report.reverse
+  if (migrations.length === 0) return
+
+  logStep('Migrations with a case here')
+
+  for (const candidate of migrations) {
+    logWarn(candidate.reason)
+    logInfo(`Run /aitk:${candidate.skill} for a proposal.`)
+  }
 }
 
 async function runSync(target: string): Promise<number> {

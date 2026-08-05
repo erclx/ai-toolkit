@@ -81,6 +81,7 @@ rtrimstr
 semgrep
 setattr
 sidepanel
+sigpipe
 soffice
 statusline
 streamable

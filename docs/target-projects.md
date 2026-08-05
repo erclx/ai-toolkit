@@ -104,11 +104,19 @@ That attribution comes from `.claude/aitk.json`, a stamp every install and sync 
 
 A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
-Three further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `aitk:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated` and handed to `aitk:migration-standards`.
+Four further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `aitk:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated` and handed to `aitk:migration-standards`.
 
-That last one matters most on an older project. Before it existed, a target holding `standards/` at its root reported zero entries for that domain, so a project that had never migrated was indistinguishable from one that was fully current.
+That third one matters most on an older project. Before it existed, a target holding `standards/` at its root reported zero entries for that domain, so a project that had never migrated was indistinguishable from one that was fully current.
 
-Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code, and neither do superseded artifacts, seed drift, or tooling, since each reports content the project is expected to edit or place itself. An unmigrated domain does count, because running the relocation closes it.
+#### What the toolkit stopped shipping
+
+The fourth cause runs backwards. Every one above starts from what the toolkit ships and asks whether the target matches, so a folder the toolkit dropped appears in none of them. `reverse` walks the target instead and reports a folder sitting at a top-level path the toolkit once shipped and has since deleted.
+
+Each entry carries a verdict, since a dropped folder and one the project wrote are the same bytes at the same path. `dropped` names the commit that published the content. `unattributed` means the toolkit shipped that path and the content matches no version it published. `project` means the folder only shares a retired name. Nothing acts on any of them, and the verdict is what makes the list safe to read.
+
+The same field names a proposal-only skill with a live case here under `migrations`, which is how `aitk:migration-claude-md` and `aitk:migration-context` become reachable. Each entry carries the measurement behind the proposal rather than the proposal alone.
+
+Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code, and neither do superseded artifacts, seed drift, tooling, or anything the reverse walk reports, since each names content the project is expected to edit or place itself. An unmigrated domain does count, because running the relocation closes it.
 
 Tooling reports under a section of its own, and `measured` there says whether the target ever recorded a chain. One that never ran a tooling sync reports unmeasured rather than clean, which is what separates tooling nobody has looked at from tooling that is current. A workspace root records nothing either way, since each package resolves its own chain. Reconcile the configs with `aitk tooling sync <stack> <path>`.
 
