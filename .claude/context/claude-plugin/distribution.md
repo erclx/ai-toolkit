@@ -27,6 +27,16 @@ The fallback conditions on the file, never on the `.claude/standards/` directory
 
 Only `${CLAUDE_SKILL_DIR}` survives to the model. Measured across three probe skills in a project with no `.claude/`, the body arrived with that variable already expanded to an absolute path, while `${CLAUDE_PLUGIN_ROOT}` reached the model as a literal string and a bare `../../` arrived unresolved. The latter two happened to work because the model inferred a base, which is the inference `standards/skill.md` bans a bare relative path to avoid. A guard on a standard's presence has to test both paths, since one testing only `.claude/standards/` refuses to run in a plugin-only project that has the file. `create-skill` and `claude-standards-audit` each carried such a guard.
 
+### The first executable in a skill
+
+`claude-orchestrate/scripts/poll.sh` is the only non-markdown file any skill ships, so a plugin that carried prose alone now carries code a target runs. It sits in `scripts/` rather than beside the runbook that invokes it, because `.claude/standards/skill.md` splits a skill folder by role and assigns `references/` to detail and `scripts/` to deterministic operations.
+
+Three stages had to reach a tree that had never held a shell file. `check:shell` globs `claude`, and so do both shfmt stages behind `format` and `check:format`. Adding it to the linter alone leaves the file checked and never formatted, which fails nothing while it happens to be clean and drifts silently on its next edit. The boundary walk needed no change, since it reads every file rather than every markdown file.
+
+A shipped script is not a shipped standard. It executes in a target's environment rather than being read there, so it takes its dependencies from that machine and its base branch from `origin/HEAD` rather than assuming `main`. A second script inherits all three stages without a further edit, and inherits the obligation to assume nothing about the repository it lands in.
+
+A runbook can cite it and a loop prompt cannot. `${CLAUDE_SKILL_DIR}` expands while a skill body renders, so a prompt pasted into a standalone turn carries the literal string instead of a path. A block a session is meant to paste therefore holds a placeholder and the prose above it says what to substitute.
+
 ### What a symlink costs
 
 A symlink is an entry point that cannot filter. `standards/aitk/` and `snippets/aitk/` were excluded at every CLI verb and still reached every plugin cache, because an installer dereferences the two symlinks and copies whatever is behind them with no code in the path. The count reached five before the fix and grew on its own, since `snippets/aitk/` was where internal snippets were authored. Internal content now lives at `internal/`, which nothing under `claude/` reaches, and the filters that guarded the old category are deleted. `scripts/core/check-plugin-boundary.sh` walks the plugin tree with symlinks followed and fails on any file resolving under `internal/`, so what the filters asserted is now measured against what an install actually copies.
