@@ -9,7 +9,7 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 ## Scope
 
-Governs the markdown mechanics of every markdown file: headings, paragraph and list structure, code spans and fences, punctuation, emphasis, and file references. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and it carries no template because mechanics are written across every document and have none of their own to shape.
+Governs the markdown mechanics of every markdown file: headings, paragraph and list structure, code spans and fences, punctuation, emphasis, and file references. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and it carries no template because mechanics are written across every document and have no shape of their own.
 
 Does not govern:
 
