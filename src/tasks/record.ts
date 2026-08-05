@@ -1,0 +1,295 @@
+import { existsSync } from 'node:fs'
+import { readFile, writeFile } from 'node:fs/promises'
+import { basename, join, relative } from 'node:path'
+import { listTaskStems, readPlanTarget, tasksDir } from '@/tasks/archive'
+
+/**
+ * Lines a task carries above its outcomes naming where the work came from. The
+ * `Pull request:` line joins them, so the last one present is the anchor.
+ */
+const ORIGIN_PREFIXES = ['Plan:', 'Groundwork:', 'Intake:', 'Issue:'] as const
+
+const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
+
+export const RECORD_REFUSALS = [
+  'no-board',
+  'no-match',
+  'ambiguous',
+  'no-outcomes',
+  'out-of-range',
+] as const
+
+export type RecordRefusal = (typeof RECORD_REFUSALS)[number]
+
+export interface RecordRefused {
+  readonly ok: false
+  readonly reason: RecordRefusal
+  readonly message: string
+  readonly detail: readonly string[]
+}
+
+export type RecordSelector =
+  | { readonly kind: 'stem'; readonly stem: string }
+  | { readonly kind: 'plan'; readonly plan: string }
+
+export type LineAction = 'added' | 'corrected' | 'unchanged'
+
+export interface PullRequestRecorded {
+  readonly ok: true
+  readonly stem: string
+  readonly path: string
+  readonly number: number
+  readonly action: LineAction
+}
+
+export type PullRequestOutcome = PullRequestRecorded | RecordRefused
+
+export interface OutcomesClosed {
+  readonly ok: true
+  readonly stem: string
+  readonly path: string
+  readonly closed: readonly string[]
+  readonly alreadyClosed: readonly string[]
+}
+
+export type CloseOutcome = OutcomesClosed | RecordRefused
+
+function refuse(
+  reason: RecordRefusal,
+  message: string,
+  detail: readonly string[] = [],
+): RecordRefused {
+  return { ok: false, reason, message, detail }
+}
+
+/**
+ * Reduces a plan reference to the token both spellings share. A task's `Plan:`
+ * line carries a path, a caller carries the branch slug, and the two differ by
+ * the folder, the extension, and the `feature-` prefix the filename adds.
+ */
+function planKey(reference: string): string {
+  const stem = basename(reference).replace(/\.md$/, '')
+  return stem.startsWith('feature-') ? stem.slice('feature-'.length) : stem
+}
+
+/**
+ * Places the `Pull request:` line under the origin lines the task already
+ * carries, and corrects the number in place when the line exists. A task with
+ * no origin line takes it under the H1, which is the only other anchor the
+ * board format guarantees.
+ */
+export function writePullRequestLine(
+  text: string,
+  number: number,
+): { readonly text: string; readonly action: LineAction } {
+  const line = `Pull request: #${number}`
+  const lines = text.split('\n')
+  const existing = lines.findIndex((entry) => entry.startsWith('Pull request:'))
+
+  if (existing !== -1) {
+    if (lines[existing] === line) return { text, action: 'unchanged' }
+    lines[existing] = line
+    return { text: lines.join('\n'), action: 'corrected' }
+  }
+
+  const origin = lastOriginLine(lines)
+  if (origin !== undefined) {
+    lines.splice(origin + 1, 0, line)
+    return { text: lines.join('\n'), action: 'added' }
+  }
+
+  const heading = lines.findIndex((entry) => entry.startsWith('# '))
+  if (heading === -1) return { text: `${line}\n${text}`, action: 'added' }
+
+  lines.splice(heading + 1, 0, '', line)
+  return { text: lines.join('\n'), action: 'added' }
+}
+
+function lastOriginLine(lines: readonly string[]): number | undefined {
+  let found: number | undefined
+
+  for (const [index, line] of lines.entries()) {
+    if (ORIGIN_PREFIXES.some((prefix) => line.startsWith(prefix))) found = index
+  }
+
+  return found
+}
+
+/**
+ * Marks outcomes closed by their 1-based position in the task's outcome list,
+ * which is the order the board format writes them. A caller reads the file
+ * before deciding, so a position is what it already holds, while a text match
+ * would need the wording handed back exactly.
+ */
+export function closeOutcomeLines(
+  text: string,
+  positions: readonly number[],
+): {
+  readonly text: string
+  readonly closed: readonly string[]
+  readonly alreadyClosed: readonly string[]
+  readonly total: number
+} {
+  const wanted = new Set(positions)
+  const closed: string[] = []
+  const alreadyClosed: string[] = []
+  let seen = 0
+
+  const rewritten = text.split('\n').map((line) => {
+    const match = OUTCOME_PATTERN.exec(line)
+    if (!match) return line
+
+    seen += 1
+    if (!wanted.has(seen)) return line
+
+    const [, box, body] = match
+    if (box !== ' ') {
+      alreadyClosed.push(body.trim())
+      return line
+    }
+
+    closed.push(body.trim())
+    return body ? `- [x] ${body}` : '- [x]'
+  })
+
+  return { text: rewritten.join('\n'), closed, alreadyClosed, total: seen }
+}
+
+async function matchByPlan(
+  dir: string,
+  stems: readonly string[],
+  plan: string,
+): Promise<string[]> {
+  const key = planKey(plan)
+
+  const read = await Promise.all(
+    stems.map(async (stem) => ({
+      stem,
+      target: readPlanTarget(await readFile(join(dir, `${stem}.md`), 'utf8')),
+    })),
+  )
+
+  return read
+    .filter(
+      (entry) => entry.target !== undefined && planKey(entry.target) === key,
+    )
+    .map(({ stem }) => stem)
+}
+
+async function resolveStem(
+  dir: string,
+  selector: RecordSelector,
+): Promise<string | RecordRefused> {
+  const stems = await listTaskStems(dir)
+
+  if (selector.kind === 'stem') {
+    if (!stems.includes(selector.stem)) {
+      return refuse(
+        'no-match',
+        `No task named ${selector.stem} on the board.`,
+        stems,
+      )
+    }
+    return selector.stem
+  }
+
+  const matched = await matchByPlan(dir, stems, selector.plan)
+
+  if (matched.length === 0) {
+    return refuse('no-match', `No task names plan ${selector.plan}.`)
+  }
+
+  if (matched.length > 1) {
+    return refuse(
+      'ambiguous',
+      `${matched.length} tasks name plan ${selector.plan}. One task, one plan.`,
+      matched,
+    )
+  }
+
+  return matched[0]
+}
+
+async function openTask(
+  root: string,
+  selector: RecordSelector,
+): Promise<{ readonly stem: string; readonly path: string } | RecordRefused> {
+  const dir = tasksDir(root)
+
+  if (!existsSync(dir)) {
+    return refuse('no-board', `No task board at ${relative(root, dir)}.`)
+  }
+
+  const resolved = await resolveStem(dir, selector)
+  if (typeof resolved !== 'string') return resolved
+
+  return { stem: resolved, path: join(dir, `${resolved}.md`) }
+}
+
+/**
+ * Records a pull request number on the task the branch closes. `git-pr` runs
+ * this from a linked worktree, where an in-place edit through the file-editing
+ * tools is refused and a shell stream editor is banned, so the write has to
+ * resolve the board root in-process.
+ */
+export async function recordPullRequest(
+  root: string,
+  selector: RecordSelector,
+  number: number,
+): Promise<PullRequestOutcome> {
+  const opened = await openTask(root, selector)
+  if ('ok' in opened) return opened
+
+  const { stem, path } = opened
+  const { text, action } = writePullRequestLine(
+    await readFile(path, 'utf8'),
+    number,
+  )
+
+  if (action !== 'unchanged') await writeFile(path, text)
+
+  return { ok: true, stem, path, number, action }
+}
+
+/**
+ * Marks the named outcomes `[x]` in place. `claude-docs` runs this against a
+ * board it can read and cannot edit from a linked worktree, and the positions
+ * come from the read it already made.
+ */
+export async function closeOutcomes(
+  root: string,
+  selector: RecordSelector,
+  positions: readonly number[],
+): Promise<CloseOutcome> {
+  const opened = await openTask(root, selector)
+  if ('ok' in opened) return opened
+
+  const { stem, path } = opened
+  const result = closeOutcomeLines(await readFile(path, 'utf8'), positions)
+
+  if (result.total === 0) {
+    return refuse('no-outcomes', `${stem} carries no outcomes to close.`)
+  }
+
+  const beyond = positions.filter(
+    (position) => position < 1 || position > result.total,
+  )
+
+  if (beyond.length > 0) {
+    return refuse(
+      'out-of-range',
+      `${stem} carries ${result.total} outcome(s), so ${beyond.join(', ')} names nothing.`,
+      beyond.map(String),
+    )
+  }
+
+  if (result.closed.length > 0) await writeFile(path, result.text)
+
+  return {
+    ok: true,
+    stem,
+    path,
+    closed: result.closed,
+    alreadyClosed: result.alreadyClosed,
+  }
+}

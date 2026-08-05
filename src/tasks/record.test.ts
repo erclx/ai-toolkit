@@ -1,0 +1,268 @@
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { readFile, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { tasksDir } from '@/tasks/archive'
+import {
+  closeOutcomeLines,
+  closeOutcomes,
+  recordPullRequest,
+  writePullRequestLine,
+} from '@/tasks/record'
+
+let ROOT: string
+
+const INDEX_SEED = `---
+title: Tasks
+subtitle: One file per task, ordered by phase label
+---
+
+# Tasks
+
+One file per task, ordered by phase label
+`
+
+interface TaskFixture {
+  readonly stem?: string
+  readonly plan?: string
+  readonly pullRequest?: number
+  readonly outcomes?: readonly string[]
+}
+
+function taskBody({
+  plan,
+  pullRequest,
+  outcomes = ['- [ ] Outcome: it ships'],
+}: TaskFixture): string {
+  const lines = [
+    '---',
+    "title: 'v28.1: A task'",
+    'description: One line on what this task achieves',
+    '---',
+    '',
+    '# v28.1: A task',
+    '',
+  ]
+
+  if (plan) lines.push(`Plan: [${plan}](../plans/${plan}.md)`)
+  if (pullRequest) lines.push(`Pull request: #${pullRequest}`)
+
+  lines.push(
+    '',
+    '## Outcomes',
+    '',
+    ...outcomes,
+    '',
+    '## Findings',
+    '',
+    '- A note.',
+  )
+
+  return `${lines.join('\n')}\n`
+}
+
+async function seedTask(fixture: TaskFixture = {}): Promise<string> {
+  const stem = fixture.stem ?? 'v28.1-trigger-escalation'
+  const dir = tasksDir(ROOT)
+
+  mkdirSync(dir, { recursive: true })
+  await writeFile(join(dir, 'index.md'), INDEX_SEED)
+  await writeFile(join(dir, `${stem}.md`), taskBody(fixture))
+
+  return stem
+}
+
+function readTask(stem: string): Promise<string> {
+  return readFile(join(tasksDir(ROOT), `${stem}.md`), 'utf8')
+}
+
+beforeEach(() => {
+  ROOT = mkdtempSync(join(tmpdir(), 'aitk-tasks-record-'))
+})
+
+afterEach(() => {
+  rmSync(ROOT, { recursive: true, force: true })
+})
+
+describe('writePullRequestLine', () => {
+  it('should add the line under the last origin line', () => {
+    const text =
+      '# A task\n\nPlan: [p](../plans/p.md)\nIssue: #12\n\n## Outcomes\n'
+
+    const { text: written, action } = writePullRequestLine(text, 673)
+
+    expect(action).toBe('added')
+    expect(written).toContain('Issue: #12\nPull request: #673\n')
+  })
+
+  it('should correct the number when the line already exists', () => {
+    const text = '# A task\n\nPlan: [p](../plans/p.md)\nPull request: #12\n'
+
+    const { text: written, action } = writePullRequestLine(text, 673)
+
+    expect(action).toBe('corrected')
+    expect(written).toContain('Pull request: #673')
+    expect(written).not.toContain('#12')
+  })
+
+  it('should report no change when the number already matches', () => {
+    const text = '# A task\n\nPull request: #673\n'
+
+    expect(writePullRequestLine(text, 673)).toEqual({
+      text,
+      action: 'unchanged',
+    })
+  })
+
+  it('should fall back to the heading when the task carries no origin line', () => {
+    const { text } = writePullRequestLine('# A task\n\n## Outcomes\n', 673)
+
+    expect(text).toBe('# A task\n\nPull request: #673\n\n## Outcomes\n')
+  })
+})
+
+describe('closeOutcomeLines', () => {
+  it('should mark only the named position', () => {
+    const text = '- [ ] Outcome: one\n- [ ] Outcome: two\n'
+
+    const result = closeOutcomeLines(text, [2])
+
+    expect(result.text).toBe('- [ ] Outcome: one\n- [x] Outcome: two\n')
+    expect(result.closed).toEqual(['Outcome: two'])
+  })
+
+  it('should report a position that is already closed rather than rewriting it', () => {
+    const result = closeOutcomeLines('- [x] Outcome: one\n', [1])
+
+    expect(result.closed).toEqual([])
+    expect(result.alreadyClosed).toEqual(['Outcome: one'])
+  })
+
+  it('should count every checkbox in file order', () => {
+    expect(closeOutcomeLines('- [x] a\n- [ ] b\n- [ ] c\n', []).total).toBe(3)
+  })
+
+  it('should leave bullets that carry no checkbox untouched', () => {
+    const text = '- A finding\n- [ ] Outcome: one\n'
+
+    expect(closeOutcomeLines(text, [1]).text).toBe(
+      '- A finding\n- [x] Outcome: one\n',
+    )
+  })
+})
+
+describe('recordPullRequest', () => {
+  it('should write the number onto a task named by stem', async () => {
+    const stem = await seedTask({ plan: 'feature-worktree-scratch-routing' })
+
+    const outcome = await recordPullRequest(ROOT, { kind: 'stem', stem }, 673)
+
+    expect(outcome.ok).toBe(true)
+    await expect(readTask(stem)).resolves.toContain('Pull request: #673')
+  })
+
+  it('should select a task by the plan its Plan line names', async () => {
+    const stem = await seedTask({ plan: 'feature-worktree-scratch-routing' })
+
+    const outcome = await recordPullRequest(
+      ROOT,
+      { kind: 'plan', plan: 'worktree-scratch-routing' },
+      673,
+    )
+
+    expect(outcome).toMatchObject({ ok: true, stem, action: 'added' })
+  })
+
+  it('should match a plan named with its full filename', async () => {
+    await seedTask({ plan: 'feature-worktree-scratch-routing' })
+
+    const outcome = await recordPullRequest(
+      ROOT,
+      {
+        kind: 'plan',
+        plan: '.claude/plans/feature-worktree-scratch-routing.md',
+      },
+      673,
+    )
+
+    expect(outcome.ok).toBe(true)
+  })
+
+  it('should refuse when no task names the plan', async () => {
+    await seedTask({ plan: 'feature-other' })
+
+    const outcome = await recordPullRequest(
+      ROOT,
+      { kind: 'plan', plan: 'worktree-scratch-routing' },
+      673,
+    )
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'no-match' })
+  })
+
+  it('should refuse when two tasks name the same plan', async () => {
+    await seedTask({ stem: 'v1-one', plan: 'feature-shared' })
+    await seedTask({ stem: 'v2-two', plan: 'feature-shared' })
+
+    const outcome = await recordPullRequest(
+      ROOT,
+      { kind: 'plan', plan: 'shared' },
+      673,
+    )
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'ambiguous' })
+  })
+
+  it('should refuse when the board does not exist', async () => {
+    const outcome = await recordPullRequest(
+      ROOT,
+      { kind: 'stem', stem: 'v1-one' },
+      673,
+    )
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'no-board' })
+  })
+})
+
+describe('closeOutcomes', () => {
+  it('should mark the named outcomes on the task file', async () => {
+    const stem = await seedTask({
+      outcomes: ['- [ ] Outcome: one', '- [ ] Outcome: two'],
+    })
+
+    const outcome = await closeOutcomes(ROOT, { kind: 'stem', stem }, [1])
+
+    expect(outcome).toMatchObject({ ok: true, closed: ['Outcome: one'] })
+    await expect(readTask(stem)).resolves.toContain('- [x] Outcome: one')
+  })
+
+  it('should refuse a position past the end of the list', async () => {
+    const stem = await seedTask({ outcomes: ['- [ ] Outcome: one'] })
+
+    const outcome = await closeOutcomes(ROOT, { kind: 'stem', stem }, [4])
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'out-of-range' })
+  })
+
+  it('should refuse a task carrying no outcomes', async () => {
+    const stem = await seedTask({ outcomes: ['- A finding, not an outcome'] })
+
+    const outcome = await closeOutcomes(ROOT, { kind: 'stem', stem }, [1])
+
+    expect(outcome).toMatchObject({ ok: false, reason: 'no-outcomes' })
+  })
+
+  it('should stay safe on a rerun against the same position', async () => {
+    const stem = await seedTask({ outcomes: ['- [ ] Outcome: one'] })
+    await closeOutcomes(ROOT, { kind: 'stem', stem }, [1])
+
+    const outcome = await closeOutcomes(ROOT, { kind: 'stem', stem }, [1])
+
+    expect(outcome).toMatchObject({
+      ok: true,
+      closed: [],
+      alreadyClosed: ['Outcome: one'],
+    })
+  })
+})
