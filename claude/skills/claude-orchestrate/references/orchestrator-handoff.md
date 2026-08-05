@@ -1,6 +1,6 @@
 ---
 title: Orchestrator handoff runbook
-description: Memory capture at the close of a session, what to write to .claude/tasks/session.md before a compaction, and what to leave to the board
+description: Memory capture at the close of a session, what to write to .claude/tasks/session.md before a compaction, what to leave to the board, and the resume invocation the file carries out
 ---
 
 Capture what the session learned, then write the pre-compact handoff as orchestrator. Do both before a compaction, because a compaction keeps conclusions and drops the reasoning that produced them, and no other file in the repository carries that reasoning.
@@ -35,12 +35,22 @@ description: <what the board cannot show, and the date it was written>
 ## Standing cautions
 
 <commands that lie, tools that measure the wrong tree, and anything unbacked>
+
+Resume by loading the orchestrator skill and asking it to resume after a compaction. This repository spells that `/aitk:claude-orchestrate` followed by the request. Following <RESUME_RUNBOOK> reaches the same place with no skill loaded at all.
+
+That resume reads the board and stops. It restarts nothing, so the review poll is a second thing owed here, and <POLL_RUNBOOK> holds the prompt and the condition. Do not reach for `session-resume`, which reads tracked work and knows nothing about this board or the workers on it.
 ```
 
 5. Cite a commit, a task, or a file and line for every claim, so the next session can tell a read from a recall.
 6. Overwrite the previous handoff rather than appending to it. A stale entry read as current is worse than no handoff.
+7. Close the file with the way back in, which is the block the template ends on. The requirement is a resume request to the orchestrator skill with that skill loaded first, and the command above is this repository's spelling rather than the only one, since the skill ships to every target holding the plugin. Name the poll restart beside it, because the resume performs none.
+8. Resolve `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md` and `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` to absolute paths, and paste each in place of `<RESUME_RUNBOOK>` and `<POLL_RUNBOOK>` above.
 
-Add a section only for content that fits none of the four and would otherwise be lost. Do not restate the board, and do not summarize the work that shipped, because git already carries it.
+Step 8 is what makes the fallback usable. The variable expands while this runbook renders and not in the turn that reads the handoff back, so a path left relative or left as the variable reaches a session holding no skill as a string resolving against nothing. `orchestrator-poll.md` resolves its script the same way and for the same reason.
+
+Add a section only for content that fits none of the four and would otherwise be lost. Do not restate the board, and do not summarize the work that shipped, because git already carries it. The closing block is the one exception, and the paragraph below states why.
+
+That block sits in this runbook and again in the file this runbook writes, which is the fix rather than a copy for a later pass to collapse. A session has to already be holding this runbook to read it, and a compaction that took the skill body took the routing to it too, so the session that most needs the resume is the one that can no longer find it. `session.md` survives that, so it carries the invocation itself. Each of the two reaches a reader the other cannot.
 
 Step 1 exists because both other callers of capture are ship-chain skills and this session never ships. Without a call here, the session that receives every operator correction is the one session that records none. A compaction arriving with no warning takes the capture with it, and firing it once per batch of merges leaves the same window open across a long planning stretch, since a sweep runs only on a merge. The refill sweep reports the debt between handoffs so the operator knows one is owed.
 
