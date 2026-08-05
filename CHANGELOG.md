@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.60.0](https://github.com/erclx/aitk/compare/v0.59.0...v0.60.0) (2026-08-05)
+
+
+### Features
+
+* **standards:** add a memory standard and a records validate kind ([#858](https://github.com/erclx/aitk/issues/858)) ([e542e9d](https://github.com/erclx/aitk/commit/e542e9d953c4b9045017946aca9fdaf9ae586999))
+
 ## [0.59.0](https://github.com/erclx/aitk/compare/v0.58.0...v0.59.0) (2026-08-04)
 
 
