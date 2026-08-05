@@ -50,9 +50,9 @@ When this happens, stop fixing and ask the user whether the underlying pattern s
 
 ## Red flags that mean "return to phase 1"
 
-- `Quick fix for now, investigate later`
-- `Just try X and see if it works`
-- `It's probably Y, let me change that`
+- "Quick fix for now, investigate later"
+- "Try X and see if it works"
+- "It's probably Y, let me change that"
 - Proposing a fix before tracing data flow
 - Adding multiple changes and running tests to see what sticks
 - Skipping the failing test "because I'll verify manually"
