@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.63.0](https://github.com/erclx/aitk/compare/v0.62.1...v0.63.0) (2026-08-05)
+
+
+### Features
+
+* **hero:** choose the skills shown and filter rules by stack ([#866](https://github.com/erclx/aitk/issues/866)) ([be77411](https://github.com/erclx/aitk/commit/be77411e5bbc39b39259d9e6bd5e451a57845df0))
+
 ## [0.62.1](https://github.com/erclx/aitk/compare/v0.62.0...v0.62.1) (2026-08-05)
 
 
