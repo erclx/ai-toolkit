@@ -1,6 +1,6 @@
 ---
 title: Tasks
-description: Selecting a shipped task by stem or pull request, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
+description: Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
 ---
 
 # Tasks
@@ -31,6 +31,49 @@ Skills branch on the reason rather than on the exit code:
 ```bash
 aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .reason end'
 ```
+
+## Pull request
+
+`aitk tasks pull-request` records the number a branch's pull request carries onto the task that branch closes. It adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already holds, and corrects the number in place when the line exists.
+
+Name the task by its filename stem, or by the plan its `Plan:` line points at:
+
+```bash
+aitk tasks pull-request 673 v28.1-trigger-escalation
+aitk tasks pull-request 673 --plan worktree-scratch-routing --json
+```
+
+| Option          | Behavior                                           |
+| --------------- | -------------------------------------------------- |
+| `--plan <slug>` | Select the task whose `Plan:` line names this plan |
+| `--json`        | Emit a machine-readable record on stdout           |
+| `--root <path>` | Board root, defaulting to the main worktree        |
+
+A plan is matched on the token both spellings share, so `worktree-scratch-routing`, `feature-worktree-scratch-routing`, and `.claude/plans/feature-worktree-scratch-routing.md` all select the same task. The `action` field reports `added`, `corrected`, or `unchanged`, which makes a rerun against the same number safe.
+
+Exit codes: `0` recorded, `1` refused. The `reason` field carries `no-board`, `no-match`, or `ambiguous`. `git-pr` skips silently on those three, because each is a case where a guessed write would archive the wrong task once the branch merges.
+
+## Outcome
+
+`aitk tasks outcome` marks outcomes `[x]` on a task by their position in its outcome list, counting every checkbox in file order from 1.
+
+```bash
+aitk tasks outcome v28.1-trigger-escalation --close 1 --close 3
+aitk tasks outcome --plan worktree-scratch-routing --close 2 --json
+```
+
+| Option               | Behavior                                           |
+| -------------------- | -------------------------------------------------- |
+| `--close <position>` | Outcome to mark `[x]`, 1-based, repeatable         |
+| `--plan <slug>`      | Select the task whose `Plan:` line names this plan |
+| `--json`             | Emit a machine-readable record on stdout           |
+| `--root <path>`      | Board root, defaulting to the main worktree        |
+
+An outcome already closed comes back under `alreadyClosed` rather than refusing, so a rerun against the same positions changes nothing. A position past the end of the list refuses as `out-of-range`, since a caller counting wrong should hear about it rather than mark a neighbor.
+
+Exit codes: `0` closed, `1` refused. The `reason` field adds `no-outcomes` and `out-of-range` to the three above.
+
+Both verbs exist because the write is an edit inside a file that already exists. `Edit` and `Write` refuse a main-root path from a linked worktree, and a shell stream editor is banned for in-place edits, so a verb resolving the board root in-process is the only route a skill body has. Creating a whole file needs no verb, because a heredoc through `Bash` writes it safely.
 
 ## Validate
 

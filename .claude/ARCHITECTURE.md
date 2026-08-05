@@ -70,6 +70,12 @@ The same finding fails a push against `tooling/*/seeds/` and only reports agains
 
 Prefixing the other five surfaces with a dot to collapse the ignore file into one pattern was measured and declined: 486 occurrences across roughly 150 committed files, 43 of which ship to targets, against 80 across 26 for the move that shipped. It is a breaking rename for every installed target, and it hides the board a person opens daily. The ignore file therefore grows by three entries rather than shrinking, which is the accepted cost. `.tmp` is the only one of the six where hidden is the correct default.
 
+### A write to shared scratch routes on what it does to the file
+
+Shared session scratch lives at the main worktree root, and a linked worktree is where every worker runs. `Edit` and `Write` refuse a main-root path there and offer the worktree copy instead, so a body naming only the destination reported success and lost the file, which is how two pull requests merged without recording their number on the task they closed. Creating a whole file therefore goes out as a plain single `Bash` command carrying a heredoc, and changing a line inside a file that already exists goes through an `aitk` verb resolving the root in-process. Instructing the shell for both was the obvious single rule and it ships the stream editor this repository already bans, because an unescaped `&` rewrites the line it anchored to and a non-match exits zero.
+
+What the split costs is that two structured edits became code with tests rather than a sentence in a skill body, which is `aitk tasks pull-request` and `aitk tasks outcome`. Relocating the four folders was the other candidate and it addresses nothing, since the refusal is tool-scoped rather than filesystem-scoped, and it is a breaking rename for every installed target. A structured edit no verb covers reads the file and writes it back whole, which holds until a second caller wants the same edit and the third verb pays for itself.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects it. `migration-standards` tests for the field it reads and falls back when a binary predating it answers, which is a pattern the other skills could take rather than a check the repository runs.
