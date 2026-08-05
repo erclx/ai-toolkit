@@ -45,7 +45,7 @@ export const DEFAULT_CHECKPOINTS = {
   run: 40,
   peerBullet: 130,
   bullet: 400,
-  paragraph: 400,
+  paragraph: 600,
   sentences: 4,
   renderWidth: 80,
 } as const
