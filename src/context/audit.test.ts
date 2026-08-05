@@ -13,6 +13,12 @@ import { resolveFolders } from '@/context/folders'
 
 const FRONTMATTER = '---\ntitle: CI\ndescription: A domain\n---\n\n'
 
+/** The sets the shipped rule publishes, held here so a scan has terms. */
+const TERMS = {
+  pronouns: ['It', 'That', 'This', 'These', 'Those', 'They'],
+  verbs: ['was', 'were', 'became', 'replaced', 'superseded', 'used to'],
+}
+
 /** Bullet counts the exempt catalog and the reported wall both hit. */
 const PEER_COUNT = 55
 
@@ -165,6 +171,93 @@ describe('measureEntry', () => {
     const source = `${FRONTMATTER}# Components\n\nThe third layer arrived in #755.\n`
 
     expect(measureEntry('components.md', source, false).provenance).toEqual([])
+  })
+
+  it('should report a bullet narrating a decision the bullet above it replaced', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 9, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
+  it('should leave the bullet opening a list unreported', () => {
+    // Nothing sits above it to have been replaced, so the back-reference
+    // points outside the list and the shape the rule names is absent.
+    const source = `${FRONTMATTER}# CI\n\n- This was 20, which the longest run overshot.\n- The cap is 30 today.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should leave a back-reference stating the current design unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- That number is what the timeout divides into.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should leave a past-tense bullet naming its own subject unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- The timeout was raised with it and holds today.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should leave a pronoun sitting mid-sentence unreported', () => {
+    // The opening is anchored because a mid-sentence `this` is a determiner
+    // rather than a reference back to the bullet above.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- Raising it was what this run needed.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should leave a verb quoted in backticks unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- This field spells \`was\` for the caller.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should leave a bullet pair inside a fenced block unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n- The cap is 30 today.\n- This was 20 before.\n\`\`\`\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should keep the run across a nested bullet under its parent', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n  - Measured across every stage.\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 10, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
+  it('should end the run at a heading between two lists', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n## Gotchas\n\n- This was raised once and holds.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should report a rejected alternative carrying the shape', () => {
+    // The standard keeps what was tried and why it lost, so this is a
+    // legitimate hit rather than a defect. No measure separates the two, which
+    // is why the check reports and the report says so.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- That was the alternative and it lost to the observed maximum.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 9, pronoun: 'That', verb: 'was' },
+    ])
+  })
+
+  it('should scan nothing when the caller loaded no term sets', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source).narration).toEqual([])
+  })
+
+  it('should leave narration unreported when no standard claims the content', () => {
+    const source = `${FRONTMATTER}# Components\n\n- The boundary holds three layers.\n- This was two before the split.\n`
+
+    expect(
+      measureEntry('components.md', source, false, TERMS).narration,
+    ).toEqual([])
   })
 
   it('should report a required section declared as a heading', () => {

@@ -19,6 +19,12 @@ import {
 } from '@/context/folders'
 import { isGating } from '@/context/gate'
 import { auditIndexes, type FolderDrift } from '@/context/index-drift'
+import {
+  loadNarration,
+  type Narration,
+  PRONOUN_HEADING,
+  VERB_HEADING,
+} from '@/context/narration'
 import { RENDER_WIDTH } from '@/markdown/structure'
 import {
   frameError,
@@ -54,7 +60,7 @@ export function register(program: Command): void {
   context
     .command('audit')
     .description(
-      'Report required sections, entry length, citations, catalog tables, provenance, and index drift',
+      'Report required sections, entry length, citations, catalog tables, provenance, superseded-decision narration, and index drift',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -79,8 +85,8 @@ export function register(program: Command): void {
         '',
         'An unresolved citation always gates. --gate widens the gate to the',
         'other two findings that are facts rather than judgments: a missing',
-        'required section and index drift. Length, table, and provenance',
-        'findings are thresholds and stay advisory under both.',
+        'required section and index drift. Length, table, provenance, and',
+        'narration findings are judgments and stay advisory under both.',
         '',
         'Depth and bullet weight are stated over every markdown file rather',
         'than over a context entry, so `aitk markdown audit` measures them.',
@@ -180,7 +186,16 @@ async function runAudit(
     )
   }
 
-  const entries = gateOnly ? [] : await measureFolders(root, folders)
+  const narration: Narration = gateOnly
+    ? { kind: 'absent' }
+    : await loadNarration(root)
+  const entries = gateOnly
+    ? []
+    : await measureFolders(
+        root,
+        folders,
+        narration.kind === 'loaded' ? narration : undefined,
+      )
   const drift = gateOnly ? [] : await auditIndexes(folders)
   const sections = gateOnly ? [] : missingSections(root, folders, entries)
 
@@ -194,6 +209,7 @@ async function runAudit(
     reportLength(entries)
     reportTables(entries)
     reportProvenance(entries, folders)
+    reportNarration(entries, folders, narration)
     reportDrift(drift)
     outro()
   }
@@ -222,6 +238,16 @@ async function runAudit(
           renderWidth: RENDER_WIDTH,
           provenanceFolder: PROVENANCE_FOLDER,
           requiredSections: REQUIRED_SECTIONS,
+          // Carries the sets themselves rather than a loaded flag, so a record
+          // showing no finding says which terms were looked for.
+          narration:
+            narration.kind === 'loaded'
+              ? {
+                  source: narration.source,
+                  pronouns: narration.pronouns,
+                  verbs: narration.verbs,
+                }
+              : null,
         },
       })}\n`,
     )
@@ -480,6 +506,75 @@ function reportProvenance(
         (entry) =>
           `${entry.rel}  ${plural(entry.provenance.length, 'marker')}\n${entry.provenance
             .map((found) => `  :${found.line}  ${found.kind}  ${found.text}`)
+            .join('\n')}`,
+      )
+      .join('\n'),
+  )
+}
+
+/**
+ * Reports the bullets narrating a decision the bullet above them replaced.
+ *
+ * The reach line names the rule the sets were read from, since the check is
+ * silent when no rule publishes them and a run that scanned nothing otherwise
+ * prints the same clean line as a run that scanned everything.
+ *
+ * The legitimate-hit line is here for the same reason the provenance section
+ * says a marker is a judgment. The standard keeps a rejected alternative and
+ * why it lost, which is a back-reference in the past tense by construction, and
+ * no measure separates one from the shape the rule bans.
+ */
+function reportNarration(
+  entries: readonly EntryReport[],
+  folders: readonly AuditedFolder[],
+  narration: Narration,
+): void {
+  logStep('Narration')
+
+  const governed = folders.filter(governsContent)
+  if (governed.length === 0) {
+    logInfo(
+      `Out of scope. The rule is stated in the standard governing .claude/${PROVENANCE_FOLDER}/, and no audited folder is that one.`,
+    )
+    return
+  }
+
+  if (narration.kind === 'absent') {
+    logWarn(
+      `Not scanned. No rule under .claude/rules/ or governance/rules/ publishes both ${PRONOUN_HEADING} and ${VERB_HEADING}.`,
+    )
+    return
+  }
+
+  logInfo(
+    `Covers .claude/${PROVENANCE_FOLDER}/ alone, reading ${plural(narration.pronouns.length, 'pronoun')} and ${plural(narration.verbs.length, 'verb')} from ${narration.source}.`,
+  )
+  logInfo(
+    'A rejected alternative is a legitimate hit, since the standard keeps what was tried and why it lost.',
+  )
+
+  const carrying = entries
+    .filter((entry) => entry.narration.length > 0)
+    .sort((a, b) => b.narration.length - a.narration.length)
+
+  if (carrying.length === 0) {
+    logInfo('No bullet narrates a decision the bullet above it replaced.')
+    return
+  }
+
+  const total = carrying.reduce((sum, entry) => sum + entry.narration.length, 0)
+  logWarn(
+    `${plural(total, 'bullet')} to read across ${carrying.length} ${carrying.length === 1 ? 'entry' : 'entries'}`,
+  )
+  pipeOutput(
+    carrying
+      .map(
+        (entry) =>
+          `${entry.rel}  ${plural(entry.narration.length, 'bullet')}\n${entry.narration
+            .map(
+              (found) =>
+                `  :${found.line}  ${found.pronoun} with ${found.verb}`,
+            )
             .join('\n')}`,
       )
       .join('\n'),
