@@ -22,7 +22,7 @@ write_report() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which arm?" "stale" "retired" "unmigrated"
+  select_or_route_scenario "Which arm?" "stale" "retired" "unmigrated" "tooling"
 
   case "$SELECTED_OPTION" in
   "stale")
@@ -96,6 +96,22 @@ stage_setup() {
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/unmigrated/expect.toml"
     log_info "         Check it with: aitk sandbox check infra:drift unmigrated"
+    ;;
+
+  "tooling")
+    write_report
+
+    log_step "Scenario ready: standards installed, tooling never recorded"
+    log_info "Context: every target installed before the tooling record shipped"
+    log_info "  .claude/aitk.json carries no tooling chain"
+    log_info ""
+    log_info "The report names tooling unmeasured rather than counting zero"
+    log_info "changes against it. A target that never installed tooling and one"
+    log_info "whose tooling is current produce the same zero, so the count alone"
+    log_info "is a claim rather than the absence of one."
+    log_info ""
+    log_info "Expect:  declared in fixtures/infra/drift/tooling/expect.toml"
+    log_info "         Check it with: aitk sandbox check infra:drift tooling"
     ;;
   esac
 }

@@ -13,10 +13,12 @@ import {
   hashFile,
   readStamp,
   type StampSource,
+  stampedChain,
   stampedCommit,
   stampedHashes,
   stampPath,
   toStampKey,
+  writeChainStamp,
   writeStamp,
 } from '@/sync/stamp'
 
@@ -111,11 +113,37 @@ describe('readStamp', () => {
       stampPath(TARGET),
       JSON.stringify({
         covers: [],
-        domains: { tooling: { syncedAt: 'now', files: {} } },
+        domains: { wireframes: { syncedAt: 'now', files: {} } },
       }),
     )
 
     expect(readStamp(TARGET)).toBeUndefined()
+  })
+
+  it('should return undefined when a chain entry is not a string', () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['tooling'],
+        domains: {
+          tooling: { syncedAt: 'now', files: {}, chain: ['base', 7] },
+        },
+      }),
+    )
+
+    expect(readStamp(TARGET)).toBeUndefined()
+  })
+
+  it('should read a stamp written before tooling joined the domains', () => {
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['standards'],
+        domains: { standards: { syncedAt: 'then', files: {} } },
+      }),
+    )
+
+    expect(readStamp(TARGET)?.domains.standards?.syncedAt).toBe('then')
   })
 
   it('should read back a stamp that was written', async () => {
@@ -188,6 +216,64 @@ describe('writeStamp', () => {
     await writeStamp(TARGET, STANDARDS, {}, NOW)
 
     expect(readFileSync(stampPath(TARGET), 'utf8').endsWith('}\n')).toBe(true)
+  })
+})
+
+describe('writeChainStamp', () => {
+  it('should record the chain in the order it was given', async () => {
+    await writeChainStamp(TARGET, '/nowhere', ['vite-react', 'base'], NOW)
+
+    expect(readStamp(TARGET)?.domains.tooling?.chain).toEqual([
+      'vite-react',
+      'base',
+    ])
+  })
+
+  it('should record no file hashes, since tooling attributes none', async () => {
+    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+
+    expect(readStamp(TARGET)?.domains.tooling?.files).toEqual({})
+  })
+
+  it('should add tooling to covers', async () => {
+    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+
+    expect(readStamp(TARGET)?.covers).toEqual(['tooling'])
+  })
+
+  it('should leave the other domain records untouched', async () => {
+    await writeStamp(TARGET, STANDARDS, { 'a.md': 'sha256:aa' }, NOW)
+    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+
+    const stamp = readStamp(TARGET)
+
+    expect(stamp?.domains.standards?.files).toEqual({ 'a.md': 'sha256:aa' })
+    expect(stamp?.covers).toEqual(['standards', 'tooling'])
+  })
+
+  it('should replace an earlier chain rather than merge into it', async () => {
+    await writeChainStamp(TARGET, '/nowhere', ['vite-react', 'base'], NOW)
+    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+
+    expect(readStamp(TARGET)?.domains.tooling?.chain).toEqual(['base'])
+  })
+})
+
+describe('stampedChain', () => {
+  it('should return an empty chain when the stamp is absent', () => {
+    expect(stampedChain(undefined)).toEqual([])
+  })
+
+  it('should return an empty chain when only other domains are stamped', async () => {
+    await writeStamp(TARGET, STANDARDS, {}, NOW)
+
+    expect(stampedChain(readStamp(TARGET))).toEqual([])
+  })
+
+  it('should return the recorded chain', async () => {
+    await writeChainStamp(TARGET, '/nowhere', ['vite-react', 'base'], NOW)
+
+    expect(stampedChain(readStamp(TARGET))).toEqual(['vite-react', 'base'])
   })
 })
 

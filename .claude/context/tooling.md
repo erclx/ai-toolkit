@@ -40,6 +40,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - References shrank to anti-patterns and opinions once golden configs landed. The config is the source, the reference carries only what a config cannot express.
 - Stacks do not compose horizontally. Single-root polyglot is unsupported, and a monorepo uses the subfolder pattern instead.
 - `tooling/claude/` is storage, not a stack. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI, so `TOOLING_STACK_EXCLUDE` keeps it out of discovery.
+- A whole-stack install records the chain it resolved into `.claude/aitk.json` through `recordToolingChain` in `src/tooling/stamp.ts`, which is what makes tooling drift measurable in `aitk sync --check`. The write lands after the copies, so a partial apply that throws leaves the previous record rather than a claim the target does not meet. Rationale and the workspace-root refusal sit in `.claude/context/cli/sync.md`.
 
 ## Gotchas
 

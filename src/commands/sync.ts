@@ -3,9 +3,13 @@ import { join } from 'node:path'
 import type { Command } from 'commander'
 import { cliPath, cliRun } from '@/cli-run'
 import { PROJECT_ROOT } from '@/exec'
-import { buildCheckReport, type CheckReport, hasDrift } from '@/sync/check'
+import {
+  buildCheckReport,
+  type CheckReport,
+  hasDrift,
+  SCANNED_DOMAINS,
+} from '@/sync/check'
 import { createGitRunner, createPullRequestOpener, hasGh } from '@/sync/git'
-import { STAMP_DOMAINS } from '@/sync/stamp'
 import {
   detectDomains,
   installedDomains,
@@ -133,6 +137,8 @@ function renderCheck(report: CheckReport): void {
     }
   }
 
+  renderTooling(report)
+
   for (const entry of report.unmigrated) {
     logStep(`${entry.domain} (not migrated)`)
     logWarn(
@@ -157,15 +163,54 @@ function renderCheck(report: CheckReport): void {
   }
 
   outro()
+  // Scanned domains only. Tooling renders a section on every managed target, so
+  // naming it here repeats what that section already said under a second
+  // remedy, where a scanned domain nobody installed has no section at all and
+  // this line is the only place it appears.
   const unmigrated = report.unmigrated.map((entry) => entry.domain)
-  const uncovered = STAMP_DOMAINS.filter(
+  const uncovered = SCANNED_DOMAINS.filter(
     (domain) => !report.covers.includes(domain) && !unmigrated.includes(domain),
   )
-  const unstamped =
-    uncovered.length === 0 ? '' : `Unstamped: ${uncovered.join(', ')}. `
+  if (uncovered.length === 0) return
+
   process.stderr.write(
-    `${GREY}${unstamped}Tooling is never stamped, run \`aitk tooling\` to reconcile configs.${NC}\n`,
+    `${GREY}Unstamped: ${uncovered.join(', ')}. Run the matching sync to record one.${NC}\n`,
   )
+}
+
+/**
+ * Tooling prints whether it was measured before it prints any count, because a
+ * target with no chain recorded produces the same zero a current target does.
+ * Naming the state is the whole reason the section exists.
+ */
+function renderTooling(report: CheckReport): void {
+  const { tooling } = report
+  logStep('tooling')
+
+  if (!tooling.measured) {
+    logWarn(
+      tooling.chain.length === 0
+        ? 'Not stamped. No chain recorded, so tooling drift is unmeasured.'
+        : `Recorded chain names no stack this toolkit ships: ${tooling.chain.join(' < ')}.`,
+    )
+    logInfo('Run `aitk tooling sync <stack>` to record what this target holds.')
+    return
+  }
+
+  logInfo(`Chain: ${tooling.chain.join(' < ')}`)
+  if (tooling.commit !== undefined) {
+    logInfo(`Synced from ${tooling.commit} on ${tooling.syncedAt}`)
+  }
+
+  if (tooling.changes === 0) {
+    logInfo('up to date')
+    return
+  }
+
+  for (const [category, count] of Object.entries(tooling.counts)) {
+    if (count > 0) logWarn(`${count} ${category}`)
+  }
+  logInfo('Run `aitk tooling sync` to reconcile these.')
 }
 
 /**
