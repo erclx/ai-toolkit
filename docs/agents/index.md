@@ -11,11 +11,12 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Capture](capture.md): Rendering committed HTML sources to PNG, what the command asserts about fonts, and why it is toolkit-only
 - [Command catalog](commands.md): Every project-level command and every domain subcommand, plus the shape each domain exposes
 - [Comments](comments.md): Comment density by language and kind, the two structural exclusions, and how the degradation sweep finds its vocabulary
-- [Context audit checks](context-audit-checks.md): What each non-gating check reports, the unit each checkpoint is measured in, and which folders each check reaches
+- [Context audit checks](context-audit-checks.md): What each non-gating check reports, the unit each checkpoint is measured in, which folders each check reaches, and what moved to the attribute tier
 - [Context audit](context-audit.md): Running the audit, its flags and folder scope, the exit codes, the citation gate, and the widened gate the seed stage runs
 - [Docs](docs.md): How aitk docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
 - [Indexes](indexes.md): Flags, exit codes, and JSON shape for aitk indexes regen, plus when it auto-stages what it rewrote
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project
+- [Markdown audit](markdown-audit.md): Running the audit over any markdown path, where its bans and checkpoints are read from, what each check reports, and why nothing gates yet
 - [Output shape](output-shape.md): Two framed shapes every command renders into, how JSON and --names modes keep stdout clean, and the exit discipline that lets piped output drain
 - [Overview](overview.md): What this folder covers, the invocation rules every command inherits, and where domain behavior is documented instead
 - [Records](records.md): Validating the gitignored session records under .claude/, the per-kind checks, the refusal reasons, and why the root defaults to the main worktree
