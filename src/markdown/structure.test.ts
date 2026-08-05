@@ -61,6 +61,15 @@ function bullet(characters: number): string {
   return `- ${'w'.repeat(characters - 2)}`
 }
 
+/** Links whose destinations outweigh the anchor text a reader is shown. */
+function links(count: number): string {
+  return Array.from(
+    { length: count },
+    (_, index) =>
+      `[text ${index}](https://x.test/a/very/long/destination/${index})`,
+  ).join(' ')
+}
+
 /** Sentences of a stated length, so weight and count vary independently. */
 function sentences(count: number, width = 20): string {
   return Array.from(
@@ -151,6 +160,15 @@ describe('longestRun', () => {
     expect(measure(source).longestRun).toBe(4)
   })
 
+  it('should wrap a link-heavy line at the width its anchor text renders', () => {
+    const source = `${FRONTMATTER}# CI\n\n${links(10)}\n`
+
+    // Raw the line wraps seven times. A rendered line shows anchor text rather
+    // than destinations, so the run is the blank line plus the one row it fills.
+    expect(links(10).length).toBeGreaterThan(RENDER_WIDTH * 6)
+    expect(measure(source).longestRun).toBe(2)
+  })
+
   it('should exempt a flat catalog of short peers', () => {
     const source = `${FRONTMATTER}# CI\n\n${weightedBullets(PEER_COUNT, CATALOG_BULLET)}\n`
 
@@ -229,6 +247,14 @@ describe('heavyBullets', () => {
     expect(measure(source).heavyBullets).toEqual([])
   })
 
+  it('should measure a link-heavy bullet against the text a reader sees', () => {
+    const item = `- ${links(10)}`
+    const source = `${FRONTMATTER}# CI\n\n${item}\n`
+
+    expect(item.length).toBeGreaterThan(BULLET_CHECKPOINT)
+    expect(measure(source).heavyBullets).toEqual([])
+  })
+
   it('should fold a continuation line into the bullet it belongs to', () => {
     const half = Math.ceil((BULLET_CHECKPOINT + 1) / 2)
     const source = `${FRONTMATTER}# CI\n\n${bullet(half)}\n${'w'.repeat(half)}\n`
@@ -277,6 +303,25 @@ describe('heavyParagraphs', () => {
     expect(
       measureStructure('ci.md', bodyLines(source), lowered).heavyParagraphs,
     ).toHaveLength(1)
+  })
+
+  it('should measure a link-heavy paragraph against the text a reader sees', () => {
+    const paragraph = links(10)
+    const source = `${FRONTMATTER}# CI\n\n${paragraph}\n`
+
+    // Measured across the corpus this is the single largest correction: the
+    // heaviest paragraph ran 1159 raw characters against 319 a reader is shown.
+    expect(paragraph.length).toBeGreaterThan(PARAGRAPH_CHECKPOINT)
+    expect(measure(source).heavyParagraphs).toEqual([])
+  })
+
+  it('should report the visible weight rather than the raw one', () => {
+    const paragraph = `${links(10)} ${'w'.repeat(PARAGRAPH_CHECKPOINT)}`
+    const source = `${FRONTMATTER}# CI\n\n${paragraph}\n`
+
+    const [found] = measure(source).heavyParagraphs
+    expect(found.characters).toBeGreaterThan(PARAGRAPH_CHECKPOINT)
+    expect(found.characters).toBeLessThan(paragraph.length)
   })
 
   it('should fold the lines of a wrapped paragraph into one measure', () => {

@@ -1,4 +1,4 @@
-import type { BodyLine } from '@/markdown/scan'
+import { type BodyLine, visibleText } from '@/markdown/scan'
 
 const HEADING = /^#{1,6}\s/
 const LIST_ITEM = /^(\s*)([-*+]|\d+\.)\s+/
@@ -143,9 +143,13 @@ export function parseCheckpoints(markdown: string): Checkpoints {
  *
  * A blank line renders as the gap it is rather than as nothing, which keeps it
  * the distance the source measure already counted it as.
+ *
+ * The width is measured against what renders, since a rendered line shows a
+ * link's anchor text rather than its destination and a source measure
+ * over-counts exactly where this rule cares how far a reader travels.
  */
 export function renderedHeight(text: string, width = RENDER_WIDTH): number {
-  return Math.max(1, Math.ceil(text.length / width))
+  return Math.max(1, Math.ceil(visibleText(text).length / width))
 }
 
 /**
@@ -173,7 +177,7 @@ function isScannablePeerList(
     if (!match) return false
     indents.add(match[1].length)
     items++
-    characters += text.length
+    characters += visibleText(text).length
   }
 
   if (indents.size !== 1) return false
@@ -297,10 +301,13 @@ export function heavyBullets(
     const item = line.text.match(LIST_ITEM)
     const text = line.text.trim()
 
+    // Structure is read off the raw line and only the weight is masked. A line
+    // carrying nothing but an autolink has no visible text at all, and reading
+    // its masked form as blank would close the bullet it continues.
     if (item) {
       close()
       if (item[1].length === 0) {
-        open = { line: line.number, characters: text.length }
+        open = { line: line.number, characters: visibleText(text).length }
       }
       continue
     }
@@ -312,7 +319,11 @@ export function heavyBullets(
 
     // The joining space a wrapped line would have carried, so folding two
     // source lines measures what one unwrapped line would have.
-    if (open) open = { ...open, characters: open.characters + text.length + 1 }
+    if (open)
+      open = {
+        ...open,
+        characters: open.characters + visibleText(text).length + 1,
+      }
   }
 
   close()
@@ -353,16 +364,13 @@ export function heavyParagraphs(
     if (block.length > 0) {
       const text = block.map((line) => line.text.trim()).join(' ')
       const sentences = countSentences(text)
+      const characters = visibleText(text).length
 
       if (
         sentences > checkpoints.sentences ||
-        text.length > checkpoints.paragraph
+        characters > checkpoints.paragraph
       ) {
-        findings.push({
-          line: block[0].number,
-          sentences,
-          characters: text.length,
-        })
+        findings.push({ line: block[0].number, sentences, characters })
       }
     }
     block = []

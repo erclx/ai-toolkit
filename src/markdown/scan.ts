@@ -23,6 +23,17 @@ const CODE_SPAN = /(`+)(?:(?!\1).)*\1/g
 const LINK_DESTINATION = /\]\([^)]*\)/g
 const AUTOLINK = /<[^>\s]+>/g
 
+/**
+ * A whole inline link, capturing the anchor text a reader is shown.
+ *
+ * `LINK_DESTINATION` covers the span both measures drop and this covers the
+ * brackets only the weight measure drops, which a reader is no more shown than
+ * the destination. The narrower pattern still runs after this one, since a link
+ * wrapped across two source lines puts its opening bracket on a line this one
+ * never matches.
+ */
+const LINK = /\[([^\]]*)\]\([^)]*\)/g
+
 export interface BodyLine {
   readonly number: number
   readonly text: string
@@ -128,16 +139,65 @@ export function maskDisplayed(text: string): string {
     .replace(AUTOLINK, blank)
 }
 
+/**
+ * Drops the spans a reader is never shown, returning the text they read.
+ *
+ * This is what a weight measure counts, and it is deliberately not
+ * `maskDisplayed`. That one holds each span's width so a ban finding can name a
+ * column, which leaves behind the very characters a weight measure exists to
+ * discount. The two also disagree on the span set: a backticked path is text a
+ * reader reads and stays counted here, while the ban scan blanks it so a
+ * standard quoting its own banned character does not report itself. One file
+ * therefore holds two answers to what a reader sees, each correct for its own
+ * measure, and collapsing them into one helper breaks whichever loses.
+ *
+ * A code span is walked around rather than through, since keeping it counted
+ * and then dropping spans from inside it takes back the decision. The
+ * placeholders this repository writes are the case: a reader is shown all of
+ * `.claude/context/<domain>.md` and the autolink pattern reaches the angle
+ * brackets in the middle of it.
+ */
+export function visibleText(text: string): string {
+  const drop = (segment: string): string =>
+    segment
+      .replace(LINK, '$1')
+      .replace(LINK_DESTINATION, '')
+      .replace(AUTOLINK, '')
+
+  let visible = ''
+  let read = 0
+
+  for (const span of text.matchAll(CODE_SPAN)) {
+    visible += drop(text.slice(read, span.index)) + span[0]
+    read = span.index + span[0].length
+  }
+
+  return visible + drop(text.slice(read))
+}
+
 function escape(term: string): string {
   return term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 /**
+ * Bounds a term on a word character or a hyphen either side.
+ *
+ * `\b` sits after a hyphen, so a banned word ending a hyphenated compound
+ * reports from inside it: `allows` came back out of `auto-allows`. A compound
+ * is one word to a reader, and the ban is on the word rather than on a morpheme
+ * of it. Stripping hyphens before matching was the alternative and it joins the
+ * compound into a token neither half reaches.
+ */
+function bounded(term: string): RegExp {
+  return new RegExp(`(?<![\\w-])${escape(term)}(?![\\w-])`, 'gi')
+}
+
+/**
  * Finds every banned term outside a fence, a code span, and a link.
  *
- * A word ban matches on word boundaries and either casing, since the standard
- * states each in lowercase and bans the word rather than a spelling of it. This
- * is what separates the check from the pattern that produced most of the
+ * A word ban matches in either casing, since the standard states each in
+ * lowercase and bans the word rather than a spelling of it. A closed set of
+ * whole words separates the check from the pattern that produced most of the
  * intake's false positives: `exercises` and `promises` end in the banned
  * suffix and are not the banned words, and a closed set never reaches them.
  */
@@ -151,12 +211,12 @@ export function scanBans(
     ...bans.words.map((term) => ({
       kind: 'word' as const,
       term,
-      pattern: new RegExp(`\\b${escape(term)}\\b`, 'gi'),
+      pattern: bounded(term),
     })),
     ...bans.spellings.map((term) => ({
       kind: 'spelling' as const,
       term,
-      pattern: new RegExp(`\\b${escape(term)}\\b`, 'gi'),
+      pattern: bounded(term),
     })),
   ]
 
