@@ -295,7 +295,8 @@ const COPULA = ['is', 'are', 'be', 'been', 'being', 'was', 'were']
  * A blank line does not end the run. Markdown reads two bullets around one as a
  * single loose list, so breaking there would leave the shape reachable by
  * anyone who spaced their bullets out. What ends a run is content that is
- * neither a bullet nor indented under one.
+ * neither a bullet nor indented under one, which the fenced branch below has to
+ * answer for itself because a fenced line is skipped before that test.
  */
 function narration(
   lines: readonly BodyLine[],
@@ -307,7 +308,15 @@ function narration(
   let following = false
 
   for (const line of lines) {
-    if (line.fenced) continue
+    // A fenced line is never a bullet, but an unindented one still ends the
+    // run. CommonMark reads a fence at column zero as interrupting the list, so
+    // the bullets around it are two lists and the second has no antecedent
+    // above it. A fence indented under its bullet stays inside the item.
+    if (line.fenced) {
+      if (!INSIDE_LIST.test(line.text)) following = false
+      continue
+    }
+
     if (line.text.trim() === '') continue
 
     const bullet = line.text.match(TOP_BULLET)

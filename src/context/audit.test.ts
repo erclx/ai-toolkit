@@ -239,6 +239,22 @@ describe('measureEntry', () => {
     ])
   })
 
+  it('should end the run at an unindented fence between two bullets', () => {
+    // CommonMark reads a fence at column zero as interrupting the list, so the
+    // bullets around it are two lists and the second has no antecedent above.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n\`\`\`bash\naitk context audit\n\`\`\`\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should keep the run across a fence indented under its bullet', () => {
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  aitk context audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 14, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
   it('should leave a passive of use behind a copula unreported', () => {
     // `is used to resolve` is the passive of `use`, not the past habitual the
     // verb set means, and no other set term appears in the bullet.
