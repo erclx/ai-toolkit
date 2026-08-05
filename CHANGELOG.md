@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.71.0](https://github.com/erclx/aitk/compare/v0.70.0...v0.71.0) (2026-08-05)
+
+
+### Features
+
+* **governance:** require a search for prior art before writing code ([#897](https://github.com/erclx/aitk/issues/897)) ([bf8846e](https://github.com/erclx/aitk/commit/bf8846ea35266f4543a2bc8027fcbc56d0d5a136))
+
 ## [0.70.0](https://github.com/erclx/aitk/compare/v0.69.0...v0.70.0) (2026-08-05)
 
 
