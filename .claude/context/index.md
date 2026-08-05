@@ -13,7 +13,7 @@ Per-domain narrative loaded on demand
 - [CLI](cli/index.md): TypeScript entry point and the layer boundary to bash, command registration and migration, the sync engine and its install stamp, the audit commands, and packaging. Start with overview.
 - [Context model](context-model.md): Three-tier context loading, which tier holds what, and how context entries get populated at ship time
 - [Design](design.md): DESIGN.md token shape, extract skill and its two paths, render command
-- [Development](development.md): Local dev workflow, scripts, and husky hooks
+- [Development](development/index.md): Local dev loop and the run command table, how bun run check scopes its work, what each stage regenerates and gates on, the hook families, and session scratch. Start with overview.
 - [Extensions](extensions.md): External browser and editor extensions
 - [Governance](governance.md): Path-scoped Claude rules, stacks, install and sync
 - [Indexes](indexes.md): Folder index.md system, frontmatter contract, when to adopt
