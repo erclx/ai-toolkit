@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process'
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -43,6 +44,8 @@ const INERT_PAYLOAD = JSON.stringify({
 interface ActingCase {
   readonly expect: string
   readonly payload: (nonce: string) => string
+  /** Prepended to the stripped PATH, for a hook whose acting branch shells out. */
+  readonly path?: string
 }
 
 interface Run {
@@ -69,14 +72,14 @@ const pathWithoutAitk = (): string =>
 // Omitting the payload leaves stdin open with nothing written and no EOF, which
 // is the descriptor the hang came from. Closing it instead would exercise the
 // cheap case and leave the observed one untested.
-const run = (hook: string, payload?: string): Promise<Run> =>
+const run = (hook: string, payload?: string, path?: string): Promise<Run> =>
   new Promise((resolve) => {
     const started = performance.now()
     const child = spawn('bash', [hook], {
       env: {
         ...process.env,
         CLAUDE_PROJECT_DIR: join(fixture, 'project'),
-        PATH: hookPath,
+        PATH: path ?? hookPath,
       },
       stdio: ['pipe', 'pipe', 'pipe'],
     })
@@ -109,10 +112,24 @@ beforeAll(() => {
     join(project, '.claude/memory'),
     join(project, '.claude/tasks'),
     join(project, 'indexed'),
+    join(fixture, 'bin'),
     join(fixture, 'elsewhere/tmp'),
   ]) {
     mkdirSync(dir, { recursive: true })
   }
+
+  // The toolkit's standards-audit reads its findings out of `aitk markdown
+  // audit --json`, so the acting branch is unreachable with the real binary
+  // stripped from PATH. A stub emitting one finding pins the output to the
+  // fixture rather than to whichever aitk the machine carries, which is the
+  // reason the strip exists. The seed copy of the same hook parses in awk and
+  // reaches its verdict whether this is on PATH or not.
+  const stub = join(fixture, 'bin/aitk')
+  writeFileSync(
+    stub,
+    '#!/usr/bin/env bash\nprintf \'%s\\n\' \'{"entries":[{"path":"doc.md","bans":[{"line":3,"column":23,"kind":"character","term":"—"}]}]}\'\n',
+  )
+  chmodSync(stub, 0o755)
 
   writeFileSync(
     join(project, 'doc.md'),
@@ -168,6 +185,7 @@ beforeAll(() => {
     },
     'standards-audit.sh': {
       expect: join(project, 'doc.md'),
+      path: [join(fixture, 'bin'), hookPath].join(delimiter),
       payload: () =>
         payloadFor({
           tool_input: { file_path: join(project, 'doc.md') },
@@ -233,6 +251,7 @@ for (const tree of TREES) {
           const result = await run(
             hook,
             expected.payload(`${tree.label}-${name}`),
+            expected.path,
           )
 
           expect(result.stdout).toContain(expected.expect)
