@@ -19,6 +19,8 @@ Output drifts everywhere the contract stops. The specified shape covers invocati
 
 The runbooks the session cannot run from memory fail on a third axis, which is where they are kept. A runbook reached by an installed path is a dependency on a channel this skill does not travel on, so a project holding the plugin and running no install follows the citation to nothing, and nothing reports the break because a missing file produces no error until someone opens the path. Every one of them therefore has to ship inside the skill, the three covering the moments the loop cannot detect and the fourth holding the review trigger. That fourth one fails on an axis of its own, since it names one client's command as the way to start the loop, so a session holding a different recurring-prompt scheduler reaches no path and a client without that command reaches none either, and the file ships to every target holding the plugin.
 
+The session also records nothing of what it learns. Both other callers of memory capture are ship-chain skills and this one never ships, so the session taking every operator correction is the session with no moment that writes one down. Hanging that moment on the merge sweep answers it and bills the operator a capture pass per batch of merges while nothing is being built, which is a cost paid on the days shipping is fastest.
+
 ## Must
 
 - Read the priority file for execution order, since the index sorts by filename and states no order
@@ -33,6 +35,7 @@ The runbooks the session cannot run from memory fail on a third axis, which is w
 - Re-resolve the board's plan pointers after any archive, since the archiving skill rewrites the task file and knows nothing about the board
 - Lead a sweep report, a board report, and an analysis with the state, the open decisions, and the next action, keeping the evidence below them
 - Write the pre-compact handoff with what no other file carries, and name the runbook that reads it back
+- Capture what the session learned at the handoff rather than in the merge sweep, and have the sweep report the debt, since a capture per batch of merges bills the operator a wait while nothing ships
 - Carry every runbook the session cannot run from memory inside the skill, so each citation resolves for a project holding the plugin and nothing else
 - State which rule wins where the tracked-file ban collides with the root instruction on small edits, and where a correction no open task owns goes
 - State the review trigger as a recurring prompt rather than as one client's command, since the runbook ships to targets running whatever client they run
