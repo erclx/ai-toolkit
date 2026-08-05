@@ -1,6 +1,6 @@
 ---
 title: Markdown audit
-description: Running the audit over any markdown path, where its bans and checkpoints are read from, what each check reports, and why nothing gates yet
+description: Running the audit over any markdown path, where its bans and checkpoints are read from, what each check reports, and why the ban half gates while the structural half reports
 ---
 
 # Markdown audit
@@ -82,13 +82,31 @@ A bullet, a heading, a table row, a blockquote, a blank line, and a fence each e
 
 ## Exit codes
 
-Exit codes are `0` for a completed run and `1` for a refusal. Every finding reports and none gates.
+Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, and `2` for a ban hit. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, so all three report under every code.
 
-A banned character is a fact rather than a judgment, which is the test that would ordinarily make it gate. What holds it back is that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order is to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change. Bullet, paragraph, and depth weight are judgments and stay advisory under any later gate.
+`2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `aitk context audit` and the `verify.sh` seed stage already draw between the same two codes.
 
-Measured at `4b7b13a2` across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. This is the baseline the corpus sweep tracks its work against. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
+A banned character is a fact rather than a judgment, which is the test that admits it to a gate. What held it back was that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order was to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change, and the gate is the last of the four.
 
-The ban half of that baseline now reports no character, word, or spelling hit, which is the precondition the gate was waiting on. The other four moved with the corpus rather than with any decision, so read them from a run rather than from this paragraph.
+Measured at `4b7b13a2` across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. This is the baseline the corpus sweep tracked its work against. The ban count is what the gate holds at zero, and it is the only one of the five a gate should ever read.
+
+The ban half of that baseline reached zero, which was the precondition the gate waited on, and it was re-measured against the same corpus at the moment the gate landed. The other four moved with the corpus rather than with any decision, so read them from a run rather than from this paragraph.
+
+### What a hit asks of an author
+
+Rewrite the sentence rather than swapping the banned token for a near-synonym. The rule is about the sense the token carries, so a swap that keeps the sense clears the report without clearing the violation.
+
+A code span clears the report too, since the ban scan walks around one, and it is the answer only where the token is genuinely an identifier under discussion. `## Code and identifiers` in `markdown.md` reserves the span for commands, API names, file paths, and identifiers, so backticking a quoted utterance spends one rule to satisfy another and leaves the corpus no cleaner.
+
+A hit the closed set cannot separate from correct prose is the case with no third option. `prose.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so the temporal `just` reports as the vague one. The rule as written reaches neither, and rewriting the sentence is what the toolkit settled on over building an exemption path, for the reasons below.
+
+### Where the rules are enforced
+
+Two surfaces read the ban sets and both go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, and the `Markdown bans` stage in `scripts/core/verify.sh` runs it across the whole corpus before a push. The hook parsed its own copy of the word bans in awk until the gate landed, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
+
+The hook reads the findings out of the `--json` record rather than off the exit code, so a binary predating the gate still reports at edit time. A machine with no `aitk` on `PATH` gets no enforcement there rather than a blocked edit, and the push stage still holds.
+
+The stage measures the whole corpus rather than the changed files. A `Do not use` bullet added to a standard bans a token retroactively, and no file in the push that adds the bullet was edited.
 
 ### Why a recorded count goes stale
 
