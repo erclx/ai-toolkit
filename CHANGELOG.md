@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.62.0](https://github.com/erclx/aitk/compare/v0.61.0...v0.62.0) (2026-08-05)
+
+
+### Features
+
+* **standards:** replace the skill word cap with a line checkpoint ([#861](https://github.com/erclx/aitk/issues/861)) ([fadbd47](https://github.com/erclx/aitk/commit/fadbd47107700aee870804134a40d677dc7b8b4b))
+
 ## [0.61.0](https://github.com/erclx/aitk/compare/v0.60.0...v0.61.0) (2026-08-05)
 
 
