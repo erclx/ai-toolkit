@@ -108,11 +108,17 @@ printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 
 Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. A head branch that carried an earlier pull request now has two, and a second `gh pr view` would pick between them by a precedence rule nothing here states. Reading what created or edited the pull request needs no such rule.
 
-Find the task by reading `.claude/tasks/` at the main worktree root, resolved with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. The board is shared scratch, so a linked worktree writing to its own `pwd` creates a second board nothing reads.
+The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.claude/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
 
-Confirm the match against the task's `Plan:` line, which names the plan this branch implemented. A branch name does not derive a plan slug and a plan slug does not derive a branch, so neither one alone identifies the task. Add `Pull request: #NNN` under the existing `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines when the task carries no such line, and correct the number in place when it does.
+```bash
+aitk tasks pull-request <number> --plan feature-<slug> --json
+```
 
-Skip this silently in three cases: no `.claude/tasks/` folder, no task whose `Plan:` line matches, or more than one match. One task, one pull request, so a second match is a misfile that a guessed write would compound. A wrong match archives the wrong task unattended once the branch merges.
+The slug is a guess at which plan this branch carries rather than a fact about the task, which is why the verb re-checks it against the board and refuses instead of writing on a near miss. A branch whose slug names no plan file falls to the silent skip below, the same as one whose plan no task cites.
+
+The verb resolves the board at the main worktree root in-process, adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already carries, and corrects the number in place when the line exists. This is the route because the write is an edit inside an existing file, which the file-editing tools refuse from a linked worktree and which no shell stream editor may make. See Worktrees in `CLAUDE.md`.
+
+Skip this silently when the record is `ok: false` and `reason` is `no-board`, `no-match`, or `ambiguous`. Those are the three cases a guessed write would compound: no board, no task naming the plan, or more than one. One task, one pull request, and a wrong match archives the wrong task unattended once the branch merges. Report any other refusal rather than swallowing it.
 
 The number is what lets the merge close the task. Every merge on `main` is a squash carrying it in the subject, so the number survives where a branch name does not, and `post-merge` reads it back to call `aitk tasks archive`. Writing it here rather than at worktree time is what makes it a pull request number rather than a branch the squash discards.
 

@@ -14,6 +14,7 @@ The filename and its type prefix, the frontmatter, the body shape each type carr
 ## Guards
 
 - All `.claude/memory/` reads and writes resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
+- From a linked worktree the file-editing tools refuse every path below, so each write in this skill goes out through `Bash` as a plain single command. A memory entry holds one fact and this session has read it, so an update rewrites the whole file with a heredoc rather than editing a line inside it.
 - If `.claude/memory/` does not exist at the main worktree root, create it, along with an `index.md` carrying `title` and `subtitle` frontmatter. `aitk claude init` seeds both, and a project predating that seed has neither. Regeneration errors without the index, so the first write into a bare folder would report a frontmatter failure against a file that is fine.
 - If the session produced no user corrections, confirmations, or context disclosures worth persisting, stop: `✅ Nothing worth capturing.`
 - Routing edits a tracked file, so it runs only where the caller commits. When the session is in the main worktree, or the caller states it does not commit, skip Step 3 and write every candidate as a memory file. `claude-orchestrate` is the caller this covers.
@@ -45,7 +46,7 @@ For each project candidate, match its subject against `.claude/context/index.md`
 
 Fail closed. A project candidate matching no entry stays a memory file, and so does one matching two entries where neither is clearly the owner. The residue is what the folder is for, and a fact filed under the wrong entry is worse than one in memory because a context entry is a surface sessions trust.
 
-Do not edit a context entry here. `claude-docs` owns those edits and folds the routed facts in on its own pass, or two skills write one file at the same step. Write each routed fact to `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root instead, appending when the file exists:
+Do not edit a context entry here. `claude-docs` owns those edits and folds the routed facts in on its own pass, or two skills write one file at the same step. Write each routed fact to `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root instead, appending when the file exists. An append is a whole-file operation the shell does directly, so send it as a plain single `Bash` command carrying a heredoc:
 
 ```markdown
 ## .claude/context/<domain>.md
@@ -59,7 +60,7 @@ The handoff is a file rather than a spoken result so the routed fact survives a 
 
 ## Step 4: dedupe
 
-For each remaining candidate, grep `.claude/memory/` for an existing file on the same topic. If one exists, update it in place rather than create a new file.
+For each remaining candidate, grep `.claude/memory/` for an existing file on the same topic. If one exists, update it in place rather than create a new file. Read it first and write the whole file back, since the guard above rules out editing a line inside it.
 
 ## Step 5: write the residue
 
@@ -68,6 +69,12 @@ Write each remaining candidate to `.claude/memory/<type>-<slug>.md`, following t
 Two of its rules are the ones a capture pass gets wrong under time pressure. State the rule rather than the incident that produced it, since the session ending is the only reader who has the narrative. Write the `title` as the rule itself, never as the filename stem.
 
 Do not edit the index. `.claude/memory/index.md` is generated from sibling frontmatter by a `PostToolUse` hook, the same way the task board's index is, so a hand-appended row is drift the next regeneration discards.
+
+The hook matches `Write|Edit|MultiEdit`, so nothing fires on the shell writes a linked worktree makes. Regenerate the index once after the last write when the entries went out through `Bash`:
+
+```bash
+aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/index.md
+```
 
 Run `aitk records validate memory` when the writes are done and fix what it names. It reads the whole pen rather than this session's writes, so treat a finding on a carried entry as one to fix in place rather than as a reason to stop.
 
