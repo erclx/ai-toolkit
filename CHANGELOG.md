@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.68.0](https://github.com/erclx/aitk/compare/v0.67.0...v0.68.0) (2026-08-05)
+
+
+### Features
+
+* **markdown:** fail a push on a banned character, word, or spelling ([#890](https://github.com/erclx/aitk/issues/890)) ([bb119be](https://github.com/erclx/aitk/commit/bb119be479d3a94397dfe84752d1ee3a3a6ecb04))
+
 ## [0.67.0](https://github.com/erclx/aitk/compare/v0.66.1...v0.67.0) (2026-08-05)
 
 
