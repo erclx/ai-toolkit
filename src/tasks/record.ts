@@ -1,7 +1,13 @@
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { basename, join, relative } from 'node:path'
-import { listTaskStems, readPlanTarget, tasksDir } from '@/tasks/archive'
+import {
+  fenceMask,
+  listTaskStems,
+  OUTCOME_PATTERN,
+  readPlanTarget,
+  tasksDir,
+} from '@/tasks/archive'
 
 /**
  * Lines a task carries above its outcomes naming where the work came from. The
@@ -9,14 +15,20 @@ import { listTaskStems, readPlanTarget, tasksDir } from '@/tasks/archive'
  */
 const ORIGIN_PREFIXES = ['Plan:', 'Groundwork:', 'Intake:', 'Issue:'] as const
 
-const OUTCOME_PATTERN = /^- \[([ xX])\] ?(.*)$/
-
+/**
+ * `bad-input` is separated from the board-state reasons on purpose. `git-pr`
+ * swallows `no-board`, `no-match`, and `ambiguous`, because each is a case where
+ * a guessed write would archive the wrong task. A caller that passed a
+ * malformed argument has a defect nobody would otherwise hear about, so it
+ * reports rather than joining the swallowed set.
+ */
 export const RECORD_REFUSALS = [
   'no-board',
   'no-match',
   'ambiguous',
   'no-outcomes',
   'out-of-range',
+  'bad-input',
 ] as const
 
 export type RecordRefusal = (typeof RECORD_REFUSALS)[number]
@@ -133,9 +145,13 @@ export function closeOutcomeLines(
   const wanted = new Set(positions)
   const closed: string[] = []
   const alreadyClosed: string[] = []
+  const lines = text.split('\n')
+  const fenced = fenceMask(lines)
   let seen = 0
 
-  const rewritten = text.split('\n').map((line) => {
+  const rewritten = lines.map((line, index) => {
+    if (fenced[index]) return line
+
     const match = OUTCOME_PATTERN.exec(line)
     if (!match) return line
 

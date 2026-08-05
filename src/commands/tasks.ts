@@ -205,7 +205,9 @@ function collectPosition(value: string, previous: string[]): string[] {
 
 /**
  * Both record verbs name a task the same two ways, and naming it neither way or
- * both ways is the same refusal in each.
+ * both ways is the same refusal in each. Both are `bad-input` rather than
+ * `ambiguous` or `no-match`, since those two describe the board and these
+ * describe the command line that reached it.
  */
 function selectorFor(
   task: string | undefined,
@@ -214,7 +216,7 @@ function selectorFor(
   if (task && plan) {
     return {
       ok: false,
-      reason: 'ambiguous',
+      reason: 'bad-input',
       message: 'Name a task or a plan, not both.',
       detail: [],
     }
@@ -225,7 +227,7 @@ function selectorFor(
 
   return {
     ok: false,
-    reason: 'no-match',
+    reason: 'bad-input',
     message: 'No task named. Pass a filename stem or --plan <slug>.',
     detail: [],
   }
@@ -253,7 +255,7 @@ async function runPullRequest(
       'aitk tasks pull-request',
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message: `Not a pull request number: ${number}`,
         detail: [],
       },
@@ -286,7 +288,7 @@ async function runOutcome(
       'aitk tasks outcome',
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message: 'No outcome named. Pass --close <position>.',
         detail: [],
       },
@@ -302,7 +304,7 @@ async function runOutcome(
       'aitk tasks outcome',
       {
         ok: false,
-        reason: 'no-match',
+        reason: 'bad-input',
         message: `Not an outcome position: ${invalid.join(', ')}`,
         detail: invalid,
       },

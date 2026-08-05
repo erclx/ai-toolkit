@@ -150,6 +150,24 @@ describe('closeOutcomeLines', () => {
       '- A finding\n- [x] Outcome: one\n',
     )
   })
+
+  it('should not count a checkbox inside a fenced block', () => {
+    const text =
+      '```markdown\n- [ ] Outcome: a sample\n```\n- [ ] Outcome: one\n'
+
+    const result = closeOutcomeLines(text, [1])
+
+    expect(result.total).toBe(1)
+    expect(result.closed).toEqual(['Outcome: one'])
+    expect(result.text).toContain('```markdown\n- [ ] Outcome: a sample\n```')
+  })
+
+  it('should count positions past a fenced block against the real list', () => {
+    const text =
+      '- [ ] Outcome: one\n\n```\n- [ ] Outcome: a sample\n```\n\n- [ ] Outcome: two\n'
+
+    expect(closeOutcomeLines(text, [2]).closed).toEqual(['Outcome: two'])
+  })
 })
 
 describe('recordPullRequest', () => {
