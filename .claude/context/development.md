@@ -95,7 +95,11 @@ Banning a token is blunt, and the alternative is a judgment no stage can make. T
 
 The walk is scoped by extension rather than by path. Two seed hooks, `tasks-index.sh` and `memory-index.sh`, call the CLI deliberately and each emits a named stale-index warning when the binary is absent, so they keep the dependency and the extension scope leaves them outside the walk with no exemption list to maintain against them.
 
-Discovery runs through `collect_seed_roots` in `scripts/lib/tooling.sh`, shared with the Seed standards stage, so a stack seeding `.claude/` later is covered with no edit to either caller. A missing `tooling/` exits 1 rather than reporting the seeds independent, matching `check-plugin-boundary.sh`. An empty discovery exits 0 and says so, because the Seed standards stage already reads that same condition as a skip.
+Discovery runs through `collect_seed_roots` in `scripts/lib/tooling.sh`, shared with the Seed standards stage, so a stack seeding `.claude/` later is covered with no edit to either caller.
+
+Three outcomes separate a clean walk from one that measured nothing, matching `check-plugin-boundary.sh` on the last two. A missing `tooling/` exits 1, since the walk covers nothing. Roots that resolve and carry no markdown between them exits 1 for the same reason, because a pass there says the seeds cite no CLI on the strength of having read no prose. No seed root carrying `.claude/` exits 0 and says so, because the Seed standards stage already reads that one condition as a skip.
+
+`internal/rules/claude/596-claude-md.md` carries the matching authoring rule, so a session editing the seed meets it at the edit rather than at the push. Its glob stays on the two `CLAUDE.md` paths rather than widening to every seed markdown, since the three bullets beside it govern the root-and-seed pair and mean nothing over `.claude/REQUIREMENTS.md`. The stage is what covers the rest of the seed tree.
 
 ## Gotchas
 

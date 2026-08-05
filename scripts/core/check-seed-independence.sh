@@ -42,13 +42,18 @@ while IFS= read -r seed_root; do
   done < <(find "$PROJECT_ROOT/$seed_root" -type f -name '*.md')
 done <<<"$seed_roots"
 
+# Roots resolved and no markdown under any of them is a walk that covered
+# nothing, which is the verdict-without-a-measurement the guards above refuse for
+# a missing tree. Reporting a pass here would say the seeds cite no CLI on the
+# strength of having read no prose.
+if [ "$measured" -eq 0 ]; then
+  echo "Seed roots resolved but carry no markdown, seed independence unverifiable." >&2
+  exit 1
+fi
+
 if [ -n "$cited" ]; then
   echo "Seed prose cites the toolkit CLI:" >&2
   printf '%s' "$cited" >&2
   echo "A scaffolded project may not have $TOOLKIT_TOKEN installed. State the capability the line needs rather than the binary that supplies it." >&2
   exit 1
-fi
-
-if [ "$measured" -eq 0 ]; then
-  echo "No markdown under any seed root, nothing measured." >&2
 fi
