@@ -255,6 +255,26 @@ describe('measureEntry', () => {
     ])
   })
 
+  it('should keep the run across an indented fence holding a blank line', () => {
+    // A blank line inside a fence has no indentation to read, so testing each
+    // fenced line rather than the opening delimiter ends the run on it.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  aitk context audit\n\n  aitk markdown audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 16, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
+  it('should keep the run when indented fence content sits at column zero', () => {
+    // CommonMark strips the fence's own indentation and nothing more, so a
+    // content line may sit at column zero inside an indented block.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\naitk context audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([
+      { line: 14, pronoun: 'This', verb: 'was' },
+    ])
+  })
+
   it('should leave a passive of use behind a copula unreported', () => {
     // `is used to resolve` is the passive of `use`, not the past habitual the
     // verb set means, and no other set term appears in the bullet.

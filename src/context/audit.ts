@@ -306,16 +306,29 @@ function narration(
 
   const findings: NarrationFinding[] = []
   let following = false
+  let fenceInsideList: boolean | undefined
 
   for (const line of lines) {
-    // A fenced line is never a bullet, but an unindented one still ends the
+    // A fenced line is never a bullet, but an unindented block still ends the
     // run. CommonMark reads a fence at column zero as interrupting the list, so
     // the bullets around it are two lists and the second has no antecedent
-    // above it. A fence indented under its bullet stays inside the item.
+    // above it. A block indented under its bullet stays inside the item.
+    //
+    // The opening delimiter decides for every line of the block. Reading each
+    // line instead ends the run on a blank line inside an indented fence, which
+    // has no indentation to read, and on a content line at column zero, which
+    // CommonMark permits because only the fence's own indent is stripped. Both
+    // are missed findings rather than false ones, so no corpus count moves when
+    // this is wrong.
     if (line.fenced) {
-      if (!INSIDE_LIST.test(line.text)) following = false
+      if (fenceInsideList === undefined) {
+        fenceInsideList = INSIDE_LIST.test(line.text)
+      }
+      if (!fenceInsideList) following = false
       continue
     }
+
+    fenceInsideList = undefined
 
     if (line.text.trim() === '') continue
 
