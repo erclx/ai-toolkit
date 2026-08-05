@@ -157,7 +157,7 @@ function isLivePlan(target: string, dir: string, root: string): boolean {
   )
 }
 
-async function listTaskStems(dir: string): Promise<string[]> {
+export async function listTaskStems(dir: string): Promise<string[]> {
   const entries = await readdir(dir)
   const reserved: readonly string[] = RESERVED_STEMS
 
