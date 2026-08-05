@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
+import { linesOutsideFences } from '@/markdown/scan'
 
 export const RECORD_KINDS = ['plans', 'groundwork', 'intake', 'memory'] as const
 
@@ -141,43 +142,6 @@ const PLAN_REQUIRED: readonly PlanSection[] = [
   'Risks',
   'Questions',
 ]
-
-const FENCE = /^(`{3,}|~{3,})/
-
-/**
- * Drops every fenced block, so a quoted template is not read as content. A plan
- * showing the shape it writes puts real-looking bullets and headings inside a
- * fence, and scanning them reports the example rather than the plan.
- *
- * A closing fence has to match the opening character and be at least as long,
- * which is what keeps a ```` block holding a ``` example from closing early. An
- * unterminated fence swallows the rest of the document, which under-reports a
- * malformed file rather than reporting its remainder as content.
- */
-export function linesOutsideFences(text: string): string[] {
-  const kept: string[] = []
-  let fence: string | undefined
-
-  for (const line of text.split('\n')) {
-    const match = FENCE.exec(line.trim())
-
-    if (fence) {
-      const closes =
-        match && match[1][0] === fence[0] && match[1].length >= fence.length
-      if (closes) fence = undefined
-      continue
-    }
-
-    if (match) {
-      fence = match[1]
-      continue
-    }
-
-    kept.push(line)
-  }
-
-  return kept
-}
 
 /**
  * A line standing alone as a bold label or an H2, whatever it names. A plan is

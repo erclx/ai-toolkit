@@ -3,6 +3,7 @@ import { writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { linesOutsideFences } from '@/markdown/scan'
 import {
   checkItems,
   checkMemory,
@@ -13,7 +14,6 @@ import {
   readQuestions,
   type RecordKind,
   recordsDir,
-  linesOutsideFences,
   preferredMarker,
   splitPlanSections,
   validateRecords,
