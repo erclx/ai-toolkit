@@ -69,16 +69,38 @@ const pathWithoutAitk = (): string =>
     .filter((dir) => dir !== '' && !existsSync(join(dir, 'aitk')))
     .join(delimiter)
 
+// The degradation branch needs a PATH carrying neither runner, and the hook
+// reads its payload through `jq` before it reaches that branch. A PATH without
+// `jq` sends the run down the no-file exit instead, which is also silent, so
+// the test would pass against the wrong branch. Keeping the directories that
+// hold `jq` alone is what separates the two.
+const pathWithJqAlone = (): string =>
+  (process.env.PATH ?? '')
+    .split(delimiter)
+    .filter(
+      (dir) =>
+        dir !== '' &&
+        existsSync(join(dir, 'jq')) &&
+        !existsSync(join(dir, 'bun')) &&
+        !existsSync(join(dir, 'aitk')),
+    )
+    .join(delimiter)
+
 // Omitting the payload leaves stdin open with nothing written and no EOF, which
 // is the descriptor the hang came from. Closing it instead would exercise the
 // cheap case and leave the observed one untested.
-const run = (hook: string, payload?: string, path?: string): Promise<Run> =>
+const run = (
+  hook: string,
+  payload?: string,
+  path?: string,
+  root?: string,
+): Promise<Run> =>
   new Promise((resolve) => {
     const started = performance.now()
     const child = spawn('bash', [hook], {
       env: {
         ...process.env,
-        CLAUDE_PROJECT_DIR: join(fixture, 'project'),
+        CLAUDE_PROJECT_DIR: root ?? join(fixture, 'project'),
         PATH: path ?? hookPath,
       },
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -112,24 +134,40 @@ beforeAll(() => {
     join(project, '.claude/memory'),
     join(project, '.claude/tasks'),
     join(project, 'indexed'),
+    join(project, 'src'),
     join(fixture, 'bin'),
+    join(fixture, 'no-source'),
     join(fixture, 'elsewhere/tmp'),
   ]) {
     mkdirSync(dir, { recursive: true })
   }
 
-  // The toolkit's standards-audit reads its findings out of `aitk markdown
-  // audit --json`, so the acting branch is unreachable with the real binary
-  // stripped from PATH. A stub emitting one finding pins the output to the
-  // fixture rather than to whichever aitk the machine carries, which is the
-  // reason the strip exists. The seed copy of the same hook parses in awk and
-  // reaches its verdict whether this is on PATH or not.
-  const stub = join(fixture, 'bin/aitk')
-  writeFileSync(
-    stub,
-    '#!/usr/bin/env bash\nprintf \'%s\\n\' \'{"entries":[{"path":"doc.md","bans":[{"line":3,"column":23,"kind":"character","term":"—"}]}]}\'\n',
-  )
-  chmodSync(stub, 0o755)
+  // The toolkit's standards-audit reads its findings out of a `markdown audit
+  // --json` record, so the acting branch is unreachable with the real binary
+  // stripped from PATH. Stubbing both runners pins the output to the fixture
+  // rather than to whichever build the machine carries, which is the reason
+  // the strip exists. The seed copy of the same hook parses in awk and reaches
+  // its verdict whether either is on PATH or not.
+  //
+  // Each stub reports a `kind` naming itself, which is what lets a test read
+  // the runner the hook resolved rather than assume it. The hook prints that
+  // field verbatim, and no real record carries either value.
+  for (const [name, kind] of [
+    ['aitk', 'via-aitk'],
+    ['bun', 'via-bun'],
+  ] as const) {
+    const stub = join(fixture, 'bin', name)
+    writeFileSync(
+      stub,
+      `#!/usr/bin/env bash\nprintf '%s\\n' '{"entries":[{"path":"doc.md","bans":[{"line":3,"column":23,"kind":"${kind}","term":"—"}]}]}'\n`,
+    )
+    chmodSync(stub, 0o755)
+  }
+
+  // An empty file is enough, since the hook tests for the path and the stub
+  // runner never reads it. Without it the project root takes the fallback and
+  // the branch the hook prefers is exercised by nothing.
+  writeFileSync(join(project, 'src/cli.ts'), '')
 
   writeFileSync(
     join(project, 'doc.md'),
@@ -261,3 +299,63 @@ for (const tree of TREES) {
     }
   })
 }
+
+// Scoped to the toolkit copy, which is the only one that shells out. The seed
+// copy parses in awk and has no runner to resolve.
+//
+// The acting case above proves the hook reaches a verdict and says nothing
+// about which runner produced it, so a branch could stop resolving and stay
+// silent with every test still green. Each stub reports a `kind` naming
+// itself, which is what makes the answer readable.
+describe('.claude/hooks/standards-audit.sh runner', () => {
+  const hook = join(ROOT, '.claude/hooks/standards-audit.sh')
+
+  const payload = (): string =>
+    JSON.stringify({
+      tool_input: { file_path: join(fixture, 'project/doc.md') },
+      tool_name: 'Write',
+    })
+
+  const withStubs = (): string =>
+    [join(fixture, 'bin'), hookPath].join(delimiter)
+
+  it.concurrent(
+    'should prefer the checkout CLI when the root carries src/cli.ts',
+    async ({ expect }) => {
+      const result = await run(hook, payload(), withStubs())
+
+      expect(result.stdout).toContain('via-bun')
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should fall back to the installed binary when the root carries no src/cli.ts',
+    async ({ expect }) => {
+      const root = join(fixture, 'no-source')
+
+      const result = await run(hook, payload(), withStubs(), root)
+
+      expect(result.stdout).toContain('via-aitk')
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should stay silent when the machine carries neither runner',
+    async ({ expect }) => {
+      // An empty PATH would send the run down the no-file exit, which is
+      // silent for a reason this test is not about.
+      const path = pathWithJqAlone()
+      expect(
+        path,
+        'no PATH entry carries jq without a runner beside it',
+      ).not.toBe('')
+
+      const result = await run(hook, payload(), path)
+
+      expect(result.stdout).toBe('')
+      expect(result.code).toBe(0)
+    },
+  )
+})
