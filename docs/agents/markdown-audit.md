@@ -86,7 +86,21 @@ Exit codes are `0` for a completed run and `1` for a refusal. Every finding repo
 
 A banned character is a fact rather than a judgment, which is the test that would ordinarily make it gate. What holds it back is that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order is to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change. Bullet, paragraph, and depth weight are judgments and stay advisory under any later gate.
 
-Measured across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. This is the baseline the corpus sweep tracks its work against. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
+Measured at `4b7b13a2` across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. This is the baseline the corpus sweep tracks its work against. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
+
+The ban half of that baseline now reports no character, word, or spelling hit, which is the precondition the gate was waiting on. The other four moved with the corpus rather than with any decision, so read them from a run rather than from this paragraph.
+
+### How the ban count reached zero
+
+Eight word hits stood between the baseline and a gate, and only three carried the sense `prose.md` bans. `leverage` sat in the requirements worldview, `allows` in the claude stack reference, and one `just` was the vague qualifier in a skill body. Those three lost the qualifier rather than the word.
+
+The other five were correct prose the closed set cannot separate from a violation. Four were the temporal `just`, meaning a moment ago, in phrases like the implementation `just` completed and the field the user `just` edited. The fifth quoted an anti-pattern a skill exists to forbid. `prose.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so the rule as written reaches none of the five while the scan reaches all of them.
+
+#### Why they were rewritten rather than exempted
+
+Rewriting the four and backticking the quotation is what settled them, over building an exemption path. An exemption has three consumers, `src/markdown/scan.ts` for the patterns, `src/markdown/bans.ts` for the sets, and `.claude/hooks/standards-audit.sh`, which greps its own copy of the word bans in awk. A mechanism landing in the verb and not the hook leaves an exempted line still failing on edit, which is the surface an author actually meets. Four sentences lost a small amount of naturalness and the count now means what it says.
+
+The collision is structural rather than a property of four legacy sentences. Writing the task and the plan behind this change each reproduced it, because a fresh file discussing the ban quotes the tokens it discusses. A later author writing about vague qualifiers will meet the same thing, and the answer is a code span, since the scan walks around one.
 
 A count written into prose goes stale against the corpus it describes, and nothing compares the two. The paragraph figure recorded when the masking fix shipped was already wrong by twelve one release later, which is why the standard states the rule and this page carries the numbers.
 
