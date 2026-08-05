@@ -55,9 +55,28 @@ Every weight and depth measure counts the text a reader is shown. A link reduces
 
 A code span is walked around rather than through, so a path quoting link or angle-bracket syntax keeps the width the page gives it. Masking inside one takes back the decision to count it, and the placeholders this toolkit writes are where that shows.
 
-The paragraph check is new and measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: measured across 3374 paragraphs, 486 sit inside four sentences and past 400 characters, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+The paragraph check measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: 88 paragraphs in this corpus sit inside four sentences and past the weight checkpoint, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
 
-The paragraph weight and the bullet weight are the same number today because the two shapes measure one population, sharing a median near 170 characters with no gap behind either candidate. They are separate checkpoints in the standard and separate patterns in the parser, so retuning one leaves the other where it is.
+The paragraph weight sits at 600 and the bullet weight at 400. The two shapes measure one population, sharing a median near 170 characters with no gap behind either candidate, so the paragraph number was borrowed from the bullet rule when both checks shipped. They are separate checkpoints in the standard and separate patterns in the parser, and the sample below moved one and left the other untouched.
+
+#### The sample behind the paragraph number
+
+The checkpoint shipped at 400 as a borrowed number and was decided against a read of the prose it reports. Thirty-six findings were sampled, six from each of six weight bands, drawn at even spacing through each band ordered by path and line, and each was classed as prose a reader wants split or prose the checkpoint should not have reported.
+
+| Band      | Wants the split | Reads as written |
+| --------- | --------------- | ---------------- |
+| 400 - 425 | 1               | 5                |
+| 425 - 450 | 2               | 4                |
+| 450 - 500 | 2               | 4                |
+| 500 - 600 | 2               | 4                |
+| 600 - 750 | 6               | 0                |
+| Past 750  | 6               | 0                |
+
+Precision is what moved the number rather than the finding count. Below 600 the checkpoint was right about seven of twenty-four sampled paragraphs, and past 600 it was right about all twelve. A checkpoint is a prompt to look, and a prompt wrong three times in four teaches a reader to stop looking. The distribution offers no seam to place the number against, with a median of 487 and a seventy-fifth percentile of 563, so the read is the whole of the evidence.
+
+Nothing inside the 500 to 600 band separated the two classes by length, which is the reason the number did not land there. The two paragraphs wanting a split ran 543 and 590 characters against four reading well at 515, 532, 555, and 569.
+
+The sample is thirty-six paragraphs against a reported population in the hundreds, and one reader classed all of them. Treat a band's rate as the order of magnitude it is rather than as a measured precision, and re-sample before moving the number again.
 
 A bullet, a heading, a table row, a blockquote, a blank line, and a fence each end a paragraph, so a heavy bullet is reported by the bullet check alone and never counted twice.
 
@@ -67,9 +86,13 @@ Exit codes are `0` for a completed run and `1` for a refusal. Every finding repo
 
 A banned character is a fact rather than a judgment, which is the test that would ordinarily make it gate. What holds it back is that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order is to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change. Bullet, paragraph, and depth weight are judgments and stay advisory under any later gate.
 
-Measured across 444 files once the weight measures moved to visible text: 8 word hits, no character or spelling hits, 119 heavy bullets, 615 heavy paragraphs, and 40 files carrying a run past the depth checkpoint. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
+Measured across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. This is the baseline the corpus sweep tracks its work against. The ban count is what a gate would have to hold at zero, and it is the only one of the five a gate should ever read.
 
-Masking took 7 of the 493 weight-only paragraphs and 4 of the 44 files under their checkpoints, and no bullet at all. The first corpus triage put those at 31 paragraphs and 2 bullets, and neither reproduces: a code span is walked around, so a backticked path holding an angle-bracket placeholder keeps the width the page gives it, and both bullets the triage counted were that shape.
+A count written into prose goes stale against the corpus it describes, and nothing compares the two. The paragraph figure recorded when the masking fix shipped was already wrong by twelve one release later, which is why the standard states the rule and this page carries the numbers.
+
+A standard sits inside the corpus this verb measures, so rewriting a rule can breach the rule beside it. A rewrite of the paragraph weight bullet landed at 539 characters against the bullet checkpoint stated two lines below it, in the authoring copy and the consumed one alike. Neither the drift stage nor the test suite reads that, so run the verb over a standard after editing one.
+
+Masking took 7 of the weight-only paragraphs the checkpoint reported at 400 and 4 of the 44 files under their checkpoints, and no bullet at all. The first corpus triage put those at 31 paragraphs and 2 bullets, and neither reproduces: a code span is walked around, so a backticked path holding an angle-bracket placeholder keeps the width the page gives it, and both bullets the triage counted were that shape.
 
 ## What it does not cover
 

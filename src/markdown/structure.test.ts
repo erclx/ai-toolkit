@@ -297,8 +297,8 @@ describe('heavyParagraphs', () => {
     const lowered: Checkpoints = { ...CHECKPOINTS, paragraph: 120 }
     const source = `${FRONTMATTER}# CI\n\n${sentences(2, 80)}\n`
 
-    // The two numbers coincide in the standard today, so only a run where they
-    // differ shows which one the paragraph measure actually reads.
+    // Lowering the paragraph number well under the bullet one is what shows
+    // which of the two the paragraph measure reads, whatever the standard says.
     expect(measure(source).heavyParagraphs).toEqual([])
     expect(
       measureStructure('ci.md', bodyLines(source), lowered).heavyParagraphs,
@@ -306,7 +306,9 @@ describe('heavyParagraphs', () => {
   })
 
   it('should measure a link-heavy paragraph against the text a reader sees', () => {
-    const paragraph = links(10)
+    // Sized from the checkpoint rather than fixed, since a raw length that has
+    // to sit past it tests nothing on the run that moves the number.
+    const paragraph = links(Math.ceil(PARAGRAPH_CHECKPOINT / 40))
     const source = `${FRONTMATTER}# CI\n\n${paragraph}\n`
 
     // Measured across the corpus this is the single largest correction: the
