@@ -40,11 +40,13 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - References shrank to anti-patterns and opinions once golden configs landed. The config is the source, the reference carries only what a config cannot express.
 - Stacks do not compose horizontally. Single-root polyglot is unsupported, and a monorepo uses the subfolder pattern instead.
 - `tooling/claude/` is storage, not a stack. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI, so `TOOLING_STACK_EXCLUDE` keeps it out of discovery.
+- The non-goal against shipping application code turns on the word application, and its own carve-out in `.claude/REQUIREMENTS.md` already reads configs, seeds, snippets, and rules. Test files, an e2e spec, the screenshot template, and six shell scripts land executable non-config source in a target, and `injectManifest` in `src/tooling/inject.ts` runs `bun add -D` against it, so the line reads as a hard stop on a stack that installs an entry point and is not one.
 - A whole-stack install records the chain it resolved into `.claude/aitk.json` through `recordToolingChain` in `src/tooling/stamp.ts`, which is what makes tooling drift measurable in `aitk sync --check`. The write lands after the copies, so a partial apply that throws leaves the previous record rather than a claim the target does not meet. Rationale and the workspace-root refusal sit in `.claude/context/cli/sync.md`.
 
 ## Gotchas
 
 - Commit golden config changes with `--no-verify`. Lint-staged runs against the template files themselves, not project source.
+- `aitk capture` and `bun run screenshot` both produce PNGs and overlap nowhere else. `src/capture/render.ts` drives Chromium over static HTML files and never a running app, and `files` in `package.json` excludes `src/capture` so an installed `aitk` refuses the command. `bun run screenshot` is a web-stack config a target owns, and it builds that target, serves it, and captures the running application.
 
 ### Manifest syntax
 

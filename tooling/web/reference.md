@@ -12,7 +12,7 @@ Golden config files live in `tooling/web/configs/` and are copied into the targe
 
 - `eslint.config.js`: flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
 - `src/test/setup.ts`: `@testing-library/jest-dom` import, `cleanup` after each test.
-- `e2e/screenshot.ts`: `CONFIG` and `ENGINE` split template. Per-project ROUTES or SURFACES edited in the CONFIG section only.
+- `e2e/screenshot.ts`: capture template. `ROUTES` and `STATES` consts at the top carry one route in a default and a dark state, and the loop below them writes `screenshots/<name>-<state>.png`. Per-project routes and states extend the two consts.
 - `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for ESLint, Tailwind, Playwright, Vitest.
 - `.github/workflows/verify.yml`: `static-checks`, `unit-tests`, `build-verify`, and `e2e-tests` jobs.
 - `scripts/verify.sh`: extends base verify with typecheck, lint, unit tests, and build in the full order.
@@ -89,6 +89,8 @@ Append rows:
 | `bun run test:coverage` | Run Vitest with coverage. |
 | `bun run test:e2e` | Run Playwright E2E tests. |
 | `bun run screenshot` | Build, preview, then capture screenshots. |
+
+`aitk tooling verify <stack>` is the only automated caller of `bun run screenshot`, running it for any stack whose `package.json` declares the script and asserting that PNG files land under `screenshots/`. No ship chain captures a screenshot, so the output path the seed writes is a contract that one verifier reads rather than a default a ship step depends on.
 
 ## Verify script
 
