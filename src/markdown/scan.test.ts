@@ -56,6 +56,37 @@ describe('bodyLines', () => {
     // content, since the remainder is whatever the unclosed block holds.
     expect(bodyLines(source).filter((line) => line.fenced)).toHaveLength(4)
   })
+
+  it('should leave the fence block undefined outside every fence', () => {
+    const lines = bodyLines('Before.\n```ts\nconst x = 1\n```\nAfter.\n')
+
+    // Counting from one is what keeps the outside answer from reading as a
+    // block a consumer can compare against.
+    expect(lines.map((line) => line.fenceBlock)).toEqual([
+      undefined,
+      1,
+      1,
+      1,
+      undefined,
+    ])
+  })
+
+  it('should number an indented block and the unindented one behind it apart', () => {
+    const source = '  ```bash\n  a\n  ```\n```bash\nb\n```\n'
+
+    // Nothing sits between the two, so the fenced mark reads them as one run.
+    expect(bodyLines(source).map((line) => line.fenceBlock)).toEqual([
+      1, 1, 1, 2, 2, 2,
+    ])
+  })
+
+  it('should number an unindented block and the indented one behind it apart', () => {
+    const source = '```bash\na\n```\n  ```bash\n  b\n  ```\n'
+
+    expect(bodyLines(source).map((line) => line.fenceBlock)).toEqual([
+      1, 1, 1, 2, 2, 2,
+    ])
+  })
 })
 
 describe('linesOutsideFences', () => {
@@ -68,6 +99,16 @@ describe('linesOutsideFences', () => {
   it('should drop a fenced block and both of its delimiters', () => {
     const kept = linesOutsideFences(
       'Before.\n```ts\nconst x = 1\n```\nAfter.\n',
+    )
+
+    expect(kept.filter((line) => line !== '')).toEqual(['Before.', 'After.'])
+  })
+
+  it('should drop both of two adjacent blocks, which it cannot tell apart', () => {
+    // A caller reading this asks only whether a line is fenced, so the block
+    // index has to leave it returning exactly what it returned before.
+    const kept = linesOutsideFences(
+      'Before.\n```ts\nconst x = 1\n```\n```sh\naitk\n```\nAfter.\n',
     )
 
     expect(kept.filter((line) => line !== '')).toEqual(['Before.', 'After.'])
@@ -197,6 +238,16 @@ describe('scanBans', () => {
 
   it('should report nothing inside a fenced block', () => {
     expect(terms('# H\n\n```ts\nconst a = 1; // simply\n```\n')).toEqual([])
+  })
+
+  it('should report nothing inside either of two adjacent blocks', () => {
+    // The ban half of `aitk markdown audit` fails a push, so the exclusion this
+    // scan walks around has to survive the walker learning about blocks.
+    expect(
+      terms(
+        '# H\n\n```ts\nconst a = 1; // simply\n```\n```sh\naitk --colour\n```\n',
+      ),
+    ).toEqual([])
   })
 
   it('should report nothing inside an inline code span', () => {
