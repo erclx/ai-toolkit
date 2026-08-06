@@ -1,6 +1,6 @@
 ---
 title: Shared skill procedures
-description: The CLI shell-out pattern every skill follows, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
+description: The CLI shell-out pattern every skill follows, the label map a project declares rather than the skill ships, the core.bare repair carried at two points, the branch worktree entry hands the ship chain, and the procedures defined once in standards and cited from each body
 ---
 
 # Shared skill procedures
@@ -24,6 +24,16 @@ That skew is the general shape rather than one skill's problem. A skill reaches 
 `migration-superseded` reads the `superseded` array off the same report and takes the opposite branch when the key is absent. It stops and names the CLI rather than degrading to a listing, because the two detections fail differently. `unmigrated` pairs against domain folders whose worst listing error is an unfiltered count, while `superseded` pairs against the seed subdirectory names and an uppercase stem is not the test. A listing of `.claude/*.md` also reaches `ARCHITECTURE.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `DESIGN.md`, each a single file the layout intends to stay one, so the fallback that costs a count on one skill costs four shredded documents on the other. A fallback is worth having when its failure is an imprecision and worth refusing when its failure is a proposal nobody can undo.
 
 The destination standard is the second place the skill declines a route every sibling takes. `skill.md` has a body cite `.claude/standards/X.md` first and name the plugin copy under `${CLAUDE_SKILL_DIR}` as the fallback, which is correct for a standard the skill follows itself. Here the standard is the project's own agreement about the shape of a folder, resolved by matching the replacement path against the `appliesTo` the standards catalog declares. A proposal drawn from the plugin copy would hand back a shape the project never adopted, against content only the user can place, so an absent standard names itself and the install command and proposes nothing. Resolving through `appliesTo` rather than through the folder stem is what lets the four seed folders nobody has observed degrade by mechanism, since `.claude/hooks/` matches no entry and earns a decline rather than a guessed shape.
+
+### Configuration a project declares rather than a skill ships
+
+`git-pr` labels a pull request from a `[domains]` table at `.claude/pr-labels.toml`, keying a label name to the path prefixes that earn it. No domain name of this repository reaches the skill or its references, because a shipped label set is a guess about someone else's surfaces and a wrong default costs more than no label at all. A project declaring no map is labelled silently and never warned, which reads the absent-key discipline above the other way: an absent file here is an answer rather than a state to repair.
+
+The scope derivation the intake proposed was measured and dropped. Across the 80 merged pull requests at `02da9e21` the conventional commit scope reaches 23 distinct values against seven labels, four of them shared, so keying on it needs a hand-maintained scope-to-domain table that is a second vocabulary to hold in step with the first. The changed paths need none, since the top level of the tree already is the domain set. The distinct count rose from 19 at 60 pull requests while the four-way overlap held, which is the shape that settles it.
+
+Labelling runs after the pull request resolves rather than as a flag on the create. `gh pr create --label` fails whole on a label the remote lacks, so a mistyped row opens no pull request at all and the branch is left pushed with nothing to review. One `gh pr edit --add-label` afterward degrades to a warning naming `gh label create`, and it covers both sides of the create-and-edit branch the final command carries, which would otherwise want two label flags and would leave every re-run unlabelled if only the create side got written. The warning earns a second output line, since the body otherwise permits one line and a refusal reaching nobody is the failure the fallback exists to prevent.
+
+The map has a second consumer and it is a person. Nothing detects a top-level directory the table fails to cover, so a surface added later labels nothing until someone adds a row. That is the manifest-to-reference symmetry this repository already records as a gotcha, arriving in a new folder.
 
 ### Repairing `core.bare`
 
