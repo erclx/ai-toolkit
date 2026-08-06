@@ -103,7 +103,7 @@ What the split costs is that two structured edits became code with tests rather 
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects it.
-- `migration-standards` and `toolkit-operator` each answer an absent key as unread rather than as empty, a pattern the remaining skills could take rather than a check the repository runs
+- `migration-standards` and `toolkit-operator` each test for a field they read and answer an absent key as unread rather than as empty, a pattern the remaining skills could take rather than a check the repository runs
   - The second was written after a sandbox run against a stale binary reported a clean target, then answered from a filesystem walk of its own, so the skew reaches a reader as a confident wrong answer rather than a failure
 - A marketplace install is a cached copy, which is the same skew in the other direction. Someone who added the marketplace and never updated runs old skills against a current CLI. Neither direction is detected.
 - Every session pays for this file from the merge onward. No standard sets a length rule for it, so the working limit is a self-imposed 150 lines borrowed from the context-entry checkpoint, and nothing enforces it.
