@@ -76,6 +76,8 @@ Attribution reuses `findInstalledOrigin` rather than a second history reader, an
 
 Three verdicts come out of that one pass. Content matching a published blob is `dropped` and names the commit. A path the toolkit shipped holding content it never published is `unattributed`, which is what history proving nothing looks like rather than a weak `dropped`. No path overlap at all is `project`, and the render drops those while the JSON keeps them, since a name collision printed on every run is a line no remedy closes.
 
+The walk reaches none of that on an unmanaged target. `isManagedTarget` gates it the way it gates its three siblings, and the early branch returns `emptyReverseReport()`, so a project holding a dropped root reports nothing unclaimed until it carries a `.claude/` directory, a `CLAUDE.md`, or an unmigrated domain. A consumer staging a folder to observe the walk stages the marker too, or it reads an empty section as a clean answer.
+
 ### Migration candidates and the gate
 
 `detectMigrations` gives the two proposal-only skills the report field `unmigrated` already gives `migration-standards`. Both tests read what the skill itself acts on, so a proposal the report makes is one the skill has work to do for. The `CLAUDE.md` line threshold is the `context.md` checkpoint raised, because that file legitimately carries more than one domain, and it gates a proposal rather than a failure so being approximate costs a line an operator can ignore.

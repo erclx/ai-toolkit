@@ -21,6 +21,8 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 - Map the stated intent to one lifecycle phase, then either run the simplest command that satisfies it or hand off
 - Resolve every stack, rule, snippet, and standard name from a catalog at runtime
 - Run the CLI non-interactively and report the command run, what changed, and the full path of anything written
+- Read the reverse walk beside the forward sections, so a folder the toolkit stopped shipping and a migration with a live case both reach the user
+- Hand off a named migration to the skill the report names, the way an unmigrated domain reaches `migration-standards`
 - Offer every audit whose surface the target carries, and offer none whose surface it lacks
 - Re-check the target after any operation that wrote, and report what those writes changed against the state read before acting
 
@@ -29,6 +31,7 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 - Edit a managed file by hand instead of running the CLI that owns it
 - Reimplement a flow another skill owns
 - Hardcode a catalog name
+- Move, delete, or name a command against a folder in `unclaimed`. The toolkit stopped claiming the path and only the user knows whether the project owns what sits there
 - Run an audit the user did not pick, which turns a front door into a full sweep
 - Refuse to finish an operation over an audit finding, since every audit reports judgments beside facts and a router that stops on one is a router a target works around
 - Auto-trigger. It is a door the user opens, and a router that fires on its own routes requests nobody made.
@@ -38,6 +41,7 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 - An intent matching a deep flow hands off rather than running a shallow version of it, since a partial scaffold is harder to recover from than none
 - An ignore-only fix on an unmeasured tooling report stops, names which cause applies, and names the command answering that cause. Unmeasured has several causes and they do not share a remedy, so one suggested command is wrong for at least one of them. No cause asks the user to supply a stack name, and none reads the zero counts under an unmeasured report as a clean target.
 - A re-check with no earlier report to compare against says the write ran without a baseline, rather than describing the target from scratch
+- A report missing a field this skill reads names the CLI version as the cause and reports that section as unread. Neither an absent key nor a hand-rolled substitute for it may be reported as a finding, since the first reads as a clean target and the second reaches a verdict only the field's attribution can make
 
 ## Out of scope
 
