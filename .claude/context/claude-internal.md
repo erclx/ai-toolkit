@@ -47,6 +47,8 @@ The runner is the only path the skill takes on its own. Its interactive counterp
 
 Verification stops at one arm per invocation. The `Queued:` list stays a printed command, so an automatic ship-time step cannot turn into a catalog sweep.
 
+The collection commands the skill spells out do not run as written from where it is invoked. Its Guards and Step 1 both carry `git diff "$(git merge-base main HEAD)" --name-only -- <globs>`, and the worktree isolation guard refuses any Bash command it cannot statically verify stays inside the worktree, which covers a command substitution standing in for a git argument and a braced compound joined by a pipe. Autoship reaches this skill only from a linked worktree, so the literal is refused on every ship-time invocation. Resolve the merge base in a prior plain command and pass the resulting sha.
+
 An item that ships unverified names one of three gates, `no-mechanism`, `credentials`, or `cost`. The vocabulary exists because the three have different fixes and a single sentence about verification being undone hides which one applied. `credentials` covers the `use_anchor` scenarios off an authenticated machine, `no-mechanism` covers a script mapping with no skill invocation to run, and `cost` is reserved for a sweep rather than a single arm.
 
 ## Orchestration
