@@ -31,6 +31,8 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk tasks outcome`       | Mark outcomes `[x]` on a task by position, repeating `--close` (`--json`)                                                                 |
 | `aitk tasks validate`      | Report board rows whose plan, task file, group, or file set does not hold (`--json`)                                                      |
 | `aitk records validate`    | Report a session record against the standard governing it, per kind (`--json`)                                                            |
+| `aitk records push`        | Commit the eight backed record folders and push them to a private records remote (`--json`)                                               |
+| `aitk records pull`        | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                   |
 | `aitk comments scan`       | Measure comment density by language and comment kind, with a trend recomputed from git                                                    |
 | `aitk context audit`       | Report required sections, length, cited paths, reference form, catalog tables, provenance, superseded-decision narration, and index drift |
 | `aitk markdown audit`      | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                    |

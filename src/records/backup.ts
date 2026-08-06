@@ -1,0 +1,394 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { $ } from 'bun'
+import { gitEnv } from '@/git-env'
+
+/**
+ * The folders a backup carries, relative to `.claude/`. They are the `# Claude`
+ * group in `.gitignore` minus `.claude/.tmp`, which is defined as deletable
+ * without loss, and `.claude/worktrees/`, whose contents belong to the
+ * enclosing repository already. The list is spelled out rather than read off
+ * that group so adding an ignore entry cannot silently enlarge the payload.
+ *
+ * `RECORD_KINDS` in `validate.ts` names four of these. The two lists differ on
+ * purpose: one is what a standard governs, this is what a disk loss would take.
+ */
+export const BACKED_FOLDERS = [
+  'groundwork',
+  'intake',
+  'memory',
+  'plans',
+  'plans-archive',
+  'review',
+  'task-archive',
+  'tasks',
+] as const
+
+/** Holds the records history beside the folders it tracks, ignored by the enclosing repository. */
+const RECORDS_GIT_DIR = join('.claude', '.records.git')
+
+const WORK_TREE = '.claude'
+
+/** Both directions name the branch, so a machine whose `init.defaultBranch` differs still lands on it. */
+const RECORDS_BRANCH = 'main'
+
+/**
+ * The records history is machine-written and nobody reads its authorship, so a
+ * fixed identity keeps `push` from failing inside a git hook on a machine where
+ * `user.email` was never configured.
+ */
+const COMMIT_IDENTITY = ['-c', 'user.name=aitk', '-c', 'user.email=aitk@local']
+
+export const BACKUP_REFUSALS = [
+  'no-repository',
+  'no-remote',
+  'remote-unreadable',
+  'remote-shared',
+  'no-remote-records',
+  'local-changes',
+  'local-ahead',
+  'git-failed',
+] as const
+
+export type BackupRefusal = (typeof BACKUP_REFUSALS)[number]
+
+export interface BackupRefused {
+  readonly ok: false
+  readonly reason: BackupRefusal
+  readonly message: string
+}
+
+export interface PushReport {
+  readonly ok: true
+  readonly root: string
+  readonly folders: readonly string[]
+  readonly changed: number
+  readonly commit?: string
+  readonly pushed: boolean
+}
+
+export interface PullReport {
+  readonly ok: true
+  readonly root: string
+  readonly folders: readonly string[]
+  readonly commit: string
+  readonly files: number
+}
+
+export type PushOutcome = PushReport | BackupRefused
+export type PullOutcome = PullReport | BackupRefused
+
+interface GitResult {
+  readonly ok: boolean
+  readonly text: string
+  readonly stderr: string
+}
+
+/**
+ * Runs one git command against the records history.
+ *
+ * Both flags go on every call. `git --git-dir=<path> init` writes
+ * `core.bare = true`, and an explicit `--work-tree` is what overrides it, so
+ * dropping the flag on a single call reads the enclosing project as the tree
+ * and stages everything in it.
+ */
+async function records(root: string, args: string[]): Promise<GitResult> {
+  const gitDir = join(root, RECORDS_GIT_DIR)
+  const workTree = join(root, WORK_TREE)
+
+  const result =
+    await $`git --git-dir=${gitDir} --work-tree=${workTree} ${args}`
+      .env(gitEnv())
+      .quiet()
+      .nothrow()
+
+  return {
+    ok: result.exitCode === 0,
+    text: result.stdout.toString().trim(),
+    stderr: result.stderr.toString().trim(),
+  }
+}
+
+function refuse(reason: BackupRefusal, message: string): BackupRefused {
+  return { ok: false, reason, message }
+}
+
+function failed(action: string, result: GitResult): BackupRefused {
+  return refuse(
+    'git-failed',
+    `git ${action} failed against the records history: ${result.stderr || 'no output'}.`,
+  )
+}
+
+/**
+ * Reduces a remote URL to `host/path`, so every spelling of one repository
+ * compares equal.
+ *
+ * Transport is what the reduction drops. `git@github.com:owner/repo.git` and
+ * `https://github.com/owner/repo` name the same repository, and comparing them
+ * as written passes a records origin that publishes the payload through the
+ * other protocol.
+ */
+function remoteIdentity(url: string): string {
+  return url
+    .trim()
+    .toLowerCase()
+    .replace(/^[a-z+]+:\/\//, '')
+    .replace(/^[^@/]+@/, '')
+    .replace(/^([^/:]+):/, '$1/')
+    .replace(/\/+$/, '')
+    .replace(/\.git$/, '')
+    .replace(/\/+$/, '')
+}
+
+/**
+ * Lists every remote of the enclosing project, or undefined when git cannot
+ * answer.
+ *
+ * The caller refuses on undefined rather than smoothing it into an empty list.
+ * An empty list clears the gate below for every URL, so a git that failed for
+ * any reason would publish the payload to whatever origin the records history
+ * happens to name. A project with no remotes answers `0` with an exit of zero,
+ * so the two states stay distinguishable.
+ */
+async function enclosingRemoteUrls(
+  root: string,
+): Promise<string[] | undefined> {
+  const result = await $`git -C ${root} remote -v`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
+  if (result.exitCode !== 0) return undefined
+
+  return result.stdout
+    .toString()
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => line.split(/\s+/)[1] ?? '')
+    .filter(Boolean)
+    .map(remoteIdentity)
+}
+
+/**
+ * Clears the four gates both verbs share and returns the records remote URL.
+ *
+ * The last two are the ones the payload depends on. This repository is public,
+ * so a records branch on any of its remotes serves the memory pen and the
+ * groundwork trails to anyone who fetches all refs. Comparing the configured
+ * URL against every remote of the enclosing repository is what keeps a
+ * misconfigured `origin` from publishing them, and refusing when that list
+ * cannot be read is what keeps a failed comparison from reading as a pass.
+ */
+async function resolveRemote(root: string): Promise<string | BackupRefused> {
+  if (!existsSync(join(root, RECORDS_GIT_DIR))) {
+    return refuse(
+      'no-repository',
+      [
+        `No records history at ${RECORDS_GIT_DIR}. Create it once, against a private repository:`,
+        `  git --git-dir=${join(root, RECORDS_GIT_DIR)} init`,
+        `  git --git-dir=${join(root, RECORDS_GIT_DIR)} remote add origin <private-repo-url>`,
+      ].join('\n'),
+    )
+  }
+
+  const remote = await records(root, ['remote', 'get-url', 'origin'])
+  if (!remote.ok || remote.text.length === 0) {
+    return refuse(
+      'no-remote',
+      [
+        'The records history has no origin. Point it at a private repository:',
+        `  git --git-dir=${join(root, RECORDS_GIT_DIR)} remote add origin <private-repo-url>`,
+      ].join('\n'),
+    )
+  }
+
+  const enclosing = await enclosingRemoteUrls(root)
+  if (!enclosing) {
+    return refuse(
+      'remote-unreadable',
+      `Cannot read the remotes of the project at ${root}, so the records origin cannot be checked against them. Records carry the memory pen and the groundwork trails, and an unchecked origin risks publishing them.`,
+    )
+  }
+
+  const url = remoteIdentity(remote.text)
+  if (enclosing.includes(url)) {
+    return refuse(
+      'remote-shared',
+      `The records origin ${remote.text} is a remote of this project. Records carry the memory pen and the groundwork trails, so they need a repository of their own.`,
+    )
+  }
+
+  return url
+}
+
+/**
+ * The subset of the eight a pathspec can name: on disk, or already in the
+ * records index.
+ *
+ * A pathspec matching neither fails the whole `add`, which is why the subset
+ * exists. The index half is what covers a folder deleted in full. Reading disk
+ * alone drops it from the pathspec, so its deletion never stages, the remote
+ * keeps it forever, and a later `pull` restores it past the gate that refuses
+ * every other unpushed deletion.
+ */
+async function scopedFolders(root: string): Promise<string[]> {
+  const tracked = await records(root, ['ls-files'])
+  const indexed = new Set(
+    tracked.ok ? tracked.text.split('\n').filter(Boolean).map(topSegment) : [],
+  )
+
+  return BACKED_FOLDERS.filter(
+    (folder) =>
+      existsSync(join(root, WORK_TREE, folder)) || indexed.has(folder),
+  )
+}
+
+function topSegment(path: string): string {
+  return path.split('/')[0]
+}
+
+/** What a report names, which is the folders a reader can go and open. */
+function presentFolders(root: string): string[] {
+  return BACKED_FOLDERS.filter((folder) =>
+    existsSync(join(root, WORK_TREE, folder)),
+  )
+}
+
+function countLines(text: string): number {
+  return text.split('\n').filter(Boolean).length
+}
+
+/**
+ * Stages the backed folders, commits when any of them changed, and pushes.
+ *
+ * The push runs whether or not this call committed, because a previous run can
+ * have committed and then failed to reach the network. Skipping it would leave
+ * that commit on one disk, which is the state the whole verb exists to end.
+ */
+export async function pushRecords(root: string): Promise<PushOutcome> {
+  const remote = await resolveRemote(root)
+  if (typeof remote !== 'string') return remote
+
+  const scope = await scopedFolders(root)
+
+  if (scope.length > 0) {
+    // `-f` is what carries the payload: every backed folder is ignored by the
+    // enclosing repository, and the pathspecs are the whole list, so nothing
+    // outside them can enter the index however the ignore rules read.
+    const staged = await records(root, ['add', '-A', '-f', '--', ...scope])
+    if (!staged.ok) return failed('add', staged)
+  }
+
+  const diff = await records(root, [
+    'diff',
+    '--cached',
+    '--name-only',
+    '--',
+    ...scope,
+  ])
+  if (!diff.ok) return failed('diff', diff)
+
+  const changed = countLines(diff.text)
+
+  if (changed > 0) {
+    const stamp = new Date().toISOString().replace('T', ' ').slice(0, 16)
+    const commit = await records(root, [
+      ...COMMIT_IDENTITY,
+      'commit',
+      '--quiet',
+      '-m',
+      `records: ${changed} changed at ${stamp}`,
+    ])
+    if (!commit.ok) return failed('commit', commit)
+  }
+
+  const folders = presentFolders(root)
+  const head = await records(root, ['rev-parse', '--short', 'HEAD'])
+  if (!head.ok) {
+    return { ok: true, root, folders, changed, pushed: false }
+  }
+
+  const pushed = await records(root, [
+    'push',
+    'origin',
+    `HEAD:refs/heads/${RECORDS_BRANCH}`,
+  ])
+  if (!pushed.ok) return failed('push', pushed)
+
+  return { ok: true, root, folders, changed, commit: head.text, pushed: true }
+}
+
+/**
+ * Fetches the records history and writes it into the backed folders.
+ *
+ * The two directions are not symmetric. A push only ever adds, while a pull
+ * onto a machine holding work that never reached the remote would discard it,
+ * so both gates below refuse rather than choosing a merge strategy. A person
+ * resolves by pushing first or by moving the local folders aside.
+ */
+export async function pullRecords(root: string): Promise<PullOutcome> {
+  const remote = await resolveRemote(root)
+  if (typeof remote !== 'string') return remote
+
+  const fetched = await records(root, [
+    'fetch',
+    '--quiet',
+    'origin',
+    `refs/heads/${RECORDS_BRANCH}`,
+  ])
+  if (!fetched.ok) {
+    // A missing branch and an unreachable remote both fail the fetch, and only
+    // the first is an ordinary state a person resolves by pushing once.
+    if (fetched.stderr.includes("couldn't find remote ref")) {
+      return refuse(
+        'no-remote-records',
+        `The records origin carries no ${RECORDS_BRANCH} branch yet. Run aitk records push from the machine holding the records.`,
+      )
+    }
+    return failed('fetch', fetched)
+  }
+
+  const target = await records(root, ['rev-parse', 'FETCH_HEAD'])
+  if (!target.ok) return failed('rev-parse', target)
+
+  const scope = await scopedFolders(root)
+
+  if (scope.length > 0) {
+    const dirty = await records(root, ['status', '--porcelain', '--', ...scope])
+    if (!dirty.ok) return failed('status', dirty)
+
+    if (dirty.text.length > 0) {
+      return refuse(
+        'local-changes',
+        `${countLines(dirty.text)} local record(s) are not in the records history. Run aitk records push first, or move them aside.`,
+      )
+    }
+  }
+
+  const head = await records(root, ['rev-parse', '--verify', '--quiet', 'HEAD'])
+  if (head.ok && head.text.length > 0) {
+    const ahead = await records(root, ['rev-list', `${target.text}..HEAD`])
+    if (!ahead.ok) return failed('rev-list', ahead)
+
+    if (ahead.text.length > 0) {
+      return refuse(
+        'local-ahead',
+        `${countLines(ahead.text)} local commit(s) have not reached the records origin. Run aitk records push first.`,
+      )
+    }
+  }
+
+  const reset = await records(root, ['reset', '--hard', '--quiet', target.text])
+  if (!reset.ok) return failed('reset', reset)
+
+  const files = await records(root, ['ls-files'])
+  if (!files.ok) return failed('ls-files', files)
+
+  return {
+    ok: true,
+    root,
+    folders: presentFolders(root),
+    commit: target.text.slice(0, 7),
+    files: countLines(files.text),
+  }
+}

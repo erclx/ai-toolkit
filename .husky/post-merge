@@ -49,28 +49,52 @@ fi
 # naming no pull request yields nothing here, which is what keeps this quiet on
 # the runs it has nothing to say about.
 numbers=$(printf '%s\n' "$subjects" | sed -n 's/.*(#\([0-9][0-9]*\))[[:space:]]*$/\1/p')
-[ -n "$numbers" ] || exit 0
 
-printf '%s\n' "$numbers" | while IFS= read -r number; do
-  [ -n "$number" ] || continue
+if [ -n "$numbers" ]; then
+  printf '%s\n' "$numbers" | while IFS= read -r number; do
+    [ -n "$number" ] || continue
 
-  # `--json` keeps the record on stdout parseable and every refusal reason with
-  # it. A refusal is the ordinary case here, since most merges close no task.
-  if record=$(aitk tasks archive --pull-request "$number" --root "$root" --json 2>/dev/null); then
-    task=$(printf '%s' "$record" | sed -n 's/.*"task":"\([^"]*\)".*/\1/p')
-    printf '\n📦 Archived %s, closed by #%s.\n\n' "$task" "$number"
-    continue
+    # `--json` keeps the record on stdout parseable and every refusal reason
+    # with it. A refusal is ordinary here, since most merges close no task.
+    if record=$(aitk tasks archive --pull-request "$number" --root "$root" --json 2>/dev/null); then
+      task=$(printf '%s' "$record" | sed -n 's/.*"task":"\([^"]*\)".*/\1/p')
+      printf '\n📦 Archived %s, closed by #%s.\n\n' "$task" "$number"
+      continue
+    fi
+
+    reason=$(printf '%s' "$record" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
+
+    # No task names this pull request, which is what a release or an unlinked
+    # branch looks like. Nothing to report.
+    if [ "$reason" = "no-match" ] || [ "$reason" = "no-board" ] || [ -z "$reason" ]; then
+      continue
+    fi
+
+    message=$(printf '%s' "$record" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
+    printf '\n📋 Task not archived for #%s: %s\n' "$number" "${message:-$reason}"
+    printf 'Run /claude-tasks to resolve it by hand.\n\n'
+  done
+fi
+
+# The eight gitignored record folders live on one disk and nowhere else, and a
+# merge is the event that changes them most. This runs on every merge rather
+# than only on one that archived a task, since a review report and a memory
+# entry both land on runs that close nothing.
+#
+# It sits last so a slow or unreachable remote delays no archiving, and inside
+# an `if` so a push failing offline still leaves this hook exiting zero.
+if backup=$(aitk records push --root "$root" --json 2>/dev/null); then
+  changed=$(printf '%s' "$backup" | sed -n 's/.*"changed":\([0-9][0-9]*\).*/\1/p')
+  if [ -n "$changed" ] && [ "$changed" != "0" ]; then
+    printf '\n🗄️  Backed up %s record path(s).\n\n' "$changed"
   fi
+else
+  reason=$(printf '%s' "$backup" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
 
-  reason=$(printf '%s' "$record" | sed -n 's/.*"reason":"\([^"]*\)".*/\1/p')
-
-  # No task names this pull request, which is what a release or an unlinked
-  # branch looks like. Nothing to report.
-  if [ "$reason" = "no-match" ] || [ "$reason" = "no-board" ] || [ -z "$reason" ]; then
-    continue
+  # No records history on this machine, which is every checkout that never ran
+  # the one-time setup. Nothing to report.
+  if [ "$reason" != "no-repository" ]; then
+    printf '\n🗄️  Records not backed up: %s\n' "${reason:-unknown}"
+    printf 'Run aitk records push when the remote is reachable.\n\n'
   fi
-
-  message=$(printf '%s' "$record" | sed -n 's/.*"message":"\([^"]*\)".*/\1/p')
-  printf '\n📋 Task not archived for #%s: %s\n' "$number" "${message:-$reason}"
-  printf 'Run /claude-tasks to resolve it by hand.\n\n'
-done
+fi

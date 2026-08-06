@@ -61,6 +61,7 @@ ollama
 parametrize
 pathlib
 pathspec
+pathspecs
 pdftoppm
 pip
 pnpm
@@ -99,6 +100,7 @@ tolower
 topbar
 toupper
 tsconfig
+unpushed
 uv
 uvicorn
 valign
