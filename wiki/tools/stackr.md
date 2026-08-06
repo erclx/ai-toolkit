@@ -1,11 +1,13 @@
 ---
-title: AI Context Stacker
+title: Stackr
 description: VS Code extension that stages files into a named context stack and copies them as one formatted payload
 ---
 
-# AI Context Stacker
+# Stackr
 
-[AI Context Stacker](https://marketplace.visualstudio.com/items?itemName=erclx.ai-context-stacker) is a VS Code extension that stages files and folders from the explorer into a named context stack, then copies that stack as a single formatted payload. Source: the `erclx` marketplace publisher, which builds and ships the extension outside this repository.
+[Stackr](https://marketplace.visualstudio.com/items?itemName=erclx.ai-context-stacker) is a VS Code extension that stages files and folders from the explorer into a named context stack, then copies that stack as a single formatted payload. Source: the `erclx` marketplace publisher, which builds and ships the extension outside this repository.
+
+The marketplace item identifier is `erclx.ai-context-stacker`, which does not match the display name. Install links resolve on the identifier, so the URL above is correct as written.
 
 ## Capabilities
 
