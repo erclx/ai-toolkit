@@ -55,7 +55,9 @@ Every weight and depth measure counts the text a reader is shown. A link reduces
 
 A code span is walked around rather than through, so a path quoting link or angle-bracket syntax keeps the width the page gives it. Masking inside one takes back the decision to count it, and the placeholders this toolkit writes are where that shows.
 
-The paragraph check measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: 36 paragraphs in this corpus sit inside four sentences and past the weight checkpoint, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+The paragraph check measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: 15 paragraphs in this corpus sit inside four sentences and past the weight checkpoint, and the heaviest of those runs 886 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+
+A sentence boundary closes on terminal punctuation ahead of a capital or a code span. The capital is what keeps a version pin and a decimal from each reading as two sentences, and the code span is admitted beside it because a command name opening a sentence carries no capital to find.
 
 The paragraph weight sits at 700 and the bullet weight at 400. Both shipped at 400, because the paragraph number was borrowed from the bullet rule when the two checks landed together, and each has since been read against a sample of its own. They are separate checkpoints in the standard and separate patterns in the parser, so a read that moves one leaves the other where it is.
 
