@@ -40,7 +40,9 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 `aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/standards/prose.md`, and `.claude/standards/markdown.md`, fill the same seed, and end at the same render.
 
-The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`. The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
+The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`.
+
+The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
 
 The greenfield path runs when nothing matches. It requires a `## Personality` paragraph in `.claude/REQUIREMENTS.md`, reads `.claude/ARCHITECTURE.md` for platform signals, and proposes token values from those inputs. Nearly every cell carries `? verify`, since the values are speculative until code or a designer anchors them. This path replaces the Claude Design onboarding quota cost for greenfield projects, and the first render usually shifts several tokens after review.
 

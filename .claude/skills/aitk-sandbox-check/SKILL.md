@@ -34,7 +34,14 @@ git diff "$(git merge-base main HEAD)" --name-only -- 'scripts/sandbox/**/*.sh'
 pwd
 ```
 
-The first list is the changed skills, both plugin (`claude/skills/`) and internal (`.claude/skills/`). The second list is the changed scripts (`scripts/`, `src/`). The third is the changed sandbox scenarios. The fourth is the current root, whether that is main or a linked worktree. `.sandbox/` lives under whichever root ran `manage-sandbox.sh`, because the script resolves `PROJECT_ROOT` from its own path.
+The four lists, in order:
+
+- The changed skills, both plugin (`claude/skills/`) and internal (`.claude/skills/`)
+- The changed scripts (`scripts/`, `src/`)
+- The changed sandbox scenarios
+- The current root, whether that is main or a linked worktree
+
+`.sandbox/` lives under whichever root ran `manage-sandbox.sh`, because the script resolves `PROJECT_ROOT` from its own path.
 
 Drop any path in the script list that already appears in the scenario list. Scenario edits surface through the "Scenarios changed but not paired" tail and do not need a mapping pass.
 
@@ -142,7 +149,8 @@ Rules for the block:
 - `Queued:` lists every remaining distinct scenario as a full `manage-sandbox.sh` command, one per line, so the user can copy directly. Omit the section when there is only one scenario.
 - Omit `Provisioning:` and `Queued:` when no pairing carries a scenario, since there is nothing to provision.
 - `Headless verification:` shows the Step 6 command for the `Provisioning:` scenario alone, carrying the arm when the scenario is multi-arm. Replace the command with `gate: <label>` when a Step 6 skip condition holds, so the report says why before the run is missing rather than after.
-- Print the interactive re-test command flush-left as a single chained line (`cd … && claude --plugin-dir … --model sonnet`) so the user can paste it into any terminal. The `--plugin-dir` points at `<current-root>/claude` so unchanged sub-skills (those not dev-injected) stay available to chained skills like `claude-autoship`. Dev-injected skills under the sandbox's `.claude/skills/` still take priority.
+- Print the interactive re-test command flush-left as a single chained line (`cd … && claude --plugin-dir … --model sonnet`) so the user can paste it into any terminal
+  - The `--plugin-dir` points at `<current-root>/claude` so unchanged sub-skills (those not dev-injected) stay available to chained skills like `claude-autoship`. Dev-injected skills under the sandbox's `.claude/skills/` still take priority.
 - Pipe the same chained command to the clipboard using the first available tool: `wl-copy`, `xclip -selection clipboard`, `pbcopy`, then `clip.exe`. If none are present, drop the `(copied to clipboard)` suffix from the heading and continue silently.
 - After the `Interactive re-test:` block, print one line: `Note: in the interactive session, invoke skills as /<skill-name>, not /aitk:<skill-name>. The project-scoped copy takes priority.` The headless prompt in Step 6 uses the qualified form for the opposite reason, so keep the two lines distinct.
 - `Scenarios changed but not paired:` lists any scenario in the changed-scenarios list that no Step 2 mapping pointed to. Omit the section when empty.
@@ -181,7 +189,9 @@ Do not guess the arm from the scenario file. Ask the user: `Arm for <category>:<
 
 Print the target, prompt, and arm before running, since a wrong pairing is invisible in the verdict alone. A scenario that needs prompt arguments is a case to report, not to guess at.
 
-Report the verdict. Do not assert it. `run.sh` merges a `verdict` object into the JSON envelope on stdout carrying `state`, `asserted`, `failed`, and `unchecked`. Print `state` as it came back, and say so when it is `unchecked`, which means the arm declared no expectations and the run asserted nothing. Do not read `unchecked` as a pass or convert it into a failure. `--strict` covers a caller that has finished arming.
+Report the verdict. Do not assert it. `run.sh` merges a `verdict` object into the JSON envelope on stdout carrying `state`, `asserted`, `failed`, and `unchecked`. Print `state` as it came back, and say so when it is `unchecked`, which means the arm declared no expectations and the run asserted nothing.
+
+Do not read `unchecked` as a pass or convert it into a failure. `--strict` covers a caller that has finished arming.
 
 Do not fix a failing verdict. The skill surfaces the result and the user decides.
 

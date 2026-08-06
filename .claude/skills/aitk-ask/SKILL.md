@@ -27,7 +27,12 @@ All four indexes are small. Parallel read avoids routing errors between consumer
 
 ## Step 2: pick one file
 
-Match the question against the one-line summaries in all four indexes. Pick the single most relevant file. Prefer `docs/` for CLI surface, target-project integration, and the workflow this repo runs on (AI workflow, operating model, design tiers, shell aliases). Prefer `.claude/context/` for how a specific domain is built (structure, decisions, gotchas). Prefer `standards/` for the shape an authored artifact must take, which is what a question about how to write one is asking. Prefer `wiki/` for Claude Code concepts and reference on tools owned outside this repo.
+Match the question against the one-line summaries in all four indexes. Pick the single most relevant file.
+
+- Prefer `docs/` for CLI surface, target-project integration, and the workflow this repo runs on (AI workflow, operating model, design tiers, shell aliases)
+- Prefer `.claude/context/` for how a specific domain is built (structure, decisions, gotchas)
+- Prefer `standards/` for the shape an authored artifact must take, which is what a question about how to write one is asking
+- Prefer `wiki/` for Claude Code concepts and reference on tools owned outside this repo
 
 If two entries look equally relevant, read both. Do not read more than two.
 

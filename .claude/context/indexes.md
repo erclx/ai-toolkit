@@ -24,7 +24,8 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - Both integration points are opt-in per project and the toolkit ships no default. Git-driven projects want `lint-staged`, agent-driven ones want the hook, and picking one for them would be wrong half the time.
 - This was the first domain migrated off bash, chosen because nothing else depended on its walker. The engine reads frontmatter with `Bun.YAML` and emits JSON with `JSON.stringify`, so neither the parser nor the escaping is hand-rolled.
 - Frontmatter is re-emitted verbatim rather than re-serialized from the parsed object. Key order, comments, and the `auto: false` marker all survive a regeneration that way.
-- Flat mode sorts sub-catalogs among the sibling files instead of appending them. A folder and a file are both one domain to a reader scanning the catalog, and the rendered lines are indistinguishable, so a trailing entry reads as absent from the alphabetical run it belongs in. `.claude/context/claude-plugin/` was the repository's first sub-catalog, so nothing read the append path until it landed at the bottom of a catalog `CLAUDE.md` loads every session. Grouped mode keeps the append, because its heading is what makes the child catalogs visible there.
+- Flat mode sorts sub-catalogs among the sibling files instead of appending them. A folder and a file are both one domain to a reader scanning the catalog, and the rendered lines are indistinguishable, so a trailing entry reads as absent from the alphabetical run it belongs in.
+- `.claude/context/claude-plugin/` was the repository's first sub-catalog, so nothing read the append path until it landed at the bottom of a catalog `CLAUDE.md` loads every session. Grouped mode keeps the append, because its heading is what makes the child catalogs visible there.
 
 ## Gotchas
 
@@ -33,7 +34,8 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - A child folder carrying no `index.md` at all drops out of every catalog silently. `collectEntries` globs the folder's own `*.md` and never recurses, so the pages inside surface neither as parent entries nor as a sub-catalog line, and the regen reports success. Create the child index in the same change that creates the folder.
 - When a folder has both an overview file and a same-named subfolder, both entries appear.
 - Whole-repo walks with no positional paths never auto-stage.
-- A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` and `.claude/memory/` both depend on that asymmetry: `bun run check` cannot regenerate either, so a `PostToolUse` hook passes the changed path instead. Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit.
+- A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` and `.claude/memory/` both depend on that asymmetry: `bun run check` cannot regenerate either, so a `PostToolUse` hook passes the changed path instead.
+- Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit
 - A hook keeping such a folder current matches tool names, `Write|Edit|MultiEdit`, so a file relocated by a shell `mv` fires nothing and the index keeps a row for a file that has moved. A skill that archives or relocates an entry calls `aitk indexes regen` itself after the last move rather than relying on the hook.
 - A frontmatter failure takes the whole folder rather than the one file. `collectEntries` returns an error for the directory, so one unparseable entry leaves every sibling's index unwritten.
 

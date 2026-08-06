@@ -14,7 +14,9 @@ Two tools anchor tier 1 and tier 2. [Stitch](../wiki/tools/stitch.md) is the age
 
 ## Tier 0: prose only
 
-The default. `.claude/DESIGN.md` holds visual intent as prose plus token tables for color, typography, spacing, borders, motion, and iconography. `.claude/WIREFRAMES.md` holds ASCII layouts. Claude Code reads both and writes the implementation. Works for CLI tools, internal dashboards, admin panels, and backend-focused projects.
+The default. `.claude/DESIGN.md` holds visual intent as prose plus token tables for color, typography, spacing, borders, motion, and iconography. `.claude/WIREFRAMES.md` holds ASCII layouts.
+
+Claude Code reads both and writes the implementation. Works for CLI tools, internal dashboards, admin panels, and backend-focused projects.
 
 ### Seed shape
 

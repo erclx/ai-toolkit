@@ -9,7 +9,13 @@ Every `aitk` command prints inside one timeline frame, and the frame has to surv
 
 ## The exec boundary
 
-No domain has a dispatcher any more. `src/commands/tooling.ts` handles `sync`, `inject`, `prune-gitignore`, and `list` in TypeScript and shells out for `ref`, `create`, and `verify`. `src/commands/gov.ts` handles `install`, `sync`, and `build`, and shells out for `list` alone. `src/commands/standards.ts` handles `install` and `sync`, and shells out for `list` alone. `src/commands/snippets.ts` handles `install`, `sync`, and `list`, and shells out for `create` alone. `src/commands/claude.ts` is TypeScript end to end, as are `sync` and `init`, which reach no verb script at all.
+No domain has a dispatcher any more.
+
+- `src/commands/tooling.ts` handles `sync`, `inject`, `prune-gitignore`, and `list` in TypeScript and shells out for `ref`, `create`, and `verify`
+- `src/commands/gov.ts` handles `install`, `sync`, and `build`, and shells out for `list` alone
+- `src/commands/standards.ts` handles `install` and `sync`, and shells out for `list` alone
+- `src/commands/snippets.ts` handles `install`, `sync`, and `list`, and shells out for `create` alone
+- `src/commands/claude.ts` is TypeScript end to end, as are `sync` and `init`, which reach no verb script at all
 
 `scripts/standards/list.sh` sets its own EXIT trap and emits section headers via `log_step` without ever emitting `┌`, which is what lets the command layer above it own the frame.
 

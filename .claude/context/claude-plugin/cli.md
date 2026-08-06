@@ -16,7 +16,11 @@ description: The aitk claude command surface and what each verb writes into a ta
 
 ### What lands
 
-Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `context/`, `tasks/`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project. Coding and doc-authoring standards arrive separately via `aitk gov install`, which `aitk init` now runs on every scaffold because `--stack` defaults to `base`. The seed `CLAUDE.md` carried a `## Markdown` section duplicating that routing for as long as a bare init could skip governance. A seed audit proposed cutting it, the cut was reverted because governance was opt-in while standards were opt-out, and the default closed that gap. The section is gone: `500-prose.md`, `501-markdown.md`, `510-context.md`, and `520-wireframes.md` deliver the same routing path-scoped. `--skip governance` reopens the gap by design, and the run warns that standards land without the rules that route to them.
+Seeds `.claude/` with project docs (`REQUIREMENTS.md`, `ARCHITECTURE.md`, `DESIGN.md`, `context/`, `tasks/`, `wireframes/`, `settings.json`) and hook scripts under `.claude/hooks/`. Also seeds `CLAUDE.md` at the project root and merges `.gitignore` entries. Skips files already present. Run once per project.
+
+Coding and doc-authoring standards arrive separately via `aitk gov install`, which `aitk init` now runs on every scaffold because `--stack` defaults to `base`. The seed `CLAUDE.md` carried a `## Markdown` section duplicating that routing for as long as a bare init could skip governance. A seed audit proposed cutting it, the cut was reverted because governance was opt-in while standards were opt-out, and the default closed that gap.
+
+The section is gone: `500-prose.md`, `501-markdown.md`, `510-context.md`, and `520-wireframes.md` deliver the same routing path-scoped. `--skip governance` reopens the gap by design, and the run warns that standards land without the rules that route to them.
 
 ### Seeded folders
 
@@ -32,9 +36,13 @@ A PostToolUse hook pairs with `.claude/hooks/standards-audit.sh`, which calls `a
 
 The seed copy keeps the awk parse and the defect that comes with it, which is the second of the two divergences above. Its `standard=` path is `prose.md`, where every `- Do not use` bullet sits, and the two character bans stay hardcoded because their rule text moved to `markdown.md` when the standard split, so a `Do not use` bullet added to `markdown.md` is parsed by nothing and the file still passes every gate. A scaffolded project may carry no `aitk`, which is what holds the awk there rather than the verb, and `scripts/core/check-seed-independence.sh` exists to catch seed content depending on the toolkit CLI.
 
-The wordlist is parsed out of the standard at runtime rather than hardcoded, so the hook cannot drift from `prose.md` the way a second copy would. Extraction takes the single-word backticked terms from every bullet opening `- Do not use`, which admits the buzzword and vague-qualifier sets and skips the multi-word and punctuation bans phrased the same way. A ban worded differently arms nothing, so the filler bullet opening `Open a sentence with its subject and action` stays outside the hook until the extraction widens to reach it. Matching is case-insensitive on word boundaries and drops inline code spans first, so `just build` in a command and a `--very-verbose` flag do not read as prose. Every banned word on a line is collected into one report line.
+The wordlist is parsed out of the standard at runtime rather than hardcoded, so the hook cannot drift from `prose.md` the way a second copy would. Extraction takes the single-word backticked terms from every bullet opening `- Do not use`, which admits the buzzword and vague-qualifier sets and skips the multi-word and punctuation bans phrased the same way. A ban worded differently arms nothing, so the filler bullet opening `Open a sentence with its subject and action` stays outside the hook until the extraction widens to reach it.
 
-The same PostToolUse block also carries `.claude/hooks/tasks-index.sh`, which regenerates `.claude/tasks/index.md` after a task file changes. It is the only trigger that reaches that folder, because the board is gitignored and the whole-repo index walk filters candidates through `git check-ignore`. It derives the walk-up boundary from the file path rather than the session, since the board resolves at the main worktree root and a linked worktree would otherwise reject the path, passes `--no-stage` so a hook never touches the git index, and reports both a frontmatter failure and a missing `aitk` as `additionalContext`, because no gate stage can fail on a stale index in an ignored folder. Reporting is the point of the hook, so neither failure exits quietly, and the path guard keeps both messages scoped to a task-file edit.
+Matching is case-insensitive on word boundaries and drops inline code spans first, so `just build` in a command and a `--very-verbose` flag do not read as prose. Every banned word on a line is collected into one report line.
+
+The same PostToolUse block also carries `.claude/hooks/tasks-index.sh`, which regenerates `.claude/tasks/index.md` after a task file changes. It is the only trigger that reaches that folder, because the board is gitignored and the whole-repo index walk filters candidates through `git check-ignore`.
+
+The hook derives the walk-up boundary from the file path rather than the session, since the board resolves at the main worktree root and a linked worktree would otherwise reject the path, passes `--no-stage` so a hook never touches the git index, and reports both a frontmatter failure and a missing `aitk` as `additionalContext`, because no gate stage can fail on a stale index in an ignored folder. Reporting is the point of the hook, so neither failure exits quietly, and the path guard keeps both messages scoped to a task-file edit.
 
 `.claude/hooks/memory-index.sh` sits beside it and does the same job for `.claude/memory/index.md`, which is gitignored for the same reason and reached the same way. The memory folder's index was hand-appended by `claude-memory-capture` until this hook took it, and it had drifted to more rows than files, which is what a hand-maintained catalog does at that size. The two hooks differ only in the path they guard on, so a change to one is owed to the other.
 
@@ -42,7 +50,9 @@ The same PostToolUse block also carries `.claude/hooks/tasks-index.sh`, which re
 
 A PreToolUse hook on `Grep` and `Glob` pairs with `.claude/hooks/index-reminder.sh`, which walks up from the search path to the nearest `index.md` and reminds the agent to read it first, once per folder per session. It fires only where an index exists, so it self-scales to a project's index density.
 
-A PreToolUse hook on `Write` and `Edit` pairs with `.claude/hooks/scratch-guard.sh`, which fires when a temp-path write lands outside `.claude/.tmp/` and reminds the agent to write scratch there, once per session. It exempts anything under `CLAUDE_PROJECT_DIR` before matching the temp patterns, because the bare `*/tmp/*` match has no notion of a project root and fired on every source write in a project whose own path carried a `tmp` segment. That trade gives up warning on a write to `<project>/tmp/`, which is a real violation, in exchange for silencing a false positive that fired constantly. It enforces the scratch rule deterministically instead of relying on CLAUDE.md prose the harness scratchpad instruction competes with.
+A PreToolUse hook on `Write` and `Edit` pairs with `.claude/hooks/scratch-guard.sh`, which fires when a temp-path write lands outside `.claude/.tmp/` and reminds the agent to write scratch there, once per session. It exempts anything under `CLAUDE_PROJECT_DIR` before matching the temp patterns, because the bare `*/tmp/*` match has no notion of a project root and fired on every source write in a project whose own path carried a `tmp` segment.
+
+That trade gives up warning on a write to `<project>/tmp/`, which is a real violation, in exchange for silencing a false positive that fired constantly. It enforces the scratch rule deterministically instead of relying on CLAUDE.md prose the harness scratchpad instruction competes with.
 
 ### User-level settings
 
@@ -58,7 +68,9 @@ The listing reads `planSeeds`, the same function `init` applies, so the two cann
 
 Reports whether each seeded project doc is present, then reconciles `.gitignore` against the `[gitignore]` section of `tooling/claude/manifest.toml`: appends any missing entries and prunes entries inside the `# Claude` section that the manifest no longer declares. Removed entries are logged as `-` lines. Never touches seeded project docs, so `.gitignore` is the only file it writes.
 
-`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so gitignore reconciliation lands in the combined sync PR alongside other domains. The changed-file tracking in `src/sync/target.ts` watches `.gitignore` for this reason. Seed audits are not automated. Run the `claude-seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `aitk sync` prints a tip reminder at the tail.
+`aitk sync` invokes this command with `AITK_NON_INTERACTIVE=1` when `.claude/` exists in the target, so gitignore reconciliation lands in the combined sync PR alongside other domains. The changed-file tracking in `src/sync/target.ts` watches `.gitignore` for this reason.
+
+Seed audits are not automated. Run the `claude-seed-sync` skill for per-part reconciliation across the preamble and each `##` section. `aitk sync` prints a tip reminder at the tail.
 
 ## setup
 

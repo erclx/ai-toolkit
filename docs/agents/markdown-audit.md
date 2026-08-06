@@ -96,9 +96,11 @@ Exit codes are `0` for a completed run with no gating finding, `1` for a refusal
 
 A banned character is a fact rather than a judgment, which is the test that admits it to a gate. What held it back was that gating on day one against a corpus never checked mechanically fails loudly on work nobody has had a chance to fix. The order was to land the verb reporting, measure the corpus once, fix what it finds, and turn the gate on as its own change, and the gate is the last of the four.
 
-Measured at `4b7b13a2` across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. This is the baseline the corpus sweep tracked its work against. The ban count is what the gate holds at zero, and it is the only one of the five a gate should ever read.
+Measured at `4b7b13a2` across 444 files with the paragraph checkpoint at 600: 8 word hits, no character or spelling hits, 119 heavy bullets, 221 heavy paragraphs across 86 files, and 41 files carrying a run past the depth checkpoint. Of the paragraphs, 88 fire on weight alone. That is the baseline the corpus sweep started from, and the ban count is the only one of the five a gate should ever read.
 
-The ban half of that baseline reached zero, which was the precondition the gate waited on, and it was re-measured against the same corpus at the moment the gate landed. The other four moved with the corpus rather than with any decision, so read them from a run rather than from this paragraph.
+The ban half reached zero, which was the precondition the gate waited on, and it was re-measured against the same corpus at the moment the gate landed. Three sweep slices then took the structural half, and the corpus reports 1 heavy bullet and 22 heavy paragraphs across 6 files on 2026-08-06, every one on a ground the triage record holds as exempt.
+
+Depth is the one measure no slice triaged, so its figure moved with the sweep rather than with the corpus. Read all four structural counts from a run rather than from this paragraph.
 
 ### What a hit asks of an author
 
