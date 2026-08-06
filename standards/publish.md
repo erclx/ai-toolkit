@@ -7,7 +7,7 @@ description: Scan run against finished text leaving through a channel no automat
 
 ## Scope
 
-Governs the scan an author runs against finished text on its way out, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies to any text leaving through a channel no automated check covers, and it carries no template because a scan has no document to shape.
+Governs the scan an author runs against finished text on its way out, the form a pull request or issue reference takes in the text that scan covers, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies to any text leaving through a channel no automated check covers, and it carries no template because a scan has no document to shape.
 
 Does not govern:
 
@@ -41,6 +41,8 @@ A number referring to a pull request or an issue takes the form its destination 
 Text published to a remote is the auto-linking half: a pull request body, an issue body, a comment on either, and a commit message. Write `#123` there, and `owner/repo#123` where the reference crosses repositories, which the same auto-linking reaches. A markdown file browsed from the repository tree is the other half, where neither spelling links and the backticked one marks the number as an identifier.
 
 A commit message takes the bare form even though it is also read through the log, where nothing links. The remote is what the form is chosen for, since a reader in the log loses only a link that plain text never carried.
+
+Text quoted from another surface keeps the spelling it arrived with. A reference inside a quotation belongs to what is being quoted rather than to the text doing the quoting, so rewriting it reports the source as having said something it never said.
 
 ## An unreadable source
 
