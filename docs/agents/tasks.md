@@ -90,7 +90,7 @@ aitk tasks validate
 aitk tasks validate --json
 ```
 
-Four checks run. Plan and Collisions are the two halves of the `## Run now` test the board standard states. Mapping and Grouping test the folder contract and hold for every group:
+Four checks run. Plan and Collisions reach one half each of the `## Run now` test the board standard states, and the second reaches only the collision reason that half names, since the other blocker kinds put no fact on disk to check against. Mapping and Grouping test the folder contract and hold for every group:
 
 | Check      | What it reports                                                                   |
 | ---------- | --------------------------------------------------------------------------------- |
