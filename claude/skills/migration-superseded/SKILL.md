@@ -31,13 +31,21 @@ No listing substitutes for the field. The pairing runs against the seed folder n
 
 ## Step 2: resolve the destination standard
 
+### Match the folder against the catalog
+
 Run `aitk standards list --json` and match each entry's `replacedBy` against the `appliesTo` array the catalog declares. Resolve from the catalog rather than from the folder stem, so a seed folder the toolkit adds later resolves without an edit here.
 
 Compare on the folder rather than on the exact string. An `appliesTo` value matches when it equals `replacedBy` or begins with `replacedBy` followed by a slash. The report spells the folder `.claude/tasks` and the catalog spells it `.claude/tasks/`, and `memory` declares a filename pattern beneath its folder rather than the folder itself, so string equality matches nothing the catalog actually carries and sends every entry to a decline below.
 
+### Search both standards roots
+
 A match resolves to that standard's `name`. Then look for that standard in the target, reading `.claude/standards/<name>.md` first and `standards/<name>.md` when the first is absent. The catalog says which standard governs the folder and only the target says whether the project holds it.
 
 Search both roots in that order, which is the order the toolkit's own standards resolution already uses. A project that has not relocated its standards keeps them at the root, and testing the installed path alone hands exactly that target a refusal plus a command that installs a second copy beside the one it already holds.
+
+A standard found at the root rather than under `.claude/` is read the same way and produces a full proposal. Say where it was read from and name `migration-standards` as the skill that relocates it, since the split is answerable either way and the layout is a note beside the proposal rather than a reason to refuse.
+
+### The states that end an entry
 
 Four states end an entry with no proposal. Name whichever one fired rather than collapsing them, because two of them are unmeasured and two are answers:
 
@@ -45,8 +53,6 @@ Four states end an entry with no proposal. Name whichever one fired rather than 
 - No value covers `replacedBy` and some entry carries an empty `appliesTo`: an empty array is a scope statement that did not parse, so a no-match verdict is unread rather than negative. Name the standards that did not parse.
 - No value covers `replacedBy` and every array is populated: `⚠️ The toolkit ships no standard for <replacedBy>. Nothing states the destination shape.` Installing cannot fix it, so name no command.
 - The standard resolved and neither root holds it: name it, then name `aitk standards install --only <name> .` as the command that lands it.
-
-A standard found at the root rather than under `.claude/` is read the same way and produces a full proposal. Say where it was read from and name `migration-standards` as the skill that relocates it, since the split is answerable either way and the layout is a note beside the proposal rather than a reason to refuse.
 
 Do not read the toolkit's own copy through `${CLAUDE_SKILL_DIR}` when the target lacks the file. Sibling skills cite that fallback for a standard they follow themselves, and this one is different: the standard here is the project's agreement about the shape of its own folder. A proposal drawn from the plugin copy hands back a shape the project never adopted, against content only the user can place.
 
