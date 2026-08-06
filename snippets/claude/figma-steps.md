@@ -15,4 +15,10 @@ Cover in order:
 - Alignment and spacing rules
 - Export settings
 
-Use exact values from the spec. Do not restate design rationale. Use Title Case for all layer and frame names. Use Figma terminology throughout, not code or CSS equivalents. Reuse existing frames or components from the same Figma document by name instead of rebuilding from scratch.
+Throughout:
+
+- Use exact values from the spec
+- Do not restate design rationale
+- Use Title Case for all layer and frame names
+- Use Figma terminology throughout, not code or CSS equivalents
+- Reuse existing frames or components from the same Figma document by name instead of rebuilding from scratch
