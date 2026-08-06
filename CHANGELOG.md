@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.79.0](https://github.com/erclx/aitk/compare/v0.78.1...v0.79.0) (2026-08-06)
+
+
+### Features
+
+* **architecture:** give the verification anchor a writer and a sweeper ([#925](https://github.com/erclx/aitk/issues/925)) ([c195788](https://github.com/erclx/aitk/commit/c195788a4c9ff18455036bc0801d11bc7d3bb737))
+
 ## [0.78.1](https://github.com/erclx/aitk/compare/v0.78.0...v0.78.1) (2026-08-06)
 
 
