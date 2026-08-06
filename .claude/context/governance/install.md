@@ -73,17 +73,4 @@ aitk gov install astro --add 200-react,260-shadcn,300-testing-ts ../my-app
 # installs astro stack rules plus the three extras, deduped
 ```
 
-To sync updates to an existing project:
-
-```bash
-aitk gov sync ../my-app
-# diffs rules already present, removes any stale .claude/GOV.md
-```
-
-To generate a concatenated paste-payload:
-
-```bash
-aitk gov build
-# strips frontmatter, concatenates rules
-# writes .claude/.tmp/gov/rules.md, paste into any AI chat
-```
+`sync` and `build` take a target path and no other argument, so the CLI table above is the whole surface.
