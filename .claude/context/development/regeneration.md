@@ -5,13 +5,13 @@ description: The regenerate-then-assert stages, covering the consumed copies of 
 
 # Regeneration stages
 
-Two stages regenerate a tracked artifact and then assert it did not move. Regenerating and then asserting is what turns an edit to a source surface into a failure that names the stale copy, rather than a copy nothing reads as wrong. The Indexes and Skill references stages share the shape, and their gotchas sit in `verification.md`.
+Two stages regenerate a tracked artifact and then assert it did not move. Regenerating and then asserting is what turns an edit to a source surface into a failure that names the stale copy, rather than a copy nothing reads as wrong. The Indexes and Skill references stages share the shape, and their gotchas sit in `.claude/context/development/verification.md`.
 
 ## Consumed copies
 
 The Consumed copies stage runs `scripts/core/regen-claude-copies.sh` and then asserts no drift across `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules`.
 
-The assert reads the unstaged diff, so the first `bun run check` after an edit to any of the four authoring surfaces reports its own regeneration as drift and exits red. Stage the rewritten copy and run again. The failure message asks for a commit while staging is what clears the stage, which is the distinction a ship chain needs, since it regenerates before the step that groups its commits. `verification.md` records the same shape for the Indexes and Skill references stages.
+The assert reads the unstaged diff, so the first `bun run check` after an edit to any of the four authoring surfaces reports its own regeneration as drift and exits red. Stage the rewritten copy and run again. The failure message asks for a commit while staging is what clears the stage, which is the distinction a ship chain needs, since it regenerates before the step that groups its commits. `.claude/context/development/verification.md` records the same shape for the Indexes and Skill references stages.
 
 Three of the four are whole-directory mirrors. `.claude/rules/` is not, because the toolkit authors 38 rules and consumes 22 of them, and installing the framework and ui rules here would fire a React rule on a fixture this repository writes. It resolves through `aitk gov regen` instead, which reads the stack named in `internal/governance.toml` and installs it with the same machinery `aitk gov install` uses for a target.
 
