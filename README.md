@@ -62,7 +62,7 @@ Two limits worth knowing before you install. Claude Code is the only agent runti
 Each domain has a canonical source in this repo and a thin install or sync CLI on your side. The links run to internal narrative, written for someone maintaining the toolkit rather than installing it, so skip them on a first pass.
 
 - [Claude Code plugin](.claude/context/claude-plugin/index.md): skills for planning, review, docs sync, and the git ship chain
-- [Governance rules](.claude/context/governance.md): Cursor rules and stacks, installable per project
+- [Governance rules](.claude/context/governance/index.md): Claude rules and stacks, installable per project
 - [Standards](.claude/context/standards/index.md): shared authoring conventions, synced to projects
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
