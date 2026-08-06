@@ -27,7 +27,8 @@ The folder splits by job: the git workflow across `target.ts`, `git.ts`, and `wo
 ## What the stamp covers
 
 - A missing or corrupt stamp degrades to the unattributed report rather than failing, which is the only path an unstamped target has.
-- Tooling is a stamp domain without being a scanned one. `src/tooling/` never calls `planSync`, so it records the stack chain it resolved instead of file hashes, and `SCANNED_DOMAINS` in `src/sync/check.ts` is the narrower list the adapter, source-path, and install-marker lookups are keyed on, and the closing unstamped line reads it too. Adding a fifth domain means deciding which of the two lists it joins.
+- Tooling is a stamp domain without being a scanned one. `src/tooling/` never calls `planSync`, so it records the stack chain it resolved instead of file hashes, and `SCANNED_DOMAINS` in `src/sync/check.ts` is the narrower list the adapter, source-path, and install-marker lookups are keyed on, and the closing unstamped line reads it too.
+- Adding a fifth domain means deciding which of the two lists it joins
 - The chain is ordered and stored whole rather than as a leaf name. A stack extends another, and a `--skip` run installs fewer layers than the leaf's chain reproduces, so the report loads the recorded stacks directly rather than re-resolving. Re-resolving would report drift against a layer the target deliberately does not carry.
 - `chain` is optional on `DomainStamp`, which keeps a stamp written before tooling joined the domains parsing rather than reading as corrupt and discarding the three records it does carry.
 - A workspace root records no chain. One chain written there is a guess at what its packages hold, and the report saying unmeasured is the true answer. The detection reads `workspaces` in `package.json` and `pnpm-workspace.yaml`, and lives in `src/tooling/stamp.ts` so `src/sync/` never learns what a workspace is.
@@ -56,7 +57,9 @@ An unmigrated domain counts as a marker because `detectUnmigrated` fires only on
 
 ### Seeds
 
-Seeds get their own reader in `src/sync/seeds-report.ts` rather than a `SyncAdapter`. Three things blocked the adapter. `listInstalled` globs `**/*.md` under one root while seeds span the target root for `CLAUDE.md`, `.claude/` for the rest, and include a `.json` and four `.sh` files. And `planSync` queues a copy for every non-matching file, which would overwrite `CLAUDE.md` wholesale and defeat the section merge `claude-seed-sync` exists to run. The reader reuses `readHistoryIndex` and `findInstalledOrigin` directly, because `recoverAttribution` is private to the engine and takes an adapter seeds have no way to supply. Seeds carry no stamp, so `customized` is unreachable and an unattributed difference stays `drifted`.
+Seeds get their own reader in `src/sync/seeds-report.ts` rather than a `SyncAdapter`. Three things blocked the adapter. `listInstalled` globs `**/*.md` under one root while seeds span the target root for `CLAUDE.md`, `.claude/` for the rest, and include a `.json` and four `.sh` files. And `planSync` queues a copy for every non-matching file, which would overwrite `CLAUDE.md` wholesale and defeat the section merge `claude-seed-sync` exists to run.
+
+The reader reuses `readHistoryIndex` and `findInstalledOrigin` directly, because `recoverAttribution` is private to the engine and takes an adapter seeds have no way to supply. Seeds carry no stamp, so `customized` is unreachable and an unattributed difference stays `drifted`.
 
 ### Superseded artifacts
 

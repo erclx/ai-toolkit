@@ -40,17 +40,21 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - References shrank to anti-patterns and opinions once golden configs landed. The config is the source, the reference carries only what a config cannot express.
 - Stacks do not compose horizontally. Single-root polyglot is unsupported, and a monorepo uses the subfolder pattern instead.
 - `tooling/claude/` is storage, not a stack. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI, so `TOOLING_STACK_EXCLUDE` keeps it out of discovery.
-- The non-goal against shipping application code turns on the word application, and its own carve-out in `.claude/REQUIREMENTS.md` already reads configs, seeds, snippets, and rules. Test files, an e2e spec, the screenshot template, and six shell scripts land executable non-config source in a target, and `injectManifest` in `src/tooling/inject.ts` runs `bun add -D` against it, so the line reads as a hard stop on a stack that installs an entry point and is not one.
-- A whole-stack install records the chain it resolved into `.claude/aitk.json` through `recordToolingChain` in `src/tooling/stamp.ts`, which is what makes tooling drift measurable in `aitk sync --check`. The write lands after the copies, so a partial apply that throws leaves the previous record rather than a claim the target does not meet. Rationale and the workspace-root refusal sit in `.claude/context/cli/sync.md`.
+- The non-goal against shipping application code turns on the word application, and its own carve-out in `.claude/REQUIREMENTS.md` already reads configs, seeds, snippets, and rules
+- Test files, an e2e spec, the screenshot template, and six shell scripts land executable non-config source in a target, and `injectManifest` in `src/tooling/inject.ts` runs `bun add -D` against it, so the line reads as a hard stop on a stack that installs an entry point and is not one
+- A whole-stack install records the chain it resolved into `.claude/aitk.json` through `recordToolingChain` in `src/tooling/stamp.ts`, which is what makes tooling drift measurable in `aitk sync --check`. The write lands after the copies, so a partial apply that throws leaves the previous record rather than a claim the target does not meet.
+- Rationale and the workspace-root refusal sit in `.claude/context/cli/sync.md`
 
 ## Gotchas
 
 - Commit golden config changes with `--no-verify`. Lint-staged runs against the template files themselves, not project source.
-- `aitk capture` and `bun run screenshot` both produce PNGs and overlap nowhere else. `src/capture/render.ts` drives Chromium over static HTML files and never a running app, and `files` in `package.json` excludes `src/capture` so an installed `aitk` refuses the command. `bun run screenshot` is a web-stack config a target owns, and it builds that target, serves it, and captures the running application.
+- `aitk capture` and `bun run screenshot` both produce PNGs and overlap nowhere else. `src/capture/render.ts` drives Chromium over static HTML files and never a running app, and `files` in `package.json` excludes `src/capture` so an installed `aitk` refuses the command.
+- `bun run screenshot` is a web-stack config a target owns, and it builds that target, serves it, and captures the running application
 
 ### Manifest syntax
 
-- The syntax invariants and the manifest-to-reference symmetry moved to `internal/rules/claude/595-tooling-reference.md`, which globs `tooling/*/manifest.toml` alongside `tooling/*/reference.md` so an edit to either side loads both. `.claude/internal/standards/tooling-reference.md` carries the symmetry in prose. The `#823` drift is what widened that glob, since the rule previously matched the reference alone and the manifest is the side that moves first.
+- The syntax invariants and the manifest-to-reference symmetry moved to `internal/rules/claude/595-tooling-reference.md`, which globs `tooling/*/manifest.toml` alongside `tooling/*/reference.md` so an edit to either side loads both. `.claude/internal/standards/tooling-reference.md` carries the symmetry in prose.
+- The `#823` drift is what widened that glob, since the rule previously matched the reference alone and the manifest is the side that moves first
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
 
 ### Sync and layering
@@ -58,7 +62,8 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - Syncing a monorepo subtree without `--skip base` re-drops husky per subtree. Git honors only one `core.hooksPath`, so the extra hook dirs silently break.
 - `--skip base` relies on the layer boundary holding: repo-root-once configs live in `base`, per-root configs live in `web` and the adapters. Moving a per-root config into `base` would break the split.
 - Non-`.txt` seeds are copy-once. To re-seed a structured file, delete it and sync again.
-- Preserving a destination's mode moved to `internal/rules/core/096-operator-files.md`. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy applying the source mode would strip the executable bit on the `web` and `astro` chains. `copyPreservingMode` in `src/copy.ts` is the implementation, sitting at the top level rather than in `src/tooling/` because the sync engine needs the same guarantee.
+- Preserving a destination's mode moved to `internal/rules/core/096-operator-files.md`. `tooling/web/configs/scripts/verify.sh` is 644 while base ships 755, so a copy applying the source mode would strip the executable bit on the `web` and `astro` chains.
+- `copyPreservingMode` in `src/copy.ts` is the implementation, sitting at the top level rather than in `src/tooling/` because the sync engine needs the same guarantee
 - `Bun.Glob` skips dotfiles unless `dot: true` is set. Tooling configs are almost entirely dotfiles, so omitting it matches 4 of 14 files in `base` and fails silently.
 
 ### Seed ownership
@@ -68,9 +73,12 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 
 ### The seed gate
 
-- The seed tree is held to the standards it seeds by a `check` stage, not by a rule path. Widening the `paths` globs on the claude rules was the alternative and it fires only when a session happens to edit a seed, which leaves a seed nobody touches wrong indefinitely. `verify.sh` runs `context audit <root> --gate` against each `tooling/<stack>/seeds/` carrying a `.claude/`, discovered per run rather than listed, so a new stack is covered without a script edit.
-- The seed gate reaches only what the index-plus-entry contract covers, which today is `tooling/base/seeds/.claude/context/`. The claude tree seeds four folders holding an `index.md` and no entries, so the gate measures their indexes and nothing else, and `ARCHITECTURE.md`, `DESIGN.md`, and `REQUIREMENTS.md` sit under no audited folder and stay out. Reaching those three needs an audit keyed to a document standard rather than a folder, which no command has.
-- A seed exempts itself from the section check with `stub: true` in its frontmatter, and both install paths strip the field so no target receives it. The exemption exists because the section check carries a false-positive class its own comment in `src/context/audit.ts` records: a standard may sanction omitting a section, and no measure separates that from a file that forgot it. Reporting is the right answer where the finding is advisory, and the seed gate makes it fail, so the tree needs a way to say an omission is deliberate.
+- The seed tree is held to the standards it seeds by a `check` stage, not by a rule path. Widening the `paths` globs on the claude rules was the alternative and it fires only when a session happens to edit a seed, which leaves a seed nobody touches wrong indefinitely.
+- `verify.sh` runs `context audit <root> --gate` against each `tooling/<stack>/seeds/` carrying a `.claude/`, discovered per run rather than listed, so a new stack is covered without a script edit
+- The seed gate reaches only what the index-plus-entry contract covers, which today is `tooling/base/seeds/.claude/context/`. The claude tree seeds four folders holding an `index.md` and no entries, so the gate measures their indexes and nothing else, and `ARCHITECTURE.md`, `DESIGN.md`, and `REQUIREMENTS.md` sit under no audited folder and stay out.
+- Reaching those three needs an audit keyed to a document standard rather than a folder, which no command has
+- A seed exempts itself from the section check with `stub: true` in its frontmatter, and both install paths strip the field so no target receives it. The exemption exists because the section check carries a false-positive class its own comment in `src/context/audit.ts` records: a standard may sanction omitting a section, and no measure separates that from a file that forgot it.
+- Reporting is the right answer where the finding is advisory, and the seed gate makes it fail, so the tree needs a way to say an omission is deliberate
 - No seed sets the marker today. Every skeletal seed is skeletal in its body and still declares each section its standard requires, which is what the gate measures. Marking one that already passes would switch off a live check for nothing, so the field stays unset until a seed genuinely has to omit a section.
 - Stripping is duplicated across two install paths because the seed trees are, `injectSeeds` in `src/tooling/inject.ts` for the stacks and `applySeeds` in `src/claude/seeds.ts` for the claude tree. Both narrow to `.md`, so hook scripts and `settings.json` still copy byte for byte, and `src/seed-marker.ts` holds the one reader and the one stripper they share.
 

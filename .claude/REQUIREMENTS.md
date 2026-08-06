@@ -1,6 +1,8 @@
 # Requirements
 
-Describe what the toolkit does and why. Not how it works. Domain architecture lives in `.claude/context/<domain>.md`. Behavioral rules live in `CLAUDE.md`. Update this doc when scope changes, goals shift, or a non-goal is promoted to a feature.
+Describe what the toolkit does and why, rather than how it works. Domain architecture lives in `.claude/context/<domain>.md` and behavioral rules live in `CLAUDE.md`.
+
+Update this doc when scope changes, goals shift, or a non-goal is promoted to a feature.
 
 What belongs:
 

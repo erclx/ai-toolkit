@@ -5,7 +5,14 @@ description: What the plan standard fixes and why its sections are mixed, the in
 
 # Per-standard decisions
 
-Four standards in the corpus cost more reasoning than their shape rules show. The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead. The plan standard costs a second time for an unrelated reason, two rules under separate headings that read as pointing opposite ways. The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm. The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
+Four standards in the corpus cost more reasoning than their shape rules show.
+
+- The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead
+- The plan standard costs a second time for an unrelated reason, two rules under separate headings that read as pointing opposite ways
+- The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm
+- The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own
+
+What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
 
 ## The plan standard
 
