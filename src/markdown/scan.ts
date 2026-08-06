@@ -39,6 +39,13 @@ export interface BodyLine {
   readonly text: string
   /** True on a fence delimiter and on every line between one pair. */
   readonly fenced: boolean
+  /**
+   * Which fenced block the line sits in, counted from one, and undefined
+   * outside one. Two blocks written with nothing between them are one
+   * contiguous run of fenced lines, so this is the only field telling them
+   * apart. Counting from one keeps the outside answer from reading as a block.
+   */
+  readonly block: number | undefined
 }
 
 export type BanKind = 'character' | 'word' | 'spelling'
@@ -58,17 +65,25 @@ export interface BanSets {
 }
 
 /**
- * Marks which lines sit inside a fence without dropping them.
+ * Marks which lines sit inside a fence without dropping them, and which block
+ * each of those lines belongs to.
  *
  * Each measure excludes a fence for its own reason and needs a different
  * response. The depth measure skips a fenced line so an example cannot break
  * the run around it, bullet folding treats one as a break so a bullet does not
  * absorb the block below it, and the ban scan ignores it outright. Returning
  * the mark rather than a filtered list is what lets one walk serve all three.
+ *
+ * The block index answers the consumer that has to decide per block rather
+ * than per contiguous run, since two adjacent blocks are indistinguishable
+ * through the mark alone. It is counted here because the walk already holds
+ * the opening delimiter, and a consumer parsing its own would be the second
+ * fence walker this repository consolidated away.
  */
 function markFences(texts: readonly string[], offset: number): BodyLine[] {
   const lines: BodyLine[] = []
   let fence: string | undefined
+  let block = 0
 
   for (const [index, text] of texts.entries()) {
     const match = FENCE.exec(text.trim())
@@ -82,9 +97,15 @@ function markFences(texts: readonly string[], offset: number): BodyLine[] {
     } else if (match) {
       fenced = true
       fence = match[1]
+      block += 1
     }
 
-    lines.push({ number: offset + index + 1, text, fenced })
+    lines.push({
+      number: offset + index + 1,
+      text,
+      fenced,
+      block: fenced ? block : undefined,
+    })
   }
 
   return lines
