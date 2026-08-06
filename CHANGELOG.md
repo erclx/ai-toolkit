@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.77.1](https://github.com/erclx/aitk/compare/v0.77.0...v0.77.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* **markdown:** tell adjacent fenced blocks apart in the line record ([#918](https://github.com/erclx/aitk/issues/918)) ([dac846e](https://github.com/erclx/aitk/commit/dac846e93451c9b36ba77f3436d8d5636053641e))
+
 ## [0.77.0](https://github.com/erclx/aitk/compare/v0.76.0...v0.77.0) (2026-08-06)
 
 
