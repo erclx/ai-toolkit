@@ -35,7 +35,9 @@ Write the result into the row. A re-test reported in chat is lost at the next co
 
 Both return a confident wrong answer rather than an error, which is why each gets a step of its own.
 
-The first is reading the condition looser than the code defines it. A row parked on a count of some shape names a shape its consumer defines precisely, and a count taken by eye or by a pattern that approximates it lands somewhere else. The row that motivated this runbook counted 19 instances of a shape whose real count under the consumer's definition was zero. Find the code that consumes the shape, read the definition off it, and measure with that. A count taken any other way is not evidence about the blocker.
+The first is reading the condition looser than the code defines it. A row parked on a count of some shape names a shape its consumer defines precisely, and a count taken by eye or by a pattern that approximates it lands somewhere else. The row that motivated this runbook counted 19 instances of a shape whose real count under the consumer's definition was zero.
+
+Find the code that consumes the shape, read the definition off it, and measure with that. A count taken any other way is not evidence about the blocker.
 
 The second is measuring against the wrong tree. A command that ships to targets is at risk in corpora this repository never formats, so a condition measured here reads as unreachable while it stays live where the command runs. Ask which tree the condition is about before asking what the count is. A local formatter removing the shape on contact says nothing about a target running no such formatter.
 
