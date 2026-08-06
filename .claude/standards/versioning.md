@@ -66,4 +66,6 @@ The surface publishing the text is the last gate on it. Where no automated check
 
 ## Why
 
-Phase labels keep planning conversations efficient. They make `git log`, PR titles, and the tag list unreadable when they leak in. A future reader cannot reconstruct what an internal label meant without the matching task file, which is gitignored. Semver tags carry meaning independent of conversation state and survive in git history. Keeping the two namespaces apart preserves both.
+Phase labels keep planning conversations efficient. They make `git log`, PR titles, and the tag list unreadable when they leak in. A future reader cannot reconstruct what an internal label meant without the matching task file, which is gitignored.
+
+Semver tags carry meaning independent of conversation state and survive in git history. Keeping the two namespaces apart preserves both.

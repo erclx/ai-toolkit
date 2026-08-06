@@ -5,7 +5,9 @@ description: Folder layout, filename convention, readiness groups, and content r
 
 # Tasks reference
 
-Applies to `.claude/tasks/`. Tracks what is being built and why, at the level of features and outcomes. One file per task. Update when a task starts, completes, or changes scope. When to open a task at all is project policy, not a shape rule, and lives in `CLAUDE.md`.
+Applies to `.claude/tasks/`. Tracks what is being built and why, at the level of features and outcomes. One file per task.
+
+Update when a task starts, completes, or changes scope. When to open a task at all is project policy, not a shape rule, and lives in `CLAUDE.md`.
 
 The folder is gitignored. Board state changes when work ships rather than when a branch is written, so committing it would put a claim about the future into the diff of an unrelated pull request. The git log records what shipped.
 
@@ -108,7 +110,9 @@ description: Record what a target installed and report the delta against the too
 
 ## File format
 
-Two headings, `## Outcomes` and `## Findings`. Outcomes are future and checkable, findings are past and factual, and as flat bullets at the same indent they are visually identical. A heading separates them at no cost. Add no third heading. Status stays inline on an outcome rather than becoming an "In progress" section.
+Two headings, `## Outcomes` and `## Findings`. Outcomes are future and checkable, findings are past and factual, and as flat bullets at the same indent they are visually identical. A heading separates them at no cost.
+
+Add no third heading. Status stays inline on an outcome rather than becoming an "In progress" section.
 
 Size the outcomes so one pull request closes all of them. A task whose outcomes span two pull requests ships the first half and leaves the rest open, with nothing recording which outcomes the merged work covered, so the board reads as in-progress work that no branch is carrying. Split the task before handing it off rather than after. This is what `## Archiving` below depends on, since a task closes whole or not at all.
 
@@ -156,7 +160,11 @@ A task with no origin is either lost context or work nobody decided to do. The i
 
 Phase-label format and where labels may appear are governed by `standards/versioning.md`.
 
-`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it. A project that archived plans before the folder moved out of `.claude/.tmp/` holds closed tasks pointing at `../.tmp/plans-archive/`, and both forms resolve against the files each names, so leave those pointers where they are. Nothing migrates them, and a task retargeted without its plan moving leads nowhere. One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
+`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it.
+
+A project that archived plans before the folder moved out of `.claude/.tmp/` holds closed tasks pointing at `../.tmp/plans-archive/`, and both forms resolve against the files each names, so leave those pointers where they are. Nothing migrates them, and a task retargeted without its plan moving leads nowhere.
+
+One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
 `Groundwork:` points at `../groundwork/<slug>/`, the folder `claude-groundwork` fills. It names the surface it points at the way `Plan:` does. Use this key alone. `Research record` and `Decision record` are earlier spellings of the same thing and both convert to it.
 

@@ -5,7 +5,9 @@ description: Voice, language, and frontmatter wording for reference markdown
 
 # Prose reference
 
-Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it. The yield covers voice alone. The language rules below stay in force on every surface, including the surfaces no automated check reaches, as do the mechanics in `markdown.md`.
+Applies to markdown reference docs, READMEs, and inline documentation in repos. It is the default voice for `.md` files and yields to any surface with its own voice, such as blogs, emails, changelogs, or commit messages. It also yields wherever another standard states the voice for the surface it governs, which is how a surface claims the exemption without this file having to name it.
+
+The yield covers voice alone. The language rules below stay in force on every surface, including the surfaces no automated check reaches, as do the mechanics in `markdown.md`.
 
 ## Scope
 
