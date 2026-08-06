@@ -24,7 +24,7 @@ stage_setup() {
     log_info "Expect docs topics: agents, ai-workflow, target-projects"
     log_info "Expect agents by folder name, described by its index subtitle"
     log_info "Expect domain context topics: tooling, governance, standards"
-    log_info "Expect no toolkit-internal topics: ci, development, extensions, sandbox"
+    log_info "Expect no toolkit-internal topics: ci, development, sandbox"
     ;;
   "get")
     log_step "Running: aitk docs agents"

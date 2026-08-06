@@ -11,7 +11,7 @@ source "$PROJECT_ROOT/scripts/lib/frontmatter.sh"
 DOCS_DIR="$PROJECT_ROOT/docs"
 CONTEXT_DIR="$PROJECT_ROOT/.claude/context"
 
-INTERNAL_TOPICS=" ci development extensions sandbox "
+INTERNAL_TOPICS=" ci development sandbox "
 
 show_help() {
   echo -e "${GREY}┌${NC}"
