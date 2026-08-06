@@ -44,8 +44,12 @@ export interface BodyLine {
    * outside one. Two blocks written with nothing between them are one
    * contiguous run of fenced lines, so this is the only field telling them
    * apart. Counting from one keeps the outside answer from reading as a block.
+   *
+   * The name carries the fence because `block` alone already names a run of
+   * `BodyLine` values in `src/markdown/structure.ts`, and one word meaning both
+   * an aggregate of lines and an index on each line reads as a bug.
    */
-  readonly block: number | undefined
+  readonly fenceBlock: number | undefined
 }
 
 export type BanKind = 'character' | 'word' | 'spelling'
@@ -83,7 +87,7 @@ export interface BanSets {
 function markFences(texts: readonly string[], offset: number): BodyLine[] {
   const lines: BodyLine[] = []
   let fence: string | undefined
-  let block = 0
+  let fenceBlock = 0
 
   for (const [index, text] of texts.entries()) {
     const match = FENCE.exec(text.trim())
@@ -97,14 +101,14 @@ function markFences(texts: readonly string[], offset: number): BodyLine[] {
     } else if (match) {
       fenced = true
       fence = match[1]
-      block += 1
+      fenceBlock += 1
     }
 
     lines.push({
       number: offset + index + 1,
       text,
       fenced,
-      block: fenced ? block : undefined,
+      fenceBlock: fenced ? fenceBlock : undefined,
     })
   }
 

@@ -57,12 +57,12 @@ describe('bodyLines', () => {
     expect(bodyLines(source).filter((line) => line.fenced)).toHaveLength(4)
   })
 
-  it('should leave the block undefined on a line outside every fence', () => {
+  it('should leave the fence block undefined outside every fence', () => {
     const lines = bodyLines('Before.\n```ts\nconst x = 1\n```\nAfter.\n')
 
     // Counting from one is what keeps the outside answer from reading as a
     // block a consumer can compare against.
-    expect(lines.map((line) => line.block)).toEqual([
+    expect(lines.map((line) => line.fenceBlock)).toEqual([
       undefined,
       1,
       1,
@@ -75,7 +75,7 @@ describe('bodyLines', () => {
     const source = '  ```bash\n  a\n  ```\n```bash\nb\n```\n'
 
     // Nothing sits between the two, so the fenced mark reads them as one run.
-    expect(bodyLines(source).map((line) => line.block)).toEqual([
+    expect(bodyLines(source).map((line) => line.fenceBlock)).toEqual([
       1, 1, 1, 2, 2, 2,
     ])
   })
@@ -83,7 +83,7 @@ describe('bodyLines', () => {
   it('should number an unindented block and the indented one behind it apart', () => {
     const source = '```bash\na\n```\n  ```bash\n  b\n  ```\n'
 
-    expect(bodyLines(source).map((line) => line.block)).toEqual([
+    expect(bodyLines(source).map((line) => line.fenceBlock)).toEqual([
       1, 1, 1, 2, 2, 2,
     ])
   })

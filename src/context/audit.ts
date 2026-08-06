@@ -326,8 +326,8 @@ function narration(
     // interrupts a list is this check's own judgment, and the walker only says
     // which lines share a block.
     if (line.fenced) {
-      if (line.block !== fenceBlock) {
-        fenceBlock = line.block
+      if (line.fenceBlock !== fenceBlock) {
+        fenceBlock = line.fenceBlock
         fenceInsideList = INSIDE_LIST.test(line.text)
       }
       if (!fenceInsideList) following = false
