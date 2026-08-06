@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.76.0](https://github.com/erclx/aitk/compare/v0.75.0...v0.76.0) (2026-08-06)
+
+
+### Features
+
+* **tasks:** widen the readiness test to a third blocker kind ([#912](https://github.com/erclx/aitk/issues/912)) ([2d630ff](https://github.com/erclx/aitk/commit/2d630ffdb22620f22e2ddb5de27cca0e5231c6ec))
+
 ## [0.75.0](https://github.com/erclx/aitk/compare/v0.74.0...v0.75.0) (2026-08-06)
 
 
