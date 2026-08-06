@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.83.0](https://github.com/erclx/aitk/compare/v0.82.2...v0.83.0) (2026-08-06)
+
+
+### Features
+
+* **publish:** state the cross-reference form by destination ([#942](https://github.com/erclx/aitk/issues/942)) ([d5093c7](https://github.com/erclx/aitk/commit/d5093c7016be439c6a2c43089b93984a4575a1d9))
+
 ## [0.82.2](https://github.com/erclx/aitk/compare/v0.82.1...v0.82.2) (2026-08-06)
 
 
