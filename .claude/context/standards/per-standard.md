@@ -45,7 +45,7 @@ The rule sits in both tiers on purpose: the always-loaded copy is what reaches t
 
 ## The tasks readiness test
 
-`standards/tasks.md` admits a row to `## Up next` on a written plan plus a stated reason the task cannot start, and the `Waiting on` cell carries a collision, a sibling task, or an external condition. A test naming only the first two leaves a planned task waiting on a condition outside the board passing neither it nor the `## Needs a plan` test below it, so such a row sits in a group whose stated rule does not admit it.
+`standards/tasks.md` admits a row to `## Up next` on a written plan plus a stated reason the task cannot start, and that group's `Waiting on` cell carries a collision, a sibling task, or an external condition. `## Needs a plan` heads a column by the same name, so the three forms are stated under the group they govern rather than under the header they share. A test naming only the first two leaves a planned task waiting on a condition outside the board passing neither it nor the `## Needs a plan` test below it, so such a row sits in a group whose stated rule does not admit it.
 
 A fourth heading is the obvious alternative and the standard bans one, because a board grouped under names of its own reads as empty to anything counting rows under a heading. Widening a test costs one clause and keeps the three headings every reader already parses.
 
