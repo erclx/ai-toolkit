@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.80.0](https://github.com/erclx/aitk/compare/v0.79.0...v0.80.0) (2026-08-06)
+
+
+### Features
+
+* **context:** require the path form for an entry reference and check it ([#926](https://github.com/erclx/aitk/issues/926)) ([d8ea9e3](https://github.com/erclx/aitk/commit/d8ea9e3ec4aa1a39d1103282bc13e21c29337ba6))
+
 ## [0.79.0](https://github.com/erclx/aitk/compare/v0.78.1...v0.79.0) (2026-08-06)
 
 
