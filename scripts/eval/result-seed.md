@@ -151,7 +151,9 @@ Bash	cat .claude/context/index.md .claude/wireframes/index.md 2>/dev/null && ls 
 Bash	echo "branch: ..." && echo "bare: ..." && ls .claude/plans/ 2>/dev/null || echo "no plans dir"
 ```
 
-The first call is the trimmed Context bullet working. It asks the session to pick what to read from the index anchors, and the session read both anchors and listed the two folders before touching source. Run 01, carrying the full three-tier taxonomy, did not do this: it ran `ls .claude/` and opened `DESIGN.md`. The behavior-first phrasing produced the anchor consultation the taxonomy described but did not cause. That is one run against one run and it is not proof, but it points the same way as the cut.
+The first call is the trimmed Context bullet working. It asks the session to pick what to read from the index anchors, and the session read both anchors and listed the two folders before touching source. Run 01, carrying the full three-tier taxonomy, did not do this: it ran `ls .claude/` and opened `DESIGN.md`.
+
+The behavior-first phrasing produced the anchor consultation the taxonomy described but did not cause. That is one run against one run and it is not proof, but it points the same way as the cut.
 
 Two rules moved the other way.
 
@@ -175,11 +177,15 @@ The task asks for the two to be reconciled where they diverge, or the divergence
 | Parallel sessions, called Worktrees in the seed                                            | yes  | yes               |
 | Markdown                                                                                   | no   | yes, deliberately |
 
+### Reading the inventory
+
 Six root-only sections are toolkit-specific and correctly absent from a seed: a domain-to-skill routing table, a content-ownership map, and a wiki convention describe this repository rather than a project scaffolded from it.
 
 The last row is the reconciliation and it is the one place the two files should differ. The root file carries no `## Markdown` section and never has, routing prose through `.claude/rules/claude/500-prose.md` since governance shipped. This session cut the seed's inline copy to match, and review reverted the cut.
 
-The revert is the finding worth keeping. The toolkit has governance installed, so the root file can rely on it. A seed cannot: `init.ts:151` skips governance entirely without `--stack` while `init.ts:166` installs standards regardless, so cutting the pointers left a bare `aitk init` with `.claude/standards/prose.md` on disk and nothing referring to it. Duplication that reads as redundant against one install path is the only thing holding up another. The seed's copy was restored carrying the `Read it before a substantial prose edit` line it had been missing, so the weaker-wording divergence closed even though the structural one stayed open. It ends when `--stack` defaults to `base`, tracked as `v24.3`.
+The revert is the finding worth keeping. The toolkit has governance installed, so the root file can rely on it. A seed cannot: `init.ts:151` skips governance entirely without `--stack` while `init.ts:166` installs standards regardless, so cutting the pointers left a bare `aitk init` with `.claude/standards/prose.md` on disk and nothing referring to it. Duplication that reads as redundant against one install path is the only thing holding up another.
+
+The seed's copy was restored carrying the `Read it before a substantial prose edit` line it had been missing, so the weaker-wording divergence closed even though the structural one stayed open. It ends when `--stack` defaults to `base`, tracked as `v24.3`.
 
 This is also a caution about the method. The cut had a written justification, a governance rule cited by number for each bullet, and a section inventory backing it, and it was still wrong. Verifying that a rule exists somewhere else is not the same as verifying it is installed on the path the artifact ships to.
 
@@ -187,7 +193,9 @@ Two divergences stay open and are stated rather than closed. The seed's `## Cont
 
 ## Harness note
 
-The `Seed surface opened` section of the raw run 02 report reads `(none)`, and that is wrong. The pattern required a `/` before `.claude/`, so it matched a `Read` of an installed path and missed a `cat .claude/context/index.md` reaching the same file. A session that consults an index through Bash touches the seed exactly as much as one that Reads it. The pattern is now unanchored and the section above is the corrected derivation. Treat the machine-derived sections of any earlier result as a floor rather than a count.
+The `Seed surface opened` section of the raw run 02 report reads `(none)`, and that is wrong. The pattern required a `/` before `.claude/`, so it matched a `Read` of an installed path and missed a `cat .claude/context/index.md` reaching the same file. A session that consults an index through Bash touches the seed exactly as much as one that Reads it.
+
+The pattern is now unanchored and the section above is the corrected derivation. Treat the machine-derived sections of any earlier result as a floor rather than a count.
 
 The runner deletes its workdir on exit, and the raw `transcript.jsonl` goes with it. Everything above the judgment sections is recoverable only because the derived report is written to stdout first. A future arm that needs to re-judge a run cannot, and that is worth fixing before the next one.
 
@@ -294,6 +302,8 @@ A cut half can write outside the fixture, and the snapshot does not see it. Both
 
 The sandbox harness has the same defect, and `write_scope` reports from a manifest diff over `.sandbox/` that cannot see outside it either. Two harnesses snapshotting a directory the session can write past is one finding rather than two, so it is recorded in `.claude/context/scripts/eval.md` where both are in scope, and the fix belongs to both at once.
 
-Hook firing still cannot be scored. No hook output appears in any of the fourteen transcripts, including one whose final message claims the standards-audit hook rejected its punctuation. A run's self-report about a hook is not evidence that the hook fired. Run 01 scored this criterion from a marker file left under `.claude/.tmp/`, and the trap deletes the workdir holding it, so that route closes the moment a run ends. The criterion cannot be scored until either the capture carries hook events or retention copies the marker directory out.
+Hook firing still cannot be scored. No hook output appears in any of the fourteen transcripts, including one whose final message claims the standards-audit hook rejected its punctuation. A run's self-report about a hook is not evidence that the hook fired.
+
+Run 01 scored this criterion from a marker file left under `.claude/.tmp/`, and the trap deletes the workdir holding it, so that route closes the moment a run ends. The criterion cannot be scored until either the capture carries hook events or retention copies the marker directory out.
 
 The arms ran serially at roughly two minutes each, which is the whole wall-clock cost of this task. They are independent processes in separate `mktemp` directories, and the only shared state is the ledger append and the run-directory stamp. Making those two safe under concurrency is the cheapest improvement available to this harness and it should land before the next multi-arm question.
