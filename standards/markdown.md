@@ -34,7 +34,7 @@ Does not govern:
 
 - Use prose by default. Reserve bullets for discrete, unrelated items.
 - Keep paragraphs to four sentences or fewer. Split longer blocks at the next logical boundary.
-- Past roughly 600 characters in one paragraph, folding in the lines that wrap it, split at the next logical boundary as well. A paragraph written as two long sentences satisfies the sentence cap above and still asks the reader to hold too much at once. This number sits above the bullet checkpoint because a paragraph is read straight through and a bullet is scanned.
+- Past roughly 700 characters in one paragraph, folding in the lines that wrap it, split at the next logical boundary as well. A paragraph written as two long sentences satisfies the sentence cap above and still asks the reader to hold too much at once. This number sits well above the bullet checkpoint because a paragraph is read straight through and a bullet is scanned.
 - Keep bullets tight. Past roughly 400 characters in one top-level bullet, counting the lines that continue it and excluding any bullet nested under it, the overflow belongs in prose. The number is a checkpoint rather than a cap, and a bullet reading well past it means the number is wrong rather than the rule.
 - Collapse a stack of bullets narrating one subsystem into a single `###` subsection carrying one narrative. Splitting a heavy bullet into three light ones satisfies the checkpoint above and leaves the reader no better off, and subdividing a block does not lighten the bullets inside it, so the two rules answer different defects.
 - Use dashes (`-`) not asterisks (`*`) for bulleted lists
