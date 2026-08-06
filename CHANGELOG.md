@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.78.0](https://github.com/erclx/aitk/compare/v0.77.1...v0.78.0) (2026-08-06)
+
+
+### Features
+
+* **architecture:** add a verification anchor to decision entries ([#917](https://github.com/erclx/aitk/issues/917)) ([b1fa18b](https://github.com/erclx/aitk/commit/b1fa18b819a93d7567be2091c79787f7b70241f7))
+
 ## [0.77.1](https://github.com/erclx/aitk/compare/v0.77.0...v0.77.1) (2026-08-06)
 
 
