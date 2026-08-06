@@ -11,6 +11,7 @@ paths:
 
 - Never fill an `- Answer:` slot on behalf of the person who owns it. A blank slot accepts the suggestion at execution time.
 - Never ship a question without a `- Suggested:` line. Write `- Suggested: needs your call, <why>` where the answer turns on preference.
+- Rewrite the `- Suggested:` line to the pick execution made when it deviates from an unanswered question, naming what moved it and leaving the slot blank. Put the same deviation in one line under the open task's `## Findings`.
 
 ## Archiving
 

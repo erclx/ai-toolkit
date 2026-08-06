@@ -79,9 +79,9 @@ description: One line on what the board covers
 
 ## Needs a plan
 
-| Task                            | Waiting on                              |
-| ------------------------------- | --------------------------------------- |
-| [vXX.Y <slug>](vXX.Y-<slug>.md) | <the collision or the task it waits on> |
+| Task                            | Waiting on                                     |
+| ------------------------------- | ---------------------------------------------- |
+| [vXX.Y <slug>](vXX.Y-<slug>.md) | <what the task needs before it can be planned> |
 ```
 
 The tests live here so the board does not carry them. Writing them as a sentence under each heading produces the paragraph the rule above deletes, and a criterion with no home gets restated from memory every time the board is touched.
@@ -171,6 +171,7 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 - Task entries describing observable behavior, one outcome per line
 - A test strategy line naming the mechanism and what it verifies
 - Findings stating what constrains the task, including blockers and dependencies
+- A deviation from the plan's suggestion, in one line naming what moved the pick. The plan is archived at ship and holds the reasoning, so this register carries what shipped.
 
 ## What does not go in
 
