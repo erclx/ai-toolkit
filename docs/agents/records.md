@@ -80,19 +80,20 @@ git --git-dir=.claude/.records.git init
 git --git-dir=.claude/.records.git remote add origin <private-repo-url>
 ```
 
-Point it at a private repository, and at one that is not a remote of the project. Records carry the memory pen, the review reports, and the groundwork trails, so a public project publishes all of it to anyone who fetches all refs. `push` compares the configured origin against every remote of the project and refuses on a match.
+Point it at a private repository, and at one that is not a remote of the project. Records carry the memory pen, the review reports, and the groundwork trails, so a public project publishes all of it to anyone who fetches all refs. `push` compares the configured origin against every remote of the project and refuses on a match. A read of that list which fails refuses as well, since an empty list clears the comparison for every origin and a gate that passes on its own failure is no gate.
 
 ### Refusals
 
-| Reason              | What fired                                                      |
-| ------------------- | --------------------------------------------------------------- |
-| `no-repository`     | No `.claude/.records.git`, answered with the two setup commands |
-| `no-remote`         | The records history has no `origin`                             |
-| `remote-shared`     | The records origin is also a remote of the project              |
-| `no-remote-records` | `pull` found no branch on the records origin                    |
-| `local-changes`     | `pull` found records on disk that the history does not carry    |
-| `local-ahead`       | `pull` found local commits that never reached the origin        |
-| `git-failed`        | A git call failed, with its stderr in the message               |
+| Reason              | What fired                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| `no-repository`     | No `.claude/.records.git`, answered with the two setup commands                      |
+| `no-remote`         | The records history has no `origin`                                                  |
+| `remote-unreadable` | The project's own remotes could not be read, so the shared-origin gate could not run |
+| `remote-shared`     | The records origin is also a remote of the project                                   |
+| `no-remote-records` | `pull` found no branch on the records origin                                         |
+| `local-changes`     | `pull` found records on disk that the history does not carry                         |
+| `local-ahead`       | `pull` found local commits that never reached the origin                             |
+| `git-failed`        | A git call failed, with its stderr in the message                                    |
 
 The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the eight has nothing to lose, so a restore onto a fresh checkout runs straight through.
 

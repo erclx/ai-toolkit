@@ -39,7 +39,7 @@ Archiving moves a record between folders that all sit on one disk, so `aitk reco
 
 The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every one of the 45 citations spelling these paths keeps working. A separate checkout was the alternative and it moves all of them. Staging runs by explicit pathspec with `--force`, which is what lets a folder the project ignores reach an index while keeping anything outside the eight out of it, and neither verb touches the project index or working tree.
 
-The remote is created by hand, once per machine, and both verbs refuse with the two setup commands until it exists. Provisioning a private repository from a verb needs a `gh` scope this toolkit asks for nowhere else. `push` also refuses when the records origin is a remote of this project, because this repository is public and the payload is the memory pen, the review reports, and the groundwork trails.
+The remote is created by hand, once per machine, and both verbs refuse with the two setup commands until it exists. Provisioning a private repository from a verb needs a `gh` scope this toolkit asks for nowhere else. `push` also refuses when the records origin is a remote of this project, because this repository is public and the payload is the memory pen, the review reports, and the groundwork trails. Failing to read the project's remotes refuses under its own reason rather than answering an empty list, since an empty list clears the comparison for every origin and turns the one gate protecting the payload into a pass.
 
 The one-time setup:
 

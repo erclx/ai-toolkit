@@ -32,13 +32,21 @@ function recordsGit(root: string, args: string[]): Promise<string> {
   return git(['--git-dir', join(root, RECORDS_GIT_DIR), ...args])
 }
 
-/** A project holding one record in each backed folder, with no records history yet. */
-function makeProject(): string {
+/**
+ * A git project holding one record in each backed folder, with no records
+ * history yet.
+ *
+ * The `git init` is what a real root always carries. Both verbs read the
+ * project's own remotes to clear the shared-origin gate and refuse when that
+ * read fails, so a bare directory exercises the refusal rather than the flow.
+ */
+async function makeProject(): Promise<string> {
   const root = mkdtempSync(join(tmpdir(), 'aitk-backup-'))
   for (const folder of BACKED_FOLDERS) {
     mkdirSync(join(root, '.claude', folder), { recursive: true })
     writeFileSync(join(root, '.claude', folder, 'entry.md'), `# ${folder}\n`)
   }
+  await git(['init', '--quiet', root])
   return root
 }
 
@@ -48,7 +56,7 @@ async function makeRecordsRepo(root: string, origin: string): Promise<void> {
 }
 
 beforeEach(async () => {
-  ROOT = makeProject()
+  ROOT = await makeProject()
   ORIGIN = mkdtempSync(join(tmpdir(), 'aitk-backup-origin-'))
   await git(['init', '--bare', ORIGIN])
 })
@@ -78,8 +86,24 @@ describe('pushRecords', () => {
     expect(outcome.reason).toBe('no-remote')
   })
 
+  it('should refuse when the project remotes cannot be read', async () => {
+    const bare = mkdtempSync(join(tmpdir(), 'aitk-backup-bare-'))
+    mkdirSync(join(bare, '.claude'), { recursive: true })
+    await makeRecordsRepo(bare, ORIGIN)
+
+    const outcome = await pushRecords(bare)
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('remote-unreadable')
+
+    const pushed = await git(['-C', ORIGIN, 'branch', '--list'])
+    expect(pushed).toBe('')
+
+    rmSync(bare, { recursive: true, force: true })
+  })
+
   it('should refuse when the records origin is also a remote of the project', async () => {
-    await git(['init', ROOT])
     await git(['-C', ROOT, 'remote', 'add', 'origin', `${ORIGIN}.git`])
     await makeRecordsRepo(ROOT, ORIGIN)
 
@@ -91,7 +115,6 @@ describe('pushRecords', () => {
   })
 
   it('should refuse a project remote spelled with the other transport', async () => {
-    await git(['init', ROOT])
     await git([
       '-C',
       ROOT,
@@ -221,7 +244,6 @@ describe('pushRecords', () => {
   })
 
   it('should leave the project working tree untouched', async () => {
-    await git(['init', ROOT])
     await makeRecordsRepo(ROOT, ORIGIN)
 
     await pushRecords(ROOT)
@@ -324,6 +346,7 @@ describe('pullRecords', () => {
 
     const fresh = mkdtempSync(join(tmpdir(), 'aitk-backup-fresh-'))
     mkdirSync(join(fresh, '.claude'), { recursive: true })
+    await git(['init', '--quiet', fresh])
     await makeRecordsRepo(fresh, ORIGIN)
 
     const outcome = await pullRecords(fresh)

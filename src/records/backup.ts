@@ -42,6 +42,7 @@ const COMMIT_IDENTITY = ['-c', 'user.name=aitk', '-c', 'user.email=aitk@local']
 export const BACKUP_REFUSALS = [
   'no-repository',
   'no-remote',
+  'remote-unreadable',
   'remote-shared',
   'no-remote-records',
   'local-changes',
@@ -140,12 +141,24 @@ function remoteIdentity(url: string): string {
     .replace(/\/+$/, '')
 }
 
-async function enclosingRemoteUrls(root: string): Promise<string[]> {
+/**
+ * Lists every remote of the enclosing project, or undefined when git cannot
+ * answer.
+ *
+ * The caller refuses on undefined rather than smoothing it into an empty list.
+ * An empty list clears the gate below for every URL, so a git that failed for
+ * any reason would publish the payload to whatever origin the records history
+ * happens to name. A project with no remotes answers `0` with an exit of zero,
+ * so the two states stay distinguishable.
+ */
+async function enclosingRemoteUrls(
+  root: string,
+): Promise<string[] | undefined> {
   const result = await $`git -C ${root} remote -v`
     .env(gitEnv())
     .quiet()
     .nothrow()
-  if (result.exitCode !== 0) return []
+  if (result.exitCode !== 0) return undefined
 
   return result.stdout
     .toString()
@@ -157,13 +170,14 @@ async function enclosingRemoteUrls(root: string): Promise<string[]> {
 }
 
 /**
- * Clears the three gates both verbs share and returns the records remote URL.
+ * Clears the four gates both verbs share and returns the records remote URL.
  *
- * The third gate is the one the payload depends on. This repository is public,
+ * The last two are the ones the payload depends on. This repository is public,
  * so a records branch on any of its remotes serves the memory pen and the
  * groundwork trails to anyone who fetches all refs. Comparing the configured
  * URL against every remote of the enclosing repository is what keeps a
- * misconfigured `origin` from publishing them.
+ * misconfigured `origin` from publishing them, and refusing when that list
+ * cannot be read is what keeps a failed comparison from reading as a pass.
  */
 async function resolveRemote(root: string): Promise<string | BackupRefused> {
   if (!existsSync(join(root, RECORDS_GIT_DIR))) {
@@ -188,8 +202,16 @@ async function resolveRemote(root: string): Promise<string | BackupRefused> {
     )
   }
 
+  const enclosing = await enclosingRemoteUrls(root)
+  if (!enclosing) {
+    return refuse(
+      'remote-unreadable',
+      `Cannot read the remotes of the project at ${root}, so the records origin cannot be checked against them. Records carry the memory pen and the groundwork trails, and an unchecked origin risks publishing them.`,
+    )
+  }
+
   const url = remoteIdentity(remote.text)
-  if ((await enclosingRemoteUrls(root)).includes(url)) {
+  if (enclosing.includes(url)) {
     return refuse(
       'remote-shared',
       `The records origin ${remote.text} is a remote of this project. Records carry the memory pen and the groundwork trails, so they need a repository of their own.`,
