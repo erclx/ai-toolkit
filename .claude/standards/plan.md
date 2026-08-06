@@ -86,16 +86,25 @@ Every question carries a `- Suggested:` line and an empty `- Answer:` slot below
    - Answer:
 ```
 
+An execution that deviates rewrites the suggestion into the form below, leaving the slot as it found it.
+
+```markdown
+1. <question>
+   - Suggested: overridden at execution to <pick>, <the measurement that moved it>
+   - Answer:
+```
+
 - A blank `- Answer:` means accept the suggestion at execution time. That default is what makes the plan decision-ready in one pass, with no separate round to collect answers.
 - Never ship a question without a suggestion. A bare question defers the judgment the plan exists to supply, and it arrives at the executing session as a stop.
 - State the pick in one line with its reason or its main tradeoff. List an alternative only where it changes the pick.
 - Write `- Suggested: needs your call, <why>` where the answer turns on preference rather than on a technical default. Fabricating a default there hides an open question behind an accepted answer.
 - Never fill an `- Answer:` slot on behalf of the person who owns it. Recording the pick as the suggestion is what the suggestion line is for.
-- Rewrite the `- Suggested:` line to the pick execution made when it deviates from an unanswered question, naming the measurement that moved it, and leave the slot blank. The prohibition above reaches the answer line alone, so the suggestion line is where a deviation goes.
+- Rewrite the `- Suggested:` line to the pick execution made when it deviates from an unanswered question, and leave the slot blank. The prohibition above reaches the answer line alone, so the suggestion line is where a deviation goes.
+- Open the rewritten text with `overridden at execution to <pick>,` and follow it with the measurement that moved the pick. The phrase is fixed, because a suggestion carrying a number is the ordinary shape of an authored one and says nothing about who wrote it.
 - Take a deviation from an answered question back to whoever answered it rather than rewriting either line. A filled slot is a decision already made, and a suggestion rewritten under one leaves the plan holding two picks with no default resolving them.
 - Answer in place when a question is settled in conversation, so the file and the decision do not disagree.
 
-A rewritten suggestion carrying its measurement is what a later reader tells an override by, since a suggestion the execution accepted holds only the reasoning the plan was written with. The plan is archived at ship, so the same deviation takes one line in the open task's `## Findings` naming what shipped. That is one fact in two registers, the plan holding why the pick moved and the task holding what the tree now has, rather than two records to keep in step.
+The fixed phrase is what a later reader tells an override by, and the measurement alone is not, since an authored suggestion routinely carries a number of its own and a reader meeting one learns nothing about who put it there. The plan is archived at ship, so the same deviation takes one line in the open task's `## Findings` naming what shipped. That is one fact in two registers, the plan holding why the pick moved and the task holding what the tree now has, rather than two records to keep in step.
 
 This contract inverts the one an intake folder keeps, where an empty slot means unread and acceptance is typed out. A plan is written and read in one sitting with every question already surfaced, so silence is a usable default here and is not one there. Both files state the inversion, since a contract read on only one side of a boundary is the one that gets applied to the wrong document.
 
