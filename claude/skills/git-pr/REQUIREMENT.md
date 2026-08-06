@@ -9,6 +9,8 @@ description: What pull request generation is for, the gaps it closes, and what i
 
 Without this skill, a pull request body is written from memory of the branch rather than from its diff, so it describes the intent and omits what the work turned into. Testing boxes get ticked from intent, which records what was meant to run instead of what ran, and a reviewer trusts the list. A second push either errors on create or opens a duplicate pull request, and banned characters survive into a body the hook never sees.
 
+Every pull request also lands unlabelled, so a merged list is a wall of titles with no way to filter it by surface. A reader looking for what changed in one domain reads all of them, and the conventional commit type in the title says what kind of change it is rather than where.
+
 A lookup that resolves by head branch alone carries its own failure. A branch name reused after an earlier pull request merged resolves to the closed one, so the run rewrites a merged pull request's title and body and reports its URL as the one it opened. Both fields are recoverable only through the issue timeline and the edit history, and nothing reports that the write landed on the wrong object.
 
 ## Must
@@ -21,6 +23,9 @@ A lookup that resolves by head branch alone carries its own failure. A branch na
 - Detect an open pull request and edit it in place, so a follow-up push keeps the body in sync instead of failing
 - Scope that detection to an open pull request on the current head and the default base, so neither a reused branch name nor a second base resolves the wrong one
 - Resolve the pull request once and reuse what that resolution returned, so the number recorded never depends on how a lookup ranks two pull requests sharing a head
+- Label from the paths the branch changed, against a map the project declares, so the label set belongs to the project rather than to the skill
+- Apply labels after the pull request exists, so a label the remote does not carry costs a warning rather than the pull request
+- Report a refused label, since a warning nothing surfaces leaves the run indistinguishable from one that labelled
 
 ## Must not
 
@@ -28,12 +33,15 @@ A lookup that resolves by head branch alone carries its own failure. A branch na
 - Put a request for the reviewer in the Testing list, since a request is not a result
 - Create a second pull request when one is open
 - Edit a pull request that is not open, or record its number on a task
+- Name a domain of any one project in the skill body or its references
+- Create a label the map names and the remote lacks
 - Emit anything after the result line
 
 ## Guards
 
 - Branch name does not conform: stop and route to the skill that renames
 - No commits ahead of main: stop
+- No label map in the project: label nothing and warn nothing, since an absent map is a decision rather than a gap
 
 ## Out of scope
 
