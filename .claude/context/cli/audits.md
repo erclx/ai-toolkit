@@ -108,6 +108,18 @@ Neither number gates, so the whole value is in what a later sweep triages. At th
 
 Tiering fits a structural measure because a checkpoint is a judgment, and a seed leaving the repository is where a judgment is worth failing a push over. A closed set has no such gradient. A banned character is as wrong in a context entry as in a seed a target installs, so a per-path tier would rank the tree its own authors read most as the tree where a violation counts least. Adding that tiering is the change this record exists to decline.
 
+### What a triage exempts and why
+
+Three shapes reach a checkpoint where no rewrite improves the prose, so a triage records them rather than editing. The first corpus slice settled all three on 2026-08-06 across `wiki/`, `scripts/`, `snippets/`, and the root instruction file, where 20 of its 44 findings fell into one.
+
+A catalog entry is a description under a link, written as several short sentences carrying one fact each. The sentence cap counts the linked claims a reader holds at once, and a catalog holds peers taken one at a time, so splitting produces two thin paragraphs describing one tool. Two pages carried 17 of the 20 on this ground alone. The depth checkpoint already exempts a table for the same reason, which is that the remedy does not exist for that shape.
+
+A roll-call enumeration is the same shape inside a paragraph, where each sentence names one item and disposes of it. Converting to a bullet list is the fix where the surrounding file already carries lists, and the exemption holds where the file is a record nothing should restructure.
+
+A frozen record under `scripts/eval/` is evidence rather than prose, and its own banner sets the scope. `result-context.md` and `result-wireframes.md` refuse every edit. `result-seed.md` refuses edits to its quoted and machine-derived blocks while stating that the operator-written judgment sections do follow prose standards, which puts those sections inside a sweep rather than outside it. Read the banner per file rather than taking the folder as one class, since a plan naming the folder exempts prose the banner governs.
+
+Nothing under `src/markdown/` reads an exemption marker, per the record above, so each of these still reports on every run. Prose is the only surface a triage can record one on, which is why the grounds sit here rather than beside the findings they cover.
+
 ## The skill audit
 
 `aitk claude skills audit` measures both skill corpora against `standards/skill.md`, gating on one check and reporting six, which is the split the context audit set. Requirement presence is the fact and the rest are judgments. The gate exists because the standard required `REQUIREMENT.md` with nothing reading the rule, the shape three open issues already record.
