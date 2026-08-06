@@ -38,7 +38,7 @@ A plugin skill reads a catalog through `aitk <domain> list --json`, matches it a
 
 ### TypeScript with a bash exec boundary
 
-`src/` parses arguments and owns every migrated domain, and `scripts/` holds what has not moved. Domains migrate one verb at a time rather than in a single rewrite, which is what let each dispatcher be deleted before all of its verbs had moved. Bash keeps only what it is good at. `read_frontmatter_field` stayed because three list scripts call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
+`src/` parses arguments and owns every migrated domain, and `scripts/` holds what has not moved. Domains migrate one verb at a time rather than in a single rewrite, which is what let each dispatcher be deleted before all of its verbs had moved. Bash keeps only what it is good at. `read_frontmatter_field` stayed because three scripts, two of them list scripts, call it once per field inside a loop, where routing through the CLI would cost a process per read. Coarse operations called once per invocation shell into `aitk` instead.
 
 ### Bun as the runtime with no build step
 

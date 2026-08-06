@@ -2,7 +2,7 @@
 title: CLI boundary
 description: Where the TypeScript command surface hands off to the bash that has not migrated, drawn from the CLI and scripts entries
 category: Components
-verified: 7b1107ac 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # CLI boundary
@@ -40,4 +40,4 @@ Every invocation enters at one place. `src/cli.ts` registers subcommands through
 
 The seam is one file. `src/exec.ts` resolves the toolkit root and spawns bash, so a command file that has not migrated stays a thin pass-through and behavior changes land in the script rather than in two places. Domains migrate a verb at a time rather than in a single rewrite, and that is what let every dispatcher be deleted before all of its verbs had moved.
 
-Bash keeps two things by decision rather than by backlog. `manage-sandbox.sh` stays permanently, and `read_frontmatter_field` stays because three list scripts call it once per field inside a loop, where routing through the CLI would cost a process per read. Traffic runs the other way too, since a bash script needing a migrated capability shells into the CLI by path rather than through the globally linked `aitk`, which is what makes a linked worktree exercise its own code instead of the main checkout's. `.claude/context/cli/index.md` holds the TypeScript side and `.claude/context/scripts/index.md` holds the bash side.
+Bash keeps two things by decision rather than by backlog. `manage-sandbox.sh` stays permanently, and `read_frontmatter_field` stays because three scripts, two of them list scripts, call it once per field inside a loop, where routing through the CLI would cost a process per read. Traffic runs the other way too, since a bash script needing a migrated capability shells into the CLI by path rather than through the globally linked `aitk`, which is what makes a linked worktree exercise its own code instead of the main checkout's. `.claude/context/cli/index.md` holds the TypeScript side and `.claude/context/scripts/index.md` holds the bash side.
