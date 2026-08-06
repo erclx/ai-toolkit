@@ -7,7 +7,28 @@
 # the entry the sweep flagged, none written onto the entry that carries none,
 # and no claim edited beside either marker.
 
+# The reply is what keeps the negatives honest. A run where Step 6 never fires
+# leaves the record untouched and satisfies all three content pins, so an
+# all-negative declaration passes hardest on the skip it exists to detect. These
+# two substrings fail that run and nothing in the tree can.
+reply = [
+  "Anchor stale",
+  "src/gov/install.ts",
+]
+
 write_scope = [".claude/**"]
+
+# Every top-level key sits above the first [[content]] block. A bare key written
+# below one belongs to that table in TOML, and the whole declaration then fails
+# to parse rather than silently asserting less.
+manual = [
+  "The run reports neither the drift entry nor the planner entry. Unwired: `reply` takes positives only, since a negative substring passes on any reply that words the thing differently",
+]
+
+# Clean runs cost 16 and 17 turns on 2026-08-06. Set above both so the ceiling
+# catches a blowup rather than firing on every run, and below the harness default
+# of 30 so it asserts something that cap does not already enforce.
+max_turns = 26
 
 # The flagged entry keeps the anchor it arrived with. Refreshing the date is the
 # failure this arm exists to catch, because the sweep measured nothing and a
@@ -29,10 +50,3 @@ pattern = 'Overwriting keeps the target uniform and discards the local edits a p
 [[content]]
 path = ".claude/ARCHITECTURE.md"
 pattern = '^`src/gov/plan\.ts` resolves which rules a stack pulls in before anything is written, chosen over resolving inside the writer\. The planner reaches 3 stacks and a single pass over them is cheap, while a writer that resolves as it goes cannot report what it is about to do\. Measured at a1b2c3d4 on 2026-07-20\.$'
-
-# No max_turns. No clean run measured yet, same reason as the diagram arms.
-
-manual = [
-  "The run reports the install-rules entry as a stale anchor, naming `src/gov/install.ts`. Unwired: the finding is a chat line and no file records it",
-  "The run reports neither the drift entry nor the planner entry. Unwired: a negative over chat output",
-]

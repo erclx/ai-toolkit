@@ -136,6 +136,11 @@ stage_setup() {
     # No delete first, unlike the diagram arms: nothing here keys on the file
     # being added, so the branch diff is the same either way.
     stage_fixtures claude docs anchor-sweep 01-initial
+    # `git init` runs without `-b`, so the baseline branch follows the machine's
+    # init.defaultBranch. The sweep resolves its diff against `main` by name, and
+    # on a machine naming it otherwise the baseline comes out unusable, the
+    # fallback set is empty because everything is committed, and Step 6 skips.
+    git branch -M main
     git add -A && git commit -m "feat(gov): install rules into a target project" --no-verify -q
 
     git checkout -b feat/widen-the-catalog -q
