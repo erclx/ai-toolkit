@@ -40,9 +40,11 @@ The map is authored by hand and nothing detects a directory it fails to cover, s
 
 Apply labels after the pull request resolves, never as a flag on the create. `gh pr create --label` fails whole on a label the remote does not carry, so a name the map got wrong opens no pull request at all and the run stops with the branch pushed and nothing to review. A `gh pr edit --add-label` against a pull request that already exists costs a warning instead, and it is one command across both the create and the edit path rather than two flags that have to stay in step.
 
-Labelling is an open-time act. The step runs when this skill runs, and an ordinary branch runs it once, when the pull request opens. A commit pushed after that reaches no labelling step, because `claude-address-review` hands its push to `git-followup`, which refreshes the body and never invokes this skill. Invoking this skill again is what reaches the step a second time, whether by hand or through `git-ship`, and it recomputes the set over the whole branch diff rather than over the new commits.
+Labelling runs whenever this skill runs and at no other time. Nothing else computes the set, so a push made any other way leaves the labels exactly as the last run left them. Any caller invoking this skill again reaches the step again, and it recomputes over the whole branch diff rather than over the new commits.
 
-The label set therefore describes the branch as it stood when this skill last ran. A follow-up push reaching a surface the earlier ones did not merges under-labelled, with nothing to report the miss. Keeping the step in one skill is worth that cost, since a review fix lands in the files the review named and rarely opens a surface the branch had not already touched.
+An ordinary branch therefore labels once, when the pull request opens. The return leg that answers a review hands its push to `git-followup`, which refreshes the body without invoking this skill, so the commits that answer a review reach no labelling step.
+
+A follow-up push reaching a surface the earlier ones did not merges under-labelled, with nothing to report the miss. Keeping the step in one skill is worth that cost, since a review fix lands in the files the review named and rarely opens a surface the branch had not already touched.
 
 `--add-label` adds and never removes. A label a person applied by hand is not this skill's to strip, and a re-run over a branch that has since dropped a surface keeps the label that surface earned.
 
