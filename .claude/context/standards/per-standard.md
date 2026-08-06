@@ -75,4 +75,6 @@ Scope is forward. The 15 decisions already in the record stay unanchored, becaus
 
 The rule reaches only a decision citing a measured number. The record's entries carry counts such as 486 occurrences across roughly 150 committed files, and those go stale while the reasoning around them stays correct. Requiring the anchor everywhere prices the cheap case at the expensive one, and an entry whose reasoning stands on its own has nothing to check.
 
+A third class was drafted and cut, covering a decision that cites no number while resting on a state of the tree that can change. It gave the writing rule a case the reading rule could not express, since an unanchored entry in that class reads as needing nothing while the writing rule asked for a marker. Keying on the number alone is what collapses the two rules onto one test, and a marker over a claim nobody can re-measure is one no reader can falsify.
+
 Nothing writes the anchor back. The diagram field has two writers that never touch each other's half, one setting `verified` and one appending `stale`, and the architecture record has neither. The rule shipped ahead of the pass that maintains it, since a rule with no anchored entries yet costs nothing to carry, and `.claude/ARCHITECTURE.md` records the gap as an open risk rather than leaving it to be re-derived.
