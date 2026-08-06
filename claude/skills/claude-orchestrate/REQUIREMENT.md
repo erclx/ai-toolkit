@@ -13,6 +13,10 @@ The queue fails in both directions. It empties and a free worker waits, or it fi
 
 Refilling on a merge and on a thinning ready list leaves the window between them unwatched. A wave mid-build has merged nothing and has moved no rows, so both conditions stay silent across the whole build and the wave finishes into an empty queue, which lands planning on the critical path directly after the stretch where it would have cost nothing.
 
+Every one of those triggers looks forward, so a row already parked is measured once and re-tested never. A blocker cell is a claim about the tree that was true the day it was written, and a merge changes the tree under every parked row at once rather than under the rows naming it. A row therefore sits on a condition that stopped holding weeks earlier with nothing reporting the gap.
+
+Re-measuring one goes wrong twice over, and both ways return a confident number rather than an error. A count read looser than its consumer defines the shape answers a question nobody asked, and a condition measured against the tree at hand reads as unreachable while it stays live in the corpus a shipped command runs against. Waiting is not evidence either, so a row untouched for weeks invites promotion on its age, and a task colliding with everything by construction gets re-measured every pass rather than split.
+
 Writing those plans against the tree alone is the second half, since several branches are already changing the shape a plan describes. A plan carrying a bare path list rather than a constraint per in-flight track leaves the worker guessing which act each path forbids, which is the dangling citation the rule against bare paths already exists to prevent.
 
 The session also writes surfaces it is told only how to read. Refilling the queue promotes and demotes rows in the priority file with no stated method, so a session invents one, and an inline rewrite exits clean when it matches nothing and leaves the board wrong with nothing reporting it. A row carrying prose where a plan pointer belongs costs a worker dispatch, because the ship chain refuses at its guard after the worktree is already open. A plan archived from a worker's own branch strands the pointer the board still carries, and the row reads as correct until someone follows it.
@@ -23,7 +27,7 @@ Output drifts everywhere the contract stops. The specified shape covers invocati
 
 Naming that reader without naming the way in fails on the next axis, and it fails circularly. The command that routes a resume request lives in this body, which is the surface a long session is likeliest to have dropped, and dropping it is the condition the handoff exists to survive, so the session holding a complete handoff cannot reach the runbook that reads it back. The review poll is lost in the same moment and recovered by neither, since it is session-scoped and the resume performs no restart, which leaves a reader who follows the whole handoff with a board and no trigger.
 
-The runbooks the session cannot run from memory fail on a third axis, which is where they are kept. A runbook reached by an installed path is a dependency on a channel this skill does not travel on, so a project holding the plugin and running no install follows the citation to nothing, and nothing reports the break because a missing file produces no error until someone opens the path. Every one of them therefore has to ship inside the skill, the three covering the moments the loop cannot detect and the fourth holding the review trigger. That fourth one fails on an axis of its own, since it names one client's command as the way to start the loop, so a session holding a different recurring-prompt scheduler reaches no path and a client without that command reaches none either, and the file ships to every target holding the plugin.
+The runbooks the session cannot run from memory fail on a third axis, which is where they are kept. A runbook reached by an installed path is a dependency on a channel this skill does not travel on, so a project holding the plugin and running no install follows the citation to nothing, and nothing reports the break because a missing file produces no error until someone opens the path. Every one of them therefore has to ship inside the skill, the four covering the moments the loop cannot detect and the fifth holding the review trigger. That last one fails on an axis of its own, since it names one client's command as the way to start the loop, so a session holding a different recurring-prompt scheduler reaches no path and a client without that command reaches none either, and the file ships to every target holding the plugin.
 
 The session also records nothing of what it learns. Both other callers of memory capture are ship-chain skills and this one never ships, so the session taking every operator correction is the session with no moment that writes one down. Hanging that moment on the merge sweep answers it and bills the operator a capture pass per batch of merges while nothing is being built, which is a cost paid on the days shipping is fastest.
 
@@ -52,6 +56,11 @@ The session also records nothing of what it learns. Both other callers of memory
 - State which rule wins where the tracked-file ban collides with the root instruction on small edits, and where a correction no open task owns goes
 - State the review trigger as a recurring prompt rather than as one client's command, since the runbook ships to targets running whatever client they run
 - Read the handoff or the resume runbook when the human asks for that side of a compaction, since the request is the only signal available for a moment the loop cannot detect
+- Re-test every parked row's blocker against the current tree on request, since every refill trigger looks forward and none of them re-reads a row already waiting
+- Measure a condition the way the code consuming it defines the shape, and settle which tree the condition is about before counting, since both errors return a number rather than a failure
+- Write each re-test into the row and its measurement into that task's Findings, since a result reported in chat is gone at the next compaction and the next pass measures the same thing
+- Plan a row the re-test clears, since a cleared row carrying no plan is one the next pass looks at again
+- Split a task whose file set collides with every other by construction, rather than re-measuring a scoping defect that reads as a blocker
 
 ## Must not
 
@@ -61,6 +70,8 @@ The session also records nothing of what it learns. Both other callers of memory
 - Hand a worker anything but a plan, because scope lives there
 - Run a second orchestrator against the same board
 - Promote a task to fill the queue when nothing qualifies. A thin queue is a real answer.
+- Promote a parked row on how long it has waited, since age is not a measurement of the blocker
+- Schedule the parked-row pass on a recurring loop, since the review poll owns the one recurring trigger this skill has and a second loop fires into a static board
 - Rewrite the board with a shell stream editor or an inline string replace, both of which exit clean when they match nothing
 - Restate the board, a task file, or a groundwork folder in the pre-compact handoff, which is the padding that makes a handoff stop being read
 - Specify a shape for a correction, since a format for admitting error invites ceremony where plainness is the whole value
@@ -71,6 +82,7 @@ The session also records nothing of what it learns. Both other callers of memory
 - Roadmap absent: omit the roadmap line rather than asserting a version the file does not state
 - Roadmap present but never committed: report the date as uncommitted, since a blank reads as a formatting slip
 - This body dropped from a long session approaching a compaction: name the re-invocation and the runbook paths, since the routing lives in the body and a user-invoked skill routes nothing once it is gone
+- Blocker only an operator can clear: record the row as untestable this pass and name the action owed, rather than re-measuring what no session can move
 
 ## Out of scope
 
