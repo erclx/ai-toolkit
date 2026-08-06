@@ -265,6 +265,22 @@ describe('measureEntry', () => {
     ])
   })
 
+  it('should end the run at an unindented block written behind an indented one', () => {
+    // Nothing sits between the two blocks, so the fenced mark alone reads them
+    // as one run and the block index is the only thing separating them.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n  \`\`\`bash\n  aitk context audit\n  \`\`\`\n\`\`\`bash\naitk markdown audit\n\`\`\`\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
+  it('should leave the run ended when an indented block follows an unindented one', () => {
+    // The indented block is inside a list item and would keep a run standing,
+    // so the answer has to stay with the unindented block that ended it.
+    const source = `${FRONTMATTER}# CI\n\n- The cap is 30, above the highest observed run.\n\n\`\`\`bash\naitk context audit\n\`\`\`\n  \`\`\`bash\n  aitk markdown audit\n  \`\`\`\n\n- This was 20, which the longest run overshot.\n`
+
+    expect(measureEntry('ci.md', source, true, TERMS).narration).toEqual([])
+  })
+
   it('should keep the run when indented fence content sits at column zero', () => {
     // CommonMark strips the fence's own indentation and nothing more, so a
     // content line may sit at column zero inside an indented block.

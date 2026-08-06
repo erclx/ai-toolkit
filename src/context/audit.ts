@@ -306,7 +306,8 @@ function narration(
 
   const findings: NarrationFinding[] = []
   let following = false
-  let fenceInsideList: boolean | undefined
+  let fenceBlock: number | undefined
+  let fenceInsideList = false
 
   for (const line of lines) {
     // A fenced line is never a bullet, but an unindented block still ends the
@@ -314,28 +315,24 @@ function narration(
     // the bullets around it are two lists and the second has no antecedent
     // above it. A block indented under its bullet stays inside the item.
     //
-    // The first delimiter of a contiguous fenced run decides for every line of
-    // it. Reading each line instead ends the run on a blank line inside an
-    // indented fence, which has no indentation to read, and on a content line
-    // at column zero, which CommonMark permits since only the fence's own
-    // indent is stripped.
+    // The opening delimiter decides for every line of its own block. Reading
+    // each line instead ends the run on a blank line inside an indented fence,
+    // which has no indentation to read, and on a content line at column zero,
+    // which CommonMark permits since only the fence's own indent is stripped.
     //
-    // Two blocks with nothing between them are one such run, so the second
-    // inherits the first's answer and an unindented block behind an indented
-    // one leaves a run standing that should have ended. Telling them apart
-    // needs the closing delimiter, which `BodyLine` does not carry, and parsing
-    // one here would be the second fence walker this repository consolidated
-    // away after its first pair disagreed. That fix belongs in
-    // `src/markdown/scan.ts` rather than in a copy of it.
+    // The block index is what re-opens that decision, so two blocks written
+    // with nothing between them are answered separately rather than the second
+    // inheriting the first. Indentation stays the test here because what
+    // interrupts a list is this check's own judgment, and the walker only says
+    // which lines share a block.
     if (line.fenced) {
-      if (fenceInsideList === undefined) {
+      if (line.block !== fenceBlock) {
+        fenceBlock = line.block
         fenceInsideList = INSIDE_LIST.test(line.text)
       }
       if (!fenceInsideList) following = false
       continue
     }
-
-    fenceInsideList = undefined
 
     if (line.text.trim() === '') continue
 
