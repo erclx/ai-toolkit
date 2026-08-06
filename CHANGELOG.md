@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.72.0](https://github.com/erclx/aitk/compare/v0.71.0...v0.72.0) (2026-08-06)
+
+
+### Features
+
+* **orchestrate:** carry the resume invocation into the handoff file ([#902](https://github.com/erclx/aitk/issues/902)) ([6908228](https://github.com/erclx/aitk/commit/690822863dd19e335304a25931bb3db940c77516))
+
 ## [0.71.0](https://github.com/erclx/aitk/compare/v0.70.0...v0.71.0) (2026-08-05)
 
 
