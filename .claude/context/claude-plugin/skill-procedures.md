@@ -41,9 +41,23 @@ A proposal drawn from the plugin copy would hand back a shape the project never 
 
 The scope derivation the intake proposed was measured and dropped. Across the 80 merged pull requests at `02da9e21` the conventional commit scope reaches 23 distinct values against seven labels, four of them shared, so keying on it needs a hand-maintained scope-to-domain table that is a second vocabulary to hold in step with the first. The changed paths need none, since the top level of the tree already is the domain set. The distinct count rose from 19 at 60 pull requests while the four-way overlap held, which is the shape that settles it.
 
+`.github/` is the rejected home for the map. A skill reads the file and GitHub does not, so a maintainer opening that folder would find a TOML no workflow consumes. `actions/labeler` is the alternative that would earn the folder, and it would relabel on every push where this design does not, at the cost of a second glob syntax the skill cannot read and a label set derived from something other than the diff the body is written from.
+
+### Labelling runs at open and nowhere else
+
 Labelling runs after the pull request resolves rather than as a flag on the create. `gh pr create --label` fails whole on a label the remote lacks, so a mistyped row opens no pull request at all and the branch is left pushed with nothing to review. One `gh pr edit --add-label` afterward degrades to a warning naming `gh label create`, and it covers both sides of the create-and-edit branch the final command carries, which would otherwise want two label flags and would leave every re-run unlabelled if only the create side got written. The warning earns a second output line, since the body otherwise permits one line and a refusal reaching nobody is the failure the fallback exists to prevent.
 
+The step stays in `git-pr` alone, which makes the label set a description of the branch at the moment the pull request opened. `claude-address-review` delegates its push to `git-followup`, which stages, commits, pushes, and refreshes the body without invoking `git-pr`, so no follow-up push reaches the labelling step whatever the branch touched.
+
+How often that costs a label is derived from the map, never read off label events. Every domain label before `#934` was applied by hand once its pull request had merged, so a timeline read shows no growth on any of them and settles nothing. Applying the seven prefixes to the changed paths instead, split at each pull request's open time, 99 of the 200 merged pull requests at `fa2f0058` took commits afterward, 13 of those are rebase artifacts whose commits all post-date the open, and the set grew on 6 of the 86 that remain readable.
+
+Roughly one branch in fourteen that pushes again therefore merges under-labelled, and the most recent 34 readable cases grew on none, which is the run a smaller sample mistakes for the rule. Moving the step into `git-followup` is the alternative and it loses on the price rather than on the rate, since one behavior in two skills on two cadences buys back that one in fourteen. A check is the other answer and it loses too, because nothing compares a label set against a diff after the fact without re-deriving the map on every push, which is the same step in a third place.
+
+### What the map fails to cover
+
 The map has a second consumer and it is a person. Nothing detects a top-level directory the table fails to cover, so a surface added later labels nothing until someone adds a row. That is the manifest-to-reference symmetry this repository already records as a gotcha, arriving in a new folder.
+
+`.claude/` carries no row and the exclusion is deliberate. The tree spans context entries, two sets of generated mirrors, and internal skills rather than one domain, so a single row would label unrelated work alike and a row per subtree doubles the map for a repository-local layout no target shares. A pull request touching that tree alone therefore merges with no label at all, which is the shape the uncovered-directory gap above takes here.
 
 ### Repairing `core.bare`
 
