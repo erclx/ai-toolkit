@@ -1,11 +1,11 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, the memory standard, what the memory pen measured, and the widened readiness test
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, the memory standard, what the memory pen measured, the widened readiness test, and the architecture record's verification anchor
 ---
 
 # Per-standard decisions
 
-Three standards in the corpus cost more reasoning than their shape rules show. The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead. The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
+Four standards in the corpus cost more reasoning than their shape rules show. The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead. The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm. The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
 
 ## The plan standard
 
@@ -66,3 +66,13 @@ Blank lines between the three parts split 102 to 64, so the standard states the 
 No dangling-link check ships. `[[name]]` appears in 147 entries against 98 distinct targets, and the two resolving to nothing name entries never written rather than retired ones, which the format treats as a marker worth keeping. Two of the four apparent dangles were backticked TOML `[[table]]` syntax, so a check would have had to exclude code spans to report a class that is legitimate anyway.
 
 The two classes the verb catches against a real pen are an entry titled with its own filename stem, which renders a slug in the catalog where the rule belongs, and a filename prefix belonging to none of the four types. The live pen reads clean of both.
+
+## The architecture record's verification anchor
+
+`standards/architecture.md` takes the verification marker the diagram standard already carries, in a different form and on a narrower scope. A diagram entry is one file per kind and keys its marker in frontmatter. The architecture record is one file holding 15 decisions and carries no frontmatter at all, so a file-level key would date the newest edit and say nothing about the other 14. The anchor is therefore a trailing sentence on the decision entry, the only granularity the record's own diagram-folder reasoning permits.
+
+Scope is forward. The 15 decisions already in the record stay unanchored, because dating each one by blame is archaeology for a marker nothing reads back. What that costs is a period where an unanchored entry means unchecked and never-anchored at once, which the standard resolves by turning the reading on whether the entry cites a number rather than on when it was written.
+
+The rule reaches only a decision citing a measured number. The record's entries carry counts such as 486 occurrences across roughly 150 committed files, and those go stale while the reasoning around them stays correct. Requiring the anchor everywhere prices the cheap case at the expensive one, and an entry whose reasoning stands on its own has nothing to check.
+
+Nothing writes the anchor back. The diagram field has two writers that never touch each other's half, one setting `verified` and one appending `stale`, and the architecture record has neither. The rule shipped ahead of the pass that maintains it, since a rule with no anchored entries yet costs nothing to carry, and `.claude/ARCHITECTURE.md` records the gap as an open risk rather than leaving it to be re-derived.
