@@ -9,6 +9,7 @@ import {
   measureFolders,
   missingSections,
 } from '@/context/audit'
+import { IGNORE_MARKER } from '@/context/citations'
 import { resolveFolders } from '@/context/folders'
 
 const FRONTMATTER = '---\ntitle: CI\ndescription: A domain\n---\n\n'
@@ -482,6 +483,142 @@ describe('measureFolders', () => {
     const [entry] = await measureFolders(root, folders)
 
     expect(entry.lines).toBeGreaterThan(0)
+  })
+})
+
+describe('bareReferences', () => {
+  let root: string
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'aitk-references-'))
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  function seedFolder(
+    relativeDir: string,
+    entries: Record<string, string>,
+  ): void {
+    const dir = join(root, relativeDir)
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(
+      join(dir, 'index.md'),
+      '---\ntitle: X\nsubtitle: Y\n---\n\n# X\n',
+    )
+    for (const [name, body] of Object.entries(entries)) {
+      writeFileSync(join(dir, name), `${FRONTMATTER}${body}`)
+    }
+  }
+
+  /** The walk starts at the named folder, so a split needs its parent seeded. */
+  function seedSplit(base: string, entries: Record<string, string>): void {
+    const [named] = base.split('/')
+    seedFolder(`.claude/${named}`, {})
+    seedFolder(`.claude/${base}`, entries)
+  }
+
+  async function namesIn(rel: string): Promise<readonly string[]> {
+    const { folders } = await resolveFolders(root)
+    const entries = await measureFolders(root, folders)
+
+    return (
+      entries
+        .find((entry) => entry.rel === rel)
+        ?.bareReferences.map((found) => found.name) ?? []
+    )
+  }
+
+  it('should report a sibling named by bare filename', async () => {
+    seedSplit('context/governance', {
+      'rules.md': '# Rules\n\nWhat earns a rule is `routing.md`.\n',
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([
+      'routing.md',
+    ])
+  })
+
+  it('should leave a sibling named by its path unreported', async () => {
+    seedSplit('context/governance', {
+      'rules.md':
+        '# Rules\n\nWhat earns a rule is `.claude/context/governance/routing.md`.\n',
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([])
+  })
+
+  it('should leave a name matching no sibling unreported', async () => {
+    seedSplit('context/governance', {
+      'rules.md': '# Rules\n\nThe voice rule is `prose.md`.\n',
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([])
+  })
+
+  it('should leave a name colliding with a seed at the flat root unreported', async () => {
+    // `.claude/context/ci.md` is a domain entry and a seed of the same name is
+    // a file a scaffolded project owns. No signal in the name separates them.
+    seedFolder('.claude/context', {
+      'tooling.md': '# Tooling\n\nA scaffold receives `ci.md` of its own.\n',
+      'ci.md': '# CI\n\nOwns the workflow.\n',
+    })
+
+    expect(await namesIn('.claude/context/tooling.md')).toEqual([])
+  })
+
+  it('should leave a name inside a fenced block unreported', async () => {
+    seedSplit('context/governance', {
+      'rules.md':
+        '# Rules\n\n```markdown\nSee `routing.md` for the rest.\n```\n',
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([])
+  })
+
+  it('should leave a name on a line carrying the ignore marker unreported', async () => {
+    seedSplit('context/governance', {
+      'rules.md': `# Rules\n\nA trailing segment opening with a letter reads as a path, as \`routing.md\` does. <!-- ${IGNORE_MARKER} -->\n`,
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([])
+  })
+
+  it('should leave an entry naming itself unreported', async () => {
+    seedSplit('context/governance', {
+      'rules.md': '# Rules\n\nThis file is `rules.md` and nothing splits it.\n',
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([])
+  })
+
+  it('should leave a diagram folder unreported', async () => {
+    seedSplit('diagrams/system', {
+      'context.md': '# Context\n\nThe boundary is in `deploy.md`.\n',
+      'deploy.md': '# Deploy\n\nOne target a stage.\n',
+    })
+
+    expect(await namesIn('.claude/diagrams/system/context.md')).toEqual([])
+  })
+
+  it('should report every bare name a line carries', async () => {
+    seedSplit('context/governance', {
+      'rules.md': '# Rules\n\nRead `routing.md` and then `stacks.md`.\n',
+      'routing.md': '# Routing\n\nOne rule a standard.\n',
+      'stacks.md': '# Stacks\n\nOne roster a toolchain.\n',
+    })
+
+    expect(await namesIn('.claude/context/governance/rules.md')).toEqual([
+      'routing.md',
+      'stacks.md',
+    ])
   })
 })
 

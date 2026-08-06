@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import { relative } from 'node:path'
+import { basename, relative } from 'node:path'
+import { BARE_NAME, IGNORE_MARKER } from '@/context/citations'
 import type { AuditedFolder } from '@/context/folders'
 import type { NarrationTerms } from '@/context/narration'
 import { type BodyLine, bodyLines, maskDisplayed } from '@/markdown/scan'
@@ -109,6 +110,12 @@ export interface ProvenanceFinding {
   readonly text: string
 }
 
+export interface BareReferenceFinding {
+  readonly line: number
+  /** The name as written, so a report says which reference to respell. */
+  readonly name: string
+}
+
 export interface NarrationFinding {
   readonly line: number
   /** The opening that points back at the bullet above. */
@@ -141,6 +148,12 @@ export interface EntryReport {
    * since an empty list here is silent about which one produced it.
    */
   readonly narration: readonly NarrationFinding[]
+  /**
+   * References naming a sibling entry by bare filename, and empty for a caller
+   * that passed no sibling names. Which entries have siblings worth matching is
+   * the caller's judgment, stated where it builds the list.
+   */
+  readonly bareReferences: readonly BareReferenceFinding[]
   /**
    * Required sections this entry declares, in the standard's order, and empty
    * outside the folder whose standard names them. What the folder is short of
@@ -398,17 +411,58 @@ function declaredSections(lines: readonly BodyLine[]): string[] {
 }
 
 /**
+ * Finds the references naming a sibling entry by bare filename.
+ *
+ * The standard asks for the path because a bare name resolves against whichever
+ * folder the reader is in, so a folder split strands every inbound reference
+ * and nothing reads the break. A path is checkable and a bare name is not,
+ * which is what makes this the one form rule worth measuring.
+ *
+ * Matching stops at the sibling set rather than at any filename, since a name
+ * that resolves to no sibling is a reference to something else and the standard
+ * leaves those alone. The entry's own name is out of the set with them: naming
+ * itself points at nothing a split can strand.
+ *
+ * Fenced blocks are skipped for the reason the scans above skip them, and a line
+ * carrying the citation ignore marker is skipped because that marker already
+ * means the line displays a name rather than pointing at one.
+ */
+function bareReferences(
+  lines: readonly BodyLine[],
+  siblings: readonly string[],
+): BareReferenceFinding[] {
+  if (siblings.length === 0) return []
+
+  const named = new Set(siblings)
+  const findings: BareReferenceFinding[] = []
+
+  for (const line of lines) {
+    if (line.fenced || line.text.includes(IGNORE_MARKER)) continue
+
+    for (const match of line.text.matchAll(BARE_NAME)) {
+      if (named.has(match[1])) {
+        findings.push({ line: line.number, name: match[1] })
+      }
+    }
+  }
+
+  return findings
+}
+
+/**
  * Measures one entry, scanning for provenance only when a standard claims it.
  *
  * The caller passes jurisdiction rather than deriving it from `rel`, because a
  * path prefix hardcodes what `--folder` exists to override and misses a domain
- * split into `context/<sub-area>/`.
+ * split into `context/<sub-area>/`. Sibling names arrive the same way and for
+ * the same reason, since the folder an entry sits in is what holds them.
  */
 export function measureEntry(
   rel: string,
   source: string,
   governsContent = true,
   terms?: NarrationTerms,
+  siblings: readonly string[] = [],
 ): EntryReport {
   const lines = bodyLines(source)
 
@@ -421,6 +475,7 @@ export function measureEntry(
     catalogTables: catalogTables(lines),
     provenance: governsContent ? provenance(lines) : [],
     narration: governsContent && terms ? narration(lines, terms) : [],
+    bareReferences: bareReferences(lines, siblings),
     sections: governsContent ? declaredSections(lines) : [],
     stub: isStubSeed(source),
   }
@@ -442,13 +497,20 @@ export async function measureFolders(
   const reports: EntryReport[] = []
 
   for (const folder of folders) {
+    const names = matchesSiblings(folder)
+      ? folder.entries.map((path) => basename(path))
+      : []
+
     for (const path of folder.entries) {
+      const self = basename(path)
+
       reports.push(
         measureEntry(
           relative(root, path),
           await readFile(path, 'utf8'),
           governsContent(folder),
           terms,
+          names.filter((name) => name !== self),
         ),
       )
     }
@@ -460,6 +522,26 @@ export async function measureFolders(
 /** Reports whether the folder's standard is the one carrying the exclusion. */
 export function governsContent(folder: AuditedFolder): boolean {
   return folder.name === PROVENANCE_FOLDER
+}
+
+/**
+ * Reports whether a bare sibling name here is a reference by construction.
+ *
+ * A split folder's entries are named for sub-areas of one domain, so a bare
+ * name matching one of them points at it and nothing else. The folder named
+ * under `.claude/` is where that stops holding, since its entries are named for
+ * whole domains and a domain name is a common noun that a seed, a script, or
+ * another tree spells the same way. Both false positives this measure was tuned
+ * against sat there, naming a seed that shares a filename with the entry beside
+ * them, and no signal in the name separates the two.
+ *
+ * What the exemption costs is the references a future split of the named folder
+ * would strand, which are the ones this measure would most like to hold. It is
+ * taken because a report firing on correct prose is what teaches a reader to
+ * stop reading the section.
+ */
+export function matchesSiblings(folder: AuditedFolder): boolean {
+  return governsContent(folder) && folder.nested
 }
 
 /**
