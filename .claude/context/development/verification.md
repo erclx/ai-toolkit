@@ -33,6 +33,8 @@ The gate runs `aitk init --stack base` rather than a bare `init`, which now reso
 
 ### The other stages
 
+A single test file runs through `bun --bun vitest run <path>` and never `bunx vitest run <path>`, which is the form `package.json` already spells in its `test` script. The `bunx` form resolves vitest under node, where a module reaching git through `$` from `bun` fails to import at collection time and the file reports zero tests rather than a failure. Every module that shells out does so through that import, so the wrong form reads as a clean run over exactly the code whose behavior lives outside the process.
+
 Nothing typechecked until `check:types` was added, so a dropped import shipped green through format, spell, shell, and the test suite. The suite catches one only where a test covers the caller, and the migration keeps adding untested call sites. Declare `typescript` in `devDependencies` rather than relying on it hoisting from an astro peer, or the gate resolves by accident.
 
 The Indexes stage asserts drift against the working tree, so the first `bun run check` after a frontmatter edit reports its own regeneration as drift and exits red. Stage or commit the rewritten `index.md` and run again. This is the same regenerate-then-assert shape as the two stages in `.claude/context/development/regeneration.md`, with the difference that the walk writes files the session never opened, so the failure names work nobody did by hand.

@@ -11,5 +11,5 @@ Local dev loop and the run command table, how bun run check scopes its work, wha
 - [Hooks](hooks.md): Where shell scripts live, the Claude Code hook families and their stdin guard, and the husky hooks with their POSIX sh constraints
 - [Overview](overview.md): What the development domain owns, the toolchain setup, the run command table and its consumers, and why the entry is a folder
 - [Regeneration stages](regeneration.md): The regenerate-then-assert stages, covering the consumed copies of standards, snippets, internal content, and rules, and the hero image with its single-writer rule
-- [Session scratch](scratch.md): Why shared scratch lives at the main worktree root, the two write routes a linked worktree has, and how each gitignored folder is indexed and archived
+- [Session scratch](scratch.md): Why shared scratch lives at the main worktree root, the two write routes a linked worktree has, how each gitignored folder is indexed and archived, and the second git directory backing them off the disk
 - [Verification](verification.md): How bun run check scopes stages to the changed-file set, why the baseline is the remote ref, and the gotchas of running the suite

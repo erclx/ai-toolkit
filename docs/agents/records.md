@@ -1,6 +1,6 @@
 ---
 title: Records
-description: Validating the gitignored session records under .claude/, the per-kind checks, the refusal reasons, and why the root defaults to the main worktree
+description: Validating the gitignored session records under .claude/, the per-kind checks, the refusal reasons, backing the folders to a private remote, and why the root defaults to the main worktree
 ---
 
 # Records
@@ -56,3 +56,46 @@ aitk records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)
 ```
 
 For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/standards/groundwork.md`, `.claude/standards/intake.md`, and `.claude/standards/memory.md`.
+
+## Push and pull
+
+`aitk records push` commits the backed record folders to a private remote and pushes them. `aitk records pull` fetches the other direction and writes them back. Both take `--json` and `--root` the way `validate` does, and both exit `0` on agreement and `1` on a refusal.
+
+```bash
+aitk records push
+aitk records push --json
+aitk records pull
+```
+
+The backed folders are `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `task-archive`, and `tasks`, all under `.claude/`. They are the gitignored Claude group minus `.claude/.tmp`, which is deletable without loss, and `.claude/worktrees/`, whose contents belong to the project repository already. The list is a constant rather than configuration, matching the four folder names `validate` hardcodes.
+
+Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the eight folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched.
+
+### Setup
+
+A person creates the records repository once per machine, and the verbs refuse with the commands when it is absent:
+
+```bash
+git --git-dir=.claude/.records.git init
+git --git-dir=.claude/.records.git remote add origin <private-repo-url>
+```
+
+Point it at a private repository, and at one that is not a remote of the project. Records carry the memory pen, the review reports, and the groundwork trails, so a public project publishes all of it to anyone who fetches all refs. `push` compares the configured origin against every remote of the project and refuses on a match.
+
+### Refusals
+
+| Reason              | What fired                                                      |
+| ------------------- | --------------------------------------------------------------- |
+| `no-repository`     | No `.claude/.records.git`, answered with the two setup commands |
+| `no-remote`         | The records history has no `origin`                             |
+| `remote-shared`     | The records origin is also a remote of the project              |
+| `no-remote-records` | `pull` found no branch on the records origin                    |
+| `local-changes`     | `pull` found records on disk that the history does not carry    |
+| `local-ahead`       | `pull` found local commits that never reached the origin        |
+| `git-failed`        | A git call failed, with its stderr in the message               |
+
+The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the eight has nothing to lose, so a restore onto a fresh checkout runs straight through.
+
+### When it runs
+
+`.husky/post-merge` runs `push` after the task-archive loop, on every merge rather than only on one that archived a task. A review report and a memory entry both land on runs that close nothing. The call sits inside an `if` and last in the file, so an unreachable remote neither aborts the hook nor delays the archiving above it, and a checkout that never ran the setup reports nothing. Anything the hook misses is covered by running the verb by hand.

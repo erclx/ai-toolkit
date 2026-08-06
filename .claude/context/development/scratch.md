@@ -1,6 +1,6 @@
 ---
 title: Session scratch
-description: Why shared scratch lives at the main worktree root, the two write routes a linked worktree has, and how each gitignored folder is indexed and archived
+description: Why shared scratch lives at the main worktree root, the two write routes a linked worktree has, how each gitignored folder is indexed and archived, and the second git directory backing them off the disk
 ---
 
 # Session scratch
@@ -32,3 +32,18 @@ A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, t
 A plan that ships moves to `.claude/plans-archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.
 
 A task that ships moves to `.claude/task-archive/` the same way, through `aitk tasks archive`. The `Pull request:` line `git-pr` writes onto the task is what lets the merge close it, since every merge on `main` is a squash carrying that number in its subject while the branch name never lands. The command owns the move, the `priority.md` row removal, and the index regen as one unit, so the hook and `claude-tasks` cannot archive differently.
+
+### Backing the eight off the disk
+
+Archiving moves a record between folders that all sit on one disk, so `aitk records push` carries the eight of them to a private remote and `aitk records pull` brings them back. The eight are the gitignored Claude group minus `.claude/.tmp`, deletable by definition, and `.claude/worktrees/`, whose contents the project repository holds already. `docs/agents/records.md` carries the verb surface and the refusal table.
+
+The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every one of the 45 citations spelling these paths keeps working. A separate checkout was the alternative and it moves all of them. Staging runs by explicit pathspec with `--force`, which is what lets a folder the project ignores reach an index while keeping anything outside the eight out of it, and neither verb touches the project index or working tree.
+
+The remote is created by hand, once per machine, and both verbs refuse with the two setup commands until it exists. Provisioning a private repository from a verb needs a `gh` scope this toolkit asks for nowhere else. `push` also refuses when the records origin is a remote of this project, because this repository is public and the payload is the memory pen, the review reports, and the groundwork trails.
+
+The one-time setup:
+
+```bash
+git --git-dir=.claude/.records.git init
+git --git-dir=.claude/.records.git remote add origin <private-repo-url>
+```
