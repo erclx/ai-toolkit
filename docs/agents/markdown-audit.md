@@ -63,6 +63,8 @@ The paragraph weight sits at 700 and the bullet weight at 400. Both shipped at 4
 
 The checkpoint shipped at 400 as a borrowed number and was decided against a read of the prose it reports. Thirty-six findings were sampled, six from each of six weight bands, drawn at even spacing through each band ordered by path and line, and each was classed as prose a reader wants split or prose the checkpoint should not have reported.
 
+Every band below was measured before the scan stopped counting link syntax as prose, so a paragraph sitting in one of these bands is heavier than a paragraph reported at the same number today. The second sample after the table re-reads the same range against the corrected measure and reaches the opposite verdict on it, which is the measure moving rather than the reader.
+
 | Band      | Wants the split | Reads as written |
 | --------- | --------------- | ---------------- |
 | 400 - 425 | 1               | 5                |

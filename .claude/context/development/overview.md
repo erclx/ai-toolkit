@@ -59,7 +59,9 @@ Widening the gate by location was the alternative, and it silences a real stale 
 
 ### A prose edit can break a test no stage in that push runs
 
-The Types and Tests stages are scoped to changed files and skip when no TypeScript changed, so a markdown-only push runs neither. The ban sets and all five checkpoints are parsed out of the standards at read time, and `src/markdown/structure.test.ts` asserts the parsed set against the shipped standard, so editing a standard that states a parsed number is a prose change that can fail a TypeScript test. Run `bun test src/markdown/` directly after moving one rather than reading a green `bun run check` as coverage.
+The Types and Tests stages are scoped to changed files and skip when no TypeScript changed, so a markdown-only push runs neither. The ban sets and all five checkpoints are parsed out of the standards at read time, and `src/markdown/structure.test.ts:83` asserts the parsed set against `standards/markdown.md`, so editing a standard that states a parsed number is a prose change that can fail a TypeScript test. Run `bun test src/markdown/` directly after moving one rather than reading a green `bun run check` as coverage.
+
+That test covers the authoring root alone. `STANDARD_ROOTS` in `src/markdown/bans.ts` resolves `.claude/standards` ahead of `standards`, so the running verb parses the consumed copy while the test reads the file behind it, and a green suite says nothing about the copy the audit measures against. The consumed-copies stage below is what closes that gap, by refusing a tree where the two have drifted.
 
 ### The consumed-copies stage fails on its own regeneration
 
