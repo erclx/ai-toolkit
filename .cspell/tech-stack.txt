@@ -83,6 +83,7 @@ setattr
 sidepanel
 sigpipe
 soffice
+stackr
 statusline
 streamable
 subgraph

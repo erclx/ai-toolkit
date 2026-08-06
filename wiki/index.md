@@ -9,4 +9,4 @@ Reference pages for tools, workflows, and concepts, split by who owns the subjec
 
 - [Claude](claude/index.md): Claude Code features and the adjacent Anthropic products, one page per subject Anthropic owns
 - [Concepts](concepts/index.md): Practices and vocabulary with no single vendor behind them, including the one page whose subject this repository owns
-- [Tools](tools/index.md): Design products, MCP servers, and community catalogs, one page per subject another vendor owns
+- [Tools](tools/index.md): Design products, editor and browser extensions, MCP servers, and community catalogs, one page per subject another vendor owns
