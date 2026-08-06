@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.75.0](https://github.com/erclx/aitk/compare/v0.74.0...v0.75.0) (2026-08-06)
+
+
+### Features
+
+* **migration:** propose the split from a retired file into its folder ([#909](https://github.com/erclx/aitk/issues/909)) ([075020e](https://github.com/erclx/aitk/commit/075020e37ee6817afa2e24a1a196238f21598751))
+
 ## [0.74.0](https://github.com/erclx/aitk/compare/v0.73.0...v0.74.0) (2026-08-06)
 
 
