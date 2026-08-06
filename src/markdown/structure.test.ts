@@ -354,8 +354,30 @@ describe('heavyParagraphs', () => {
   })
 
   it('should not read a version pin as the end of a sentence', () => {
-    const source = `${FRONTMATTER}# CI\n\nThe pin is 0.63.1 and the cap is 4.5 for now.\n`
+    const source = `${FRONTMATTER}# CI\n\nThe pin is 0.63.1 for now.\n`
 
     expect(measure(source).heavyParagraphs).toEqual([])
+  })
+
+  it('should not read a decimal as the end of a sentence', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe cap is 4.5 for now.\n`
+
+    expect(measure(source).heavyParagraphs).toEqual([])
+  })
+
+  it('should close a sentence where the next one opens on a code span', () => {
+    const paragraph = [
+      'The verb reads the standard.',
+      '`aitk markdown audit` reports the count.',
+      '`aitk records push` carries the folders.',
+      '`aitk indexes regen` rewrites the file.',
+      '`aitk claude sync` installs the skills.',
+    ].join(' ')
+    const source = `${FRONTMATTER}# CI\n\n${paragraph}\n`
+
+    // A command name is lowercase, so a boundary resting on a capital alone
+    // finds none of the four these spans open.
+    const [found] = measure(source).heavyParagraphs
+    expect(found.sentences).toBe(5)
   })
 })
