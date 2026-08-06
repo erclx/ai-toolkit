@@ -55,13 +55,15 @@ Every weight and depth measure counts the text a reader is shown. A link reduces
 
 A code span is walked around rather than through, so a path quoting link or angle-bracket syntax keeps the width the page gives it. Masking inside one takes back the decision to count it, and the placeholders this toolkit writes are where that shows.
 
-The paragraph check measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: 88 paragraphs in this corpus sit inside four sentences and past the weight checkpoint, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
+The paragraph check measures both halves of one rule. `markdown.md` caps a paragraph at four sentences, and a sentence cap on its own is satisfied by writing fewer and longer ones: 36 paragraphs in this corpus sit inside four sentences and past the weight checkpoint, and the heaviest of those runs 1121 characters. The standard therefore states a weight beside the sentence cap, and the verb reads it as its own checkpoint.
 
-The paragraph weight sits at 600 and the bullet weight at 400. The two shapes measure one population, sharing a median near 170 characters with no gap behind either candidate, so the paragraph number was borrowed from the bullet rule when both checks shipped. They are separate checkpoints in the standard and separate patterns in the parser, and the sample below moved one and left the other untouched.
+The paragraph weight sits at 700 and the bullet weight at 400. Both shipped at 400, because the paragraph number was borrowed from the bullet rule when the two checks landed together, and each has since been read against a sample of its own. They are separate checkpoints in the standard and separate patterns in the parser, so a read that moves one leaves the other where it is.
 
 #### The sample behind the paragraph number
 
 The checkpoint shipped at 400 as a borrowed number and was decided against a read of the prose it reports. Thirty-six findings were sampled, six from each of six weight bands, drawn at even spacing through each band ordered by path and line, and each was classed as prose a reader wants split or prose the checkpoint should not have reported.
+
+Every band below was measured before the scan stopped counting link syntax as prose, so a paragraph sitting in one of these bands is heavier than a paragraph reported at the same number today. The re-sample in the section below re-reads the same range against the corrected measure and reaches the opposite verdict on it, which is the measure moving rather than the reader.
 
 | Band      | Wants the split | Reads as written |
 | --------- | --------------- | ---------------- |
@@ -77,6 +79,10 @@ Precision is what moved the number rather than the finding count. Below 600 the 
 Nothing inside the 500 to 600 band separated the two classes by length, which is the reason the number did not land there. The two paragraphs wanting a split ran 543 and 590 characters against four reading well at 515, 532, 555, and 569.
 
 The sample is thirty-six paragraphs against a reported population in the hundreds, and one reader classed all of them. Treat a band's rate as the order of magnitude it is rather than as a measured precision, and re-sample before moving the number again.
+
+#### The re-sample that moved the number to 700
+
+That re-sample ran once the scan stopped counting link syntax as prose. Findings at 604, 633, and 677 characters each read as an ordinary four-sentence paragraph on one topic, density arrived around 760 and was plain by 860, and the move cut the weight half of the report roughly in half while leaving the sentence cap untouched.
 
 A bullet, a heading, a table row, a blockquote, a blank line, and a fence each end a paragraph, so a heavy bullet is reported by the bullet check alone and never counted twice.
 

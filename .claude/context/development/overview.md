@@ -56,3 +56,13 @@ Those sites keep the flat spelling, and the citation gate is what that costs. It
 Two repairs follow, and which one applies turns on whether the surface installs. A line in a file that reaches a target drops the path, since a marker there is toolkit bookkeeping landing in someone else's tree. That covers the seeded `CLAUDE.md`, the `project-commands` guard and the row describing it, and the four stack references `applyReferences` copies into a target's `.claude/tooling/`. A line that stays in this repository carries `<!-- audit-ignore-citations -->` instead, which is `docs/target-projects.md` alone.
 
 Widening the gate by location was the alternative, and it silences a real stale reference in the same trees. Where a stop message has to spell the flat path, a fenced block carries it rather than a marker, since the gate skips fences in markdown.
+
+### A prose edit can break a test no stage in that push runs
+
+The Types and Tests stages are scoped to changed files and skip when no TypeScript changed, so a markdown-only push runs neither. The ban sets and all five checkpoints are parsed out of the standards at read time, and `src/markdown/structure.test.ts:83` asserts the parsed set against `standards/markdown.md`, so editing a standard that states a parsed number is a prose change that can fail a TypeScript test. Run `bun test src/markdown/` directly after moving one rather than reading a green `bun run check` as coverage.
+
+That test covers the authoring root alone. `STANDARD_ROOTS` in `src/markdown/bans.ts` resolves `.claude/standards` ahead of `standards`, so the running verb parses the consumed copy while the test reads the file behind it, and a green suite says nothing about the copy the audit measures against. The consumed-copies stage below is what closes that gap, by refusing a tree where the two have drifted.
+
+### The consumed-copies stage fails on its own regeneration
+
+The stage regenerates the copies and then asserts `git diff --exit-code` over `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules`, so a session that edits an authoring source sees it fail on the regeneration of that same edit. Staging the regenerated file satisfies the assertion as well as committing it does, which is what lets the stages below it run before the session reaches its commit step. Re-running the command alone never clears it, since the second run regenerates the same diff.
