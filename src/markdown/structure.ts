@@ -15,8 +15,14 @@ const BLOCKQUOTE = /^\s*>/
  * one. An abbreviation ahead of a capitalized word still counts, which
  * over-reports by one on the sentence that carries it and is why this measure
  * reports rather than gates.
+ *
+ * A code span opens a sentence that carries no capital at all, since a command
+ * name is lowercase and the requirement above would catch nothing there. The
+ * backtick therefore stands alone rather than joining the delimiters a capital
+ * follows, and the price is that a span opening a fragment mid-paragraph reads
+ * as a sentence start.
  */
-const SENTENCE_END = /[.!?]["'’”)\]]*(?=\s+["'“(\[]*[A-Z]|\s*$)/g
+const SENTENCE_END = /[.!?]["'’”)\]]*(?=\s+(?:["'“(\[]*[A-Z]|`)|\s*$)/g
 
 const NUMBER_WORDS: Record<string, number> = {
   one: 1,
