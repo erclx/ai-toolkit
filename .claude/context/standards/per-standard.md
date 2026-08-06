@@ -1,11 +1,11 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, the memory standard, what the memory pen measured, the widened readiness test, and the architecture record's verification anchor
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, the memory standard, what the memory pen measured, the widened readiness test, and the architecture record's verification anchor
 ---
 
 # Per-standard decisions
 
-Four standards in the corpus cost more reasoning than their shape rules show. The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead. The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm. The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
+Four standards in the corpus cost more reasoning than their shape rules show. The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead. The plan standard costs a second time for an unrelated reason, two rules under separate headings that read as pointing opposite ways. The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm. The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
 
 ## The plan standard
 
@@ -29,7 +29,23 @@ The plan and intake answer contracts invert each other and both files state the 
 
 A blank `- Answer:` accepts the suggestion because a plan is written and read in one sitting with every question already surfaced, while an empty `You:` means unread because an intake folder is read over weeks and silence there is far more likely to be absence than assent.
 
-`558-plan` routes `.claude/plans/**` and `.claude/plans-archive/**` and joins `base`, following `556-groundwork` and `557-intake`. It carries the two directives that ship silently when violated, a filled answer slot and a deleted plan, and points at the standard for the rest.
+`558-plan` routes `.claude/plans/**` and `.claude/plans-archive/**` and joins `base`, following `556-groundwork` and `557-intake`. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
+
+## Where an execution-time deviation goes
+
+An executing session that reads the tree and picks other than the suggestion had two rules pointing opposite ways. `standards/plan.md` bars filling the answer slot and requires amending the plan in place when a decision changes, and `558-plan` carries the pair under separate headings, so the prohibition read as covering the whole question block. Twice the deviation went to a pull request description instead, and a review pass is what moved it onto a durable surface both times.
+
+The route settled as a clarification rather than a new state. Amending the `- Suggested:` line was already permitted and already preserves the blank slot, so the gap was reach rather than permission, and the contract now says the prohibition covers the answer line alone.
+
+The route reaches an unanswered question alone. A deviation from a filled slot goes back to whoever filled it, because a suggestion rewritten under an answer leaves the plan holding two picks with no default resolving them, which is the failure the blank slot exists to prevent arriving through the fix for it.
+
+A fourth marker on the question block was the alternative it beat. The block already carries a suggestion, an answer slot, and a blank-means-accept default, and a template growing a line per edge case stops being read. The rewritten line opens with the fixed phrase `overridden at execution to <pick>,` instead, which names the source on a line already being rewritten and adds no marker.
+
+The measurement was the first candidate for that tell and it does not discriminate. 219 of the 898 `- Suggested:` lines in the plan archive already carry a number and every one of them was written by the plan's author, so a reader meeting a measurement learns nothing about who put it there and the archived plan still reads as though its suggestion held. A tell that fires on a quarter of the authored corpus is the same outcome as no tell, which is what the fixed phrase closes.
+
+The deviation also takes one line in the open task's `## Findings`, because the plan is archived at ship and the task is what the board still points at. Naming the plan alone puts the record in a file nobody opens after the fact. The two registers hold different halves, the plan carrying why the pick moved and the task carrying what shipped. `standards/tasks.md` names the finding class from its own side, since a handoff written on one side of a boundary is never checked against the standard on the other, which is the both-sides rule the answer-contract inversion above already follows.
+
+Two occurrences is what the rule is written against. `#891` split a context entry into six files where its plan suggested four, `#907` split another into five where its plan suggested three, and both shipped with the slot blank and the reason off the plan. Both reached a correct outcome after review, so what the change removes is a review dependency rather than a broken artifact.
 
 ## The memory standard
 

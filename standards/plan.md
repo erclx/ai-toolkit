@@ -86,12 +86,25 @@ Every question carries a `- Suggested:` line and an empty `- Answer:` slot below
    - Answer:
 ```
 
+An execution that deviates rewrites the suggestion into the form below, leaving the slot as it found it.
+
+```markdown
+1. <question>
+   - Suggested: overridden at execution to <pick>, <the measurement that moved it>
+   - Answer:
+```
+
 - A blank `- Answer:` means accept the suggestion at execution time. That default is what makes the plan decision-ready in one pass, with no separate round to collect answers.
 - Never ship a question without a suggestion. A bare question defers the judgment the plan exists to supply, and it arrives at the executing session as a stop.
 - State the pick in one line with its reason or its main tradeoff. List an alternative only where it changes the pick.
 - Write `- Suggested: needs your call, <why>` where the answer turns on preference rather than on a technical default. Fabricating a default there hides an open question behind an accepted answer.
 - Never fill an `- Answer:` slot on behalf of the person who owns it. Recording the pick as the suggestion is what the suggestion line is for.
+- Rewrite the `- Suggested:` line to the pick execution made when it deviates from an unanswered question, and leave the slot blank. The prohibition above reaches the answer line alone, so the suggestion line is where a deviation goes.
+- Open the rewritten text with `overridden at execution to <pick>,` and follow it with the measurement that moved the pick. The phrase is fixed, because a suggestion carrying a number is the ordinary shape of an authored one and says nothing about who wrote it.
+- Take a deviation from an answered question back to whoever answered it rather than rewriting either line. A filled slot is a decision already made, and a suggestion rewritten under one leaves the plan holding two picks with no default resolving them.
 - Answer in place when a question is settled in conversation, so the file and the decision do not disagree.
+
+The fixed phrase is what a later reader tells an override by, and the measurement alone is not, since an authored suggestion routinely carries a number of its own and a reader meeting one learns nothing about who put it there. The plan is archived at ship, so the same deviation takes one line in the open task's `## Findings` naming what shipped. That is one fact in two registers, the plan holding why the pick moved and the task holding what the tree now has, rather than two records to keep in step.
 
 This contract inverts the one an intake folder keeps, where an empty slot means unread and acceptance is typed out. A plan is written and read in one sitting with every question already surfaced, so silence is a usable default here and is not one there. Both files state the inversion, since a contract read on only one side of a boundary is the one that gets applied to the wrong document.
 
@@ -99,7 +112,7 @@ This contract inverts the one an intake folder keeps, where an empty slot means 
 
 - Write the plan before implementation starts, and treat it as the scope of the run that executes it.
 - Keep every plan at one root. A plan copied into each parallel working tree forks, and the copies answer the same question differently.
-- Amend the plan in place when a decision changes mid-flight. Do not append a second passage narrating the change, which leaves a reader to work out which of two answers is current.
+- Amend the plan in place when a decision changes mid-flight. Do not append a second passage narrating the change, which leaves a reader to work out which of two answers is current. An execution-time deviation from a suggestion is one such amendment, and the contract above fixes which line takes it.
 - Move the plan to `.claude/plans-archive/` when the work it describes ships. Never delete it, because the plan is where the rejected alternative is written down and nothing else records it.
 - Write the plan in the same session that opens the task it serves. The session executing it later inherits reasoning it would otherwise re-derive.
 
@@ -109,6 +122,7 @@ This contract inverts the one an intake folder keeps, where an empty slot means 
 - **The bundled plan.** Two concerns under one slug cannot be split later without rewriting both halves.
 - **The question with no suggestion.** It reads as thoroughness and lands as a blocked run.
 - **The answer filled in by the author.** A slot holding the writer's own pick destroys the only signal that anyone else agreed.
+- **The deviation recorded off the plan.** The reasoning lands in a pull request description no later reader of the plan opens, and the archived plan reads as though its suggestion held.
 - **The count carried in.** A figure quoted from an earlier session survives the change that invalidated it, and the scope built on it is quietly wrong.
 - **The plan deleted on ship.** The considered-and-dropped reasoning goes with it, and the next session re-proposes what this one rejected.
 
