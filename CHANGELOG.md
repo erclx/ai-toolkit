@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.77.0](https://github.com/erclx/aitk/compare/v0.76.0...v0.77.0) (2026-08-06)
+
+
+### Features
+
+* **orchestrate:** add the parked-row re-test runbook and routing ([#915](https://github.com/erclx/aitk/issues/915)) ([59ad987](https://github.com/erclx/aitk/commit/59ad9879b029f48a9e1c6c4c199571d883e87e9b))
+
 ## [0.76.0](https://github.com/erclx/aitk/compare/v0.75.0...v0.76.0) (2026-08-06)
 
 
