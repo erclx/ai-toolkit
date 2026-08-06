@@ -84,7 +84,9 @@ Connect a codebase and any existing design files during onboarding. Claude Desig
 
 ### Daily loop
 
-Describe the artifact in one or two sentences. Claude Design typically inserts a clarification pass before generating, surfacing a `Questions` tab with a generated multiple-choice form covering variation count, vibe, layout, fidelity, color usage, and CTA copy. Answer the form, then Claude Design produces a first pass. Refine with conversational edits for structural changes, inline comments for targeted fixes, and direct manipulation for spatial nudges. Export only after the artifact is review-ready, not during exploration.
+Describe the artifact in one or two sentences. Claude Design typically inserts a clarification pass before generating, surfacing a `Questions` tab with a generated multiple-choice form covering variation count, vibe, layout, fidelity, color usage, and CTA copy. Answer the form, then Claude Design produces a first pass.
+
+Refine with conversational edits for structural changes, inline comments for targeted fixes, and direct manipulation for spatial nudges. Export only after the artifact is review-ready, not during exploration.
 
 First-pass fidelity is usable when the design system is rich and the prompt lines up with it. On an on-brand prompt against a fully onboarded design system, one high-fidelity pass can be shippable without iteration.
 

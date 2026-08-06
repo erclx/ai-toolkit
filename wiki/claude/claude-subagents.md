@@ -53,7 +53,7 @@ A foreground subagent blocks the main conversation until it returns, and this is
 
 Run subagents sequentially when a later one needs output from an earlier one, or when ordering matters for user-visible state, such as review before ship. The cost is wall time.
 
-Fan out only when the work earns it. Each spawned subagent pays its own startup and context cost. If the work is small, inline it. For sustained independent work rather than a single delegated task, a background session is the better tool. See the [background sessions](claude-worktrees.md#background-sessions) section for the worktree-isolated variant.
+Fan out only when the work earns it. Each spawned subagent pays its own startup and context cost, so inline the work when it is small. For sustained independent work rather than a single delegated task, a background session is the better tool. See the [background sessions](claude-worktrees.md#background-sessions) section for the worktree-isolated variant.
 
 ## Pitfalls
 

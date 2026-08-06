@@ -70,8 +70,10 @@ Stitch positions DESIGN.md as a peer of README.md and AGENTS.md. README is writt
 
 Inside Stitch, a design system carries two parallel surfaces, both visible in the design system editor:
 
-- **Theme tokens**, structured fields under the `Theme` tab. The MCP `DesignTheme` schema is tight: `colorMode` (LIGHT or DARK), a seed `customColor` hex, a `colorVariant` picked from nine Material You presets, optional hex overrides for primary, secondary, tertiary, and neutral, three font roles (headline, body, label) chosen from a 29-name font enum, and `roundness` (ROUND_FOUR, ROUND_EIGHT, ROUND_TWELVE, ROUND_FULL). These drive rendering.
+- **Theme tokens**, structured fields under the `Theme` tab. These drive rendering.
 - **DESIGN.md prose**, free-text markdown under the `DESIGN.md` tab, stored as `designMd` on the same theme object. Documentation layer.
+
+The MCP `DesignTheme` schema behind the theme tokens is tight: `colorMode` (LIGHT or DARK), a seed `customColor` hex, a `colorVariant` picked from nine Material You presets, optional hex overrides for primary, secondary, tertiary, and neutral, three font roles (headline, body, label) chosen from a 29-name font enum, and `roundness` (ROUND_FOUR, ROUND_EIGHT, ROUND_TWELVE, ROUND_FULL).
 
 The two surfaces sit side by side. Stitch's own UI warns: `Changes to this file will not update theme variables or the design system preview on canvas in real time.`
 

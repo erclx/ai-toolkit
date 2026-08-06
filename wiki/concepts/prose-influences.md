@@ -60,11 +60,36 @@ Apple's [`while, although, whereas` entry](https://support.apple.com/guide/apple
 
 ## Where we diverge
 
-Every bullet names the page it rests on. Claims added or re-checked on 2026-08-02 are dated against `a37d18a2`.
+Every entry names the page it rests on. Claims added or re-checked on 2026-08-02 are dated against `a37d18a2`.
 
-- The industry guides allow semicolons and em dashes with moderation. We ban both outright because AI models overuse them consistently. Google's [semicolons page](https://developers.google.com/style/semicolons) reads `If possible, avoid using semicolons. In a few cases, a semicolon is preferred`, Microsoft's [semicolons page](https://learn.microsoft.com/en-us/style-guide/punctuation/semicolons) sets out three cases where one applies, and Microsoft's [dashes page](https://learn.microsoft.com/en-us/style-guide/punctuation/dashes-hyphens/) reads `Em dashes can be an effective alternative to colons, semicolons, and parentheses, but don't overuse them`. Checked 2026-08-02.
-- Google's guide permits "Note that" in specific contexts. We ban it entirely.
-- Apple's [`jargon` entry](https://support.apple.com/guide/applestyleguide/j-apsgf88bd162/web) says to avoid jargon whenever possible and define technical terminology on first occurrence. `prose.md` assumes developer-level technical knowledge and skips hand-holding explanations, which reverses the entry for reference docs written for developers.
-- Google discourages parenthetical asides without banning them. Its [parentheses page](https://developers.google.com/style/parentheses) reads `don't put important information in parentheses if you can help it` and `whenever you're inclined to use parentheses, consider whether they're necessary`, where `markdown.md` bans the aside in prose outright. Microsoft treats parentheses only as a [formatting](https://learn.microsoft.com/en-us/style-guide/punctuation/formatting-punctuation) question and Apple's `parenthesis` entry rules only on spelling, so neither addresses the aside. Checked 2026-08-02.
-- Google permits `the following` as a list lead-in and `markdown.md` bans that exact form. Google's [lists page](https://developers.google.com/style/lists) reads `In most cases, precede a list with an introductory sentence` and names `the following` as a noun phrase that can do it. The ban covers the two filler forms, `Here are the X:` and `The following X:`, and takes no position on a substantive introduction, so the divergence is over the wording rather than over the lead-in. Microsoft's [lists page](https://learn.microsoft.com/en-us/style-guide/scannable-content/lists) and Apple's `lists (bulleted)` entry each require an introduction without naming a form, which `markdown.md` permits. Checked 2026-08-02.
-- None of the three guides addresses negative parallelism, gerund openers, hedging clusters, or false balance as a pattern, since all four predate widespread LLM usage in docs. Checked 2026-08-02 across Google's [Voice and tone](https://developers.google.com/style/tone), [Active voice](https://developers.google.com/style/voice), [Sentence structure](https://developers.google.com/style/sentence-structure), [Pronouns](https://developers.google.com/style/pronouns), and [word list](https://developers.google.com/style/word-list), Microsoft's [Verbs](https://learn.microsoft.com/en-us/style-guide/grammar/verbs), [Word choice](https://learn.microsoft.com/en-us/style-guide/word-choice/), [Use simple words, concise sentences](https://learn.microsoft.com/en-us/style-guide/word-choice/use-simple-words-concise-sentences), [Person](https://learn.microsoft.com/en-us/style-guide/grammar/person), and [Nouns and pronouns](https://learn.microsoft.com/en-us/style-guide/grammar/nouns-pronouns), and the G, H, L, P, and W pages of Apple's `Style and usage A–Z` linked above. Apple rules on the connective in `While X is true`, which is under `What we left out`.
+### Semicolons and em dashes
+
+The industry guides allow both with moderation. We ban them outright because AI models overuse them consistently.
+
+Google's [semicolons page](https://developers.google.com/style/semicolons) reads `If possible, avoid using semicolons. In a few cases, a semicolon is preferred`, Microsoft's [semicolons page](https://learn.microsoft.com/en-us/style-guide/punctuation/semicolons) sets out three cases where one applies, and Microsoft's [dashes page](https://learn.microsoft.com/en-us/style-guide/punctuation/dashes-hyphens/) reads `Em dashes can be an effective alternative to colons, semicolons, and parentheses, but don't overuse them`. Checked 2026-08-02.
+
+### The "Note that" opener
+
+Google's guide permits "Note that" in specific contexts. We ban it entirely.
+
+### Jargon and audience
+
+Apple's [`jargon` entry](https://support.apple.com/guide/applestyleguide/j-apsgf88bd162/web) says to avoid jargon whenever possible and define technical terminology on first occurrence. `prose.md` assumes developer-level technical knowledge and skips hand-holding explanations, which reverses the entry for reference docs written for developers.
+
+### Parenthetical asides
+
+Google discourages them without banning them. Its [parentheses page](https://developers.google.com/style/parentheses) reads `don't put important information in parentheses if you can help it` and `whenever you're inclined to use parentheses, consider whether they're necessary`, where `markdown.md` bans the aside in prose outright.
+
+Microsoft treats parentheses only as a [formatting](https://learn.microsoft.com/en-us/style-guide/punctuation/formatting-punctuation) question and Apple's `parenthesis` entry rules only on spelling, so neither addresses the aside. Checked 2026-08-02.
+
+### List lead-ins
+
+Google permits `the following` as a list lead-in and `markdown.md` bans that exact form. Google's [lists page](https://developers.google.com/style/lists) reads `In most cases, precede a list with an introductory sentence` and names `the following` as a noun phrase that can do it. The ban covers the two filler forms, `Here are the X:` and `The following X:`, and takes no position on a substantive introduction, so the divergence is over the wording rather than over the lead-in.
+
+Microsoft's [lists page](https://learn.microsoft.com/en-us/style-guide/scannable-content/lists) and Apple's `lists (bulleted)` entry each require an introduction without naming a form, which `markdown.md` permits. Checked 2026-08-02.
+
+### Patterns the guides predate
+
+None of the three guides addresses negative parallelism, gerund openers, hedging clusters, or false balance as a pattern, since all four predate widespread LLM usage in docs.
+
+Checked 2026-08-02 across Google's [Voice and tone](https://developers.google.com/style/tone), [Active voice](https://developers.google.com/style/voice), [Sentence structure](https://developers.google.com/style/sentence-structure), [Pronouns](https://developers.google.com/style/pronouns), and [word list](https://developers.google.com/style/word-list), Microsoft's [Verbs](https://learn.microsoft.com/en-us/style-guide/grammar/verbs), [Word choice](https://learn.microsoft.com/en-us/style-guide/word-choice/), [Use simple words, concise sentences](https://learn.microsoft.com/en-us/style-guide/word-choice/use-simple-words-concise-sentences), [Person](https://learn.microsoft.com/en-us/style-guide/grammar/person), and [Nouns and pronouns](https://learn.microsoft.com/en-us/style-guide/grammar/nouns-pronouns), and the G, H, L, P, and W pages of Apple's `Style and usage A–Z` linked above. Apple rules on the connective in `While X is true`, which is under `What we left out`.

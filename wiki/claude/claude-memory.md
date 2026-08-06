@@ -36,11 +36,13 @@ Toggle auto-memory with `/memory` or set `autoMemoryEnabled: false` in settings.
 
 ## Toolkit memory workflow
 
-Project-scoped memory complements Claude Code's auto-memory. Files live at `.claude/memory/` in the project tree, gitignored, written by capture and curated through a review loop. A fact about a domain does not land there at all: capture routes it to that domain's `.claude/context/` entry, which the three-tier context model already loads on demand. What stays is the residue no entry owns, which in practice is feedback about how to work. The toolkit treats that residue as a holding pen, not long-term storage. Every review should promote each entry to a durable surface (`CLAUDE.md`, skill body, standards, governance) or retire it to `.claude/.tmp/memory-archive/`. User-type memories are the exception when no in-repo target exists.
+Project-scoped memory complements Claude Code's auto-memory. Files live at `.claude/memory/` in the project tree, gitignored, written by capture and curated through a review loop. A fact about a domain does not land there at all: capture routes it to that domain's `.claude/context/` entry, which the three-tier context model already loads on demand. What stays is the residue no entry owns, which in practice is feedback about how to work.
+
+The toolkit treats that residue as a holding pen, not long-term storage. Every review should promote each entry to a durable surface (`CLAUDE.md`, skill body, standards, governance) or retire it to `.claude/.tmp/memory-archive/`. User-type memories are the exception when no in-repo target exists.
 
 Capture opens the ship chain and propose closes it. The cost of review is re-deriving why an entry was captured, and that context is gone once the session ends. Writing the proposed fix while the session is fresh turns the later decision into a one-glance confirm and stops the pen from stacking to ten or more cold entries. Propose reads `CLAUDE.md`, the skill bodies, standards, and governance each ship, so it pays a read cost, but that work moves earlier where the batch is small.
 
-The loop:
+### The loop
 
 1. **Capture** with `/claude-memory-capture`. Classifies session patterns as `feedback`, `project`, `user`, or `reference`, routes a project fact naming a context entry to that entry, and writes the rest as files. The ship skills run it first, because a routed fact edits a tracked file and has to reach the branch before the commit steps.
 2. **Propose** with `/claude-memory-review`, run last by `claude-autoship` and `git-ship` and skipped when capture wrote no file. A ship caller scopes it to that session's captures. Run standalone it sweeps the whole pen, which is what lets cross-session duplicates merge into one rule. Writes `.claude/review/memory-review-<branch>.md` with a `Decision:` slot and a proposed fix per item.
@@ -48,6 +50,8 @@ The loop:
 4. **Challenge, Discuss, Cleanup** by re-pinging `/claude-memory-review` with the matching phase phrase. Challenge applies absorbed, delta, and generality tests to promote items. Discuss writes `Take:` lines for question decisions. Cleanup deletes one receipt and touches no entry, since Apply is the only phase that moves one.
 
 The skill detects the phase from the user's phrasing and the review file state. Capture writes the information at ship, Propose writes the fix at ship, and Apply is the only gated step. See `claude/skills/claude-memory-review/SKILL.md` for the phase-by-phase contract.
+
+### Index and location
 
 `.claude/memory/index.md` is generated from each entry's `title`, `description`, and sentence-case `category` by a `PostToolUse` hook, since the folder is gitignored and the whole-repo index walk never reaches it. An archive move is a shell `mv`, which the hook does not match, so the review calls `aitk indexes regen` itself after the last move.
 
