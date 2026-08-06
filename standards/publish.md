@@ -32,7 +32,15 @@ Restructure the sentence rather than substituting the character. A semicolon swa
 
 `versioning.md` holds the label rule and the table of surfaces. Read it at scan time rather than working the format from memory.
 
-Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, takes the character checks alone.
+Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, skips it.
+
+## Cross-reference form
+
+A number referring to a pull request or an issue takes the form its destination renders. Write it bare where the destination auto-links it, and in backticks where it does not. Both spellings are correct, each in one place, so a reference moved from one destination to the other is rewritten rather than copied.
+
+Text published to a remote is the auto-linking half: a pull request body, an issue body, a comment on either, and a commit message. Write `#123` there, and `owner/repo#123` where the reference crosses repositories, which the same auto-linking reaches. A markdown file browsed from the repository tree is the other half, where neither spelling links and the backticked one marks the number as an identifier.
+
+A commit message takes the bare form even though it is also read through the log, where nothing links. The remote is what the form is chosen for, since a reader in the log loses only a link that plain text never carried.
 
 ## An unreadable source
 
