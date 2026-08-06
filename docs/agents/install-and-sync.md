@@ -213,7 +213,8 @@ nothing.
 The managed gate above applies here too, and it is the one place it surprises.
 A directory holding a dropped folder and nothing else reports an empty `reverse`
 rather than the folder, because it carries none of the three markers. Read an
-empty section on an unmanaged target as unwalked rather than as clean.
+empty section on an unmanaged target as a walk that never ran rather than as a
+clean result.
 
 Each entry carries `rel`, a file count, and an `attribution` of `dropped`,
 `project`, or `unattributed`. A dropped folder and one the project wrote are the
