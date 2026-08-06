@@ -48,13 +48,15 @@ Group tasks by readiness rather than by status, one row per task, under the colu
 
 Readiness is three groups under fixed headings, `## Run now`, `## Up next`, and `## Needs a plan`, in that order. The names are the contract rather than a suggestion, because a board grouped by readiness under names of its own satisfies every other rule here and still reads as empty to anything counting rows under a heading. Add no fourth group. A task belongs to exactly one, and the tests are read in order.
 
-- `## Run now`: a written plan covers every open outcome, and the files the task touches collide with nothing already running. A worker is handed a task from this group alone.
-- `## Up next`: a written plan exists, and the task either collides with something running or waits on another task to land. The blocker column names which.
+- `## Run now`: a written plan covers every open outcome, and the task carries no reason it cannot start. A collision against the files something already running touches is one such reason, and the `Touches` column is what states it. A worker is handed a task from this group alone.
+- `## Up next`: a written plan exists, and the task carries a stated reason it cannot start. The `Waiting on` column names that reason.
 - `## Needs a plan`: everything else. The task has no plan, or the plan it carries no longer describes the work.
 
-Each group fixes its own columns, which follow from the test above it rather than from preference. Neither half of the `## Run now` test is checkable without the file set and the plan sitting beside the task. The blocker column under `## Up next` names whether a collision or a dependency holds the row. `## Needs a plan` states no file set at all, because a task with no plan has no bounded one to state. A group with no rows keeps its heading and its header row.
+Each group fixes its own columns, which follow from the test above it rather than from preference. Neither half of the `## Run now` test is checkable without the file set and the plan sitting beside the task. The `Waiting on` column under `## Up next` carries that reason in one of three forms. `## Needs a plan` states no file set at all, because a task with no plan has no bounded one to state. A group with no rows keeps its heading and its header row.
 
-`aitk tasks validate` reads those columns and reports where a row's claim and the tree disagree: a plan pointer resolving to no file, a row and a task file that do not map one to one, a task in two groups, and two `## Run now` rows touching a path in common. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on. It reports and never writes, so a session fixes the row it names.
+A collision names the file held by the task already running, a sibling task names that task, and an external condition names both the condition and what would satisfy it. Naming what would satisfy it is what separates a blocked row from one nobody has examined, so a cell stating a condition with no way out of it fails the test. The header text is the contract the way the group names are, because anything reading the cell resolves the column by header rather than by position.
+
+`aitk tasks validate` reads those columns and reports where a row's claim and the tree disagree: a plan pointer resolving to no file, a row and a task file that do not map one to one, a task in two groups, and two `## Run now` rows touching a path in common. It does not read the `Waiting on` cell, so that test holds on reading alone. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on. It reports and never writes, so a session fixes the row it names.
 
 ```markdown
 ---

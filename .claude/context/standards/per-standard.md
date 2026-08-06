@@ -1,11 +1,11 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, the memory standard, and what the memory pen measured
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, the memory standard, what the memory pen measured, and the widened readiness test
 ---
 
 # Per-standard decisions
 
-Two standards in the corpus cost more reasoning than their shape rules show, because both were drafted against a live folder holding two or three files. The plan standard shipped a rule the whole corpus failed, and the memory standard was measured against the pen instead. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
+Three standards in the corpus cost more reasoning than their shape rules show. The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead. The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm. What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
 
 ## The plan standard
 
@@ -42,6 +42,18 @@ The delete prohibition stayed in `CLAUDE.md` while the rest of the block moved. 
 The test in `.claude/ARCHITECTURE.md` asks whether a rule fires on a path being edited, and this is the case where the answer is no because the violating action is not an edit at all.
 
 The rule sits in both tiers on purpose: the always-loaded copy is what reaches the shell path, and the rule copy is the reminder a session gets while editing an entry.
+
+## The tasks readiness test
+
+`standards/tasks.md` admits a row to `## Up next` on a written plan plus a stated reason the task cannot start, and the `Waiting on` cell carries a collision, a sibling task, or an external condition. A test naming only the first two leaves a planned task waiting on a condition outside the board passing neither it nor the `## Needs a plan` test below it, so such a row sits in a group whose stated rule does not admit it.
+
+A fourth heading is the obvious alternative and the standard bans one, because a board grouped under names of its own reads as empty to anything counting rows under a heading. Widening a test costs one clause and keeps the three headings every reader already parses.
+
+The three tests are read in order, so widening `## Up next` alone leaves its new kind unreachable. A `## Run now` test whose second half names only a file collision admits a task blocked on an external condition, since such a task collides with nothing running, and the ordered read hands it to a worker before `## Up next` is ever consulted. Both tests therefore turn on the same clause, that the task carries no reason it cannot start, with the collision kept named under `## Run now` so the `Touches` column and the validator's collision check keep their basis.
+
+The external kind names what would satisfy the condition rather than the condition alone. Without that clause the kind admits any excuse, including a row nobody has looked at, which collapses the group into a holding pen for whatever is stalled.
+
+`aitk tasks validate` resolves the `Task`, `Plan`, and `Touches` columns by header text and never reads the `Waiting on` cell, so the widened test holds on reading alone and the standard says so. A non-empty check is the alternative and every row already passes it, which buys a check that has never once fired. Every finding the validator does report compares a written claim against the tree, and an external condition puts no fact there to disagree with, unlike a plan pointer that resolves or two file sets that intersect.
 
 ## What the memory pen measured
 
