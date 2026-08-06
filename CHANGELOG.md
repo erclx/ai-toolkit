@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.82.0](https://github.com/erclx/aitk/compare/v0.81.0...v0.82.0) (2026-08-06)
+
+
+### Features
+
+* **pr:** label a pull request from the paths it changed ([#934](https://github.com/erclx/aitk/issues/934)) ([3a0fd69](https://github.com/erclx/aitk/commit/3a0fd6958f510b51d7abb852f5aa5b8d8089ec14))
+
+
+### Bug Fixes
+
+* **markdown:** count a sentence opening on a code span ([#933](https://github.com/erclx/aitk/issues/933)) ([e29f415](https://github.com/erclx/aitk/commit/e29f4157cd73f76e3740718f10b35e3a5d38e0c1))
+
 ## [0.81.0](https://github.com/erclx/aitk/compare/v0.80.0...v0.81.0) (2026-08-06)
 
 
