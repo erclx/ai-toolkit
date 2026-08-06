@@ -56,7 +56,7 @@ function showHelp(): void {
     `${GREY}│${NC}    comments [cmd]     ${GREY}# Measure comment density and trend (scan)${NC}`,
     `${GREY}│${NC}    context [cmd]      ${GREY}# Report context folder health (audit)${NC}`,
     `${GREY}│${NC}    markdown [cmd]     ${GREY}# Report markdown against the attribute standards (audit)${NC}`,
-    `${GREY}│${NC}    records [cmd]      ${GREY}# Check session records under .claude/ (validate)${NC}`,
+    `${GREY}│${NC}    records [cmd]      ${GREY}# Session records under .claude/ (validate, push, pull)${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
     `${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}`,
@@ -91,6 +91,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk context audit --json`,
     `${GREY}│${NC}    aitk markdown audit .claude/rules --json`,
     `${GREY}│${NC}    aitk records validate plans`,
+    `${GREY}│${NC}    aitk records push --json`,
     `${GREY}└${NC}`,
   ]
   console.log(lines.join('\n'))

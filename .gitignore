@@ -11,6 +11,8 @@
 node_modules/
 
 # Claude
+# .records.git holds the backup history for the folders below, not a record itself.
+.claude/.records.git/
 .claude/.tmp
 .claude/groundwork/
 .claude/intake/
