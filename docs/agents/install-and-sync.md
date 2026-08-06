@@ -142,11 +142,11 @@ edit and a job counting those stays red with no remedy.
 
 ### Surfaces reported beside the domains
 
-Five sections sit outside the per-domain scan, because each names something
+Four sections sit outside the per-domain scan, because each names something
 that walk cannot see. None of them produces a change, and no sync command
 applies any of them.
 
-All five report only against a toolkit-managed target, which is one carrying a
+All four report only against a toolkit-managed target, which is one carrying a
 `.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
 report says so through `managed` in the JSON and routes an unmanaged directory to
 `aitk init`. Seeds are why the gate exists, since they enumerate from the toolkit
