@@ -22,23 +22,28 @@ Load a domain doc with `aitk docs <topic>` only when the intent touches that dom
 
 Run `aitk sync --check . --json` before routing. It reports what a target is behind on across every surface, so the intent comes from the project state rather than from the user having to know it already. Skip only when the user named a single operation to run.
 
-Read six fields off the report and carry each to `## Route`:
+Read seven fields off the report and carry each to `## Route`:
 
 - `unmigrated`: a domain sitting at the root layout with nothing under `.claude/`. The most urgent finding, because that domain reports no drift of its own while being entirely behind
 - `superseded`: a file a newer seed folder replaced. Report it and stop. No command moves it, since the content is the project's own
 - `seeds`: entries are `matching`, `stale`, `drifted`, or `missing`. Anything but `matching` needs the seed handoff
 - `domains[].entries`: per-file `stale`, `customized`, `stranded`, and `orphaned` as before
-- `historyUnavailable` on a domain or on `seeds`: attribution failed, so treat every difference as unverified and say so rather than reporting a file as untouched
+- `reverse`: what the target holds that no live catalog claims. `unclaimed` lists folders at roots the toolkit stopped shipping, each with an `attribution` of `dropped`, `unattributed`, or `project`. Act on the first two and leave `project` alone, which history proved the project owns. `migrations` names a proposal-only skill with a live case here and the `reason` it was measured from
+- `historyUnavailable` on a domain, on `seeds`, or on `reverse`: nothing could be dated, so treat every difference as unverified and say so rather than reporting a file as untouched. It is set on `reverse` when the toolkit itself ships without history, which is the registry-install case, so the walk found nothing rather than finding a clean target
 - `tooling`: read `measured` first. Every count under it is zero when it is false, which is an absence of measurement rather than a measured zero. Past that, `chain` names the stacks the install resolved, nearest first, and `counts.gitignore` counts the managed ignore entries the target is missing.
 
 State what the report found in one line per finding before acting on any of it.
+
+A `reverse` key the report does not carry at all is a CLI predating the field rather than a target with nothing unclaimed. Say the walk did not run and name the CLI version as the cause. Reading the absent key as an empty answer reports a clean target to a project nobody has looked at, and answering it from a filesystem walk of your own is worse, since that reaches a verdict the attribution the field carries is the only thing entitled to make.
 
 ## Route
 
 Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then act:
 
 - A domain in `unmigrated`: hand off to `migration-standards`
+- An entry in `migrations`: hand off to the skill its `skill` field names, spelled as the report spells it. Both of them propose without writing, so the handoff is where this stops
 - Anything in `superseded`: tell the user which files and what replaced them. Do not move or delete them
+- A folder in `unclaimed`: name it and the attribution it carries. No command moves it and the content may be the project's own, so the decision is the user's
 
 - First-time scaffold of a fresh project: hand off to `setup-init`
 - Governance rules for the project stack: hand off to `setup-gov`
