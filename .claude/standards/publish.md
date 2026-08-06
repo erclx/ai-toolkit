@@ -1,6 +1,6 @@
 ---
 title: Publish reference
-description: Scan run against finished text leaving through a channel no automated check covers
+description: Scan an author runs against finished text, the cross-reference form each destination takes, and the response to an unreadable source
 ---
 
 # Publish reference

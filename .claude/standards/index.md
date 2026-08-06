@@ -17,7 +17,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Memory reference](memory.md): Filename and type prefix, frontmatter, the body shape per type, links between entries, and the lifecycle from write to retire
 - [Plan reference](plan.md): Filename and slug, required sections, the suggested-and-answer contract, and the lifecycle from the live folder to the archive
 - [Prose reference](prose.md): Voice, language, and frontmatter wording for reference markdown
-- [Publish reference](publish.md): Scan run against finished text leaving through a channel no automated check covers
+- [Publish reference](publish.md): Scan an author runs against finished text, the cross-reference form each destination takes, and the response to an unreadable source
 - [Readme reference](readme.md): Readme voice, structure, and content conventions
 - [Requirements reference](requirements.md): Shape and content rules for .claude/REQUIREMENTS.md
 - [Governance rule reference](rule.md): Rule frontmatter, body shape, and voice for .claude/rules files
