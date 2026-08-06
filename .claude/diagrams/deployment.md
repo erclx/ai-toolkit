@@ -2,7 +2,7 @@
 title: Deployment
 description: Gates between a commit and a released version, drawn from the workflow files
 category: Deployment
-verified: 73e9a3f8 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # Deployment
