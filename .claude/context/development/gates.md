@@ -27,6 +27,14 @@ The stage is guarded on `claude` resolving on `PATH` and reports a skip when it 
 
 `--strict` promotes warnings to failures, which is what makes the stage catch a manifest missing metadata rather than only one that fails to parse. The cost is that a Claude Code release introducing a new warning fails `bun run check` for everyone until the manifest answers it.
 
+## Skill paths
+
+The Skill paths stage runs `scripts/core/check-skill-paths.sh` over the shipped skill tree and fails on a path that resolves only in this repository. A shipped skill runs from a plugin cache in someone else's project, where this tree's top-level folders reach nothing, so a citation reading correctly here is a dead pointer everywhere the skill actually runs.
+
+The walk reads inside fenced code blocks, which is what makes an illustrative example count. A TOML block demonstrating the label map in `claude/skills/git-pr/references/labels.md` used this repository's own `docs/` and `wiki/` rows and failed the stage. That is a true positive rather than the fenced-example class the Seed independence stage below accepts, since an example is the part of a reference a reader copies, so a target handed one built from this layout learns a folder set it does not have. An example in shipped content invents its paths.
+
+The failure message assumes a match inside a `references/` folder is a generated copy and directs the fix to `standards/bundled/`. A hand-authored reference under a single skill breaks that assumption, so the recovery it prints names a source file that does not exist and the fix belongs in the reference itself.
+
 ## Seed independence
 
 The Seed independence stage runs `scripts/core/check-seed-independence.sh`, which walks the `.md` files under every seed root and fails on the literal token `aitk`. Seed prose installs into a scaffolded project and is read there as instruction about that project, so a line naming this repository's CLI hands a target a verb it may not be able to run and tells the reader the file is about somewhere else.

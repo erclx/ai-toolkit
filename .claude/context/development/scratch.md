@@ -11,9 +11,11 @@ A linked worktree reads them through one tool and writes them through another. `
 
 The same isolation refuses a `Bash` command whose target it cannot statically verify stays inside the worktree, reporting complexity rather than a path. Joining `mkdir -p` and a heredoc write to the main root with `&&` is refused whole even though each half runs alone, so a main-root write goes out as a plain single command.
 
+The verification reads the heredoc body as well as the command around it. A review report quoting a command substitution was refused on its content, and so was the same report with the substitution stripped and a quoted `||` left in place, while a bare `mkdir -p` against that folder ran. Content decides it rather than length, so a body of plain prose goes out and a body quoting shell does not.
+
 ### The two write routes
 
-Two write kinds therefore take two routes. Creating a whole file is a heredoc through `Bash`, which is why a plan, a review report, and a memory entry need no code behind them. Changing a line inside a file that already exists has no shell route, because the stream editors that would do it are banned for rewriting the line they anchored to and for exiting zero on a non-match, so it runs through an `aitk` verb resolving the main root in-process.
+Two write kinds therefore take two routes. Creating a whole file is a heredoc through `Bash`, which is why a plan, a review report, and a memory entry need no code behind them. A body the verification above refuses falls back to `Write` into the worktree followed by a two-argument `cp` out to the main root, which carries no syntax to inspect and needs no verb. Changing a line inside a file that already exists has no shell route, because the stream editors that would do it are banned for rewriting the line they anchored to and for exiting zero on a non-match, so it runs through an `aitk` verb resolving the main root in-process.
 
 `aitk tasks pull-request` and `aitk tasks outcome` cover the two the board takes, and `mainWorktreeRoot()` in `src/worktree.ts` is the resolver all of them share. A skill with a structured edit no verb covers reads the file and writes it back whole instead.
 

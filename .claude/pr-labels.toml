@@ -1,0 +1,24 @@
+# Pull request domain labels.
+#
+# `git-pr` reads this file, matches the paths a branch changed against the
+# prefixes below, and applies every label that matches. A project without this
+# file gets no labels and no warning.
+#
+# Each label named here has to exist on the remote before the first run that
+# matches it. Create one with `gh label create <name> --description "<text>"`.
+#
+# Label count is worth watching rather than capping. A pull request needing
+# three domain labels is one `git-split` should have split. Two is normal for a
+# change that touches a surface and its docs.
+#
+# Nothing detects a top-level directory this map fails to cover. A surface added
+# after the map was written labels nothing until someone adds a row.
+
+[domains]
+skills = ["claude/skills/"]
+governance = ["governance/"]
+standards = ["standards/"]
+tooling = ["tooling/"]
+cli = ["src/"]
+sandbox = ["scripts/sandbox/"]
+docs = ["docs/", "wiki/"]

@@ -11,6 +11,7 @@ Read these files in parallel:
 
 - `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
 - `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
+- `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/pr-labels.toml`.
 - `.claude/standards/prose.md` from the project root: voice and banned words for all generated text
 - `.claude/standards/markdown.md` from the project root: punctuation and formatting for all generated text
 - `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
@@ -29,6 +30,7 @@ Then run these commands in parallel to gather git context:
 - `git branch --show-current 2>/dev/null || echo "unknown"`
 - `git log <base>..HEAD --oneline 2>/dev/null || echo "NO_COMMITS"`
 - `git diff <base> HEAD -- . ':(exclude)*.lock' ':(exclude)*-lock.json' 2>/dev/null || echo "NO_DIFF"`
+- `git diff --name-only <base> HEAD 2>/dev/null || echo "NO_FILES"`
 
 ## Diff baseline
 
@@ -82,15 +84,24 @@ The lookup scopes to the base as well as the head. One head can carry open pull 
 
 A detached HEAD gives `git branch --show-current` an empty result, which would read as no open pull request and create a second one. The branch-name guard above stops the run first, since an empty name does not match `<type>/<description>`.
 
+### Labels
+
+Read `.claude/pr-labels.toml` from the project root. A project that has not declared a map gets no labels and no warning, since a label set this skill supplied would be a guess about that project's surfaces.
+
+When the file resolves, match it against the name-only diff per `${CLAUDE_SKILL_DIR}/references/labels.md` and write the comma-separated result into `pr_labels` below. Leave `pr_labels` empty when no map resolves or no prefix matches, which skips the labelling command rather than running it against nothing.
+
 ### Final command
 
 Detect an open pull request on the current head and branch: edit it in place when one exists, create it otherwise. This keeps the body in sync on a follow-up push instead of erroring on `gh pr create`.
+
+Labels apply after that branch converges, against a pull request that already exists. `gh pr create --label` refuses a label the remote does not carry and opens no pull request at all, so a mistyped row costs the run rather than the label. One command after the fact also covers the create and the edit path together.
 
 ```bash
 mkdir -p .claude/.tmp/pr
 cat <<'BODY' > .claude/.tmp/pr/body.md
 <body content following pr.md template exactly>
 BODY
+pr_labels="<comma-separated labels, empty when the map resolves to nothing>"
 git push -u origin HEAD || exit 1
 base_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name) || exit 1
 pr_number=$(gh pr list --head "$(git branch --show-current)" --base "$base_branch" --state open --json number --jq '.[0].number // empty')
@@ -99,6 +110,10 @@ if [ -n "$pr_number" ]; then
 else
   pr_url=$(gh pr create --title "<title>" --body-file .claude/.tmp/pr/body.md) || exit 1
   pr_number=${pr_url##*/}
+fi
+if [ -n "$pr_labels" ]; then
+  gh pr edit "$pr_number" --add-label "$pr_labels" >/dev/null ||
+    printf 'Label apply failed. Create a missing label with: gh label create <name>\n' >&2
 fi
 rm -rf .claude/.tmp/pr
 printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
@@ -124,8 +139,12 @@ The number is what lets the merge close the task. Every merge on `main` is a squ
 
 ## After execution
 
-Respond with exactly one line, using the `url` the final command printed:
+Respond with one line, using the `url` the final command printed:
 
 `✅ PR: <url>`
+
+Add a second line only when the labelling command printed its warning, quoting the label `gh` refused:
+
+`⚠️ Labels not applied: <what gh reported>`
 
 Do not add any other text.
