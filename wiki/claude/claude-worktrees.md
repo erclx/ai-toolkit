@@ -88,7 +88,9 @@ Skills from `.claude/skills/` resolve from the worktree's directory as well. Ski
 
 `.claude/plans/`, `.claude/review/`, and `.claude/memory/` are gitignored and live at the main worktree root, not inside a linked worktree. Agents running inside a worktree resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` when not in a git repo. The canonical rule is the Worktrees bullet in `CLAUDE.md`.
 
-Resolving the path is not enough to write it. Claude Code's session isolation refuses an editing-tool write to any path outside the worktree and offers the worktree copy instead, while reads resolve normally, so the boundary is tool-scoped rather than filesystem-scoped. An agent that accepts the offered redirect reports success and leaves the file where no later session looks. A shell command reaches the main root, though only as a plain single command, since a compound one whose target cannot be statically verified is refused for complexity. That covers writing a whole file and not changing a line inside one, which needs a tool that resolves the main root in its own process.
+Resolving the path is not enough to write it. Claude Code's session isolation refuses an editing-tool write to any path outside the worktree and offers the worktree copy instead, while reads resolve normally, so the boundary is tool-scoped rather than filesystem-scoped. An agent that accepts the offered redirect reports success and leaves the file where no later session looks.
+
+A shell command reaches the main root, though only as a plain single command, since a compound one whose target cannot be statically verified is refused for complexity. That covers writing a whole file and not changing a line inside one, which needs a tool that resolves the main root in its own process.
 
 Ephemeral per-command scratch like `.claude/.tmp/pr/body.md` stays in the current worktree. It is deleted the same turn it is created, so centralizing buys nothing.
 
@@ -108,7 +110,7 @@ A fan-out of N worktrees produces N PRs. The order they merge in matters only wh
 
 **Merge order.** Merge the branch with the smallest shared-hotspot footprint first. If any branch touches `CLAUDE.md`, a Claude context entry, or a regenerated `index.md`, that branch merges last. Its siblings rebase on the new `main` once it lands. See [Fan-out rules](#fan-out-rules-for-this-toolkit) for the hotspot list.
 
-**Rebase before merging the next PR.** After PR 1 squash-merges, sibling branches are behind `main` and may have stale rebases of shared files. In each sibling worktree, run `git fetch origin && git rebase origin/main` before merging. If the rebase is clean, merge. If it conflicts, resolve in the worktree, push, then merge. Never force-merge a stale branch.
+**Rebase before merging the next PR.** After PR 1 squash-merges, sibling branches are behind `main` and may have stale rebases of shared files. In each sibling worktree, run `git fetch origin && git rebase origin/main` before merging. Merge when the rebase is clean, and when it conflicts resolve in the worktree, push, then merge. Never force-merge a stale branch.
 
 **Clean up after merge.** Once a PR merges, the worktree and its local branch are stale. Run `/git-worktree cleanup` to remove worktrees whose branches are merged on GitHub and prune the local branches. The skill detects merge state via `gh pr view`. To start a fresh feature from inside a stale worktree, `ExitWorktree(action: "keep")` back to main, then `/claude-worktree <new-name>`.
 
