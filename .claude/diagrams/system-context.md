@@ -2,7 +2,7 @@
 title: System context
 description: Who the toolkit serves and what it publishes to, drawn from REQUIREMENTS.md
 category: System context
-verified: 73e9a3f8 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # System context

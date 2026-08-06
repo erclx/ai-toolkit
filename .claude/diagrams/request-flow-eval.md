@@ -2,7 +2,7 @@
 title: Eval harness
 description: An eval run from a person deciding to spend money through to a committed ledger row, drawn from the harness README
 category: Request flow
-verified: 7b1107ac 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # Eval harness

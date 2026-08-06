@@ -2,7 +2,7 @@
 title: Stack resolution
 description: How a tooling stack resolves through its extends chain and which layer wins a duplicate path, drawn from the manifest walk
 category: Data pipeline
-verified: 7b1107ac 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # Stack resolution

@@ -2,7 +2,7 @@
 title: Context assembly
 description: Three loading tiers a session's context window is built from, what triggers each, and which one pays on every run
 category: Data pipeline
-verified: 7b1107ac 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # Context assembly

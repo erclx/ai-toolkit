@@ -2,7 +2,7 @@
 title: Memory lifecycle
 description: How a captured pattern travels from the holding pen to a durable surface or to deletion, drawn from the two memory skills
 category: Request flow
-verified: 7b1107ac 2026-08-02
+verified: 9da595ee 2026-08-06
 ---
 
 # Memory lifecycle
