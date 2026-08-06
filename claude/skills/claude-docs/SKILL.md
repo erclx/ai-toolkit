@@ -9,11 +9,11 @@ description: Updates `.claude/` planning docs to reflect decisions made during t
 
 - If no `.claude/` directory exists, stop: `❌ No .claude/ directory found. Run aitk claude init to set up the workflow.`
 
-The skip for a session that changed nothing lives at the end of Step 2, because it needs the diff to decide. It drops the doc rewrite alone. The diff-driven sweeps in Steps 4 and 5 still run.
+The skip for a session that changed nothing lives at the end of Step 2, because it needs the diff to decide. It drops the doc rewrite alone. The diff-driven sweeps in Steps 4, 5, and 6 still run.
 
 ## Diff baseline
 
-Steps 2, 4, 5, and 7 share one diff on the usable path. An unusable baseline splits them, per the rule below. Resolve the base ref once and reuse it:
+Steps 2, 4, 5, 6, and 8 share one diff on the usable path. An unusable baseline splits them, per the rule below. Resolve the base ref once and reuse it:
 
 ```bash
 git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null
@@ -32,11 +32,13 @@ An unusable baseline costs only the committed half. `git diff <base> HEAD` is em
 
 **Step 2 recovers the committed half.** Read `git log -p -1`, widening to `git log -p -<n>` when the session spans several commits, and read the candidate task files against the working tree. That yields names and content both, which is what lets Step 2 decide on behavior rather than on filenames. A fresh `git init` on `main` with no remote is the ordinary shape of a scaffolded project, so this path carries the evidence rather than covering an edge case.
 
-**Steps 4, 5, and 7 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, each reporting the warning its own step names.
+**Steps 4, 5, 6, and 8 keep the scoped set.** Run them on the working tree and untracked files alone, and skip only when that set comes out empty, each reporting the warning its own step names.
 
-Never substitute the whole tree for a missing baseline, and do not reuse Step 2's commit read in these three for consistency. On a fresh `git init` project the last commit is the scaffold commit, so `git log -p -1` is the whole tree by another route. Step 2 tolerates that because it only reads, and it matches conservatively against outcomes already on the board. These three write, so the same set stubs a wireframe for every uncovered surface in the repository, stubs a diagram for every source signal the scaffold introduced, and rewrites every context entry that tree touches.
+Never substitute the whole tree for a missing baseline, and do not reuse Step 2's commit read in these four for consistency. On a fresh `git init` project the last commit is the scaffold commit, so `git log -p -1` is the whole tree by another route. Step 2 tolerates that because it only reads, and it matches conservatively against outcomes already on the board. Steps 4, 5, and 8 write, so the same set stubs a wireframe for every uncovered surface in the repository, stubs a diagram for every source signal the scaffold introduced, and rewrites every context entry that tree touches.
 
-Widening what a step reads is safe. Widening what a step writes is not.
+Step 6 only reports, and the whole tree costs it a different way. Every anchored decision cites a path the scaffold commit carries, so the sweep flags the entire record and the reader learns nothing about which number moved.
+
+Widening what a step reads is safe. Widening what a step writes is not, and widening what a step flags spends the reader's attention on entries nothing put in doubt.
 
 ## Step 1: read current docs
 
@@ -49,7 +51,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 
 Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
 
-- `.claude/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. Step 8 reads every file in the folder for its plans sweep and states that where it gives the instruction.
+- `.claude/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. Step 9 reads every file in the folder for its plans sweep and states that where it gives the instruction.
 
 ## Step 2: identify what changed
 
@@ -72,19 +74,20 @@ Keep the match conservative:
 
 Skip Step 3 when the session shows no divergence **and** the diff matches no queued outcome, reporting `✅ No doc updates needed. Session matched the original plan.` Both conditions have to hold. Shipping a queued task exactly as planned is the ordinary case and it reads as no divergence, so a session-only skip would drop the marking step with it.
 
-Then run Steps 4 through 8. Step 3 is the only one this skips, because it is the only one driven by the session rather than by the diff or the board. A project with an empty task board making a mechanical change satisfies both conditions above, and stopping here would put an uncovered surface and an uncovered diagram kind out of reach in every such project.
+Then run Steps 4 through 9. Step 3 is the only one this skips, because it is the only one driven by the session rather than by the diff or the board. A project with an empty task board making a mechanical change satisfies both conditions above, and stopping here would put an uncovered surface and an uncovered diagram kind out of reach in every such project.
 
-Three of the steps that follow write, so each earns the reach separately:
+The steps that follow reach past the session, so each earns the reach separately:
 
 - Steps 4 and 5 stub against the diff. These are why the skip is not a stop. A session that changed no docs is exactly when an uncovered surface or diagram kind goes unnoticed.
-- Step 7 rewrites context entries against the diff and against the facts `claude-memory-capture` routed. The Diff baseline section above groups its diff half with Steps 4 and 5 as a scoped-set step, so a quiet session is no different from any other for it. The routed half reads a named file and runs whatever the diff shows.
-- Step 8 reads the board rather than the session. Its board-wide scan exists to clear a plan an earlier run stranded, and a run that stops at Step 2 can never reach one.
+- Step 6 reads the architecture record against the diff. A run that amended no decision is the one where an anchored number moves under a reasoning nobody reread, which is the case the marker exists to surface.
+- Step 8 rewrites context entries against the diff and against the facts `claude-memory-capture` routed. The Diff baseline section above groups its diff half with Steps 4 and 5 as a scoped-set step, so a quiet session is no different from any other for it. The routed half reads a named file and runs whatever the diff shows.
+- Step 9 reads the board rather than the session. Its board-wide scan exists to clear a plan an earlier run stranded, and a run that stops at Step 2 can never reach one.
 
-This changes which steps the skill reaches. It does not widen what any of them reads. Steps 4, 5, and 7 still take the same scoped set the Diff baseline section defines, and that section's rule is about the input a write is handed rather than about which writes run.
+This changes which steps the skill reaches. It does not widen what any of them reads. Steps 4, 5, 6, and 8 still take the same scoped set the Diff baseline section defines, and that section's rule is about the input a step is handed rather than about which steps run.
 
 ## Step 3: update
 
-For each doc with relevant changes, apply updates following these rules. Read a standard this skill names, here or in Step 7, from `${CLAUDE_SKILL_DIR}/../../standards/` when the project does not have it.
+For each doc with relevant changes, apply updates following these rules. Read a standard this skill names, here or in a later step, from `${CLAUDE_SKILL_DIR}/../../standards/` when the project does not have it.
 
 **`.claude/tasks/`**
 
@@ -98,6 +101,8 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
 - Follow `.claude/standards/prose.md` and `.claude/standards/markdown.md` for all edits.
+- Close a decision entry in `.claude/ARCHITECTURE.md` with its verification anchor whenever this run writes that entry or amends its reasoning and that reasoning cites a measured number. Re-read the number against the tree first, since the marker records the read rather than the edit. `.claude/standards/architecture.md` fixes the sentence.
+- Leave every decision entry this run did not write alone, anchored or not. The rule is scoped forward, so an entry written before it is dated by blame rather than by a read. Step 6 reports a stale anchor and no step writes one on an entry it did not amend.
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
@@ -121,7 +126,19 @@ Both findings key on something literally entering or leaving the tree. Anything 
 
 Past the skip above, read `${CLAUDE_SKILL_DIR}/references/diagram-sweep.md` for the two findings, the signal table deciding an uncovered kind, the stub it writes, and the output lines. Both tests need the cited paths and the signal list that file carries, so the folder check is the only one the body can settle on its own.
 
-## Step 6: flag CLAUDE.md drift
+## Step 6: architecture anchor sweep
+
+Skip this step silently when `.claude/ARCHITECTURE.md` does not exist at `pwd` or carries no decision entry with a verification anchor. A record written before the rule holds none, and a project is not told on every ship that nothing has been checked when the standard calls that state correct. When the baseline is unusable, scope the sweep to the working tree and untracked files, and skip it only when that set is empty, reporting `⚠ No diff to scope against. Skipped the anchor sweep.`
+
+This step reports and never writes. The record carries no frontmatter, so an anchor is a sentence sharing a paragraph with the claim it marks, and a pass editing prose to mark prose has no structural guard against editing the claim beside it. The diagram sweep gets that separation from YAML and this one cannot.
+
+Step 3 holds the writer, and the two never meet. Anchoring fires when this run amends a decision, and this sweep fires when the diff moves a path under one, so a single step covering both would gate the anchor obligation on a signal that has nothing to do with it.
+
+Follow `.claude/standards/architecture.md` for the anchor sentence this step matches on.
+
+Past the skip above, read `${CLAUDE_SKILL_DIR}/references/anchor-sweep.md` for how an entry's cited paths are collected, the finding the diff fires, and the report line.
+
+## Step 7: flag CLAUDE.md drift
 
 If this session established or changed a cross-cutting behavior rule that belongs in root `CLAUDE.md` (a new always-on convention, a revised workflow rule), surface a one-line warning:
 
@@ -129,7 +146,7 @@ If this session established or changed a cross-cutting behavior rule that belong
 
 Do not edit `CLAUDE.md` inline. Every `CLAUDE.md` change goes through the show-diff-and-approve gate, so this step only flags. Skip silently when the session made no cross-cutting behavior decision.
 
-## Step 7: refresh context entries
+## Step 8: refresh context entries
 
 Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip this step silently if the directory does not exist or has no entries.
 
@@ -160,7 +177,7 @@ Add a line naming the handoff when one was consumed:
 
 The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
-## Step 8: sweep consumed scratch
+## Step 9: sweep consumed scratch
 
 Sweep reviews this session consumed, and sweep plans across the whole board. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
