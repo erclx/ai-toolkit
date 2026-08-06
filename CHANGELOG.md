@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.82.2](https://github.com/erclx/aitk/compare/v0.82.1...v0.82.2) (2026-08-06)
+
+
+### Bug Fixes
+
+* **tooling:** keep the records ignore rule out of the installed group ([#938](https://github.com/erclx/aitk/issues/938)) ([e859ede](https://github.com/erclx/aitk/commit/e859eded3d9f81be6cbc71311860f200fc89b07f))
+
 ## [0.82.1](https://github.com/erclx/aitk/compare/v0.82.0...v0.82.1) (2026-08-06)
 
 
