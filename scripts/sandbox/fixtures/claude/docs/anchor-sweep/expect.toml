@@ -8,12 +8,18 @@
 # and no claim edited beside either marker.
 
 # The reply is what keeps the negatives honest. A run where Step 6 never fires
-# leaves the record untouched and satisfies all three content pins, so an
+# leaves the record untouched and satisfies every content pin, so an
 # all-negative declaration passes hardest on the skip it exists to detect. These
-# two substrings fail that run and nothing in the tree can.
+# substrings fail that run and nothing in the tree can.
+#
+# The third names the decision citing `CLAUDE.md`, a file at the repository root
+# and the case where the match rules read as contradicting each other: it is a
+# file citation and it is also a single segment. The skip reaches folders alone,
+# so this entry has to fire, and the decision title is what says it did.
 reply = [
   "Anchor stale",
   "src/gov/install.ts",
+  "The toolkit states its rules in one file",
 ]
 
 write_scope = [".claude/**"]
@@ -25,9 +31,9 @@ manual = [
   "The run reports neither the drift entry nor the planner entry. Unwired: `reply` takes positives only, since a negative substring passes on any reply that words the thing differently",
 ]
 
-# Clean runs cost 16 and 17 turns on 2026-08-06. Set above both so the ceiling
-# catches a blowup rather than firing on every run, and below the harness default
-# of 30 so it asserts something that cap does not already enforce.
+# Three clean runs cost 16, 17, and 18 turns on 2026-08-06. Set above the widest
+# so the ceiling catches a blowup rather than firing on every run, and below the
+# harness default of 30 so it asserts something that cap does not already enforce.
 max_turns = 26
 
 # The flagged entry keeps the anchor it arrived with. Refreshing the date is the
@@ -50,3 +56,10 @@ pattern = 'Overwriting keeps the target uniform and discards the local edits a p
 [[content]]
 path = ".claude/ARCHITECTURE.md"
 pattern = '^`src/gov/plan\.ts` resolves which rules a stack pulls in before anything is written, chosen over resolving inside the writer\. The planner reaches 3 stacks and a single pass over them is cheap, while a writer that resolves as it goes cannot report what it is about to do\. Measured at a1b2c3d4 on 2026-07-20\.$'
+
+# The root-file entry is reported and still not written. Its cited count moves
+# from 2 rules to 4 on this branch, which is exactly the claim a refreshed anchor
+# would silently bless without anyone re-reading it.
+[[content]]
+path = ".claude/ARCHITECTURE.md"
+pattern = '^`CLAUDE\.md` carries 2 standing rules today, chosen over a folder of path-scoped files\. That is few enough for a reader to take in one pass, and splitting them would cost more to find than to read\. Measured at a1b2c3d4 on 2026-07-20\.$'

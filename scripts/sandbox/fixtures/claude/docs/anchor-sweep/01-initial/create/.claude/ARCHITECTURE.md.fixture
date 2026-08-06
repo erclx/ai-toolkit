@@ -18,6 +18,10 @@ A rule lands in the target as a real file the project edits and owns, chosen ove
 
 `src/gov/plan.ts` resolves which rules a stack pulls in before anything is written, chosen over resolving inside the writer. The planner reaches 3 stacks and a single pass over them is cheap, while a writer that resolves as it goes cannot report what it is about to do. Measured at a1b2c3d4 on 2026-07-20.
 
+### The toolkit states its rules in one file
+
+`CLAUDE.md` carries 2 standing rules today, chosen over a folder of path-scoped files. That is few enough for a reader to take in one pass, and splitting them would cost more to find than to read. Measured at a1b2c3d4 on 2026-07-20.
+
 ## Risks / open questions
 
 - Nothing re-reads a rule count once a stack changes shape.

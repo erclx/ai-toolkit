@@ -21,13 +21,15 @@ For each anchored entry, collect the backticked code paths its reasoning cites. 
 
 Most of these name a folder rather than a file, because the number an entry anchors is usually a count over a tree. Match accordingly:
 
-- A citation naming a file matches when the diff carries that file.
-- A citation ending in a slash matches when the diff carries any path under it.
-- A citation of a single segment matches nothing and is skipped.
+- A citation naming a file matches when the diff carries that file, wherever it sits. A file at the repository root such as `CLAUDE.md` is a file citation like any other.
+- A folder citation, which is one ending in a slash, matches when the diff carries any path under it.
+- A folder citation of a single segment matches nothing and is skipped.
 
-The third rule is what stops a citation of `.claude/` from matching every branch. `src/`, `scripts/`, and `.claude/` each name a tree a project organizes most of its work under, so a prefix match on one fires constantly and rebuilds the ignored warning this sweep exists to avoid. Measured against this repository's record at `87b11e87`, the skip drops 13 of 26 folder citations and keeps the ones carrying a signal, among them `src/tooling/`, `.claude/rules/`, and `governance/rules/`.
+The third rule reaches folders alone, which is what keeps it off `CLAUDE.md`. Breadth is the whole reason it exists, and a root file has none: it names one path the diff either carries or does not.
 
-A decision citing nothing narrower than one segment therefore never fires. That is the correct outcome rather than a gap: a count over a whole tree moves on nearly every branch, so flagging it every time tells a reader that time has passed and nothing else.
+What it does stop is a citation of `.claude/` matching every branch. `src/`, `scripts/`, and `.claude/` each name a tree a project organizes most of its work under, so a prefix match on one fires constantly and rebuilds the ignored warning this sweep exists to avoid. Measured against this repository's record at `87b11e87`, the skip drops 13 of the 26 folder citations and keeps the ones carrying a signal, among them `src/tooling/`, `.claude/rules/`, and `governance/rules/`.
+
+A decision whose folder citations are all a single segment, and which cites no file, therefore never fires. That is the correct outcome rather than a gap: a count over a whole tree moves on nearly every branch, so flagging it every time tells a reader that time has passed and nothing else.
 
 ## The finding
 
