@@ -10,7 +10,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "diagram-sweep" "diagram-quiet" "board-sweep"
+  select_or_route_scenario "Which scenario?" "drift" "context-entries" "wireframe-coverage" "diagram-sweep" "diagram-quiet" "anchor-sweep" "board-sweep"
 
   case "$SELECTED_OPTION" in
   "drift")
@@ -129,6 +129,34 @@ stage_setup() {
     log_info "         whole so an appended stale: key fails the match"
     log_info "         The run closes on one line. Step 2 reports no doc updates"
     log_info "         and the After completion fallback stays suppressed."
+    log_info "         Two expectations need a reader and report as unchecked."
+    ;;
+  "anchor-sweep")
+    # The fixture record overwrites the seeded .claude/ARCHITECTURE.md in place.
+    # No delete first, unlike the diagram arms: nothing here keys on the file
+    # being added, so the branch diff is the same either way.
+    stage_fixtures claude docs anchor-sweep 01-initial
+    git add -A && git commit -m "feat(gov): install rules into a target project" --no-verify -q
+
+    git checkout -b feat/widen-the-catalog -q
+    stage_fixtures claude docs anchor-sweep 02-widen
+    git add . && git commit -m "feat(gov): widen the bundled catalog and scope sync to a stack" --no-verify -q
+
+    log_step "Scenario ready: docs architecture anchor sweep"
+    log_info "Context: the branch moves a number two decisions cite, one anchored and one not"
+    log_info "  The install decision is anchored and cites src/gov/install.ts, which goes from 4 rules to 6"
+    log_info "  The drift decision cites src/gov/sync.ts, which this branch also edits, and carries no anchor"
+    log_info "  The planner decision is anchored and cites src/gov/plan.ts, which this branch never touches"
+    log_info ""
+    log_info "Narrate nothing about the catalog. The arm fails if the sweep only"
+    log_info "reaches an entry the prompt named, and it fails the other way if it"
+    log_info "flags the unanchored entry or the entry no signal points at."
+    log_info ""
+    log_info "Action:  /claude-docs"
+    log_info "Expect:  declared in fixtures/claude/docs/anchor-sweep/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:docs anchor-sweep"
+    log_info "         One reported entry, and .claude/ARCHITECTURE.md unwritten:"
+    log_info "         no anchor refreshed, none added, no claim edited beside one"
     log_info "         Two expectations need a reader and report as unchecked."
     ;;
   "board-sweep")

@@ -1,0 +1,38 @@
+# What a correct `/claude-docs` run leaves behind on the anchor-sweep arm.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# Step 6 reports and never writes, so every file assertion here is a negative.
+# The record has to come out of the run byte-identical: no anchor refreshed on
+# the entry the sweep flagged, none written onto the entry that carries none,
+# and no claim edited beside either marker.
+
+write_scope = [".claude/**"]
+
+# The flagged entry keeps the anchor it arrived with. Refreshing the date is the
+# failure this arm exists to catch, because the sweep measured nothing and a
+# date it wrote would assert a read that never happened.
+[[content]]
+path = ".claude/ARCHITECTURE.md"
+pattern = 'installer at `src/gov/install\.ts` carries 4 rules today, which is small enough that copying costs nothing and a pointer would cost every project a resolver\. Measured at a1b2c3d4 on 2026-07-20\.$'
+
+# The unanchored entry stays unanchored. Its cited path changes on this branch
+# too, so a sweep keying on the path rather than on the anchor annotates it, and
+# a writer ignoring the forward scope dates a decision written before the rule.
+[[content]]
+path = ".claude/ARCHITECTURE.md"
+pattern = 'Overwriting keeps the target uniform and discards the local edits a project made deliberately, and those edits are the reason install copies in the first place\.\n\n### The planner runs ahead of the installer$'
+
+# The control entry is anchored and its cited path never enters the diff, so it
+# is the one the sweep has to stay silent about. Pinned whole, since an edit
+# anywhere in it means the pass reached an entry no signal pointed at.
+[[content]]
+path = ".claude/ARCHITECTURE.md"
+pattern = '^`src/gov/plan\.ts` resolves which rules a stack pulls in before anything is written, chosen over resolving inside the writer\. The planner reaches 3 stacks and a single pass over them is cheap, while a writer that resolves as it goes cannot report what it is about to do\. Measured at a1b2c3d4 on 2026-07-20\.$'
+
+# No max_turns. No clean run measured yet, same reason as the diagram arms.
+
+manual = [
+  "The run reports the install-rules entry as a stale anchor, naming `src/gov/install.ts`. Unwired: the finding is a chat line and no file records it",
+  "The run reports neither the drift entry nor the planner entry. Unwired: a negative over chat output",
+]
