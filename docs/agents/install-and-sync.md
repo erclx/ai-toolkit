@@ -34,7 +34,9 @@ under `AITK_NON_INTERACTIVE=1`. Both used to fall back to an interactive picker
 that resolved to its first option headlessly, so `aitk gov install` with no
 stack installed whichever stack sorted first and `aitk snippets install` with no
 category installed every category. Each now reports the valid names on stderr
-and exits 1. Every documented agent path already passes the argument, including
+and exits 1.
+
+Every documented agent path already passes the argument, including
 `aitk init`. The confirm-then-apply prompt after it still resolves to `Yes`
 headlessly, so a call that names its stack or category is unchanged.
 
@@ -76,8 +78,9 @@ lands between one and three of the fifteen.
 because the `.claude/rules/` it writes there is produced output rather than an
 operator's working copy. It reads the stack recorded in `internal/governance.toml`,
 installs it alongside anything under `internal/rules/`, and clears the
-destination first so a rule the record stopped naming disappears. It takes
-`--root <path>` and defaults to the toolkit root, prints nothing on success, and
+destination first so a rule the record stopped naming disappears.
+
+It takes `--root <path>` and defaults to the toolkit root, prints nothing on success, and
 reports the reason on stderr with exit 1 when the record names a stack or rule
 that does not resolve. `scripts/core/regen-claude-copies.sh` calls it, and the
 Consumed copies stage of `bun run check` asserts the result is committed.
@@ -88,7 +91,9 @@ Consumed copies stage of `bun run check` asserts the result is committed.
 and open a pull request. Under `AITK_NON_INTERACTIVE=1` it applies the domain
 syncs and then refuses the git workflow, reporting the branch and commit it
 would have created and exiting 0. Nothing is staged, committed, or pushed
-headlessly. Run it interactively to reach the commit and pull request options.
+headlessly.
+
+Run it interactively to reach the commit and pull request options.
 It also refuses a target whose working tree is dirty, so commit or stash first.
 
 ## Drift reporting
@@ -97,8 +102,9 @@ It also refuses a target whose working tree is dirty, so commit or stash first.
 and is safe to run at any time. Each file is classified as `stale` when it still
 matches what the toolkit installed, `customized` when the project edited it,
 `stranded` when it sits at a path the toolkit no longer installs to, `orphaned`
-when the project authored it, or `drifted` when no stamp covers it. Use `--json`
-for the machine-readable report and `--exit-code` to fail a CI job. Orphaned
+when the project authored it, or `drifted` when no stamp covers it.
+
+Use `--json` for the machine-readable report and `--exit-code` to fail a CI job. Orphaned
 files are excluded from that exit code, since a project-authored rule never
 converges. Attribution reads `.claude/aitk.json`, which every install and sync
 writes.

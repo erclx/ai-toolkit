@@ -8,8 +8,9 @@ category: Workflow
 
 A way to build fast and reliably across parallel Claude Code sessions without a
 loop and without losing the human review gate. One warm session plans and
-reviews. Cold worker sessions build. The human launches workers and merges. This
-page covers the roles and the loop. For the worktree mechanism (isolation, merge
+reviews. Cold worker sessions build. The human launches workers and merges.
+
+This page covers the roles and the loop. For the worktree mechanism (isolation, merge
 order, port collisions), see [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md).
 
 ## Two roles
@@ -108,7 +109,9 @@ occasional theme-setting.
 
 The binding constraint is the human and the shared files, not the roadmap. Cap
 at two or three worker tracks and split them across the stack so they do not
-collide on the same files. Unit checks run freely in many worktrees at once.
+collide on the same files.
+
+Unit checks run freely in many worktrees at once.
 Only fixed-port work (a dev server, an end-to-end run, a screenshot) and
 singleton resources (one local model server, one GPU) serialize. See
 [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for merge order and the

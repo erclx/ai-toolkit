@@ -23,7 +23,9 @@ A line counts as a comment when its first non-whitespace token opens one, which 
 
 Two exclusions are structural rather than tuning. Heredoc bodies are dropped from both the numerator and the denominator, because a scenario script carrying markdown inside one has `#` opening a heading rather than a comment, which inflated a measured 112 comment lines to 427. Fixture trees are pruned by path segment for the same reason. The line-1 shebang is not a comment, since every script has one and counting it puts a floor under density that reports the file count.
 
-`--since` recomputes each point from git via `ls-tree` and `cat-file --batch`, checking nothing out. No ledger is written or read. Six points spread evenly across the window by default, and the boundary revision is always included so the series keeps the reading it is measured against. This works only because density is a pure function of a tree. Which author or session wrote a comment is not recoverable from git and does not belong here.
+`--since` recomputes each point from git via `ls-tree` and `cat-file --batch`, checking nothing out. No ledger is written or read. Six points spread evenly across the window by default, and the boundary revision is always included so the series keeps the reading it is measured against.
+
+This works only because density is a pure function of a tree. Which author or session wrote a comment is not recoverable from git and does not belong here.
 
 ## Degradation sweep
 

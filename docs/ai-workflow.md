@@ -44,12 +44,16 @@ One session works for most features. Prefer splitting across two sessions only w
 
 Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
-- When the input is a pile of findings rather than one feature, invoke `aitk:claude-intake` first. It files the dump into `.claude/intake/<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled. The routing test is whether the repository can answer an item today, so a session grepping handles the yes and the next bullet handles the no.
-- When the current state is unmeasured and more than one approach is live, invoke `aitk:claude-groundwork` first. It opens a track folder under `.claude/groundwork/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled. A track may run experiments to settle a question, writing a fixture it reads itself under `.claude/.tmp/groundwork-fixtures/<slug>/` and spawning up to three billed headless runs before it asks. A fixture a headless run is pointed at sits outside the repository, since a session started under the project root inherits that project's `CLAUDE.md` and rules and would measure them instead of the arm.
+- When the input is a pile of findings rather than one feature, invoke `aitk:claude-intake` first. It files the dump into `.claude/intake/<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled.
+- When the current state is unmeasured and more than one approach is live, invoke `aitk:claude-groundwork` first. It opens a track folder under `.claude/groundwork/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
 - Invoke `aitk:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
 - For UI changes, invoke `aitk:claude-ui-test` to generate and run Playwright e2e tests
   End the session once the feature works and tests pass. Invoke `aitk:claude-docs` to capture any decisions made during implementation before closing.
+
+The routing test is whether the repository can answer an item today. A session grepping handles the yes, and a groundwork track handles the no.
+
+A groundwork track may run experiments to settle a question, writing a fixture it reads itself under `.claude/.tmp/groundwork-fixtures/<slug>/` and spawning up to three billed headless runs before it asks. A fixture a headless run is pointed at sits outside the repository, since a session started under the project root inherits that project's `CLAUDE.md` and rules and would measure them instead of the arm.
 
 #### Session 2
 
@@ -95,7 +99,9 @@ The sweep reads the whole board rather than the tasks the session touched. It is
 
 `aitk tasks validate` checks what those rows claim against what the tree holds: every plan pointer resolves, every row and task file map one to one, no task sits in two groups, and no two rows marked ready touch the same file. That last check is the half a reader cannot run by eye, and it is what keeps two workers from being handed colliding work. It reports and never writes, because a row is the orchestrator's claim and a validator repairing one would assert the claim it exists to test. Nothing fires it automatically, since the board is gitignored per-machine scratch with no shared moment to hang a hook on, so the orchestrator's sweep calls it at the point the readiness claim is made.
 
-`aitk:claude-tasks` owns the two operations that bracket a task's life. It creates the file, holding the filename convention and the frontmatter contract so a malformed write cannot break the index for every sibling, and it moves a shipped task to `.claude/task-archive/`. Creation is where the origin invariant is enforced: every task names a plan, a groundwork folder, an intake folder, or an issue, since a task with no origin is either lost context or work nobody decided to do. Archiving a task leaves its plan alone, because `aitk:claude-docs` owns the plans sweep and already holds the last-live-citation rule. That makes the order load-bearing, so the archive verb refuses to run while the `Plan:` line still points into `.claude/plans/`. The sweep only reaches tasks still in the live folder, and archiving the task first would strand the plan there with nothing citing it.
+`aitk:claude-tasks` owns the two operations that bracket a task's life. It creates the file, holding the filename convention and the frontmatter contract so a malformed write cannot break the index for every sibling, and it moves a shipped task to `.claude/task-archive/`. Creation is where the origin invariant is enforced: every task names a plan, a groundwork folder, an intake folder, or an issue, since a task with no origin is either lost context or work nobody decided to do.
+
+Archiving a task leaves its plan alone, because `aitk:claude-docs` owns the plans sweep and already holds the last-live-citation rule. That makes the order load-bearing, so the archive verb refuses to run while the `Plan:` line still points into `.claude/plans/`. The sweep only reaches tasks still in the live folder, and archiving the task first would strand the plan there with nothing citing it.
 
 Nothing chained that archive until the `post-merge` git hook landed. Every earlier step fires from `aitk:claude-autoship` or `aitk:git-ship`, both of which finish while the pull request is still open, so a task archived there would close for work that may be abandoned. The board is gitignored, which rules out reading it from anywhere but the machine that pulled. The hook names the board's archive candidates and stays silent otherwise, including on a project with no board.
 
@@ -109,13 +115,28 @@ For features on a mature stack, chain the post-plan pipeline in one session. App
 
 - Use when the plan is tight and the stack has real verify commands and test coverage
 - Autoship stops on: verify failure after one fix attempt, UI manual checklist non-empty, an inherited review finding above minor, no diff baseline resolving against `main`, an empty changed-file list, or hook failure
-- Review findings split by origin before severity is read. One the branch inherited stops the chain, and one the run itself caused is repaired in place at any severity, bounded at a single pass. Origin is causation rather than authorship, so staleness the run induced in a file it never opened counts as its own and the plan's file list bounds what it builds rather than what it may repair.
-- Review is skipped when the diff is prose that only informs: every changed file matches `*.md` or `*.txt`, and none sits under a behavior path. Behavior paths cover skills, rules, standards, snippets, and `tooling/` in both the authoring and the installed spelling, plus root `CLAUDE.md`, so the list matches whether a repository authors those surfaces or consumed them from the toolkit. Markdown under one states what an agent does, so a branch touching it reaches review while `docs/` and `wiki/` still skip and stay gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks.
-- An empty changed-file list stops the chain rather than counting as prose-only. The filename test passes vacuously on an empty set, which routed a branch past review instead of through it.
 - Every stop leaves recoverable state. Fix and resume with `/git-ship`
 - Skip autoship for auth, migrations, security-sensitive changes, or work where the plan itself is uncertain
-- Both `autoship` and `git-ship` open with `claude-memory-capture`, which sends what the session learned to the surface that owns it. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.claude/memory/`. Capture leads rather than trails because a routed fact edits a tracked file, which has to reach the branch before the commit steps run.
-- If capture wrote at least one memory file, `claude-memory-review` then proposes a decision-ready fix scoped to those entries while context is fresh, otherwise it is skipped. It stops at Propose. Review the receipt and run Apply yourself, on its own commit separate from the feature. Run `claude-memory-review` standalone to curate the whole pen. An entry it retires moves to `.claude/.tmp/memory-archive/` rather than being deleted, since the folder is gitignored and a bulk pass has no undo.
+
+#### What reaches review
+
+Review findings split by origin before severity is read. One the branch inherited stops the chain, and one the run itself caused is repaired in place at any severity, bounded at a single pass. Origin is causation rather than authorship, so staleness the run induced in a file it never opened counts as its own and the plan's file list bounds what it builds rather than what it may repair.
+
+Review is skipped when the diff is prose that only informs: every changed file matches `*.md` or `*.txt`, and none sits under a behavior path. Behavior paths cover skills, rules, standards, snippets, and `tooling/` in both the authoring and the installed spelling, plus root `CLAUDE.md`, so the list matches whether a repository authors those surfaces or consumed them from the toolkit.
+
+Markdown under one states what an agent does, so a branch touching it reaches review while `docs/` and `wiki/` still skip and stay gated by `docs-sync`, `claude-standards-audit`, and pre-push hooks.
+
+An empty changed-file list stops the chain rather than counting as prose-only. The filename test passes vacuously on an empty set, which routed a branch past review instead of through it.
+
+#### Memory in the chain
+
+Both `autoship` and `git-ship` open with `claude-memory-capture`, which sends what the session learned to the surface that owns it. A fact about a domain carrying an entry in `.claude/context/index.md` is routed to that entry, and `claude-docs` folds it in on the next step, so it ships in the same pull request. Anything no entry owns stays a file in `.claude/memory/`.
+
+Capture leads rather than trails because a routed fact edits a tracked file, which has to reach the branch before the commit steps run.
+
+If capture wrote at least one memory file, `claude-memory-review` then proposes a decision-ready fix scoped to those entries while context is fresh, otherwise it is skipped. It stops at Propose. Review the receipt and run Apply yourself, on its own commit separate from the feature.
+
+Run `claude-memory-review` standalone to curate the whole pen. An entry it retires moves to `.claude/.tmp/memory-archive/` rather than being deleted, since the folder is gitignored and a bulk pass has no undo.
 
 ### UI polish
 

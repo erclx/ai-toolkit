@@ -5,7 +5,9 @@ description: Two framed shapes every command renders into, how JSON and --names 
 
 # Output shape
 
-Every CLI command renders into one of two framed shapes. Data goes to stdout. UI and logs go to stderr. Help output is the exception. It prints to stdout so it can be piped and grepped.
+Every CLI command renders into one of two framed shapes. Data goes to stdout. UI and logs go to stderr.
+
+Help output is the exception. It prints to stdout so it can be piped and grepped.
 
 ## Data shape (lists, runs, errors)
 
