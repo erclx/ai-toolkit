@@ -83,6 +83,7 @@ Only the `development` entry carries this section. It is not a general-purpose h
 - Decisions specific to the domain. Broader cross-domain decisions belong in `.claude/ARCHITECTURE.md`.
 - Constraints, gotchas, things tried and rejected
 - Domain-specific conventions that do not fit a `paths:`-scoped rule
+- A reference to another entry, spelled as the path that entry sits at rather than as its bare filename. A bare name resolves against whichever folder the reader is already in, so a domain that splits into subfolders strands every inbound reference and the break surfaces nowhere. A reference to a seed, a standard, or a file the project owns elsewhere keeps the form its own surface uses.
 
 ## What does not go in
 

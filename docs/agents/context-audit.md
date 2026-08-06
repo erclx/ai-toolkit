@@ -37,7 +37,7 @@ A run where no requested name resolves refuses, whichever list it read. Naming t
 
 ## Exit codes
 
-Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. Length, table, provenance, and narration findings print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around. Narration is the weakest of the four, since whether two bullets share a subject is a call the measure approximates from structure alone, and one of the shapes it matches is the rejected alternative the standard asks an entry to keep.
+Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. Length, reference form, table, provenance, and narration findings print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around. Narration is the weakest of the five, since whether two bullets share a subject is a call the measure approximates from structure alone, and one of the shapes it matches is the rejected alternative the standard asks an entry to keep.
 
 Required-section and index findings sit between the two. Both are answerable from the file rather than weighed, so `--gate` promotes them to failing codes while a bare run leaves them advisory. The toolkit runs the bare form against itself and the widened form against the seed tree, described below.
 
@@ -76,7 +76,7 @@ Three exclusions keep it from firing on prose about paths. Fenced blocks are ski
 
 Two cases remain, and no syntax separates either from a real reference. One is a sentence naming a hypothetical entry to show the shape of a name. The other is a line instructing a target project about its own tree, which resolves against the target rather than against this repository and passes here only while the two layouts agree. Splitting a seeded domain into a folder ends that agreement and turns every such line red at once.
 
-Append `<!-- audit-ignore-citations -->` to the source line in either case. The marker suppresses citation checking for its own line only.
+Append `<!-- audit-ignore-citations -->` to the source line in either case. The marker suppresses citation checking for its own line only, and the reference-form check reads it too, since both ask whether a line points at a file and the marker is how a line says it displays a name instead.
 
 The marker itself stays out of anything that installs. A seed, a plugin skill body, and a stack reference all reach a target, so a marker there lands as toolkit bookkeeping in someone else's tree. Reword those lines to drop the path instead, and where a stop message has to spell it, move that message into a fenced block, which this check already skips.
 

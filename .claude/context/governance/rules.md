@@ -7,7 +7,7 @@ description: The numbering bands and their two sources, the frontmatter contract
 
 A rule is a `.md` file carrying the Claude shape directly, so nothing generates it and install is a passthrough copy. Rules sit in subdirectories by domain and install preserves that layout, since a flat folder would leave the numbering bands as the only grouping signal.
 
-What earns a rule in the first place, and which standard each one routes to, is `routing.md`.
+What earns a rule in the first place, and which standard each one routes to, is `.claude/context/governance/routing.md`.
 
 ## Numbering bands
 
@@ -53,13 +53,13 @@ Always-on rules such as the core persona, testing, and error handling emit with 
 ## Gotchas
 
 - A widened source rule fails `bun run check` until the copy is committed. The regen propagates the change and the drift assertion turns the resulting diff into a failure. A rule matching nothing still does not error, so the gate catches the stale copy rather than the dead glob.
-- A rule authored under `governance/rules/` in a folder no stack names installs for nobody. `stacks.md` covers which folders close that and which do not.
+- A rule authored under `governance/rules/` in a folder no stack names installs for nobody. `.claude/context/governance/stacks.md` covers which folders close that and which do not.
 
 ## Adding a rule
 
 Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed.
 
-Whether it reaches anyone depends on the stack roster rather than on the file. A rule added to `core/` or `claude/` reaches every `base` consumer with no stack edit, and a rule in any other folder needs its name in the relevant `governance/stacks/*.toml`. See `stacks.md` for both cases and for the stage that reports the gap.
+Whether it reaches anyone depends on the stack roster rather than on the file. A rule added to `core/` or `claude/` reaches every `base` consumer with no stack edit, and a rule in any other folder needs its name in the relevant `governance/stacks/*.toml`. See `.claude/context/governance/stacks.md` for both cases and for the stage that reports the gap.
 
 ## Project-local rules
 

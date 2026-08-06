@@ -50,6 +50,23 @@ export function citationPattern(folders: readonly string[]): RegExp {
 }
 
 /**
+ * A backticked filename carrying no folder, the form a reference takes when it
+ * names a sibling rather than a path.
+ *
+ * `citationPattern` spells the `.claude/` prefix and cannot see this shape at
+ * all, which is the reason the form rule exists. Widening that expression to
+ * admit a bare name was the alternative and it puts one match in the position of
+ * answering two questions, since a spelled path is a reference by construction
+ * and a bare name is a candidate whichever caller found it still has to test
+ * against the folder it sits in.
+ *
+ * The backticks are required rather than incidental. A filename written into
+ * running prose without them is not a reference a reader follows, and matching
+ * one would report every sentence that happens to name a file.
+ */
+export const BARE_NAME = /`([A-Za-z0-9._-]+\.md)`/g
+
+/**
  * Pulls the cited paths out of one file's text.
  *
  * Fenced blocks are skipped for markdown only. A fence is markdown syntax, and

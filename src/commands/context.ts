@@ -4,6 +4,7 @@ import {
   type EntryReport,
   governsContent,
   LENGTH_CHECKPOINT,
+  matchesSiblings,
   measureFolders,
   missingSections,
   PROVENANCE_FOLDER,
@@ -60,7 +61,7 @@ export function register(program: Command): void {
   context
     .command('audit')
     .description(
-      'Report required sections, entry length, citations, catalog tables, provenance, superseded-decision narration, and index drift',
+      'Report required sections, entry length, citations, reference form, catalog tables, provenance, superseded-decision narration, and index drift',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -85,8 +86,9 @@ export function register(program: Command): void {
         '',
         'An unresolved citation always gates. --gate widens the gate to the',
         'other two findings that are facts rather than judgments: a missing',
-        'required section and index drift. Length, table, provenance, and',
-        'narration findings are judgments and stay advisory under both.',
+        'required section and index drift. Length, reference form, table,',
+        'provenance, and narration findings are judgments and stay advisory',
+        'under both.',
         '',
         'Depth and bullet weight are stated over every markdown file rather',
         'than over a context entry, so `aitk markdown audit` measures them.',
@@ -205,6 +207,7 @@ async function runAudit(
     intro('aitk context audit')
     reportScope(folders, unresolved)
     reportCitations(citations, cited)
+    reportReferenceForm(entries, folders)
     reportSections(sections, folders)
     reportLength(entries)
     reportTables(entries)
@@ -366,6 +369,65 @@ function reportCitations(
   pipeOutput(
     report.unresolved
       .map((citation) => `${citation.file}:${citation.line}  ${citation.path}`)
+      .join('\n'),
+  )
+}
+
+/**
+ * Reports the references naming a sibling entry by bare filename.
+ *
+ * This prints beside the citation check rather than among the readability
+ * measures, since the two read the same thing: one resolves a path a reference
+ * spells and this one finds the references that spell none. The reach line
+ * names the split folders rather than the governed folder alone, because a run
+ * whose only context folder is flat measures nothing here and would otherwise
+ * print the same clean line as a run that measured every split.
+ */
+function reportReferenceForm(
+  entries: readonly EntryReport[],
+  folders: readonly AuditedFolder[],
+): void {
+  logStep('Reference form')
+
+  const scoped = folders.filter(matchesSiblings)
+  if (scoped.length === 0) {
+    logInfo(
+      `Out of scope. A bare name is matched against the siblings of a domain split into a folder, and no audited folder under .claude/${PROVENANCE_FOLDER}/ is one.`,
+    )
+    return
+  }
+
+  logInfo(
+    `Covers ${plural(scoped.length, 'split folder')} under .claude/${PROVENANCE_FOLDER}/, whose standard asks a reference to spell its path.`,
+  )
+  logInfo(
+    'The flat folder is out of reach, since a domain filename there is shared by seeds and other trees.',
+  )
+
+  const carrying = entries
+    .filter((entry) => entry.bareReferences.length > 0)
+    .sort((a, b) => b.bareReferences.length - a.bareReferences.length)
+
+  if (carrying.length === 0) {
+    logInfo('Every reference to a sibling entry spells its path.')
+    return
+  }
+
+  const total = carrying.reduce(
+    (sum, entry) => sum + entry.bareReferences.length,
+    0,
+  )
+  logWarn(
+    `${plural(total, 'bare name')} across ${carrying.length} ${carrying.length === 1 ? 'entry' : 'entries'}`,
+  )
+  pipeOutput(
+    carrying
+      .map(
+        (entry) =>
+          `${entry.rel}  ${plural(entry.bareReferences.length, 'bare name')}\n${entry.bareReferences
+            .map((found) => `  :${found.line}  ${found.name}`)
+            .join('\n')}`,
+      )
       .join('\n'),
   )
 }

@@ -89,7 +89,7 @@ The scenario also cannot be driven by the bare `/aitk:claude-groundwork` prompt 
 
 ### The gap the rule names
 
-The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
+The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
 
 ## The skill census
 

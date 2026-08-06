@@ -26,4 +26,4 @@ The entry is a folder on the sub-area condition rather than on length. `standard
 
 ### Editing `.claude/rules/` here changes nothing
 
-This repository's own `.claude/rules/` is produced output rather than a working copy, so a rule written into it by hand is deleted on the next `bun run check`. `install.md` covers the record it is produced from and where a new rule for this repository is registered instead.
+This repository's own `.claude/rules/` is produced output rather than a working copy, so a rule written into it by hand is deleted on the next `bun run check`. `.claude/context/governance/install.md` covers the record it is produced from and where a new rule for this repository is registered instead.
