@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.82.1](https://github.com/erclx/aitk/compare/v0.82.0...v0.82.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* **tooling:** ignore the records git directory in every target ([#936](https://github.com/erclx/aitk/issues/936)) ([20bf232](https://github.com/erclx/aitk/commit/20bf2321ab5ebb9fa78a182d3738c6091b70da21))
+
 ## [0.82.0](https://github.com/erclx/aitk/compare/v0.81.0...v0.82.0) (2026-08-06)
 
 
