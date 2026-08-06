@@ -1,13 +1,13 @@
 ---
 title: Publish reference
-description: Scan run against finished text leaving through a channel no automated check covers
+description: Scan an author runs against finished text, the cross-reference form each destination takes, and the response to an unreadable source
 ---
 
 # Publish reference
 
 ## Scope
 
-Governs the scan an author runs against finished text on its way out, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies to any text leaving through a channel no automated check covers, and it carries no template because a scan has no document to shape.
+Governs the scan an author runs against finished text on its way out, the form a pull request or issue reference takes in every destination, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies wherever no automated check covers the text, whether that text is leaving through a channel or sitting in the repository, and it carries no template because a scan has no document to shape.
 
 Does not govern:
 
@@ -32,7 +32,17 @@ Restructure the sentence rather than substituting the character. A semicolon swa
 
 `versioning.md` holds the label rule and the table of surfaces. Read it at scan time rather than working the format from memory.
 
-Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, takes the character checks alone.
+Scope this check by destination. Text published to a remote takes it. Text scanned on its way into the repository, where the reader has the task board, skips it.
+
+## Cross-reference form
+
+A number referring to a pull request or an issue takes the form its destination renders. Write it bare where the destination auto-links it, and in backticks where it does not. Both spellings are correct, each in one place, so a reference moved from one destination to the other is rewritten rather than copied.
+
+Text published to a remote is the auto-linking half: a pull request body, an issue body, a comment on either, and a commit message. Write `#123` there, and `owner/repo#123` where the reference crosses repositories, which the same auto-linking reaches. A markdown file browsed from the repository tree is the other half, where neither spelling links and the backticked one marks the number as an identifier.
+
+A commit message takes the bare form even though it is also read through the log, where nothing links. The remote is what the form is chosen for, since a reader in the log loses only a link that plain text never carried.
+
+Text quoted from another surface keeps the spelling it arrived with. A reference inside a quotation belongs to what is being quoted rather than to the text doing the quoting, so rewriting it reports the source as having said something it never said.
 
 ## An unreadable source
 

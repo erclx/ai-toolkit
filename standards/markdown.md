@@ -17,6 +17,7 @@ Does not govern:
 - What sections a document has, or what belongs in each: the standard for that document type
 - The text inside a fenced block, which follows the conventions of its own language rather than these
 - The scan that applies the punctuation bans to finished text on its way out: `publish.md`
+- Whether a pull request or issue number is backticked, which turns on where the text is published rather than on the text: `publish.md`
 
 ## Headings
 

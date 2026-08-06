@@ -1,16 +1,17 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, the memory standard, what the memory pen measured, the widened readiness test, and the architecture record's verification anchor
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, and the cross-reference form split by destination
 ---
 
 # Per-standard decisions
 
-Four standards in the corpus cost more reasoning than their shape rules show.
+Five standards in the corpus cost more reasoning than their shape rules show.
 
 - The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead
 - The plan standard costs a second time for an unrelated reason, two rules under separate headings that read as pointing opposite ways
 - The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm
 - The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own
+- The publish standard splits one rule by destination, so the same reference takes opposite spellings on either side of the remote and no check can reach the half that goes wrong
 
 What each one settled belongs here rather than in the file itself, which states the rule and not the count behind it.
 
@@ -101,3 +102,17 @@ The rule reaches only a decision citing a measured number. The record's entries 
 A third class was drafted and cut, covering a decision that cites no number while resting on a state of the tree that can change. It gave the writing rule a case the reading rule could not express, since an unanchored entry in that class reads as needing nothing while the writing rule asked for a marker. Keying on the number alone is what collapses the two rules onto one test, and a marker over a claim nobody can re-measure is one no reader can falsify.
 
 Nothing writes the anchor back. The diagram field has two writers that never touch each other's half, one setting `verified` and one appending `stale`, and the architecture record has neither. The rule shipped ahead of the pass that maintains it, since a rule with no anchored entries yet costs nothing to carry, and `.claude/ARCHITECTURE.md` records the gap as an open risk rather than leaving it to be re-derived.
+
+## The publish standard's cross-reference form
+
+`standards/publish.md` states the form a pull request or issue number takes, under `## Cross-reference form`. The rule is one test rather than a list of surfaces: bare where the destination auto-links it, backticked where it does not. A list goes stale when a seventh surface appears, and the test covers the cross-repository spelling without a clause of its own, since the same auto-linking reaches it.
+
+The split runs through the remote. A pull request body, an issue body, a comment on either, and a commit message all auto-link, and a markdown file browsed from the repository tree links neither spelling, so the two forms are each correct in one place and a reference moved between them is rewritten. The failing artifact was a pull request body carrying the backticked form, corrected by hand, which is what surfaced that the spellings are not interchangeable.
+
+`publish.md` holds the rule over `markdown.md` because it turns on where the text is going rather than on what the text is. `markdown.md` governs a file reference identically in every file, and this one is wrong in one destination and right in the other, which is the split `publish.md` already draws for phase labels. `markdown.md` carries the `Does not govern:` entry and `publish.md` names the rule in its own scope line, which is what makes the boundary declared from both sides. Writing the yield alone left a standard originating a rule its scope statement never claimed, and `.claude/context/standards/scope.md` holds that failure as the general case.
+
+Six skills write GitHub conversational text and every one already cites the standard, so a single section reaches all of them and no skill body carries the rule. Restating it per skill would put one rule in seven places on seven cadences.
+
+Quoted text is exempt, which the rule has to say rather than leave to judgment. Two of the six consumers quote repository prose into a GitHub comment, so an instruction to rewrite a reference moved between destinations reaches inside a quotation and reports the source as having said something it never said.
+
+Nothing enforces it and nothing can. `aitk markdown audit` runs over repository files, where the backticked form is the correct one, so a check there would flag the compliant references in the tree and reach none of the published text that goes wrong. The rule joins the character and phase-label bans as something an author applies at publish time, and those at least have a verb behind them for the repository half.

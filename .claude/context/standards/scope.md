@@ -47,6 +47,12 @@ A scope statement stays silent on a section the standard holds but should not ow
 
 A statement enumerating the parts of the artifact it governs carries the same list the shape rules carry, so a part added to one is added to both or the standard contradicts itself. `skill.md` names the skill folder's contents in its scope sentence and again under `## Structure`, and the eval sibling reached the second while the first still claimed five parts. Nothing compares the two, since the citation stage verifies that a path resolves rather than that two sentences agree, so the second enumeration is the cost of naming parts in a statement whose job is naming owners.
 
+`publish.md` is the second occurrence and it shows the failure reaching a sibling. Its statement named the scan and the unreadable-source response, a cross-reference section landed among the shape rules with the enumeration unmoved, and `markdown.md` was given a `Does not govern:` entry yielding the rule at the same time. The yielding side then pointed at a standard whose own scope line claimed nothing, which is a both-sides boundary declared from one side and a half.
+
+The first repair narrowed that gap rather than closing it, which is the part worth carrying. The claim went into the enumeration under a qualifier naming only outbound text while the section ruled on both destinations, so the repository half stayed yielded by one standard and claimed by neither. A standard writes its jurisdiction in three places, the frontmatter `description`, the enumeration of what the scope statement governs, and the sentence saying where the standard applies, so widening one and leaving the others reproduces the gap a line down. The repair took all three across as many passes, each finding the next surface the one before it had left behind.
+
+The `description` is the surface to check last and the one that reaches furthest. It becomes the index link label on install, so it is rendered into the catalog of every tree the standard ships to and is the only one of the three a reader meets without opening the file.
+
 `prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
 
 ## How the scope statement is parsed
