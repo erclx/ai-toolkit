@@ -63,7 +63,7 @@ The paragraph weight sits at 700 and the bullet weight at 400. Both shipped at 4
 
 The checkpoint shipped at 400 as a borrowed number and was decided against a read of the prose it reports. Thirty-six findings were sampled, six from each of six weight bands, drawn at even spacing through each band ordered by path and line, and each was classed as prose a reader wants split or prose the checkpoint should not have reported.
 
-Every band below was measured before the scan stopped counting link syntax as prose, so a paragraph sitting in one of these bands is heavier than a paragraph reported at the same number today. The second sample after the table re-reads the same range against the corrected measure and reaches the opposite verdict on it, which is the measure moving rather than the reader.
+Every band below was measured before the scan stopped counting link syntax as prose, so a paragraph sitting in one of these bands is heavier than a paragraph reported at the same number today. The re-sample in the section below re-reads the same range against the corrected measure and reaches the opposite verdict on it, which is the measure moving rather than the reader.
 
 | Band      | Wants the split | Reads as written |
 | --------- | --------------- | ---------------- |
@@ -80,7 +80,9 @@ Nothing inside the 500 to 600 band separated the two classes by length, which is
 
 The sample is thirty-six paragraphs against a reported population in the hundreds, and one reader classed all of them. Treat a band's rate as the order of magnitude it is rather than as a measured precision, and re-sample before moving the number again.
 
-That re-sample ran once the scan stopped counting link syntax as prose, and it took the number to 700. Findings at 604, 633, and 677 characters each read as an ordinary four-sentence paragraph on one topic, density arrived around 760 and was plain by 860, and the move cut the weight half of the report roughly in half while leaving the sentence cap untouched.
+#### The re-sample that moved the number to 700
+
+That re-sample ran once the scan stopped counting link syntax as prose. Findings at 604, 633, and 677 characters each read as an ordinary four-sentence paragraph on one topic, density arrived around 760 and was plain by 860, and the move cut the weight half of the report roughly in half while leaving the sentence cap untouched.
 
 A bullet, a heading, a table row, a blockquote, a blank line, and a fence each end a paragraph, so a heavy bullet is reported by the bullet check alone and never counted twice.
 
