@@ -271,7 +271,9 @@ so this section reports and gates nothing.
 `aitk init` installs up to six core domains and reports each one independently. A
 domain that fails does not abort the run, so the command finishes the rest and
 exits 1 naming the failures. Passing any flag skips the confirmation prompt,
-which is what makes it scriptable. `--stack` defaults to `base`, and the default
+which is what makes it scriptable.
+
+`--stack` defaults to `base`, and the default
 does not read as a passed flag, so a bare `aitk init` installs governance and
 still prompts. `--skip` takes `wiki`, `standards`, and `governance`, and warns
 without aborting on any other value. `--standards` defaults to `all` and reaches

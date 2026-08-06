@@ -124,7 +124,13 @@ That third one matters most on an older project. Before it existed, a target hol
 
 The fourth cause runs backwards. Every one above starts from what the toolkit ships and asks whether the target matches, so a folder the toolkit dropped appears in none of them. `reverse` walks the target instead and reports a folder sitting at a top-level path the toolkit once shipped and has since deleted.
 
-Each entry carries a verdict, since a dropped folder and one the project wrote are the same bytes at the same path. `dropped` names the commit that published the content. `unattributed` means the toolkit shipped that path and the content matches no version it published. `project` means the folder only shares a retired name. Nothing acts on any of them, and the verdict is what makes the list safe to read.
+Each entry carries a verdict, since a dropped folder and one the project wrote are the same bytes at the same path.
+
+- `dropped` names the commit that published the content
+- `unattributed` means the toolkit shipped that path and the content matches no version it published
+- `project` means the folder only shares a retired name
+
+Nothing acts on any of them, and the verdict is what makes the list safe to read.
 
 The same field names a proposal-only skill with a live case here under `migrations`, which is how `aitk:migration-claude-md` and `aitk:migration-context` become reachable. Each entry carries the measurement behind the proposal rather than the proposal alone.
 
