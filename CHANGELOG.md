@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.74.0](https://github.com/erclx/aitk/compare/v0.73.0...v0.74.0) (2026-08-06)
+
+
+### Features
+
+* **markdown:** raise the paragraph weight checkpoint to 700 ([#908](https://github.com/erclx/aitk/issues/908)) ([2689890](https://github.com/erclx/aitk/commit/2689890a1d639c970f984f8029f086ad8a137981))
+
 ## [0.73.0](https://github.com/erclx/aitk/compare/v0.72.0...v0.73.0) (2026-08-06)
 
 
