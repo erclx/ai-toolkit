@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.73.0](https://github.com/erclx/aitk/compare/v0.72.0...v0.73.0) (2026-08-06)
+
+
+### Features
+
+* **operator:** route the reverse walk to the skills it names ([#903](https://github.com/erclx/aitk/issues/903)) ([3ea700e](https://github.com/erclx/aitk/commit/3ea700eeb2bed581e30ff6957c6b3e40cb539064))
+
 ## [0.72.0](https://github.com/erclx/aitk/compare/v0.71.0...v0.72.0) (2026-08-06)
 
 
