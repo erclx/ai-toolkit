@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.81.0](https://github.com/erclx/aitk/compare/v0.80.0...v0.81.0) (2026-08-06)
+
+
+### Features
+
+* **records:** back the record folders to a private remote ([#929](https://github.com/erclx/aitk/issues/929)) ([02da9e2](https://github.com/erclx/aitk/commit/02da9e21d8b02d3b3991287d7884077f4414bd1e))
+
 ## [0.80.0](https://github.com/erclx/aitk/compare/v0.79.0...v0.80.0) (2026-08-06)
 
 
