@@ -39,7 +39,9 @@ A compaction is a moment this skill cannot detect, so the human asks for each si
 
 The review trigger takes the same shape. `references/orchestrator-poll.md` holds the loop prompt and the condition under which the poll runs, and `scripts/poll.sh` is what the prompt invokes. A session holding a recurring-prompt scheduler starts and cancels that loop itself, and no hook or check does, so the condition holds only while whoever holds the loop applies it.
 
-That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/aitk:claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The two runbooks sit at `references/orchestrator-handoff.md` and `references/orchestrator-resume.md` inside this skill's own folder, so a person who knows their plugin root opens either one directly and follows it without this skill loaded at all.
+A board that is not moving is a third such moment. On a request to re-test the parked rows, read `${CLAUDE_SKILL_DIR}/references/orchestrator-parked.md` and follow it. It re-tests every `## Up next` and `## Needs a plan` blocker against the current tree, writes what each test showed into the row, and plans what it clears. Its trigger is the inverse of the refill sweep's below, which fires on a merge and asks what to promote next rather than whether a row already parked is still parked for a reason.
+
+That routing lives in this body and this skill is user-invoked, so a session that has dropped the body routes nothing and the request lands as ordinary conversation. Approaching a compaction is when a long session is likeliest to have dropped it, which is the same moment the handoff exists for. Re-invoke `/aitk:claude-orchestrate` first whenever the session has run long or the ask goes unanswered. The three runbooks sit at `references/orchestrator-handoff.md`, `references/orchestrator-resume.md`, and `references/orchestrator-parked.md` inside this skill's own folder, so a person who knows their plugin root opens any one of them directly and follows it without this skill loaded at all.
 
 ## Output
 
@@ -129,7 +131,7 @@ It counts unclaimed plans against workers rather than reading the reserve in ste
 3. Archive what closed. A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive. A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
 4. Read `.claude/tasks/priority.md` and count entries under its `## Run now` heading that carry a written plan. Keep one in reserve beyond what is running.
 5. Promote by whether a task establishes functionality rather than by age. Prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
-6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint.
+6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint. A candidate held by something outside the tree stays where it is whatever those sets show, since disjointness answers only the collision half of the `## Run now` test and a blocker no worker can clear survives it untouched.
 7. Write a plan for each newly promoted task with `claude-feature`, carrying the in-flight constraint that The loop above states, then report:
 
 ```plaintext
