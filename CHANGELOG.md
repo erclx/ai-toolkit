@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.78.1](https://github.com/erclx/aitk/compare/v0.78.0...v0.78.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* **plan:** record an execution-time deviation on the suggestion line ([#922](https://github.com/erclx/aitk/issues/922)) ([8b81af4](https://github.com/erclx/aitk/commit/8b81af4498cac505e73e22c23a3d73fd3d6fccec))
+
 ## [0.78.0](https://github.com/erclx/aitk/compare/v0.77.1...v0.78.0) (2026-08-06)
 
 
