@@ -148,4 +148,6 @@ The verb reads the two attribute standards and nothing else. The five standards 
 
 `publish.md` describes a scan applying the same punctuation bans to finished text on its way out. No code implemented that scan before this command, so nothing is duplicated, and a later surface should call this verb rather than build a second one.
 
+That standard's cross-reference rule is out of reach rather than merely unimplemented. It resolves by destination, bare where the destination auto-links a pull request or issue number and backticked where it does not, so this verb sees only the half where the backticked form is correct. A check here would report every compliant reference in the tree and reach none of the published text that goes wrong, which is why the rule holds on reading alone.
+
 The list-density rule at `standards/markdown.md` is out of scope on purpose, since it carries no number and what a density figure should measure is still open.
