@@ -48,9 +48,9 @@ History is absent exactly where the stamp is, since a registry install ships `sr
 
 ## Surfaces reported without a change
 
-Four report sections sit outside the domain scan in `src/sync/check.ts`, each covering something `planSync` structurally cannot. All four are report-only, and the reason is the same in each case: the engine turns a difference into a `copy` and a retired surface into a `delete`, and every file here holds content the project wrote.
+Five report sections sit outside the domain scan in `src/sync/check.ts`, each covering something `planSync` structurally cannot. All five are report-only, and the reason is the same in each case: the engine turns a difference into a `copy` and a retired surface into a `delete`, and every file here holds content the project wrote.
 
-All four are gated on `isManagedTarget`, which reads a `.claude/` directory, a `CLAUDE.md`, or a detected unmigrated domain. Seeds are the reason the gate exists. They enumerate from the source rather than from what a target installed, so an unmanaged directory reported every seed as `missing` and routed to a section-merge skill, while the three scanned domains correctly stayed quiet because `installedStampDomains` already gates them on an install marker.
+All five are gated on `isManagedTarget`, which reads a `.claude/` directory, a `CLAUDE.md`, or a detected unmigrated domain. Seeds are the reason the gate exists. They enumerate from the source rather than from what a target installed, so an unmanaged directory reported every seed as `missing` and routed to a section-merge skill, while the three scanned domains correctly stayed quiet because `installedStampDomains` already gates them on an install marker.
 
 An unmigrated domain counts as a marker because `detectUnmigrated` fires only on root files whose basename the toolkit ships, so it firing proves the toolkit installed there before the layout moved. Reading the two path markers alone split the report against itself: a root-layout target with neither marker rendered as unmanaged while the JSON still carried its unmigrated domain, and `toolkit-operator` reads the JSON, so the rendered half routed to install while the router routed to the relocation. An unmanaged target now returns every section empty rather than only suppressing the render, so no consumer can act on a finding the render withheld.
 
@@ -75,6 +75,8 @@ The candidate set is read from history rather than declared. `readDroppedRoots` 
 Attribution reuses `findInstalledOrigin` rather than a second history reader, and it keys on the path the toolkit once held under that root. Only files whose relative path appears in the index are hashed, so a project folder colliding on a retired name costs no reads.
 
 Three verdicts come out of that one pass. Content matching a published blob is `dropped` and names the commit. A path the toolkit shipped holding content it never published is `unattributed`, which is what history proving nothing looks like rather than a weak `dropped`. No path overlap at all is `project`, and the render drops those while the JSON keeps them, since a name collision printed on every run is a line no remedy closes.
+
+The walk reaches none of that on an unmanaged target. `isManagedTarget` gates it with the four sections above, and the early branch returns `emptyReverseReport()`, so a project holding a dropped root reports nothing unclaimed until it carries a `.claude/` directory, a `CLAUDE.md`, or an unmigrated domain. A consumer staging a folder to observe the walk stages the marker too, or it reads an empty section as a clean answer.
 
 ### Migration candidates and the gate
 
