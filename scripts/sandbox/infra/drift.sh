@@ -21,67 +21,6 @@ write_report() {
   log_info "Report written to $REPORT"
 }
 
-# The newest top-level path history records a deletion under that the toolkit no
-# longer ships. Read from history rather than hardcoded, so the arm stages a root
-# the walk will actually recognize instead of a name that has since come back.
-# `prompts` is preferred because it is the case measured in a real target, and
-# any other dropped root exercises the same walk.
-pick_dropped_root() {
-  local preferred="prompts"
-  local first=""
-  local candidate
-
-  while IFS= read -r candidate; do
-    [ -e "$PROJECT_ROOT/$candidate" ] && continue
-    [ "$candidate" = "$preferred" ] && {
-      echo "$preferred"
-      return 0
-    }
-    [ -n "$first" ] || first="$candidate"
-  done < <(git -C "$PROJECT_ROOT" log --all --diff-filter=D --name-only --format= |
-    awk -F/ 'NF > 1 { print $1 }' | sort -u)
-
-  echo "$first"
-}
-
-# Restores one file's exact published bytes from the commit before it was
-# deleted. Content is what the attribution matches on, so a file written by hand
-# would report unattributed and the arm would assert the wrong verdict.
-#
-# Both reads take the whole listing through a process substitution rather than a
-# pipeline ending in an early exit. `set -o pipefail` is on, and a `grep -m 1`
-# that matches the first line closes the pipe while git is still writing, so the
-# substitution returns git's SIGPIPE status and the arm fails on a listing it
-# actually read.
-restore_dropped_file() {
-  local root="$1"
-  local rel="" commit="" line
-
-  while IFS= read -r line; do
-    case "$line" in
-    "$root"/*)
-      rel="$line"
-      break
-      ;;
-    esac
-  done < <(git -C "$PROJECT_ROOT" log --all --diff-filter=D --name-only \
-    --format= -- "$root/")
-
-  [ -n "$rel" ] || return 1
-
-  while IFS= read -r line; do
-    commit="$line"
-    break
-  done < <(git -C "$PROJECT_ROOT" log --all --diff-filter=D --format=%H -- "$rel")
-
-  [ -n "$commit" ] || return 1
-
-  mkdir -p "$(dirname "$rel")"
-  git -C "$PROJECT_ROOT" show "$commit^:$rel" >"$rel" || return 1
-
-  echo "$rel"
-}
-
 stage_setup() {
   select_or_route_scenario "Which arm?" "stale" "retired" "unmigrated" "tooling" "unclaimed"
 
