@@ -25,7 +25,7 @@ Run `aitk sync --check . --json` before routing. It reports what a target is beh
 Read seven fields off the report and carry each to `## Route`:
 
 - `unmigrated`: a domain sitting at the root layout with nothing under `.claude/`. The most urgent finding, because that domain reports no drift of its own while being entirely behind
-- `superseded`: a file a newer seed folder replaced. Report it and stop. No command moves it, since the content is the project's own
+- `superseded`: a file a newer seed folder replaced. No command moves it, since the content is the project's own, so this routes to the skill that proposes the split rather than ending at the report
 - `seeds`: entries are `matching`, `stale`, `drifted`, or `missing`. Anything but `matching` needs the seed handoff
 - `domains[].entries`: per-file `stale`, `customized`, `stranded`, and `orphaned` as before
 - `reverse`: what the target holds that no live catalog claims. `unclaimed` lists folders at roots the toolkit stopped shipping, each with an `attribution` of `dropped`, `unattributed`, or `project`. Act on the first two and leave `project` alone, which history proved the project owns. `migrations` names a proposal-only skill with a live case here and the `reason` it was measured from
@@ -42,7 +42,7 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 
 - A domain in `unmigrated`: hand off to `migration-standards`
 - An entry in `migrations`: hand off to the skill its `skill` field names, spelled as the report spells it. Both of them propose without writing, so the handoff is where this stops
-- Anything in `superseded`: tell the user which files and what replaced them. Do not move or delete them
+- Anything in `superseded`: name which files and what replaced them, then hand off to `migration-superseded`. Both skills propose, so neither moves nor deletes the file
 - A folder in `unclaimed`: name it and the attribution it carries. No command moves it and the content may be the project's own, so the decision is the user's
 
 - First-time scaffold of a fresh project: hand off to `setup-init`

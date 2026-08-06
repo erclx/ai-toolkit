@@ -183,6 +183,13 @@ seed tree rather than from a fixed set of filenames, so a folder added later is
 covered without a code change. Only an exact stem matches, which leaves a
 suffixed variant such as `TASKS-ARCHIVE.md` unreported.
 
+Route it to `migration-superseded`. That skill resolves the standard governing
+`replacedBy` from the `appliesTo` the standards catalog declares, reads the
+destination shape from the target's own copy under `.claude/standards/` or at the
+root, and proposes the split without writing. Where a folder has no governing
+standard, or neither root holds the one it has, the entry earns a named refusal
+rather than a shape the project never adopted.
+
 `unmigrated` names a domain sitting at the root layout an older toolkit installed
 to, with nothing at the path the current one reads. It carries `rootPath`,
 `installPath`, and a file count. Without it a project holding `standards/` at its
