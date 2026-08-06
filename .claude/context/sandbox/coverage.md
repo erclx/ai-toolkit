@@ -13,7 +13,7 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Twenty-five arms across thirteen scenarios out of 59 is 22 percent of scenarios, well under the 42 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one. Both figures floor rather than round, which the current pair does not show, since thirteen of 59 falls the far side of the boundary and floors and rounds alike. `coveragePercent` states the reason and this entry matches what the command prints, so a percentage here that looks a point low is the measure working rather than an entry left stale.
+Scenarios and arms count separately. Thirty-two arms across fourteen scenarios out of 60 is 23 percent of scenarios, well under the 53 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one. Both figures floor rather than round, which the current pair does not show, since fourteen of 60 falls the far side of the boundary and floors and rounds alike. `coveragePercent` states the reason and this entry matches what the command prints, so a percentage here that looks a point low is the measure working rather than an entry left stale.
 
 Neither number weighs an arm by what it asserts. An arm can carry a single assertion over its own provisioning, such as `.claude/standards/skill.md` being absent, which is a claim about the fixture rather than about the skill under test. The count reads as scenarios reached rather than behavior covered, since nothing in it separates that arm from one asserting eleven things about a run, and a reader taking 15 percent as skill coverage is reading past what the declarations say plainly.
 
@@ -71,6 +71,12 @@ Writing that guard is what surfaced the deeper defect. Every section of the repo
 
 The `audits`, `gitignore`, and `unclaimed` arms sit at the default cap rather than above an observation. The first two have never been run. The third has, and the run it produced is the false green above rather than a turn count worth declaring against. The other four passed on 2026-08-04, which is the first time either skill was executed by anything. Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both are declared at the cap rather than above an observation for that reason. The `fresh` run is the one whose turn count is not recorded, since `record_run` failed to write it and the envelope went with it.
 
+### The superseded arm and the guard that fixed the skill
+
+`claude/migration-superseded.sh` stages three retired `.claude/` files against the folders that replaced them, and its assertions run in the two directions the proposal shape demands. Three `paths` entries and three `content` pins hold the retired files byte-identical, since the content is project-authored and a run that produced a correct split and then applied it fails nowhere else. Three `absent` entries name the destination folders, and `.claude/hooks` carries the extra weight: no standard declares `appliesTo` over it, so a run proposing a shape there had to invent one, which the absence catches whether or not the reply admitted to it. The reply pins name the standard each entry resolved to rather than the destination folder, because the folder comes free off the report while the standard separates a shape read from the project's installed copy from one the run made up.
+
+Provisioning is what corrected the skill rather than the run. The fixture asserts its own premise, that the staged file is tracked and ignored at once, and the guard failed against a tree that was correct. `git check-ignore` consults the index and reports a tracked path as not ignored, so the flagless form returns nothing in exactly the state the step exists to find. Both the skill and the guard read `--no-index` now. An arm that staged the state without asserting it would have shipped a step that reports every tracked-while-ignored file as clean, and no reply pin could have seen it, since the skill would have said nothing about a file it believed was fine.
+
 ### The groundwork arms assert nothing and refuse the bare prompt
 
 `scripts/sandbox/fixtures/claude/groundwork/` does not exist, so every `claude:groundwork` arm returns `state: unchecked` with nothing asserted and a verdict from it confirms only that the session completed.
@@ -91,7 +97,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Eleven of 55 skills are asserted where thirteen of 59 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
+The denominators disagree on purpose. Twelve of 56 skills are asserted where fourteen of 60 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
 ### Pairing a scenario to a skill
 
