@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { $ } from 'bun'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import { BACKED_FOLDERS, pullRecords, pushRecords } from '@/records/backup'
 
 let ROOT: string
@@ -16,8 +17,14 @@ let ORIGIN: string
 
 const RECORDS_GIT_DIR = join('.claude', '.records.git')
 
+/**
+ * `gitEnv()` is what keeps these fixtures off the repository under test. The
+ * pre-push hook exports `GIT_DIR` and `GIT_WORK_TREE`, and both take precedence
+ * over `-C` and `--git-dir`, so a bare call here resolves against this
+ * repository and the suite fails only when run from a hook.
+ */
 async function git(args: string[]): Promise<string> {
-  const result = await $`git ${args}`.quiet().nothrow()
+  const result = await $`git ${args}`.env(gitEnv()).quiet().nothrow()
   return result.stdout.toString().trim()
 }
 
