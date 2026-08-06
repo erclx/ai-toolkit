@@ -72,7 +72,9 @@ Surface the proposed `title` and `subtitle` and let the user edit before writing
 
 ## Inject
 
-After all confirmations, write frontmatter into each sibling and `index.md` into each folder. Use a single batched write per file. Preserve existing content below the frontmatter block. If a sibling already has frontmatter without `title` or `description`, merge in the missing fields. Do not touch files the user rejected.
+After all confirmations, write frontmatter into each sibling and `index.md` into each folder. Use a single batched write per file.
+
+Preserve existing content below the frontmatter block. If a sibling already has frontmatter without `title` or `description`, merge in the missing fields. Do not touch files the user rejected.
 
 ## Validate
 

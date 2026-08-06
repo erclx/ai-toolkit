@@ -28,7 +28,9 @@ Follow `.claude/standards/diagrams.md` for frontmatter, entry kinds, layout, bud
 
 ### Migrating a pre-split flat file
 
-When `.claude/diagrams/` holds no entry and `.claude/DIAGRAMS.md` exists, this pass converts it. An entry is any `*.md` in the folder other than `index.md`. The seed ships `index.md` alone, so a folder holding only the catalog is an empty set and still converts. Split each H2 section into the entry whose kind it matches, carry its mermaid body and explanation prose across unchanged, and add the frontmatter the standard requires. Leave `.claude/DIAGRAMS.md` on disk so the split can be compared against its source, and say in Step 7 that deleting it is the user's call.
+When `.claude/diagrams/` holds no entry and `.claude/DIAGRAMS.md` exists, this pass converts it. An entry is any `*.md` in the folder other than `index.md`. The seed ships `index.md` alone, so a folder holding only the catalog is an empty set and still converts.
+
+Split each H2 section into the entry whose kind it matches, carry its mermaid body and explanation prose across unchanged, and add the frontmatter the standard requires. Leave `.claude/DIAGRAMS.md` on disk so the split can be compared against its source, and say in Step 7 that deleting it is the user's call.
 
 Convert only. Do not redraw a diagram during a migration pass, since a rewrite and a move landing together leaves no way to tell which one broke a diagram.
 

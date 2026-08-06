@@ -14,7 +14,9 @@ Orchestrates the onboarding chain. Detects project type, resolves per-domain arg
 
 ## Read catalogs
 
-Run in parallel. Never hardcode stack, rule, snippet, or standards names. Run from the target project's current directory. Do not cd into the toolkit source tree. The `aitk` CLI is global.
+Run in parallel. Never hardcode stack, rule, snippet, or standards names.
+
+Run from the target project's current directory. Do not cd into the toolkit source tree. The `aitk` CLI is global.
 
 ```bash
 aitk gov list --json 2>/dev/null

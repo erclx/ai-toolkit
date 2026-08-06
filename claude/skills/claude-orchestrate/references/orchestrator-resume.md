@@ -19,7 +19,9 @@ Stale in the groundwork: <lean or number the shipped work overturned>
 Next: <the one or two tasks ready to hand a worker>
 ```
 
-Treat a groundwork folder as three kinds of content with different shelf lives. Trust the reasoning and the method, which stay correct. Re-measure every count, size, and cost, because they were true when written. Check every `Leaning:` against what has shipped, because work spawned by a track routinely overturns the lean that spawned it and nothing writes back. A plan a live task cites goes stale the same way, and `claude-orchestrate` states the check that catches it.
+Treat a groundwork folder as three kinds of content with different shelf lives. Trust the reasoning and the method, which stay correct. Re-measure every count, size, and cost, because they were true when written. Check every `Leaning:` against what has shipped, because work spawned by a track routinely overturns the lean that spawned it and nothing writes back.
+
+A plan a live task cites goes stale the same way, and `claude-orchestrate` states the check that catches it.
 
 After each merge, place every finding the work produced before starting anything else. A finding that changes a standard goes to the standard, one that changes another task goes to that task's Findings, and one that overturns a groundwork lean gets marked answered in that folder. Findings recorded in a pull request thread and nowhere else are lost at merge.
 

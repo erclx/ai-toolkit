@@ -11,7 +11,9 @@ Without this skill, a brain dump reaches a session that has nowhere to put it. `
 
 Two failure modes cost more than the rest. An operator's silence on an item reads as consent when the folder borrows the plan file's blank-means-accept contract, which ships changes nobody approved across a folder read over weeks. And a report naming only a path cannot distinguish three new items from one reworded sentence in a file that holds a dozen items, so every reader diffs it against memory to find out what moved.
 
-Four more are cheaper to name than to rediscover. A question filed without a pick comes back unresolved, measured across one folder's 19 open items, where every one carrying a suggestion resolved on a bare `ok` and the five carrying none did not. A session with no numbering convention re-decides the folder shape per dump, so no two intakes are readable the same way and the second one has to be learned from scratch. A question answerable both in the index and on its item resolves to whichever a reader opens first, with no rule saying which wins. And a pass with no write scope starts fixing what it files, which turns a triage into a branch nobody asked for and nobody reviewed.
+Four more are cheaper to name than to rediscover. A question filed without a pick comes back unresolved, measured across one folder's 19 open items, where every one carrying a suggestion resolved on a bare `ok` and the five carrying none did not.
+
+A session with no numbering convention re-decides the folder shape per dump, so no two intakes are readable the same way and the second one has to be learned from scratch. A question answerable both in the index and on its item resolves to whichever a reader opens first, with no rule saying which wins. And a pass with no write scope starts fixing what it files, which turns a triage into a branch nobody asked for and nobody reviewed.
 
 ## Must
 
