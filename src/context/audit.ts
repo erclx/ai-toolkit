@@ -418,10 +418,13 @@ function declaredSections(lines: readonly BodyLine[]): string[] {
  * and nothing reads the break. A path is checkable and a bare name is not,
  * which is what makes this the one form rule worth measuring.
  *
- * Matching stops at the sibling set rather than at any filename, since a name
- * that resolves to no sibling is a reference to something else and the standard
- * leaves those alone. The entry's own name is out of the set with them: naming
- * itself points at nothing a split can strand.
+ * Matching stops at the sibling set, which reaches less than the rule does. The
+ * standard governs a reference to any other entry, so a split entry naming one
+ * that sits in a different folder is a violation this never sees. What the set
+ * buys is that a name resolving inside the folder is a reference by
+ * construction, where a bare filename matched anywhere would report every
+ * sentence that happens to name a file. The entry's own name is out of the set
+ * on separate grounds, since naming itself points at nothing a split can strand.
  *
  * Fenced blocks are skipped for the reason the scans above skip them, and a line
  * carrying the citation ignore marker is skipped because that marker already
