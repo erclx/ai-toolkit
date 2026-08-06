@@ -64,7 +64,11 @@ Review the session for decisions that diverged from the original plan:
 - Design or UX decisions that differ from DESIGN.md or any `.claude/wireframes/<surface>.md`
 - Tasks blocked or newly identified
 
-Then resolve the diff baseline and match it against the board. From `.claude/tasks/index.md` at the main worktree root, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped. Path matching only chooses which files to open. Behavior decides each outcome. For each unchecked outcome, decide whether the diff shipped the behavior that outcome names. Completion is the one judgment here that is a fact about the repository rather than a fact about the conversation, so the diff decides it and the session does not. Requirements, architecture, and design stay session-sourced.
+Then resolve the diff baseline and match it against the board. From `.claude/tasks/index.md` at the main worktree root, pick the task files whose title or description relates to the changed paths and read the ones Step 1 skipped.
+
+Path matching only chooses which files to open. Behavior decides each outcome. For each unchecked outcome, decide whether the diff shipped the behavior that outcome names.
+
+Completion is the one judgment here that is a fact about the repository rather than a fact about the conversation, so the diff decides it and the session does not. Requirements, architecture, and design stay session-sourced.
 
 Keep the match conservative:
 
@@ -91,10 +95,12 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 
 **`.claude/tasks/`**
 
-- Mark completed outcomes `[x]` in the task's own file through `aitk tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. The verb resolves the board at the main worktree root in-process, which is the route because this is an edit inside an existing file and the file-editing tools refuse that path from a linked worktree. Do not move or archive the file.
+- Mark completed outcomes `[x]` in the task's own file through `aitk tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. Do not move or archive the file.
 - Write a newly identified task as its own file, following `.claude/standards/tasks.md` for the filename and frontmatter.
 - Do not touch task files this session did not change.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it.
+
+The verb resolves the board at the main worktree root in-process, which is the route because this is an edit inside an existing file and the file-editing tools refuse that path from a linked worktree.
 
 **REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, `.claude/wireframes/<surface>.md`**
 
@@ -164,6 +170,7 @@ Reuse the diff from the baseline above, names and content both. For each existin
 
 - Map the entry's section headings to the changed files. An entry is relevant when its prose references files, modules, or decisions touched by the diff.
 - For each relevant entry, rewrite only the sections affected by the diff. Same pattern as `docs-sync`. Do not touch unrelated sections.
+- Write a reference to another entry as the path that entry sits at, rather than as its bare filename. `.claude/standards/context.md` states the form, and a bare name strands the reference once a domain splits into subfolders.
 
 Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `.claude/standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
 
@@ -183,11 +190,17 @@ Sweep reviews this session consumed, and sweep plans across the whole board. Res
 
 Every move and delete below is a shell operation, so send each as a plain single `Bash` command rather than joining a `mkdir -p` to the `mv` with `&&`, which is refused as compound from a linked worktree. The one edit inside an existing file is the `Plan:` retarget, and no verb covers it: read the task file and write it back whole with a heredoc, which the file-editing tools refuse from a linked worktree and no shell stream editor may do.
 
-**Plans.** Scan every file in `.claude/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target. The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file. The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `.claude/standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
+**Plans.** Scan every file in `.claude/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target.
+
+The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file.
+
+The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `.claude/standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
 
 Board-wide scope is the one place this sweep reaches past Step 3's rule against touching task files the session did not change. A board carrying a task that closed while an earlier run missed its archive is the defect this exists to clear, and skipping those tasks would preserve it. Reaching them is safe because the archive moves the plan and points the task at the new path, so a task from unrelated work ends up with a working pointer rather than a broken one.
 
-Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone. A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/plans-archive/`, and the count then reads a citation that does not exist and archives nothing.
+Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone.
+
+A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/plans-archive/`, and the count then reads a citation that does not exist and archives nothing.
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
