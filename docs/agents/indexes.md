@@ -5,7 +5,9 @@ description: Flags, exit codes, and JSON shape for aitk indexes regen, plus when
 
 # Indexes
 
-`aitk indexes regen` rewrites `index.md` files from sibling frontmatter. With no positional paths, it walks the current directory. With paths, each resolves by walking up to the nearest indexed ancestor, bounded by `--root`. Duplicates dedupe. The whole-repo walk prunes `.git`, `node_modules`, and anything `.gitignore` covers via `git check-ignore`.
+`aitk indexes regen` rewrites `index.md` files from sibling frontmatter. With no positional paths, it walks the current directory. With paths, each resolves by walking up to the nearest indexed ancestor, bounded by `--root`.
+
+Duplicates dedupe. The whole-repo walk prunes `.git`, `node_modules`, and anything `.gitignore` covers via `git check-ignore`.
 
 A positional path is not filtered that way, because the walk-up resolves on the filesystem and never consults git. That is the only way to regenerate an index inside a gitignored folder, and it is how `.claude/tasks/` and `.claude/memory/` both stay current.
 

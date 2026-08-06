@@ -18,7 +18,9 @@ The default. `.claude/DESIGN.md` holds visual intent as prose plus token tables 
 
 ### Seed shape
 
-The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template with a starting set of roles, and `.claude/standards/design.md` carries the same tables under `## Template` with placeholder rows. The column headers are what the renderer parses, so they stay verbatim in either, while the rows and values are the project's own. The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
+The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table template with a starting set of roles, and `.claude/standards/design.md` carries the same tables under `## Template` with placeholder rows. The column headers are what the renderer parses, so they stay verbatim in either, while the rows and values are the project's own.
+
+The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
 
 ### Tools
 
@@ -41,7 +43,13 @@ The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table
 
 ## Tier 1: visual companion
 
-ASCII and prose stay as source of truth. Add a visual render as a feedback surface for the agent and for human review. Stitch via MCP handles agent-driven generation of prototypes and design systems. Excalidraw handles agent-driven wireframes when the round-trip canvas loop matters. Claude Design joins only when codebase extraction or the annotated handoff bundle is worth the ceiling cost. All three produce derived artifacts, so human edits are review annotations rather than source changes.
+ASCII and prose stay as source of truth. Add a visual render as a feedback surface for the agent and for human review.
+
+- Stitch via MCP handles agent-driven generation of prototypes and design systems
+- Excalidraw handles agent-driven wireframes when the round-trip canvas loop matters
+- Claude Design joins only when codebase extraction or the annotated handoff bundle is worth the ceiling cost
+
+All three produce derived artifacts, so human edits are review annotations rather than source changes.
 
 ### Seed shape
 
@@ -124,7 +132,9 @@ Four questions. Each yes weighs toward a higher tier.
 - Is there a dedicated designer, or will there be one?
 - Does design iterate independently of code?
 
-Zero or one yes: tier 0. Two or three: tier 1. Four: tier 2. Resist over-tiering early. Moving up is cheap because tiers stack. Moving down means abandoning tooling and confusing collaborators.
+Zero or one yes: tier 0. Two or three: tier 1. Four: tier 2.
+
+Resist over-tiering early. Moving up is cheap because tiers stack. Moving down means abandoning tooling and confusing collaborators.
 
 ## References
 

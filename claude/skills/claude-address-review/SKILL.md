@@ -76,8 +76,9 @@ Push the fixes before posting the reply so the comment never runs ahead of the
 code it describes. Ship the fixes as a follow-up commit on the same branch with
 the `git-followup` skill, invoked with `reply-owned` so it stages, commits,
 pushes, and refreshes the open PR body without posting its own comment. This
-skill owns the reply. Do not reimplement that flow here. For in-place fixes to
-files the PR body already covers, `git-followup` leaves the body untouched and
+skill owns the reply. Do not reimplement that flow here.
+
+For in-place fixes to files the PR body already covers, `git-followup` leaves the body untouched and
 the reply comment carries the fix log. A rebase in step 5 rewrote the branch, so
 that push is a force-push and `git-followup` resolves it from the tracking
 branch. Worker branches are single-owner here, which is what makes overwriting
@@ -100,15 +101,19 @@ mapping each finding to what changed, or to a one-line reason when it is a
 conscious-accept rather than a defect. Key the filename on the PR number so two
 sessions addressing different pull requests never overwrite each other between
 the write and the post. Note any `.claude/` docs refreshed as a result of the
-fixes. The reply is a rendered-for-human GitHub surface, so follow
+fixes.
+
+The reply is a rendered-for-human GitHub surface, so follow
 `.claude/standards/prose.md` for voice, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md`
 when the project does not have it, and keep each mapping to a line or two.
+
 Open the body with the `## Review response` heading so it anchors as a section
 distinct from human threads and stays subordinate to the `## Review` heading the
 review itself carries. Follow it with a one-line summary sentence, then one
 bullet per finding, each opening with the bolded finding identifier.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
 reads as an independent machine pass, not a human sign-off.
+
 When step 5 rebased the branch, say so in the summary sentence and name which
 files were resolved by hand and which the regen rebuilt. The next review is a
 full pass rather than a delta, and the reader is owed the reason.

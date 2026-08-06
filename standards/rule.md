@@ -7,7 +7,9 @@ description: Rule frontmatter, body shape, and voice for .claude/rules files
 
 ## Overview
 
-Rules give Claude Code coding constraints scoped to file paths. Claude Code discovers `.claude/rules/**/*.md` at session start. A rule with no `paths:` field always applies, at the same priority as `CLAUDE.md`. A rule with `paths:` applies when Claude reads a file matching the glob. Author one rule per topic so the scope stays precise.
+Rules give Claude Code coding constraints scoped to file paths. Claude Code discovers `.claude/rules/**/*.md` at session start.
+
+A rule with no `paths:` field always applies, at the same priority as `CLAUDE.md`. A rule with `paths:` applies when Claude reads a file matching the glob. Author one rule per topic so the scope stays precise.
 
 ## Scope
 

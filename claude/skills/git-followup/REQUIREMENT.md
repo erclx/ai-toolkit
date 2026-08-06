@@ -7,7 +7,9 @@ description: What the follow-up push is for, the gaps it closes, and how it spli
 
 ## Gap
 
-Without this skill, an edit made after a pull request is already open ships as a bare push. The body still describes the scope from before the edit, so a reviewer returning to the page reads a description the diff no longer matches. A reviewer who left comments gets no reply, and when a caller has already posted its own reply, a second one lands underneath it. A caller that rebased the branch before handing over hits a rejected push, since the tracking branch no longer reaches the head. A branch entered through a worktree hits the opposite shape, carrying an open pull request with no tracking ref at all, which read as a branch that had never been pushed.
+Without this skill, an edit made after a pull request is already open ships as a bare push. The body still describes the scope from before the edit, so a reviewer returning to the page reads a description the diff no longer matches. A reviewer who left comments gets no reply, and when a caller has already posted its own reply, a second one lands underneath it.
+
+A caller that rebased the branch before handing over hits a rejected push, since the tracking branch no longer reaches the head. A branch entered through a worktree hits the opposite shape, carrying an open pull request with no tracking ref at all, which read as a branch that had never been pushed.
 
 ## Must
 

@@ -91,7 +91,9 @@ Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor
 
 ## Step 4: post to the PR
 
-Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered. Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
+Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`. The PR number stops two sessions reviewing different pull requests from overwriting each other between the write and the post. The head commit stops a second pass overwriting the first one's body, and leaves the folder a record of which commit each review covered.
+
+Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
 
 The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
 
@@ -132,7 +134,11 @@ Read the state off the most recent review comment rather than off the presence o
 
 Both of this skill's headings anchor as a section distinct from human threads. Do not invent one beyond those two and the `## Review response` a sibling owns, and do not append the PR number, which GitHub already renders above the comment.
 
-Name the scope in every summary line after the first pass, since a reader cannot otherwise tell a narrow read from a full one. When the fallback in Step 2 fired, replace the commit count with `Re-reviewed the full change, the prior pass's commit is no longer on the branch`. Budget the body. State each finding as the failure and the fix in two or three sentences, not a paragraph of reasoning. Omit files with no findings. Do not lecture on process. The integration, contract, and consumer lenses stay, but as findings, not asides.
+Name the scope in every summary line after the first pass, since a reader cannot otherwise tell a narrow read from a full one. When the fallback in Step 2 fired, replace the commit count with `Re-reviewed the full change, the prior pass's commit is no longer on the branch`.
+
+Budget the body. State each finding as the failure and the fix in two or three sentences, not a paragraph of reasoning.
+
+Omit files with no findings. Do not lecture on process. The integration, contract, and consumer lenses stay, but as findings, not asides.
 
 The `What is right` section is optional, capped at three bullets, and included only when it changes the merge decision. Drop it otherwise and let the summary line carry the approval.
 
@@ -144,7 +150,9 @@ Before posting, run the scan in `.claude/standards/publish.md` against the body,
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md
 ```
 
-A pass with no findings takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No blocking findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.` Post that one even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
+A pass with no findings takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No blocking findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
+
+Post that one even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
 
 ## Step 5: output
 

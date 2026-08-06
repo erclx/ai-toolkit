@@ -38,7 +38,9 @@ Fall back to the appearance heuristic in step 3 when the report cannot attribute
 
 ## Step 2: read installed copies
 
-For each entry in the merged list, read the file at its `target` path from the project root. Run reads in parallel. Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
+For each entry in the merged list, read the file at its `target` path from the project root. Run reads in parallel.
+
+Mark missing files for **Add** treatment. Skip non-text seeds (`.json`) for section diffing. Record a one-line note in the scope table that the user can compare manually.
 
 When detecting target-only files for `local-only` flagging, skip files the toolkit's own walkers regenerate from sibling frontmatter (today: any `index.md` produced by `aitk indexes regen`). They are absent from source catalogs by design, so flagging them as `local-only` is a false positive.
 

@@ -23,7 +23,9 @@ Read these in parallel from the project root, skipping any that do not exist:
 Also read these when the feature touches code or UI. Skip them for prose, docs, catalog, or config-only changes:
 
 - `.claude/DESIGN.md`: tokens, typography, spacing, and component rules
-- `.claude/wireframes/index.md` + the surface files relevant to the feature: intended UI layout and behavior. Read `index.md` first, then load only the per-surface files (`.claude/wireframes/<surface>.md`) the feature actually touches. Do not read the whole folder speculatively. When the plan adds or revises a surface, the wireframe file follows `.claude/standards/wireframes.md`, or `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md` when the project does not have it.
+- `.claude/wireframes/index.md` + the surface files relevant to the feature: intended UI layout and behavior. Read `index.md` first, then load only the per-surface files (`.claude/wireframes/<surface>.md`) the feature actually touches. Do not read the whole folder speculatively.
+
+When the plan adds or revises a surface, the wireframe file follows `.claude/standards/wireframes.md`, or `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md` when the project does not have it.
 
 Coding standards live in `.claude/rules/`. Claude Code loads them automatically. Path-scoped rules apply to the files they match.
 
@@ -31,7 +33,9 @@ Coding standards live in `.claude/rules/`. Claude Code loads them automatically.
 
 Based on the feature description, identify and read source files that are directly relevant. Do not read entire directories speculatively.
 
-Measure against the tree rather than recall. Grep for each construct the plan will name and count the sites, so the plan carries the count the tree holds today. Confirm any work the plan sequences behind is still open, so it does not lead with an item that already shipped. Open each file before describing what is in it. A count or a claim carried from an earlier session, a summary, or another document is the most common way a plan ships the wrong scope.
+Measure against the tree rather than recall. Grep for each construct the plan will name and count the sites, so the plan carries the count the tree holds today. Confirm any work the plan sequences behind is still open, so it does not lead with an item that already shipped.
+
+Open each file before describing what is in it. A count or a claim carried from an earlier session, a summary, or another document is the most common way a plan ships the wrong scope.
 
 ## Step 3: build the plan
 

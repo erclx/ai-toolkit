@@ -9,7 +9,9 @@ description: What a non-interactive automation script owes its caller, and the s
 
 Without this skill, an automation script is written with an interactive tool's habits. Progress frames, icons, and color land on stdout, so the script stops composing in a pipe and the caller parses a spinner as data. The failure is invisible in a terminal and total in CI.
 
-The robustness failures are the ones that reach production. Without strict mode a failed stage inside a pipe exits zero and the script reports success on work that did not happen. An unset variable expands to nothing and a path built from it points somewhere nobody meant. Errors print and execution continues. And a single long `main()` holding every responsibility cannot be tested or reused, which is what turns a one-off script into one nobody will touch.
+The robustness failures are the ones that reach production. Without strict mode a failed stage inside a pipe exits zero and the script reports success on work that did not happen.
+
+An unset variable expands to nothing and a path built from it points somewhere nobody meant. Errors print and execution continues. And a single long `main()` holding every responsibility cannot be tested or reused, which is what turns a one-off script into one nobody will touch.
 
 ## Must
 

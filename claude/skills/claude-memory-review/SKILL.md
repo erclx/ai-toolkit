@@ -68,7 +68,9 @@ For each in-scope entry (see Scope), pick one action:
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
 - **Promote to a standards file**: the rule is an authoring reference that belongs in `.claude/standards/<domain>.md`.
 - **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.claude/.tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
-- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. In the toolkit repo, point the user at `aitk-governance` and `.claude/standards/rule.md`, which own the source-of-truth rules under `governance/rules/`. In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
+- **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
+  - In the toolkit repo, point the user at `aitk-governance` and `.claude/standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
+  - In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`.
 - **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
 
 Retire is an archive, not a deletion, which `.claude/standards/memory.md` states as the rule and this skill executes. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why the move is cheap rather than free.
@@ -164,7 +166,9 @@ aitk indexes regen --no-stage --root <main-root> <main-root>/.claude/memory/inde
 
 The `PostToolUse` hook that keeps the index current matches `Write|Edit|MultiEdit`, and an archive move is a shell `mv`, so nothing fires on it. Without this call the index keeps a row per archived entry and drifts exactly the way the hand-appended one did. Run it once after the last move rather than per item.
 
-Apply promotion edits one at a time via `Edit`. Claude Code's tool permission dialog is the confirmation gate per edit. Never rewrite a whole promotion target. This governs the tracked surfaces a promote lands in, which sit at `pwd` and take `Edit` from anywhere. The receipt and the memory entries are main-root scratch and follow the guard instead.
+Apply promotion edits one at a time via `Edit`. Claude Code's tool permission dialog is the confirmation gate per edit. Never rewrite a whole promotion target.
+
+This governs the tracked surfaces a promote lands in, which sit at `pwd` and take `Edit` from anywhere. The receipt and the memory entries are main-root scratch and follow the guard instead.
 
 As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 📦 for retired, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the review file. It stays as a receipt until Cleanup runs or the next Propose pass overwrites it.
 

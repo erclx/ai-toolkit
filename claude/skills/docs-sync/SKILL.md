@@ -65,7 +65,9 @@ Classify at the section level, not the file level. A doc edited earlier in the s
 
 ## Action
 
-Rewrite only the stale sections. Do not touch sections unrelated to the diff. Write the updated file immediately after the preview. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
+Rewrite only the stale sections. Do not touch sections unrelated to the diff.
+
+Write the updated file immediately after the preview. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
 
 Never rewrite a `departed` section. Leave it as written and report it as a finding, since the repair belongs in the code rather than in the prose.
 

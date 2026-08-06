@@ -122,7 +122,9 @@ After the PR is created, mark it as draft:
 gh pr ready --undo
 ```
 
-After marking draft, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status. On all-pass, continue. On any failure, stop and report the failing check with its URL. Do not auto-fix.
+After marking draft, watch CI. Poll `gh pr checks <number>` until no check is pending, then read the final status.
+
+On all-pass, continue. On any failure, stop and report the failing check with its URL. Do not auto-fix.
 
 8. `aitk:claude-memory-review`: if step 1's capture wrote or updated at least one memory file, propose fixes scoped to those entries, writing the decision-ready receipt while session context is fresh. Skip when capture wrote nothing to the folder, which is the ordinary outcome once routing has taken the domain facts.
 
