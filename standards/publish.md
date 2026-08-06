@@ -7,7 +7,7 @@ description: Scan run against finished text leaving through a channel no automat
 
 ## Scope
 
-Governs the scan an author runs against finished text on its way out, the form a pull request or issue reference takes in the text that scan covers, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies to any text leaving through a channel no automated check covers, and it carries no template because a scan has no document to shape.
+Governs the scan an author runs against finished text on its way out, the form a pull request or issue reference takes in every destination, and the responses available when a source it reaches for cannot be read. It is an attribute standard rather than a document-type one, so it applies wherever no automated check covers the text, whether that text is leaving through a channel or sitting in the repository, and it carries no template because a scan has no document to shape.
 
 Does not govern:
 

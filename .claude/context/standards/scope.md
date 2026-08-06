@@ -49,6 +49,8 @@ A statement enumerating the parts of the artifact it governs carries the same li
 
 `publish.md` is the second occurrence and it shows the failure reaching a sibling. Its statement named the scan and the unreadable-source response, a cross-reference section landed among the shape rules with the enumeration unmoved, and `markdown.md` was given a `Does not govern:` entry yielding the rule at the same time. The yielding side then pointed at a standard whose own scope line claimed nothing, which is a both-sides boundary declared from one side and a half.
 
+The first repair narrowed that gap rather than closing it, which is the part worth carrying. The claim went into the enumeration under a qualifier naming only outbound text while the section ruled on both destinations, so the repository half stayed yielded by one standard and claimed by neither. A scope statement holds jurisdiction in two places, the enumeration of what it governs and the sentence saying where the standard applies, so widening one and leaving the other reproduces the gap one sentence down.
+
 `prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
 
 ## How the scope statement is parsed
