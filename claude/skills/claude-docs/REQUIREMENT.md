@@ -9,6 +9,8 @@ description: What the planning-doc reconcile is for, the gaps it closes, and why
 
 Without this skill, the planning docs describe the scope the session opened with. An outcome the diff shipped stays unchecked, so the board reports finished work as open and the next session re-plans it. A requirement or architecture decision that changed mid-cycle lives only in the conversation and dies with it. Plans for closed tasks accumulate in the live folder, so the folder stops indicating what is in flight.
 
+A decision's verification anchor has the same shape of gap in the other direction. The reasoning keeps reading as current while the number it cites moves underneath, and an amendment written without an anchor leaves nothing recording which numbers were checked and which nobody has read since.
+
 ## Must
 
 - Take completion from the diff and everything else from the session, since completion is a fact about the repository rather than about the conversation
@@ -17,6 +19,8 @@ Without this skill, the planning docs describe the scope the session opened with
 - Write tracked docs at the current worktree root and the task board at the main root, since only the first commits with the branch
 - Count every other citation before archiving a plan, comparing resolved targets rather than raw strings or bare filenames
 - Retarget a closed task at the archived plan, so the reasoning behind finished work stays reachable
+- Anchor a decision entry this run writes or amends whose reasoning cites a measured number, re-reading the number against the tree before writing the marker
+- Report an anchored decision whose cited path the diff touched, since the number was read before the branch moved what it counted
 
 ## Must not
 
@@ -25,6 +29,8 @@ Without this skill, the planning docs describe the scope the session opened with
 - Widen what a writing step reads when the baseline is unusable. Widening a read is safe and widening a write stubs a surface for every file in the repository.
 - Edit `CLAUDE.md` inline. Every change there goes through a diff-and-approve gate, so this skill only flags.
 - Create a context entry or delete a plan
+- Write an anchor onto a decision the run did not amend, or refresh one without re-reading the number. A date from a pass that measured nothing is the false confidence the marker exists to prevent.
+- Anchor an entry written before the rule, which dates it by blame rather than by a read
 
 ## Guards
 
@@ -37,3 +43,4 @@ Without this skill, the planning docs describe the scope the session opened with
 - Public-facing docs, which `docs-sync` owns. This skill reconciles the `.claude/` planning surface.
 - Regenerating the task index, owned by a hook
 - Redrawing diagrams, which `claude-diagram` owns. This skill flags staleness and leaves the re-run to the author.
+- Re-measuring an architecture claim to decide whether its number moved. The sweep keys on a cited path entering the diff, so a claim whose number moved with no cited path in the diff goes unflagged.
