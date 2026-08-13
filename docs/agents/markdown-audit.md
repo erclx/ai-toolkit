@@ -51,7 +51,7 @@ A banned word is bounded on a word character or a hyphen either side. A plain wo
 
 A banned spelling keeps the plain word boundary, hyphens included. The two bans target different things: a word ban targets the word, so reading a compound as one word is correct, while a spelling ban targets the orthography inside it, which sits in `behaviour-driven` as plainly as it sits alone.
 
-Two ban shapes stay unmeasured and the report says so on every run. A phrase ban carries a placeholder standing in for the rest of the sentence, so no literal match reaches it, and every rule under `## Voice` is a judgment. A report listing hits without naming those would read as a verdict on the whole standard.
+Two ban shapes stay unmeasured and the report says so on every run. A multi-word ban escapes the harvest by width, whether it carries a placeholder standing in for the rest of the sentence or spells the phrase out in full, and every rule under `## Voice` is a judgment. The bans `## Language` states over what a sentence may claim sit in the first group by construction, since a literal match over a pattern reports the compliant text and reaches none of the violations. A report listing hits without naming those would read as a verdict on the whole standard.
 
 ### Bullets, paragraphs, and depth
 
