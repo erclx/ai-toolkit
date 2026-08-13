@@ -69,13 +69,19 @@ Its first run is why the arm carries two guards. The `aitk` on that machine was 
 
 Provisioning therefore refuses a CLI that attributes no unclaimed folder, which is the two-speed release risk `ARCHITECTURE.md` records arriving in the harness rather than in a target. Reading attribution rather than the bare key is what makes the guard prove the walk reached the staged folder instead of proving only that the field exists.
 
+The refusal fired on 2026-08-13 against a CLI at 0.83.0, which is why the message names causes rather than a version to install. A guard reading attribution cannot separate a binary predating the walk from a walk that ran and reached nothing, so it names both and leaves the reader to tell them apart. Driving the arm needs a walk that reaches the staged folder, which no message produces.
+
 Writing that guard is what surfaced the deeper defect. Every section of the report, the reverse walk included, is gated on `isManagedTarget`, and the arm staged a `package.json` and a dropped folder and none of the three markers that gate reads. The section came back empty for that reason rather than for the CLI's, and the first probe that appeared to work had run after `stage_setup` returned, against a tree the harness had since given a `.claude/skills/` copy of the skill under test.
 
 An arm inheriting its premise from dev-skill injection holds only while the branch changes that skill, so the fixture stages a short `CLAUDE.md` and owns the gate itself. Short is load-bearing, since a file past the 250-line checkpoint adds a `migration-claude-md` candidate and the arm would score two decisions in one reply.
 
 The declaration also pins the folder name beside the verdict, against the general rule that a name history decides does not belong in a pin, because the second guard fails provisioning the moment that root comes back and a reader sees the fragility where it is rather than inside a declaration going quietly vacuous.
 
-The `audits`, `gitignore`, and `unclaimed` arms sit at the default cap rather than above an observation. The first two have never been run. The third has, and the run it produced is the false green above rather than a turn count worth declaring against. The other four passed on 2026-08-04, which is the first time either skill was executed by anything.
+The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `audits` failed at 4 asserted and 2 failed, both failures on a reply that described the audit categories in prose and named neither `aitk context audit` nor `aitk records validate`. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. All three keep the default cap, since a failed run and a refusal each bound nothing.
+
+The `audits` run failed wider than its count reports. The fixture stages a target carrying two of the four audit surfaces and the reply offered all four as measurable, the withheld comment density included, which is the condition the arm exists to score. The checker passes that, because the withheld offer is asserted as a negative substring and any rephrasing satisfies it, which the arm's first `manual` entry names in advance. Four of its eight assertions come back unchecked rather than passed, so read `asserted` as the denominator rather than as the coverage.
+
+The other four arms passed on 2026-08-04, which is the first time either skill was executed by anything.
 
 Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both are declared at the cap rather than above an observation for that reason. The `fresh` run is the one whose turn count is not recorded, since `record_run` failed to write it and the envelope went with it.
 
@@ -85,9 +91,9 @@ Two of them cost 6 turns and end where the route is named. The other two carry o
 
 Three `absent` entries name the destination folders, and `.claude/hooks` carries the extra weight: no standard declares `appliesTo` over it, so a run proposing a shape there had to invent one, which the absence catches whether or not the reply admitted to it. The reply pins name the standard each entry resolved to rather than the destination folder, because the folder comes free off the report while the standard separates a shape read from the project's installed copy from one the run made up.
 
-No agent has driven this arm, so it sits at the default cap beside `audits` and `gitignore` and its verdict is weaker than the number reports. Every mechanically scored assertion on it is a no-write claim, and a no-write claim holds on a tree the skill never ran against, so `10 asserted, 0 failed` and the `asserted` verdict both describe assertions no run has exercised.
+A run on 2026-08-13 scored the arm for the first time and it passed, at 13 asserted and 0 failed with 5 unchecked, in 17 turns at 0.58 dollars. The count moves from 10 to 13 under a run because the three `reply` pins score only against an envelope, so the standalone figure describes ten no-write claims holding on a tree the skill never touched. The cap stays at 30 against that one observation, which is a floor on what a correct run costs rather than a bound on it.
 
-Only the three `reply` pins separate a correct proposal from a session that did nothing, and scoring those needs an envelope. An arm whose assertions are all negative earns that note rather than the count it prints, which generalizes past this one: a proposal-only skill cannot be covered by tree assertions alone.
+Only the three `reply` pins separate a correct proposal from a session that did nothing. An arm whose tree assertions are all negative earns that note rather than the count it prints, which generalizes past this one: a proposal-only skill cannot be covered by tree assertions alone.
 
 Provisioning is what corrected the skill rather than the run. The fixture asserts its own premise, that the staged file is tracked and ignored at once, and the guard failed against a tree that was correct. `git check-ignore` consults the index and reports a tracked path as not ignored, so the flagless form returns nothing in exactly the state the step exists to find. Both the skill and the guard read `--no-index` now.
 
