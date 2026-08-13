@@ -87,6 +87,8 @@ Apply the high-signal filter: flag only what will cause incorrect behavior, brea
 
 A later pass applies the same axes to the delta, and adds one check the first pass cannot make: did each prior finding land, and did the fix regress anything it touched. Findings of its own are normal findings, stated at the same severity and counted the same way. That count is what Step 4 reads to pick the heading, so a pass raising one of its own is not a close-out.
 
+A prior finding can also be settled by argument rather than by a fix. A reply naming the plan question that already declined it, or a constraint this session could not see, withdraws the finding or moves its grade. State that outcome in the body under the finding it changes, naming the fact that produced it, whether the argument arrived on the thread or through the channel that carried the dispatch. Dropping the finding from this body instead leaves a reader unable to tell a withdrawal from an oversight, and the reasoning goes with the session that heard it. A withdrawal removes the finding from the count, so a pass that withdrew every open item is a close-out. Write the withdrawal and its cause into that body rather than taking the short close-out line Step 4 supplies, which reports prior findings addressed and would credit a fix nobody made.
+
 Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor` (visibility only).
 
 ## Step 4: post to the PR

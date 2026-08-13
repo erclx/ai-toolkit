@@ -33,6 +33,8 @@ The runbooks the session cannot run from memory fail on a third axis, which is w
 
 Every one of them therefore has to ship inside the skill, the four covering the moments the loop cannot detect and the fifth holding the review trigger. That last one fails on an axis of its own, since it names one client's command as the way to start the loop, so a session holding a different recurring-prompt scheduler reaches no path and a client without that command reaches none either, and the file ships to every target holding the plugin.
 
+The dispatch's return leg is unplaced for the same reason. A reply reaches this session as a message and settles a finding, corrects which session holds which branch, or names a gate a worker's edits pass through, and reading it is the whole of what happens to it. Both sessions then end, so the half that belonged on the pull request never reaches it and the half that belonged on the board is rediscovered by whoever needs it next.
+
 The session also records nothing of what it learns. Both other callers of memory capture are ship-chain skills and this one never ships, so the session taking every operator correction is the session with no moment that writes one down. Hanging that moment on the merge sweep answers it and bills the operator a capture pass per batch of merges while nothing is being built, which is a cost paid on the days shipping is fastest.
 
 ## Must
@@ -42,6 +44,7 @@ The session also records nothing of what it learns. Both other callers of memory
 - Verify a plan against the tree before handing it over, counting the sites it claims and opening the files it describes
 - List a candidate's file set against every track in flight, and serialize when the sets are not disjoint
 - Place every finding a merged pull request produced against the surface that owns it
+- Place what the return leg carries by what it changes, sending an answer that settles a finding onto the pull request and one that corrects this session's model of the world to the task owning that surface, since neither becomes a record by being read
 - Date the roadmap line from that file's last commit, so an old sequence reads as old
 - Keep one planned, non-conflicting task in reserve beyond what is running
 - Refill the queue while a wave is still building, rather than on a merge and a thinning list alone, since neither of those fires across the window planning costs nothing
