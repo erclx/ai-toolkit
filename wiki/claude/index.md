@@ -16,6 +16,7 @@ Claude Code features and the adjacent Anthropic products, one page per subject A
 - [Claude Code permissions](claude-permissions.md): Modes, allow/ask/deny rules, and rule syntax
 - [Claude Code plan mode](claude-plan-mode.md): Read-only exploration and plan approval flow
 - [Claude Code routines](claude-routines.md): Cloud-run agents triggered by schedule, API, or GitHub events
+- [Claude Code sessions](claude-sessions.md): Peer session discovery, addressing by name and ref, what a cross-session message carries, and why a session map goes stale
 - [Claude Code skills](claude-skills.md): Skills, plugins, invocation, and installation
 - [Claude Code subagents](claude-subagents.md): When and how a skill should spawn a subagent, parallel vs sequential, and pitfalls
 - [Claude Code and git worktrees](claude-worktrees.md): Running parallel sessions on independent branches
