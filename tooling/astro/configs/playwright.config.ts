@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const isCI = !!process.env.CI
+const baseURL = `http://localhost:${4321 + (Number(process.env.WORKTREE_PORT_OFFSET) || 0)}`
 
 export default defineConfig({
   testDir: 'e2e',
@@ -10,7 +11,7 @@ export default defineConfig({
   reporter: isCI ? 'list' : 'html',
   use: {
     trace: 'on-first-retry',
-    baseURL: 'http://localhost:4321',
+    baseURL,
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
@@ -19,7 +20,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'bun run build && bun run preview',
-    url: 'http://localhost:4321',
-    reuseExistingServer: !isCI,
+    url: baseURL,
+    reuseExistingServer: false,
   },
 })

@@ -15,15 +15,17 @@ packages = [
 ]
 
 [scripts]
-"dev" = "astro dev"
+"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) astro dev"
 "build" = "astro check && astro build"
-"preview" = "astro preview"
+"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) astro preview"
 "astro" = "astro"
 "typecheck" = "astro check"
 "setup" = "./scripts/setup.sh"
 
 [scripts.override]
-"screenshot" = "PREVIEW_PORT=4321 bash scripts/screenshot.sh"
+"screenshot" = "PREVIEW_PORT=$(bash scripts/worktree-port.sh 4321) bash scripts/screenshot.sh"
+"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) astro dev"
+"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) astro preview"
 
 [gitignore]
 "# Astro" = [".astro/"]
