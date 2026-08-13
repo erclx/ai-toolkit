@@ -72,6 +72,8 @@ The default path is `base`. `aitk init` on `base` installs base tooling configs,
 
 Escalate only for real web apps. The `setup-init` skill reads `package.json` and root configs, then picks the matching tooling stack (`vite-react` today) and the matching governance stack (`react`, `astro`, `node`).
 
+`node-server` is named rather than detected. It carries the server-side security and persistence rules for a project writing request handlers or a persistence layer in TypeScript, and the detect step matches a runtime or a framework against stack names, so nothing there marks a project as a backend. Pass it deliberately with `aitk init --stack node-server` or `aitk gov install node-server <target>`.
+
 Markdown-heavy projects, CLI tools, docs sites, research notebooks, and scripting repos stay on `base`. Escalation is a ceiling move, not a default.
 
 Run `aitk tooling list --json` and `aitk gov list --json` to see the current catalogs. Never hardcode stack names.

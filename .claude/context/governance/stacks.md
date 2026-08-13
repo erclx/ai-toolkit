@@ -11,10 +11,13 @@ Each stack declares an optional `extends` chain and a `rules` list. An entry nam
 | ---------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `base`           | -       | the `core/` and `claude/` folders whole, which is every core rule plus every claude authoring rule                               |
 | `node`           | base    | 100-typescript                                                                                                                   |
+| `node-server`    | node    | 360-security-server, 370-database                                                                                                |
 | `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
 | `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
 | `python`         | base    | 110-python, 330-testing-py, 340-pydantic, 360-security-server, 370-database                                                      |
 | `python-fastapi` | python  | 220-fastapi                                                                                                                      |
+
+`360-security-server` and `370-database` glob Python alongside TypeScript and JavaScript, so both reach a Python backend and a Node one and the stack naming them is what decides which target sees them. `350-security-web` globs component and markup files alone and matches nothing on a request handler or a query. `python` and `node-server` therefore carry the server pair, while `node`, `react`, and `astro` carry neither rule.
 
 ## Decisions
 
@@ -25,6 +28,20 @@ Each stack declares an optional `extends` chain and a `rules` list. An entry nam
 `base` takes `core` and `claude` whole. Those two folders were enumerated one rule at a time and the list was always exactly the folder, so adding a rule needed a second edit nothing prompted. Every other stack stays enumerated, because taking three of six rule folders is a selection a folder entry cannot express.
 
 The consequence is that both folders are now opt-out. A rule authored into `governance/rules/claude/` ships to every `base` consumer by existing, so the decision moved from the stack file to whether the file belongs in that folder. The install output is where the flat list is paid back, since `runInstall` expands before printing and the operator still reads every rule name.
+
+### A Node backend takes a sibling stack where Python takes none
+
+`python` names both server rules directly and can, because `python-fastapi` is the only stack extending it and a FastAPI target wants them. `node` cannot do the same. `react` and `astro` both extend it, so a persistence rule placed there arrives at every pure frontend target and matches none of its files, which is the reads-as-covered defect the corpus work opened against.
+
+`node-server` extends `node` instead, beside those two rather than above them. `resolveRules` walks `extends` ancestors first and then the stack's own rules, so a child inherits from its parent and pushes nothing back up. `react` and `astro` resolve exactly what they resolved before this stack existed, and a Node backend picks the two server rules up by naming one stack.
+
+Reaching for symmetry between the two ecosystems is what reintroduces the defect, since the shape that works for Python turns on nothing extending it. Renaming `node` was the other candidate and it breaks both frontend stack files plus every target that installed under the old name, for a result the sibling already gives.
+
+The stack carries those two rules and nothing else. `300-testing-ts` and `310-zod` read as reasonable on a backend and are currently named by `react`, so pulling either in is a separate decision about the default a Node backend gets, and it costs one line once a target asks.
+
+`--add 360-security-server,370-database` was the interim route onto a `node` target and this stack supersedes it. The flag is unchanged and still layers on any stack, so it stays the way to reach a rule no stack names rather than the way to reach these two.
+
+Nothing detects the stack. `setup-init` and `setup-gov` both pick by matching a detected runtime or framework against stack names, and a Node backend detects the runtime, so it lands on `node` and resolves neither server rule. `node-server` is therefore named deliberately until one of those skills carries a rule for the backend case, which needs a decision about what evidence marks a project as one.
 
 ### The extras flag layers rather than defines
 
@@ -46,7 +63,9 @@ The `Unreferenced rules` stage in `scripts/core/verify.sh` reports rules no stac
 
 ## Adding a stack
 
-Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names without `.md` in the `rules` array, or a folder name under `governance/rules/` to take that folder whole. No build step needed.
+Create a new `.toml` file in `governance/stacks/`. Set `extends` to the parent stack name or leave it empty. List rule names without `.md` in the `rules` array, or a folder name under `governance/rules/` to take that folder whole. Nothing compiles the stack, so the file is live to `aitk gov install` as soon as it is written.
+
+`bun run check` still has something to say about it. Governance stacks are one of the five catalogs `scripts/core/regen-hero.sh` counts, so a new file moves the count on `assets/hero.html` and the Hero stage fails until `aitk capture assets/hero.html` re-renders the image. Both files then commit together, which is what `assert_hero_pair` reads.
 
 ```toml
 extends = "node"
