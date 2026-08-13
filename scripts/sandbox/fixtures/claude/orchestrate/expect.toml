@@ -12,10 +12,11 @@
 # that table in TOML, so an array written at the bottom parses clean and asserts
 # nothing.
 
-# The default cap, which is what `scripts/sandbox/run.sh` runs under. No run has
-# bounded this arm yet, and a proposal-only skill costs whatever reading the tree
-# costs, so the ceiling stays at the cap until an observation lowers it. The
-# routing arms beside this one settled the same way for the same reason.
+# The default cap, which is what `scripts/sandbox/run.sh` runs under. A passing
+# run cost 4 turns, which is a floor on what a correct run costs rather than a
+# bound on it, since a proposal-only skill pays for however it reads the tree and
+# one sample of a varying cost lowers nothing. The routing arms beside this one
+# settled the same way for the same reason.
 max_turns = 30
 
 # The two files a run that overstepped would leave behind. Neither is staged, so
