@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { createStandardsAdapter, standardsSourceDir } from '@/standards/adapter'
 import { ALL_SELECTION, selectStandards } from '@/standards/closure'
 import {

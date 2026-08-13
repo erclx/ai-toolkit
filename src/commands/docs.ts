@@ -1,7 +1,8 @@
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
 import { listTopics, readTopic, resolveTopic } from '@/docs/read'
-import { execScript, PROJECT_ROOT } from '@/exec'
+import { execScript } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { intro, logError, logInfo, logStep, logWarn, outro } from '@/ui'
 
 export function register(program: Command): void {

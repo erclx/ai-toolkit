@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { PROJECT_ROOT } from '@/exec'
 import { stripFrontmatter } from '@/frontmatter'
+import { PROJECT_ROOT } from '@/project-root'
 import { standardsSourceDir } from '@/standards/adapter'
 import { INDEX_FILE } from '@/standards/index-refresh'
 

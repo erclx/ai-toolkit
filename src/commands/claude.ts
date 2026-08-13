@@ -29,7 +29,8 @@ import {
   writeSettings,
 } from '@/claude/settings'
 import { copyPreservingMode } from '@/copy'
-import { execScript, PROJECT_ROOT } from '@/exec'
+import { execScript } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { isDirectory, resolveTarget } from '@/target'
 import { injectGitignore, pruneGitignore } from '@/tooling/inject'
 import {

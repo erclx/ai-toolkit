@@ -1,19 +1,6 @@
-import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { execa } from 'execa'
-
-/**
- * The root of the package this CLI is running out of, which is the repository
- * root in a checkout and the installed package directory in a target.
- *
- * Derived from `import.meta.url` rather than Bun's `import.meta.dir`, since the
- * test runner resolves the first and leaves the second undefined, which puts
- * every module reading this root out of reach of a test.
- */
-export const PROJECT_ROOT = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  '..',
-)
+import { PROJECT_ROOT } from '@/project-root'
 
 export async function execScript(
   script: string,

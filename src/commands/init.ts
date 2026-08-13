@@ -1,6 +1,6 @@
 import type { Command } from 'commander'
 import { cliPath, cliRun } from '@/cli-run'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { applyInitOptions, flagsProvided } from '@/init/flags'
 import { type InitFlags, parseSkip, planInit } from '@/init/plan'
 import { runDomains } from '@/init/run'

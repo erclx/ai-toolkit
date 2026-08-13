@@ -2,7 +2,8 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import type { Command } from 'commander'
-import { PROJECT_ROOT, execScript } from '@/exec'
+import { execScript } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import {
   assertedPercent,
   collectCensus,

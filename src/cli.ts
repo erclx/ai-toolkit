@@ -24,7 +24,7 @@ import { register as comments } from '@/commands/comments'
 import { register as context } from '@/commands/context'
 import { register as markdown } from '@/commands/markdown'
 import { register as records } from '@/commands/records'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 
 const GREY = '\x1b[0;90m'
 const WHITE = '\x1b[1;37m'

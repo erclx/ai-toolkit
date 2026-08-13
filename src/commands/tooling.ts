@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
-import { execScript, PROJECT_ROOT } from '@/exec'
+import { execScript } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import {
   applyReferences,
   injectConfigs,
