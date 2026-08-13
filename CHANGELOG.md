@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.88.0](https://github.com/erclx/aitk/compare/v0.87.0...v0.88.0) (2026-08-13)
+
+
+### Features
+
+* **governance:** add a node-server stack carrying the server rules ([#960](https://github.com/erclx/aitk/issues/960)) ([5e2c114](https://github.com/erclx/aitk/commit/5e2c11472b043dffd448a187426c883739876c45))
+
 ## [0.87.0](https://github.com/erclx/aitk/compare/v0.86.2...v0.87.0) (2026-08-13)
 
 
