@@ -49,6 +49,12 @@ The rules this argument produces fire when a skill is being written, so they liv
 
 Intake is a skill rather than a mode inside either neighbor. A mode gives one skill two purposes and its `REQUIREMENT.md` two subjects, which is the collision the requirement file exists to prevent. A snippet was the other candidate and carries no read contract, so it cannot orient against the board or measure against the tree, and those two steps are what the one run that exists turned on. Groundwork's qualifying guard refuses a breadth pass outright, so the guard now names intake as the destination rather than sending a refused dump to the planning skill.
 
+Answering what a pass filed is a second skill rather than a mode on the first, on the same argument that made intake its own front door. `claude-intake-answer` walks the unread slots in batches and lands each selection through `aitk intake answer`, and it carries `disable-model-invocation` so routing never reaches for it mid-flow. A pass that files a dump and answers it in one run decides items on silence, which is the contract inversion the folder exists to hold.
+
+The write is a verb rather than a body instruction because every worker runs in a linked worktree, where the file-editing tools refuse a main-root path and the stream editors this repository bans are what a shell route would reach for. That is the same constraint behind the task record verbs. One call carries a whole cluster, since concurrent calls against one file race on the read and keep only the last answer.
+
+Building the verb measured a format fact the standard had not stated. A pass that splits a finding after the fact labels the halves `3a` and `3b` rather than renumbering the file, and a parser accepting digits alone drops those items with nothing reporting the gap. Four items in one cluster of `toolkit-overview` sat in that shape, so the label is a string carrying an optional suffix and the standard now says so.
+
 The pass that produced the skill also measured the ratio. Of 58 items carrying a verdict, exactly one qualified as groundwork, and the eight that resolved to already-settled are the output neither neighbor has anywhere to put. One convention was dropped rather than lifted: an empty operator slot in an intake folder means unread, where a plan file's blank answer means accept. A plan is read in one sitting and an intake folder is read over weeks, so silence there is far more likely to mean nobody reached the item.
 
 ## What a skill carries

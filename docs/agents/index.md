@@ -16,6 +16,7 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Docs](docs.md): How aitk docs resolves the toolkit's own reference surface from an install root, and how a split domain is named
 - [Indexes](indexes.md): Flags, exit codes, and JSON shape for aitk indexes regen, plus when it auto-stages what it rewrote
 - [Install and sync](install-and-sync.md): What each install and sync verb writes, refuses, or leaves alone, and how drift is attributed in a target project
+- [Intake](intake.md): Reading intake folder counts and items, the three read states an item can be in, landing a batch of selections in one cluster, the refusal reasons, and why a call is scoped to one file
 - [Markdown audit](markdown-audit.md): Running the audit over any markdown path, where its bans and checkpoints are read from, what each check reports, and why the ban half gates while the structural half reports
 - [Output shape](output-shape.md): Two framed shapes every command renders into, how JSON and --names modes keep stdout clean, and the exit discipline that lets piped output drain
 - [Overview](overview.md): What this folder covers, the invocation rules every command inherits, and where domain behavior is documented instead
