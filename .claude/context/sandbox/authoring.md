@@ -88,7 +88,7 @@ use_config() {
 
 `SANDBOX_INJECT_STANDARDS` and `SANDBOX_INJECT_GOV` run `aitk standards install` and `aitk gov install` against the sandbox rather than copying source trees. The installer decides what lands, so the sandbox cannot drift from what a target receives, and provisioning exercises the installer as a side effect. `SANDBOX_GOV_STACK` picks the stack and defaults to `base`.
 
-A stack install narrows what arrives. The copy it replaced took all 38 rules under `governance/rules`, while `base` resolves to 20, which is what a real target holds since no project carries both the React and FastAPI rules. A scenario needing a framework's rules sets `SANDBOX_GOV_STACK` rather than assuming every rule is present.
+A stack install narrows what arrives. The copy it replaced took all 48 rules under `governance/rules`, while `base` resolves to 28, which is what a real target holds since no project carries both the React and FastAPI rules. A scenario needing a framework's rules sets `SANDBOX_GOV_STACK` rather than assuming every rule is present.
 
 A failed install aborts provisioning with the installer's own stderr, since a sandbox missing the rules a scenario depends on would otherwise fail later somewhere unrelated.
 

@@ -13,7 +13,7 @@ Each stack declares an optional `extends` chain and a `rules` list. An entry nam
 | `node`           | base    | 100-typescript                                                                                                                   |
 | `react`          | node    | 200-react, 230-nextjs, 250-tailwind, 300-testing-ts, 310-zod, 350-security-web, 400-ui, 410-a11y, 420-forms, 430-ux-completeness |
 | `astro`          | node    | 210-astro, 350-security-web, 400-ui, 410-a11y, 430-ux-completeness                                                               |
-| `python`         | base    | 110-python, 330-testing-py, 340-pydantic                                                                                         |
+| `python`         | base    | 110-python, 330-testing-py, 340-pydantic, 360-security-server, 370-database                                                      |
 | `python-fastapi` | python  | 220-fastapi                                                                                                                      |
 
 ## Decisions
