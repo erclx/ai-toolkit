@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.86.2](https://github.com/erclx/aitk/compare/v0.86.1...v0.86.2) (2026-08-13)
+
+
+### Bug Fixes
+
+* **sandbox:** name both refusal causes and record four arm verdicts ([#958](https://github.com/erclx/aitk/issues/958)) ([bbe8a28](https://github.com/erclx/aitk/commit/bbe8a28c48c245869c68f3d1e673a320089b4a30))
+
 ## [0.86.1](https://github.com/erclx/aitk/compare/v0.86.0...v0.86.1) (2026-08-13)
 
 
