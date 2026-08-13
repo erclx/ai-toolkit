@@ -102,7 +102,7 @@ The runbook carries the two ways a re-test returns a confident wrong answer rath
 
 ### The review trigger
 
-`claude-orchestrate/scripts/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand. It routes a moved or answered pull request to a narrow re-review and reports an opened one and stops, which automates detection and leaves the judgment where it was. `.claude/groundwork/review-automation/06-decision.md` records why the reviewing half stays manual: a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
+`claude-orchestrate/scripts/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand, and the runbook's routing block decides what each report earns. A first pass, a re-review, and the handback dispatch all run from that block, so the operator triggers none of them. What stays fixed is where the pass runs rather than who starts it: `.claude/groundwork/review-automation/06-decision.md` records that it belongs in this warm session, since a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
 
 `orchestrator-poll.md` is a runbook of the kind above and sits with the others, while the script it invokes takes `scripts/` per `.claude/standards/skill.md`, which splits detail from deterministic operations. Placing both on an internal surface was tried first and it strands a target, which installs an orchestrator carrying four runbooks and no review trigger while the skill body names neither the poll nor the script.
 
@@ -113,6 +113,20 @@ The runbook cites the script as `${CLAUDE_SKILL_DIR}/scripts/poll.sh` and the lo
 Shipping the script makes it the only executable in the plugin, so the three shell stages had to reach a tree that had never held one. `check:shell` globs `claude` alongside `scripts`, `tooling`, and `.claude/hooks`, and both shfmt stages behind `format` and `check:format` glob it too. Adding it to one and not the others leaves the file linted and never formatted, which fails nothing until its next edit drifts. `.claude/context/claude-plugin/distribution.md` carries what else that first executable changes.
 
 The script is tracked and its baseline is not. State lives at `.claude/.tmp/pr-poll/baseline.txt` under the main worktree root, resolved through `git worktree list` rather than through the script's own folder, so a poll started from a linked worktree reads what one started from main wrote. Delete a copy left at `.claude/.tmp/pr-poll/poll.sh` on any machine that ran the poll before it was tracked, since that path is gitignored and no change here removes it.
+
+### The handback dispatch
+
+A posted finding reaches the worker as a message from the reviewing session, which is the one step in the loop where that session already knows what a specific live session should do next. `ListAgents` and `SendMessage` carry it and `wiki/claude/claude-sessions.md` holds the transport, with the relay through a person as the alternative that lost. A trial across the seven pull requests reviewed on 2026-08-13 is what the shipped step encodes rather than what the transport permits.
+
+Three findings shape the rule. Severity is the gate, since a minor posts under the same heading as everything else and dispatching on any open finding sends a worker to act on a note. A session resolves at the moment of sending and never from a stored map, because names rotate and one written down earlier in a session failed inside the hour. A message carries plain text, so the step names a skill for the reader to run rather than embedding an invocation that would arrive as text.
+
+The grade is load-bearing once the dispatch keys on it, and the trial graded it poorly in both directions. A mis-called minor dispatches nobody, so it lands as a defect the operator has to notice rather than as a note in a comment, and a should-fix raised over a decision the plan already declined sends a worker to act on nothing.
+
+The return leg is the part this work was not written to build and is the strongest argument for the channel. A worker answering a posted finding by naming the plan question that had already declined it changed the outcome in the moment, where a thread comment waits on whoever reads it next. What a worker volunteers reaches the reviewing session nowhere else.
+
+One branch ships untested. Every dispatch in the trial found a live session, so the fallback that reports the invocation for a person rests on reasoning alone.
+
+The runbook holds the routing and the skill body points at it, after a rewrite in a scheduler dropped a case the shipped block covered. Correcting a running loop is a cancel and a re-create rather than an edit, so the runbook now states both directions of the divergence instead of only the one already written down.
 
 ### Phase label containment
 
