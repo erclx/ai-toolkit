@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.89.0](https://github.com/erclx/aitk/compare/v0.88.0...v0.89.0) (2026-08-13)
+
+
+### Features
+
+* **standards:** add the date form, content bans, and decision-escalate ([#961](https://github.com/erclx/aitk/issues/961)) ([5f26e11](https://github.com/erclx/aitk/commit/5f26e1169c70fee40cef10143cdb6ab0d72824da))
+
+
+### Bug Fixes
+
+* **claude:** link an emitted path when the session runs on desktop ([#963](https://github.com/erclx/aitk/issues/963)) ([dec432d](https://github.com/erclx/aitk/commit/dec432dfe00f3030ce66c3a0f9fe437008cbac01))
+
 ## [0.88.0](https://github.com/erclx/aitk/compare/v0.87.0...v0.88.0) (2026-08-13)
 
 
