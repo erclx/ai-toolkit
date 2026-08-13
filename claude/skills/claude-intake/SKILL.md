@@ -101,7 +101,14 @@ A file the pass only read gets no line, which is what keeps the block short.
 
 **Open questions:** <N> awaiting your call
 
-Next: answer the `You:` slots, then /claude-tasks to promote what is ready
+Next: /claude-intake-answer to answer the `You:` slots from here, or type them
+into the files, then /claude-tasks to promote what is ready
 ```
 
 Use `📂 Resumed` in place of `📂 Opened` on a resume pass.
+
+## Answering what this pass wrote
+
+The slots this pass leaves empty are answered by editing each cluster file, or from chat through `claude-intake-answer`, which walks the unread items in batches and writes each selection back onto the item it answers. Name that route in the closing line so the operator finds it where they look for it.
+
+Do not invoke it from here. It is operator-triggered, and a pass that files a dump and answers it in the same run decides items on silence.
