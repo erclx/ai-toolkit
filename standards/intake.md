@@ -89,6 +89,7 @@ Where an item touches a task already on the board, say so in the index rather th
 ```
 
 - `Problem:`, `Fix:`, `Worth it:`, and the empty `You:` slot ship on every item. The other two are conditional.
+- Number items per cluster file, and give a finding split after the fact a letter suffix on the number it came from, as in `3a` beside `3`. Renumbering the items below it instead moves every label a reader or an answer already cited.
 - `Suggested:` is required whenever `Open:` is present. A bare question invites a bare answer, and `ok` against two defensible options carries no information. Where the answer is the operator's preference rather than a technical call, say so in that form rather than inventing a default.
 - `Overlaps:` never replaces `Worth it:`. The items where a live board task might be the thing that is wrong are exactly the ones whose verdict matters most.
 
@@ -106,9 +107,17 @@ That inverts the plan file's contract, where a blank answer slot means accept th
 
 Never fill a `You:` slot, and never infer a disposition from an empty one. On a resume pass, report unread items by count rather than deciding them.
 
+A slot is filled two ways. The operator types into the cluster file, or answers in chat and a verb lands the selection on the item. Both put the answer on the item, which is what keeps retrieval working, and neither lets a session decide one. An answer given in conversation and never written back leaves the item unread, since the file rather than the conversation is the record.
+
+An item already carrying an answer is refused rather than overwritten, whichever route the second answer arrives by. A filled slot is a decision already made, and revising one is the operator editing their own line.
+
 ## Retrieval
 
 Answers live on items, so one pass over the folder reports every touched slot.
+
+A session with the toolkit CLI on PATH reads the folder through `aitk intake list`, which reports per-folder counts bare and one folder's items with `--json`, and takes `--unread` to keep only the empty slots. It is the surface under test, and it skips the index and every fenced sample, which the greps below cannot do.
+
+The greps stay for a reader without the CLI, and they overcount by whatever the folder displays in a fence.
 
 ```bash
 awk '/^### /{h=FILENAME": "$0} /^- \*\*You:\*\*./{print h; print "   "$0}' *.md
