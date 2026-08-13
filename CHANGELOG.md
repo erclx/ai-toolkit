@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.85.0](https://github.com/erclx/aitk/compare/v0.84.0...v0.85.0) (2026-08-13)
+
+
+### Features
+
+* **governance:** give eight pointer rules their operative directives ([#952](https://github.com/erclx/aitk/issues/952)) ([7089720](https://github.com/erclx/aitk/commit/7089720a836405bf77674751256fddfce08f1816))
+
 ## [0.84.0](https://github.com/erclx/aitk/compare/v0.83.0...v0.84.0) (2026-08-13)
 
 
