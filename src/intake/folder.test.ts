@@ -187,7 +187,7 @@ describe('answerItems', () => {
 
     await answerItems(ROOT, 'a-dump', '01-domain.md', [
       { label: '1', answer: 'ok' },
-      { label: '3', answer: 'ship behind v51' },
+      { label: '3', answer: 'not worth it' },
     ])
 
     const items = readItems(
@@ -196,7 +196,7 @@ describe('answerItems', () => {
     expect(items.map((entry) => entry.answer)).toEqual([
       'ok',
       undefined,
-      'ship behind v51',
+      'not worth it',
     ])
   })
 
@@ -257,6 +257,52 @@ describe('answerItems', () => {
     const outcome = await answerItems(ROOT, 'a-dump', '01-domain.md', [
       { label: '1', answer: 'ok' },
       { label: '2', answer: 'ok' },
+    ])
+
+    expect(outcome.ok).toBe(false)
+    expect(await readFile(join(folder, '01-domain.md'), 'utf8')).toBe(before)
+  })
+
+  it('should refuse an answer carrying a line break and leave the slot unread', async () => {
+    const folder = await seedFolder('a-dump', {
+      '01-domain.md': cluster(item({ label: '1' })),
+    })
+    const before = await readFile(join(folder, '01-domain.md'), 'utf8')
+
+    const outcome = await answerItems(ROOT, 'a-dump', '01-domain.md', [
+      { label: '1', answer: 'first line\nsecond line' },
+    ])
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('bad-input')
+    expect(outcome.detail).toEqual(['1'])
+    expect(await readFile(join(folder, '01-domain.md'), 'utf8')).toBe(before)
+  })
+
+  it('should refuse an answer carrying a carriage return', async () => {
+    await seedFolder('a-dump', {
+      '01-domain.md': cluster(item({ label: '1' })),
+    })
+
+    const outcome = await answerItems(ROOT, 'a-dump', '01-domain.md', [
+      { label: '1', answer: 'first\rsecond' },
+    ])
+
+    expect(outcome.ok).toBe(false)
+    if (outcome.ok) return
+    expect(outcome.reason).toBe('bad-input')
+  })
+
+  it('should refuse the whole batch when one answer carries a line break', async () => {
+    const folder = await seedFolder('a-dump', {
+      '01-domain.md': cluster(item({ label: '1' }), item({ label: '2' })),
+    })
+    const before = await readFile(join(folder, '01-domain.md'), 'utf8')
+
+    const outcome = await answerItems(ROOT, 'a-dump', '01-domain.md', [
+      { label: '1', answer: 'ok' },
+      { label: '2', answer: 'first\nsecond' },
     ])
 
     expect(outcome.ok).toBe(false)

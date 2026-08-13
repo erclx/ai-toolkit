@@ -139,6 +139,12 @@ export function readItems(text: string): IntakeItem[] {
  * ampersand in the replacement to the whole match and exits zero on a
  * non-match, so an answer carrying one would rewrite the line it anchored to
  * and a missed slot would report success with the answer lost.
+ *
+ * The answer occupies one line, and the caller owes that guarantee. A line
+ * break splices a bare continuation into the item matching none of the patterns
+ * the reader tests, so the slot reads back as the text before the break while
+ * the item counts as answered, which puts correcting it behind the refusal on
+ * an item that already carries one.
  */
 export function writeAnswerLine(
   text: string,

@@ -218,6 +218,18 @@ export async function answerItems(
     )
   }
 
+  const broken = selections.filter((selection) =>
+    /[\r\n]/.test(selection.answer),
+  )
+
+  if (broken.length > 0) {
+    return refuse(
+      'bad-input',
+      `An answer is one line, so item ${broken.map((entry) => entry.label).join(', ')} cannot carry a line break.`,
+      broken.map((entry) => entry.label),
+    )
+  }
+
   let text = await readFile(path, 'utf8')
   const items = readItems(text)
 

@@ -40,7 +40,7 @@ The index is skipped, since it points at items and answers nothing itself. So is
 
 ```bash
 aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok
-aitk intake answer toolkit-overview --cluster 11-intake-skill.md --set 3d=ok --set 9="ship behind v51" --json
+aitk intake answer toolkit-overview --cluster 11-intake-skill.md --set 3d=ok --set 9="not worth it" --json
 ```
 
 | Option                | Behavior                                              |
@@ -60,9 +60,11 @@ An item already carrying an answer refuses rather than being overwritten, and on
 
 Exit codes: `0` every named item now carries its answer, `1` refused. The `reason` field carries `no-intake`, `no-folder`, `no-cluster`, `no-item`, `answered`, or `bad-input`.
 
-`bad-input` covers a malformed command line: no cluster, no selection, a selection that parses to no label and answer, an empty answer, or two answers for one item. It is separate from the reasons describing the folder, so a caller that mistyped a flag is not sent to repair a file that is fine.
+`bad-input` covers a malformed command line: no cluster, no selection, a selection that parses to no label and answer, an empty answer, an answer carrying a line break, or two answers for one item. It is separate from the reasons describing the folder, so a caller that mistyped a flag is not sent to repair a file that is fine.
 
 An empty answer refuses rather than writing an empty slot. The slot means unread while it is empty, so writing one back would report an item as answered that nobody decided.
+
+An answer occupies one line, and one carrying a line break refuses before anything is read. Writing it splices a bare continuation into the item that matches none of the patterns the reader tests, so the slot reads back as the text before the break while the item counts as answered, and the refusal on an already-answered item then leaves hand-editing the file as the only correction. The whole batch refuses, so a good selection beside a broken one never lands half applied.
 
 The folder is shared scratch at the main worktree root, so `--root` defaults to the first entry of `git worktree list` rather than the working directory. The write is an edit inside a file that already exists, which `Edit` and `Write` refuse from a linked worktree and a shell stream editor may not do, so the verb resolves the root in-process and rewrites whole lines.
 

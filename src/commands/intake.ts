@@ -119,7 +119,7 @@ export function register(program: Command): void {
         '',
         'Examples:',
         '  aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok',
-        '  aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok --set 4="ship behind v51" --json',
+        '  aitk intake answer toolkit-overview --cluster 05-coverage.md --set 3=ok --set 4="not worth it" --json',
         '',
       ].join('\n'),
     )
