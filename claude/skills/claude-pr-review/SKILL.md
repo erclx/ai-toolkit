@@ -95,6 +95,20 @@ Write the comment to `.claude/.tmp/pr-review/body-<number>-<short-sha>.md`. The 
 
 Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a name the folder already holds.
 
+When `<prior-oid>` from Step 2 equals `headRefOid`, the head repeats and the folder already holds `body-<number>-<short-sha>.md`. Add a third segment taking the id of the `## Review response` comment this pass answers, giving `body-<number>-<short-sha>-r<comment-id>.md`. That satisfies both prohibitions above rather than carving an exception into either.
+
+```bash
+gh pr view <number> --json reviews,comments --jq '([.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .submittedAt) as $prior | [.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response") | select(.createdAt > $prior)] | last | .url // empty | split("-") | last'
+```
+
+Scope the responses to those newer than the prior pass, never to every response the thread carries. A pass answering the newest response and a pass answering an older one derive the same third segment, so an unscoped read hands a re-run after a close-out the name its own prior pass already wrote. That is the collision this case exists to prevent, reached without a rebase or an error.
+
+Read the number off `.url`. The `id` field carries a GraphQL node id, which the thread never displays. Keep the `// empty` guard, since `split` aborts jq on the null an empty selection returns, and an aborted command reaches the session as an error rather than as the empty result the stop below reads.
+
+An empty result means no response arrived since the prior pass, so this pass would restate a body the folder already holds. Stop: `❌ No response since the prior pass on <short-sha>. Nothing new to review.`
+
+The response is also the whole read on a repeated head. Step 2 resolves an empty range, because a commit is its own ancestor and `<prior-oid>..<headRefOid>` spans nothing, so the delta cannot answer whether a prior finding landed. Read that comment for what the worker changed or accepted, and treat an accepted finding as closed rather than restating it.
+
 The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
 
 ```markdown

@@ -41,7 +41,7 @@ One feature travels this path end to end.
 3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 5. Worker addresses the findings with `claude-address-review`, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up.
-6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, and posts under `## Review closed` when it finds nothing open or under `## Review` when it does, so a reader learns the state from the heading. Repeat from step 5 until the review closes.
+6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review closed` when it finds nothing open or under `## Review` when it does, so a reader learns the state from the heading. Repeat from step 5 until the review closes.
 7. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
 
 There is no loop construct here. Each worker is a single build that halts at the
@@ -67,6 +67,13 @@ Review travels on the PR, not through chat. `claude-pr-review` posts findings to
 the PR. `claude-address-review` reads them back, fixes each, replies or resolves
 the threads, and pushes a follow-up. `claude-pr-review` then runs again, reading
 only what the follow-up added.
+
+A finding answered without a commit leaves the head where the first pass read it,
+which a gitignored record and a finding accepted as recorded both produce. The
+close-out is still owed there, since the newest heading is what tells an operator
+whether the branch is blocked, so the pass reads the worker's response rather than
+a delta and names its body from that response instead of from a tree that did not
+change.
 
 A branch that stopped merging while the review was open is the worker's problem
 to close. `claude-address-review` rebases onto `origin/main` between the fixes

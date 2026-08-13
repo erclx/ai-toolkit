@@ -94,7 +94,7 @@ EOF
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "first-pass" "close-out"
+  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head"
 
   case "$SELECTED_OPTION" in
   "first-pass")
@@ -152,6 +152,80 @@ EOF
     log_info "         posts under ## Review closed, since the delta raises no findings of its own"
     log_info "         names the commit and the count read in the summary line"
     log_info "         writes a new body file rather than overwriting the first pass, does NOT merge"
+    ;;
+
+  "unchanged-head")
+    log_step "Configuring pr-review unchanged-head environment ($ANCHOR_REPO)"
+    seed_reviewable_pr
+
+    # Same first pass as close-out, so its commit.oid is the head the next pass reads.
+    gh pr review "$PR_URL" --comment --body "## Review
+
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
+
+**\`src/tasks.ts\`**
+
+- **minor**: \`handleCreate\` returns the created task without a status field. Nothing consumes one yet.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the first pass. Post one manually before testing."
+
+    # The worker accepts the minor as recorded, so nothing is committed and the head stays put.
+    gh pr comment "$PR_URL" --body "## Review response
+
+Accepted as recorded. No status field is added, since nothing consumes one and the shape is settled by v0.1.
+
+🤖 Addressed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the response. Post one manually before testing."
+
+    log_step "Scenario ready: a second pass at a head the first pass already covered"
+    log_info "Context: open PR with a posted ## Review, a ## Review response, and no commit since"
+    log_info "Action:  /claude-pr-review"
+    log_info "Expect:  finds the prior review's commit and sees it equal to headRefOid"
+    log_info "         reads the ## Review response rather than a delta, which spans nothing"
+    log_info "         names the body body-<number>-<short-sha>-r<comment-id>.md, id off the comment url"
+    log_info "         posts under ## Review closed, treating the accepted minor as closed"
+    log_info "         does NOT reuse the first pass name, invent a suffix, or merge"
+    ;;
+
+  "answered-head")
+    log_step "Configuring pr-review answered-head environment ($ANCHOR_REPO)"
+    seed_reviewable_pr
+
+    gh pr review "$PR_URL" --comment --body "## Review
+
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
+
+**\`src/tasks.ts\`**
+
+- **minor**: \`handleCreate\` returns the created task without a status field. Nothing consumes one yet.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the first pass. Post one manually before testing."
+
+    gh pr comment "$PR_URL" --body "## Review response
+
+Accepted as recorded. No status field is added, since nothing consumes one and the shape is settled by v0.1.
+
+🤖 Addressed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the response. Post one manually before testing."
+
+    # The close-out the unchanged-head arm produces, so the newest pass post-dates
+    # every response and the thread has nothing left to answer.
+    gh pr review "$PR_URL" --comment --body "## Review closed
+
+✅ Prior findings addressed. Re-reviewed the response, no commits since the prior pass.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the close-out. Post one manually before testing."
+
+    log_step "Scenario ready: a re-run after a close-out already answered the thread"
+    log_info "Context: open PR whose newest pass is ## Review closed, with no response after it"
+    log_info "Action:  /claude-pr-review"
+    log_info "Expect:  sees the prior commit equal to headRefOid and scopes responses to the prior pass"
+    log_info "         derives nothing, since every response pre-dates the close-out"
+    log_info "         stops with 'No response since the prior pass', posting no comment"
+    log_info "         does NOT reuse the close-out body name or re-derive its comment id"
     ;;
 
   *)
