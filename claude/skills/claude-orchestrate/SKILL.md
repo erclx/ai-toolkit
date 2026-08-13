@@ -196,6 +196,8 @@ properly and stop when you cannot.
 Serialize any track that touches a shared wiring seam with another in flight.
 Merge the branch with the smallest shared-file footprint first, and merge a
 branch touching `CLAUDE.md`, a Claude context entry, or a regenerated `index.md`
-last. Have every sibling rebase on the new `main` before the next merge. Assign
-a distinct port per track when two workers run a server, since each session
-spawns its own process.
+last. Have every sibling rebase on the new `main` before the next merge. Two
+workers running a server take a port apiece without being told to, since a
+stack derives it from the worktree it runs in through `scripts/worktree-port.sh`.
+Read that value rather than assigning one, and set `WORKTREE_PORT_OFFSET` by
+hand only when two worktrees derive the same offset.
