@@ -114,6 +114,23 @@ bullet per finding, each opening with the bolded finding identifier.
 Close the body with `🤖 Addressed by Claude Code` on its own line so the reply
 reads as an independent machine pass, not a human sign-off.
 
+A finding this run declined carries the fact that settled it, inside its own
+bullet rather than in a section of its own. Name the plan question that already
+answered it, the constraint the diff does not show, or the measurement the
+reviewer did not have. Answering the dispatch in the channel and leaving that
+fact there loses it when both sessions end, and the reviewer is left with a
+finding that stopped being mentioned. The rule fires on a bullet the body already
+writes, so nothing depends on judging mid-reply whether a reply was important.
+
+The rule reaches a finding and nothing else. A correction to what the reviewing
+session believes about the world, such as which session holds which branch or
+what an edit passes through before it lands, changes no finding on this pull
+request and belongs in that session's own record rather than on a thread that
+closes. Keep it off the comment, and answer it wherever the dispatch reached this
+session when one did. Nothing tests the reply for either rule, since the scan
+below reads it for banned characters and phase labels alone, so both halves hold
+while a run applies them.
+
 When step 5 rebased the branch, say so in the summary sentence and name which
 files were resolved by hand and which the regen rebuilt. The next review is a
 full pass rather than a delta, and the reader is owed the reason.

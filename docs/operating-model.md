@@ -74,6 +74,19 @@ reply that changes an outcome, such as a worker naming the plan question that
 already declined a finding, still belongs back on the PR, since the session
 holding it ends and the thread is what a later reader opens.
 
+Two rules put it there rather than leaving that to whoever remembers. A finding
+the worker declines carries the fact that settled it in the same reply body that
+already maps every finding, and a pass accepting that argument states the
+withdrawal or the regrade with what produced it instead of dropping the finding
+from its next comment. Both fire on a line the body already writes, so neither
+asks a session to judge mid-reply whether its own message mattered.
+
+A reply that corrects the reviewing session rather than a finding stays off the
+thread. Which session holds which branch, or what gate a worker's edits pass
+through, changes no finding on a pull request that closes, so it goes to the task
+owning that surface. Nothing checks either rule, so both hold while a session
+applies them.
+
 A finding answered without a commit leaves the head where the first pass read it,
 which a gitignored record and a finding accepted as recorded both produce. The
 close-out is still owed there, since the newest heading is what tells an operator

@@ -87,6 +87,8 @@ Apply the high-signal filter: flag only what will cause incorrect behavior, brea
 
 A later pass applies the same axes to the delta, and adds one check the first pass cannot make: did each prior finding land, and did the fix regress anything it touched. Findings of its own are normal findings, stated at the same severity and counted the same way. That count is what Step 4 reads to pick the heading, so a pass raising one of its own is not a close-out.
 
+A prior finding can also be settled by argument rather than by a fix. A reply naming the plan question that already declined it, or a constraint this session could not see, withdraws the finding or moves its grade. State that outcome in the body under the finding it changes, naming the fact that produced it, whether the argument arrived on the thread or through the channel that carried the dispatch. Dropping the finding from this body instead leaves a reader unable to tell a withdrawal from an oversight, and the reasoning goes with the session that heard it. A withdrawal removes the finding from the count, so a pass that withdrew every open item is a close-out. Write the withdrawal and its cause into that body rather than taking the short close-out line Step 4 supplies, which reports prior findings addressed and would credit a fix nobody made.
+
 Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor` (visibility only).
 
 ## Step 4: post to the PR
@@ -165,6 +167,8 @@ gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>
 ```
 
 A pass with no findings takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No blocking findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
+
+A pass that closed by withdrawing a finding rather than by reading its fix takes neither line, per the withdrawal rule in Step 3. Both claim a fix landed, and the second names it, so posting either over a withdrawal credits work nobody did on the one comment a reader treats as the verdict. Write the withdrawal and the fact that settled it in place of the canned line, keeping the heading and the footer.
 
 Post that one even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
 

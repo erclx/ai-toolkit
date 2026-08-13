@@ -120,6 +120,8 @@ A session is reachable when it appears in a live listing, which reads what each 
 
 The channel runs both ways and the return leg carries what the pull request cannot. A worker answering a posted finding by naming the plan question that had already declined it changes the outcome in the moment, where a thread comment waits on whoever reads it next. Read what a worker volunteers as part of the review rather than as an aside.
 
+What arrives there does not become a record by being read, so place it by what it changes. An answer that settles a finding goes onto the pull request through the next pass, which withdraws or regrades that finding and names the fact behind it, per `claude-pr-review`. An answer that changes what this session believes about the world instead, which is a mapping correction or a constraint on what a worker can do, settles no finding and reaches no thread, so route it the way Boundaries below routes a change found while orchestrating, which lands it on the task owning the surface it describes. Writing a tracked file to hold either is forbidden here, which leaves the pull request and the board as the two surfaces this session writes.
+
 A plan written here is written against a tree several branches are already changing, so it names the file set of every track in flight as a constraint, one set per track, read from the Touches column of that track's row. State for each set which of the two acts it forbids, per Constraints in `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. A bare path list leaves the worker guessing, which is how a plan ends up forbidding the repair of a citation the change broke.
 
 ## Boundaries

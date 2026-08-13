@@ -11,6 +11,8 @@ Without this skill, review findings are worked in whatever order the author read
 
 A branch also goes stale from `main` moving rather than from anything the branch did. Nothing in the return leg rebases it, so the worker closes every finding, reports the pull request answered, and the branch still cannot merge. Half the resolution is mechanical and wrong to do by hand, since a generated file merged manually produces a diff the next regen discards.
 
+A declined finding fails on a third axis, which is where its reason ends up. A worker answering a dispatch by naming the plan question that already settled the finding, or the constraint the diff never showed, settles it in whichever session heard the answer. Both sessions end, so a reader opening the thread later finds a finding that stopped being mentioned and no record of what stopped it, which is the durability the posted review already has by design.
+
 ## Must
 
 - Treat a failing check as a finding alongside the review comments, so the follow-up closes both
@@ -22,6 +24,7 @@ A branch also goes stale from `main` moving rather than from anything the branch
 - Rebuild a generated file through the project check rather than resolving its conflict by hand
 - Push before replying, so the comment never runs ahead of the code it describes
 - Map every finding to what changed, or to a one-line reason when it is a question or a conscious accept
+- Carry the fact behind a declined finding into the posted reply rather than into the message that answered the dispatch, since both sessions end and the thread is what the next reader opens
 - Post the terminal comment only when the findings are addressed and every check passes
 - Say what the run actually did on a rebase-only pass, since a reply mapping findings and a terminal comment claiming they were addressed are both false on a pull request carrying none
 - Scan the reply for banned characters and internal phase labels before posting, since the comment leaves for the remote unchecked
@@ -33,6 +36,8 @@ A branch also goes stale from `main` moving rather than from anything the branch
 - Post the closing comment while a check is failing
 - Reimplement the follow-up push or the doc refresh. Both have owners, and a second copy here drifts from them.
 - Edit silently. A finding answered without a reply leaves the reviewer re-deriving the change from the diff.
+- Answer a finding in the channel alone. A reply that changes what the review concluded is the one the thread has to carry.
+- Post a correction to what the reviewing session believes about the world. That class changes no finding here and belongs in the session record.
 - Take one side of a conflict wholesale. Both sides are valid content, so `--ours` or `--theirs` drops one silently and passes every check.
 - Merge `main` into the branch. The repository squash-merges, so a merge commit reads as noise on the pull request.
 - Guess at a hunk the tree does not settle. That case reaches the operator as an ordinary finding on the next pass only if the worker stops.
