@@ -49,6 +49,7 @@ subtitle: One file per task, ordered by phase label
 One file per task, ordered by phase label
 
 - [v00.1: Log a habit with one tap](v00.1-log-entry.md): Mark a habit done for today with a single tap
+- [v00.2: Show the current and longest streak](v00.2-streak-view.md): Read the logged entries and report both streaks per habit
 EOF
 
   cat <<'EOF' >.claude/tasks/priority.md
@@ -57,6 +58,10 @@ EOF
 ## Run now
 
 - `v00.1-log-entry`: plan written, ready to hand off
+
+## Needs a plan
+
+- `v00.2-streak-view`: no plan yet
 EOF
 
   cat <<'EOF' >.claude/tasks/v00.1-log-entry.md
@@ -71,6 +76,20 @@ description: Mark a habit done for today with a single tap
 - [ ] Outcome: a second tap the same day is a no-op
 
 > Test strategy: component, tap toggles done state once per day
+EOF
+
+  cat <<'EOF' >.claude/tasks/v00.2-streak-view.md
+---
+title: 'v00.2: Show the current and longest streak'
+description: Read the logged entries and report both streaks per habit
+---
+
+# v00.2: Show the current and longest streak
+
+- [ ] Outcome: each habit shows the run of consecutive days ending today
+- [ ] Outcome: each habit shows its longest run ever
+
+> Test strategy: unit, streak arithmetic over a seeded entry list
 EOF
 
   cat <<'EOF' >.claude/plans/feature-log-entry.md
@@ -94,10 +113,11 @@ EOF
   git add . && git commit -m "docs(project): roadmap, tasks, and log-entry plan" --no-verify -q
 
   log_step "Scenario ready: orchestrator board readout"
-  log_info "Context: ROADMAP now-row at v0.1, priority.md orders the board, a plan for log-entry, none for streak-view"
+  log_info "Context: ROADMAP now-row at v0.1, priority.md groups the board, a plan for log-entry, none for streak-view"
   log_info "Action:  /claude-orchestrate"
   log_info "Expect:  a Roadmap line quoting the v0.1 now-row and dating it, never asserting Active: v0.1 as fact,"
   log_info "         order read from priority.md rather than inferred from index.md,"
   log_info "         log-entry ready to hand to a worker (has plan), streak-view needs /claude-feature first,"
   log_info "         a single Next action, and In review omitted (no open PRs in this fixture)"
+  log_info "Assert:  declared in fixtures/claude/orchestrate/expect.toml"
 }

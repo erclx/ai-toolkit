@@ -13,7 +13,7 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Thirty-three arms across fourteen scenarios out of 60 is 23 percent of scenarios, well under the 55 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one. Both figures floor rather than round, which the current pair does not show, since fourteen of 60 falls the far side of the boundary and floors and rounds alike. `coveragePercent` states the reason and this entry matches what the command prints, so a percentage here that looks a point low is the measure working rather than an entry left stale.
+Scenarios and arms count separately. Thirty-four arms across fifteen scenarios out of 60 is 25 percent of scenarios, well under the 56 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one. Both figures floor rather than round, which the arms figure shows and the scenario figure does not, since 34 of 60 falls between the two and fifteen of 60 lands on 25 exactly. `coveragePercent` states the reason and this entry matches what the command prints, so a percentage here that looks a point low is the measure working rather than an entry left stale.
 
 Neither number weighs an arm by what it asserts. An arm can carry a single assertion over its own provisioning, such as `.claude/standards/skill.md` being absent, which is a claim about the fixture rather than about the skill under test. The count reads as scenarios reached rather than behavior covered, since nothing in it separates that arm from one asserting eleven things about a run, so a reader taking either percentage as skill coverage is reading past what the declarations say plainly.
 
@@ -99,6 +99,20 @@ Provisioning is what corrected the skill rather than the run. The fixture assert
 
 An arm that staged the state without asserting it would have shipped a step that reports every tracked-while-ignored file as clean, and no reply pin could have seen it, since the skill would have said nothing about a file it believed was fine.
 
+### The orchestrate arm scores a routing decision on four reply pins
+
+`claude/orchestrate.sh` drives a skill that reads a board and reports state, so it is proposal-only and inherits what the superseded arm generalized. Four `reply` pins carry the verdict and two `absent` entries carry the tree, and nothing asserts that the staged board is still staged, since a pin over provisioning counts the same as a real one and is what makes a coverage number lie.
+
+The pins split the skill's one routing decision. `.claude/plans/feature-log-entry.md` proves the run opened the plans folder rather than reporting the task board alone, `claude-autoship` is the route a task with a plan earns, and `claude-feature` is the route a task without one earns. Both routes are spelled without a leading slash, because a session invoking through the plugin writes `/aitk:claude-autoship`, which carries the bare name and not the slashed one. `Next:` asserts the output contract's last slot and not the singleness the scenario expects, which is the fourth of five `manual` entries.
+
+The fixture gained a second task row to make that split reachable. Its board staged one task and that task had a plan, so the needs-a-plan branch could never fire, and the first run failed the `claude-feature` pin against a session that had read the board correctly. A roadmap naming a feature no task carries does not put it on the ready list, so the row is what the expectation was always describing.
+
+A run on 2026-08-13 passed at 6 asserted and 0 failed with 5 unchecked, in 4 turns at 0.21 dollars. Read the unchecked figure beside the asserted one rather than under it. Three of the five `manual` entries are scenario expectations no substring reaches, a fourth qualifies the `Next:` pin that reaches its slot and not the singleness behind it, and the fifth bounds what the two absences can claim, so this arm adds to the `asserted` count while covering one decision. The cap stays at 30 against a run that cost a seventh of it, since a proposal-only skill pays for however it reads the tree and one observation is a floor rather than a bound.
+
+A third run drove the arm against a copy of the skill carrying one rewritten routing line, and it failed that pin and held the other five. A run that scores shows a declaration can pass and leaves the other half unmeasured, so the rewritten line is what shows this one can also fail on the behavior it was written for.
+
+Escapes on two of the three runs named three files between them, every one of them a file another session was editing while the run went on and none of them written by the sandbox. An escape list is read against what the machine was doing at the time before any entry on it counts as a finding, which is why the scenario is driven while the board is quiet.
+
 ### The groundwork arms assert nothing and refuse the bare prompt
 
 `scripts/sandbox/fixtures/claude/groundwork/` does not exist, so every `claude:groundwork` arm returns `state: unchecked` with nothing asserted and a verdict from it confirms only that the session completed.
@@ -119,7 +133,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Twelve of 56 skills are asserted where fourteen of 60 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
+The denominators disagree on purpose. Thirteen of 57 skills are asserted where fifteen of 60 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
 ### Pairing a scenario to a skill
 
