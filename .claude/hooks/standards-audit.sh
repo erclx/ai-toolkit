@@ -41,15 +41,16 @@ root="${CLAUDE_PROJECT_DIR:-.}"
 # `src/markdown/bans.ts` into the push and not into the edit.
 # `scripts/core/verify.sh` names the same reason for the same choice.
 #
-# A tree without the source falls back to the binary, and a machine with
-# neither degrades to no enforcement rather than a blocked edit, which is the
-# behavior this hook already carried for a missing standard.
+# A tree without the source falls back to the binary. A machine with neither
+# reports that nothing ran rather than exiting clean, since an edit nobody
+# checked and an edit carrying no violation are the same silence to a reader.
+unread=""
 if [ -f "$root/src/cli.ts" ] && command -v bun >/dev/null 2>&1; then
   record=$(cd "$root" 2>/dev/null && bun src/cli.ts markdown audit "$file" --json 2>/dev/null) || true
 elif command -v aitk >/dev/null 2>&1; then
   record=$(cd "$root" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
 else
-  exit 0
+  unread="runner"
 fi
 
 # The record decides rather than the exit code, so a binary predating the gate
@@ -58,8 +59,27 @@ fi
 hits=$(printf '%s' "$record" |
   jq -r '.entries[]?.bans[]? | ":\(.line):\(.column + 1)  \(.kind)  \(.term)"' 2>/dev/null)
 
-[ -z "$hits" ] && exit 0
+# The verb already reports which standard it found under neither root, and
+# reading the findings alone turned a narrowed check into a clean pass. An
+# empty ban list means one thing when both standards were read and another
+# when neither was.
+missing=$(printf '%s' "$record" |
+  jq -r '[.bans.missingStandards[]?] | join(", ")' 2>/dev/null)
 
-msg=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite the sentence (do not lazy-swap). A code span is the answer only where the token is genuinely an identifier under discussion.\n%s' "$file" "$hits")
+[ -z "$hits" ] && [ -z "$unread" ] && [ -z "$missing" ] && exit 0
+
+nl=$'\n'
+msg=""
+
+if [ -n "$unread" ]; then
+  msg=$(printf 'Standards-audit: nothing checked in %s. Resolved neither the checkout CLI at %s/src/cli.ts nor an installed `aitk` binary. Install one with `bun add -g @erclx/aitk`.' "$file" "$root")
+elif [ -n "$missing" ]; then
+  msg=$(printf 'Standards-audit: no ban read for %s, so %s was checked against a narrowed set. Looked under .claude/standards/ then standards/. Restore it with `aitk standards install`.' "$missing" "$file")
+fi
+
+if [ -n "$hits" ]; then
+  found=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite the sentence (do not lazy-swap). A code span is the answer only where the token is genuinely an identifier under discussion.\n%s' "$file" "$hits")
+  msg="${msg:+$msg$nl}$found"
+fi
 
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'
