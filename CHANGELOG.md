@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.90.0](https://github.com/erclx/aitk/compare/v0.89.1...v0.90.0) (2026-08-13)
+
+
+### Features
+
+* **intake:** add a chat answer route over intake folders ([#969](https://github.com/erclx/aitk/issues/969)) ([b931554](https://github.com/erclx/aitk/commit/b931554bb7f9fa6725103f3f07b35cad284abfd9))
+
+
+### Bug Fixes
+
+* **skills:** point emitted paths at the output rule, not the terminal ([#970](https://github.com/erclx/aitk/issues/970)) ([906d939](https://github.com/erclx/aitk/commit/906d93922dff8cbd8dbcd670a80b7996dd76651d))
+
 ## [0.89.1](https://github.com/erclx/aitk/compare/v0.89.0...v0.89.1) (2026-08-13)
 
 
