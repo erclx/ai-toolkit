@@ -224,7 +224,7 @@ EOF
     case "$report" in
     *'"attribution"'*) ;;
     *)
-      log_error "The aitk on PATH attributes no unclaimed folder. Install a CLI at 0.70.0 or newer before running this arm."
+      log_error "The aitk on PATH attributes no unclaimed folder. Either the binary predates the reverse walk added at 0.70.0, or the walk ran and did not reach $root/. Check aitk --version against the first, and the staged tree against the second."
       return 1
       ;;
     esac
