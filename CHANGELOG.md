@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.87.0](https://github.com/erclx/aitk/compare/v0.86.2...v0.87.0) (2026-08-13)
+
+
+### Features
+
+* **orchestrate:** dispatch the review handback to the worker session ([#959](https://github.com/erclx/aitk/issues/959)) ([61bed1f](https://github.com/erclx/aitk/commit/61bed1f98cec44e17aa70c0a5c917a484691e680))
+
 ## [0.86.2](https://github.com/erclx/aitk/compare/v0.86.1...v0.86.2) (2026-08-13)
 
 
