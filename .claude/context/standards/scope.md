@@ -15,6 +15,8 @@ A convention governing a surface only the toolkit has lives in `internal/standar
 
 A convention consumed by a specific skill rather than authored by a project lives in `standards/bundled/`. Each carries a `consumers:` field, and the fan-out copies it into every listed skill's `references/`, so the skill works in a project that never ran `aitk standards install`.
 
+Narrow readership is the criterion, not portability, and `.claude/ARCHITECTURE.md` records why the two came apart. The fan-out writes one copy per consumer, so a standard several surfaces read costs a copy each time it moves here, while the plugin symlink already puts the flat root on disk for anyone who installed the plugin. A file the whole corpus cites therefore stays in the flat root however portable the bundled folder looks.
+
 A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md` and `standards/slug.md` are the two, each cited from every body that runs it. Both take a one-word name, which is what every other installable standard carries.
 
 A subfolder was not available for them, since install and the sync adapter walk the flat root only. A combined `procedures.md` was the other candidate and recreates the aggregation at a new address.
