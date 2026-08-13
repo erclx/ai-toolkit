@@ -47,7 +47,9 @@ A handwritten reference that lives only in one skill's `references/` omits `cons
 
 `regen-skill-references.sh` walks `standards/bundled/` alone, which leaves the mistake inert there, but the field also gates the standards audit, so a mistaken one silences the audit on that file.
 
-The audit pairs the field with the location, because the fan-out copies frontmatter verbatim and the field alone matches the six sources under `standards/bundled/` as well as the ten copies. Keying on the field alone left a bundled standard audited against nothing, and keying on the folder alone would drop the seven hand-authored references the skill standard governs.
+Every name in the list is a copy on disk, so the field's cost tracks its length rather than the file it sits on. Six sources currently produce eleven copies, three of the six listing more than one consumer and `branch.md` alone listing four. That ratio is what decided against moving the flat corpus here, since `prose.md` is named by eighteen skill bodies across the two catalogs and would arrive as eighteen copies. `.claude/ARCHITECTURE.md` carries the decision and the route that made it unnecessary.
+
+The audit pairs the field with the location, because the fan-out copies frontmatter verbatim and the field alone matches the six sources under `standards/bundled/` as well as the eleven copies. Keying on the field alone left a bundled standard audited against nothing, and keying on the folder alone would drop the seven hand-authored references the skill standard governs.
 
 ## Standards that moved out of a skill
 
