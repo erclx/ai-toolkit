@@ -84,6 +84,14 @@ Settings resolve hierarchically through four scopes: managed, user, project, and
 
 Skills from `.claude/skills/` resolve from the worktree's directory as well. Skills added to the main branch are not visible inside a sibling worktree until that branch is checked out.
 
+## A worktree starts without dependencies
+
+A linked worktree is a second working directory over one repository, and git shares only what it tracks. Every ecosystem installs into a folder its ignore file names, such as `node_modules/`, `.venv/`, or `vendor/`, so none of it crosses and a tree created seconds ago carries none of it.
+
+Nothing announces this at entry. Every tracked file is present, so the worktree looks complete, and the first command that needs a dependency reports a missing module rather than an empty working directory. Install once per worktree, ahead of the first build, test, or server command.
+
+The cost is disk per tree plus one install wait. A package manager with a content-addressed store links rather than copies, which keeps the repeat installs across sibling worktrees cheap.
+
 ## Shared session scratch
 
 `.claude/plans/`, `.claude/review/`, and `.claude/memory/` are gitignored and live at the main worktree root, not inside a linked worktree. Agents running inside a worktree resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd` when not in a git repo. The canonical rule is the Worktrees bullet in `CLAUDE.md`.
@@ -102,7 +110,7 @@ Tools that honor `.gitignore` by walking parent directories will treat every fil
 
 Do not resume the same session in two terminals at once. Both terminals write to the same session file and messages interleave. Each terminal sees only its own view during the run, but the merged transcript becomes unreadable on the next resume. Use `--fork-session` to branch a session cleanly when two lines of work must share a starting context.
 
-Separate sessions in separate worktrees are safe to run concurrently. There is no documented shared-cache or rate-limit contention between sessions, and no worktree-level locking. If two sessions auto-start the same stdio MCP server, each session spawns its own server process. Coordinate ports explicitly if a server binds one.
+Separate sessions in separate worktrees are safe to run concurrently. There is no documented shared-cache or rate-limit contention between sessions, and no worktree-level locking. If two sessions auto-start the same stdio MCP server, each session spawns its own server process. Coordinate ports explicitly when a server binds one. Deriving the port from the worktree's own directory name is the coordination that needs no shared state, since the name is unique per tree and stable across restarts, and a claim file needs a lock to be correct under two sessions starting at once.
 
 ## Shipping from worktrees
 

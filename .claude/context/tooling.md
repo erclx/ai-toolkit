@@ -36,7 +36,8 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - `python` extends `base` directly rather than going through `web`. It runs on `uv` instead of `bun`, so the web layer's assumptions do not apply.
 - Dictionary seeds merge rather than copy-once. `.cspell/*.txt` accumulates project terms over time, so sync appends new entries and sorts. Every other seed type copies once and is then left alone.
 - Gitignore merging is additive only and existing entries are never touched, so a project can reorder or annotate its own ignores without sync fighting it.
-- Scripts are never overwritten except through `[scripts.override]`, which exists for two cases: scaffolds that ship an anti-pattern by default, and toolkit-owned wrappers whose body must stay in lockstep with the shipped shell scripts.
+- Scripts are never overwritten except through `[scripts.override]`, which exists for three cases: scaffolds that ship an anti-pattern by default, toolkit-owned wrappers whose body must stay in lockstep with the shipped shell scripts, and a key whose value the stack owns where the scaffold writes its own. `dev` and `preview` are the third case, since both scaffolds define them and a plain `[scripts]` entry never replaces a defined key.
+- A served port derives from the working directory rather than from a literal. `scripts/worktree-port.sh` in the web layer prints a base plus an offset hashed from the worktree folder name into a band of 50, each server-starting script exports it, and every config adds it to the stack default. A claim file was the alternative and needs a lock. `strictPort` and Playwright's `reuseExistingServer: false` are what make a collision fail loudly, since a suite reusing whatever answers on the port reports a pass against another branch.
 - References shrank to anti-patterns and opinions once golden configs landed. The config is the source, the reference carries only what a config cannot express.
 - Stacks do not compose horizontally. Single-root polyglot is unsupported, and a monorepo uses the subfolder pattern instead.
 - `tooling/claude/` is storage, not a stack. It holds seeds, user-level config, and a minimal manifest consumed only by the `aitk claude` CLI, so `TOOLING_STACK_EXCLUDE` keeps it out of discovery.
@@ -56,6 +57,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - The syntax invariants and the manifest-to-reference symmetry moved to `internal/rules/claude/595-tooling-reference.md`, which globs `tooling/*/manifest.toml` alongside `tooling/*/reference.md` so an edit to either side loads both. `.claude/internal/standards/tooling-reference.md` carries the symmetry in prose.
 - The `#823` drift is what widened that glob, since the rule previously matched the reference alone and the manifest is the side that moves first
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
+- Bun's script shell expands command substitution and a leading environment assignment, so a script value may carry `VAR=$(bash scripts/x.sh) command`. Verified 2026-08-13 against `bun run`.
 
 ### Sync and layering
 
@@ -148,6 +150,8 @@ aitk tooling sync python ./backend --skip base
 `aitk tooling verify <stack>` is the end-to-end validator. It scaffolds fresh into `.claude/.tmp/verify-<stack>/`, runs the optional `[verify] prepare` hook, invokes `aitk tooling sync <stack> .`, then executes `bun run lint:fix`, `bun run check`, `bun run test:e2e`, and `bun run screenshot`, asserts screenshot artifacts, and reports a pass/fail matrix. The tmp dir auto-removes on success. Use `--keep` to inspect a green run, or rely on the auto-preserve on failure.
 
 Run it after any change to `tooling/<stack>/configs/`, a manifest, or the sync logic in `src/tooling/`.
+
+The validator cannot reach its `test:e2e` and `screenshot` phases while the scaffolded project's dictionary fails. Measured 2026-08-13 on `vite-react`: `check` exits on unknown words in `.claude/tooling/base.md`, `.husky/post-merge`, `.lintstagedrc`, and `README.md`, all seeded rather than authored by the stack under test, so a config change reaches no end-to-end run until those words land in a dictionary.
 
 Unit tests cover the manifest walk, the gitignore transforms, the package.json comparisons, and the scan. Equivalence against the bash this replaced was established by syncing every stack into paired fixtures and diffing contents and file modes, which is the check to repeat when changing injection order or copy semantics.
 
