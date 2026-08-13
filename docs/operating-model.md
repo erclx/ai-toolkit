@@ -40,7 +40,7 @@ One feature travels this path end to end.
 2. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
 3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
-5. Worker addresses the findings with `claude-address-review`, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up.
+5. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a critical or should-fix finding, resolving the target from a session listing taken at that moment and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up.
 6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review closed` when it finds nothing open or under `## Review` when it does, so a reader learns the state from the heading. Repeat from step 5 until the review closes.
 7. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
 
@@ -63,10 +63,16 @@ merge is the final gate. No layer repeats another.
 
 ## The review channel
 
-Review travels on the PR, not through chat. `claude-pr-review` posts findings to
-the PR. `claude-address-review` reads them back, fixes each, replies or resolves
-the threads, and pushes a follow-up. `claude-pr-review` then runs again, reading
-only what the follow-up added.
+Findings travel on the PR. `claude-pr-review` posts them there.
+`claude-address-review` reads them back, fixes each, replies or resolves the
+threads, and pushes a follow-up. `claude-pr-review` then runs again, reading only
+what the follow-up added.
+
+What the session channel carries is the handback instruction and the worker's
+reply to it, which is a notification layer over a record that stays on the PR. A
+reply that changes an outcome, such as a worker naming the plan question that
+already declined a finding, still belongs back on the PR, since the session
+holding it ends and the thread is what a later reader opens.
 
 A finding answered without a commit leaves the head where the first pass read it,
 which a gitignored record and a finding accepted as recorded both produce. The
