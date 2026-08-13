@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.86.1](https://github.com/erclx/aitk/compare/v0.86.0...v0.86.1) (2026-08-13)
+
+
+### Bug Fixes
+
+* **review:** name a review body from the thread when the head repeats ([#955](https://github.com/erclx/aitk/issues/955)) ([bada580](https://github.com/erclx/aitk/commit/bada580f506b52177506a9ca02ecf9b9c896a284))
+
 ## [0.86.0](https://github.com/erclx/aitk/compare/v0.85.0...v0.86.0) (2026-08-13)
 
 
