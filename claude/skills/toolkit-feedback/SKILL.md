@@ -58,7 +58,7 @@ cat <<'EOF' | aitk feedback
 EOF
 ```
 
-Report the printed path back to the user on its own line so the terminal makes it clickable.
+Report the printed path back to the user on its own line, in the form the project's instruction file sets under `## Output`.
 
 For a durable, cross-machine report instead of local scratch, add `--github`. The CLI opens a GitHub issue on the toolkit repo and prints the issue URL. It needs `gh` authenticated, and falls back to local scratch with a warning when `gh` is absent.
 
