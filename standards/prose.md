@@ -1,6 +1,6 @@
 ---
 title: Prose reference
-description: Voice, language, and frontmatter wording for reference markdown
+description: Voice, language, what prose may claim, and frontmatter wording for reference markdown
 ---
 
 # Prose reference
@@ -11,11 +11,11 @@ The yield covers voice alone. The language rules below stay in force on every su
 
 ## Scope
 
-Governs voice, word choice, and frontmatter wording wherever prose is written. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, yields on voice alone where that standard states one, and carries no template because voice is written across every document and has none of its own to shape.
+Governs voice, word choice, what prose may claim about its subject and its sources, and frontmatter wording wherever prose is written. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, yields on voice alone where that standard states one, and carries no template because voice is written across every document and has none of its own to shape.
 
 Does not govern:
 
-- Headings, list and paragraph structure, code spans, punctuation, emphasis, and file references: `markdown.md`
+- Headings, list and paragraph structure, code spans, the form a date takes, punctuation, emphasis, and file references: `markdown.md`
 - What sections a document has, or what belongs in each: the standard for that document type
 - Which frontmatter fields a document carries, which is that standard's own subject. This file governs the wording of a `title` and a `description` and nothing else about them.
 - Phase-label and semver discipline: `versioning.md`
@@ -44,8 +44,14 @@ Does not govern:
 - Do not pad verb phrases or delay the action. Write the shortest form (`in order to` → `to`, `ensure that X is set` → `set X`, `By doing X, you can Y` → state Y directly).
 - Do not address the reader as a participant (`Let's`, `Here's`, `Here are`). State the content directly.
 - Commit to a position. Do not hedge in clusters (`It might be worth considering`) or use false balance (`While X is true, Y is also important`). Recommend, or state the tradeoff.
+- Do not inflate significance. State what a thing does rather than calling it `a major milestone` or `a turning point for the field`.
+- Do not name a person, company, or product to borrow its authority. Name a source only where the claim turns on who made it.
+- Do not attribute a claim to an unnamed authority (`experts say`, `studies show`, `it is widely believed`). Name the source or cut the claim.
+- Do not introduce a fact, name, date, or citation the source does not carry when rewriting existing text. A rewrite changes wording and never claims.
 
-The character bans sit in `markdown.md` under `## Punctuation` rather than here, because an em dash and a semicolon are typography and these are word choice. A surface applying both reads both files.
+The character bans sit in `markdown.md` under `## Punctuation` rather than here, because an em dash and a semicolon are typography and the bans here reach the words a sentence chooses and the claims it makes. A surface applying both reads both files.
+
+Illustrate a pattern ban with a multi-word phrase. An audit reading this section harvests the single lowercase backticked words out of every `- Do not use ` bullet into a literal ban set, so a one-word example bans that word everywhere it appears rather than banning the pattern it stands for. Both the toolkit command and the audit hook a project installs parse that shape, so the constraint holds wherever this file lands.
 
 ## Frontmatter descriptions
 

@@ -1,6 +1,6 @@
 ---
 title: Authoring
-description: The canonical template rule and where it stops, the meta-standard's placement, the lifecycle of a change, the sibling section a new rule falsifies, and how to add a standard
+description: The canonical template rule and where it stops, the meta-standard's placement, the lifecycle of a change, the sibling section a new rule falsifies, the parser that reads two standards as input, and how to add a standard
 ---
 
 # Authoring
@@ -56,6 +56,18 @@ Adding a section to a standard can make a claim in a sibling section of that sam
 The change checkpoint does not prompt for it. Its collision question asks which sibling standard, rule, or template the change contradicts, so a sibling section inside the file being edited falls outside what the four questions reach. Read the destination-scoped sections of that file for words such as `alone` and `only` before adding a section beside them, and rewrite the one that now claims too much rather than leaving the new section to contradict it.
 
 The failure is invisible to every check the repository runs. Both sentences are well-formed prose citing nothing, so the drift stages, the markdown audit, and the spell check all pass over a file that now states two incompatible things.
+
+## The parser that reads two standards as input
+
+`prose.md` and `markdown.md` have a code reader behind them, which no other standard in the corpus does. `src/markdown/bans.ts` anchors on `## Language` and `## Punctuation`, then harvests the single lowercase backticked words and the single non-alphanumeric backticked characters out of every `- Do not use ` bullet under them. The seeded audit hook parses the same shape and ships to every target, so a wording choice in either file changes what a hook bans in every project that resyncs.
+
+An example chosen to illustrate a pattern therefore becomes a literal ban on that example. A content ban shown with a bare noun bans the noun everywhere it appears rather than banning the pattern it stood for, and nothing reports the difference, because both outcomes are a term in a list. A pattern ban is written with a multi-word phrase, which the parser skips by design and `bans.ts` documents as the reason it skips them.
+
+The two headings are the anchor rather than the bullet's position. Renaming one empties its set at the report's legend, where a position-based read would narrow the check and still print a count, so neither heading moves for a wording reason.
+
+No checker ships for the content bans that landed under `## Language`, covering inflated significance, borrowed authority, vague attribution, and fabrication introduced by a rewrite. Each is a pattern rather than a closed set, which is what already leaves negative parallelism enforcing on a reader alone. A literal match over a pattern reports the compliant text and misses the violation, and `bans.test.ts` asserting the parsed sets against the shipped standards is the check that catches a wording edit widening the closed sets by accident.
+
+The constraint is stated twice on purpose. `prose.md` carries a one-line note under `## Language` so an author meets it while editing, and the reason sits here because it is a fact about a code reader rather than about prose. Before that it was stated only as a doc comment on `parseWordBans`, which is a file no author editing a standard opens, so the constraint held without a single author of the corpus knowing it existed until an intake pass went looking.
 
 ## Authoring a new standard
 

@@ -1,0 +1,81 @@
+---
+name: decision-escalate
+description: Collects every open decision whose answer turns on the operator's preference, puts them as one batch of questions each carrying options and a recommended default, then waits. Use when asked to "escalate this", "ask me the open questions", "batch the open decisions", "what do you need from me", or "stop and ask before you pick". Do NOT use for a judgment call the session can settle, which is a pick with the tradeoff stated in one sentence.
+disable-model-invocation: true
+---
+
+# Decision escalate
+
+Put every open decision that belongs to the operator as one batch, each carrying its options and a recommended default, then stop until the batch is answered.
+
+One batch is the whole point. A session that asks one question, acts, then asks the next spends the operator's attention once per decision and hides how many are open.
+
+## Guards
+
+- If nothing is open, stop: `❌ Nothing to escalate. Every open call is one this session can make.`
+- Escalate only a decision whose answer turns on the operator's preference. A judgment call with two or three reasonable options the session can weigh is a pick with the tradeoff stated in one sentence, taken without asking.
+- Escalate only what is open now. A decision already taken this session goes to the artifact that records it rather than back to the operator.
+- Do not act on any decision in the batch before it is answered. Continue the work that depends on none of them.
+- Do not escalate a question the session can answer by reading the repository. Read first, and escalate what the tree does not settle.
+
+## Step 1: collect what is open
+
+Sweep the session for every decision still unmade. The usual sources:
+
+- A plan question whose answer turns on preference rather than measurement
+- A fork the session parked to keep moving, where both branches still ship
+- A default the session took silently that changes what the operator receives
+- A scope boundary the request left ambiguous, where the two readings produce different work
+
+Drop anything the session can settle. What survives is the batch.
+
+## Step 2: shape each question
+
+Each entry carries a short header naming the axis, the question itself, and two to four options. Give every option what it means and what it costs. Rank the recommendation first and say it is the recommendation.
+
+An option with no stated cost is not an option, since the operator picks it without knowing what the other one buys.
+
+Cap the batch at four. A structured question tool takes four, and a batch past that is a session asking to be redesigned rather than answered. When more than four are open, send the four blocking the most work and say in one line how many are held.
+
+## Step 3: put the batch
+
+Put every question in one turn. Never split the batch across turns and never ask the first while the rest stay unstated.
+
+When the session runs on a surface carrying a structured question tool, such as `AskUserQuestion` in Claude Code, send the whole batch through one call with one entry per decision. The tool renders the options and collects the picks together.
+
+Otherwise write the batch as a numbered list in one message, each question followed by its lettered options with the recommendation marked. The behavior is the same on either surface, and only the rendering changes.
+
+Batch shape:
+
+```plaintext
+<N> open decisions. <M> held.
+
+1. <axis>: <question>
+   a. <option> (recommended): <what it means>, <what it costs>
+   b. <option>: <what it means>, <what it costs>
+
+2. <axis>: <question>
+   a. <option> (recommended): <what it means>, <what it costs>
+   b. <option>: <what it means>, <what it costs>
+```
+
+## Step 4: wait
+
+Stop after the batch. Do not answer on the operator's behalf, do not act on the recommendation because it is the recommendation, and do not fill the wait with work the batch would invalidate.
+
+An operator who answers some and not others has answered those. Continue on the answered ones and hold the rest.
+
+## Step 5: record and continue
+
+Restate each pick in one line, then continue the work.
+
+A pick that changes a written artifact goes into that artifact under the rule its own standard sets. An answer to an open plan question rewrites that question's `- Suggested:` line to the pick and names the operator as its source, leaving the `- Answer:` slot blank, per `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. The standard bars a session from filling that slot even when the operator supplied the pick, and the blank slot resolves to the rewritten suggestion, so the record carries the operator's decision either way. A pick that settles nothing written stays in the session.
+
+Output after the answers land:
+
+```plaintext
+✅ <N> decisions answered
+<axis>: <pick>
+<axis>: <pick>
+<M held, restated in one line each>
+```

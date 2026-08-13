@@ -1,6 +1,6 @@
 ---
 title: Markdown reference
-description: Headings, paragraph and list structure, code spans, punctuation, emphasis, and file references
+description: Headings, paragraph and list structure, code spans, the date form, punctuation, emphasis, and file references
 ---
 
 # Markdown reference
@@ -9,11 +9,11 @@ Applies to markdown reference docs, READMEs, and inline documentation in repos. 
 
 ## Scope
 
-Governs the markdown mechanics of every markdown file: headings, paragraph and list structure, code spans and fences, punctuation, emphasis, and file references. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and it carries no template because mechanics are written across every document and have no shape of their own.
+Governs the markdown mechanics of every markdown file: headings, paragraph and list structure, code spans and fences, the form a date takes, punctuation, emphasis, and file references. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and it carries no template because mechanics are written across every document and have no shape of their own.
 
 Does not govern:
 
-- Voice, word choice, and the wording of a `title` or `description`: `prose.md`
+- Voice, word choice, what prose may claim, and the wording of a `title` or `description`: `prose.md`
 - What sections a document has, or what belongs in each: the standard for that document type
 - The text inside a fenced block, which follows the conventions of its own language rather than these
 - The scan that applies the punctuation bans to finished text on its way out: `publish.md`
@@ -48,6 +48,10 @@ Does not govern:
 - Wrap commands, API names, file paths, and code identifiers in backticks
 - Use a language identifier on all fenced code blocks (`markdown`, `typescript`, `plaintext`). Never use a bare ` ``` `
 - In ASCII tree diagrams, use `←` for inline annotations. Never use `#`.
+
+## Dates
+
+- Write a date as `YYYY-MM-DD` wherever one appears, in frontmatter, in prose, and in a filename. Never a month name, a slash-separated form, or a two-digit year.
 
 ## Punctuation
 
