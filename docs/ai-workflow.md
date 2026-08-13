@@ -169,6 +169,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `aitk:claude-intake`         | File a brain dump into an inventory under `.claude/intake/`, one item per finding with a verdict                     |
 | `aitk:claude-groundwork`     | Before a plan is warranted, measure an unknown in a track folder under `.claude/groundwork/`                         |
 | `aitk:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                            |
+| `aitk:decision-escalate`     | Batch every open decision that turns on your preference into one set of questions, each with a recommended default   |
 | `aitk:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                     |
 | `aitk:claude-orchestrate`    | Assert the orchestrator role, refill the ready queue, and dispatch the feature, review, and worktree skills          |
 | `aitk:claude-diagram`        | Draft per-kind mermaid entries under `.claude/diagrams/` from architecture and code, then verify each rendered image |

@@ -71,6 +71,14 @@ Only the second kind is a rule's to hold, and `.claude/standards/rule.md` has a 
 
 Routing through the body moves the failure rather than removing it, and a skill carrying `disable-model-invocation` has to say so. The routing is only in play while the body is loaded, and a long session approaching a compaction is the likeliest place to have dropped it, which is the same moment the runbook exists for. A body that stops at the routing leaves the request landing as ordinary conversation with nothing reporting the miss, so it owes two recoveries: re-invoke the skill, and name the runbook paths so a reader can open one with the skill unloaded.
 
+## Two surfaces on one rule, split by reach
+
+The judgment-call rule in `CLAUDE.md` states two branches and each branch owns a surface. A call the session can weigh takes a pick carrying its tradeoff in one sentence, which `snippets/decision-help.md` shapes. A call whose answer turns on the operator's preference goes to `decision-escalate`, which collects every open decision and puts them as one batch rather than one question per turn.
+
+The two overlap in subject and never in reach, which is what keeps both on the shelf. A snippet is copied into a project by a CLI command and runs in a chat with no repository behind it, while a skill loads live from the plugin root, so a project that added the plugin and installed nothing reaches the skill alone. Reaching it without an install is the property the escalation branch needed, since the branch that had no surface is the one a session hits mid-run inside a repository.
+
+`decision-escalate` carries `disable-model-invocation: true`, joining the five skills that already do, so nothing routes to it on a description match and the operator is what fires it. The body states the batching behavior before it names any question tool, which keeps one body running on a surface that carries none.
+
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.
