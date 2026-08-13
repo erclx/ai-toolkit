@@ -122,7 +122,11 @@ Three findings shape the rule. Severity is the gate, since a minor posts under t
 
 The grade is load-bearing once the dispatch keys on it, and the trial graded it poorly in both directions. A mis-called minor dispatches nobody, so it lands as a defect the operator has to notice rather than as a note in a comment, and a should-fix raised over a decision the plan already declined sends a worker to act on nothing.
 
-The return leg is the part this work was not written to build and is the strongest argument for the channel. A worker answering a posted finding by naming the plan question that had already declined it changed the outcome in the moment, where a thread comment waits on whoever reads it next. What a worker volunteers reaches the reviewing session nowhere else.
+The return leg is the part this work was not written to build and is the strongest argument for the channel. A worker answering a posted finding by naming the plan question that had already declined it changed the outcome in the moment, where a thread comment waits on whoever reads it next.
+
+That reply now reaches the pull request rather than two transcripts that both end. The responding skill carries the fact behind a declined finding into the bullet its body already writes, and the reviewing skill states a withdrawal or a regrade with what produced it instead of dropping the finding from its next body. Keying the rule to a finding the body already enumerates is what makes it fire, since a rule asking a session to judge whether its own reply mattered is the judgment that failed four times in one day.
+
+The other class stays off the thread by decision. A correction to what the reviewing session believes, such as which session holds which branch or that a worker's edits pass an approval gate, settles no finding on a pull request that closes, so it takes the route the skill already states for a change found while orchestrating and lands on the task owning that surface. Both halves are prose and no check tests a posted reply for either, so the split holds while a session applies it.
 
 One branch ships untested. Every dispatch in the trial found a live session, so the fallback that reports the invocation for a person rests on reasoning alone.
 
