@@ -108,9 +108,17 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
 5. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
 6. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate.
-   - Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand
-   - The poll routes a moved or answered pull request straight to a re-review and reports an opened one without acting, which keeps every first pass a batched judgment this session triggers
-7. Close the loop. After the worker runs `claude-address-review`, re-review if needed, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
+   - Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. That runbook holds the routing, and a summary of it here is a second source that drifts from it.
+7. Dispatch the handback. A pass posting a critical or should-fix finding tells the session holding that branch to run `claude-address-review`, rather than waiting for a person to relay it. Re-review when the answer lands, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
+   - Send only above that floor. A minor posts under the same heading and is visibility alone, so a rule keyed on any open finding sends a worker to act on a note
+   - Resolve the target from a fresh session listing at the moment of sending, never from a mapping written down earlier, since names rotate as sessions end and one recorded earlier in a session has failed inside the hour
+   - Open the message with the worktree and branch the sender believes the reader holds, asking to be corrected, whenever that mapping is inferred rather than confirmed
+   - Name the skill for the reader to run rather than writing an invocation, which arrives as text
+   - Read the pull request's own draft flag rather than the state a worker reports, since two reported a draft that read ready inside ninety seconds
+
+A session is reachable when it appears in a live listing, which reads what each session registered on disk rather than probing it, and a message carries plain text and no authority. When no live session holds the branch, report the invocation for the human, naming the branch, the pull request, and the skill to run, then stop. Retrying or waiting leaves the loop believing it is open while nothing acts on it. Every dispatch in the trial behind this step found a live session, so this branch stands on reasoning rather than on observation.
+
+The channel runs both ways and the return leg carries what the pull request cannot. A worker answering a posted finding by naming the plan question that had already declined it changes the outcome in the moment, where a thread comment waits on whoever reads it next. Read what a worker volunteers as part of the review rather than as an aside.
 
 A plan written here is written against a tree several branches are already changing, so it names the file set of every track in flight as a constraint, one set per track, read from the Touches column of that track's row. State for each set which of the two acts it forbids, per Constraints in `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. A bare path list leaves the worker guessing, which is how a plan ends up forbidding the repair of a citation the change broke.
 
@@ -119,7 +127,7 @@ A plan written here is written against a tree several branches are already chang
 - Run one orchestrator at a time. The board is gitignored, so a second session sees none of this one's writes: two task files land minutes apart under different labels for the same work, one session archives a task mid-sweep in the other, and each archives a plan the other had retargeted. An Owner column does not fix this, since neither session can read the other's rows.
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
-- Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR.
+- Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR. The handback dispatch in step 7 reaches a session the human already launched, so it leaves this boundary where it is.
 - Do not edit tracked files from this session, at any size. The boundary offers no proportionality exception and nothing enforces it.
 - Do not hand a worker anything but a plan, since scope lives there. A plan carries exact diffs only when they are already known, otherwise it states the scope and the open questions and lets the worker write the diff.
 

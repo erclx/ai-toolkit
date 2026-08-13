@@ -3,7 +3,7 @@ title: Orchestrator poll runbook
 description: The review trigger, the condition under which it runs, and how to read what it reports
 ---
 
-Run the orchestrator's review trigger. The poll reports pull request movement and the session acts on what it reports. It reads only, and it never starts a first-pass review.
+Run the orchestrator's review trigger. The poll reports pull request movement and the session acts on what it reports. The script reads and never writes, and the routing block below decides which report earns a review, which earns a dispatch, and which earns neither.
 
 `${CLAUDE_SKILL_DIR}/scripts/poll.sh` is the script. It needs `gh` authenticated against the remote and `jq` on the path, and it reads the base branch from `origin/HEAD` rather than assuming a name.
 
@@ -17,6 +17,8 @@ Nothing enforces this. No hook starts the poll and no check stops it, so the con
 
 The poll is session-scoped and dies with the session that started it. Restart it after a compaction, and take the prompt from this file rather than from a transcript, since a running loop holds whatever wording it was started with and a correction here does not reach it.
 
+The reverse direction is the one that goes unnoticed. A scheduled prompt cannot be edited, so every routing fix is a cancel and a re-create, and three made inside one session each reached the running loop and none reached this file. Edit the block here first and re-create the loop from what this file then says. Rewriting the block from memory drops what the shipped one covered, which is how a `SEEN` report once fell through to no rule at all.
+
 ## The prompt
 
 The requirement is a recurring prompt at roughly three minutes carrying the block below. `/loop 3m <the block>` is the mechanism this repository uses and one example among the schedulers a client may hold, so a client without that command reaches the same requirement through whatever recurring prompt it can schedule. Naming one vendor's command as the only path dates a file that ships to every target holding the plugin.
@@ -28,15 +30,16 @@ Resolve `${CLAUDE_SKILL_DIR}/scripts/poll.sh` to an absolute path and paste that
 ```plaintext
 Poll GitHub for pull request movement by running <POLL_SCRIPT>, then act on what it reports.
 
+- A release pull request, whatever state follows it: report it and stop. Its sweep carries no findings, so no pass is owed. Test this before any rule below, since a release pull request is reported OPENED like any other and would otherwise match that rule first.
 - MOVED or RESPONSE on a pull request I have already reviewed: run the aitk:claude-pr-review skill on it immediately, narrow pass. Re-reviews read prior..head and gain nothing from waiting.
-- OPENED, or a pull request with no prior review pass: report it and stop. First passes wait for the operator, because reading several together is what surfaces cross-PR findings.
+- OPENED, or a pull request with no prior review pass: run the aitk:claude-pr-review skill on it. A draft counts, since every pull request here opens as one and skipping drafts skips everything.
 - SEEN: report it and stop. A pass already covers that head, whether it arrived out of band or before the poll first saw the pull request, so no review follows.
 - CONFLICT: report it and stop. The branch owner rebases, not this session.
 - GONE: report it, then sweep the board by invoking the aitk:claude-orchestrate skill and following its queue-refill sweep.
 - A line starting `poll:`: report it verbatim and treat that pull request as unread this run. It is a failed query, not a state.
 - Nothing changed: say exactly "No movement." and nothing else.
 
-Never start a first-pass review on your own.
+After any pass that posts a critical or should-fix finding, tell the session holding that branch to run the aitk:claude-address-review skill, resolving it from a session listing taken at that moment. Name the worktree and branch you believe the reader holds and ask to be corrected. Report the invocation for me instead when no live session holds it. A pass carrying only minor findings dispatches nobody.
 ```
 
 ## Reading the output
