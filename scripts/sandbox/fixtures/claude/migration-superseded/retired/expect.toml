@@ -8,9 +8,15 @@
 # then applied the split from passing.
 
 # The default cap rather than an observation. A pass on 2026-08-13 cost 17 turns,
-# which is one sample and a floor on what a correct run needs rather than a bound
-# on it, so a ceiling equal to the cap still catches a truncated run while never
+# and a ceiling equal to the cap still catches a truncated run while never
 # failing a legitimate one.
+#
+# `toolkit-operator/unmigrated` derives a ceiling from one 6-turn observation and
+# this arm does not, because a route arm stops at the skill it names and its work
+# is fixed by that route. A proposal-only arm reads the whole staged tree and
+# resolves three retired files against three standards, so its turn count varies
+# with how a run orders those reads and 17 is one path through them. A second
+# observation is what separates a stable cost from one sample of a variable one.
 max_turns = 30
 
 # The proposal, pinned on the standard each entry resolved to rather than on the
