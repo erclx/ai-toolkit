@@ -16,16 +16,16 @@ The vite-react stack covers Vite + React + TypeScript projects: web apps and Chr
 
 ## What ships as golden configs
 
-- `vite.config.ts`: `@vitejs/plugin-react`, `@tailwindcss/vite`, `@` path alias to `./src`, `VITE_BASE_URL` env for base path.
+- `vite.config.ts`: `@vitejs/plugin-react`, `@tailwindcss/vite`, `@` path alias to `./src`, `VITE_BASE_URL` env for base path. Dev port `5173` and preview port `4173`, each plus `WORKTREE_PORT_OFFSET`, both with `strictPort`.
 - `vitest.config.ts`: merges from `vite.config.ts`, jsdom, globals, setup file, `passWithNoTests: true`, v8 coverage.
-- `playwright.config.ts`: all browsers, `webServer` on `bun run dev` at port 5173, trace under `use`.
+- `playwright.config.ts`: all browsers, `webServer` on `bun run dev` at port `5173` plus `WORKTREE_PORT_OFFSET`, `reuseExistingServer: false`, trace under `use`.
 - `tsconfig.json`: unified, `noEmit: true`, `skipLibCheck: true`, `@/` paths, `vitest/globals` and `@testing-library/jest-dom` in types.
 
 ## Chrome extension variant
 
 When scaffolding a Chrome extension, override the installed golden configs:
 
-- `vite.config.ts`: use `crx({ manifest })` and `zip()` from `@crxjs/vite-plugin` instead of `react()` alone. Set `server.port: 5173`, `server.strictPort: true`, `server.hmr.clientPort: 5173`, and `chrome-extension://` in CORS origins. Drop `VITE_BASE_URL`.
+- `vite.config.ts`: use `crx({ manifest })` and `zip()` from `@crxjs/vite-plugin` instead of `react()` alone. Keep the derived `server.port` and `server.strictPort: true`, set `server.hmr.clientPort` to the same derived value, and add `chrome-extension://` to CORS origins. Drop `VITE_BASE_URL`.
 - `vitest.config.ts`: use a standalone `defineConfig` (no `mergeConfig`). crxjs plugin breaks Vitest. Declare `@vitejs/plugin-react` and `@tailwindcss/vite` directly. Add `**/release/**` to excludes and `manifest.config.ts`, `**/*.d.ts` to coverage excludes.
 - `playwright.config.ts`: chromium-only (Firefox and WebKit cannot run extensions). Bundled `chromium` channel. No `baseURL` or `webServer`. Tests load the built extension directly from `dist/`.
 - `e2e/fixtures.ts`: extend Playwright base `test` with `context` (persistent context loading the extension from `dist/`) and `extensionId` (extracted from service worker URL). Rename `use` to `apply` to avoid the React hooks ESLint rule. `waitForEvent('serviceworker')` blocks until the MV3 service worker registers.
@@ -45,7 +45,7 @@ When scaffolding a Chrome extension, override the installed golden configs:
 
 Append to the `## Scripts` table:
 
-| `bun run dev` | Start the Vite dev server on port 5173. |
+| `bun run dev` | Start the Vite dev server on port 5173, plus this worktree's port offset. |
 | `bun run build` | Typecheck then build the production bundle. |
 | `bun run preview` | Serve the built bundle locally. |
 | `bun run typecheck` | Run `tsc --noEmit`. |

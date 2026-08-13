@@ -125,8 +125,10 @@ at two or three worker tracks and split them across the stack so they do not
 collide on the same files.
 
 Unit checks run freely in many worktrees at once.
-Only fixed-port work (a dev server, an end-to-end run, a screenshot) and
-singleton resources (one local model server, one GPU) serialize. See
+A dev server, an end-to-end run, and a screenshot run alongside each other on a
+web stack, since every worktree derives its own port. Singleton resources (one
+local model server, one GPU) still serialize, as does any port a stack fixes by
+hand. See
 [Claude Code and git worktrees](../wiki/claude/claude-worktrees.md) for merge order and the
 port-collision detail.
 

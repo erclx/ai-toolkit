@@ -96,4 +96,26 @@ git config core.bare false
 
 The flag is not set on every entry, so read before writing and announce only when the write happened. Tracked upstream as `anthropics/claude-code#58345`, closed as not planned, so the repair stays until the tool changes.
 
+## Step 6: report whether the tree can run
+
+A linked worktree is a second working directory over one repository, and every ecosystem installs its dependencies into a folder git ignores. Nothing copies that folder across, so a fresh worktree arrives without it and the session learns as much from whichever command needs it first, which reports a missing module rather than an empty working directory.
+
+Report the state on one line. Do not install. Entering a worktree to read is as common as entering one to run, and an install is slow, needs a network, and picks an ecosystem on the session's behalf.
+
+Read the worktree root and emit the first line that matches:
+
+- `package.json` present, `node_modules/` missing: `Dependencies are not installed. Run <install> before any build, test, or server command.` Take `<install>` from the lockfile beside the manifest, and use `bun install` when no lockfile names one.
+- A `pyproject.toml` or `requirements.txt` present, `.venv/` missing: `No virtual environment. Create and populate one before running anything.`
+- A manifest present with its folder alongside it: `Dependencies are installed.`
+- No package manifest of either kind: `No package manifest, so there is nothing to install.`
+
+The last line is what keeps the step honest on a stack this skill cannot read. Entry is not stack-aware, and silence is indistinguishable from a check that passed.
+
+Then report the port this worktree derives, on a second line:
+
+- `scripts/worktree-port.sh` present: run `bash scripts/worktree-port.sh` and emit `Port offset <n>. Every served port adds it to the stack default.`
+- Absent: `No port derivation installed, so every served port is the stack default.`
+
+The offset is what `claude-orchestrate` sends a reader here to read rather than assign, and what an operator overrides through `WORKTREE_PORT_OFFSET` when two worktrees derive the same value. Deriving it correctly and printing it nowhere leaves both instructions naming a number no surface emits.
+
 Do not invoke `ExitWorktree` from this skill. Exit is the user's call.

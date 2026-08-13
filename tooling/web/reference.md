@@ -16,6 +16,7 @@ Golden config files live in `tooling/web/configs/` and are copied into the targe
 - `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for ESLint, Tailwind, Playwright, Vitest.
 - `.github/workflows/verify.yml`: `static-checks`, `unit-tests`, `build-verify`, and `e2e-tests` jobs.
 - `scripts/verify.sh`: extends base verify with typecheck, lint, unit tests, and build in the full order.
+- `scripts/worktree-port.sh`: prints a base port plus this working directory's offset. Called with no argument it prints the offset alone.
 
 ## What stays in per-stack adapters
 
@@ -31,6 +32,17 @@ Framework glue lives in `tooling/vite-react/configs/` or `tooling/astro/configs/
 - `src/` for app code, `e2e/` for Playwright, `scripts/` for shell, `src/test/setup.ts` for Vitest globals.
 - Path alias `@` maps to `./src` in both tsconfig and the framework's build config.
 - Tsconfig is unified at root with `noEmit: true` in Vite stacks. Astro uses the scaffold default from `@astrojs/check`.
+
+## Ports
+
+Two worktrees of one repository run the same stack, so a fixed port makes the second one attach to the first.
+
+- Derive every served port from `scripts/worktree-port.sh`. Never write a port literal into a script string.
+- Read `WORKTREE_PORT_OFFSET` in a config and add it to the stack's default port. Unset yields the default, so a plain clone keeps the port it has always served on.
+- Draw the offset from a band of 50, hashed from the worktree folder name. Two worktrees can hash to one offset, so set `WORKTREE_PORT_OFFSET` by hand to break a tie.
+- Force-replace `dev` and `preview` through `[scripts.override]`. Both stacks' scaffolds define those keys, and a plain `[scripts]` entry never replaces a key the scaffold already wrote.
+- Set `strictPort` on every dev and preview server. A server that walks to the next free port serves where nothing is looking for it.
+- Set Playwright `reuseExistingServer: false`. Reuse attaches to whatever answers on the port, which reports a pass against another branch's code and prints nothing to say so.
 
 ## Anti-patterns
 

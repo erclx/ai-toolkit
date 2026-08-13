@@ -17,9 +17,9 @@ The astro stack covers Astro + TypeScript projects: content sites, marketing sit
 
 ## What ships as golden configs
 
-- `astro.config.mjs`: `@astrojs/react` integration, `@tailwindcss/vite` in `vite.plugins`, `@/` path alias via `vite.resolve.alias`, `ASTRO_SITE` env for the `site` field.
+- `astro.config.mjs`: `@astrojs/react` integration, `@tailwindcss/vite` in `vite.plugins`, `@/` path alias via `vite.resolve.alias`, `ASTRO_SITE` env for the `site` field. Port `4321` plus `WORKTREE_PORT_OFFSET` at `server.port`, with `strictPort` under `vite.server` and `vite.preview`. Astro merges the user's `vite` block into the config backing both its dev and its static preview server, and feeds `server.port` through as the preview port, so the port sits at the top level while the bind guarantee sits under `vite`.
 - `vitest.config.ts`: uses `getViteConfig` from `astro/config` (not `mergeConfig`). jsdom, globals, setup file, `passWithNoTests: true`, v8 coverage, `**/*.astro` in coverage excludes.
-- `playwright.config.ts`: all browsers, `webServer` runs `bun run build && bun run preview` on port 4321. Astro's dev/prod gap is wide (MDX, island hydration, asset optimization), so E2E always tests the built `dist/`.
+- `playwright.config.ts`: all browsers, `webServer` runs `bun run build && bun run preview` on port `4321` plus `WORKTREE_PORT_OFFSET`, `reuseExistingServer: false`. Astro's dev/prod gap is wide (MDX, island hydration, asset optimization), so E2E always tests the built `dist/`.
 - `tsconfig.json`: extends `astro/tsconfigs/strict`, adds `skipLibCheck`, `vitest/globals` and `@testing-library/jest-dom` in types, `@/` paths.
 - `eslint.config.js`: overrides the web layer. Adds `eslint-plugin-astro` (`.astro` parser via `astro-eslint-parser`). React-hooks scoped to `.jsx`/`.tsx` only (`.astro` is not React). `src/pages/**` exempt from filename and folder naming conventions because Astro's file-based routing ties names to URL segments.
 
@@ -49,7 +49,7 @@ Add `prettier-plugin-astro` first in plugins, then `prettier-plugin-tailwindcss`
 
 Append to the `## Scripts` table:
 
-| `bun run dev` | Start the Astro dev server on port 4321. |
+| `bun run dev` | Start the Astro dev server on port 4321, plus this worktree's port offset. |
 | `bun run build` | Run `astro check` then build the static output. |
 | `bun run preview` | Serve the built site locally. |
 | `bun run astro` | Expose the Astro CLI. |
