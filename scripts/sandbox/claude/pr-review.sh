@@ -94,7 +94,7 @@ EOF
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "first-pass" "close-out"
+  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head"
 
   case "$SELECTED_OPTION" in
   "first-pass")
@@ -152,6 +152,40 @@ EOF
     log_info "         posts under ## Review closed, since the delta raises no findings of its own"
     log_info "         names the commit and the count read in the summary line"
     log_info "         writes a new body file rather than overwriting the first pass, does NOT merge"
+    ;;
+
+  "unchanged-head")
+    log_step "Configuring pr-review unchanged-head environment ($ANCHOR_REPO)"
+    seed_reviewable_pr
+
+    # Same first pass as close-out, so its commit.oid is the head the next pass reads.
+    gh pr review "$PR_URL" --comment --body "## Review
+
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
+
+**\`src/tasks.ts\`**
+
+- **minor**: \`handleCreate\` returns the created task without a status field. Nothing consumes one yet.
+
+🤖 Reviewed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the first pass. Post one manually before testing."
+
+    # The worker accepts the minor as recorded, so nothing is committed and the head stays put.
+    gh pr comment "$PR_URL" --body "## Review response
+
+Accepted as recorded. No status field is added, since nothing consumes one and the shape is settled by v0.1.
+
+🤖 Addressed by Claude Code" 2>/dev/null ||
+      log_info "Could not seed the response. Post one manually before testing."
+
+    log_step "Scenario ready: a second pass at a head the first pass already covered"
+    log_info "Context: open PR with a posted ## Review, a ## Review response, and no commit since"
+    log_info "Action:  /claude-pr-review"
+    log_info "Expect:  finds the prior review's commit and sees it equal to headRefOid"
+    log_info "         reads the ## Review response rather than a delta, which spans nothing"
+    log_info "         names the body body-<number>-<short-sha>-r<comment-id>.md, id off the comment url"
+    log_info "         posts under ## Review closed, treating the accepted minor as closed"
+    log_info "         does NOT reuse the first pass name, invent a suffix, or merge"
     ;;
 
   *)
