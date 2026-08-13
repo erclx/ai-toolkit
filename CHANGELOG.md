@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.89.1](https://github.com/erclx/aitk/compare/v0.89.0...v0.89.1) (2026-08-13)
+
+
+### Bug Fixes
+
+* **worktree:** derive a served port and report dependency state ([#967](https://github.com/erclx/aitk/issues/967)) ([cd8d02f](https://github.com/erclx/aitk/commit/cd8d02f21bd9cd112038ef5ce03bb75fd34144c1))
+
 ## [0.89.0](https://github.com/erclx/aitk/compare/v0.88.0...v0.89.0) (2026-08-13)
 
 
