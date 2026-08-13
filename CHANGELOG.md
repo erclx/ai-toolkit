@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.86.0](https://github.com/erclx/aitk/compare/v0.85.0...v0.86.0) (2026-08-13)
+
+
+### Features
+
+* **standards:** read the package corpus when a project installed none ([#953](https://github.com/erclx/aitk/issues/953)) ([cc379db](https://github.com/erclx/aitk/commit/cc379dbf120dfd93cb016622ed8b050959df312c))
+
 ## [0.85.0](https://github.com/erclx/aitk/compare/v0.84.0...v0.85.0) (2026-08-13)
 
 
