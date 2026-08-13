@@ -97,7 +97,7 @@ Do not close while an open question quietly fails an outcome. Resolve it, or rec
 
 ## Output
 
-Emit the full relative path from the project root for every file written or updated. Bare filenames are not clickable.
+Emit the full relative path from the project root for every file written or updated. A bare filename names a file the reader cannot open.
 
 Open and resume:
 
