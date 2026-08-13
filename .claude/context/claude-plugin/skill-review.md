@@ -39,6 +39,16 @@ That rewrite landed as a second pass the skill had never described. `claude-pr-r
 
 Callers invented five spellings for the second file across roughly twenty-five scratch files, and the sessions that had already written the defect down overwrote their first-pass body anyway. A name the caller has to choose is a name the caller gets wrong, so the fix is that the second segment is derived.
 
+### When the head repeats
+
+Deriving from the head leaves a later pass with no legal name whenever the head stops moving, which is an ordinary state rather than an error. A fix landing in gitignored records produces no commit, since the return leg delegates its push to `git-followup` and that skill stops on an unchanged tree, and a finding the worker accepts as recorded produces no change at all. The close-out is still owed on both routes, because the newest heading is what an operator reads to decide whether the branch is blocked.
+
+So a repeated head takes a third segment off the `## Review response` comment the pass answers. The thread is what moved, the id is a real object rather than a suffix someone picked, and the head still leads the name, so the second body sorts beside the first. Both prohibitions survive intact instead of gaining an exception. A pass index was the other candidate and it loses because nothing in the thread carries it, so a session would count prior comments to pick the next one, which is the hand-chosen suffix the rule already forbids.
+
+The number sits only in the comment `url`. `gh pr view --json comments` returns a GraphQL node id under `id`, which names the same comment in a form the thread does not show. Extracting it needs a null guard, since the jq that splits the url aborts on a thread carrying no response and an aborted command reads as an error rather than as the empty result the stop is written against.
+
+An empty derivation is a head repeating with no response behind it, so the pass has nothing to add and stops rather than writing a second body over one commit. Where a response does sit there, it is also the entire read: the equality that triggers the naming case makes Step 2's range empty, so the comment rather than the delta is what says whether a prior finding landed.
+
 Deriving it also decides what a close-out reads. `gh pr view --json reviews` returns `commit.oid` per review, so the last comment the skill posted names the commit the prior pass covered, and the close-out reads that range to the head rather than the whole change. The same field settles the rebase case without a second mechanism: after a force-push the prior commit no longer reaches the head, `git merge-base --is-ancestor` exits non-zero, and the skill pays for a full pass and states that in the body. Scoping by the prior review's timestamp instead would have needed its own rebase test, since a commit's author date can predate the push that put it on the branch.
 
 ### The heading contract
