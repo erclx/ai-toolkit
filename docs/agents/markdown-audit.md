@@ -27,7 +27,13 @@ A bare run measures every markdown file git lists, tracked plus untracked-and-no
 
 ## Where the rules come from
 
-Both ban sets and all five checkpoints are read out of the standards per run, resolved under `.claude/standards/` first and the authoring root second, so a target project measures against the copy it actually has. Holding the lists in code was the alternative and it puts each ban in two places, where an author adding one gets no enforcement until someone edits TypeScript.
+Both ban sets and all five checkpoints are read out of the standards per run, resolved under `.claude/standards/` first, the authoring root second, and the corpus inside the `aitk` package last, so a target project measures against the copy it actually has and a project that installed none is measured all the same. Holding the lists in code was the alternative and it puts each ban in two places, where an author adding one gets no enforcement until someone edits TypeScript.
+
+A project copy wins wherever one exists. An installed standard is a seed a project edits, so a package copy overriding it would discard that edit with nothing said, and the fallback answers absence rather than staleness. The package copy is reachable because `package.json` ships `standards/` beside the code doing the reading, which is what leaves the install optional for every machine consumer.
+
+The report names the copy it read on every run, spelling a package copy under `<aitk>/` rather than as a path anything would join to a project root. A published package can lag the toolkit a session reads from, the same two-speed skew `.claude/ARCHITECTURE.md` records between the plugin cache and the CLI, and naming the source is what keeps that diagnosable instead of invisible.
+
+`aitk standards <name>` resolves the same three roots in the same order and prints the standard, so the human catalog reads without a project copy on disk too.
 
 The trade is a reader of prose that a reformat can break. `src/markdown/bans.test.ts` answers it by asserting the parsed sets against the shipped standards, so a rewrite that narrows a set fails there rather than passing quietly. A checkpoint falls back per number rather than per file, and the depth legend names every checkpoint that fell back on the run that used one.
 
@@ -116,7 +122,9 @@ Four surfaces read the ban sets and two of them go through this verb. `.claude/h
 
 The other two read the standards directly and neither is a consolidation left half done. `claude/skills/claude-standards-audit/SKILL.md` greps the banned tokens agent-side, which is a session reading prose rather than a process it can shell out to, and it ships to every target. The seed copy of the hook keeps its awk, because a scaffolded project may carry no `aitk` and `scripts/core/check-seed-independence.sh` exists to catch seed content depending on the toolkit CLI. Both are the likelier place for the next drift, since nothing compares either against the verb.
 
-The hook prefers a checkout's own `src/cli.ts` over a globally installed binary, so it and the push stage read one build. A published binary lags a branch by whatever has not been released, which would put a ban kind added on the branch into the push and not into the edit. It reads its findings out of the `--json` record rather than off the exit code, so an older binary still reports where the fallback applies. It reads `bans.missingStandards` out of the same record, so a standard the verb found under neither root reaches the author as a check narrowed to what it could read.
+The hook prefers a checkout's own `src/cli.ts` over a globally installed binary, so it and the push stage read one build. A published binary lags a branch by whatever has not been released, which would put a ban kind added on the branch into the push and not into the edit. It reads its findings out of the `--json` record rather than off the exit code, so an older binary still reports where the fallback applies. It reads `bans.missingStandards` out of the same record, so a standard the verb found under none of the three roots reaches the author as a check narrowed to what it could read.
+
+The package fallback leaves that message reachable in one case rather than none. A CLI running out of a package carrying the corpus always resolves a standard, so the narrowed-check path fires only for a checkout whose own source tree lacks the file. The message stays right for that case and the hook keeps reading the field, since a reader cannot tell a narrowed check from a clean one without it.
 
 A machine with neither runner still blocks no edit, and it says so rather than exiting clean. The push stage holds either way. An edit nobody checked and an edit carrying no violation are one silence to a reader, so the enforcement a machine lacks is reported rather than inferred.
 

@@ -7,6 +7,8 @@ description: What the standards domain owns, the trees a standard can live in, t
 
 Owns the markdown docs defining developer workflow conventions. They install into a target under `.claude/standards/` and are read by agents and developers alike. Standards cover workflow conventions, not code style. Code style belongs in governance rules.
 
+The install is what a project takes to own an editable copy rather than what a machine consumer depends on. `src/standards/read.ts` searches `.claude/standards/`, then the project's `standards/`, then the corpus the package ships in its `files` array, so `aitk markdown audit` and `aitk standards <name>` both answer in a project that installed nothing. A project copy wins wherever one exists, since a standard is a seed a project edits and a package copy overriding it would discard that edit with nothing said.
+
 ## Layout
 
 - `standards/` owns the authoring source, one file per installable standard
