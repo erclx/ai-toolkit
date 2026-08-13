@@ -25,6 +25,10 @@ A subfolder was not available for them, since install and the sync adapter walk 
 
 A standard states its rule and never what enforces it here. These files install into projects whose hooks, scratch paths, and skill catalogs are their own, so a rule justified by this repository's audit hook or illustrated with this catalog's output filenames is wrong in a target and nothing reports it. Name the general condition and let the consuming surface name its own case.
 
+That prohibition runs one direction only. A path-scoped rule may carry the operative directives of the standard it points at, since the rule arrives attached to the edit while a pointer reaches a session only if that session opens the file. The standard keeps the full specification and the rule keeps what a session must have on arrival, so a drift is a rule falling behind rather than two files disagreeing. Nothing checks it.
+
+Two standards are exempt permanently. A seeded audit hook parses the word bans out of `prose.md`, so a rule restating that list is two sources for one list with a machine reading one of them, and `markdown.md` carries its character bans on the same terms. Both keep pointer-only rules.
+
 The rule lives in `standards/standard.md` under `## Scoping rules`, routed to every standards edit by `591-standard-authoring`, because a decision recorded here governs nothing an author reads while editing. Audit the whole corpus for a violation of it rather than the files that prompted it, since a pass scoped to one plan's file list leaves the rest reading clean.
 
 Every standard declares its own jurisdiction in a `## Scope` section, above the shape rules. A standard that specifies shape exhaustively and jurisdiction nowhere cannot refuse a rule, so a rule with no obvious owner lands in whichever standard sits nearest and the corpus grows by annexation.
