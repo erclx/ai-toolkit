@@ -40,7 +40,7 @@ function showHelp(): void {
     `${GREY}│${NC}    sync [path]        ${GREY}# Sync all installed domains in a project${NC}`,
     `${GREY}│${NC}    sandbox [cat:cmd]  ${GREY}# Provision and run sandbox scenarios${NC}`,
     `${GREY}│${NC}    gov [command]      ${GREY}# Governance commands (install, sync)${NC}`,
-    `${GREY}│${NC}    standards [cmd]    ${GREY}# Standards commands (install, sync)${NC}`,
+    `${GREY}│${NC}    standards [cmd]    ${GREY}# Standards commands (install, sync, list, <name>)${NC}`,
     `${GREY}│${NC}    snippets [cmd]     ${GREY}# Snippets commands (install, sync)${NC}`,
     `${GREY}│${NC}    tooling [cmd]      ${GREY}# Manage tooling stacks (sync, ref, create)${NC}`,
     `${GREY}│${NC}    claude [cmd]       ${GREY}# Claude workflow (init, sync, setup)${NC}`,

@@ -10,6 +10,7 @@ import {
   standardsInstallDir,
 } from '@/standards/index-refresh'
 import { applyInstall, planInstall } from '@/standards/install'
+import { listStandards, readStandard, resolveStandard } from '@/standards/read'
 import { recordStamp, runDomainSync } from '@/sync/engine'
 import { resolveTarget } from '@/target'
 import {
@@ -35,8 +36,35 @@ interface InstallOptions {
 export function register(program: Command): void {
   const standards = program
     .command('standards')
-    .description('Standards commands (install, sync, list)')
+    .description('Standards commands (install, sync, list, <name>)')
+    .argument('[name]', 'Standard to print, by name with or without .md')
     .helpOption('-h, --help', 'Show this help message')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'A name resolves under .claude/standards/, then standards/, then the',
+        'corpus inside the aitk package, so a standard prints without a project',
+        'copy on disk. The frame names the copy it read.',
+        '',
+        'Examples:',
+        '  aitk standards prose',
+        '  aitk standards markdown.md',
+        '',
+      ].join('\n'),
+    )
+    .action((name: string | undefined, _options: unknown, cmd: Command) => {
+      if (name === undefined) {
+        // Registering an action replaces commander's own no-action fallback,
+        // which writes this help to stderr. Help is UI rather than data, and
+        // the default here is stdout.
+        cmd.outputHelp({ error: true })
+        process.exitCode = 1
+        return
+      }
+
+      process.exitCode = print(name)
+    })
 
   standards
     .command('sync')
@@ -80,6 +108,35 @@ export function register(program: Command): void {
     })
 
   registerPassThroughVerbs(standards, 'standards', ['list'])
+}
+
+/**
+ * Writes the standard to stdout and every frame line to stderr, so a caller
+ * capturing the output with `$(...)` receives the document alone.
+ *
+ * The root is the caller's directory rather than the toolkit's, since a project
+ * copy is what governs wherever one exists and the package copy answers only
+ * its absence.
+ */
+function print(name: string): number {
+  intro('aitk standards')
+
+  const root = process.cwd()
+  const resolved = resolveStandard(root, name)
+
+  if (!resolved) {
+    logWarn(`Unknown standard: ${name}`)
+    logStep('Available standards')
+    for (const each of listStandards(root)) logInfo(each)
+    logError("Run 'aitk standards list' for descriptions.")
+    outro()
+    return 1
+  }
+
+  logStep(resolved.source)
+  process.stdout.write(readStandard(resolved))
+  outro()
+  return 0
 }
 
 async function runInstall(target: string, selection: string): Promise<number> {
