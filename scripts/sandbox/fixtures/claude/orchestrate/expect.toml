@@ -1,0 +1,69 @@
+# What a correct `/claude-orchestrate` run reports against the staged board.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# The skill reads a board and reports state, writing nothing, so the reply
+# carries almost the whole verdict. Tree assertions cannot cover a proposal, which
+# is the generalization already recorded beside the superseded arm, and padding
+# this declaration with negatives over the staged board would print a healthy
+# number while measuring the fixture rather than the skill.
+
+# Every top-level key sits above any table block. A bare key below one belongs to
+# that table in TOML, so an array written at the bottom parses clean and asserts
+# nothing.
+
+# The default cap, which is what `scripts/sandbox/run.sh` runs under. A passing
+# run cost 4 turns, which is a floor on what a correct run costs rather than a
+# bound on it, since a proposal-only skill pays for however it reads the tree and
+# one sample of a varying cost lowers nothing. The routing arms beside this one
+# settled the same way for the same reason.
+max_turns = 30
+
+# The two files a run that overstepped would leave behind. Neither is staged, so
+# both are claims about what the session did rather than about provisioning.
+#
+# `feature-streak-view.md` is the boundary between reporting a route and taking
+# it. The board carries a task under `## Needs a plan` and the roadmap's now-row
+# names the feature behind it, so a run that wrote that plan itself did the
+# planning step it was meant to route. The slug follows the task filename, which
+# is where a plan for it would take its name, and a run choosing another one
+# passes this entry vacuously, which is a miss rather than a false pass.
+#
+# `session.md` is the handoff. The skill writes it on a request to save the
+# session and on nothing else, so a bare invocation that produced one wrote
+# without being asked.
+absent = [
+  ".claude/plans/feature-streak-view.md",
+  ".claude/tasks/session.md",
+]
+
+# Three of the scenario's six expectations reach a load-bearing token. Each pin is
+# a positive, since a negative substring passes on every reply that phrases the
+# thing differently.
+#
+# The plan path proves the run opened `.claude/plans/` rather than reporting the
+# task board alone. `claude-autoship` is the route that path earns, and
+# `claude-feature` is the route the unplanned feature earns, so the pair separates
+# a run that read the roadmap against the plans folder from one that reported the
+# single queued task and stopped.
+#
+# Both routes are spelled without a leading slash. A session invoking through the
+# plugin writes `/aitk:claude-autoship`, which carries the bare name and not the
+# slashed one, so the shorter token survives either spelling.
+#
+# `Next:` is the output contract's last slot. It asserts the slot rather than the
+# singleness the scenario expects, which the manual entry below carries.
+reply = [
+  ".claude/plans/feature-log-entry.md",
+  "claude-autoship",
+  "claude-feature",
+  "Next:",
+]
+
+manual = [
+  "The Roadmap line quotes the now-row and dates it rather than asserting an active version as fact. Semantic: a negative, and any rephrasing that states the version as fact still carries the quoted words.",
+  "The In review section is omitted where the fixture has no open pull request. Semantic: a negative, and an entry asserting what a run must not have written passes on every spelling that phrases it differently.",
+  "Execution order is read from priority.md rather than inferred from index.md. Unwired: the two staged rows sit in filename order in both files, and readiness is recoverable from the plans folder alone, so a run that never opened priority.md reports the same board.",
+  "The Next line proposes a single action. Semantic: a substring finds the slot and cannot count what follows it, so a reply offering three actions under one heading passes.",
+  "The session wrote nothing at all. Unwired: an absence names a path, and the paths a wrong run would invent are unbounded, so the two entries above cover the two a wrong run most plausibly writes and nothing catches the rest.",
+]
