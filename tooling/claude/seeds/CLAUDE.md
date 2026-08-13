@@ -40,6 +40,7 @@
 - Read `CLAUDE_CODE_ENTRYPOINT` once, at the first response that emits a path, and reuse it for the rest of the session. The surface cannot change mid-session, so a second read only confirms the first.
 - When it reads `claude-desktop`, emit each path as a markdown link carrying the path as its text and an absolute `file://` URI as its target, resolving a relative path against the main project root to build that target. The desktop file tree hides dotted folders, so a bare path into one names a file the reader cannot reach.
 - On every other value, including unset, emit the path bare. A terminal emulator makes it clickable through its own path detection, and link markup defeats that.
+- Both forms govern a path emitted in a response. A path written into a markdown file follows `.claude/standards/markdown.md` instead, which backticks a file reference and never repeats it as a link label.
 - Use the path the user's editor can resolve. The editor is rooted at the main project root.
 - In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
 - In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
