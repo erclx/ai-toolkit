@@ -32,7 +32,7 @@ paths:
 ## Conventions
 
 - Use `.test.ts` / `.test.tsx` for unit tests.
-- Use `.spec.ts` / `.spec.tsx` for integration tests.
+- Use `.spec.ts` / `.spec.tsx` for integration tests and for Playwright tests under `e2e/`.
 - Do not make real network calls in unit tests.
 - `describe()` labels use the exact identifier of the subject under test in its natural casing.
 - `it()` descriptions use "should" + sentence case.
