@@ -7,6 +7,8 @@ description: The REQUIREMENT.md sibling, what loads it, and the admission test u
 
 Every skill folder carries `REQUIREMENT.md` beside `SKILL.md`, stating the gaps that skill exists to close so a proposed change has something to be argued against. It is authoring context for whoever maintains the skill. Claude Code loads `SKILL.md` as the entry and never reads the sibling, and `src/sync/check.ts` leaves `claude/skills/` out of the synced sources because skills load live from the plugin directory rather than being copied, so the file reaches no target session and costs no tokens there. `governance/rules/claude/570-skill.md` fires on both filenames and carries the consult-first bullet.
 
+The consult-first bullet reaches one direction. A change to `SKILL.md` tests against the requirement, and no rule states the reverse, so a branch editing a `## Must` line can leave the body carrying a reason its requirement no longer states. The emitted-path sweep found that shape in `youtube-transcripts`, where a plan listed the requirement line and the body line implementing it as two independent sites. A `## Must` line and the body line implementing it move in one change.
+
 The unit is the skill rather than the family. A single file covering the whole `git-*` family or the ship chain would state a boundary no one body could be checked against, and the boundaries worth writing down are the ones between siblings.
 
 Which skills carry the file is a fact two commands report. `aitk claude skills list --json` carries `requirement` per entry across the shipped corpus, and `aitk claude skills audit` measures presence across both corpora and fails on an absence. Read coverage from either rather than from a count written here, which goes stale the moment a skill is added.
