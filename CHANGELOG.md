@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.84.0](https://github.com/erclx/aitk/compare/v0.83.0...v0.84.0) (2026-08-13)
+
+
+### Features
+
+* **governance:** cover persistence, server security, and dependencies ([#950](https://github.com/erclx/aitk/issues/950)) ([15e96d0](https://github.com/erclx/aitk/commit/15e96d0df7c19595d2cc906e87c404da0d08c5ae))
+
 ## [0.83.0](https://github.com/erclx/aitk/compare/v0.82.2...v0.83.0) (2026-08-06)
 
 
