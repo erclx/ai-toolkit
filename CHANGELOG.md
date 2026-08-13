@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.91.0](https://github.com/erclx/aitk/compare/v0.90.0...v0.91.0) (2026-08-13)
+
+
+### Features
+
+* **claude:** put a reply that changes a finding on the pull request ([#972](https://github.com/erclx/aitk/issues/972)) ([a032e89](https://github.com/erclx/aitk/commit/a032e898b138b81a514e0a2e86bf735f1d29be01))
+
 ## [0.90.0](https://github.com/erclx/aitk/compare/v0.89.1...v0.90.0) (2026-08-13)
 
 
