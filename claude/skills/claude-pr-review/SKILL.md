@@ -168,6 +168,8 @@ gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>
 
 A pass with no findings takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No blocking findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
 
+A pass that closed by withdrawing a finding rather than by reading its fix takes neither line, per the withdrawal rule in Step 3. Both claim a fix landed, and the second names it, so posting either over a withdrawal credits work nobody did on the one comment a reader treats as the verdict. Write the withdrawal and the fact that settled it in place of the canned line, keeping the heading and the footer.
+
 Post that one even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
 
 ## Step 5: output
