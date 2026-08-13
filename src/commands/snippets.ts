@@ -1,6 +1,6 @@
 import type { Command } from 'commander'
 import { registerPassThroughVerbs } from '@/commands/pass-through'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { createSnippetsAdapter } from '@/snippets/adapter'
 import { BASE_CATEGORY } from '@/snippets/categories'
 import {

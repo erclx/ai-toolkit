@@ -69,8 +69,10 @@ export function register(program: Command): void {
         'what markdown.md reserves the span for.',
         '',
         'Bans and checkpoints are read from markdown.md and prose.md, resolved',
-        'under .claude/standards/ then standards/. No folder has to resolve and',
-        'no index.md has to exist, so .claude/rules/, governance/, and snippets/',
+        'under .claude/standards/, then standards/, then the corpus inside the',
+        'aitk package, so a project that installed neither is still measured.',
+        'The report names the copy it read. No folder has to resolve and no',
+        'index.md has to exist, so .claude/rules/, governance/, and snippets/',
         'are in reach.',
         '',
         'Examples:',
@@ -206,7 +208,7 @@ function reportBans(reports: readonly FileReport[], bans: BanReport): void {
 
   if (bans.missing.length > 0) {
     logWarn(
-      `Not measured. Found neither copy of: ${bans.missing.join(', ')}. Looked under .claude/standards/ then standards/.`,
+      `Not measured. Found no copy of: ${bans.missing.join(', ')}. Looked under .claude/standards/, then standards/, then the aitk package.`,
     )
     if (bans.sources.length === 0) return
   }

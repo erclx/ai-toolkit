@@ -20,13 +20,13 @@ What the split costs is a citation that crosses it. A skill body naming an insta
 
 ### A standard already travels four routes, so the corpus stays out of the fan-out
 
-`standards/` reaches a project four ways where the tree appears to show one. `aitk standards install` writes the flat root into a target, `claude/standards` is a symlink an install dereferences so every plugin cache holds the whole corpus, `standards/bundled/` fans out into each consuming skill's `references/`, and the published package carries the corpus in its `files` array, which nothing reads from yet.
+`standards/` reaches a project four ways where the tree appears to show one. `aitk standards install` writes the flat root into a target, `claude/standards` is a symlink an install dereferences so every plugin cache holds the whole corpus, `standards/bundled/` fans out into each consuming skill's `references/`, and the published package carries the corpus in its `files` array, which the CLI reads as its own last-resort root.
 
-The second route already delivers the self-containment a proposal would build. Someone who installs the plugin and runs no CLI command has every standard on disk, and 39 of the 56 plugin skills already name it as the fallback behind the installed path.
+The second route already delivers the self-containment a proposal would build. Someone who installs the plugin and runs no CLI command has every standard on disk, and 33 of the 56 plugin skills already name it as the fallback behind the installed path. The fourth route delivers the same thing to a machine reader, since `src/standards/read.ts` searches the package corpus behind both project roots, so a command reading a standard answers in a project that installed none. A project copy wins wherever one exists, because an installed standard is a seed a project edits and a package copy overriding it would discard that edit with nothing said.
 
 Moving the flat corpus into the fan-out was the alternative, and what declines it is a measurement rather than a preference. The fan-out writes one copy per consumer and stands at eleven copies from six sources, so the most-cited standard, named by eighteen skill bodies across the two catalogs, would land a copy in each. That scales the duplication the fan-out exists to prevent, and it breaks every pointer rule and all three machine consumers of the installed tree at once.
 
-A machine-parsed standard is permanently exempt from any design inlining a standard into the rule that cites it, because a rule restating the list a parser reads is two sources for one list. `prose.md` and `markdown.md` are the current members, and stating the rule rather than the pair is what survives a third parser arriving. Measured at `d2c0281c` on 2026-08-13.
+A machine-parsed standard is permanently exempt from any design inlining a standard into the rule that cites it, because a rule restating the list a parser reads is two sources for one list. `prose.md` and `markdown.md` are the current members, and stating the rule rather than the pair is what survives a third parser arriving. Measured at `03779846` on 2026-08-13.
 
 ### The toolkit consumes its own output
 

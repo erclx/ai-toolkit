@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import {
   intro,
   logAdd,

@@ -83,7 +83,7 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 `governance`, `standards`, and `wiki` are skippable:
 
 - `--skip governance`: leave `.claude/rules/` empty. Standards still install, so `.claude/standards/prose.md` lands with nothing pointing at it and no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
-- `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root.
+- `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing for a reader following the path. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root, and so is the CLI, which searches the corpus inside its own package behind both project roots. `aitk markdown audit` and `aitk standards <name>` therefore answer in a project that skipped the install, and what the skip costs is the editable copy rather than the enforcement.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
 That standards fallback carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.

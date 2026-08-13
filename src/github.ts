@@ -1,5 +1,5 @@
 import { execa } from 'execa'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { buildIssueArgs, type CreateIssueOptions } from '@/github-format'
 
 const GH_TIMEOUT_MS = 30_000

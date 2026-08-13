@@ -1,7 +1,6 @@
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import { execa } from 'execa'
-
-export const PROJECT_ROOT = resolve(import.meta.dir, '..')
+import { PROJECT_ROOT } from '@/project-root'
 
 export async function execScript(
   script: string,

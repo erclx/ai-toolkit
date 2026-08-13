@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   banReport,
   loadStandards,
@@ -68,6 +71,39 @@ describe('banReport', () => {
     // that as a clean file claims the prose passed when nothing was looked for.
     expect(report.missing).toEqual(['markdown.md'])
     expect(report.characters).toEqual([])
+  })
+})
+
+describe('loadStandards', () => {
+  /**
+   * A root outside this repository is the only place the fallback is
+   * observable. The authoring root and the package root are one directory when
+   * the CLI runs here, so a run against the repository passes either way.
+   */
+  let ROOT: string
+
+  beforeEach(() => {
+    ROOT = mkdtempSync(join(tmpdir(), 'aitk-bans-'))
+  })
+
+  afterEach(() => {
+    rmSync(ROOT, { recursive: true, force: true })
+  })
+
+  it('should measure a project that installed no standards against the package', async () => {
+    const report = banReport(await loadStandards(ROOT))
+
+    expect(report.missing).toEqual([])
+    expect(report.words).toEqual(WORDS)
+  })
+
+  it('should name the package as the copy it read', async () => {
+    const report = banReport(await loadStandards(ROOT))
+
+    expect(report.sources).toEqual([
+      join('<aitk>', 'standards', 'markdown.md'),
+      join('<aitk>', 'standards', 'prose.md'),
+    ])
   })
 })
 

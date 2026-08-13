@@ -47,7 +47,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | ----------- | --------------------------------------------------------------------------- |
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`      |
 | `snippets`  | `list`, `install`, `sync`, `create`                                         |
-| `standards` | `list`, `install`, `sync`                                                   |
+| `standards` | `list`, `install`, `sync`, `<name>`                                         |
 | `gov`       | `list`, `install`, `sync`, `build`                                          |
 | `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `setup [dest]` |
 | `wiki`      | `init`                                                                      |

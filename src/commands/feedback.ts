@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Command } from 'commander'
 import { deriveSlug, deriveTitle } from '@/commands/feedback-format'
-import { PROJECT_ROOT } from '@/exec'
+import { PROJECT_ROOT } from '@/project-root'
 import { createGithubIssue } from '@/github'
 import { frameError, frameSuccess } from '@/ui'
 
