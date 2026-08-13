@@ -11,7 +11,7 @@ All `.sh` files live under `scripts/`, except Claude Code hooks, which live in `
 
 ## Claude hooks
 
-`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Five carry the same names as the hooks `aitk claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `.claude/context/claude-plugin/cli.md`, and four of those are byte-identical to their seeded copies.
+`.claude/hooks/` holds the toolkit's own Claude Code hooks, wired through `.claude/settings.json`. Five carry the same names as the hooks `aitk claude init` seeds from `tooling/claude/seeds/.claude/hooks/`, covered in `.claude/context/claude-plugin/cli.md`, and three of those are byte-identical to their seeded copies. `scratch-guard.sh` and `standards-audit.sh` are the two that diverge, so a fix to either is owed to its counterpart by hand.
 
 ### The stdin guard
 
@@ -22,6 +22,16 @@ Every hook that reads a payload opens with `IFS= read -r -d '' -t 2 input` and e
 The acting payload is what a mangled read fails. A corrupted payload reaches the same quiet exit as one naming a tool the hook filters out, so a test built on the filtered case passes whatever the read did to the bytes. Each hook therefore carries a payload reaching the branch that does its work, paired with a string only that branch emits, and a hook added without one fails rather than passing on the refusal alone.
 
 The two index hooks run with `aitk` dropped from `PATH`, which pins them to the branch reporting a stale index instead of leaving the assertion to depend on whether the CLI is installed.
+
+### What the audit hook could not read
+
+Both copies of `standards-audit.sh` depend on something outside themselves, and each reports the dependency it failed to resolve rather than exiting clean. A pass on a file nobody checked reads the same as a pass on a file carrying no violation, and the report is what separates them.
+
+The seed parses its word list out of the project's `.claude/standards/prose.md`, so an absent standard empties the list and narrows the awk to the two hardcoded characters. The path it looked under reaches the session through the same `additionalContext` channel a violation takes, named beside `aitk standards install`. A non-zero exit is the blunter alternative and carries more than a PostToolUse event warrants.
+
+The toolkit copy parses no standard and reads a `markdown audit --json` record, so it reaches the same defect by two other routes. Resolving neither the checkout CLI nor an installed binary reports that nothing ran, and a record whose `bans.missingStandards` names a standard reports a check narrowed to what the verb could read. The verb returns that field either way, and reading the findings beside it alone is what let a narrowed check report a pass.
+
+`hooks-guard.test.ts` covers all four branches. The two toolkit cases stub a runner apiece, so the verdict comes from the fixture rather than from whichever build the machine carries, and the two seed cases need no stub because the awk reaches its verdict off a fixture root carrying a `prose.md` or carrying none.
 
 ### The dev command reminder
 
