@@ -107,8 +107,9 @@ EOF
     log_info "Branch: qux"
     log_info "Plan:   .claude/plans/feature-qux.md"
     log_info "Action:  /aitk:claude-worktree"
-    log_info "Expect:  entry proceeds, then Step 6 reports one line"
+    log_info "Expect:  entry proceeds, then Step 6 reports two lines"
     log_info "         package.json present and node_modules missing, so it names bun install"
+    log_info "         no scripts/worktree-port.sh here, so the port line names the stack default"
     log_info "         nothing is installed, since the step reports rather than runs"
     ;;
   *)

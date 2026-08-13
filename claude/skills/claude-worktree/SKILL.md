@@ -111,4 +111,11 @@ Read the worktree root and emit the first line that matches:
 
 The last line is what keeps the step honest on a stack this skill cannot read. Entry is not stack-aware, and silence is indistinguishable from a check that passed.
 
+Then report the port this worktree derives, on a second line:
+
+- `scripts/worktree-port.sh` present: run `bash scripts/worktree-port.sh` and emit `Port offset <n>. Every served port adds it to the stack default.`
+- Absent: `No port derivation installed, so every served port is the stack default.`
+
+The offset is what `claude-orchestrate` sends a reader here to read rather than assign, and what an operator overrides through `WORKTREE_PORT_OFFSET` when two worktrees derive the same value. Deriving it correctly and printing it nowhere leaves both instructions naming a number no surface emits.
+
 Do not invoke `ExitWorktree` from this skill. Exit is the user's call.

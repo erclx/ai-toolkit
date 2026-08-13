@@ -13,6 +13,8 @@ Entry also writes the bare flag into the shared config, which strands the main w
 
 The tree the entry hands over is also not one the session can run. Dependencies live in a folder git ignores and never shares between working directories, so a fresh worktree arrives with none, and nothing on the entry path says so. The session finds out from whichever command needs them first, and the message it gets names a missing module rather than an empty working directory.
 
+A stack that derives its ports from the working directory has the same shape. The number is correct and invisible, and `claude-orchestrate` sends a reader here to read it rather than assign one, so the entry that knows the working directory is the surface that owes it.
+
 ## Must
 
 - Derive the name from the plan matched to the current branch, falling through the ordered sources rather than picking
@@ -25,6 +27,7 @@ The tree the entry hands over is also not one the session can run. Dependencies 
 - Announce the repair only when a write actually happened
 - Report on one line whether the entered worktree carries its dependencies, naming the command that installs them when it does not
 - Report the same way when the project declares no package manifest, since silence there reads as a passing check
+- Report the port offset this worktree derives, and say so when the project installs no derivation
 
 ## Must not
 
