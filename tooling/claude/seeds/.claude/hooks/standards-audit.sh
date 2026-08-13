@@ -33,6 +33,7 @@ esac
 # bullet added to markdown.md is parsed by nothing and enforces silently.
 standard="${CLAUDE_PROJECT_DIR:-.}/.claude/standards/prose.md"
 words=""
+unread=""
 if [ -f "$standard" ]; then
   words=$(grep '^- Do not use ' "$standard" |
     grep -o '`[^`]*`' |
@@ -40,6 +41,12 @@ if [ -f "$standard" ]; then
     grep -x '[a-z][a-z]*' |
     sort -u |
     paste -sd '|' -)
+else
+  # An absent standard empties the word list, and the awk below reads an empty
+  # list as nothing to look for rather than as nothing found. The path is kept
+  # so the report names what could not be read, since a file carrying no banned
+  # word and a file nobody checked produce the same silence otherwise.
+  unread="$standard"
 fi
 
 hits=$(awk -v words="$words" '
@@ -66,8 +73,18 @@ hits=$(awk -v words="$words" '
   }
 ' "$file")
 
-[ -z "$hits" ] && exit 0
+[ -z "$hits" ] && [ -z "$unread" ] && exit 0
 
-msg=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite or restructure (do not lazy-swap).\n%s' "$file" "$hits")
+nl=$'\n'
+msg=""
+
+if [ -n "$unread" ]; then
+  msg=$(printf 'Standards-audit: no word ban checked in %s. Found no standard at %s, so only the character bans ran. Restore it with `aitk standards install`.' "$file" "$unread")
+fi
+
+if [ -n "$hits" ]; then
+  found=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite or restructure (do not lazy-swap).\n%s' "$file" "$hits")
+  msg="${msg:+$msg$nl}$found"
+fi
 
 jq -nc --arg msg "$msg" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$msg}}'

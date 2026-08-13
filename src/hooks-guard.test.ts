@@ -129,7 +129,9 @@ beforeAll(() => {
     join(project, 'src'),
     join(fixture, 'bin'),
     join(fixture, 'bin-no-runner'),
+    join(fixture, 'bin-missing-standard'),
     join(fixture, 'no-source'),
+    join(fixture, 'with-standard/.claude/standards'),
     join(fixture, 'elsewhere/tmp'),
   ]) {
     mkdirSync(dir, { recursive: true })
@@ -174,10 +176,34 @@ beforeAll(() => {
     chmodSync(stub, 0o755)
   }
 
+  // A record carrying no ban and a standard the verb found under neither root,
+  // which is the narrowed check the hook reports rather than passing. It stubs
+  // `aitk` alone, so a root without `src/cli.ts` is what routes to it.
+  const narrowed = join(fixture, 'bin-missing-standard/aitk')
+  writeFileSync(
+    narrowed,
+    `#!/usr/bin/env bash\nprintf '%s\\n' '{"entries":[],"bans":{"missingStandards":["prose.md"]}}'\n`,
+  )
+  chmodSync(narrowed, 0o755)
+
   // An empty file is enough, since the hook tests for the path and the stub
   // runner never reads it. Without it the project root takes the fallback and
   // the branch the hook prefers is exercised by nothing.
   writeFileSync(join(project, 'src/cli.ts'), '')
+
+  // The seed parses its word list out of the project's own prose.md, so a root
+  // carrying one exercises the branch that reads and a root carrying none
+  // exercises the branch that reports. The bullet is the shape the seed greps
+  // for rather than the shipped standard, which would tie the case to a
+  // wording edit.
+  writeFileSync(
+    join(fixture, 'with-standard/.claude/standards/prose.md'),
+    '## Language\n\n- Do not use filler (`simply`)\n',
+  )
+  writeFileSync(
+    join(fixture, 'with-standard/doc.md'),
+    '# Doc\n\nA line that simply reads.\n',
+  )
 
   writeFileSync(
     join(project, 'doc.md'),
@@ -352,7 +378,7 @@ describe('.claude/hooks/standards-audit.sh runner', () => {
   )
 
   it.concurrent(
-    'should stay silent when the machine carries neither runner',
+    'should report that nothing ran when the machine carries neither runner',
     async ({ expect }) => {
       // The linked dependencies and nothing else, so neither runner resolves
       // whatever the machine carries. A missing link would take the run
@@ -363,7 +389,76 @@ describe('.claude/hooks/standards-audit.sh runner', () => {
 
       const result = await run(hook, payload(), path)
 
-      expect(result.stdout).toBe('')
+      expect(result.stdout).toContain('nothing checked')
+      expect(result.stdout).toContain(join(fixture, 'project/doc.md'))
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should name the standard the verb found under neither root',
+    async ({ expect }) => {
+      // `no-source` carries no `src/cli.ts`, which is what sends the hook past
+      // the checkout branch to the stubbed binary.
+      const path = [join(fixture, 'bin-missing-standard'), hookPath].join(
+        delimiter,
+      )
+
+      const result = await run(
+        hook,
+        payload(),
+        path,
+        join(fixture, 'no-source'),
+      )
+
+      expect(result.stdout).toContain('prose.md')
+      expect(result.stdout).toContain('narrowed set')
+      expect(result.code).toBe(0)
+    },
+  )
+})
+
+// The seed carries the same defect by another route, parsing its word list out
+// of a standard it may not be able to read. An empty list narrows the awk to
+// the two hardcoded characters, so the pass it reports covers less than a
+// reader would take it to cover.
+describe('seeds standards-audit.sh word list', () => {
+  const hook = join(
+    ROOT,
+    'tooling/claude/seeds/.claude/hooks/standards-audit.sh',
+  )
+
+  const payloadFrom = (file: string): string =>
+    JSON.stringify({ tool_input: { file_path: file }, tool_name: 'Write' })
+
+  it.concurrent(
+    'should report the standard it could not read',
+    async ({ expect }) => {
+      const result = await run(
+        hook,
+        payloadFrom(join(fixture, 'project/doc.md')),
+      )
+
+      expect(result.stdout).toContain('no word ban checked')
+      expect(result.stdout).toContain('.claude/standards/prose.md')
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should stay on the parsed list when the standard is present',
+    async ({ expect }) => {
+      const root = join(fixture, 'with-standard')
+
+      const result = await run(
+        hook,
+        payloadFrom(join(root, 'doc.md')),
+        undefined,
+        root,
+      )
+
+      expect(result.stdout).toContain('banned word (simply)')
+      expect(result.stdout).not.toContain('no word ban checked')
       expect(result.code).toBe(0)
     },
   )
