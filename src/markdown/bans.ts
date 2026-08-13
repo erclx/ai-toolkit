@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
 import { linesOutsideFences } from '@/markdown/scan'
+import { resolveStandard } from '@/standards/read'
 
 /**
  * Headings the two standards state their closed sets under.
@@ -17,13 +17,6 @@ export const CHARACTER_BAN_HEADING = '## Punctuation'
 const BAN_LEAD = '- Do not use '
 const SPELLING_LEAD = '- Use American English spelling'
 
-/**
- * Roots searched in order. The installed copy wins over the authoring root, so
- * a target project measures against the standard it actually has rather than
- * one only the toolkit carries.
- */
-const STANDARD_ROOTS = ['.claude/standards', 'standards']
-
 const BACKTICKED = /`([^`]+)`/g
 const WORD = /^[a-z]+$/
 const SUFFIX = /^-[a-z]+$/
@@ -35,12 +28,16 @@ export interface BanReport {
   readonly words: readonly string[]
   /** Spellings derived from the prose standard's own examples. */
   readonly spellings: readonly string[]
-  /** Repo-relative paths of the standards read, in the order read. */
+  /**
+   * Paths of the standards read, in the order read. Repo-relative for a project
+   * copy, and spelled under `<aitk>/` for the package copy, so a reader can
+   * tell which root answered without joining a path that resolves nowhere.
+   */
   readonly sources: readonly string[]
   /**
-   * Standards that resolved under neither root. Absent is a distinct state from
-   * empty: a scan with no terms finds nothing, and reporting that as a clean
-   * file claims the prose passed when nothing was looked for.
+   * Standards that resolved under none of the roots. Absent is a distinct state
+   * from empty: a scan with no terms finds nothing, and reporting that as a
+   * clean file claims the prose passed when nothing was looked for.
    */
   readonly missing: readonly string[]
 }
@@ -155,7 +152,7 @@ export function parseSpellingBans(markdown: string): string[] {
 }
 
 export interface StandardText {
-  /** Repo-relative path of the copy read, so a report says which root won. */
+  /** Path of the copy read, so a report says which root won. */
   readonly source: string
   readonly text: string
 }
@@ -164,29 +161,24 @@ export interface Standards {
   readonly markdown: StandardText | undefined
   readonly prose: StandardText | undefined
   /**
-   * Standards that resolved under neither root. Absent is a distinct state from
-   * empty: a scan with no terms finds nothing, and reporting that as a clean
-   * file claims the prose passed when nothing was looked for.
+   * Standards that resolved under none of the roots. Absent is a distinct state
+   * from empty: a scan with no terms finds nothing, and reporting that as a
+   * clean file claims the prose passed when nothing was looked for.
    */
   readonly missing: readonly string[]
 }
 
-async function readStandard(
+async function loadStandard(
   root: string,
   name: string,
 ): Promise<StandardText | undefined> {
-  for (const standardRoot of STANDARD_ROOTS) {
-    const path = resolve(root, standardRoot, name)
-    const file = Bun.file(path)
-    if (!(await file.exists())) continue
+  const resolved = resolveStandard(root, name)
+  if (!resolved) return undefined
 
-    return {
-      source: `${standardRoot}/${name}`,
-      text: await readFile(path, 'utf8'),
-    }
+  return {
+    source: resolved.source,
+    text: await readFile(resolved.path, 'utf8'),
   }
-
-  return undefined
 }
 
 /**
@@ -199,8 +191,8 @@ async function readStandard(
  */
 export async function loadStandards(root: string): Promise<Standards> {
   const [markdown, prose] = await Promise.all([
-    readStandard(root, 'markdown.md'),
-    readStandard(root, 'prose.md'),
+    loadStandard(root, 'markdown.md'),
+    loadStandard(root, 'prose.md'),
   ])
 
   return {
