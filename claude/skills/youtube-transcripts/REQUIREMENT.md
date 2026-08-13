@@ -16,7 +16,7 @@ Two smaller failures follow the fetch. A video with no captions produces a file 
 ## Must
 
 - Run the CLI, which owns the fetch, the caption cleanup, and the frontmatter
-- Surface the written path as a full relative path so the terminal makes it clickable
+- Surface the written path as a full relative path, in the form the project's instruction file sets under `## Output`
 - Report a video with no captions as a fact about the video, since the file still exists and carries its metadata
 - Name the missing external binary and stop, leaving the install to the user
 

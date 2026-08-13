@@ -97,7 +97,7 @@ The command drops the task's row from `.claude/tasks/priority.md` and leaves pro
 
 ## Output
 
-Emit the full relative path from the project root for every file written or moved. Bare filenames are not clickable.
+Emit the full relative path from the project root for every file written or moved. A bare filename names a file the reader cannot open.
 
 Create:
 

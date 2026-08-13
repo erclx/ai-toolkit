@@ -208,7 +208,7 @@ Without this skill, a session <observed failure>, <observed failure>.
 
 ### Output and tuning
 
-- Skill success lines emit the full relative path from the project root (`<dir>/<file>`) for any file written, updated, or deleted. Bare filenames are not clickable in the terminal.
+- Skill success lines emit the full relative path from the project root (`<dir>/<file>`) for any file written, updated, or deleted. A bare filename names a file the reader cannot open. The `## Output` section of the project's instruction file sets the form that path takes, so a skill body states which path is emitted and leaves the form to that section.
 - Codify a skill's posted or generated output as a fenced template, and keep the body consistent with every capability the frontmatter description names.
 - When a skill gathers user input or pre-seeds a template, attach a concrete proposed default to every question, derived from project context. Accept "use defaults" as a bulk-confirm.
 - Separate correctness axes (routing, sourcing, escalation, decline) from shape axes (line count, formatting, variant sprawl) when tuning a skill. Tighten only on correctness regressions. Do not convert soft caps to hard caps for aesthetic drift when correctness passes.

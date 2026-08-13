@@ -26,7 +26,7 @@ aitk transcripts <url>
 
 - Pass `--keep-timestamps` when the user wants `[mm:ss]` markers per line instead of prose.
 - Pass `--out <dir>` to override the output directory. The default is `transcripts/` in the current directory.
-- The written file path prints to stdout. Surface it back to the user as a full relative path so it is clickable.
+- The written file path prints to stdout. Surface it back to the user as a full relative path, in the form the project's instruction file sets under `## Output`.
 
 ## After the fetch
 
