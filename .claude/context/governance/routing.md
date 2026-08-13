@@ -27,6 +27,10 @@ Every standard governing a file path carries a rule routing to it, so an edit lo
 
 Each of those two carries the pair of directives that ship silently when violated, the answer contract for intake and the re-measure floor for groundwork, and points at its standard for the rest. What a rule cannot carry is the write scope, since a misrouted write lands on a path the glob never matches, so that floor stays in the skill body.
 
+Fifteen of the seventeen claude rules now carry operative directives beside the pointer, since a rule arrives attached to the edit while a pointer reaches a session only if that session opens the file. Five bullets is the cap, matching the two largest of the seven that reached the shape on their own, and past it a rule reproduces the standard's structure rather than stating what must not go wrong. The standard keeps the full specification either way, so a drift is a rule falling behind rather than two files disagreeing, and nothing checks it.
+
+`500-prose` and `501-markdown` are the two that stay pointer-only, permanently. The seeded audit hook parses the word bans out of `standards/prose.md`, so a rule restating that list is two sources for one list with a machine reading one of them. `.claude/ARCHITECTURE.md` carries the general form of that exemption, and `.claude/context/standards/scope.md` carries what it narrows on the standards side.
+
 ## Rules reached by something other than a glob
 
 `standards/versioning.md` is deliberately unrouted. It governs commit subjects, PR titles and bodies, review comments, issues, and git tags, none of which are files, so a path-scoped rule has nothing to match and would never fire.
