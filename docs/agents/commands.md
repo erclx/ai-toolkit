@@ -30,6 +30,8 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk tasks pull-request`  | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)                                                  |
 | `aitk tasks outcome`       | Mark outcomes `[x]` on a task by position, repeating `--close` (`--json`)                                                                 |
 | `aitk tasks validate`      | Report board rows whose plan, task file, group, or file set does not hold (`--json`)                                                      |
+| `aitk intake list`         | Report intake folder counts, or one folder's items, keeping what is unread with `--unread` (`--json`)                                     |
+| `aitk intake answer`       | Write selections into one cluster's answer slots, repeating `--set <item>=<answer>` (`--json`)                                            |
 | `aitk records validate`    | Report a session record against the standard governing it, per kind (`--json`)                                                            |
 | `aitk records push`        | Commit the eight backed record folders and push them to a private records remote (`--json`)                                               |
 | `aitk records pull`        | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                   |
@@ -54,6 +56,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `design`    | `render`                                                                    |
 | `slides`    | `render`, `list`                                                            |
 | `tasks`     | `archive`, `validate`                                                       |
+| `intake`    | `list`, `answer`                                                            |
 | `comments`  | `scan`                                                                      |
 | `context`   | `audit`                                                                     |
 | `markdown`  | `audit`                                                                     |
