@@ -98,10 +98,12 @@ Derive both segments from Step 1. Never pick a suffix by hand, and never reuse a
 When `<prior-oid>` from Step 2 equals `headRefOid`, the head repeats and the folder already holds `body-<number>-<short-sha>.md`. Add a third segment taking the id of the `## Review response` comment this pass answers, giving `body-<number>-<short-sha>-r<comment-id>.md`. That satisfies both prohibitions above rather than carving an exception into either.
 
 ```bash
-gh pr view <number> --json comments --jq '[.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response")] | last | .url // empty | split("-") | last'
+gh pr view <number> --json reviews,comments --jq '([.reviews[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review" or . == "## Review closed")] | last | .submittedAt) as $prior | [.comments[] | select(.body // "" | split("\n")[0] | rtrimstr("\r") | . == "## Review response") | select(.createdAt > $prior)] | last | .url // empty | split("-") | last'
 ```
 
-Read the number off `.url`. The `id` field carries a GraphQL node id, which the thread never displays. Keep the `// empty` guard, since `split` aborts jq on the null that a thread carrying no response returns, and an aborted command reaches the session as an error rather than as the empty result the stop below reads.
+Scope the responses to those newer than the prior pass, never to every response the thread carries. A pass answering the newest response and a pass answering an older one derive the same third segment, so an unscoped read hands a re-run after a close-out the name its own prior pass already wrote. That is the collision this case exists to prevent, reached without a rebase or an error.
+
+Read the number off `.url`. The `id` field carries a GraphQL node id, which the thread never displays. Keep the `// empty` guard, since `split` aborts jq on the null an empty selection returns, and an aborted command reaches the session as an error rather than as the empty result the stop below reads.
 
 An empty result means no response arrived since the prior pass, so this pass would restate a body the folder already holds. Stop: `❌ No response since the prior pass on <short-sha>. Nothing new to review.`
 
