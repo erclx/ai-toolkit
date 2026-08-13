@@ -17,7 +17,7 @@ Without this skill, a pull request is reviewed only by the session that wrote it
 - Scope a later pass to the commits added since the prior one, once that commit is confirmed to still reach the head
 - Apply the integration, contract, and consumer lenses a self-review structurally cannot
 - Post the closing pass even with nothing to report, since a review left unanswered reads as one nobody closed
-- Key the body file on both the pull request number and the head commit, so no two passes overwrite each other
+- Key the body file on the pull request number and the head commit, and on the response it answers once the head repeats, so no two passes overwrite each other
 - Scan the comment for banned characters and internal phase labels before posting, since a finding phrased against a phase label reaches a reader with no task board
 
 ## Must not
@@ -32,6 +32,7 @@ Without this skill, a pull request is reviewed only by the session that wrote it
 
 - No open pull request for the target branch: stop and route to the local review skill
 - The fetch of the pull request head fails: stop rather than falling through to a full pass
+- The head repeats with no response since the prior pass: stop rather than posting a body restating one the folder holds
 
 ## Out of scope
 
