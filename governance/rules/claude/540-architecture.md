@@ -9,8 +9,7 @@ paths:
 ## Decisions
 
 - Give each decision its own H3 under `## Key technical decisions`, naming what it chose and the alternative it passed over.
-- Skip a decision whose rationale is self-evident.
-- Keep line-by-line function behavior and full type definitions out. The code carries both.
+- Keep line-by-line function behavior and full type definitions out.
 
 ## Verification anchors
 

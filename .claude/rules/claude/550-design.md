@@ -8,10 +8,10 @@ paths:
 
 ## Tokens
 
-- Describe a token as intent rather than as a computed value. Exact values live in code.
+- Describe a token as intent rather than as a computed value.
 - Keep CSS classes, component filenames, and prop names out.
 - Carry a token system as a table, one row per token, and a component rule as a short bullet.
-- Keep the token table headers verbatim. The render tooling reads them by exact key.
+- Keep the token table headers verbatim.
 - Record a non-obvious omission, such as no motion or no custom icons.
 
 ## Authority

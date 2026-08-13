@@ -9,7 +9,7 @@ paths:
 ## Scope and non-goals
 
 - State a goal as a user-facing outcome, never as the implementation delivering it.
-- Record explicit non-goals. Mark a deferred item `(deferred)` so it reads as paused rather than excluded.
+- Record explicit non-goals. Mark a deferred item `(deferred)`.
 - Leave the MVP list as written once its features ship. Do not renumber it, extend it, or annotate an entry with status.
 - Add later scope as a new section rather than as an extension of the MVP list.
 - Drop a section rather than pad it. Include `## Distribution` only when the project ships outside its own repository.
