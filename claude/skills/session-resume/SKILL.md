@@ -11,7 +11,7 @@ Resolve `.claude/plans/`, `.claude/memory/`, and `.claude/tasks/` at the main wo
 
 Read these in parallel, skipping any that do not exist:
 
-- the newest `.claude/tasks/session-*.md`: the handoff a previous session wrote before a compaction, per `.claude/standards/session-map.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session-map.md` when the project does not have it. It leads the report rather than the reads.
+- the newest `.claude/tasks/session-*.md`: the handoff a previous session wrote before a compaction, per `.claude/standards/session.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session.md` when the project does not have it. It leads the report rather than the reads.
 - `.claude/tasks/index.md`: the folder catalog. Read this before any individual task file, and take the backlog from it by dropping the `index`, `priority`, and `session-` rows, which are siblings rather than tasks.
 - `.claude/plans/*.md`: execution detail for in-progress tasks
 - `.claude/memory/index.md` and any memory files relevant to the top backlog item

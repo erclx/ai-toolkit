@@ -3,7 +3,7 @@ title: Orchestrator handoff runbook
 description: The two sections an orchestrating session adds over the shared session map, how capture runs from a session that never commits, and the resume invocation the file carries out
 ---
 
-Write the pre-compaction handoff as orchestrator. Follow `.claude/standards/session-map.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session-map.md` when the project does not have it, for the filename, the three core sections, the write procedure, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
+Write the pre-compaction handoff as orchestrator. Follow `.claude/standards/session.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session.md` when the project does not have it, for the filename, the three core sections, the write procedure, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
 
 1. Run the capture step the core opens with, and tell `aitk:claude-memory-capture` that this session does not commit.
 2. Add `## Decisions taken under delegated authority` directly after `## State`, holding each decision and why it went that way, so nobody re-proposes it. It sits there rather than after the core because a decision is read against the state it was taken in.

@@ -21,7 +21,7 @@ Does not govern:
 - Phase-label format and which surfaces a label may appear on: `versioning.md`
 - Sequencing across versions and why the order is what it is: `roadmap.md`
 - Architectural reasoning that outlives a task: `architecture.md`
-- The pre-compaction handoff sitting in the folder, its filename and its sections: `session-map.md`
+- The pre-compaction handoff sitting in the folder, its filename and its sections: `session.md`
 - When a project opens a task at all, which is project policy rather than a shape rule
 
 ## Layout
@@ -37,7 +37,7 @@ Does not govern:
 
 One file per task is what keeps the board safe under parallel sessions. Two sessions working different tasks never write the same file, which matters because a gitignored board has no history to recover a clobbered write from.
 
-Siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md` and `priority.md` are governed here. Every `session-` file is a pre-compaction handoff governed by `session-map.md`, and each is optional: a project whose sessions never approach a compaction carries none. Anything filtering the folder to tasks skips all of them, so a name outside the set is a task whatever it holds.
+Siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md` and `priority.md` are governed here. Every `session-` file is a pre-compaction handoff governed by `session.md`, and each is optional: a project whose sessions never approach a compaction carries none. Anything filtering the folder to tasks skips all of them, so a name outside the set is a task whatever it holds.
 
 The handoff takes one file per session for the reason a task does. A single shared path puts two sessions closing near each other on one file that neither can watch the other write, and the loser leaves no trace on a board with no history behind it.
 

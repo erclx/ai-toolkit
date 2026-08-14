@@ -21,7 +21,7 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Readme reference](readme.md): Readme voice, structure, and content conventions
 - [Requirements reference](requirements.md): Shape and content rules for .claude/REQUIREMENTS.md
 - [Governance rule reference](rule.md): Rule frontmatter, body shape, and voice for .claude/rules files
-- [Session map reference](session-map.md): Filename and location, the sections a handoff carries, the write and read procedures, and how a role extends it
+- [Session map reference](session.md): Filename and location, the sections a handoff carries, the write and read procedures, and how a role extends it
 - [Claude skill reference](skill.md): Claude skill structure and authoring rules
 - [Slug reference](slug.md): Transform from a git branch name to a slug, and the three responses to an empty result
 - [Standard reference](standard.md): Shape and content rules for authoring a standard
