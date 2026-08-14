@@ -39,7 +39,7 @@ Poll GitHub for pull request movement by running <POLL_SCRIPT>, then act on what
 - A line starting `poll:`: report it verbatim and treat that pull request as unread this run. It is a failed query, not a state.
 - Nothing changed: say exactly "No movement." and nothing else.
 
-After any pass that posts a critical or should-fix finding, tell the session holding that branch to run the aitk:claude-address-review skill, resolving it from a session listing taken at that moment. Name the worktree and branch you believe the reader holds and ask to be corrected. Report the invocation for me instead when no live session holds it. A pass carrying only minor findings dispatches nobody.
+After any pass that posts a critical or should-fix finding, tell the session holding that branch to run the aitk:claude-address-review skill. Resolve the target by running `aitk sessions list --branch <branch> --json` at that moment and addressing the name it returns, which is an exact match rather than a guess. Report the invocation for me instead when it returns no session. Fall back to picking from a session listing when that command is missing or refuses. Open by naming the worktree and branch you believe the reader holds and asking to be corrected, in every case except one where the command answered and its confidence field reads "confirmed". A pass carrying only minor findings dispatches nobody.
 ```
 
 ## Reading the output
