@@ -15,6 +15,14 @@ Source: Anthropic, which owns both tools and the discovery behavior behind them.
 
 Discovery is filesystem visibility rather than a heartbeat. Each session registers itself in files on disk and binds an inbox socket, and the listing reads those files, so a row appearing means a session left a record rather than that it answered a probe.
 
+## No working directory in the listing
+
+The listing names no working directory, so it cannot say which repository, worktree, or branch a session is working in. Every consumer that needs to reach the session holding a particular branch has to recover that mapping some other way.
+
+Ordering the rows by start time and matching them against the order the worktrees were created is the inference this invites, and it fails whenever two sessions start close enough together for the reader to be unsure which came first. An earlier measurement against five worktrees found the ordering held and read that as settled. It did not cover two sessions started inside the same minute, which is the case that breaks it.
+
+The record each session writes for itself carries more than the listing renders, including the working directory. Reading those records resolves a name to a branch by an exact match, which is what a consumer should prefer over the ordering. The file layout is an implementation detail rather than a published interface, so a consumer depending on it states what it is relying on and reports when the read is unavailable rather than falling back silently.
+
 ## Addressing a session
 
 Send the bare name. Append the bracketed ref only when the bare name cannot resolve on its own, which happens when the listing shows two rows carrying it or when an error asks for the disambiguation. An error of that kind names the candidates to retry with, so the ref never has to be guessed.
