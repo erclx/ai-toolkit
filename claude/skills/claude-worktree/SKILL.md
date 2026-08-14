@@ -1,6 +1,6 @@
 ---
 name: claude-worktree
-description: Enters a Claude Code worktree at `.claude/worktrees/<name>/` with a name derived from the active plan or branch. Use when asked to "enter a worktree", "start a worktree", "work in a worktree", or at the plan-to-execute boundary after `/claude-feature`. Do NOT use to list, clean up, or rotate worktrees.
+description: Enters a Claude Code worktree at `.claude/worktrees/<name>/` with a name derived from the active plan or branch. Use when asked to "enter a worktree", "start a worktree", "work in a worktree", or at the plan-to-execute boundary after `/claude-feature`. Do NOT use to list, clean up, or rotate worktrees (use `git-worktree`).
 ---
 
 # Claude worktree
