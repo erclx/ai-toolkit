@@ -23,5 +23,6 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Records](records.md): Validating the gitignored session records under .claude/, the per-kind checks, the refusal reasons, backing the folders to a private remote, and why the root defaults to the main worktree
 - [Sandbox](sandbox.md): Scenario routing, the expectation scoring surface, and the coverage census over scenarios and skills
 - [Scripting](scripting.md): The runtime catalogs that replace hardcoded names, what each carries, and a headless invocation per domain
+- [Sessions](sessions.md): Resolving live peer sessions to the worktree and branch each holds, the liveness confidence field, the unresolved reasons, and what the read depends on
 - [Skill audit](skills-audit.md): Measuring both skill corpora against standards/skill.md, the checks it reads, and the requirement gate that is the only failing one
 - [Tasks](tasks.md): Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
