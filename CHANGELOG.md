@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.92.0](https://github.com/erclx/aitk/compare/v0.91.2...v0.92.0) (2026-08-14)
+
+
+### Features
+
+* **sessions:** resolve a branch holder from the session registry ([#980](https://github.com/erclx/aitk/issues/980)) ([0f7ee98](https://github.com/erclx/aitk/commit/0f7ee985448e4e7c109b64f81cd26e0e7314bd17))
+
+
+### Bug Fixes
+
+* **skills:** route a measurement intent to the audit offers ([#979](https://github.com/erclx/aitk/issues/979)) ([cbb0b4f](https://github.com/erclx/aitk/commit/cbb0b4f1c82b81ed5bde49067bed9b879e5541f1))
+
 ## [0.91.2](https://github.com/erclx/aitk/compare/v0.91.1...v0.91.2) (2026-08-14)
 
 
