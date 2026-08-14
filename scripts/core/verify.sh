@@ -138,18 +138,25 @@ file_sha256() {
 # One digest the stamp recorded against the file it was taken over. An absent
 # field reports itself rather than comparing against an empty string, so a stamp
 # predating the current format is distinguishable from a file that moved.
+#
+# Both names in the message come off the paths rather than from arguments. The
+# caller passes absolute paths and the reader wants repository-relative ones, and
+# deriving them here is what keeps a name from disagreeing with the file it
+# labels once a second capture source calls this.
 assert_stamp_field() {
-  local stamp=$1 field=$2 file=$3 label=$4
+  local stamp=$1 field=$2 file=$3
+  local stamp_label=${stamp#"$PROJECT_ROOT"/}
+  local file_label=${file#"$PROJECT_ROOT"/}
   local recorded actual
   recorded=$(awk -v key="$field:" '$1 == key { print $2; exit }' "$stamp")
   if [ -z "$recorded" ]; then
-    echo "assets/hero.stamp carries no $field line, so it predates the capture that writes one."
+    echo "$stamp_label carries no $field line, so it predates the capture that writes one."
     return 1
   fi
   actual=$(file_sha256 "$file") || return 1
   if [ "$recorded" != "$actual" ]; then
-    echo "assets/hero.stamp records $field $recorded"
-    echo "$label hashes to $actual"
+    echo "$stamp_label records $field $recorded"
+    echo "$file_label hashes to $actual"
     return 1
   fi
 }
@@ -186,8 +193,8 @@ assert_hero_stamp() {
     return 1
   fi
 
-  assert_stamp_field "$stamp" source-sha256 "$html" assets/hero.html || return 1
-  assert_stamp_field "$stamp" image-sha256 "$png" assets/hero.png || return 1
+  assert_stamp_field "$stamp" source-sha256 "$html" || return 1
+  assert_stamp_field "$stamp" image-sha256 "$png" || return 1
 }
 
 # Entries the audit actually measured, summed across the folders it resolved.
