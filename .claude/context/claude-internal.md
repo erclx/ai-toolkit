@@ -84,6 +84,16 @@ Being gitignored also puts the citations these artifacts carry outside every che
 
 The check it earns its place on is file-set overlap between `## Run now` rows. That group's test has a plan half and a half asking whether the task carries a reason it cannot start, and a collision against what something already running touches is one such reason, which is the part a person cannot run by eye.
 
+The blocker check reaches the opposite groups on the same argument. A blocker cell is a measurement taken the day a row was parked, and two of the five kinds it carries put a fact on disk: a cited task is settled by being archived or closing every outcome, and a cited file is settled by nothing under `## Run now` still holding it. Both are inputs the validator already reads for the other four checks.
+
+The cell stays prose and the check reads citations out of it, which is the constraint the board standard sets by fixing three forms for the cell and leaving it unstructured. A cited task is a bare sibling link, so a pointer into another folder is a plan and settles nothing. Parsing the cell into fields was the alternative and it writes a grammar for a corpus of a handful of rows nobody phrases the same way twice.
+
+Both halves gate on the cell rather than on a column beside it. The collision half read the row's own `Touches` column first, and that fires on any parked row whose declared files nothing running holds, whatever parked the row. The false finding is the cheaper half of that error: the row also counts as re-tested and drops out of the untested list, so the condition still holding it goes unmentioned and the report reads as a clean board. The standard gives a collision cell the file held by the running task, so the citation is already there to gate on.
+
+A citation resolving in neither folder is `blocker-unresolved` rather than a settled row. Reading an absent file as archived states a specific fact about a file nobody wrote, which is what a renamed task or a typo produces, and the two want different findings because only a task that genuinely closed releases the row.
+
+The three kinds resting on judgment go to a second array rather than to the findings, because a check reporting only what it can settle is trusted past its reach. A clean findings list on a board whose parked rows were never testable reads as a clean board, so the untested array is what keeps the reach visible without moving an exit code.
+
 ### Orchestrator runbooks
 
 Five runbooks under `claude/skills/claude-orchestrate/references/` cover the moments the model cannot detect on its own. `orchestrator-sweep.md` triggers the queue refill after a batch of merges, and `orchestrator-parked.md` re-tests a row already parked, on the opposite trigger, per the paragraph below. `orchestrator-poll.md` holds the review trigger and is covered under The review trigger below.
@@ -106,7 +116,9 @@ The one file per session lands on the board catalog, which filters nothing and g
 
 Capture sits in the handoff rather than in the sweep because a pass per batch of merges bills the operator a wait while nothing is being built. The sweep reports the debt in its output block and the handoff pays it, which keeps the signal without the wait.
 
-The parked-row pass is separate from the sweep because the two run in opposite directions. All three refill triggers ask what to promote next, so a blocker cell keeps the value it was measured at the day the row was parked, while a merge changes the tree under every parked row at once rather than under the rows naming it. Folding the re-test into the sweep was the alternative and it ties the pass to a merge, when the window it wants is the one where nothing merged and the board is not moving.
+The parked-row pass stays a separate runbook and the sweep ends by firing it. The two ask opposite questions, since all three refill triggers ask what to promote next and take the blocker cell as read, while the pass asks whether the cell is still true. What forces the merge trigger is that a merge changes the tree under every parked row at once rather than under the rows naming it, and the pass ran zero times across four sweeps on the day the trigger was measured.
+
+Folding the pass into the sweep was the alternative and it loses the idle-session trigger, which is the window where planning what the pass clears costs the critical path nothing. Two triggers into one runbook keeps both, and they differ in scope rather than in procedure: a merge sends the rows `aitk tasks validate` listed as untested, and an idle session walks every parked row because no event narrowed which to look at.
 
 The runbook carries the two ways a re-test returns a confident wrong answer rather than an error, which are reading the condition looser than the code consuming it defines the shape, and measuring it against a tree the shipped command does not run against.
 

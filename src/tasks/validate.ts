@@ -1,7 +1,12 @@
 import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { isReservedStem, tasksDir } from '@/tasks/archive'
+import {
+  archiveDir,
+  isReservedStem,
+  readOutcomes,
+  tasksDir,
+} from '@/tasks/archive'
 
 const ORDERING_FILE = 'priority.md'
 
@@ -31,6 +36,8 @@ export const FINDING_KINDS = [
   'row-duplicated',
   'touches-unstated',
   'touches-collided',
+  'blocker-settled',
+  'blocker-unresolved',
 ] as const
 
 export type FindingKind = (typeof FINDING_KINDS)[number]
@@ -42,6 +49,17 @@ export interface Finding {
   readonly message: string
 }
 
+/**
+ * A parked row neither half of the blocker check reached. Three of the five
+ * blocker kinds put no fact on disk, so a run reporting findings alone would
+ * read as a board with nothing stale on it.
+ */
+export interface Untested {
+  readonly group: BoardGroup
+  readonly subject: string
+  readonly message: string
+}
+
 export interface BoardRow {
   readonly group: BoardGroup
   readonly label: string
@@ -49,6 +67,8 @@ export interface BoardRow {
   readonly plan: string | undefined
   /** Absent when the group fixes no `Touches` column, empty when it read none. */
   readonly touches: readonly string[] | undefined
+  /** Absent when the group fixes no `Waiting on` column, which is `## Run now`. */
+  readonly waiting: string | undefined
 }
 
 export interface ValidateReport {
@@ -56,6 +76,7 @@ export interface ValidateReport {
   readonly rows: number
   readonly tasks: number
   readonly findings: readonly Finding[]
+  readonly untested: readonly Untested[]
 }
 
 export interface ValidateRefused {
@@ -185,6 +206,7 @@ export function readBoard(text: string): {
     const taskAt = columnIndex(header, 'task')
     const planAt = columnIndex(header, 'plan')
     const touchesAt = columnIndex(header, 'touches')
+    const waitingAt = columnIndex(header, 'waiting on')
 
     const task = taskAt >= 0 ? (cells[taskAt] ?? '') : ''
     const target = linkTarget(task)
@@ -196,6 +218,7 @@ export function readBoard(text: string): {
       stem: target ? stemOf(target) : undefined,
       plan,
       touches: touchesAt >= 0 ? readPaths(cells[touchesAt] ?? '') : undefined,
+      waiting: waitingAt >= 0 ? (cells[waitingAt] ?? '') : undefined,
     })
   }
 
@@ -359,6 +382,142 @@ function checkCollisions(rows: readonly BoardRow[]): Finding[] {
   return findings
 }
 
+/**
+ * Reads the task a blocker cell cites. A task pointer is a bare sibling
+ * filename, the way every `Task` column spells one, so a target carrying a
+ * directory names something else and yields nothing. A row waiting on a plan
+ * links that plan, and reading its stem as a task would report the row settled
+ * against a folder the plan does not sit in.
+ */
+function citedStem(cell: string): string | undefined {
+  const target = linkTarget(cell)?.split('#')[0]
+  if (!target || target.includes('/')) return undefined
+  return stemOf(target)
+}
+
+/**
+ * Reports what a cited task does to the row waiting on it. A live file whose
+ * outcomes are all closed settles the row, and so does one sitting in the
+ * archive. A file carrying no outcome box settles nothing, since a file the
+ * check could not parse is not evidence of a finished one.
+ *
+ * A citation resolving in neither folder is a broken pointer rather than a
+ * closed task, and the two take different findings. Reading an absent file as
+ * archived states a specific fact about a file nobody ever wrote, which is what
+ * a renamed task or a typo produces.
+ *
+ * The outcome list comes off `readOutcomes` rather than a pattern of its own,
+ * so this check cannot disagree with the archive and outcome verbs about which
+ * checkboxes are outcomes and which sit inside a block a task displays.
+ */
+async function checkCitedTask(
+  group: BoardGroup,
+  subject: string,
+  cited: string,
+  root: string,
+): Promise<Finding[]> {
+  const live = join(tasksDir(root), `${cited}.md`)
+
+  if (!existsSync(live)) {
+    if (existsSync(join(archiveDir(root), `${cited}.md`))) {
+      return [
+        {
+          kind: 'blocker-settled',
+          group,
+          subject,
+          message: `waits on ${cited}, which is archived.`,
+        },
+      ]
+    }
+
+    return [
+      {
+        kind: 'blocker-unresolved',
+        group,
+        subject,
+        message: `waits on ${cited}, which is neither on the board nor archived.`,
+      },
+    ]
+  }
+
+  const { open, closed } = readOutcomes(await readFile(live, 'utf8'))
+  if (open.length > 0 || closed.length === 0) return []
+
+  return [
+    {
+      kind: 'blocker-settled',
+      group,
+      subject,
+      message: `waits on ${cited}, which carries no open outcome.`,
+    },
+  ]
+}
+
+/**
+ * Re-takes the two blocker kinds a command can settle, over every row outside
+ * `## Run now`. A cited task is settled by being archived or by closing every
+ * outcome, and a cited path is settled by no `## Run now` row still holding it.
+ *
+ * Both halves gate on a citation the cell carries, never on a column beside it.
+ * The board standard gives a collision cell the file held by the running task,
+ * so a row whose cell names no file was parked by something else and its
+ * `Touches` column says nothing about what holds it. Reading that column
+ * instead reports a cleared collision on a row no collision ever parked, and
+ * counts the row as re-tested, which is the more expensive half of that error.
+ *
+ * The cell is read for citations rather than parsed into fields, since the
+ * standard fixes three forms for it and leaves it prose. A row neither half
+ * reached is returned as untested, because the other three kinds are a person's
+ * to judge and silence about them reads as a board with nothing stale on it.
+ */
+async function checkParked(
+  rows: readonly BoardRow[],
+  root: string,
+): Promise<{ findings: Finding[]; untested: Untested[] }> {
+  const findings: Finding[] = []
+  const untested: Untested[] = []
+  const running = rows.filter((row) => row.group === 'Run now')
+
+  for (const row of rows) {
+    if (row.group === 'Run now') continue
+
+    const subject = row.stem ?? row.label
+    const cell = row.waiting ?? ''
+    const cited = citedStem(cell)
+    const contested = readPaths(cell)
+
+    if (cited) {
+      findings.push(...(await checkCitedTask(row.group, subject, cited, root)))
+    }
+
+    const held = contested.filter((path) =>
+      running.some((run) =>
+        (run.touches ?? []).some((other) => sharesPath(path, other)),
+      ),
+    )
+
+    if (contested.length > 0 && held.length === 0) {
+      findings.push({
+        kind: 'blocker-settled',
+        group: row.group,
+        subject,
+        message: `waits on ${contested.join(', ')}, which nothing under Run now holds.`,
+      })
+    }
+
+    if (!cited && contested.length === 0) {
+      untested.push({
+        group: row.group,
+        subject,
+        message:
+          'cites no task and no file, so neither half of its blocker is mechanical.',
+      })
+    }
+  }
+
+  return { findings, untested }
+}
+
 function refuse(reason: ValidateRefusal, message: string): ValidateRefused {
   return { ok: false, reason, message }
 }
@@ -389,12 +548,20 @@ export async function validateBoard(root: string): Promise<ValidateOutcome> {
   }
 
   const stems = await listTaskStems(dir)
+  const parked = await checkParked(rows, root)
 
   const findings = [
     ...checkMapping(rows, stems, dir),
     ...checkPlans(rows, dir, root),
     ...checkCollisions(rows),
+    ...parked.findings,
   ]
 
-  return { ok: true, rows: rows.length, tasks: stems.length, findings }
+  return {
+    ok: true,
+    rows: rows.length,
+    tasks: stems.length,
+    findings,
+    untested: parked.untested,
+  }
 }
