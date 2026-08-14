@@ -1,41 +1,53 @@
 import type { Page } from '@playwright/test'
-
-const ROUTES = [{ name: 'home', path: '/', width: 1280, height: 800 }]
-
-type State = { name: string; setup?: (page: Page) => Promise<void> }
-const STATES: State[] = [
-  { name: 'default' },
-  { name: 'dark', setup: async (p) => p.emulateMedia({ colorScheme: 'dark' }) },
-]
-
 import { chromium } from '@playwright/test'
 import { mkdir } from 'fs/promises'
 import path from 'path'
+
+interface CaptureCase {
+  section: string
+  theme: string
+  route: string
+  width: number
+  height: number
+  setup?: (page: Page) => Promise<void>
+}
+
+const CASES: CaptureCase[] = [
+  { section: 'home', theme: 'default', route: '/', width: 1280, height: 800 },
+  {
+    section: 'home',
+    theme: 'dark',
+    route: '/',
+    width: 1280,
+    height: 800,
+    setup: (page) => page.emulateMedia({ colorScheme: 'dark' }),
+  },
+]
 
 const BASE_URL = process.env.SCREENSHOT_BASE_URL ?? 'http://localhost:4173'
 const OUT_DIR = 'screenshots'
 
 const browser = await chromium.launch()
-await mkdir(OUT_DIR, { recursive: true })
 
-for (const route of ROUTES) {
-  for (const state of STATES) {
-    const ctx = await browser.newContext({
-      viewport: { width: route.width, height: route.height },
-    })
-    const page = await ctx.newPage()
+for (const captureCase of CASES) {
+  const context = await browser.newContext({
+    viewport: { width: captureCase.width, height: captureCase.height },
+  })
+  const page = await context.newPage()
 
-    if (state.setup) await state.setup(page)
+  if (captureCase.setup) await captureCase.setup(page)
 
-    await page.goto(`${BASE_URL}${route.path}`)
-    await page.waitForLoadState('networkidle')
+  await page.goto(`${BASE_URL}${captureCase.route}`)
+  await page.waitForLoadState('networkidle')
 
-    const file = path.join(OUT_DIR, `${route.name}-${state.name}.png`)
-    await page.screenshot({ path: file, fullPage: true })
-    console.log(`captured ${file}`)
+  const sectionDir = path.join(OUT_DIR, captureCase.section)
+  await mkdir(sectionDir, { recursive: true })
 
-    await ctx.close()
-  }
+  const file = path.join(sectionDir, `${captureCase.theme}.png`)
+  await page.screenshot({ path: file, fullPage: true })
+  console.log(`captured ${file}`)
+
+  await context.close()
 }
 
 await browser.close()
