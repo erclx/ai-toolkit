@@ -11,8 +11,11 @@ Without this skill, the planning docs describe the scope the session opened with
 
 A decision's verification anchor has the same shape of gap in the other direction. The reasoning keeps reading as current while the number it cites moves underneath, and an amendment written without an anchor leaves nothing recording which numbers were checked and which nobody has read since.
 
+The trigger side carries a gap of its own. "Sync the docs" names either corpus to the person saying it, so a description leaving its corpus to the opening clause alone competes with its public-facing sibling on nothing the routing field states, and the planning surface the request was about goes untouched.
+
 ## Must
 
+- Name the `.claude/` corpus in a trigger phrase rather than in the opening clause alone, so a bare request to sync the docs separates this skill from `docs-sync` on something both descriptions state
 - Take completion from the diff and everything else from the session, since completion is a fact about the repository rather than about the conversation
 - Match an outcome on the behavior it names, never on a filename or a commit subject
 - Leave an outcome unchecked when the diff is ambiguous. An unmarked shipped outcome costs one manual edit and a wrongly marked one hides work that never happened.
