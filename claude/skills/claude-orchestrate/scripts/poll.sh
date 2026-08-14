@@ -84,9 +84,13 @@ JQ_LAST_REVIEW_STATE='
     end
 '
 
-# An open pass this old has nobody on it. A review-to-follow-up cycle runs in
-# tens of minutes, so the threshold sits several times past one and well short
-# of a thread left overnight. A project whose workers run longer raises it here.
+# An open pass this old has nobody on it. The cycle it has to clear is a review
+# landing and a worker pushing a follow-up, measured between ten and thirty
+# minutes across a day of runs on 2026-08-14, so two hours sits about four times
+# past the slowest observed and still well inside a working session. Shorter
+# starts catching the slow healthy case this threshold exists to exclude, and
+# longer lets a dead dispatch sit past the point a person would have noticed.
+# A project whose workers run longer than that raises it here.
 STALE_AFTER=7200
 
 # A pull request this run could not read keeps the line it had, so the GONE
