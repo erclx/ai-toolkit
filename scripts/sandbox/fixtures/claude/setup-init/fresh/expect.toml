@@ -6,10 +6,11 @@
 # evidence. Every path below was read off the tree a run produced on 2026-08-03
 # rather than projected from what `buildSteps` orders.
 
-# A clean run cost 20 turns on 2026-08-03 against the default cap of 30. The
-# ceiling sits at the cap rather than at the observation: a truncated run reports
-# one turn past its cap, so an equal ceiling still catches truncation while never
-# failing a legitimate run that lands in the gap a lower number would open.
+# A clean run cost 20 turns on 2026-08-03 against the default cap of 30. One
+# sample, and the arm drives the real installer across six domains, so how a run
+# orders those installs moves the count and 20 is one path through them. The
+# ceiling holds at the default until a second pass shows the cost is stable, and
+# comes down to sit above the widest observation once one does.
 max_turns = 30
 
 # One path per domain the chain installs. `buildSteps` orders six of them and a

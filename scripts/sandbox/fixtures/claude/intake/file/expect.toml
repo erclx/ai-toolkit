@@ -10,7 +10,12 @@
 # one belongs to that table in TOML, so a `manual` array written at the bottom
 # parses clean and asserts nothing.
 
-max_turns = 45
+# The default cap, declared rather than observed. No recorded run for this arm
+# survives, so the ceiling sits where the running narrative puts an uncalibrated
+# one and comes down whenever a pass is measured. It stood at 45 against a cap of
+# 30, where a truncated run reports 31, passes the turn assertion, and fails only
+# what was going to fail anyway.
+max_turns = 30
 
 # The slug is pinned by the invocation rather than left to the run. `paths`
 # matches an exact path, and a slug the model derives from the dump's wording

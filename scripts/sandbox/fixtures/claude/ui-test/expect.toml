@@ -41,9 +41,9 @@ write_scope = [
 
 # A clean run cost 21 turns on 2026-08-02, against 29 for the run before the
 # fixture was corrected, where the skill spent its budget reporting the unmounted
-# input. Set equal to the default cap rather than under it: a truncated run
-# reports one turn past its cap, so an equal ceiling still catches truncation
-# while a lower one fails legitimate runs landing in the gap.
+# input. One clean sample against a fixture that has moved once already, and the
+# arm's cost turns on how many changes the skill judges visual-only. The ceiling
+# holds at the default until a second pass shows the cost is stable.
 max_turns = 30
 
 manual = [

@@ -7,10 +7,10 @@
 # proposal that found drift from an empty file. The drift reasoning itself sits
 # in `manual`.
 
-# A clean run cost 28 turns on 2026-08-03 against the default cap of 30. A
-# truncated run reports one turn past its cap, so a ceiling equal to the cap
-# still catches truncation while never failing a legitimate run that lands in the
-# gap a lower number would open. This arm has almost none of that gap to spare.
+# A clean run cost 28 turns on 2026-08-03 against the default cap of 30.
+# Correcting from that observation lands on the cap anyway, since a ceiling sits
+# above the cost it measured and the only room above 28 is the two turns to the
+# cap. This arm has almost none of that gap to spare.
 max_turns = 30
 
 # The filename carries the slug transform from `standards/skill.md` applied to

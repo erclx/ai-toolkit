@@ -7,12 +7,12 @@
 # rather than as content the project authored.
 
 # A clean run cost 21 turns on 2026-08-04 against the default cap of 30. The
-# ceiling sits at the cap rather than at twice the observation, because a
-# truncated run reports one turn past its cap and a declaration above the cap
-# passes that assertion while every other one fails. The route continues into
-# `claude-seed-sync` once the sync refuses, which is where the turns go. The
-# re-check after the write adds a pass on top of that 21, so a truncation here
-# is a signal to split the arm rather than to raise a ceiling already at the cap.
+# ceiling holds at the default rather than coming down to that observation,
+# because the route continues into `claude-seed-sync` once the sync refuses,
+# which is where the turns go, and the re-check after the write adds a pass on
+# top of that 21. One sample of a cost that moves with how far the route runs,
+# so a truncation here is a signal to split the arm rather than to raise a
+# ceiling already at the cap.
 max_turns = 30
 
 # The route, named as the command rather than as a skill, because this is the
