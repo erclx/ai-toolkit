@@ -52,6 +52,7 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 - Install one snippet, standard, or rule: run the domain `install` command
 - Sync one domain or every installed domain: run `aitk <domain> sync` or `aitk sync`
 - Fix only the ignore entries of the installed stack: run `aitk tooling inject --gitignore <stack>`
+- Measure a surface without changing it: offer the audits under `### Audits`
 - Browse what is available: run `aitk <domain> list`
 
 That row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false one splits three ways. Report tooling as unmeasured in each, name the cause, and run nothing, since the zero counts underneath are unmeasured rather than clean:
@@ -65,6 +66,8 @@ On a measured report, take `<stack>` from the first name in `tooling.chain`, whi
 ### Audits
 
 Four audits measure a surface without changing it. Offer the ones whose surface the target carries, list them together, and let the user pick. Run none of them unasked, and never treat a finding as a reason to abandon the operation the user asked for, since each reports judgments beside facts.
+
+A lifecycle row and these offers can fire on one target, since a project carrying a context folder and no installed domain satisfies the scaffold row and two audit conditions at once. The lifecycle row governs. Name its handoff first, then offer the audits in the same reply rather than in place of it. Scaffold work on a target with nothing installed is real work, and an audit offered instead of it answers a question nobody asked, while an audit dropped in favor of it loses the one the user did.
 
 - `.claude/context/` present: offer `aitk context audit`
 - A record folder present under `.claude/`, one of `plans`, `groundwork`, `intake`, or `memory`: offer `aitk records validate <kind>` for each one found
