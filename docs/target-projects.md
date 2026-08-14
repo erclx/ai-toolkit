@@ -78,7 +78,7 @@ Escalate only for real web apps. The `setup-init` skill reads `package.json` and
 
 Markdown-heavy projects, CLI tools, docs sites, research notebooks, and scripting repos stay on `base`. Escalation is a ceiling move, not a default.
 
-A project the toolkit ships no stack for lands on `base` the same way, and the skill marks that resolution as a fallback in its preview rather than reporting it as a match. The base layer carries JavaScript development dependencies, scripts, and hooks, so a project outside that ecosystem declines at the preview and takes `aitk:setup-gov` for the governance layer alone, which is language-neutral.
+A project the toolkit ships no stack for lands on `base` the same way, and the skill marks that resolution as a fallback in its preview rather than reporting it as a match. Configs, seeds, and gitignore entries land either way, and the JavaScript development dependencies, scripts, and hook activation land only where a `package.json` exists to carry them. A project outside that ecosystem declines at the preview and takes `aitk:setup-gov` for the governance layer alone, which is language-neutral.
 
 Run `aitk tooling list --json` and `aitk gov list --json` to see the current catalogs. Never hardcode stack names.
 

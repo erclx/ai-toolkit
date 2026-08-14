@@ -45,7 +45,7 @@ EOF
     log_step "Scenario ready: setup-init skill on a language with no stack"
     log_info "Context: go.mod and main.go, no package.json and no JavaScript evidence"
     log_info "Action:  /aitk:setup-init"
-    log_info "Expect:  both stacks resolve to 'base' and the preview marks each a fallback, naming the base development dependencies, scripts, and hooks a Go project inherits. The chain runs on that default rather than stopping, and names setup-gov as where a project declining it takes the language-neutral rule layer."
+    log_info "Expect:  both stacks resolve to 'base' and the preview marks each a fallback, naming what lands with no package.json present: configs, seeds, and gitignore entries, but no dev dependencies, scripts, or hook activation. The chain runs on that default rather than stopping, and names setup-gov as where a project declining it takes the language-neutral rule layer."
     ;;
   "vite-react")
     log_step "Running bun create vite"

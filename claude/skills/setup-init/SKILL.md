@@ -67,7 +67,7 @@ Before executing, output:
 
 - **Detected:** each technology with its evidence file
 - **Stack:** picked governance stack + resolved rule count. Mark it `fallback` when no detected runtime or framework matched a catalog name.
-- **Tooling stack:** picked tooling stack. Mark it `fallback` on the same test, and name what the project inherits: the `base` development dependencies, scripts, and hooks, which a project outside the JavaScript ecosystem will not use.
+- **Tooling stack:** picked tooling stack. Mark it `fallback` on the same test, and name what `base` lands: configs, seeds, and gitignore entries in every case, plus the JavaScript development dependencies, scripts, and hook activation wherever a `package.json` exists to carry them. A project outside that ecosystem runs none of the second group and keeps the first.
 - **Extras:** each `--add` rule with a one-line reason
 - **Snippets:** resolved category
 - **Skip:** any `--skip` entries with reason
