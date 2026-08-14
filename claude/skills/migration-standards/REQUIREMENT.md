@@ -13,6 +13,8 @@ A fourth failure comes before those three, from deciding what is unmigrated by l
 
 Taking detection from a command opens a failure the listing never had. A CLI predating the field exits zero with a well-formed report that never mentions it, so a skill treating an absent key as an empty answer tells a project whose every domain sits at the root that it has nothing to relocate. That is the population this skill exists for, and a silent false negative there costs more than the unfiltered count reading the folder would have produced.
 
+The re-sync the skill names has the same gap in the other direction. The relocation is what makes those commands land on a path that held nothing before, so the run hands over a command whose overwrite behavior it never states, and the reference holding that answer is named in the boundary below where no session reads it. Claude Code loads the skill entry alone.
+
 Three failures follow from acting without looking first. A move onto an existing `.claude/standards/` copy overwrites the files already installed there, which is the case the relocation was supposed to be unnecessary for. A `git mv` on a dirty tree lands the relocation in the same commit as unrelated work, so neither can be reviewed or reverted alone. And a session that rewrites every inbound reference spends its effort on toolkit-owned rules and skills, which the next sync overwrites, while the author-owned lines that actually break go unmentioned.
 
 ## Must
@@ -24,6 +26,7 @@ Three failures follow from acting without looking first. A move onto an existing
 - Propose `git mv` so history follows each file
 - Report author-owned inbound references as TODO lines the user fixes, and leave the reference itself untouched
 - Name the re-sync commands that reinstall toolkit-owned content at the new path, since the move alone leaves the install stale
+- Route to the overwrite contract from the body where those commands are printed, and carry its destructive rows into the reminder
 - Report the already-relocated case as a pass
 
 ## Must not

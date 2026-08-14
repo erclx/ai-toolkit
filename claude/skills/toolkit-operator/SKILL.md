@@ -80,6 +80,7 @@ The markdown row is the one every target satisfies, since a project with no mark
 For operations this skill runs directly:
 
 - Read the catalog first with `aitk <domain> list --json`, then match against project context
+- Read the `toolkit-cli` skill before any install or sync, and warn the user by name about each surface it lists as overwritten. A command name says nothing about what it does to a file already there, and this skill is the one running it.
 - Run the CLI with `AITK_NON_INTERACTIVE=1` so it skips prompts. The tool permission dialog is the confirmation gate.
 - Report the command run and what changed. Emit the full relative path for any file written.
 - Re-run `aitk sync --check . --json` after any operation that wrote, and compare it against the report `## Diagnose` read before acting

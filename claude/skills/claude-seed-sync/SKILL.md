@@ -34,6 +34,8 @@ Keep every seed regardless of state. `CLAUDE.md` is the file a project edits mos
 
 Record the dropped standards as one line in the scope table rather than as rows: `<n> standards stale, taken by aitk standards sync`.
 
+Read the `toolkit-cli` skill before naming that command in the output. It states which surfaces a sync overwrites, merges, or writes once, and this skill hands the user a command against files its own attribution pass cleared as carrying no edits.
+
 Fall back to the appearance heuristic in step 3 when the report cannot attribute, which is `historyUnavailable` set on the relevant section or the command failing outright. Say so in the summary block, because a fallback audit reports guesses rather than facts.
 
 ## Step 2: read installed copies

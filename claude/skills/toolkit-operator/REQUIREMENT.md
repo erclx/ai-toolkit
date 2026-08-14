@@ -13,6 +13,8 @@ Two failures come from acting on memory. A session that names a stack, rule, or 
 
 The third failure is duplication. A front door that answers everything itself reimplements first-time detection and seed diffing inline, badly, beside the skills that already do both. The value of a router is that it stops at the handoff.
 
+A fourth failure sits between the router and what it runs. This skill executes the install and sync commands whose effect on an existing file is invisible from the command line, and the reference stating that effect per surface is named in the boundary below, which Claude Code never loads. The router therefore overwrites a customized golden config with the answer sitting one skill away and unread.
+
 The last failure is writing without re-checking. A domain sync brought a stricter standard into a target and left ten of its eleven context entries non-compliant in the same moment, and the run reported success because reporting the command was where its work ended. A person found the breakage afterwards by running an audit by hand. The audit that would have caught it is built and reachable from nothing the router offers, so one session held both the defect and its detector and connected neither to the other.
 
 ## Must
@@ -21,6 +23,7 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 - Map the stated intent to one lifecycle phase, then either run the simplest command that satisfies it or hand off
 - Resolve every stack, rule, snippet, and standard name from a catalog at runtime
 - Run the CLI non-interactively and report the command run, what changed, and the full path of anything written
+- Read the overwrite contract from the body before any install or sync, and name each surface it lists as overwritten before running one
 - Read the reverse walk beside the forward sections, so a folder the toolkit stopped shipping and a migration with a live case both reach the user
 - Hand off a named migration to the skill the report names, the way an unmigrated domain reaches `migration-standards`
 - Offer every audit whose surface the target carries, and offer none whose surface it lacks

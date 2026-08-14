@@ -11,8 +11,11 @@ Without this skill, the planning docs describe the scope the session opened with
 
 A decision's verification anchor has the same shape of gap in the other direction. The reasoning keeps reading as current while the number it cites moves underneath, and an amendment written without an anchor leaves nothing recording which numbers were checked and which nobody has read since.
 
+The trigger side carries a gap of its own. "Sync the docs" names either corpus to the person saying it, so a description leaving its corpus to the opening clause alone competes with its public-facing sibling on nothing the routing field states, and the planning surface the request was about goes untouched.
+
 ## Must
 
+- Name the `.claude/` corpus in a trigger phrase rather than in the opening clause alone, so a bare request to sync the docs separates this skill from `docs-sync` on something both descriptions state
 - Take completion from the diff and everything else from the session, since completion is a fact about the repository rather than about the conversation
 - Match an outcome on the behavior it names, never on a filename or a commit subject
 - Leave an outcome unchecked when the diff is ambiguous. An unmarked shipped outcome costs one manual edit and a wrongly marked one hides work that never happened.
@@ -40,7 +43,7 @@ A decision's verification anchor has the same shape of gap in the other directio
 ## Out of scope
 
 - Creating a task file or moving one off the board, which `claude-tasks` owns
-- Public-facing docs, which `docs-sync` owns. This skill reconciles the `.claude/` planning surface.
+- Public-facing docs, which `docs-sync` owns. This skill reconciles the `.claude/` planning surface, and both descriptions name their corpus in the trigger so a request saying only "sync the docs" lands on one of the pair rather than on either.
 - Regenerating the task index, owned by a hook
 - Redrawing diagrams, which `claude-diagram` owns. This skill flags staleness and leaves the re-run to the author.
 - Re-measuring an architecture claim to decide whether its number moved. The sweep keys on a cited path entering the diff, so a claim whose number moved with no cited path in the diff goes unflagged.

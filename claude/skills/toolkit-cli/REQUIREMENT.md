@@ -13,6 +13,10 @@ The damage lands on the files a project owns. A golden config carrying local edi
 
 The inverse failure is quieter. A session that assumes a sync will pick up a change edits a seed and waits for an update that never comes, because the seed is copy-once and no sync command writes it again. Both failures are one missing fact available before the command runs.
 
+Being reachable is a separate problem from being right. This is a pure reference whose moment happens inside another skill's run, so nothing brings it up unless a body names it. Three sibling requirement files named it and routed nothing, because Claude Code loads `SKILL.md` as the entry and never opens the sibling. A route lives in a body or it does not exist, and a fourth requirement mention would repeat the same defect.
+
+The three bodies now carrying an inline pointer are `claude-seed-sync`, `migration-standards`, and `toolkit-operator`, each at the point it runs or prints an overwriting command.
+
 ## Must
 
 - State per surface and per command whether an existing file is overwritten, merged, written once, or left alone
@@ -24,6 +28,7 @@ The inverse failure is quieter. A session that assumes a sync will pick up a cha
 
 - Run any `aitk` command. The skill is read before acting.
 - Restate the full semantics. It is a target-session summary and the detail lives with its owner.
+- Take a mention in a sibling's requirement file as an inbound route. The three bodies named in the gap above carry the pointer, and adding a fourth means editing that body rather than its requirement.
 
 ## Guards
 
