@@ -1,17 +1,17 @@
 ---
 title: Orchestrator parked row runbook
-description: Re-testing every parked blocker against the current tree, the trigger that separates this pass from the merge sweep, and the two ways a re-test goes wrong
+description: Re-testing every parked blocker against the current tree, the two triggers that start the pass, and the two ways a re-test goes wrong
 ---
 
 Re-test every parked row as orchestrator. A blocker cell is a measurement taken the day the row was parked and nothing re-takes it, so a row can wait on a condition that stopped holding weeks earlier with no surface reporting the gap.
 
-Run this when nothing merged and the board is not moving. Workers are building, no pull request is waiting on a first pass, and the session is otherwise idle.
+Two triggers start this pass. `orchestrator-sweep.md` ends by sending the rows `aitk tasks validate` listed as untested here, because a merge changes the tree under every parked row at once rather than under the rows naming it. The other is an idle session: nothing merged, workers are building, no pull request is waiting on a first pass, and the board is not moving.
 
-That trigger is the inverse of the sweep's. `orchestrator-sweep.md` runs after a batch of merges and asks which parked row to promote next, taking the blocker cell as read. This pass asks whether that cell is still true. Both walk the same rows and both can end in a promotion, so a session reading them as one pass runs whichever it remembers and re-tests nothing.
+The two differ in scope rather than in procedure. A merge sends the untested rows, since the validator already re-took the two kinds it can settle. An idle session walks every parked row, because no event narrowed which of them to look at.
 
-A merge is still worth following with this pass even though the sweep already ran. A merge changes the tree under every parked row at once rather than under the rows naming it, and the sweep re-reads none of them.
+Neither trigger is a scheduler. `orchestrator-poll.md` owns the one recurring trigger this skill has, and a second loop firing into a static board is the always-on failure that file already warns about.
 
-Nothing starts this pass, and it takes no scheduler of its own. `orchestrator-poll.md` owns the one recurring trigger this skill has, and a second loop firing into a static board is the always-on failure that file already warns about.
+The sweep's own question stays distinct from this one. It asks which parked row to promote next, taking the blocker cell as read, and this pass asks whether that cell is still true. A session collapsing them runs whichever it remembers and re-tests nothing.
 
 ## Scope
 
@@ -21,10 +21,10 @@ Take the rows in board order and finish one before opening the next. Clearing a 
 
 ## Re-testing a row
 
-The blocker cell states what the row waits on, and each kind is tested differently.
+The blocker cell states what the row waits on, and each kind is tested differently. `aitk tasks validate` already re-takes the first two and reports the rest as untested, so run it first and re-take by hand only what it names.
 
-- Collision with a track in flight: intersect the row's Touches column with that of every `## Run now` row. A track that merged since the row was parked is no longer in flight, whatever the sets still share. A `## Needs a plan` row carries no Touches column, so read its file set off the task file before claiming a collision either way.
-- A dependency on another task: open that task. One whose outcomes are all `[x]`, or one already archived, holds nothing.
+- Collision with a track in flight: the validator intersects the row's Touches column with that of every `## Run now` row. A track that merged since the row was parked is no longer in flight, whatever the sets still share. A `## Needs a plan` row carries no Touches column, so the validator skips that half and the file set comes off the task file before claiming a collision either way.
+- A dependency on another task: the validator opens the task a link in the cell names. One whose outcomes are all `[x]`, or one already archived, holds nothing. A cell naming the task in prose resolves to no file, so open it by hand and rewrite the cell as a link.
 - A condition about the tree, such as a count of some shape or the presence of a construct: measure it again, per Two ways a re-test goes wrong below.
 - Waiting on a plan: nothing external holds the row, so the pass writes the plan rather than testing anything. See The plan half below.
 - Waiting on an operator action, such as a run that happens from a shell: record it as untestable this pass and name what the operator has to do. A session cannot clear it, and re-measuring it every pass is waste.
