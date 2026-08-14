@@ -77,13 +77,21 @@ An arm inheriting its premise from dev-skill injection holds only while the bran
 
 The declaration also pins the folder name beside the verdict, against the general rule that a name history decides does not belong in a pin, because the second guard fails provisioning the moment that root comes back and a reader sees the fragility where it is rather than inside a declaration going quietly vacuous.
 
-The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `audits` failed at 4 asserted and 2 failed, both failures on a reply that described the audit categories in prose and named neither `aitk context audit` nor `aitk records validate`. Its turn count and cost went unrecorded, so the two figures below are the only observations the three runs produced. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. All three keep the default cap, since a failed run and a refusal each bound nothing.
-
-The `audits` run failed wider than its count reports. The fixture stages a target carrying two of the four audit surfaces and the reply offered all four as measurable, the withheld comment density included, which is the condition the arm exists to score. The checker passes that, because the withheld offer is asserted as a negative substring and any rephrasing satisfies it, which the arm's first `manual` entry names in advance. Four of its eight assertions come back unchecked rather than passed, so read `asserted` as the denominator rather than as the coverage.
+The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. All three keep the default cap, since a failed run and a refusal each bound nothing.
 
 The other four arms passed on 2026-08-04, which is the first time either skill was executed by anything.
 
 Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both are declared at the cap rather than above an observation for that reason. The `fresh` run is the one whose turn count is not recorded, since `record_run` failed to write it and the envelope went with it.
+
+### The audits arm failed twice before the section had a route
+
+`audits` failed twice on the same two reply pins by two different paths, at 4 asserted and 2 failed each time. The first reply described the audit categories in prose and named neither `aitk context audit` nor `aitk records validate`, and its turn count and cost went unrecorded. The second took the scaffold handoff on a report showing 14 missing seeds and no installed domain and never reached the audits at all, in 6 turns at 0.24 dollars. Escapes on that run came back empty.
+
+The first run failed wider than its count reports. The fixture stages a target carrying two of the four audit surfaces and the reply offered all four as measurable, the withheld comment density included, which is the condition the arm exists to score. The checker passes that, because the withheld offer is asserted as a negative substring and any rephrasing satisfies it, which the arm's first `manual` entry names in advance. Four of its eight assertions come back unchecked rather than passed, so read `asserted` as the denominator rather than as the coverage.
+
+The second run identifies the cause as structural rather than as a wandering session. `## Route` maps an intent or a diagnostic finding to one lifecycle phase and the audit offers sit in a subsection below it, so the table has to carry a measurement row for the section to be reachable at all. It carries one now, and the section ranks a lifecycle row ahead of the offers, since the fixture's target fires the scaffold row and two audit conditions at once.
+
+The arm pins `setup-init` beside the two audit commands, which scores that ranking rather than assuming it, and the order between the handoff and the offers stays in `manual` because a substring set is unordered. The cap stays at 30 until a passing run bounds it.
 
 ### The superseded arm and the guard that fixed the skill
 
