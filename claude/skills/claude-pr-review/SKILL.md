@@ -144,11 +144,13 @@ Re-reviewed `<short-sha>`, N commits since the prior pass. X critical, Y should-
 🤖 Reviewed by Claude Code
 ```
 
-The heading reports whether anything blocks the merge and the summary line reports which pass this is. Post under `## Review` whenever the pass carries a critical or a should-fix, whether it is the first pass or the fourth. Post `## Review closed` on every other pass, a pass carrying only minors included, and list those minors under it as follow-ups. One severity threshold then governs the heading and the dispatch alike, since the routing that sends a worker to act fires on the same two grades. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while a critical or should-fix is still open, and `## Review closed` when neither is.
+The heading reports whether anything blocks the merge and the summary line reports which pass this is. Post under `## Review` whenever the pass carries a critical or a should-fix, whether it is the first pass or the fourth. Post `## Review closed` on every other pass, a pass carrying only minors included, and list those minors under it as follow-ups. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while a critical or should-fix is still open, and `## Review closed` when neither is.
+
+The heading and the dispatch answer two different questions, so a close-out does not mean the pass owes nobody. The heading says whether anything blocks the merge and the dispatch says whether any work is owed, and a pass carrying only minors closes the heading while still sending the session holding the branch. Keying the dispatch on the grade too was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low.
 
 The cost is that a clean thread no longer reads off the heading alone, since a close-out may carry minors. Take the merge decision from the heading and the counts from the summary line under it, which is where they already sit.
 
-A minor under a close-out is deferred rather than dropped, so it needs a surface that survives the merge. Write it into the `## Findings` section of the task the branch closes, which is where the queue-refill sweep already routes a finding that changes another task, and name that destination in the bullet. A minor left on the thread alone is lost the moment the pull request merges.
+A minor the dispatched worker declines is what needs a surface that survives the merge, rather than every minor, since one that gets fixed on the branch needs no durable record. Write a declined minor into the `## Findings` section of the task the branch closes, which is where the queue-refill sweep already routes a finding that changes another task. A declined finding left on the thread alone is lost the moment the pull request merges.
 
 Read the state off the most recent review comment rather than off the presence of a closed one. A close-out does not close the pull request, so a commit pushed after it gets its own pass, and that pass reopens the review under `## Review` when it raises a critical or a should-fix.
 
@@ -181,7 +183,7 @@ A pass carrying only minors takes the same heading and the full shape rather tha
 
 **`path/to/file.ext`**
 
-- **minor**: finding, and the task whose findings now carry it.
+- **minor**: finding, and the fix it wants.
 
 🤖 Reviewed by Claude Code
 ```
