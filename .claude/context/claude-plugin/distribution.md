@@ -7,7 +7,7 @@ description: The marketplace entry, the install-shape traps it avoids, and the r
 
 `.claude-plugin/marketplace.json` at the repository root holds one entry whose `source` is `./claude`. The marketplace root is the directory holding `.claude-plugin/`, and an entry's source resolves against that root rather than against the manifest file. Adding the marketplace and installing the one plugin is the whole install path. The `--plugin-dir` alias survives as the development path, where a local edit overrides the installed copy for that session.
 
-Sourcing the repository root instead is the trap this shape exists to avoid, and it was measured rather than reasoned about. Skills are discovered only at `<plugin-root>/skills/` and this repository keeps them a level down, so a root-sourced entry exposes zero skills. It also costs 312M, because Claude Code runs a dependency install on any plugin carrying a package manifest and copies `.claude/` and the internal skills into the cache. The closest comparable project sources its root, which works only because its skills sit there.
+Sourcing the repository root instead is the trap this shape exists to avoid, and it was measured rather than reasoned about. Skills are discovered at `<plugin-root>/skills/` unless the entry names them explicitly, and this repository keeps them a level down, so a root-sourced entry carrying no `skills` array exposes zero skills. It also costs 312M, because Claude Code runs a dependency install on any plugin carrying a package manifest and copies `.claude/` and the internal skills into the cache. The closest comparable project sources its root, which works only because its skills sit there.
 
 `claude/standards` and `claude/snippets` are symlinks to the root authoring sources. A symlink inside a plugin that resolves elsewhere within the marketplace is dereferenced at install and its content copied, so the files arrive as real directories in the cache. The measured install is 964K with 55 skills, against 760K for the same shape without the symlinks.
 
@@ -50,6 +50,24 @@ Internal content now lives at `internal/`, which nothing under `claude/` reaches
 A native Windows checkout without symlink support materializes both links as plain text files holding the paths `../standards` and `../snippets`. The plugin then ships two junk files and no standards, and no stage notices, because every catalog command reads the real directories at the repository root. `.claude/context/sandbox/overview.md` treats Windows as a supported development environment, so this is a limitation to state rather than a case the pipeline can catch.
 
 A marketplace name is one global slot per user. Adding a second marketplace under the same name replaces the first, and a local-path marketplace pointing at a worktree breaks when that worktree is removed.
+
+## The per-install subset lever
+
+A marketplace entry's `skills` array adds to the conventional `<plugin-root>/skills/` scan rather than narrowing it. An entry sourced at `./claude` naming four skill directories exposed all 59, and the same entry naming one skill directory outside `skills/` exposed 60. The documented restricting behavior is an artifact of the plugin root rather than a property of the field. Where the resolved root carries no `skills/` directory, the conventional scan contributes nothing and the array becomes the only source, which is what both published examples of the field have in common.
+
+Removing `plugin.json` from the subdirectory changes none of it. The manifest governs name and version and leaves component discovery to the root's own layout, so whether that root carries `skills/` is what decides.
+
+The shape that narrows in this layout is a curated root holding one symlink per kept skill and no `skills/` directory, with the entry naming each path. The full entry loads 59 skills at roughly 8,000 always-on tokens, and a four-skill curated entry loads 4 at roughly 330. Install dereferences the symlinks the way it does `claude/standards`, so the cache holds real directories at 104K against 964K for the full plugin.
+
+What that shape drops is the standards fallback. Install copies the named skill directories alone, so no `standards/` sibling arrives, and a skill sitting one level under the curated root rather than two under the plugin root resolves `${CLAUDE_SKILL_DIR}/../../standards/X.md` to nothing. Every citing body loses its fallback at once, which a curated entry has to answer before one ships.
+
+### What a shape change does to an installed cache
+
+A change to an entry's `skills` array reaches the reported inventory as soon as the marketplace refreshes and never reaches the cache. Adding a fifth skill made `claude plugin details` report five while the cache directory still held four, so the command answers from the entry rather than from what an install materialized. `claude plugin update` declined the work and reported the plugin already current, because the version key had not moved. Uninstall followed by install reconciled both.
+
+Publishing a shape change therefore strands anyone who has already installed, unless the release moves the version the cache is keyed on. An entry resolving a `plugin.json` takes its key from that file's version, which `release-please` bumps, so a shape change riding a release materializes and one shipped without a bump does not. An entry resolving no manifest is keyed on the source commit instead.
+
+`claude plugin marketplace remove` leaves the cache directory behind. Removing a marketplace reclaims nothing until the directory under `plugins/cache/` goes as well.
 
 ## Release
 
