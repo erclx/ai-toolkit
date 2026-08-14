@@ -103,7 +103,7 @@ The collision check is the one a person cannot run by eye. Paths come from the b
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 
-Columns are read from each table's own header rather than by position, so a project whose board differs from this one is reported for what it lacks. The `index`, `priority`, and `session` siblings are skipped, since none of the three is a task.
+Columns are read from each table's own header rather than by position, so a project whose board differs from this one is reported for what it lacks. The `index` and `priority` siblings are skipped, along with every pre-compaction handoff, which takes one file per session under a `session-` prefix. None of them is a task, and a handoff counted as one would be reported as a task carrying no row on every session that wrote one.
 
 Skills branch on the findings rather than on the exit code:
 
