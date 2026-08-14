@@ -1,6 +1,6 @@
 ---
 name: claude-pr-review
-description: Reviews an open pull request from an independent session and posts findings as a review comment on the PR. Posts a first pass against the whole change and every later pass against only the commits added since, under `## Review` while anything is open and `## Review closed` once nothing is. Reads project docs and the roadmap for cross-feature context a self-review lacks. Use when asked to "review the PR", "review this feature's PR", "post a PR review", "re-review the PR", "close out the review", "confirm the findings are fixed", or acting as the orchestrator reviewing a worker's PR. Do NOT use to review local uncommitted changes. That is `claude-review`.
+description: Reviews an open pull request from an independent session and posts findings as a review comment on the PR. Posts a first pass against the whole change and every later pass against only the commits added since, under `## Review` while a critical or should-fix is open and `## Review closed` once nothing blocks the merge. Reads project docs and the roadmap for cross-feature context a self-review lacks. Use when asked to "review the PR", "review this feature's PR", "post a PR review", "re-review the PR", "close out the review", "confirm the findings are fixed", or acting as the orchestrator reviewing a worker's PR. Do NOT use to review local uncommitted changes. That is `claude-review`.
 ---
 
 # Claude PR review
@@ -13,10 +13,10 @@ findings to the PR, so the vantage is independent and the output is durable.
 It posts at least twice over a pull request's life. A first pass opens the
 review against the whole change, and every later pass reads only the commits
 added since. The heading reports state rather than pass number: a pass carrying
-findings takes `## Review`, and `## Review closed` is reserved for a pass
-carrying none, so the most recent comment's heading reports where the review
-stands. Every pass is this skill, and which one it is gets detected from the
-thread rather than named by the caller.
+a critical or a should-fix takes `## Review`, and `## Review closed` covers
+every other pass, so the most recent comment's heading reports whether anything
+blocks the merge. Every pass is this skill, and which one it is gets detected
+from the thread rather than named by the caller.
 
 ## Guards
 
@@ -85,9 +85,9 @@ Review the diff and files for the same axes as `claude-review` (bugs, edge cases
 
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
-A later pass applies the same axes to the delta, and adds one check the first pass cannot make: did each prior finding land, and did the fix regress anything it touched. Findings of its own are normal findings, stated at the same severity and counted the same way. That count is what Step 4 reads to pick the heading, so a pass raising one of its own is not a close-out.
+A later pass applies the same axes to the delta, and adds one check the first pass cannot make: did each prior finding land, and did the fix regress anything it touched. Findings of its own are normal findings, stated at the same severity and counted the same way. That count is what Step 4 reads to pick the heading, so a pass raising a critical or a should-fix of its own is not a close-out.
 
-A prior finding can also be settled by argument rather than by a fix. A reply naming the plan question that already declined it, or a constraint this session could not see, withdraws the finding or moves its grade. State that outcome in the body under the finding it changes, naming the fact that produced it, whether the argument arrived on the thread or through the channel that carried the dispatch. Dropping the finding from this body instead leaves a reader unable to tell a withdrawal from an oversight, and the reasoning goes with the session that heard it. A withdrawal removes the finding from the count, so a pass that withdrew every open item is a close-out. Write the withdrawal and its cause into that body rather than taking the short close-out line Step 4 supplies, which reports prior findings addressed and would credit a fix nobody made.
+A prior finding can also be settled by argument rather than by a fix. A reply naming the plan question that already declined it, or a constraint this session could not see, withdraws the finding or moves its grade. State that outcome in the body under the finding it changes, naming the fact that produced it, whether the argument arrived on the thread or through the channel that carried the dispatch. Dropping the finding from this body instead leaves a reader unable to tell a withdrawal from an oversight, and the reasoning goes with the session that heard it. A withdrawal removes the finding from the count, so a pass that withdrew every critical and should-fix is a close-out. Write the withdrawal and its cause into that body rather than taking the short close-out line Step 4 supplies, which reports prior findings addressed and would credit a fix nobody made.
 
 Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor` (visibility only).
 
@@ -144,9 +144,15 @@ Re-reviewed `<short-sha>`, N commits since the prior pass. X critical, Y should-
 🤖 Reviewed by Claude Code
 ```
 
-The heading reports whether anything is open and the summary line reports which pass this is. Post under `## Review` whenever the pass carries a finding at any severity, whether it is the first pass or the fourth. Reserve `## Review closed` for a pass carrying none, which makes it the marker worth scanning for rather than a label on a kind of pass. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while anything is still open, and `## Review closed` when nothing is.
+The heading reports whether anything blocks the merge and the summary line reports which pass this is. Post under `## Review` whenever the pass carries a critical or a should-fix, whether it is the first pass or the fourth. Post `## Review closed` on every other pass, a pass carrying only minors included, and list those minors under it as follow-ups. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while a critical or should-fix is still open, and `## Review closed` when neither is.
 
-Read the state off the most recent review comment rather than off the presence of a closed one. A close-out does not close the pull request, so a commit pushed after it gets its own pass, and that pass reopens the review under `## Review` when it raises anything.
+The heading and the dispatch answer two different questions, so a close-out does not mean the pass owes nobody. The heading says whether anything blocks the merge and the dispatch says whether any work is owed, and a pass carrying only minors closes the heading while still sending the session holding the branch. Keying the dispatch on the grade too was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low.
+
+The cost is that a clean thread no longer reads off the heading alone, since a close-out may carry minors. Take the merge decision from the heading and the counts from the summary line under it, which is where they already sit.
+
+A minor the dispatched worker declines is what needs a surface that survives the merge, rather than every minor, since one that gets fixed on the branch needs no durable record. Write a declined minor into the `## Findings` section of the task the branch closes, which is where the queue-refill sweep already routes a finding that changes another task. A declined finding left on the thread alone is lost the moment the pull request merges.
+
+Read the state off the most recent review comment rather than off the presence of a closed one. A close-out does not close the pull request, so a commit pushed after it gets its own pass, and that pass reopens the review under `## Review` when it raises a critical or a should-fix.
 
 Both of this skill's headings anchor as a section distinct from human threads. Do not invent one beyond those two and the `## Review response` a sibling owns, and do not append the PR number, which GitHub already renders above the comment.
 
@@ -166,11 +172,25 @@ Before posting, run the scan in `.claude/standards/publish.md` against the body,
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md
 ```
 
-A pass with no findings takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No blocking findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
+A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No blocking findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
 
-A pass that closed by withdrawing a finding rather than by reading its fix takes neither line, per the withdrawal rule in Step 3. Both claim a fix landed, and the second names it, so posting either over a withdrawal credits work nobody did on the one comment a reader treats as the verdict. Write the withdrawal and the fact that settled it in place of the canned line, keeping the heading and the footer.
+A pass carrying only minors takes the same heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. Keep whichever scope sentence the pass owes on the summary line:
 
-Post that one even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
+```markdown
+## Review closed
+
+0 critical, 0 should-fix, Z minor. Nothing blocks the merge. Reviewed against project docs and roadmap.
+
+**`path/to/file.ext`**
+
+- **minor**: finding, and the fix it wants.
+
+🤖 Reviewed by Claude Code
+```
+
+A pass that closed by withdrawing a finding rather than by reading its fix takes neither ✅ line, per the withdrawal rule in Step 3. Both claim a fix landed, and the second names it, so posting either over a withdrawal credits work nobody did on the one comment a reader treats as the verdict. Write the withdrawal and the fact that settled it in place of the canned line, keeping the heading and the footer.
+
+Post a close-out even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
 
 ## Step 5: output
 

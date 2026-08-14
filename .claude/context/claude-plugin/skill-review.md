@@ -55,13 +55,35 @@ Deriving it also decides what a close-out reads. `gh pr view --json reviews` ret
 
 ### The heading contract
 
-The heading is the half a reader sees without opening anything, so it reports state rather than pass number. `## Review` covers every pass carrying a finding and `## Review closed` is reserved for one carrying none, so the state comes off the most recent comment rather than off a label on a kind of pass. A close-out does not close the pull request, which is why the rule reads the latest heading rather than promising the closed one is last.
+The heading is the half a reader sees without opening anything, so it reports state rather than pass number. `## Review` covers a pass carrying a critical or a should-fix and `## Review closed` covers every other pass, so the state comes off the most recent comment rather than off a label on a kind of pass. A close-out does not close the pull request, which is why the rule reads the latest heading rather than promising the closed one is last.
 
 Coupling it to the pass number instead was measured wrong on two reviews in five, since twenty-one of fifty-three close-outs reported an open finding under a heading asserting closure. `claude-address-review` nests `## Review response` under the first of those, so a thread reads as opened, answered, still open, closed.
 
 Sharing a prefix across that family is why the detection matches the first line for equality rather than testing a prefix. A prefix test also accepts `## Review response`, and it happened to be safe only because `claude-address-review` posts through `gh pr comment`, which lands in `.comments` and never in `.reviews`. Nothing recorded that dependency, so the close-out would have started scoping to the worker's reply the day that skill switched to posting a review. An equality test costs the same and owes nothing to a sibling's choice of command.
 
-A finding withdrawn on a reply's argument leaves that count too, so a pass withdrawing every open item reads as a close-out while still owing a body the short close-out line cannot carry, since that line credits a fix nobody made. `.claude/context/claude-internal.md` holds why a reply reaches the thread at all and which class of reply stays off it.
+A finding withdrawn on a reply's argument leaves that count too, so a pass withdrawing every critical and should-fix reads as a close-out while still owing a body the short close-out line cannot carry, since that line credits a fix nobody made. `.claude/context/claude-internal.md` holds why a reply reaches the thread at all and which class of reply stays off it.
+
+### The heading and the dispatch answer two questions
+
+Reserving the closed heading for a pass carrying nothing at all left a minors-only pass between two rules that disagreed. The heading reported an open review on a finding at any grade and the poll runbook floored the dispatch at should-fix, so such a pass read as open while no rule told anyone to act on it. The same situation was handled two ways within one hour on 2026-08-14, one thread closing with the item named in prose and a zero count and the other staying open on a count of one.
+
+The closed heading reports that nothing blocks the merge rather than that nothing was said, so a minors-only pass posts it and lists the minors as follow-ups with the summary line still carrying the counts. Unifying both surfaces on that one threshold was the first resolution and it held for hours: a live minors-only pass then closed cleanly and dispatched nobody, and the work sat until the operator ran the address skill by hand.
+
+So the dispatch floor came off rather than the heading rule. The heading answers whether anything blocks the merge and the dispatch answers whether any work is owed, and a minors-only pass closes the first while still sending the session holding the branch. What justifies splitting them again is the measurement that made the grade load-bearing in the first place: across 8 findings on an archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded. A grade that runs that low can decide the merge signal, where a reader checks the counts underneath it, and cannot decide whether anyone is sent, where nothing checks behind it.
+
+The cost is that a clean thread no longer reads off the heading alone, and that the dispatch reads the counts rather than the heading above them. Both come off the summary line, which is where they already sat.
+
+A minor the dispatched worker declines goes to the `## Findings` section of the task the branch closes, which the queue-refill sweep already names as the destination for a finding that changes another task. Every minor went there under the unified rule, which was right while nobody was sent to fix them and is now double-recording a fix that landed on the branch.
+
+Whether a finding is new in the diff or pre-existing and out of it is the real difference behind the two handlings, and it stays off the thread. It is a second axis on a ladder already called imprecisely, and the single threshold closes the gap without it.
+
+`poll.sh` carries the detection, because a rule firing only when a session reads it is what produced the inconsistency. A third jq filter takes the last family review's first line rather than its commit, and a `STALLED` state names a pull request whose open pass covers the head with nothing following it. Reporting a standing condition rather than a transition would fire on every later run and the board would never read `No movement.`, so the classification writes a marker into the baseline field it derives and reports once per entry.
+
+The heading alone cannot decide it, which the marker hides rather than fixes. One threshold under the heading and the dispatch means an open pass is a dispatch owed and made, so the healthy thread is a worker still working and every dispatched pull request would be named minutes into the work it was sent to do. A signal firing on the healthy path is one an operator learns to skip, which is the always-on failure the runbook already records from the other direction. The same filter therefore emits the pass's age beside its heading, computed in jq because `date -d` is GNU-only, and the state adds a floor of two hours. That is several times a review-to-follow-up cycle and well short of a thread left overnight, and a project whose workers run longer raises the constant. A review carrying no timestamp reads as age zero and classifies nothing, matching the answer a pull request the run could not read already gets.
+
+Keying on elapsed time rather than on two consecutive quiet polls also drops the history the state needed. A baseline written before the field exists reads as not yet reported, which is what it is, so the first run after an upgrade names a thread already past the floor instead of waiting a poll to confirm what it can already see. The prose half still cannot be dropped, since the script reports and never instructs and the state catches only a thread already in the wrong shape.
+
+Splitting the heading from the dispatch narrowed what the state reaches. It reads the open heading, and a minors-only pass now owes a dispatch under a closed one, so a stalled minor is invisible to it while a stalled blocking finding is not. Closing that gap means pinning the summary line's counts, which is a second string from `claude-pr-review` that this script would have to track through every edit, so the narrowing is recorded where a reader meets the state rather than paid for.
 
 ## The rebase stage
 
