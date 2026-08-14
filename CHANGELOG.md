@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.93.0](https://github.com/erclx/aitk/compare/v0.92.0...v0.93.0) (2026-08-14)
+
+
+### Features
+
+* **claude:** add a skills drift verb and run it at the handoff ([#981](https://github.com/erclx/aitk/issues/981)) ([302e96d](https://github.com/erclx/aitk/commit/302e96d1a7b3b497bdafec7d4c0a95a5b248474a))
+
 ## [0.92.0](https://github.com/erclx/aitk/compare/v0.91.2...v0.92.0) (2026-08-14)
 
 
