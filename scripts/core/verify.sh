@@ -111,21 +111,54 @@ collect_plugin_manifests() {
   } | sort -u
 }
 
+# sha256 of a file under the coreutils name and the macOS one. `aitk capture`
+# writes the same digest into the stamp through node's crypto, so the two sides
+# agree on an algorithm rather than on a tool being installed.
+file_sha256() {
+  local digest
+  if command -v sha256sum >/dev/null 2>&1; then
+    digest=$(sha256sum "$1")
+  else
+    digest=$(shasum -a 256 "$1")
+  fi
+  printf '%s\n' "${digest%% *}"
+}
+
 # The drift assert covers the HTML because the PNG is a chromium render whose
 # bytes move with the browser. That leaves the artifact a visitor actually sees
 # asserted nowhere, so a branch that regenerates the HTML and never runs the
 # capture passes every stage while shipping an image with the old counts.
 #
-# The two files move together or the image is stale, so their last-touching
-# commit is the same commit. Comparing the branch's file list instead would pass
-# any branch that touched both anywhere, including one that regenerated the HTML
-# alone in a later commit. Both absent resolves to two empty strings and passes,
-# which is correct for a tree that carries neither.
-assert_hero_pair() {
-  local html_commit png_commit
-  html_commit=$(git -C "$PROJECT_ROOT" log -1 --format=%H -- assets/hero.html)
-  png_commit=$(git -C "$PROJECT_ROOT" log -1 --format=%H -- assets/hero.png)
-  [ "$html_commit" = "$png_commit" ]
+# `aitk capture` records the digest of the markup it rendered in the stamp
+# beside the image, so this reads provenance rather than timing. Comparing the
+# commit that last touched each file passes any pair that moved together
+# whatever the image holds, which is what a binary conflict resolved by taking
+# either side produces. All three absent passes, which is correct for a tree
+# that carries none of them.
+assert_hero_stamp() {
+  local html="$PROJECT_ROOT/assets/hero.html"
+  local png="$PROJECT_ROOT/assets/hero.png"
+  local stamp="$PROJECT_ROOT/assets/hero.stamp"
+
+  if [ ! -f "$html" ] && [ ! -f "$png" ] && [ ! -f "$stamp" ]; then return 0; fi
+
+  local missing=""
+  [ -f "$html" ] || missing="$missing assets/hero.html"
+  [ -f "$png" ] || missing="$missing assets/hero.png"
+  [ -f "$stamp" ] || missing="$missing assets/hero.stamp"
+  if [ -n "$missing" ]; then
+    echo "Missing from the hero set:$missing"
+    return 1
+  fi
+
+  local recorded actual
+  recorded=$(awk '$1 == "sha256:" { print $2; exit }' "$stamp")
+  actual=$(file_sha256 "$html")
+  if [ "$recorded" != "$actual" ]; then
+    echo "assets/hero.stamp records $recorded"
+    echo "assets/hero.html hashes to $actual"
+    return 1
+  fi
 }
 
 # Entries the audit actually measured, summed across the folders it resolved.
@@ -188,8 +221,8 @@ main() {
   # machine whose chromium differs rather than on a stale count.
   log_step "Hero"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-hero.sh" "Hero regen failed"
-  assert_no_drift "assets/hero.html" "Hero counts drifted. Run bun run check, then aitk capture assets/hero.html, and commit assets/hero.html with assets/hero.png."
-  run_check "assert_hero_pair" "Hero HTML and image last moved in different commits, so the image may be stale. Run aitk capture assets/hero.html and commit both files together."
+  assert_no_drift "assets/hero.html" "Hero counts drifted. Run bun run check, then aitk capture assets/hero.html, and commit assets/hero.html with assets/hero.png and assets/hero.stamp."
+  run_check "assert_hero_stamp" "assets/hero.png was captured from different markup than the assets/hero.html committed beside it. Run aitk capture assets/hero.html and commit all three files together."
   log_info "Hero clean"
 
   log_step "Skill references"
