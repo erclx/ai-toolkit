@@ -51,6 +51,8 @@ Writing the stamp inside the render rather than in a wrapper is what makes it wo
 
 Each digest covers a whole file rather than the five counts inside it. A template edit changes what the image shows without moving any count, and hashing bytes keeps the stage ignorant of what the markup renders, which is what lets it stay correct as the frame grows fields.
 
+The counts are regenerated from the standards and skills trees, so any branch adding a standard or a skill moves `assets/hero.html` whether or not it meant to touch the frame. Clearing the stage then costs a capture and all three files in the commit, which puts that branch in collision with any track holding `assets/` however its plan drew the file set. Read the collision off this stage rather than off the plan.
+
 `file_sha256` refuses on a machine carrying neither `sha256sum` nor `shasum`, and it refuses on stderr. Every caller reads it through a command substitution that captures stdout into the digest, so a message written there is swallowed and the stage reports a mismatch against a blank value, which names the image as wrong when the checker is what could not run.
 
 ## Seed independence

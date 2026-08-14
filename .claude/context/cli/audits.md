@@ -236,7 +236,7 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - A heading outside the three the standard fixes yields no group at all, which refuses instead of reporting a clean board nothing parsed
 - An absent `Touches` column and an unreadable one are one finding, not two states. Reporting only the second passed a `## Run now` table declaring no file set, which is the shape where the collision check silently tests nothing.
 - A backticked span counts as a path when it holds a slash or ends in an extension opening with a letter. The letter is what separates `commands.md` from a task version, whose trailing segment opens with a digit, since reading the version as a path collides two rows that merely cite the same task. <!-- audit-ignore-citations -->
-- `RESERVED_STEMS` moved out of `archive.ts` as an export and gained `session`, so the two verbs cannot count a board sibling as a task the other does not. It is also what keeps the one-to-one mapping check from reporting `session.md` as a task carrying no row.
+- `RESERVED_STEMS` moved out of `archive.ts` as an export, so the two verbs cannot count a board sibling as a task the other does not. `isReservedStem` wraps it because the pre-compaction handoff takes one file per session named for the branch, so the test matches the fixed stems plus any stem opening `session-`. That is what keeps the one-to-one mapping check from reporting every handoff as a task carrying no row.
 
 ## The record validator
 

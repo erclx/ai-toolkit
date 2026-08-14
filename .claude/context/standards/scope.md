@@ -17,9 +17,11 @@ A convention consumed by a specific skill rather than authored by a project live
 
 Narrow readership is the criterion, not portability, and `.claude/ARCHITECTURE.md` records why the two came apart. The fan-out writes one copy per consumer, so a standard several surfaces read costs a copy each time it moves here, while the plugin symlink already puts the flat root on disk for anyone who installed the plugin. A file the whole corpus cites therefore stays in the flat root however portable the bundled folder looks.
 
-A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md` and `standards/slug.md` are the two, each cited from every body that runs it. Both take a one-word name, which is what every other installable standard carries.
+A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md`, `standards/slug.md`, and `standards/session-map.md` are the three, each cited from every body that runs it. The first two take a one-word name, which is what every other installable standard carried until the third arrived naming a document type spelled in two.
 
 A subfolder was not available for them, since install and the sync adapter walk the flat root only. A combined `procedures.md` was the other candidate and recreates the aggregation at a new address.
+
+`session-map.md` is the one of the three that also governs a document, so it took the flat root on two counts rather than one. `standards/bundled/` was the closer fit for a file two skills read and reached it through a generated copy per consumer, which the paragraph above rules out for anything the flat root already delivers. What decided it against the bundled folder is that the standard has to reach a session holding no skill at all, since a compaction takes the routing to the skill before it takes the file.
 
 ## What a standard declares
 
