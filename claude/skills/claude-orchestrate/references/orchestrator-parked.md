@@ -23,7 +23,7 @@ Take the rows in board order and finish one before opening the next. Clearing a 
 
 The blocker cell states what the row waits on, and each kind is tested differently. `aitk tasks validate` already re-takes the first two and reports the rest as untested, so run it first and re-take by hand only what it names.
 
-- Collision with a track in flight: the validator intersects the row's Touches column with that of every `## Run now` row. A track that merged since the row was parked is no longer in flight, whatever the sets still share. A `## Needs a plan` row carries no Touches column, so the validator skips that half and the file set comes off the task file before claiming a collision either way.
+- Collision with a track in flight: the validator tests the file the cell cites against the Touches column of every `## Run now` row. A track that merged since the row was parked is no longer in flight, whatever the sets still share. A cell naming the file in prose rather than in backticks cites nothing, so write the collision the way the board format spells it and the check picks the row up on the next run.
 - A dependency on another task: the validator opens the task a link in the cell names. One whose outcomes are all `[x]`, or one already archived, holds nothing. A cell naming the task in prose resolves to no file, so open it by hand and rewrite the cell as a link.
 - A condition about the tree, such as a count of some shape or the presence of a construct: measure it again, per Two ways a re-test goes wrong below.
 - Waiting on a plan: nothing external holds the row, so the pass writes the plan rather than testing anything. See The plan half below.

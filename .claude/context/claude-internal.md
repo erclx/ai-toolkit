@@ -84,9 +84,13 @@ Being gitignored also puts the citations these artifacts carry outside every che
 
 The check it earns its place on is file-set overlap between `## Run now` rows. That group's test has a plan half and a half asking whether the task carries a reason it cannot start, and a collision against what something already running touches is one such reason, which is the part a person cannot run by eye.
 
-The blocker check reaches the opposite groups on the same argument. A blocker cell is a measurement taken the day a row was parked, and two of the five kinds it carries put a fact on disk: a cited task is settled by being archived or closing every outcome, and a collision is settled by nothing under `## Run now` still holding a path the parked row names. Both are inputs the validator already reads for the other four checks.
+The blocker check reaches the opposite groups on the same argument. A blocker cell is a measurement taken the day a row was parked, and two of the five kinds it carries put a fact on disk: a cited task is settled by being archived or closing every outcome, and a cited file is settled by nothing under `## Run now` still holding it. Both are inputs the validator already reads for the other four checks.
 
 The cell stays prose and the check reads citations out of it, which is the constraint the board standard sets by fixing three forms for the cell and leaving it unstructured. A cited task is a bare sibling link, so a pointer into another folder is a plan and settles nothing. Parsing the cell into fields was the alternative and it writes a grammar for a corpus of a handful of rows nobody phrases the same way twice.
+
+Both halves gate on the cell rather than on a column beside it. The collision half read the row's own `Touches` column first, and that fires on any parked row whose declared files nothing running holds, whatever parked the row. The false finding is the cheaper half of that error: the row also counts as re-tested and drops out of the untested list, so the condition still holding it goes unmentioned and the report reads as a clean board. The standard gives a collision cell the file held by the running task, so the citation is already there to gate on.
+
+A citation resolving in neither folder is `blocker-unresolved` rather than a settled row. Reading an absent file as archived states a specific fact about a file nobody wrote, which is what a renamed task or a typo produces, and the two want different findings because only a task that genuinely closed releases the row.
 
 The three kinds resting on judgment go to a second array rather than to the findings, because a check reporting only what it can settle is trusted past its reach. A clean findings list on a board whose parked rows were never testable reads as a clean board, so the untested array is what keeps the reach visible without moving an exit code.
 

@@ -1,7 +1,12 @@
 import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { isReservedStem, readOutcomes, tasksDir } from '@/tasks/archive'
+import {
+  archiveDir,
+  isReservedStem,
+  readOutcomes,
+  tasksDir,
+} from '@/tasks/archive'
 
 const ORDERING_FILE = 'priority.md'
 
@@ -32,6 +37,7 @@ export const FINDING_KINDS = [
   'touches-unstated',
   'touches-collided',
   'blocker-settled',
+  'blocker-unresolved',
 ] as const
 
 export type FindingKind = (typeof FINDING_KINDS)[number]
@@ -390,38 +396,83 @@ function citedStem(cell: string): string | undefined {
 }
 
 /**
- * Says how a cited task stopped holding the row that waits on it, and nothing
- * when it still holds. An archived file and a file whose outcomes are all
- * closed both settle it, while a file carrying no outcome box settles nothing,
- * since a file the check could not parse is not evidence of a finished one.
+ * Reports what a cited task does to the row waiting on it. A live file whose
+ * outcomes are all closed settles the row, and so does one sitting in the
+ * archive. A file carrying no outcome box settles nothing, since a file the
+ * check could not parse is not evidence of a finished one.
  *
- * The list comes off `readOutcomes` rather than a pattern of its own, so this
- * check cannot disagree with the archive and outcome verbs about which
+ * A citation resolving in neither folder is a broken pointer rather than a
+ * closed task, and the two take different findings. Reading an absent file as
+ * archived states a specific fact about a file nobody ever wrote, which is what
+ * a renamed task or a typo produces.
+ *
+ * The outcome list comes off `readOutcomes` rather than a pattern of its own,
+ * so this check cannot disagree with the archive and outcome verbs about which
  * checkboxes are outcomes and which sit inside a block a task displays.
  */
-async function settledBy(path: string): Promise<string | undefined> {
-  if (!existsSync(path)) return 'is archived'
+async function checkCitedTask(
+  group: BoardGroup,
+  subject: string,
+  cited: string,
+  root: string,
+): Promise<Finding[]> {
+  const live = join(tasksDir(root), `${cited}.md`)
 
-  const { open, closed } = readOutcomes(await readFile(path, 'utf8'))
-  if (open.length > 0 || closed.length === 0) return undefined
-  return 'carries no open outcome'
+  if (!existsSync(live)) {
+    if (existsSync(join(archiveDir(root), `${cited}.md`))) {
+      return [
+        {
+          kind: 'blocker-settled',
+          group,
+          subject,
+          message: `waits on ${cited}, which is archived.`,
+        },
+      ]
+    }
+
+    return [
+      {
+        kind: 'blocker-unresolved',
+        group,
+        subject,
+        message: `waits on ${cited}, which is neither on the board nor archived.`,
+      },
+    ]
+  }
+
+  const { open, closed } = readOutcomes(await readFile(live, 'utf8'))
+  if (open.length > 0 || closed.length === 0) return []
+
+  return [
+    {
+      kind: 'blocker-settled',
+      group,
+      subject,
+      message: `waits on ${cited}, which carries no open outcome.`,
+    },
+  ]
 }
 
 /**
  * Re-takes the two blocker kinds a command can settle, over every row outside
  * `## Run now`. A cited task is settled by being archived or by closing every
- * outcome, and a collision is settled by no `## Run now` row holding a path the
- * parked row names.
+ * outcome, and a cited path is settled by no `## Run now` row still holding it.
+ *
+ * Both halves gate on a citation the cell carries, never on a column beside it.
+ * The board standard gives a collision cell the file held by the running task,
+ * so a row whose cell names no file was parked by something else and its
+ * `Touches` column says nothing about what holds it. Reading that column
+ * instead reports a cleared collision on a row no collision ever parked, and
+ * counts the row as re-tested, which is the more expensive half of that error.
  *
  * The cell is read for citations rather than parsed into fields, since the
- * board standard fixes three forms for it and leaves it prose. A row neither
- * half reached is returned as untested rather than dropped, because the other
- * three kinds are a person's to judge and silence about them reads as a board
- * with nothing stale on it.
+ * standard fixes three forms for it and leaves it prose. A row neither half
+ * reached is returned as untested, because the other three kinds are a person's
+ * to judge and silence about them reads as a board with nothing stale on it.
  */
 async function checkParked(
   rows: readonly BoardRow[],
-  dir: string,
+  root: string,
 ): Promise<{ findings: Finding[]; untested: Untested[] }> {
   const findings: Finding[] = []
   const untested: Untested[] = []
@@ -431,44 +482,35 @@ async function checkParked(
     if (row.group === 'Run now') continue
 
     const subject = row.stem ?? row.label
-    const cited = citedStem(row.waiting ?? '')
-    const named = row.touches ?? []
+    const cell = row.waiting ?? ''
+    const cited = citedStem(cell)
+    const contested = readPaths(cell)
 
     if (cited) {
-      const settled = await settledBy(join(dir, `${cited}.md`))
-
-      if (settled) {
-        findings.push({
-          kind: 'blocker-settled',
-          group: row.group,
-          subject,
-          message: `waits on ${cited}, which ${settled}.`,
-        })
-      }
+      findings.push(...(await checkCitedTask(row.group, subject, cited, root)))
     }
 
-    const held = named.filter((path) =>
+    const held = contested.filter((path) =>
       running.some((run) =>
         (run.touches ?? []).some((other) => sharesPath(path, other)),
       ),
     )
 
-    if (named.length > 0 && held.length === 0) {
+    if (contested.length > 0 && held.length === 0) {
       findings.push({
         kind: 'blocker-settled',
         group: row.group,
         subject,
-        message: `names ${named.join(', ')}, which nothing under Run now holds, so a collision parking it has cleared.`,
+        message: `waits on ${contested.join(', ')}, which nothing under Run now holds.`,
       })
     }
 
-    if (!cited && named.length === 0) {
+    if (!cited && contested.length === 0) {
       untested.push({
         group: row.group,
         subject,
-        message: row.touches
-          ? 'cites no task and names no file, so neither half of its blocker is mechanical.'
-          : 'cites no task and states no file set, so neither half of its blocker is mechanical.',
+        message:
+          'cites no task and no file, so neither half of its blocker is mechanical.',
       })
     }
   }
@@ -506,7 +548,7 @@ export async function validateBoard(root: string): Promise<ValidateOutcome> {
   }
 
   const stems = await listTaskStems(dir)
-  const parked = await checkParked(rows, dir)
+  const parked = await checkParked(rows, root)
 
   const findings = [
     ...checkMapping(rows, stems, dir),

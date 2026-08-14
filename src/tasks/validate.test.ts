@@ -63,6 +63,12 @@ async function seedTask(stem: string, outcomes = ''): Promise<void> {
   )
 }
 
+async function seedArchivedTask(stem: string): Promise<void> {
+  const archive = join(ROOT, '.claude', 'task-archive')
+  mkdirSync(archive, { recursive: true })
+  await writeFile(join(archive, `${stem}.md`), `# ${stem}\n`)
+}
+
 function parkedTable(rows: readonly string[]): string {
   return [
     '## Up next',
@@ -412,6 +418,7 @@ describe('validateBoard', () => {
   it('should report a parked row whose cited task is archived', async () => {
     await seedTask('v1.0-first')
     await seedTask('v2.0-second')
+    await seedArchivedTask('v3.0-gone')
     await seedPlan('v1.0-first')
     await seedBoard(
       boardBody([
@@ -428,6 +435,30 @@ describe('validateBoard', () => {
       {
         kind: 'blocker-settled',
         message: 'waits on v3.0-gone, which is archived.',
+      },
+    ])
+  })
+
+  it('should report a cited task that is neither on the board nor archived', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [v9.0-typo](v9.0-typo.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      {
+        kind: 'blocker-unresolved',
+        message:
+          'waits on v9.0-typo, which is neither on the board nor archived.',
       },
     ])
   })
@@ -521,13 +552,15 @@ describe('validateBoard', () => {
       ]),
     )
 
-    expect(await validateBoard(ROOT)).toMatchObject({
-      findings: [],
-      untested: [],
-    })
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.untested).toMatchObject([
+      { group: 'Up next', subject: 'v2.0-second' },
+    ])
   })
 
-  it('should report a parked row whose files nothing under run now holds', async () => {
+  it('should report a parked row whose cited file nothing under run now holds', async () => {
     await seedTask('v1.0-first')
     await seedTask('v2.0-second')
     await seedPlan('v1.0-first')
@@ -535,7 +568,7 @@ describe('validateBoard', () => {
       boardBody([
         readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
         parkedTable([
-          '| [v2.0-second](v2.0-second.md) | `src/z.ts` | the sweep is holding it |',
+          '| [v2.0-second](v2.0-second.md) | `src/z.ts` | `src/z.ts`, held by the task already running |',
         ]),
       ]),
     )
@@ -546,9 +579,45 @@ describe('validateBoard', () => {
       {
         kind: 'blocker-settled',
         subject: 'v2.0-second',
-        message:
-          'names src/z.ts, which nothing under Run now holds, so a collision parking it has cleared.',
+        message: 'waits on src/z.ts, which nothing under Run now holds.',
       },
+    ])
+  })
+
+  it('should leave a parked row whose cited file is still held unreported', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | `src/a.ts`, held by the task already running |',
+        ]),
+      ]),
+    )
+
+    expect(await validateBoard(ROOT)).toMatchObject({ findings: [] })
+  })
+
+  it('should call a row untested when it declares files but its blocker cites none', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/z.ts` | a published upstream release, cleared when it ships |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.untested).toMatchObject([
+      { group: 'Up next', subject: 'v2.0-second' },
     ])
   })
 
@@ -573,7 +642,7 @@ describe('validateBoard', () => {
         group: 'Up next',
         subject: 'v2.0-second',
         message:
-          'cites no task and names no file, so neither half of its blocker is mechanical.',
+          'cites no task and no file, so neither half of its blocker is mechanical.',
       },
     ])
   })
@@ -602,7 +671,7 @@ describe('validateBoard', () => {
         group: 'Needs a plan',
         subject: 'v3.0-third',
         message:
-          'cites no task and states no file set, so neither half of its blocker is mechanical.',
+          'cites no task and no file, so neither half of its blocker is mechanical.',
       },
     ])
   })
