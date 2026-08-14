@@ -34,6 +34,7 @@ The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a p
 - `aitk:claude-design-extract` to draft `.claude/DESIGN.md`, from existing project signals or from requirements alone on day one
 - `aitk:claude-ui-test` for e2e test generation after UI changes
 - `aitk:claude-ux-audit` for UX gap detection on existing surfaces
+- `aitk:claude-ux-measure` for what a running surface costs to paint, read against published thresholds
 - Anthropic's `frontend-design` plugin optional for light visual steering
 
 ### When to pick

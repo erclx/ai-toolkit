@@ -85,6 +85,18 @@ The two overlap in subject and never in reach, which is what keeps both on the s
 
 `decision-escalate` carries `disable-model-invocation: true`, joining the five skills that already do, so nothing routes to it on a description match and the operator is what fires it. The body states the batching behavior before it names any question tool, which keeps one body running on a surface that carries none.
 
+## The interface pair splits on the act rather than the subject
+
+`claude-ux-audit` and `claude-ux-measure` share a subject and differ on what they do to it. The first reads source and reports judgments against stated intent, the second starts the thing and reports numbers against published thresholds. A search across the shipped skills, the standards, and the tooling configs for the vocabulary of browser auditing returned five matches on 2026-08-14, every one a false positive, so the second act had no surface at all and the question landed on whichever skill matched the word "UI".
+
+Folding the measurement into the audit was the obvious alternative and its own guard rules it out. That skill stops when it finds no interface source to read, which is a condition a running interface does not satisfy, so the host would refuse the request before reaching it. Each body therefore declines the other by name, since a boundary stated on one side alone is never checked against the skill on the other.
+
+Contrast stays with the static reader against the pull of the runtime one. Two color values compute it and the audit already reads the token table holding them, so moving it buys a browser start for an answer arithmetic gives. What that costs is a contrast failure from a color computed at runtime, which is invisible to a token-table reader and is accepted rather than overlooked.
+
+The runner is detected rather than prescribed. The operator settled on 2026-08-14 that the harness differs per project, which removed the blocker this item first carried, being the need to name one project and lift its configuration. The surface owns the metrics and the thresholds, which are portable, and reads the project's choice of runner, which is not. Detecting nothing therefore reports what the measurement needs and stops, the same absent-key rule `migration-standards` and `toolkit-operator` already follow, since a stop there says the project has not chosen a runner rather than saying the skill is broken.
+
+The front door reaches it through the audit offers, which now carry five rows. Four are `aitk` verbs and this one is a skill handoff, so the execute contract governing a CLI run does not reach it. Its second condition is a browser harness, which the front door does not test, because the skill detects that already and a second reader of the same fact answers stale.
+
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.
