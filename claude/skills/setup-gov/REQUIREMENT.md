@@ -11,12 +11,15 @@ Without this skill, a session picks a stack name from memory and installs rules 
 
 The two costly failures are quieter. An unmatched technology gets the nearest rule instead of a stop, so the project carries governance authored for something adjacent and nothing marks it as a guess. A rule written directly into the target lands where no sync will ever reach it, so it drifts from the toolkit copy that owns it.
 
+The last failure sits at a boundary rather than inside a run. `setup-init` turns away a project whose language it carries no stack for and sends it here, and a body stating only what this skill does not cover leaves that route running one way, so a person arriving on it reads a skill that never says it is the destination.
+
 ## Must
 
 - Read the catalog at run time and resolve both the stack and every extra against it
 - Name the evidence file behind each detected technology in the preview, so a wrong match is visible before the install rather than after
 - Dedupe extras against the rules the picked stack already resolves
 - Run the install non-interactively, since the CLI picker blocks where no terminal is attached
+- State the inbound route from `setup-init`, so a project sent here for the language-neutral rule layer can tell it landed at the destination the chain named
 
 ## Must not
 

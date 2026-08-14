@@ -13,6 +13,7 @@ Read `.claude/context/indexes.md` from the toolkit if context on the system is n
 
 - Bootstrap un-indexed folders only. Skip folders that already contain an `index.md`.
 - All-or-nothing per chosen folder. Every `*.md` sibling in a chosen folder gets `title` and `description` injected, or none does. Partial migration creates folders that hard-error on regen.
+- This is where `setup-init` sends an install that wants the Claude layer without the tooling chain, once `aitk claude init` has seeded the docs. The work is the same either way, since the scan below prunes `.claude` and reads the project's own documentation folders whichever route reached it.
 
 ## Scan
 

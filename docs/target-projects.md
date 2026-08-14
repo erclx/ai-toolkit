@@ -49,6 +49,8 @@ The chain is:
 - The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections <!-- audit-ignore-citations -->
 - `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
+The chain serves a fresh scaffold and names a destination for the three states it does not. An existing project goes to `aitk:toolkit-operator`, which reads what the project already carries before naming a per-domain command. An install wanting the Claude layer without the tooling chain runs `aitk claude init` for the seed docs and then `aitk:setup-indexes` for the index system. A language the toolkit ships no stack for is the one of the three the chain still runs for, on `base`, with the fallback marked in the preview so it can be declined there.
+
 Keep the `## Scripts` table in `.claude/context/development.md` current as scripts are added. Base tooling seeds that entry with the commands it installs, and each stack reference extends the table. `project-commands` reads it to start the app or run a check on request, so a command missing from the table cannot be run that way. A project whose entry outgrew one file and split into `.claude/context/development/` keeps the table in `overview.md`, which is where the skill looks next. <!-- audit-ignore-citations -->
 
 ### From scaffold to first feature
@@ -75,6 +77,8 @@ Escalate only for real web apps. The `setup-init` skill reads `package.json` and
 `node-server` is named rather than detected. It carries the server-side security and persistence rules for a project writing request handlers or a persistence layer in TypeScript, and the detect step matches a runtime or a framework against stack names, so nothing there marks a project as a backend. Pass it deliberately with `aitk init --stack node-server` or `aitk gov install node-server <target>`.
 
 Markdown-heavy projects, CLI tools, docs sites, research notebooks, and scripting repos stay on `base`. Escalation is a ceiling move, not a default.
+
+A project the toolkit ships no stack for lands on `base` the same way, and the skill marks that resolution as a fallback in its preview rather than reporting it as a match. Configs, seeds, and gitignore entries land either way, and the JavaScript development dependencies, scripts, and hook activation land only where a `package.json` exists to carry them. A project outside that ecosystem declines at the preview and takes `aitk:setup-gov` for the governance layer alone, which is language-neutral.
 
 Run `aitk tooling list --json` and `aitk gov list --json` to see the current catalogs. Never hardcode stack names.
 
@@ -174,7 +178,7 @@ cd <your-project>
 claude
 ```
 
-In the session, invoke `aitk:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. It previews the chain, then runs `aitk init`.
+In the session, invoke `aitk:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. The preview marks both stacks as fallbacks, since neither came from a match, then the chain runs `aitk init`.
 
 Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `aitk:claude-seed-sync` for seed drift or `aitk sync .` for a catch-all refresh.
 

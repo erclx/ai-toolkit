@@ -7,6 +7,11 @@ description: Detects a project's stack from its files and installs matching tool
 
 Automates `aitk gov install` by inferring the stack and extras from the current project, then shelling out to the CLI with the resolved arguments.
 
+## Scope
+
+- Governance rules and nothing else. `setup-init` is the one-shot chain that installs governance beside tooling, standards, snippets, and the seeds.
+- This is where `setup-init` sends a project whose language the toolkit carries no stack for. Rules install without the `base` development dependencies the tooling layer would drop on it. Resolve and stop exactly as below, since a language with no stack is the unmatched case `## Gap handling` already owns and arriving by that route changes none of it.
+
 ## Read the catalog
 
 Run this first to load the current stacks and rules. Never hardcode names. The catalog is the source of truth.
