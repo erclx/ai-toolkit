@@ -41,7 +41,7 @@ One feature travels this path end to end.
 3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
 5. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a critical or should-fix finding, resolving the target from a session listing taken at that moment and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches nobody and goes straight to step 7, since a minor is visibility alone and leaves nothing for a worker to act on.
-6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review closed` when it finds nothing open or under `## Review` when it does, so a reader learns the state from the heading. Repeat from step 5 until the review closes or leaves only minor findings open.
+6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds a critical or a should-fix and under `## Review closed` otherwise, so a reader learns the merge decision from the heading and the counts from the line under it. Repeat from step 5 until a pass closes the review.
 7. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
 
 There is no loop construct here. Each worker is a single build that halts at the
@@ -102,9 +102,13 @@ closed clean and then went stale still rebases when the skill is invoked. The
 re-read costs a full pass rather than a delta, since the prior reviewed commit no
 longer reaches the head, and `claude-pr-review` detects that itself.
 
-The heading carries the state rather than the pass number. A pass with a finding
-takes `## Review` and a pass with none takes `## Review closed`, so a thread can
-be scanned for what is still open without opening a comment. The feedback
+The heading carries the state rather than the pass number. A pass carrying a
+critical or a should-fix takes `## Review` and every other pass takes
+`## Review closed`, so one severity threshold governs the heading and the
+dispatch alike and a thread can be scanned for what still blocks a merge without
+opening a comment. A minor rides under a close-out as a follow-up and goes to the
+findings of the task the branch closes, since a thread does not survive the
+merge. The feedback
 becomes a durable artifact both sessions read, survives a session ending, and
 anchors to the change. That removes the copy-paste that otherwise routes review
 through the human between two sessions.
