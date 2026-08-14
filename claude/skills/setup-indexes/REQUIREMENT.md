@@ -11,6 +11,8 @@ Without this skill, a session bootstrapping the index system writes `index.md` i
 
 The scan is where the other failures start. A walk that does not prune reaches `node_modules`, gitignored output, and the snippets folder, which is invoked by reference rather than browsed and needs neither an index nor per-file frontmatter. A folder that already carries an `index.md` gets a second one written over the first.
 
+One failure predates the scan. `setup-init` declines an install that wants the Claude layer without the tooling chain and names this skill as where the index system gets bootstrapped, and a body that never states the inbound route leaves the person arriving on it unable to tell whether they landed at the destination or somewhere adjacent to it.
+
 Drafted frontmatter is a proposal, and a session that writes it before the user sees it turns a review into a cleanup. The convention block has the mirror failure. A session that paraphrases it into `CLAUDE.md` produces a copy that reads correctly and no longer matches its source, so the two drift with nothing reporting it. And a project with no `CLAUDE.md` gets one scaffolded to hold the block, which installs a file the project declined.
 
 ## Must
@@ -21,6 +23,7 @@ Drafted frontmatter is a proposal, and a session that writes it before the user 
 - Validate with a dry run and stop on the first reported error, before writing for real
 - Paste the convention block verbatim from its single source
 - Emit the closeout exactly once, whatever the seed step concluded
+- State the inbound route from `setup-init`, so an install wanting the Claude layer without the tooling chain can tell it landed at the destination the chain named
 
 ## Must not
 

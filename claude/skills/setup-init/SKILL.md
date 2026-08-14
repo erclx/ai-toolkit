@@ -12,6 +12,16 @@ Orchestrates the onboarding chain. Detects project type, resolves per-domain arg
 - This skill and `aitk init` run once on a fresh scaffold, never on an existing project. They do not guard against clobbering existing configs. When tempted to add guards, mode switches, or an existing-project branch, stop. Extend the per-domain `aitk <domain> install` or `aitk sync` paths instead.
 - The chain does not bootstrap the `index.md` system and does not provision Claude Code plugins. `setup-indexes` owns the first. `setup-plugins` owns the second, which installs once per machine rather than into a project, so no project-scoped chain can carry it. Name both in the report so a clean result does not read as onboarding complete.
 
+## Declined states
+
+Three states reach this skill that the chain does not serve. Name the destination for each, so the refusal routes rather than ends. The first two stop the chain outright and the third runs it on a default the person may not want.
+
+- **An existing project.** Stop and hand off to `toolkit-operator`. It reads what the target already carries before it names a command, which this chain never does, so any per-domain install picked here is a guess against configs nobody read. The Scope bullet above names the same commands as the authoring alternative, and this is the destination a person takes.
+- **An install wanting the `.claude/` folder alone.** Stop. Run `aitk claude init` for the seed docs, then invoke `setup-indexes` to bootstrap the `index.md` system over the project's own documentation folders. Neither needs the tooling sync this chain runs.
+- **A language the toolkit carries no stack for.** The chain still runs, on `base`, with the fallback marked in the preview. A project that wants none of what `base` carries declines there and takes `setup-gov` for the governance layer, which is language-neutral. Say so at the preview rather than resolving it here, since the fallback is a working default and only the person can say whether it fits.
+
+Do not add a stack, a mode switch, or an existing-project branch to satisfy one of these. Each destination already exists and routing to it costs a line.
+
 ## Read catalogs
 
 Run in parallel. Never hardcode stack, rule, snippet, or standards names.
@@ -36,8 +46,8 @@ Read these from the project root in parallel, skipping any that do not exist:
 
 ## Resolve arguments
 
-- **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base`.
-- **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match.
+- **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base` and carry the fallback into the preview.
+- **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match, and carry that fallback into the preview too.
 - **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `paths` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
 - **Snippets:** default to `all`. Narrow only if the user asked for a specific category.
 - **Skip (`--skip`):** `standards` and `wiki` are core and install by default. Add `--skip standards` or `--skip wiki` only when the user explicitly wants them left out.
@@ -56,13 +66,15 @@ Rules, snippets, and stacks are authored in the toolkit repo, never in the targe
 Before executing, output:
 
 - **Detected:** each technology with its evidence file
-- **Stack:** picked governance stack + resolved rule count
-- **Tooling stack:** picked tooling stack
+- **Stack:** picked governance stack + resolved rule count. Mark it `fallback` when no detected runtime or framework matched a catalog name.
+- **Tooling stack:** picked tooling stack. Mark it `fallback` on the same test, and name what the project inherits: the `base` development dependencies, scripts, and hooks, which a project outside the JavaScript ecosystem will not use.
 - **Extras:** each `--add` rule with a one-line reason
 - **Snippets:** resolved category
 - **Skip:** any `--skip` entries with reason
 - **Target:** resolved target path
 - **Commands:** the full chain that will run
+
+A resolved name and a fallback read alike once written, so mark the fallback here rather than in the report. The preview is the last point before the first write, and the report runs after the files have landed.
 
 ## Execute
 
