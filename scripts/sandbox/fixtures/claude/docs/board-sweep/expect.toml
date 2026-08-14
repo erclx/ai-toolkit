@@ -13,9 +13,9 @@
 # marked and one more plan moved, is a handful of edits against a board both arms
 # read and reason about once, which is where the turns actually go.
 #
-# The ceiling equals the cap rather than sitting under it. A truncated run
-# reports one turn past its cap, so an equal ceiling still catches truncation,
-# while a lower one fails legitimate runs landing between the two numbers.
+# Correcting from that 28 lands on the cap anyway. A ceiling has to sit above the
+# observation to catch a blowup rather than fire on ordinary variance, and the
+# only room above 28 is the two turns to the cap.
 max_turns = 30
 
 # Both plans move. `feature-pagination.md` belongs to the task this session's

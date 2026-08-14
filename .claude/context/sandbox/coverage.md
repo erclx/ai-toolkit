@@ -83,7 +83,7 @@ The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and tw
 
 The other four arms passed on 2026-08-04, which is the first time either skill was executed by anything.
 
-Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both are declared at the cap rather than above an observation for that reason. The `fresh` run is the one whose turn count is not recorded, since `record_run` failed to write it and the envelope went with it.
+Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both hold their ceiling at the default. `installed` holds there because a cost that moves with how far the route runs needs more than one sample before a ceiling comes down to it. `fresh` holds there because its turn count is not recorded at all, since `record_run` failed to write it and the envelope went with it.
 
 ### The audits arm failed twice before the section had a route
 
