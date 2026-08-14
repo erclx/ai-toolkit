@@ -39,7 +39,9 @@ The failure message assumes a match inside a `references/` folder is a generated
 
 The Hero stage regenerates `assets/hero.html` and asserts no drift on it, then runs `assert_hero_stamp` over the image beside it. The drift assert cannot reach the PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
 
-`aitk capture` writes `assets/hero.stamp` from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both committed files and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
+`aitk capture` writes `assets/hero.stamp` from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both files where they sit on disk and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
+
+Both halves clear on a staged regeneration rather than on a committed one. `assert_no_drift` reads `git diff --exit-code` against the working tree and `git ls-files --others`, so `git add` of the three files satisfies it while nothing is committed, and `file_sha256` reads the path rather than a committed blob. A branch that regenerates the markup, runs the capture, and stages the triple therefore passes `bun run check` before its commit exists, which is what lets a ship chain verify ahead of the step that commits. Measured 2026-08-14.
 
 Two digests rather than one, because either file can move alone. The markup side catches an edit committed with no capture. The image side catches a PNG replaced, truncated, or committed by itself under markup that never changed, which a markup-only digest passes and which the timing read caught by accident. Recording only the markup traded one hole for another rather than closing both.
 
