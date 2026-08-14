@@ -40,27 +40,28 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk context audit`       | Report required sections, length, cited paths, reference form, catalog tables, provenance, superseded-decision narration, and index drift |
 | `aitk markdown audit`      | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                    |
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                            |
+| `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD` (`--json`)                                                         |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                     |
 
 ## Domain commands
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain      | Subcommands                                                                 |
-| ----------- | --------------------------------------------------------------------------- |
-| `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`      |
-| `snippets`  | `list`, `install`, `sync`, `create`                                         |
-| `standards` | `list`, `install`, `sync`, `<name>`                                         |
-| `gov`       | `list`, `install`, `sync`, `build`                                          |
-| `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `setup [dest]` |
-| `wiki`      | `init`                                                                      |
-| `design`    | `render`                                                                    |
-| `slides`    | `render`, `list`                                                            |
-| `tasks`     | `archive`, `validate`                                                       |
-| `intake`    | `list`, `answer`                                                            |
-| `comments`  | `scan`                                                                      |
-| `context`   | `audit`                                                                     |
-| `markdown`  | `audit`                                                                     |
+| Domain      | Subcommands                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------- |
+| `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                      |
+| `snippets`  | `list`, `install`, `sync`, `create`                                                         |
+| `standards` | `list`, `install`, `sync`, `<name>`                                                         |
+| `gov`       | `list`, `install`, `sync`, `build`                                                          |
+| `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `setup [dest]` |
+| `wiki`      | `init`                                                                                      |
+| `design`    | `render`                                                                                    |
+| `slides`    | `render`, `list`                                                                            |
+| `tasks`     | `archive`, `validate`                                                                       |
+| `intake`    | `list`, `answer`                                                                            |
+| `comments`  | `scan`                                                                                      |
+| `context`   | `audit`                                                                                     |
+| `markdown`  | `audit`                                                                                     |
 
 Common patterns:
 
