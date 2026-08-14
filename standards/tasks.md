@@ -21,6 +21,7 @@ Does not govern:
 - Phase-label format and which surfaces a label may appear on: `versioning.md`
 - Sequencing across versions and why the order is what it is: `roadmap.md`
 - Architectural reasoning that outlives a task: `architecture.md`
+- The pre-compaction handoff sitting in the folder, its filename and its sections: `session-map.md`
 - When a project opens a task at all, which is project policy rather than a shape rule
 
 ## Layout
@@ -29,14 +30,16 @@ Does not govern:
 .claude/tasks/
 ├── index.md              ← generated, never hand-edited
 ├── priority.md           ← hand-maintained execution order
-├── session.md            ← optional, what a compaction is about to destroy
+├── session-<slug>.md     ← optional, what a compaction is about to destroy
 ├── v09.0-sync-paths.md
 └── v13.0-toolkit-drift.md
 ```
 
 One file per task is what keeps the board safe under parallel sessions. Two sessions working different tasks never write the same file, which matters because a gitignored board has no history to recover a clobbered write from.
 
-Three siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md` and `priority.md` are governed here. `session.md` is the pre-compaction handoff, written by `orchestrator-handoff` and read by `orchestrator-resume`, and it is optional: a project running no orchestrator carries no such file. Anything reading the folder as a task list skips all three, so a name outside the set is a task whatever it holds.
+Siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md` and `priority.md` are governed here. Every `session-` file is a pre-compaction handoff governed by `session-map.md`, and each is optional: a project whose sessions never approach a compaction carries none. Anything reading the folder as a task list skips all of them, so a name outside the set is a task whatever it holds.
+
+The handoff takes one file per session for the reason a task does. A single shared path puts two sessions closing near each other on one file that neither can watch the other write, and the loser leaves no trace on a board with no history behind it.
 
 `index.md` is generated from sibling frontmatter. The folder is gitignored, so the whole-repo index walk skips it and a hook passing the changed path regenerates it instead. Never hand-edit it.
 
