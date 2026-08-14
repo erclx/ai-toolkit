@@ -92,4 +92,6 @@ Two states produce no proposal at all, and each gets its own line rather than an
 - Both folders already live under `.claude/`: `✅ standards/ and snippets/ already live under .claude/. Nothing to relocate.`
 - A root folder exists and no domain names it in `unmigrated`: `✅ <folder>/ holds no file the toolkit installed. Nothing to relocate.` Name every such folder. The guard passed because the folder is there, so a session that printed nothing would leave the user reading silence as a failed run rather than as the answer.
 
+Read the `toolkit-cli` skill before printing the re-sync block, and name in the reminder any surface it lists as overwritten. The user runs those commands against a tree the moves above relocated, and that relocation is what puts an overwrite onto files never installed at the new path.
+
 Do not run the `git mv` commands. Do not edit `CLAUDE.md`, rule files, or docs. The user runs the commands and fixes author-owned references after reviewing.
