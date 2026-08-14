@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.95.0](https://github.com/erclx/aitk/compare/v0.94.0...v0.95.0) (2026-08-14)
+
+
+### Features
+
+* **claude:** let any session write the pre-compaction handoff ([#986](https://github.com/erclx/aitk/issues/986)) ([6861db1](https://github.com/erclx/aitk/commit/6861db19fb04ac7527745d23c16bd6031fc6831d))
+
 ## [0.94.0](https://github.com/erclx/aitk/compare/v0.93.0...v0.94.0) (2026-08-14)
 
 
