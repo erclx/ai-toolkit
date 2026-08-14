@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.97.1](https://github.com/erclx/aitk/compare/v0.97.0...v0.97.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* **review:** split the review heading from the dispatch ([#995](https://github.com/erclx/aitk/issues/995)) ([21e98d9](https://github.com/erclx/aitk/commit/21e98d9118a3db8eb53d547464d0b5ba0b3499d2))
+
 ## [0.97.0](https://github.com/erclx/aitk/compare/v0.96.0...v0.97.0) (2026-08-14)
 
 
