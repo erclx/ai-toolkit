@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.98.0](https://github.com/erclx/aitk/compare/v0.97.1...v0.98.0) (2026-08-14)
+
+
+### Features
+
+* **tasks:** check parked blockers and trigger the re-test on a merge ([#998](https://github.com/erclx/aitk/issues/998)) ([69c6213](https://github.com/erclx/aitk/commit/69c6213e20f18b4fb70fad24affe20b35add026b))
+
 ## [0.97.1](https://github.com/erclx/aitk/compare/v0.97.0...v0.97.1) (2026-08-14)
 
 
