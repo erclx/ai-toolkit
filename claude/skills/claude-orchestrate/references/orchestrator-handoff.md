@@ -6,9 +6,10 @@ description: Memory capture at the close of a session, what to write to .claude/
 Capture what the session learned, then write the pre-compact handoff as orchestrator. Do both before a compaction, because a compaction keeps conclusions and drops the reasoning that produced them, and no other file in the repository carries that reasoning.
 
 1. Invoke `aitk:claude-memory-capture` and tell it this session does not commit. Capture reads the session and this handoff summarizes it, so capturing first lets the handoff cite what was written instead of restating the same lesson in prose.
-2. Resolve the main worktree root with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`. Write `.claude/tasks/session.md` under it.
-3. Write only what a compaction destroys and no other file already carries. The board holds the ordering and what each task waits on, a task file holds its own findings, and a groundwork folder holds its track.
-4. Use this shape, resolving `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md` and `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` to absolute paths as you write it and pasting each in place of `<RESUME_RUNBOOK>` and `<POLL_RUNBOOK>`:
+2. Run `aitk claude skills drift <commit this session started from>` and re-read any body it names before writing anything below. Nothing on the machine records that commit, so recover it from how long the session has been running with `git log -1 --format=%H --before='<duration> ago'`, rounding the duration up rather than down. A ref older than the oldest load over-reports and confirming a name costs one read of the body, so the generous end is the safe one and a guess at the exact commit is not worth making. A skill body enters a session once and re-invoking the skill replays the held copy rather than the file, so the drift is worst at exactly this moment and a name here is a body this session has been following out of date. Record what it named under `## Standing cautions`. The verb answers where the working directory carries `claude/skills/` with history behind it, which is the toolkit repository itself, and refuses by naming the absent tree anywhere else. A project consuming the plugin from a marketplace cache is that second case, so read the refusal as the boundary rather than as a fault.
+3. Resolve the main worktree root with `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`, falling back to `pwd`. Write `.claude/tasks/session.md` under it.
+4. Write only what a compaction destroys and no other file already carries. The board holds the ordering and what each task waits on, a task file holds its own findings, and a groundwork folder holds its track.
+5. Use this shape, resolving `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md` and `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` to absolute paths as you write it and pasting each in place of `<RESUME_RUNBOOK>` and `<POLL_RUNBOOK>`:
 
 ```markdown
 ---
@@ -41,10 +42,10 @@ Resume by loading the orchestrator skill and asking it to resume after a compact
 That resume reads the board and stops. It restarts nothing, so the review poll is a second thing owed here, and <POLL_RUNBOOK> holds the prompt and the condition. Do not reach for `session-resume`, which reads tracked work and knows nothing about this board or the workers on it.
 ```
 
-5. Cite a commit, a task, or a file and line for every claim, so the next session can tell a read from a recall.
-6. Overwrite the previous handoff rather than appending to it. A stale entry read as current is worse than no handoff.
+6. Cite a commit, a task, or a file and line for every claim, so the next session can tell a read from a recall.
+7. Overwrite the previous handoff rather than appending to it. A stale entry read as current is worse than no handoff.
 
-The substitution belongs in step 4 because step 6 ends the write. A reader who treats the list as finished there ships the literal placeholders, and the variable expands while this runbook renders rather than in the turn that reads the handoff back, so a path left unresolved reaches a session holding no skill as a string matching nothing. `orchestrator-poll.md` resolves its script at the same point and for the same reason.
+The substitution belongs in step 5 because step 7 ends the write. A reader who treats the list as finished there ships the literal placeholders, and the variable expands while this runbook renders rather than in the turn that reads the handoff back, so a path left unresolved reaches a session holding no skill as a string matching nothing. `orchestrator-poll.md` resolves its script at the same point and for the same reason.
 
 Add a section only for content that fits none of the four and would otherwise be lost. Do not restate the board, and do not summarize the work that shipped, because git already carries it. The closing block is the one exception, and the paragraph below states why.
 

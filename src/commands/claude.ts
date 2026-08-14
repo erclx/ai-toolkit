@@ -21,6 +21,7 @@ import {
   type SkillFinding,
   type SkillsAudit,
 } from '@/claude/skills-audit'
+import { type DriftReport, readDrift } from '@/claude/skills-drift'
 import { listSkills } from '@/claude/skills-list'
 import {
   planSettings,
@@ -65,6 +66,10 @@ interface SkillsListOptions {
 interface SkillsAuditOptions {
   readonly json?: boolean
   readonly requirementsOnly?: boolean
+}
+
+interface SkillsDriftOptions {
+  readonly json?: boolean
 }
 
 const SEEDED_FILES: readonly string[] = [
@@ -157,15 +162,15 @@ export function register(program: Command): void {
 
   const skills = claude
     .command('skills')
-    .description('Plugin skill catalog (list, audit)')
-    .argument('[subcommand]', "One of 'list' or 'audit'")
+    .description('Plugin skill catalog (list, audit, drift)')
+    .argument('[subcommand]', "One of 'list', 'audit', or 'drift'")
     .helpOption('-h, --help', 'Show this help message')
     .action((subcommand: string | undefined) => {
       intro('aitk claude')
       logError(
         subcommand === undefined
-          ? "Missing subcommand. Use 'list' or 'audit'."
-          : `Unknown subcommand: ${subcommand}. Use 'list' or 'audit'.`,
+          ? "Missing subcommand. Use 'list', 'audit', or 'drift'."
+          : `Unknown subcommand: ${subcommand}. Use 'list', 'audit', or 'drift'.`,
       )
       outro()
       process.exitCode = 1
@@ -224,6 +229,34 @@ export function register(program: Command): void {
     )
     .action(async (path: string | undefined, opts: SkillsAuditOptions) => {
       process.exitCode = await runSkillsAudit(path, opts)
+    })
+
+  skills
+    .command('drift')
+    .description('Name the shipped skill bodies rewritten since a given ref')
+    .argument('<ref>', 'The commit a session started from')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  history was read, whether or not a body moved',
+        '  1  the question could not be answered, with the reason on stderr',
+        '',
+        'A moved body means the file changed, not that a session holds a stale',
+        'copy. Passing a ref older than the oldest load over-reports, which is',
+        'the safe direction. Confirm a name by reading the body.',
+        '',
+        'Examples:',
+        '  aitk claude skills drift HEAD~20',
+        '  aitk claude skills drift 02d7b265 --json',
+        '',
+      ].join('\n'),
+    )
+    .action((ref: string, opts: SkillsDriftOptions) => {
+      process.exitCode = runSkillsDrift(ref, opts)
     })
 }
 
@@ -465,6 +498,75 @@ function runSkillsList(opts: SkillsListOptions): number {
   }
   outro()
   return 0
+}
+
+/**
+ * Measures the cwd for the same reason the audit does, and takes the ref as a
+ * required argument with no default. `HEAD` would be the only defensible one and
+ * it answers every run with nothing moved, which is the silence this reports
+ * against.
+ */
+function runSkillsDrift(ref: string, opts: SkillsDriftOptions): number {
+  const root = process.cwd()
+  const report = readDrift(root, ref)
+
+  if (report.kind === 'measured') {
+    intro('aitk claude skills drift')
+    reportDrift(report, ref)
+    outro()
+  } else {
+    frameError(report.reason)
+  }
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify(
+        report.kind === 'measured'
+          ? {
+              root,
+              ref,
+              base: report.base,
+              head: report.head,
+              moved: report.moved,
+            }
+          : { root, ref, unreadable: report.reason },
+      )}\n`,
+    )
+  }
+
+  return report.kind === 'measured' ? 0 : 1
+}
+
+/**
+ * States the bound on every run, including the run that names nothing. A report
+ * listing only what moved reads as a verdict on what a session holds, and the
+ * command has no access to that.
+ */
+function reportDrift(
+  report: Extract<DriftReport, { kind: 'measured' }>,
+  ref: string,
+): void {
+  logStep('Range')
+  logInfo(`${ref} to HEAD, resolved as ${report.base}..${report.head}.`)
+  logInfo(
+    'A body here changed on disk. Whether a session still holds the old one is what reading it settles.',
+  )
+
+  logStep('Moved bodies')
+  if (report.moved.length === 0) {
+    logInfo('No shipped body changed in this range.')
+    return
+  }
+
+  const count = report.moved.length
+  logWarn(
+    `${count} skill ${count === 1 ? 'body' : 'bodies'} rewritten since ${ref}`,
+  )
+  pipeOutput(
+    report.moved
+      .map((moved) => `${moved.name}  ${moved.commit.slice(0, 8)}`)
+      .join('\n'),
+  )
 }
 
 /**
