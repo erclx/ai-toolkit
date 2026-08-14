@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.94.0](https://github.com/erclx/aitk/compare/v0.93.0...v0.94.0) (2026-08-14)
+
+
+### Features
+
+* **setup:** route declined states and name the fallback stack ([#985](https://github.com/erclx/aitk/issues/985)) ([f6f12e0](https://github.com/erclx/aitk/commit/f6f12e0a7da84b2d0c1dcc1b54e17c96f72d6df7))
+* **skills:** add claude-ux-measure for runtime interface cost ([#984](https://github.com/erclx/aitk/issues/984)) ([c9e4f85](https://github.com/erclx/aitk/commit/c9e4f85206a5d28e14e283438b2c4e71f21ff3a7))
+
 ## [0.93.0](https://github.com/erclx/aitk/compare/v0.92.0...v0.93.0) (2026-08-14)
 
 
