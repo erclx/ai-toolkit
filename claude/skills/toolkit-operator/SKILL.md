@@ -38,7 +38,9 @@ A `reverse` key the report does not carry at all is a CLI predating the field ra
 
 ## Route
 
-Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then act:
+Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then act.
+
+The two can name different rows, and a reply answers both rather than picking one. Run or hand off what the finding names, then answer the intent in the same reply. A measurement intent therefore reaches the audit offers below even on a target whose diagnostic found scaffold work, which is the case a session leaving from the scaffold row would otherwise never read.
 
 - A domain in `unmigrated`: hand off to `migration-standards`
 - An entry in `migrations`: hand off to the skill its `skill` field names, spelled as the report spells it. Both of them propose without writing, so the handoff is where this stops
@@ -52,9 +54,12 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 - Install one snippet, standard, or rule: run the domain `install` command
 - Sync one domain or every installed domain: run `aitk <domain> sync` or `aitk sync`
 - Fix only the ignore entries of the installed stack: run `aitk tooling inject --gitignore <stack>`
+- Measure a surface without changing it: offer the audits under `### Audits`
 - Browse what is available: run `aitk <domain> list`
 
-That row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false one splits three ways. Report tooling as unmeasured in each, name the cause, and run nothing, since the zero counts underneath are unmeasured rather than clean:
+### The ignore-only row
+
+The ignore-only row runs on a measured tooling report alone, so `measured` decides before `chain` is read at all. A false one splits three ways. Report tooling as unmeasured in each, name the cause, and run nothing, since the zero counts underneath are unmeasured rather than clean:
 
 - An empty `chain` at a workspace root, which carries `pnpm-workspace.yaml` or a `workspaces` key in `package.json`: no chain is recorded there by design, since one would guess at what the packages hold. Name `aitk tooling sync <stack> <path>` against a package.
 - An empty `chain` anywhere else: no tooling install is recorded, so name `aitk tooling sync` as the command that records one rather than asking the user for a stack.
@@ -65,6 +70,8 @@ On a measured report, take `<stack>` from the first name in `tooling.chain`, whi
 ### Audits
 
 Four audits measure a surface without changing it. Offer the ones whose surface the target carries, list them together, and let the user pick. Run none of them unasked, and never treat a finding as a reason to abandon the operation the user asked for, since each reports judgments beside facts.
+
+A lifecycle row and these offers fire together on a project carrying a context folder and no installed domain, which is the ranking the preamble states. Scaffold work on a target with nothing installed is real work, so an audit offered instead of it answers a question nobody asked, while an audit dropped in favor of it loses the one the user did.
 
 - `.claude/context/` present: offer `aitk context audit`
 - A record folder present under `.claude/`, one of `plans`, `groundwork`, `intake`, or `memory`: offer `aitk records validate <kind>` for each one found

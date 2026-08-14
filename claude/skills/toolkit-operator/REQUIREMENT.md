@@ -15,7 +15,9 @@ The third failure is duplication. A front door that answers everything itself re
 
 A fourth failure sits between the router and what it runs. This skill executes the install and sync commands whose effect on an existing file is invisible from the command line, and the reference stating that effect per surface is named in the boundary below, which Claude Code never loads. The router therefore overwrites a customized golden config with the answer sitting one skill away and unread.
 
-The last failure is writing without re-checking. A domain sync brought a stricter standard into a target and left ten of its eleven context entries non-compliant in the same moment, and the run reported success because reporting the command was where its work ended. A person found the breakage afterwards by running an audit by hand. The audit that would have caught it is built and reachable from nothing the router offers, so one session held both the defect and its detector and connected neither to the other.
+The fifth failure is writing without re-checking. A domain sync brought a stricter standard into a target and left ten of its eleven context entries non-compliant in the same moment, and the run reported success because reporting the command was where its work ended. A person found the breakage afterwards by running an audit by hand. The audit that would have caught it is built and reachable from nothing the router offers, so one session held both the defect and its detector and connected neither to the other.
+
+The last failure is a section no route reaches. `## Route` maps an intent or a diagnostic finding to one lifecycle phase, so audit offers sitting below that table with no row naming them are unreachable by a correct reading. Two runs asked what the toolkit could measure and both took the scaffold handoff, the row the table declares. A route in settles half of it, since a project carrying a context folder and no installed domain fires the scaffold row and two audit conditions at once, and a body ranking neither leaves the choice to whichever the session read last.
 
 ## Must
 
@@ -26,6 +28,8 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 - Read the overwrite contract from the body before any install or sync, and name each surface it lists as overwritten before running one
 - Read the reverse walk beside the forward sections, so a folder the toolkit stopped shipping and a migration with a live case both reach the user
 - Hand off a named migration to the skill the report names, the way an unmigrated domain reaches `migration-standards`
+- Route a measurement intent to the audit offers from the route table itself, rather than leaving the section reachable only by reading past the table
+- Rank a lifecycle row against the audit offers where the route table itself states it, so a session acting on the lifecycle row reads the ranking without opening the section being ranked
 - Offer every audit whose surface the target carries, and offer none whose surface it lacks
 - Re-check the target after any operation that wrote, and report what those writes changed against the state read before acting
 
@@ -52,3 +56,5 @@ The last failure is writing without re-checking. A domain sync brought a stricte
 - Seed and preamble drift in installed files: `claude-seed-sync`
 - Governance rule install and index bootstrap: `setup-gov` and `setup-indexes`
 - What a given sync overwrites once it runs: `toolkit-cli`
+
+That last contract carries no row for the governance install this skill routes to, so the overwrite `Must` above reads nothing at one of its own destinations. The row belongs to the skill owning the table. This file records the silence rather than answering it, since a rule written here for a silent contract teaches a session that silence means safe.

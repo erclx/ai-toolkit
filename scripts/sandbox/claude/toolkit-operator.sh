@@ -128,7 +128,7 @@ EOF
     log_step "Scenario ready: toolkit-operator skill on a target carrying two of four audit surfaces"
     log_info "Context: .claude/context/ and .claude/plans/ present, no TypeScript or shell source"
     log_info "Action:  /aitk:toolkit-operator then 'what can you measure about this project'"
-    log_info "Expect:  offers the context and records audits, withholds the comment scan"
+    log_info "Expect:  names the setup-init handoff, then offers the context and records audits, withholds the comment scan"
     log_info "Assert:  declared in fixtures/claude/toolkit-operator/audits/expect.toml"
     ;;
   "gitignore")
