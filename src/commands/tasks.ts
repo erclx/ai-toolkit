@@ -11,6 +11,7 @@ import {
 } from '@/tasks/record'
 import {
   type Finding,
+  type Untested,
   type ValidateOutcome,
   validateBoard,
 } from '@/tasks/validate'
@@ -458,6 +459,19 @@ function reportValidation(
     } else {
       for (const finding of outcome.findings) logWarn(describe(finding))
     }
+
+    // The untested rows carry the warn glyph rather than the pass glyph. They
+    // move no exit code, and a green tick on a row nothing re-took is the
+    // misread this section exists to prevent.
+    logStep('Parked rows')
+    if (outcome.untested.length === 0) {
+      logInfo('every parked row carried a citation or a file set to re-test')
+    } else {
+      logWarn(
+        `${outcome.untested.length} row(s) carry a blocker no check can settle`,
+      )
+      for (const row of outcome.untested) logWarn(describeUntested(row))
+    }
     outro()
   }
 
@@ -469,6 +483,7 @@ function reportValidation(
         rows: outcome.rows,
         tasks: outcome.tasks,
         findings: outcome.findings,
+        untested: outcome.untested,
       })}\n`,
     )
   }
@@ -479,6 +494,10 @@ function reportValidation(
 function describe(finding: Finding): string {
   const scope = finding.group ? `${finding.group}: ` : ''
   return `${scope}${finding.subject} ${finding.message}`
+}
+
+function describeUntested(row: Untested): string {
+  return `${row.group}: ${row.subject} ${row.message}`
 }
 
 async function runArchive(
