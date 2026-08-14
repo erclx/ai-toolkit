@@ -47,8 +47,13 @@ const NO_PROC: LivenessProbes = {
 function locating(branch: string | null): (cwd: string) => Promise<Located> {
   return async (cwd) =>
     branch === null
-      ? { worktree: cwd, branch: null, unresolved: 'detached-head' }
-      : { worktree: cwd, branch, unresolved: null }
+      ? {
+          repository: '/repo/.git',
+          worktree: cwd,
+          branch: null,
+          unresolved: 'detached-head',
+        }
+      : { repository: '/repo/.git', worktree: cwd, branch, unresolved: null }
 }
 
 describe('resolveSessions', () => {
@@ -143,6 +148,48 @@ describe('resolveSessions', () => {
     expect(report.kind === 'resolved' && report.sessions[0]?.cwd).toBe(
       '/repo/worktrees/w100',
     )
+  })
+
+  it('should carry the repository each session belongs to', async () => {
+    seed(100)
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+    })
+
+    expect(report.kind === 'resolved' && report.sessions[0]?.repository).toBe(
+      '/repo/.git',
+    )
+  })
+
+  it('should report an absent start time as absent rather than as 1970', async () => {
+    seed(100, { startedAt: undefined })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+    })
+
+    expect(
+      report.kind === 'resolved' && report.sessions[0]?.startedAt,
+    ).toBeNull()
+  })
+
+  it('should report an absent session identifier as absent rather than as empty', async () => {
+    seed(100, { sessionId: undefined })
+
+    const report = await resolveSessions({
+      dir: DIR,
+      probes: ALIVE,
+      locate: locating('feat/parser'),
+    })
+
+    expect(
+      report.kind === 'resolved' && report.sessions[0]?.sessionId,
+    ).toBeNull()
   })
 
   it('should report no live session on a registry holding only ended ones', async () => {

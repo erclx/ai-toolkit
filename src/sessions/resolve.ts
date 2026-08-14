@@ -16,11 +16,17 @@ export type Unresolved =
 export interface ResolvedSession {
   readonly name: string
   readonly pid: number
-  readonly sessionId: string
+  readonly sessionId: string | null
   readonly cwd: string
   readonly kind: string
   readonly status: string
-  readonly startedAt: string
+  readonly startedAt: string | null
+  /**
+   * The shared git directory every worktree of one repository resolves to,
+   * which is what identifies the repository a row belongs to. A branch name is
+   * unique inside one and says nothing across a machine.
+   */
+  readonly repository: string | null
   readonly worktree: string | null
   readonly branch: string | null
   /** Null exactly when `branch` is set. The two are written together. */
@@ -47,6 +53,7 @@ export interface ResolveOptions {
 }
 
 export interface Located {
+  readonly repository: string | null
   readonly worktree: string | null
   readonly branch: string | null
   readonly unresolved: Unresolved | null
@@ -68,6 +75,7 @@ async function locate(cwd: string): Promise<Located> {
     // ordinary answer, so the distinguishing read is whether git ran at all.
     const version = await $`git --version`.quiet().nothrow()
     return {
+      repository: null,
       worktree: null,
       branch: null,
       unresolved:
@@ -76,25 +84,57 @@ async function locate(cwd: string): Promise<Located> {
   }
 
   const worktree = top.stdout.toString().trim()
+  const repository = await repositoryOf(cwd)
   const head = await $`git -C ${cwd} branch --show-current`.quiet().nothrow()
   const branch = head.stdout.toString().trim()
 
   if (head.exitCode !== 0 || branch.length === 0) {
-    return { worktree, branch: null, unresolved: 'detached-head' }
+    return { repository, worktree, branch: null, unresolved: 'detached-head' }
   }
 
-  return { worktree, branch, unresolved: null }
+  return { repository, worktree, branch, unresolved: null }
 }
 
+/**
+ * Resolves the shared git directory a working directory belongs to.
+ *
+ * The common directory is what a linked worktree and its main checkout agree
+ * on, so two rows in one repository match here while the toplevel would place
+ * every worktree in a repository of its own.
+ */
+export async function repositoryOf(cwd: string): Promise<string | null> {
+  const dir =
+    await $`git -C ${cwd} rev-parse --path-format=absolute --git-common-dir`
+      .quiet()
+      .nothrow()
+
+  if (dir.exitCode !== 0) return null
+
+  const resolved = dir.stdout.toString().trim()
+  return resolved.length > 0 ? resolved : null
+}
+
+/**
+ * An absent field is rendered as an absence rather than as a value.
+ *
+ * A missing start time formatted from zero reads as a session launched in 1970
+ * and a missing identifier as an empty one, both of which a caller would take
+ * for data. Null says the record did not carry it, which is the same
+ * distinction the registry draws between an absent folder and an empty one.
+ */
 function present(record: SessionRecord, located: Located): ResolvedSession {
   return {
     name: record.name,
     pid: record.pid,
-    sessionId: record.sessionId ?? '',
+    sessionId: record.sessionId ?? null,
     cwd: record.cwd,
     kind: record.kind ?? 'unknown',
     status: record.status ?? 'unknown',
-    startedAt: new Date(record.startedAt ?? 0).toISOString(),
+    startedAt:
+      record.startedAt === undefined
+        ? null
+        : new Date(record.startedAt).toISOString(),
+    repository: located.repository,
     worktree: located.worktree,
     branch: located.branch,
     unresolved: located.unresolved,

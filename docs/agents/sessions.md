@@ -18,11 +18,19 @@ aitk sessions list --branch feat/parser --json
 | Option            | Behavior                                     |
 | ----------------- | -------------------------------------------- |
 | `--json`          | Add a machine-readable record on stdout      |
-| `--branch <name>` | Report only the sessions holding this branch |
+| `--branch <name>` | Report the sessions holding this branch here |
 
 It reads and never writes. The question it answers is which session to address when work has to reach the one holding a given branch, which a session listing cannot answer on its own.
 
-Exit codes: `0` the roster was read, `1` refused. The refusal carries a `reason` of `no-registry`.
+Exit codes: `0` the roster was read, `1` refused. The refusal carries a `reason` of `no-registry` or `no-repository`.
+
+## Scope and count
+
+`--branch` scopes the match to the repository the command runs in, and refuses outside one. A branch name identifies a branch inside a repository and nothing across a machine, so an unscoped match reaches a session working in a different project, and `main` collides on every machine running two of them.
+
+A bare run reports every repository and carries a `repository` field on each row, holding the shared git directory that a main checkout and all its linked worktrees agree on. That is what a caller filters on when it wants a scope of its own.
+
+The match can return more than one session. Read the count rather than the first row, since nothing stops two sessions holding one branch, and a caller that treats the result as singular picks among candidates without knowing it.
 
 ## Why the verb exists
 
@@ -33,6 +41,8 @@ Each session writes its own record on disk carrying its working directory beside
 ## What a row carries
 
 Every row names the session, the process holding it, its working directory, and the branch checked out there. The status field repeats what the session listing reports, so a caller picking a target reads one output instead of two.
+
+A field the record did not carry is reported as null rather than as a value, so an absent start time never reads as a session launched in 1970 and an absent identifier never reads as an empty one.
 
 A row whose branch cannot be read is kept and marked rather than dropped. A caller has to be able to tell a session holding no branch from one the resolver never saw, and the second is the failure the verb replaces. The `unresolved` field carries the reason:
 
