@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.96.0](https://github.com/erclx/aitk/compare/v0.95.0...v0.96.0) (2026-08-14)
+
+
+### Features
+
+* **records:** validate the standards corpus as a fifth record kind ([#991](https://github.com/erclx/aitk/issues/991)) ([27b3b1f](https://github.com/erclx/aitk/commit/27b3b1ffc0aacf15b98a66409aee79fd2362ae2d))
+
 ## [0.95.0](https://github.com/erclx/aitk/compare/v0.94.0...v0.95.0) (2026-08-14)
 
 
