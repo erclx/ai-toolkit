@@ -66,11 +66,15 @@ The warning sits on stderr among the framing, where a caller reading the tail of
 
 The default turn cap is 30. A clean `claude/docs` `drift` run takes 29 turns, and a truncated run fails the same assertions as a reasoning miss with nothing to tell them apart, so the global default sits above observed cost.
 
-Set an arm's ceiling equal to the cap rather than under it, which is the relationship `drift` carries at 30 against the default 30. A truncated run reports one turn past its cap, so an equal ceiling still catches truncation, while a lower one fails legitimate runs that land in the gap between the two numbers.
+Declare an arm's ceiling at the default and correct it from an observation. A ceiling under the cap catches truncation the same way an equal one does, since a truncated run reports one turn past the cap and any declaration at or under the cap sits below that number. What a corrected ceiling buys over the default is that it asserts something the runner does not already enforce, which is what `anchor-sweep` carries at 26 against three runs of 16, 17, and 18.
 
-Estimate an arm's cost from what it reads rather than from what it writes. `board-sweep` was projected to need a raised cap because it marks one more outcome and moves one more plan than `drift`, and it came in at 28 against `drift`'s 29. The extra mutations are a few edits, while the turns go to reading the board and reasoning about it, which both arms do once. A projected budget is worth nothing next to one real run, so declare the ceiling at the default and correct it from the first observation.
+Correct from a cost that holds rather than from one sample of a variable one. `migration-superseded/retired` stays at the default on a single 17-turn pass, because a proposal-only arm resolves several files against several standards and its turn count varies with how a run orders those reads. A ceiling derived from one path through that trades a ceiling that never fires for one that fires on a correct run.
 
-`AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates, and if its declared ceiling sits above the cap it passes that one assertion while failing the rest.
+Never declare a ceiling above the cap. A truncated run reports one turn past the cap, a declaration above the cap is at least that number, and the checker fails an arm only on a count strictly over its ceiling. The turn assertion goes green, only the assertions that were going to fail anyway go red, and the ceiling masks the one failure it exists to catch.
+
+Estimate an arm's cost from what it reads rather than from what it writes. `board-sweep` was projected to need a raised cap because it marks one more outcome and moves one more plan than `drift`, and it came in at 28 against `drift`'s 29. The extra mutations are a few edits, while the turns go to reading the board and reasoning about it, which both arms do once. A projected budget is worth nothing next to one real run.
+
+`AITK_SKILL_TEST_MAX_TURNS` is the only budget. An arm's `max_turns` is a ceiling the checker asserts after the run, and `run.sh` never reads `expect.toml`, so a declaration cannot raise the cap it runs under. An arm needing more than the default truncates.
 
 Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
 
