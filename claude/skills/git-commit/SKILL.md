@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Generates conventional commit messages from staged changes. Use for any git commit.
+description: Generates one conventional commit message from the staged changes and commits them exactly as staged, so a hunk-level selection survives. Use when asked to "commit this" or "commit the staged changes" and the staged set covers one concern, or whenever the selection was staged hunk by hand. Do NOT use when the staged changes span several concerns and need separate commits. That is `git-stage`.
 ---
 
 # Git commit
