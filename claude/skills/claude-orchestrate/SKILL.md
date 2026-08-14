@@ -38,7 +38,7 @@ The roadmap is optional and this skill does not require it. It carries why a seq
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do.
 
-On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It captures what the session learned, then writes `.claude/tasks/session.md` with the state of play, the decisions taken under delegated authority, the mistakes worth not repeating, and the standing cautions. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
+On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It captures what the session learned, then writes a session map per `.claude/standards/session-map.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session-map.md` when the project does not have it, carrying the state of play, the mistakes worth not repeating, and the standing cautions, with the decisions taken under delegated authority added as this role's extension. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
 On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work.
 

@@ -1,6 +1,6 @@
 ---
 name: session-resume
-description: Resumes a previous session by reading tracked work and relevant context. Use when starting a new session, or when asked to "pick up where we left off", "what was I working on", or "resume".
+description: Resumes a previous session by reading the handoff it left behind, tracked work, and relevant context. Use when starting a new session, or when asked to "pick up where we left off", "what was I working on", or "resume".
 ---
 
 # Session resume
@@ -11,17 +11,22 @@ Resolve `.claude/plans/`, `.claude/memory/`, and `.claude/tasks/` at the main wo
 
 Read these in parallel, skipping any that do not exist:
 
+- the newest `.claude/tasks/session-*.md`: the handoff a previous session wrote before a compaction, per `.claude/standards/session-map.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session-map.md` when the project does not have it. It leads the report rather than the reads.
 - `.claude/tasks/index.md`: the backlog, one line per task. Read this before any individual task file.
 - `.claude/plans/*.md`: execution detail for in-progress tasks
 - `.claude/memory/index.md` and any memory files relevant to the top backlog item
 
 Then read only the task files the summary needs, typically the top one. Do not read the whole folder.
 
-If all three surfaces are absent or empty, stop: `✅ No tracked work found. Start a new task.`
+Most projects carry no handoff. Say nothing about its absence, since a line reporting it every run trains a reader to skip the line on the run where a handoff exists.
+
+If all four surfaces are absent or empty, stop: `✅ No tracked work found. Start a new task.`
 
 ## Step 2: summarize
 
-Output three sections:
+Output these sections, omitting the first when no handoff was found:
+
+**Carried over:** the reasoning the handoff holds, as its writer stated it. Attribute it to the map rather than restating it as fact, and re-measure any count, size, or cost before acting on one.
 
 **Up next:** one line per entry in `.claude/tasks/index.md`, preserving order.
 
@@ -33,6 +38,14 @@ Output three sections:
 
 End with one line: `Start with: <first Up next item>` and note whether it has a linked plan.
 
+When the board is empty and a handoff was found, name what the handoff leaves open instead: `Start with: <the open thread the handoff names>`. A recommendation slot filled with nothing reads as a failed run, and a handoff on an empty board is the shape a session leaves when it was reasoning rather than shipping.
+
 Do not offer to remove entries. A completed task is archived out of `.claude/tasks/` when work ships. The git log is the authoritative record of shipped work. Plan files are archived per the plan lifecycle rule in `CLAUDE.md`.
 
 Memory is updated only when a recorded fact becomes wrong, never on resume. A domain fact reaches a session through `.claude/context/`, which `claude-memory-capture` routes to and the three-tier model loads on demand, so the memory folder read here is the residue no context entry owns.
+
+## Writing the next one
+
+This skill reads a handoff and never writes one. Reading and writing are two jobs, and the write happens at the close of a session rather than at its start.
+
+Name the standard when the session asks how to leave a handoff behind, and let the session follow it directly. Any session may write one, whatever role it holds, so nothing here routes the request to another skill. A role carrying sections of its own adds them over the core per that role's own runbook.
