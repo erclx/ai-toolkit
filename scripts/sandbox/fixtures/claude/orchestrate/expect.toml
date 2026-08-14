@@ -29,12 +29,15 @@ max_turns = 30
 # is where a plan for it would take its name, and a run choosing another one
 # passes this entry vacuously, which is a miss rather than a false pass.
 #
-# `session.md` is the handoff. The skill writes it on a request to save the
+# `session-*.md` is the handoff. The skill writes it on a request to save the
 # session and on nothing else, so a bare invocation that produced one wrote
-# without being asked.
+# without being asked. The entry is a glob because the file takes one name per
+# session, derived from the branch, and the scenario's branch follows whatever
+# the machine's `git init` inherits. A single spelling would pass vacuously on
+# every machine deriving another.
 absent = [
   ".claude/plans/feature-streak-view.md",
-  ".claude/tasks/session.md",
+  ".claude/tasks/session-*.md",
 ]
 
 # Three of the scenario's six expectations reach a load-bearing token. Each pin is

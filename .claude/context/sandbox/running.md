@@ -79,7 +79,7 @@ Raise the default or set the variable per run. A per-arm budget would need `run.
 An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `aitk sandbox check <category>:<command> [arm]` reads it, asserts against the sandbox tree, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
 
 - `paths`: files that must exist after the run
-- `absent`: files that must not exist
+- `absent`: files that must not exist, as an exact path or as a glob
 - `content`: array of tables, each a `path` and a `pattern` it must match
 - `write_scope`: globs bounding where the session may write
 - `reply`: substrings the run's reply text must carry
@@ -91,6 +91,8 @@ An arm declares what a correct run leaves behind in `expect.toml`, beside its nu
 Patterns use TOML literal strings (`'^- \[x\] done'`) so a regex needs no backslash escaping. The split between mechanical and human-judged is per expectation, not per skill: the `claude/docs` `drift` arm produces both kinds in one run, three the checker asserts and two needing a reader.
 
 A literal string cannot carry an apostrophe, which is what closes it. A pin over prose spells that character `.` instead, costing one character of precision per apostrophe. Switching to a basic string to escape it would reintroduce the backslash doubling the literal form exists to avoid.
+
+An `absent` entry carrying `*` is matched as a glob, and the failure names the file that matched rather than the pattern that caught it. That is what lets an arm forbid a file whose name a run derives rather than fixes, such as the per-session handoff `claude/orchestrate` must not write, where pinning one spelling of the derived name passes vacuously against every other spelling and reads as coverage the arm does not have.
 
 `content` matches positively, so pinning a block from its first line to its last is how an arm asserts that nothing inside it changed. Both `claude/docs` diagram arms do this, one over frontmatter and one over a mermaid body and the paragraphs under it. Anchor the block below any frontmatter a run is allowed to append to, or the append pushes the closing line and fails a correct run.
 

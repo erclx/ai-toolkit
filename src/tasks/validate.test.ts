@@ -273,6 +273,16 @@ describe('validateBoard', () => {
     expect(await validateBoard(ROOT)).toMatchObject({ tasks: 1, findings: [] })
   })
 
+  it('should skip a session map named for the session that wrote it', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('session-feature-work')
+    await seedTask('session-main')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+
+    expect(await validateBoard(ROOT)).toMatchObject({ tasks: 1, findings: [] })
+  })
+
   it('should report a task carrying a row in two groups', async () => {
     await seedTask('v1.0-first')
     await seedPlan('v1.0-first')

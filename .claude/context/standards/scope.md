@@ -17,9 +17,13 @@ A convention consumed by a specific skill rather than authored by a project live
 
 Narrow readership is the criterion, not portability, and `.claude/ARCHITECTURE.md` records why the two came apart. The fan-out writes one copy per consumer, so a standard several surfaces read costs a copy each time it moves here, while the plugin symlink already puts the flat root on disk for anyone who installed the plugin. A file the whole corpus cites therefore stays in the flat root however portable the bundled folder looks.
 
-A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md` and `standards/slug.md` are the two, each cited from every body that runs it. Both take a one-word name, which is what every other installable standard carries.
+A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md`, `standards/slug.md`, and `standards/session.md` are the three, each cited from every body that runs it. All three take a one-word name, which every installable standard carries.
 
 A subfolder was not available for them, since install and the sync adapter walk the flat root only. A combined `procedures.md` was the other candidate and recreates the aggregation at a new address.
+
+`session.md` is the one of the three that also governs a document, so it took the flat root on two counts rather than one. `standards/bundled/` was the closer fit for a file two skills read and reached it through a generated copy per consumer, which the paragraph above rules out for anything the flat root already delivers. What decided it against the bundled folder is that the standard has to reach a session holding no skill at all, since a compaction takes the routing to the skill before it takes the file.
+
+The name follows the artifact's own path segment, which is what every standard here does: `plan.md` over `.claude/plans/feature-<slug>.md`, `memory.md` over `.claude/memory/<type>-<slug>.md`, and `session.md` over `.claude/tasks/session-<slug>.md`. It shipped as `session-map.md` and was renamed before merge, since a standard installs into every target and is cited by bare filename, so the cost of an outlier name only grows. `handoff.md` was the other candidate and it collides: this corpus already calls a `Does not govern:` pointer a scope handoff, and `groundwork.md` already calls its own last file the handoff, so the one word would name three artifacts across three standards.
 
 ## What a standard declares
 

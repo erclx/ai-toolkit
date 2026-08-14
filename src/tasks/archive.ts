@@ -9,11 +9,20 @@ const PLANS_DIR = join('.claude', 'plans')
 
 /**
  * Siblings that sit on the board without being tasks: the generated index, the
- * hand-maintained ordering, and the pre-compaction session map. `validate`
- * reads the same list, so neither verb can count a sibling as a task the other
- * does not.
+ * hand-maintained ordering, and a handoff a session wrote before the file took
+ * one name per session. `validate` reads the same list, so neither verb can
+ * count a sibling as a task the other does not.
  */
 export const RESERVED_STEMS = ['index', 'priority', 'session'] as const
+
+/** The pre-compaction handoff takes one file per session, so its stems vary. */
+const SESSION_MAP_PREFIX = 'session-'
+
+export function isReservedStem(stem: string): boolean {
+  const reserved: readonly string[] = RESERVED_STEMS
+
+  return reserved.includes(stem) || stem.startsWith(SESSION_MAP_PREFIX)
+}
 
 /**
  * `bad-input` describes the command line rather than the board, which is the
@@ -190,12 +199,11 @@ function isLivePlan(target: string, dir: string, root: string): boolean {
 
 export async function listTaskStems(dir: string): Promise<string[]> {
   const entries = await readdir(dir)
-  const reserved: readonly string[] = RESERVED_STEMS
 
   return entries
     .filter((entry) => entry.endsWith('.md'))
     .map((entry) => entry.slice(0, -'.md'.length))
-    .filter((stem) => !reserved.includes(stem))
+    .filter((stem) => !isReservedStem(stem))
     .sort()
 }
 

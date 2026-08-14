@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { RESERVED_STEMS, tasksDir } from '@/tasks/archive'
+import { isReservedStem, tasksDir } from '@/tasks/archive'
 
 const ORDERING_FILE = 'priority.md'
 
@@ -204,12 +204,11 @@ export function readBoard(text: string): {
 
 async function listTaskStems(dir: string): Promise<string[]> {
   const entries = await readdir(dir)
-  const reserved: readonly string[] = RESERVED_STEMS
 
   return entries
     .filter((entry) => entry.endsWith('.md'))
     .map((entry) => entry.slice(0, -'.md'.length))
-    .filter((stem) => !reserved.includes(stem))
+    .filter((stem) => !isReservedStem(stem))
     .sort()
 }
 
