@@ -5,7 +5,7 @@ description: The stages that gate a push on a measure, covering the sandbox cove
 
 # Gating stages
 
-Three stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
+Five stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
 
 ## Sandbox coverage
 
@@ -34,6 +34,18 @@ The Skill paths stage runs `scripts/core/check-skill-paths.sh` over the shipped 
 The walk reads inside fenced code blocks, which is what makes an illustrative example count. A TOML block demonstrating the label map in `claude/skills/git-pr/references/labels.md` used this repository's own `docs/` and `wiki/` rows and failed the stage. That is a true positive rather than the fenced-example class the Seed independence stage below accepts, since an example is the part of a reference a reader copies, so a target handed one built from this layout learns a folder set it does not have. An example in shipped content invents its paths.
 
 The failure message assumes a match inside a `references/` folder is a generated copy and directs the fix to `standards/bundled/`. A hand-authored reference under a single skill breaks that assumption, so the recovery it prints names a source file that does not exist and the fix belongs in the reference itself.
+
+## Hero provenance
+
+The Hero stage regenerates `assets/hero.html` and asserts no drift on it, then runs `assert_hero_stamp` over the image beside it. The drift assert cannot reach the PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
+
+`aitk capture` writes `assets/hero.stamp` from inside the render, recording the digest of the markup it rendered. The stage hashes the committed HTML and compares. What it proves is provenance: this image came from this markup, whatever either file's history says.
+
+Comparing the commit that last touched each file was the previous read and it measures timing. Two branches editing different counts merge clean while the binary conflicts, and a conflict resolved by taking either side leaves both files moved by the same commit with the image showing one branch's numbers. The digest catches that case and still catches the one the timing read was written for, a markup change committed with no capture at all.
+
+Writing the stamp inside the render rather than in a wrapper is what makes it worth reading. A caller cannot capture and skip the stamp, so a PNG without a current one is either uncaptured or hand-placed, and the stage names which of the three files is missing rather than reporting a mismatch it cannot compute. All three absent passes, which is correct for a tree carrying none of them.
+
+The digest covers the whole file rather than the five counts inside it. A template edit changes what the image shows without moving any count, and hashing bytes keeps the stage ignorant of what the markup renders, which is what lets it stay correct as the frame grows fields.
 
 ## Seed independence
 

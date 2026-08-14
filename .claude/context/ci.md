@@ -105,7 +105,7 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Format check       | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
 | Indexes            | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
 | Consumed copies    | `scripts/core/regen-claude-copies.sh`                    | `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules` match source      |
-| Hero               | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and the PNG beside it last moved in the same commit      |
+| Hero               | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and the stamp proves the PNG was rendered from it        |
 | Skill references   | `scripts/core/regen-skill-references.sh`                 | bundled standards match their consumers                                                            |
 | Skill paths        | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
 | Plugin boundary    | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
