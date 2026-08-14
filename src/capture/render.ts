@@ -83,7 +83,7 @@ async function captureOne(
     mkdirSync(dirname(source.pngPath), { recursive: true })
     const png = await element.screenshot({ omitBackground: true })
     writeFileSync(source.pngPath, png)
-    writeStamp(source)
+    writeStamp(source, png)
     return {
       status: 'rendered',
       htmlPath: source.htmlPath,
@@ -109,13 +109,17 @@ async function captureOne(
  *
  * The source is stored as a bare filename. An absolute path would record the
  * machine that ran the capture into a tracked file and differ per checkout.
+ *
+ * The image digest is taken over the buffer the screenshot returned rather than
+ * by reading the file back, so the stamp describes the bytes this run wrote.
  */
-function writeStamp(source: CaptureSource): void {
+function writeStamp(source: CaptureSource, png: Uint8Array): void {
   writeFileSync(
     stampPath(source.pngPath),
     formatStamp({
       source: basename(source.htmlPath),
-      sha256: hashSource(readFileSync(source.htmlPath)),
+      sourceSha256: hashSource(readFileSync(source.htmlPath)),
+      imageSha256: hashSource(png),
     }),
   )
 }

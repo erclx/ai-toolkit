@@ -39,13 +39,17 @@ The failure message assumes a match inside a `references/` folder is a generated
 
 The Hero stage regenerates `assets/hero.html` and asserts no drift on it, then runs `assert_hero_stamp` over the image beside it. The drift assert cannot reach the PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
 
-`aitk capture` writes `assets/hero.stamp` from inside the render, recording the digest of the markup it rendered. The stage hashes the committed HTML and compares. What it proves is provenance: this image came from this markup, whatever either file's history says.
+`aitk capture` writes `assets/hero.stamp` from inside the render, recording a `source-sha256` over the markup it read and an `image-sha256` over the bytes it wrote. The stage hashes both committed files and compares each against its field. What it proves is provenance: this image came from this markup, whatever either file's history says.
 
-Comparing the commit that last touched each file was the previous read and it measures timing. Two branches editing different counts merge clean while the binary conflicts, and a conflict resolved by taking either side leaves both files moved by the same commit with the image showing one branch's numbers. The digest catches that case and still catches the one the timing read was written for, a markup change committed with no capture at all.
+Two digests rather than one, because either file can move alone. The markup side catches an edit committed with no capture. The image side catches a PNG replaced, truncated, or committed by itself under markup that never changed, which a markup-only digest passes and which the timing read caught by accident. Recording only the markup traded one hole for another rather than closing both.
+
+Comparing the commit that last touched each file was the previous read and it measures timing. Two branches editing different counts merge clean while the binary conflicts, and a conflict resolved by taking either side leaves both files moved by the same commit with the image showing one branch's numbers. The digests catch that case and both cases above.
 
 Writing the stamp inside the render rather than in a wrapper is what makes it worth reading. A caller cannot capture and skip the stamp, so a PNG without a current one is either uncaptured or hand-placed, and the stage names which of the three files is missing rather than reporting a mismatch it cannot compute. All three absent passes, which is correct for a tree carrying none of them.
 
-The digest covers the whole file rather than the five counts inside it. A template edit changes what the image shows without moving any count, and hashing bytes keeps the stage ignorant of what the markup renders, which is what lets it stay correct as the frame grows fields.
+Each digest covers a whole file rather than the five counts inside it. A template edit changes what the image shows without moving any count, and hashing bytes keeps the stage ignorant of what the markup renders, which is what lets it stay correct as the frame grows fields.
+
+`file_sha256` refuses on a machine carrying neither `sha256sum` nor `shasum`, and it refuses on stderr. Every caller reads it through a command substitution that captures stdout into the digest, so a message written there is swallowed and the stage reports a mismatch against a blank value, which names the image as wrong when the checker is what could not run.
 
 ## Seed independence
 

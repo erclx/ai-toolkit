@@ -17,7 +17,7 @@ aitk capture assets --out .claude/review/captures
 
 Only the HTML is asserted for drift. The PNG is a chromium render whose bytes move with the browser version, so rebuild it with `aitk capture assets/hero.html` when the check reports the HTML changed.
 
-Every render writes a stamp beside its PNG, `hero.png` next to `hero.stamp`, holding the source filename and the sha256 of the exact markup bytes that produced the image. The stamp is what `bun run check` compares to decide whether a committed image matches the markup committed with it, so it is tracked and commits alongside the pair. Nothing hand-edits it, and a capture that cannot write it reports that source as failed and exits 1, so an image whose stamp never landed is reported rather than passed over.
+Every render writes a stamp beside its PNG, `hero.png` next to `hero.stamp`, holding the source filename, a `source-sha256` over the markup bytes it read, and an `image-sha256` over the image bytes it wrote. Both digests are what `bun run check` compares, so a markup edit committed without a capture and a PNG swapped under unchanged markup each fail. The stamp is tracked and commits alongside the pair. Nothing hand-edits it, and a capture that cannot write it reports that source as failed and exits 1, so an image whose stamp never landed is reported rather than passed over.
 
 | Option             | Behavior                                          |
 | ------------------ | ------------------------------------------------- |

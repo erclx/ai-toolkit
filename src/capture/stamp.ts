@@ -5,14 +5,19 @@ const HASH_ALGORITHM = 'sha256'
 const STAMP_EXTENSION = '.stamp'
 
 /**
- * Provenance for one rendered PNG: the markup it came from and the digest of
- * that markup's exact bytes. `assert_hero_stamp` in `scripts/core/verify.sh`
- * reads the digest back with awk, so the field names, the colon, and the single
+ * Provenance for one rendered PNG: the markup it came from and a digest over
+ * each side of the pair. `assert_hero_stamp` in `scripts/core/verify.sh` reads
+ * both digests back with awk, so the field names, the colon, and the single
  * space after it are a contract across two languages rather than formatting.
+ *
+ * Both sides are recorded because either can move alone. The markup digest
+ * catches an edit committed with no capture, and the image digest catches a PNG
+ * replaced under markup that never changed.
  */
 export interface CaptureStamp {
   readonly source: string
-  readonly sha256: string
+  readonly sourceSha256: string
+  readonly imageSha256: string
 }
 
 /**
@@ -37,5 +42,10 @@ export function hashSource(bytes: Uint8Array): string {
 }
 
 export function formatStamp(stamp: CaptureStamp): string {
-  return `source: ${stamp.source}\nsha256: ${stamp.sha256}\n`
+  return [
+    `source: ${stamp.source}`,
+    `source-sha256: ${stamp.sourceSha256}`,
+    `image-sha256: ${stamp.imageSha256}`,
+    '',
+  ].join('\n')
 }

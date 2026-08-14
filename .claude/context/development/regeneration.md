@@ -21,7 +21,7 @@ The producer clears `.claude/rules/` before installing, so a rule dropped from t
 
 The Hero stage runs `scripts/core/regen-hero.sh`, which fills `assets/hero.html.tmpl` from five catalogs and writes `assets/hero.html`, then asserts no drift on that file. The shape applies to a documentation image so no count on the README frame is maintained by hand.
 
-The assert covers the HTML and not the PNG beside it. A capture is a chromium render whose bytes move with the browser version, so asserting the image would fail on a machine whose browser differs rather than on a stale count. A second assert closes the gap that leaves without rendering anything: `aitk capture` writes the digest of the markup it rendered into `assets/hero.stamp`, and the stage hashes the committed HTML and compares.
+The assert covers the HTML and not the PNG beside it. A capture is a chromium render whose bytes move with the browser version, so asserting the image would fail on a machine whose browser differs rather than on a stale count. A second assert closes the gap that leaves without rendering anything: `aitk capture` writes a digest of the markup it read and one of the image it wrote into `assets/hero.stamp`, and the stage hashes both committed files and compares each.
 
 Reading the commit that last touched each file measures timing rather than agreement, so a pair moved by one commit passes whatever the image holds. `.claude/context/development/gates.md` carries what the digest proves and the merge case that needs it. The cost is unchanged: a capture cannot ship as a follow-up commit, so regenerate, capture, and commit all three files in one step.
 
