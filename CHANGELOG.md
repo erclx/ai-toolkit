@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.97.0](https://github.com/erclx/aitk/compare/v0.96.0...v0.97.0) (2026-08-14)
+
+
+### Features
+
+* **capture:** write into section folders and fire a rule on routes ([#994](https://github.com/erclx/aitk/issues/994)) ([24a5544](https://github.com/erclx/aitk/commit/24a5544b807aba04a7b2743572b43578fe0b7d37))
+
+
+### Bug Fixes
+
+* **sandbox:** settle where an arm turn ceiling sits and repair the violator ([#993](https://github.com/erclx/aitk/issues/993)) ([74ca1c7](https://github.com/erclx/aitk/commit/74ca1c7f4313819d272ebfbc03c1d7d95d0229f0))
+
 ## [0.96.0](https://github.com/erclx/aitk/compare/v0.95.0...v0.96.0) (2026-08-14)
 
 
