@@ -164,27 +164,120 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 
 ## Skills
 
-| Skill                        | When to use                                                                                                          |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `aitk:claude-intake`         | File a brain dump into an inventory under `.claude/intake/`, one item per finding with a verdict                     |
-| `aitk:claude-groundwork`     | Before a plan is warranted, measure an unknown in a track folder under `.claude/groundwork/`                         |
-| `aitk:claude-feature`        | Before implementation, scan for conflicts and ambiguities                                                            |
-| `aitk:decision-escalate`     | Batch every open decision that turns on your preference into one set of questions, each with a recommended default   |
-| `aitk:claude-roadmap`        | Sequence MVP scope into ordered versions in `.claude/ROADMAP.md`                                                     |
-| `aitk:claude-orchestrate`    | Assert the orchestrator role, refill the ready queue, and dispatch the feature, review, and worktree skills          |
-| `aitk:claude-diagram`        | Draft per-kind mermaid entries under `.claude/diagrams/` from architecture and code, then verify each rendered image |
-| `aitk:claude-design-extract` | Draft `.claude/DESIGN.md`, sourcing tokens from existing UI code or proposing them from requirements on day one      |
-| `aitk:claude-review`         | In a fresh session, review all changes since main                                                                    |
-| `aitk:claude-pr-review`      | Review an open PR from an independent session, then re-review the commits added since until nothing is open          |
-| `aitk:claude-address-review` | Address PR findings and CI status, refresh stale docs, rebase a branch that stopped merging, then push a follow-up   |
-| `aitk:claude-tasks`          | Add a task to `.claude/tasks/` or archive a shipped one out of the folder                                            |
-| `aitk:claude-docs`           | When decisions diverged from plan, update `.claude/` docs                                                            |
-| `aitk:claude-ui-test`        | After UI changes, generate and run e2e tests + visual checklist                                                      |
-| `aitk:claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, inconsistencies                                           |
-| `aitk:claude-ux-measure`     | Measure paint, processor, and layout cost against a running interface, on the harness the project already carries    |
-| `aitk:claude-autoship`       | After plan approval, chain implement → verify → review → draft PR                                                    |
-| `aitk:systematic-debugging`  | When a test fails or bug surfaces, enforce root-cause investigation before fixes                                     |
-| `aitk:git-ship`              | Post-feature: sync docs, commit, rename branch, open PR                                                              |
+Groups run in the order a project meets them, so a reader at a known point scans to that group and reads across. The set reconciles the scenarios above with the lifecycle [target projects](target-projects.md) describes, rather than inventing a third vocabulary beside those two, so a group name matches neither source exactly and every moment either one names has a group. Each row says when to reach for the skill. What it does is the skill's own description.
+
+This section is the corpus the coverage claim is measured against: every name `aitk claude skills list --names` reports takes exactly one row here. A skill serving two moments sits at the earlier one, and mentions elsewhere in this file are prose rather than routing.
+
+### Set up a project
+
+| Skill                        | When to use                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
+| `aitk:setup-init`            | On a fresh scaffold, to detect the stack and run the whole install chain in one pass    |
+| `aitk:toolkit-operator`      | On a project that already exists, to read what it carries before an install is picked   |
+| `aitk:setup-gov`             | When the governance rules are wanted without the tooling chain                          |
+| `aitk:setup-indexes`         | When a markdown-heavy folder needs an `index.md` a session can browse                   |
+| `aitk:setup-plugins`         | On a new machine, to install the community and official plugins user-scoped             |
+| `aitk:setup-verify`          | After the agent generates configs, to run the installed scripts and report pass or fail |
+| `aitk:claude-design-extract` | Before the first UI feature, to draft `.claude/DESIGN.md`                               |
+| `aitk:claude-diagram`        | Once the architecture is written, to draft per-kind entries under `.claude/diagrams/`   |
+
+### Decide what to build
+
+| Skill                       | When to use                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `aitk:claude-intake`        | When the input is a pile of findings rather than one feature                    |
+| `aitk:claude-intake-answer` | When an intake folder holds unread slots waiting on your decision               |
+| `aitk:claude-groundwork`    | When the state is unmeasured and more than one approach is live                 |
+| `aitk:decision-escalate`    | When open decisions turn on your preference and want batching into one set      |
+| `aitk:claude-roadmap`       | When MVP scope needs sequencing into ordered versions                           |
+| `aitk:claude-tasks`         | When a decided item needs a file on the board, or a shipped one needs archiving |
+| `aitk:claude-feature`       | When the approach is settled and the next step is a plan                        |
+
+### Build the feature
+
+| Skill                       | When to use                                                         |
+| --------------------------- | ------------------------------------------------------------------- |
+| `aitk:claude-worktree`      | At the plan-to-execute boundary, to get an isolated tree and branch |
+| `aitk:claude-autoship`      | After plan approval, to chain implement, verify, review, draft PR   |
+| `aitk:project-commands`     | When the project's own command needs running                        |
+| `aitk:systematic-debugging` | When a test fails or a bug surfaces, to force root cause first      |
+| `aitk:claude-ui-test`       | After a UI change, to generate e2e tests and a visual checklist     |
+
+### Check the work before it leaves the branch
+
+| Skill                         | When to use                                                           |
+| ----------------------------- | --------------------------------------------------------------------- |
+| `aitk:claude-review`          | On the local branch diff, before anything is pushed                   |
+| `aitk:claude-standards-audit` | When changed markdown has to answer to the authoring standards        |
+| `aitk:claude-ux-audit`        | To read UI source for missing states, edge cases, and inconsistencies |
+| `aitk:claude-ux-measure`      | To start the interface and measure paint, processor, and layout cost  |
+
+### Ship it
+
+| Skill                        | When to use                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| `aitk:git-ship`              | To run the whole post-feature chain from docs sync through open PR                 |
+| `aitk:claude-memory-capture` | First in that chain, to route what the session learned to the surface owning it    |
+| `aitk:claude-docs`           | When decisions diverged from the plan, or a shipped task needs its outcomes marked |
+| `aitk:docs-sync`             | When a change since main left `README.md` or `docs/` stale                         |
+| `aitk:git-stage`             | When the staged set spans several concerns and wants one commit each               |
+| `aitk:git-commit`            | When the staged set is one concern, or was staged hunk by hand                     |
+| `aitk:git-branch`            | When a branch name needs generating or renaming to conventional form               |
+| `aitk:git-pr`                | When a pull request needs a title and body written from the diff                   |
+| `aitk:claude-memory-review`  | After capture writes an entry, to propose where each one belongs                   |
+
+### After the pull request opens
+
+| Skill                        | When to use                                                          |
+| ---------------------------- | -------------------------------------------------------------------- |
+| `aitk:claude-pr-review`      | From an independent session, to post findings on the PR itself       |
+| `aitk:claude-address-review` | On the worker's side, to fix posted findings and push a follow-up    |
+| `aitk:git-followup`          | For a small self-review edit on a branch whose PR is already open    |
+| `aitk:git-split`             | When a branch turns out to carry unrelated commits                   |
+| `aitk:git-issue`             | When something surfaced that belongs on the tracker rather than here |
+| `aitk:git-worktree`          | After a PR merges, to list worktrees and reclaim the slot            |
+
+### Run several tracks at once
+
+| Skill                     | When to use                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| `aitk:claude-orchestrate` | To assert the control session that owns the queue and reviews each worker's PR |
+| `aitk:session-resume`     | At the start of a session, to pick up what a previous one left                 |
+
+### Keep the project current with the toolkit
+
+| Skill                       | When to use                                                                        |
+| --------------------------- | ---------------------------------------------------------------------------------- |
+| `aitk:claude-seed-sync`     | After a toolkit update, to reconcile installed seeds without losing customizations |
+| `aitk:migration-claude-md`  | When `CLAUDE.md` grew past what always-load context should carry                   |
+| `aitk:migration-context`    | When `docs/` holds agent-flavored files belonging in `.claude/context/`            |
+| `aitk:migration-standards`  | When standards sit at the root while rules point into `.claude/`                   |
+| `aitk:migration-superseded` | When a drift report names a `.claude/` file a folder has replaced                  |
+| `aitk:toolkit-feedback`     | When something in the toolkit is broken, missing, or off                           |
+| `aitk:toolkit-triage`       | In the toolkit repo, to work through the open feedback issues                      |
+
+### Generate an artifact on demand
+
+| Skill                      | When to use                                                           |
+| -------------------------- | --------------------------------------------------------------------- |
+| `aitk:create-rule`         | For a project-specific governance rule the toolkit does not ship      |
+| `aitk:create-skill`        | For a new `SKILL.md`                                                  |
+| `aitk:create-snippet`      | For a reusable prompt                                                 |
+| `aitk:create-standard`     | For a new authoring convention                                        |
+| `aitk:bash-script`         | For an interactive, human-facing shell tool                           |
+| `aitk:cli-script`          | For a non-interactive automation, CI, or pipeline script              |
+| `aitk:ci-workflow`         | For a GitHub Actions workflow file                                    |
+| `aitk:claude-slides-draft` | For a deck, drafted as `.claude/SLIDES.md` and rendered to PowerPoint |
+| `aitk:claude-screencast`   | For a recording script with beats and defaults already seeded         |
+
+### Answer a question at any point
+
+| Skill                      | When to use                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------ |
+| `aitk:toolkit-cli`         | Before a sync or install, to learn what it overwrites, merges, or leaves alone |
+| `aitk:youtube-transcripts` | When a video transcript is wanted in the repo as context                       |
+
+Both rows answer a question rather than mark a point in a project's life, so a phase above would send a reader to the wrong group.
 
 ## Feedback routing
 

@@ -17,6 +17,16 @@ These entries hold the reasons instead: why a skill exists, where its boundary a
 
 A hand-written copy of the roster stood here and drifted the way `.claude/standards/context.md` predicts, describing two skills the plugin had already stopped shipping. That standard puts a catalog a `list` command already returns under what does not go in, and says to link the command so the entry cannot drift from it.
 
+## The consumer map groups by phase, and its table is the corpus
+
+`docs/ai-workflow.md` carries the when-to-use map, and the `## Skills` table under it is what a coverage claim is measured against. Groups run in the order a project meets them, from setup through building, checking, and shipping to the pull request and the toolkit-sync relationship. The last two hold what serves no single moment: one for artifacts generated on request, one for skills answering a question at any point.
+
+Naming the map rather than the table leaves the claim open, since mentions elsewhere in the file reach further than the table does. Measured on 2026-08-14 against the shipped folder listing, the table named 19, every mention in the file reached 24, every consumer doc reached 35, and adding `docs/agents/` gave 37. An outcome saying every skill appears is four claims until one block is named, so the table is the block and coverage claimed anywhere else does not count toward it.
+
+The groups derive from the scenarios above the map reconciled against the lifecycle `docs/target-projects.md` describes, rather than a third vocabulary beside those two. Each skill takes exactly one row, so a reader scanning a group reads a set rather than a sample, and a skill honestly serving two moments sits at the earlier one. The map carries no total, because the count moves whenever a skill lands.
+
+Nothing checks that the table still covers the corpus. `aitk claude skills list --names` reports the set and the comparison is a person's to run, so a skill added after this pass reopens the gap with nothing reporting it. That check belongs beside the other catalog commands rather than inside a doc rewrite.
+
 ## Workflow skills and domain-knowledge skills
 
 Skills split into two categories by function. The toolkit owns the first and installs the second, and mixing them is the most common source of skill bloat and maintenance drag.
