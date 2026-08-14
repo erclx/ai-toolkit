@@ -77,7 +77,7 @@ An arm inheriting its premise from dev-skill injection holds only while the bran
 
 The declaration also pins the folder name beside the verdict, against the general rule that a name history decides does not belong in a pin, because the second guard fails provisioning the moment that root comes back and a reader sees the fragility where it is rather than inside a declaration going quietly vacuous.
 
-The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. All three keep the default cap, since a failed run and a refusal each bound nothing.
+The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. Both keep the default cap, since a failed run and a refusal each bound nothing, while `audits` has since been driven to a pass and takes its ceiling from that run.
 
 The other four arms passed on 2026-08-04, which is the first time either skill was executed by anything.
 
@@ -91,7 +91,15 @@ The first run failed wider than its count reports. The fixture stages a target c
 
 The second run identifies the cause as structural rather than as a wandering session. `## Route` maps an intent or a diagnostic finding to one lifecycle phase and the audit offers sit in a subsection below it, so the table has to carry a measurement row for the section to be reachable at all. It carries one now, and the preamble above the table ranks a lifecycle row ahead of the offers, since the fixture's target fires the scaffold row and two audit conditions at once. The ranking sits there rather than inside the section it ranks, because a session acting on the lifecycle row never opens that section and is exactly the reader the rule is for.
 
-The arm pins `setup-init` beside the two audit commands, which scores that ranking rather than assuming it, and the order between the handoff and the offers stays in `manual` because a substring set is unordered. The cap stays at 30 until a passing run bounds it.
+The arm pins `setup-init` beside the two audit commands, which scores that ranking rather than assuming it, and the order between the handoff and the offers stays in `manual` because a substring set is unordered.
+
+### The audits arm passes on the repaired route
+
+A run on 2026-08-14 passed at 5 asserted and 0 failed with 5 unchecked, in 7 turns at 0.32 dollars over 38 seconds, and escapes came back empty. The reply named the scaffold handoff first and then offered the two staged audits, withheld the comment scan with a reason, and named `plans` as the only record kind. All five manual entries held on reading, and reading is not scoring, so the two figures belong beside each other rather than one under the other. The runs folder is per-machine scratch, so these figures are the durable record rather than a pointer to one.
+
+The ceiling comes off that run at 12, which is 7 with room for a reply that runs longer without the skill having changed. It matches `unmigrated`, the only other `toolkit-operator` arm bounded by an observation, and it is provisional against a sample of one. The failing second run cost 6 turns against the passing 7, so the spread is unmeasured and a later run that widens it reads as data rather than as a regression.
+
+What the pass does not reach is whether the ranking holds on a target shaped differently. The fixture stages one shape and the reply that passed named the scaffold handoff first on a target with nothing installed, so another target could rank those two rows the other way with no assertion here seeing it.
 
 ### The superseded arm and the guard that fixed the skill
 
