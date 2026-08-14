@@ -106,12 +106,12 @@ export function TaskList() {
   return (
     <div>
       <h2>Tasks</h2>
-      <img src="/banner.svg" alt="" />
       <ul>
         {(tasks ?? []).map((t) => (
           <li key={t.id}>{t.title}</li>
         ))}
       </ul>
+      <img src="/banner.svg" alt="" />
     </div>
   );
 }
@@ -157,8 +157,8 @@ EOF
   log_info "Seeded so detection has one answer:"
   log_info "  playwright.config.ts and @playwright/test make Playwright the harness found"
   log_info "  preview on 4173 is production-shaped, dev on 5173 is not"
-  log_info "  TaskList.tsx renders an unsized banner and fills its list after 400ms,"
-  log_info "  so paint and layout both have something to report"
+  log_info "  TaskList.tsx fills its list after 400ms above an unsized banner,"
+  log_info "  so the banner is pushed down and the layout reading is non-zero"
   log_info "Before:  bun install, then bunx playwright install chromium. Neither is seeded,"
   log_info "         since a sandbox provisions files and cannot fetch a browser."
   log_info "Action:  /claude-ux-measure"
