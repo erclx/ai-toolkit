@@ -60,14 +60,34 @@ JQ_REPLY_COUNT='
 # blocks the merge. Taking it as well as the commit is what separates a thread
 # waiting on a worker from one a pass left open owing no dispatch. A project
 # editing the two filters above for its own headings edits this one with them.
-JQ_LAST_REVIEW_HEADING='
+#
+# The age of that review comes out of the same selection, because the heading
+# alone cannot separate the two. Under the rule above an open heading means a
+# dispatch was owed and made, so the ordinary healthy thread is a worker still
+# working and every one of them would be reported minutes after the pass posted.
+# jq computes the elapsed seconds itself, since `date -d` is GNU-only and this
+# script runs wherever the plugin is installed. A review carrying no stamp reads
+# as age zero and classifies nothing, which is the same answer the carry-forward
+# path gives a pull request this run could not read.
+JQ_LAST_REVIEW_STATE='
   [ .reviews[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")
              | . == "## Review" or . == "## Review closed")
-    | (.body // "") | split("\n")[0] | rtrimstr("\r")
   ] | last
-  | if . == "## Review" then "open" elif . == null then "none" else "closed" end
+  | if . == null then "none 0"
+    else ((.body | split("\n")[0] | rtrimstr("\r")
+           | if . == "## Review" then "open" else "closed" end)
+          + " "
+          + (if .submittedAt == null then "0"
+             else ((now - (.submittedAt | fromdateiso8601)) | floor | tostring)
+             end))
+    end
 '
+
+# An open pass this old has nobody on it. A review-to-follow-up cycle runs in
+# tens of minutes, so the threshold sits several times past one and well short
+# of a thread left overnight. A project whose workers run longer raises it here.
+STALE_AFTER=7200
 
 # A pull request this run could not read keeps the line it had, so the GONE
 # sweep below does not read the gap as a merge and the baseline does not lose
@@ -92,7 +112,7 @@ carry_forward() {
 }
 
 snapshot() {
-  local numbers n payload head prior resp merges heading
+  local numbers n payload head prior resp merges review_state
   git fetch -q origin "$BASE_BRANCH" 2>/dev/null || true
 
   # A failed list reaches the caller as no open pull requests, and that reports
@@ -123,7 +143,9 @@ snapshot() {
 
     prior=$(jq -r "$JQ_LAST_REVIEWED_HEAD" <<<"$payload")
     resp=$(jq -r "$JQ_REPLY_COUNT" <<<"$payload")
-    heading=$(jq -r "$JQ_LAST_REVIEW_HEADING" <<<"$payload")
+    # Two space-separated fields, so the line below carries them as its own
+    # sixth and seventh rather than needing a split.
+    review_state=$(jq -r "$JQ_LAST_REVIEW_STATE" <<<"$payload")
 
     # `gh pr view --json mergeable` reports UNKNOWN until GitHub finishes
     # computing it, which is exactly when a poll asks. merge-tree answers
@@ -142,7 +164,7 @@ snapshot() {
       merges=conflict
     fi
 
-    echo "$n $head ${prior:-none} $resp $merges $heading"
+    echo "$n $head ${prior:-none} $resp $merges $review_state"
   done
 }
 
@@ -159,7 +181,7 @@ CHANGED=0
 # would fire on every later run and the board would never read "No movement."
 FINAL=""
 
-while read -r n head prior resp merges heading; do
+while read -r n head prior resp merges heading age; do
   [ -z "$n" ] && continue
   state=$heading
   old=$(grep "^$n " "$STATE" || true)
@@ -177,14 +199,16 @@ while read -r n head prior resp merges heading; do
       echo "OPENED    #$n at ${head:0:7}, $merges against $BASE_BRANCH"
     fi
     CHANGED=1
-    FINAL+="$n $head $prior $resp $merges $state"$'\n'
+    FINAL+="$n $head $prior $resp $merges $state $age"$'\n'
     continue
   fi
   old_head=$(echo "$old" | cut -d' ' -f2)
   old_resp=$(echo "$old" | cut -d' ' -f4)
   old_merges=$(echo "$old" | cut -d' ' -f5)
-  # A baseline written before this field existed yields empty, which matches no
-  # test below, so the first run after an upgrade classifies nothing new.
+  # Only the marker is read off this field, so a baseline written before it
+  # existed yields empty and reads as not yet reported, which is what it is. The
+  # age decides the rest, so the first run after an upgrade needs no history and
+  # classifies a thread already past the threshold rather than waiting a run.
   old_heading=$(echo "$old" | cut -d' ' -f6)
 
   # A conflict arrives from the base moving, not from the branch, so it is
@@ -219,14 +243,17 @@ while read -r n head prior resp merges heading; do
   elif [ "$resp" -gt "$old_resp" ]; then
     echo "RESPONSE  #$n answered with no new commit"
     CHANGED=1
-  elif [ "$heading" = open ] && [ "$old_heading" = open ] && [ "$prior" = "$head" ]; then
+  elif [ "$heading" = open ] && [ "$old_heading" != reported ] &&
+    [ "$prior" = "$head" ] && [ "$age" -ge "$STALE_AFTER" ]; then
     # Three things at once: the last pass is open, it covers the head so no
     # commit followed it, and the two branches above found no reply either. The
     # open heading is posted only for a critical or should-fix, so a pass owing
     # no dispatch left it here. Any two of these describe an ordinary review
-    # waiting on a worker, which is also what a worker slower than one interval
-    # looks like, so the report asks for a confirmation rather than asserting.
-    echo "STALLED   #$n open at ${head:0:7}, no commit or reply since the last pass"
+    # waiting on a worker, which is why the age carries the third: without it
+    # every dispatched worker is reported minutes into the work it was sent to
+    # do, and a signal firing on the healthy path is one an operator learns to
+    # skip. The report still asks for a confirmation rather than asserting.
+    echo "STALLED   #$n open at ${head:0:7}, no commit or reply in $((age / 3600))h"
     state=reported
     CHANGED=1
   elif [ "$heading" = open ] && [ "$old_heading" = reported ]; then

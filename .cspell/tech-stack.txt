@@ -30,6 +30,7 @@ execve
 fastapi
 firecrawl
 flowchart
+fromdateiso
 gitattributes
 glama
 gsub
@@ -101,6 +102,7 @@ tldraw
 tmpl
 tolower
 topbar
+tostring
 toupper
 tsconfig
 unpushed
