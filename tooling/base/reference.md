@@ -4,6 +4,8 @@
 
 The base layer covers every project the toolkit scaffolds, whatever language sits on top. It ships formatting, spelling, shell linting, conventional commits, git hooks, CI, and three maintenance scripts. Every other stack extends it, so a decision made here is one every stack inherits.
 
+A repository with several language roots layers this stack once at the root and skips it per subtree, since git honors only one `core.hooksPath` and a re-dropped husky silently breaks. `docs/target-projects.md` carries the recipe.
+
 ## What ships as golden configs
 
 Golden config files live in `tooling/base/configs/` and are copied into the target on `aitk tooling sync base .`. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
