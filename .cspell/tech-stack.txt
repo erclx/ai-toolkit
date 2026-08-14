@@ -12,6 +12,7 @@ canva
 clack
 commander
 conftest
+contentful
 coreutils
 coveragerc
 crxjs
@@ -38,6 +39,7 @@ inplace
 kwargs
 labelledby
 listitem
+longtask
 lucide
 mermaid
 metacharacters
