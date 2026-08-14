@@ -32,7 +32,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk tasks validate`      | Report board rows whose plan, task file, group, or file set does not hold (`--json`)                                                      |
 | `aitk intake list`         | Report intake folder counts, or one folder's items, keeping what is unread with `--unread` (`--json`)                                     |
 | `aitk intake answer`       | Write selections into one cluster's answer slots, repeating `--set <item>=<answer>` (`--json`)                                            |
-| `aitk records validate`    | Report a session record against the standard governing it, per kind (`--json`)                                                            |
+| `aitk records validate`    | Report a session record or a standard against the standard governing it, per kind (`--json`)                                              |
 | `aitk records push`        | Commit the eight backed record folders and push them to a private records remote (`--json`)                                               |
 | `aitk records pull`        | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                   |
 | `aitk sessions list`       | Resolve live sessions to the worktree and branch each holds, filtered by `--branch` (`--json`)                                            |

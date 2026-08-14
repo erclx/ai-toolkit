@@ -61,6 +61,8 @@ Both govern a gitignored folder no check reaches, which puts them in one class w
 
 The precedent extended is `aitk tasks validate`, which reports against the board without writing, and reporting is what makes a verb safe over a folder with no history to recover from. `aitk records validate <kind>` now covers all four, `memory` having landed with its standard rather than as a second command.
 
+A fifth kind reads this corpus rather than a gitignored folder, and it keeps the reporting discipline on the opposite reason. A standard is tracked, installed into every target, and cited by bare filename, so the risk a write carries is a rename reaching further than the file it moved rather than a repair nothing can undo. `.claude/context/cli/audits.md` holds the check and its two roots.
+
 ## Gotchas
 
 - `aitk standards sync` is file-level. "Apply all" overwrites whole files and destroys local customizations. For projects that customize sections, use the `claude-seed-sync` skill, which diffs the preamble plus each `##` section and preserves customizations by default.
