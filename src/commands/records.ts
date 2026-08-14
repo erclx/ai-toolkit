@@ -9,7 +9,9 @@ import {
 import {
   type Finding,
   isRecordKind,
+  isSharedScratch,
   RECORD_KINDS,
+  type RecordKind,
   type ValidateOutcome,
   validateRecords,
 } from '@/records/validate'
@@ -22,7 +24,7 @@ import {
   outro,
   pipeOutput,
 } from '@/ui'
-import { mainWorktreeRoot } from '@/worktree'
+import { currentWorktreeRoot, mainWorktreeRoot } from '@/worktree'
 
 /** Returned when a record carries a finding, which is the gating result. */
 const EXIT_FINDINGS = 2
@@ -38,17 +40,20 @@ export function register(program: Command): void {
   const records = program
     .command('records')
     .description(
-      'Check and back up the gitignored session records under .claude/',
+      'Check a governed corpus against its standard, and back up the session records under .claude/',
     )
     .helpOption('-h, --help', 'Show this help message')
 
   records
     .command('validate')
-    .description('Report where a record and the standard governing it disagree')
+    .description('Report where a file and the standard governing it disagree')
     .argument('<kind>', `Record folder: ${RECORD_KINDS.join(', ')}`)
     .helpOption('-h, --help', 'Show this help message')
     .option('--json', 'Add a machine-readable record on stdout')
-    .option('--root <path>', 'Project root, defaulting to the main worktree')
+    .option(
+      '--root <path>',
+      'Project root, defaulting to the main worktree except on standards',
+    )
     .addHelpText(
       'after',
       [
@@ -58,18 +63,22 @@ export function register(program: Command): void {
         '  groundwork  README and current-state files, numbering, dating, and a half-closed track',
         '  intake      overview file, numbering, dating, and the four bullets every item carries',
         '  memory      filename and type prefix, frontmatter, and the body shape each type carries',
+        '  standards   frontmatter, the scope section and its handoff list, and a filename',
+        '              derived from the governed path',
         '',
         'Exit codes:',
         '  0  every check passed',
         '  1  refused, with the reason on stderr or in the JSON record',
         '  2  at least one record carries a finding',
         '',
-        'It reports and never writes. Each folder is per-machine scratch with no',
-        'history behind it, so a session fixes the record the report names.',
+        'It reports and never writes, so a session fixes what the report names. A',
+        'session record has no history to undo a wrong repair from, and a standard',
+        'is installed and cited everywhere, so a rename is larger than a file move.',
         '',
         'Examples:',
         '  aitk records validate plans',
         '  aitk records validate memory',
+        '  aitk records validate standards',
         '  aitk records validate intake --json',
         '',
       ].join('\n'),
@@ -218,6 +227,15 @@ function reportRefusal(
   return 1
 }
 
+/**
+ * A shared-scratch kind reads the main worktree root, so a linked worktree
+ * validates the records every other session reads. A tracked corpus reads the
+ * checkout the caller stands in, which is the copy that session has edited.
+ */
+function defaultRoot(kind: RecordKind): Promise<string> {
+  return isSharedScratch(kind) ? mainWorktreeRoot() : currentWorktreeRoot()
+}
+
 async function runValidate(
   kind: string,
   opts: ValidateCommandOptions,
@@ -236,7 +254,7 @@ async function runValidate(
     )
   }
 
-  const root = opts.root ?? (await mainWorktreeRoot())
+  const root = opts.root ?? (await defaultRoot(kind))
 
   return report(await validateRecords(root, kind), emitJson, root)
 }
