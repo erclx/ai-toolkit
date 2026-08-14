@@ -181,6 +181,7 @@ Before the first feature session on a UI-heavy project, pick a design tier. The 
 | `aitk:claude-docs`           | When decisions diverged from plan, update `.claude/` docs                                                            |
 | `aitk:claude-ui-test`        | After UI changes, generate and run e2e tests + visual checklist                                                      |
 | `aitk:claude-ux-audit`       | Audit existing UI surfaces for missing states, edge cases, inconsistencies                                           |
+| `aitk:claude-ux-measure`     | Measure paint, processor, and layout cost against a running interface, on the harness the project already carries    |
 | `aitk:claude-autoship`       | After plan approval, chain implement → verify → review → draft PR                                                    |
 | `aitk:systematic-debugging`  | When a test fails or bug surfaces, enforce root-cause investigation before fixes                                     |
 | `aitk:git-ship`              | Post-feature: sync docs, commit, rename branch, open PR                                                              |

@@ -1,6 +1,6 @@
 ---
 name: claude-ux-audit
-description: Audits the current UI for incomplete, inconsistent, or confusing patterns. Reads DESIGN.md and .claude/wireframes/ for intent, scans UI files, and outputs observations grouped by surface. Use when asked "audit the UX", "audit the UI", "UX audit", or "find UI roughness". Do NOT use for new feature planning or code changes.
+description: Audits the current UI for incomplete, inconsistent, or confusing patterns. Reads DESIGN.md and .claude/wireframes/ for intent, scans UI files, and outputs observations grouped by surface. Use when asked "audit the UX", "audit the UI", "UX audit", or "find UI roughness". Do NOT use for new feature planning or code changes, and do NOT use to measure what a running interface costs to paint, which is `claude-ux-measure`.
 ---
 
 # Claude UX audit
@@ -8,6 +8,7 @@ description: Audits the current UI for incomplete, inconsistent, or confusing pa
 ## Guards
 
 - If no UI files exist in the project (no JSX, TSX, Vue, Svelte, or HTML under `src/`), stop: `❌ No UI surfaces found to audit.`
+- If the request asks what the interface costs to paint, block, or shift at runtime, run nothing and name `claude-ux-measure`. This skill reads source and reaches no number a browser produces. Contrast is the exception and stays here, since it is computable from the two color values already in the token table.
 
 ## Step 1: read context
 

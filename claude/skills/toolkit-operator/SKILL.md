@@ -69,7 +69,7 @@ On a measured report, take `<stack>` from the first name in `tooling.chain`, whi
 
 ### Audits
 
-Four audits measure a surface without changing it. Offer the ones whose surface the target carries, list them together, and let the user pick. Run none of them unasked, and never treat a finding as a reason to abandon the operation the user asked for, since each reports judgments beside facts.
+Five audits measure a surface without changing it. Offer the ones whose surface the target carries, list them together, and let the user pick. Run none of them unasked, and never treat a finding as a reason to abandon the operation the user asked for, since each reports judgments beside facts.
 
 A lifecycle row and these offers fire together on a project carrying a context folder and no installed domain, which is the ranking the preamble states. Scaffold work on a target with nothing installed is real work, so an audit offered instead of it answers a question nobody asked, while an audit dropped in favor of it loses the one the user did.
 
@@ -77,10 +77,13 @@ A lifecycle row and these offers fire together on a project carrying a context f
 - A record folder present under `.claude/`, one of `plans`, `groundwork`, `intake`, or `memory`: offer `aitk records validate <kind>` for each one found
 - Markdown that git lists: offer `aitk markdown audit`
 - TypeScript or shell source present: offer `aitk comments scan`
+- A `package.json` script that serves an interface, one of `dev`, `preview`, `serve`, or `start`: offer `claude-ux-measure`
 
 An audit offered against a surface the target lacks reports an empty run as a finding, which is the same defect as never offering it at all. Check the surface before naming the command.
 
-The markdown row is the one every target satisfies, since a project with no markdown is not one this reaches. Its condition is stated so the four rows read alike, and the row needs no gate beyond it.
+The markdown row is the one every target satisfies, since a project with no markdown is not one this reaches. Its condition is stated so the five rows read alike, and the row needs no gate beyond it.
+
+The last row is a skill handoff rather than a command, so `## Execute` does not govern it. Hand it off and stop, the way a lifecycle row hands off. Its condition reads a serving command rather than a source folder, since that skill measures what a browser receives and never opens the tree behind it. It carries a second condition this skill cannot read, which is a browser harness the project already installed, and the skill itself reports what it needs when it finds none. Testing for that here would put the detection in two places and let this one answer stale.
 
 ## Execute
 

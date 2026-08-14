@@ -37,3 +37,4 @@ The pass slides into fixing what it finds, and then the audit and the change lan
 - Feature planning, which `claude-feature` owns
 - Verifying one specific change, which `claude-ui-test` owns
 - Defining the intent it audits against, which `claude-design-extract` and the wireframes own
+- Measuring what a running interface costs to paint, block, or shift, which `claude-ux-measure` owns. Contrast stays here rather than going with it, being computable from two color values this skill already reads off the token table.
