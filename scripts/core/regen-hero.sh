@@ -5,7 +5,9 @@
 # bytes move with the browser version, so asserting it in verify.sh would fail
 # on a machine whose chromium differs rather than on a stale count. Rebuild the
 # image with `aitk capture assets/hero.html` after this script reports a change.
-# The frame carries no version. `package.json` is bumped on main by the release
+# That capture also writes assets/hero.stamp, which records the digest of the
+# markup it rendered and is what the Hero stage compares, so all three files
+# commit together. The frame carries no version. `package.json` is bumped on main by the release
 # tooling, so embedding it drifts every open branch on the next release and the
 # stage then fails for work that touched nothing.
 #

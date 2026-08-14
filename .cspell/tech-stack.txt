@@ -12,6 +12,7 @@ canva
 clack
 commander
 conftest
+coreutils
 coveragerc
 crxjs
 cspell
