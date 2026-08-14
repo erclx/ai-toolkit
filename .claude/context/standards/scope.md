@@ -25,6 +25,10 @@ A subfolder was not available for them, since install and the sync adapter walk 
 
 The name follows the artifact's own path segment, which is what every standard here does: `plan.md` over `.claude/plans/feature-<slug>.md`, `memory.md` over `.claude/memory/<type>-<slug>.md`, and `session.md` over `.claude/tasks/session-<slug>.md`. It shipped as `session-map.md` and was renamed before merge, since a standard installs into every target and is cited by bare filename, so the cost of an outlier name only grows. `handoff.md` was the other candidate and it collides: this corpus already calls a `Does not govern:` pointer a scope handoff, and `groundwork.md` already calls its own last file the handoff, so the one word would name three artifacts across three standards.
 
+That derivation is now stated in `standards/standard.md` under `## Scoping rules` and checked by `aitk records validate standards`. The rule went in first, because a check asserting an unwritten convention reports an author for something nobody told them, which is what the rename above cost. Stating the derivation is what the rule had to do rather than stating the shape: one word is the output across all 21 authored standards, and a check keyed on word count would pass a conforming single word naming the wrong artifact.
+
+The check derives from the scope statement, so it inherits every constraint the parsing section below records. An attribute standard is exempt because it governs no path, a statement anchoring nothing is reported rather than passed, and a finding on a name says what the rename reaches, since the hero frame lists standards by name and a row moves whether or not a count does.
+
 ## What a standard declares
 
 A standard states its rule and never what enforces it here. These files install into projects whose hooks, scratch paths, and skill catalogs are their own, so a rule justified by this repository's audit hook or illustrated with this catalog's output filenames is wrong in a target and nothing reports it. Name the general condition and let the consuming surface name its own case.
@@ -72,6 +76,8 @@ The scope statement is read by machine as well as by a person, which is what cos
 Publishing the declaration was the alternative to widening the audit's hardcoded mapping, which bound three document types out of thirteen. The cost is that rewording a Governs line can break a consumer with no error in front of it, which is why an unreadable statement emits an empty array rather than a guess.
 
 `standard.md` names `standards/` rather than `.claude/standards/`, so the declaration matches the authoring root and the installed copy alike.
+
+A second consumer now reads the statement, the `standards` kind of the record validator, and it reads it on the same contract rather than on one of its own. Two readings of one sentence would let a standard pass the check while publishing a different jurisdiction to every consumer of the catalog, which is a disagreement no stage would report.
 
 Every backticked token in that first sentence is read as a path, and the `*` resolution for an attribute standard fires only when the sentence carries none. A field name or a file extension backticked there is published as the standard's jurisdiction, so a consumer mapping a changed file through `appliesTo` matches nothing and reports the file clean.
 
