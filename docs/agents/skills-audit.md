@@ -71,6 +71,8 @@ A skill body enters a session once and stays. Re-invoking the skill replays the 
 
 The ref is required and carries no default. `HEAD` is the only value the command could supply for itself, and it answers every run with nothing moved, which is the silence this verb exists to break. A session passes the commit it started from.
 
+Nothing on the machine records that commit, so a session recovers it from its own elapsed run time with `git log -1 --format=%H --before='<duration> ago'` and rounds the duration up. Over-reporting costs one read of a body while under-reporting costs the answer, so the generous end of the estimate is the correct one and no session needs to pin the exact commit.
+
 ### What drift reads
 
 Bodies alone, one `SKILL.md` per folder, across `claude/skills/` and not the internal tree. A reference or a requirement beside the body is read by whoever opens it and holds no copy that outlives the read, and the internal corpus never loads into a target session at all.
