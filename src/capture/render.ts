@@ -1,10 +1,11 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { basename, dirname } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { chromium } from '@playwright/test'
 import type { Browser, Page } from '@playwright/test'
 import type { CaptureSource } from '@/capture/sources'
 import { primaryFontFamily, resolveCaptureSources } from '@/capture/sources'
+import { formatStamp, hashSource, stampPath } from '@/capture/stamp'
 
 /**
  * Every browser reference in the toolkit lives in this module, and `files` in
@@ -82,6 +83,7 @@ async function captureOne(
     mkdirSync(dirname(source.pngPath), { recursive: true })
     const png = await element.screenshot({ omitBackground: true })
     writeFileSync(source.pngPath, png)
+    writeStamp(source)
     return {
       status: 'rendered',
       htmlPath: source.htmlPath,
@@ -97,6 +99,25 @@ async function captureOne(
   } finally {
     await page.close()
   }
+}
+
+/**
+ * Runs inside the render rather than in a wrapper around it, so a capture
+ * cannot succeed and leave the provenance unrecorded. A throw here reaches the
+ * caller's catch and reports the source as failed, which is correct: a PNG
+ * whose stamp never landed is the state the verify stage exists to reject.
+ *
+ * The source is stored as a bare filename. An absolute path would record the
+ * machine that ran the capture into a tracked file and differ per checkout.
+ */
+function writeStamp(source: CaptureSource): void {
+  writeFileSync(
+    stampPath(source.pngPath),
+    formatStamp({
+      source: basename(source.htmlPath),
+      sha256: hashSource(readFileSync(source.htmlPath)),
+    }),
+  )
 }
 
 function failed(source: CaptureSource, reason: string): CaptureResult {
