@@ -40,7 +40,7 @@ A decision's verification anchor has the same shape of gap in the other directio
 ## Out of scope
 
 - Creating a task file or moving one off the board, which `claude-tasks` owns
-- Public-facing docs, which `docs-sync` owns. This skill reconciles the `.claude/` planning surface.
+- Public-facing docs, which `docs-sync` owns. This skill reconciles the `.claude/` planning surface, and both descriptions name their corpus in the trigger so a request saying only "sync the docs" lands on one of the pair rather than on either.
 - Regenerating the task index, owned by a hook
 - Redrawing diagrams, which `claude-diagram` owns. This skill flags staleness and leaves the re-run to the author.
 - Re-measuring an architecture claim to decide whether its number moved. The sweep keys on a cited path entering the diff, so a claim whose number moved with no cited path in the diff goes unflagged.
