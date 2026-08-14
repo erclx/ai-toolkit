@@ -46,6 +46,14 @@ A standard failing these questions is non-conforming even when it satisfies ever
 - Separate a jurisdiction exclusion from a content exclusion. The first names a concern another standard owns and belongs in `## Scope`. The second names what does not belong inside the document and stays with the shape rules. Merging them puts a boundary claim where no sibling will read it.
 - Stay silent on a section the standard holds today but should not own. Claiming it makes the scope statement false the moment it moves, and the mismatch is the evidence that moves it.
 
+### Naming the file
+
+- Name the file for the artifact the scope statement governs, taking the word from the deepest path segment that names the artifact rather than the folder holding it. `plan.md` over `.claude/plans/feature-<slug>.md` and `session.md` over `.claude/tasks/session-<slug>.md` both follow it.
+- Take the singular or the plural of that word, whichever reads as the artifact. A standard over one document takes the singular, and one over a set may take either.
+- Name an attribute standard for the attribute itself, since it governs no path to derive a word from.
+- Write the derived word alone. A standard installs as a sibling and is cited by bare filename, so a qualifier makes an outlier that every later citation has to carry.
+- Rename an outlier at the moment it is found, and state the reach in the change that does it. The name is installed in every target and cited in surfaces that never see the rename, so the cost only grows.
+
 ### Staying inside it
 
 - Name no path, filename, or folder outside the document type the standard governs. A standard reaches projects whose layout is their own, so a path borrowed from the authoring repository is wrong in a target and nothing reports it.
