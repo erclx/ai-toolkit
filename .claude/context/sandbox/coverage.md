@@ -13,7 +13,9 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Thirty-four arms across fifteen scenarios out of 60 is 25 percent of scenarios, well under the 56 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one. Both figures floor rather than round, which the arms figure shows and the scenario figure does not, since 34 of 60 falls between the two and fifteen of 60 lands on 25 exactly. `coveragePercent` states the reason and this entry matches what the command prints, so a percentage here that looks a point low is the measure working rather than an entry left stale.
+Scenarios and arms count separately, and the report prints both rather than picking the flattering one. Several arms can share one scenario, so dividing arms by scenarios always produces the higher figure and the scenario percentage is the honest rollout number. Read the current pair off `aitk sandbox coverage --json`, which carries `totalScenarios`, `armedScenarios`, and `armedArms`. A figure frozen into this paragraph goes stale again the moment another scenario lands, which is why the rule sits here and the numbers do not.
+
+Both percentages floor rather than round. A ratio falling between two whole numbers reports the lower one, so a percentage that looks a point under a hand-worked division is the measure working rather than an entry left stale. `coveragePercent` states the reason.
 
 Neither number weighs an arm by what it asserts. An arm can carry a single assertion over its own provisioning, such as `.claude/standards/skill.md` being absent, which is a claim about the fixture rather than about the skill under test. The count reads as scenarios reached rather than behavior covered, since nothing in it separates that arm from one asserting eleven things about a run, so a reader taking either percentage as skill coverage is reading past what the declarations say plainly.
 
@@ -77,7 +79,7 @@ An arm inheriting its premise from dev-skill injection holds only while the bran
 
 The declaration also pins the folder name beside the verdict, against the general rule that a name history decides does not belong in a pin, because the second guard fails provisioning the moment that root comes back and a reader sees the fragility where it is rather than inside a declaration going quietly vacuous.
 
-The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. All three keep the default cap, since a failed run and a refusal each bound nothing.
+The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. Both keep the default cap, since a failed run and a refusal each bound nothing, while `audits` has since been driven to a pass and takes its ceiling from that run.
 
 The other four arms passed on 2026-08-04, which is the first time either skill was executed by anything.
 
@@ -91,7 +93,15 @@ The first run failed wider than its count reports. The fixture stages a target c
 
 The second run identifies the cause as structural rather than as a wandering session. `## Route` maps an intent or a diagnostic finding to one lifecycle phase and the audit offers sit in a subsection below it, so the table has to carry a measurement row for the section to be reachable at all. It carries one now, and the preamble above the table ranks a lifecycle row ahead of the offers, since the fixture's target fires the scaffold row and two audit conditions at once. The ranking sits there rather than inside the section it ranks, because a session acting on the lifecycle row never opens that section and is exactly the reader the rule is for.
 
-The arm pins `setup-init` beside the two audit commands, which scores that ranking rather than assuming it, and the order between the handoff and the offers stays in `manual` because a substring set is unordered. The cap stays at 30 until a passing run bounds it.
+The arm pins `setup-init` beside the two audit commands, which scores that ranking rather than assuming it, and the order between the handoff and the offers stays in `manual` because a substring set is unordered.
+
+### The audits arm passes on the repaired route
+
+A run on 2026-08-14 passed at 5 asserted and 0 failed with 5 unchecked, in 7 turns at 0.32 dollars over 38 seconds, and escapes came back empty. The reply named the scaffold handoff first and then offered the two staged audits, withheld the comment scan with a reason, and named `plans` as the only record kind. All five manual entries held on reading, and reading is not scoring, so the two figures belong beside each other rather than one under the other. The runs folder is per-machine scratch, so these figures are the durable record rather than a pointer to one.
+
+The ceiling comes off that run at 12, which is 7 with room for a reply that runs longer without the skill having changed. It matches `unmigrated`, the only other `toolkit-operator` arm bounded by an observation, and it is provisional against a sample of one. The failing second run cost 6 turns against the passing 7, so the spread is unmeasured and a later run that widens it reads as data rather than as a regression.
+
+What the pass does not reach is whether the ranking holds on a target shaped differently. The fixture stages one shape and the reply that passed named the scaffold handoff first on a target with nothing installed, so another target could rank those two rows the other way with no assertion here seeing it.
 
 ### The superseded arm and the guard that fixed the skill
 
@@ -141,7 +151,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Thirteen of 57 skills are asserted where fifteen of 60 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
+The denominators disagree on purpose. Fewer skills are asserted than scenarios are armed, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill, and `--skills` carries `totalSkills` and `asserted` for whoever wants the current pair. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
 ### Pairing a scenario to a skill
 

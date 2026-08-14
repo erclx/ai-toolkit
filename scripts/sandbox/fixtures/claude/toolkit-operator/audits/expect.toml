@@ -8,10 +8,13 @@
 # from a list of every command the CLI registers.
 
 # The reply lists commands rather than running them, so the run costs less than
-# the routes that execute. The ceiling sits at the default cap, because a
-# truncated run reports one turn past its cap and a declaration above the cap
-# passes that assertion while every other one fails.
-max_turns = 30
+# the routes that execute. The ceiling takes the 2026-08-14 passing run at 7
+# turns and adds headroom rather than pinning the number, since the cap is
+# asserted after the run rather than enforced during it and a ceiling equal to
+# the one observation fails the next run that is slower for an unrelated reason.
+# A truncated run still fails, since it reports one turn past the runner's cap
+# and only a declaration above that cap passes the assertion.
+max_turns = 12
 
 # The two audits whose surface the fixture staged, named as commands since
 # `## Route` states the offer as the command a user picks, plus the lifecycle row
