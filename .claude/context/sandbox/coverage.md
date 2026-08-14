@@ -13,7 +13,9 @@ aitk sandbox coverage --json    # machine copy on stdout
 aitk sandbox coverage --strict  # exit 1 while any scenario declares nothing
 ```
 
-Scenarios and arms count separately. Thirty-four arms across fifteen scenarios out of 60 is 25 percent of scenarios, well under the 56 percent that dividing arms by scenarios produces, and the report prints both rather than picking the flattering one. Both figures floor rather than round, which the arms figure shows and the scenario figure does not, since 34 of 60 falls between the two and fifteen of 60 lands on 25 exactly. `coveragePercent` states the reason and this entry matches what the command prints, so a percentage here that looks a point low is the measure working rather than an entry left stale.
+Scenarios and arms count separately, and the report prints both rather than picking the flattering one. Several arms can share one scenario, so dividing arms by scenarios always produces the higher figure and the scenario percentage is the honest rollout number. Read the current pair off `aitk sandbox coverage --json`, which carries `totalScenarios`, `armedScenarios`, and `armedArms`. A figure frozen into this paragraph goes stale again the moment another scenario lands, which is why the rule sits here and the numbers do not.
+
+Both percentages floor rather than round. A ratio falling between two whole numbers reports the lower one, so a percentage that looks a point under a hand-worked division is the measure working rather than an entry left stale. `coveragePercent` states the reason.
 
 Neither number weighs an arm by what it asserts. An arm can carry a single assertion over its own provisioning, such as `.claude/standards/skill.md` being absent, which is a claim about the fixture rather than about the skill under test. The count reads as scenarios reached rather than behavior covered, since nothing in it separates that arm from one asserting eleven things about a run, so a reader taking either percentage as skill coverage is reading past what the declarations say plainly.
 
@@ -149,7 +151,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Thirteen of 57 skills are asserted where fifteen of 60 scenarios are, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
+The denominators disagree on purpose. Fewer skills are asserted than scenarios are armed, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill, and `--skills` carries `totalSkills` and `asserted` for whoever wants the current pair. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
 ### Pairing a scenario to a skill
 
