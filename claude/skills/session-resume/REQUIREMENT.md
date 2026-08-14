@@ -11,6 +11,8 @@ Without this skill, a session picking up old work reconstructs state from the gi
 
 A compaction keeps conclusions and drops the reasoning that produced them, and the previous session can write that reasoning to a handoff before it goes. A resume that reads the board, the plans, and the memory index alone walks past that file, so the one artifact written to survive the compaction reaches nobody and the next session re-derives what it holds.
 
+The task index is a folder catalog rather than a task filter, so it carries a row for the ordering file and one for every handoff on the board. A session reporting each row as a backlog item queues work nobody filed, and the count grows with every session that ever wrote a handoff.
+
 From a linked worktree the shared scratch folders resolve against the worktree rather than the main root, where they are empty. That reports no tracked work on a repository carrying a full backlog, and the report is indistinguishable from the true empty case.
 
 A resume is a read, and a session that treats it as a cleanup pass offers to archive finished entries or refresh a memory it decided was stale. Both change tracked state on the strength of a summary the user has not confirmed yet.
@@ -20,6 +22,7 @@ A resume is a read, and a session that treats it as a cleanup pass offers to arc
 - Read the newest handoff before the board, and report what it carries attributed to its writer
 - Resolve the handoff, plans, memory, and tasks folders at the main worktree root
 - Read the task index before any individual task file, and open only the task files the summary needs
+- Drop the board siblings from the index before reporting it as the backlog, since the catalog filters nothing and carries a row per handoff
 - Preserve the index's order in the report, since the order is the priority
 - Surface only the memory entries that inform the top item
 - Close with one recommendation naming the first item and whether a plan backs it

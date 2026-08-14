@@ -12,7 +12,7 @@ Resolve `.claude/plans/`, `.claude/memory/`, and `.claude/tasks/` at the main wo
 Read these in parallel, skipping any that do not exist:
 
 - the newest `.claude/tasks/session-*.md`: the handoff a previous session wrote before a compaction, per `.claude/standards/session-map.md`, or `${CLAUDE_SKILL_DIR}/../../standards/session-map.md` when the project does not have it. It leads the report rather than the reads.
-- `.claude/tasks/index.md`: the backlog, one line per task. Read this before any individual task file.
+- `.claude/tasks/index.md`: the folder catalog. Read this before any individual task file, and take the backlog from it by dropping the `index`, `priority`, and `session-` rows, which are siblings rather than tasks.
 - `.claude/plans/*.md`: execution detail for in-progress tasks
 - `.claude/memory/index.md` and any memory files relevant to the top backlog item
 
@@ -28,7 +28,7 @@ Output these sections, omitting the first when no handoff was found:
 
 **Carried over:** the reasoning the handoff holds, as its writer stated it. Attribute it to the map rather than restating it as fact, and re-measure any count, size, or cost before acting on one.
 
-**Up next:** one line per entry in `.claude/tasks/index.md`, preserving order.
+**Up next:** one line per task row in `.claude/tasks/index.md`, preserving order. A board carrying handoffs has a row per session that wrote one, so a report listing every row queues work nobody filed.
 
 **Active plans:** one line per file in `.claude/plans/`, linking each to its task file in `.claude/tasks/`. Say "None" if empty.
 
