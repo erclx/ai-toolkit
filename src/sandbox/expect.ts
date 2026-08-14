@@ -220,15 +220,39 @@ function checkPaths(
   )
 }
 
+/**
+ * An entry carrying `*` is matched as a glob, which is what lets an arm forbid
+ * a file whose name a run derives rather than fixes. Pinning one spelling of a
+ * derived name passes vacuously against every other spelling, which reads as
+ * coverage the arm does not have. Returns the offending path so a failure names
+ * the file the run wrote rather than the pattern that caught it.
+ */
+function writtenUnder(pattern: string, sandboxDir: string): string | undefined {
+  if (!pattern.includes('*')) {
+    return existsSync(join(sandboxDir, pattern)) ? pattern : undefined
+  }
+
+  for (const match of new Bun.Glob(pattern).scanSync({
+    cwd: sandboxDir,
+    dot: true,
+  })) {
+    return match
+  }
+
+  return undefined
+}
+
 function checkAbsent(
   expectation: Expectation,
   sandboxDir: string,
 ): AssertionResult[] {
-  return expectation.absent.map((path) =>
-    existsSync(join(sandboxDir, path))
-      ? { ok: false, message: `should not exist: ${path}` }
-      : { ok: true, message: `absent: ${path}` },
-  )
+  return expectation.absent.map((path) => {
+    const written = writtenUnder(path, sandboxDir)
+
+    return written
+      ? { ok: false, message: `should not exist: ${written}` }
+      : { ok: true, message: `absent: ${path}` }
+  })
 }
 
 /**

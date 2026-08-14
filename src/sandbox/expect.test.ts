@@ -292,6 +292,46 @@ describe('checkExpectation', () => {
  * diverge on `write_scope`, which yields one result per write rather than one per
  * glob, so a pass with zero assertions has to be unreachable.
  */
+describe('checkExpectation on an absent entry carrying a glob', () => {
+  const HANDOFFS = '.claude/tasks/session-*.md'
+
+  function runGlob(): Verdict {
+    return checkExpectation(
+      {
+        paths: [],
+        absent: [HANDOFFS],
+        content: [],
+        writeScope: [],
+        reply: [],
+        manual: [],
+        maxTurns: undefined,
+      },
+      { sandboxDir: sandbox, envelope: CLEAN_ENVELOPE },
+    )
+  }
+
+  it('should pass when no file matches the glob', () => {
+    write('.claude/tasks/v01.0-postgres.md', '# A task\n')
+
+    expect(runGlob().state).toBe('pass')
+  })
+
+  it('should fail when a file the run derived its name for matches', () => {
+    write('.claude/tasks/session-feature-work.md', '# Session map\n')
+
+    expect(runGlob().state).toBe('fail')
+  })
+
+  it('should name the matched file rather than the pattern that caught it', () => {
+    write('.claude/tasks/session-feature-work.md', '# Session map\n')
+
+    expect(runGlob().results).toContainEqual({
+      ok: false,
+      message: 'should not exist: .claude/tasks/session-feature-work.md',
+    })
+  })
+})
+
 describe('checkExpectation with no assertion able to run', () => {
   const scopeOnly: Expectation = {
     paths: [],
