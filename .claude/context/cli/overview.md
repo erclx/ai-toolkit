@@ -22,6 +22,7 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/claude/` owns seed planning, the gitignore preview, and the user settings merge
 - `src/tasks/` owns the task-board archive, the one domain whose primary caller is a git hook rather than a person, and the two record verbs a skill reaches for when worktree isolation refuses its own write
 - `src/worktree.ts` owns `mainWorktreeRoot()`, which every shared-scratch verb resolves its root through. It sat duplicated in the tasks and records command files until a third caller was due
+- `src/sessions/` owns the live-session roster, splitting the registry read, the liveness decision, and the git join across three modules so the platform-specific half is the only one a stub has to replace
 - `src/comments/` owns the comment census, reasoned about in `.claude/context/cli/audits.md`
 - `src/context/` owns the context-folder audit, reasoned about alongside it
 - `src/markdown/` owns the attribute-standard audit, reasoned about alongside both, and the fence walker every other markdown reader now shares
@@ -43,6 +44,12 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `PROJECT_ROOT` derives from `import.meta.url` rather than Bun's `import.meta.dir`, which the test runner leaves undefined and which made the module holding it throw on import there. Both spellings resolve the same directory under Bun, so the derivation is the whole of the change and it is what puts a module reading the package root within reach of a test.
 - The constant sits in `src/project-root.ts` rather than beside `execScript`, since a path constant and a process spawn share no reason to change. Importing it from `exec.ts` loaded `execa` to read one string, which is what `040-performance` bans, and the eleven modules wanting the root and no subprocess were paying it.
 - An engine module still takes the toolkit root as a parameter wherever the caller's root decides the answer, which keeps root resolution in the command layer. `src/standards/read.ts` is the one module holding both: a project root it is handed, and the package root it imports as the last-resort search behind it, so a standard resolves in a project that installed none. Tests build fixtures with `mkdtempSync(join(tmpdir(), 'aitk-<domain>-'))`, which for that module is also the only place the package root is separable from the authoring root.
+
+### Reading a tree someone else owns
+
+- `src/sessions/` is the first command whose correctness depends on a file nothing in this repository writes. The client records one JSON file per session under its configuration directory, resolved from `CLAUDE_CONFIG_DIR` before `~/.claude`, and each record carries that session's working directory beside the name a session listing renders. Reading it is what lets a name join to a branch by an exact match rather than by ordering the roster on start time.
+- The location, the filenames, and the fields carry no published contract, so an absent registry reports as a refusal rather than as a machine running no sessions. A client that moves the folder then surfaces as a failure instead of an empty roster, which is the same absent-key rule the audits already apply.
+- The liveness check matches a record against the start time it stamped by reading the process filesystem, and falls back to a signal probe where that does not exist. The fallback marks the whole roster unverified rather than dropping rows, since the folder is never pruned and a reused pid would otherwise read as a live session. A record carrying a non-positive pid is dropped at the registry, because signal zero addresses the caller's own process group and would answer for it.
 
 ### Writing into a tree someone else owns
 
