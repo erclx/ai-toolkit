@@ -90,7 +90,7 @@ aitk tasks validate
 aitk tasks validate --json
 ```
 
-Four checks run. Plan and Collisions reach one half each of the `## Run now` test the board standard states, and the second reaches only the collision reason that half names, since the other blocker kinds put no fact on disk to check against. Mapping and Grouping test the folder contract and hold for every group:
+Five checks run. Plan and Collisions reach one half each of the `## Run now` test the board standard states. Mapping and Grouping test the folder contract and hold for every group. Blockers reaches the rows outside `## Run now`:
 
 | Check      | What it reports                                                                   |
 | ---------- | --------------------------------------------------------------------------------- |
@@ -98,8 +98,27 @@ Four checks run. Plan and Collisions reach one half each of the `## Run now` tes
 | Mapping    | A row naming no task file, and a task file no row names                           |
 | Grouping   | A task carrying a row in more than one readiness group                            |
 | Collisions | Two `## Run now` rows whose Touches columns name a path in common                 |
+| Blockers   | A parked row whose blocker has stopped holding, under the kind `blocker-settled`  |
 
 The collision check is the one a person cannot run by eye. Paths come from the backticked spans in the Touches column, a span naming no file is dropped, and a directory collides with any file beneath it. A `## Run now` row whose column parses to nothing is reported rather than skipped, since a row stating no file set makes a claim nothing can check.
+
+The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or closing every outcome, and a collision is settled by nothing under `## Run now` still holding a path the parked row names. A cited task is read out of the cell as a bare sibling link, the way the Task column spells one, so a pointer into another folder names a plan rather than a task and settles nothing. A cited task carrying no outcome box settles nothing either, since a file the check could not parse is not evidence of a finished one.
+
+The other three kinds rest on a person's judgment, so a row neither half reached lands in a second array rather than in the findings:
+
+```json
+{
+  "untested": [
+    {
+      "group": "Needs a plan",
+      "subject": "v50.6-a-standard-no-skill-reads",
+      "message": "..."
+    }
+  ]
+}
+```
+
+An untested row is not a finding and moves no exit code. Reading a clean findings list as a clean board is the failure the array exists to prevent, and `orchestrator-parked.md` is the pass that takes those rows by hand.
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 
