@@ -217,7 +217,7 @@ Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans-archive/
 
 If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 
-Do not sweep `ui-checklist-*.md` (pending human verification) or `ux-audit-*.md` (standalone deliverable).
+Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables).
 
 Output one line per file swept:
 

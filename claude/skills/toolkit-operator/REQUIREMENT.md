@@ -31,6 +31,7 @@ The last failure is a section no route reaches. `## Route` maps an intent or a d
 - Route a measurement intent to the audit offers from the route table itself, rather than leaving the section reachable only by reading past the table
 - Rank a lifecycle row against the audit offers where the route table itself states it, so a session acting on the lifecycle row reads the ranking without opening the section being ranked
 - Offer every audit whose surface the target carries, and offer none whose surface it lacks
+- Hand off an audit that is a skill rather than a command, since the execute contract governs a CLI run and says nothing about a skill's own guards
 - Re-check the target after any operation that wrote, and report what those writes changed against the state read before acting
 
 ## Must not
