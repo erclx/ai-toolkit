@@ -13,12 +13,18 @@
 # passes that assertion while every other one fails.
 max_turns = 30
 
-# The two audits whose surface the fixture staged. Named as commands, since
-# `## Route` states the offer as the command a user picks.
-reply = ["aitk context audit", "aitk records validate"]
+# The two audits whose surface the fixture staged, named as commands since
+# `## Route` states the offer as the command a user picks, plus the lifecycle row
+# the same target fires. The fixture stages no install, so the scaffold row and
+# two audit conditions fire together, and the body ranks the row first with the
+# offers alongside it rather than behind it. Pinning the handoff beside the offers
+# is what separates that ranking from a reply reaching the audits by dropping the
+# handoff.
+reply = ["setup-init", "aitk context audit", "aitk records validate"]
 
 # Prose the checker cannot assert, each with the reason it stays here.
 manual = [
+  "The scaffold handoff is named ahead of the audit offers rather than behind them. Unwired: the reply pins are an unordered substring set, so a reply that offers the audits and mentions the handoff last carries both tokens",
   "The reply does not offer `aitk comments scan`. Semantic: a negative substring passes on every reply that phrases the withheld offer differently, including one that never considered it",
   "The offer names `plans` as the record kind and no other. Semantic: the fixture stages one of the four record folders, and a reply naming every kind has skipped the per-folder condition while still carrying the command token",
   "The audits were offered rather than run. Unwired: the envelope carries the reply, not whether a command executed, so an audit fired unasked reads the same as one listed",
