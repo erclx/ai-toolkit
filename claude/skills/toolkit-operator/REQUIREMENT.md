@@ -29,7 +29,7 @@ The last failure is a section no route reaches. `## Route` maps an intent or a d
 - Read the reverse walk beside the forward sections, so a folder the toolkit stopped shipping and a migration with a live case both reach the user
 - Hand off a named migration to the skill the report names, the way an unmigrated domain reaches `migration-standards`
 - Route a measurement intent to the audit offers from the route table itself, rather than leaving the section reachable only by reading past the table
-- Rank a lifecycle row against the audit offers when a target fires both, so the order comes from the body rather than from the reading
+- Rank a lifecycle row against the audit offers where the route table itself states it, so a session acting on the lifecycle row reads the ranking without opening the section being ranked
 - Offer every audit whose surface the target carries, and offer none whose surface it lacks
 - Re-check the target after any operation that wrote, and report what those writes changed against the state read before acting
 
