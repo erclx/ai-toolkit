@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.91.1](https://github.com/erclx/aitk/compare/v0.91.0...v0.91.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* **skills:** repair four routing defects the skill census found ([#975](https://github.com/erclx/aitk/issues/975)) ([2f47b2e](https://github.com/erclx/aitk/commit/2f47b2e2bbb8884690551364d262f30ed217747c))
+
 ## [0.91.0](https://github.com/erclx/aitk/compare/v0.90.0...v0.91.0) (2026-08-13)
 
 
