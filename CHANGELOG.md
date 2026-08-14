@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.91.2](https://github.com/erclx/aitk/compare/v0.91.1...v0.91.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* **verify:** gate the hero image on its capture stamp ([#976](https://github.com/erclx/aitk/issues/976)) ([048102d](https://github.com/erclx/aitk/commit/048102de9d215ccc1960a11a9f0da53e5a01358b))
+
 ## [0.91.1](https://github.com/erclx/aitk/compare/v0.91.0...v0.91.1) (2026-08-14)
 
 
