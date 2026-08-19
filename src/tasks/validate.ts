@@ -5,8 +5,10 @@ import {
   archiveDir,
   isReservedStem,
   readOutcomes,
+  readPullRequest,
   tasksDir,
 } from '@/tasks/archive'
+import { gitTrunkReader, type TrunkReader } from '@/tasks/trunk'
 
 const ORDERING_FILE = 'priority.md'
 const BACKLOG_FILE = 'backlog.md'
@@ -486,16 +488,33 @@ function citedStem(cell: string): string | undefined {
   return stemOf(target)
 }
 
+/** What one blocker citation produced, since a row can be neither settled nor open. */
+interface CitedResult {
+  readonly findings: readonly Finding[]
+  readonly untested: readonly Untested[]
+}
+
+function nothing(): CitedResult {
+  return { findings: [], untested: [] }
+}
+
 /**
- * Reports what a cited task does to the row waiting on it. A live file whose
- * outcomes are all closed settles the row, and so does one sitting in the
- * archive. A file carrying no outcome box settles nothing, since a file the
- * check could not parse is not evidence of a finished one.
+ * Reports what a cited task does to the row waiting on it. A file sitting in
+ * the archive settles the row, and a live file settles it only once the work it
+ * carries is on the trunk. A file carrying no outcome box settles nothing,
+ * since a file the check could not parse is not evidence of a finished one.
  *
  * A citation resolving in neither folder is a broken pointer rather than a
  * closed task, and the two take different findings. Reading an absent file as
  * archived states a specific fact about a file nobody ever wrote, which is what
  * a renamed task or a typo produces.
+ *
+ * A closed outcome is not the same fact as landed work. The ship chain marks
+ * outcomes as its first step and opens the pull request several steps later, so
+ * a check reading the checkbox reports the row settled while the branch is
+ * still in review. The pull request the task names is what the trunk is asked
+ * about, and a task naming none leaves the row untested rather than settled,
+ * because the only local signal left is the checkbox that produced the defect.
  *
  * The outcome list comes off `readOutcomes` rather than a pattern of its own,
  * so this check cannot disagree with the archive and outcome verbs about which
@@ -506,42 +525,76 @@ async function checkCitedTask(
   subject: string,
   cited: string,
   root: string,
-): Promise<Finding[]> {
+  trunk: TrunkReader,
+): Promise<CitedResult> {
   const live = join(tasksDir(root), `${cited}.md`)
 
   if (!existsSync(live)) {
     if (existsSync(join(archiveDir(root), `${cited}.md`))) {
-      return [
-        {
-          kind: 'blocker-settled',
-          group,
-          subject,
-          message: `waits on ${cited}, which is archived.`,
-        },
-      ]
+      return settled(group, subject, `waits on ${cited}, which is archived.`)
     }
 
-    return [
-      {
-        kind: 'blocker-unresolved',
-        group,
-        subject,
-        message: `waits on ${cited}, which is neither on the board nor archived.`,
-      },
-    ]
+    return {
+      findings: [
+        {
+          kind: 'blocker-unresolved',
+          group,
+          subject,
+          message: `waits on ${cited}, which is neither on the board nor archived.`,
+        },
+      ],
+      untested: [],
+    }
   }
 
-  const { open, closed } = readOutcomes(await readFile(live, 'utf8'))
-  if (open.length > 0 || closed.length === 0) return []
+  const text = await readFile(live, 'utf8')
+  const { open, closed } = readOutcomes(text)
+  if (open.length > 0 || closed.length === 0) return nothing()
 
-  return [
-    {
-      kind: 'blocker-settled',
+  const pullRequest = readPullRequest(text)
+  if (pullRequest === undefined) {
+    return untestedRow(
       group,
       subject,
-      message: `waits on ${cited}, which carries no open outcome.`,
-    },
-  ]
+      `waits on ${cited}, which closed every outcome but names no pull request, so nothing tests whether the work reached the trunk.`,
+    )
+  }
+
+  const landed = await trunk(pullRequest)
+  if (landed === undefined) {
+    return untestedRow(
+      group,
+      subject,
+      `waits on ${cited}, whose pull request #${pullRequest} could not be read against the trunk.`,
+    )
+  }
+
+  if (!landed) return nothing()
+
+  return settled(
+    group,
+    subject,
+    `waits on ${cited}, whose pull request #${pullRequest} reached the trunk.`,
+  )
+}
+
+function settled(
+  group: BoardGroup,
+  subject: string,
+  message: string,
+): CitedResult {
+  return {
+    findings: [{ kind: 'blocker-settled', group, subject, message }],
+    untested: [],
+  }
+}
+
+function untestedRow(
+  group: BoardGroup,
+  subject: string,
+  message: string,
+): CitedResult {
+  return { findings: [], untested: [{ group, subject, message }] }
 }
 
 /**
@@ -564,6 +617,7 @@ async function checkCitedTask(
 async function checkParked(
   rows: readonly BoardRow[],
   root: string,
+  trunk: TrunkReader,
 ): Promise<{ findings: Finding[]; untested: Untested[] }> {
   const findings: Finding[] = []
   const untested: Untested[] = []
@@ -578,7 +632,15 @@ async function checkParked(
     const contested = readPaths(cell)
 
     if (cited) {
-      findings.push(...(await checkCitedTask(row.group, subject, cited, root)))
+      const result = await checkCitedTask(
+        row.group,
+        subject,
+        cited,
+        root,
+        trunk,
+      )
+      findings.push(...result.findings)
+      untested.push(...result.untested)
     }
 
     const held = contested.filter((path) =>
@@ -613,12 +675,21 @@ function refuse(reason: ValidateRefusal, message: string): ValidateRefused {
   return { ok: false, reason, message }
 }
 
+export interface ValidateOptions {
+  /** Overridden by tests, which supply the trunk rather than reaching for git. */
+  readonly trunk?: TrunkReader
+}
+
 /**
  * Reports what every board row claims against what the tree holds. It writes
  * nothing: a row is a session's claim about readiness, and a validator that
  * repaired one would be asserting the claim it exists to test.
  */
-export async function validateBoard(root: string): Promise<ValidateOutcome> {
+export async function validateBoard(
+  root: string,
+  options: ValidateOptions = {},
+): Promise<ValidateOutcome> {
+  const trunk = options.trunk ?? gitTrunkReader(root)
   const dir = tasksDir(root)
   if (!existsSync(dir)) {
     return refuse('no-board', `No task board at ${dir}.`)
@@ -647,7 +718,7 @@ export async function validateBoard(root: string): Promise<ValidateOutcome> {
     : []
 
   const stems = await listTaskStems(dir)
-  const parked = await checkParked(rows, root)
+  const parked = await checkParked(rows, root, trunk)
 
   const findings = [
     ...checkMapping(rows, backlog, stems, dir),

@@ -24,6 +24,8 @@ aitk tasks archive --pull-request 673 --json
 
 Exit codes: `0` archived, `1` refused. Every gate is a refusal rather than a warning, because `.husky/post-merge` calls this with nobody watching. The `reason` field carries which gate fired: `no-board`, `no-match`, `ambiguous`, `no-outcomes`, `open-outcomes`, `plan-unswept`, or `bad-input`.
 
+`plan-unswept` fires on the last task pointing at a live plan, never on every task pointing at one. The gate counts the other live tasks whose `Plan:` line resolves onto the same file, so a plan several tasks share archives its tasks freely and only the final one is held until `claude-docs` sweeps the plan. Reading the folder alone refused all of them, which deadlocked the board against a sweep correctly declining to move a plan another live task cites.
+
 `bad-input` covers a malformed command line, which all three task verbs answer the same way. It is separate from `ambiguous` and `no-match` because those describe the board, and a caller that passed two selectors would otherwise be sent to repair a task citation that is fine.
 
 The board is shared scratch at the main worktree root, so `--root` defaults to the first entry of `git worktree list` rather than the working directory. A linked worktree archives against the same board every other session reads.
@@ -106,7 +108,11 @@ A backlog line is a bullet carrying a link to a sibling task, since the backlog 
 
 The collision check is the one a person cannot run by eye. Paths come from the backticked spans in the Touches column, a span naming no file is dropped, and a directory collides with any file beneath it. A `## Run now` row whose column parses to nothing is reported rather than skipped, since a row stating no file set makes a claim nothing can check.
 
-The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or closing every outcome, and a collision is settled by nothing under `## Run now` still holding the file the cell cites.
+The blocker check re-takes a measurement the board records once and never repeats. Two of the five blocker kinds put a fact on disk: a dependency is settled by the cited task being archived or by its work reaching the trunk, and a collision is settled by nothing under `## Run now` still holding the file the cell cites.
+
+A closed outcome is not the fact the dependency half needs. The ship chain marks outcomes as its first step and opens the pull request several steps later, so a check reading the checkbox reports the row settled while the branch is still in review. A live task therefore settles the row only once it closed every outcome and carries a `Pull request:` line the trunk holds. One that names no pull request, and one whose number no trunk ref could answer for, land in the untested array below rather than being settled or left silent.
+
+The trunk is read as the clone already holds it, `origin/main` first and local `main` behind it, and no run fetches. A validate runs several times a sweep and a fetch per run is a cost this command does not carry, so a clone behind its remote under-reports rather than claiming work landed.
 
 Both halves gate on a citation inside the `Waiting on` cell, never on the columns beside it. The board format gives a collision cell the file held by the running task, so a row whose cell names no file was parked by something else, and testing its Touches column instead reports a cleared collision on a row no collision ever parked while counting that row as re-tested. A cited task is a bare sibling link, the way the Task column spells one, so a pointer into another folder names a plan rather than a task and settles nothing. A cited task carrying no outcome box settles nothing either, since a file the check could not parse is not evidence of a finished one.
 
