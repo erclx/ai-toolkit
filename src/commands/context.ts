@@ -3,6 +3,10 @@ import type { Command } from 'commander'
 import {
   type EntryReport,
   governsContent,
+  type LengthCause,
+  type LengthFinding,
+  lengthFindings,
+  type LengthQuestion,
   LENGTH_CHECKPOINT,
   matchesSiblings,
   measureFolders,
@@ -200,6 +204,7 @@ async function runAudit(
       )
   const drift = gateOnly ? [] : await auditIndexes(folders)
   const sections = gateOnly ? [] : missingSections(root, folders, entries)
+  const length = lengthFindings(entries)
 
   if (gateOnly) {
     reportGate(citations)
@@ -209,7 +214,7 @@ async function runAudit(
     reportCitations(citations, cited)
     reportReferenceForm(entries, folders)
     reportSections(sections, folders)
-    reportLength(entries)
+    reportLength(length)
     reportTables(entries)
     reportProvenance(entries, folders)
     reportNarration(entries, folders, narration)
@@ -234,6 +239,11 @@ async function runAudit(
           unresolved: citations.unresolved,
         },
         entries,
+        // The join is published rather than left to a consumer, since deriving
+        // it from `entries` means restating which question the provenance count
+        // answers, and one wrong restatement is a cause reported against the
+        // wrong entry.
+        length,
         missingSections: sections,
         indexDrift: drift,
         checkpoints: {
@@ -475,7 +485,32 @@ function reportSections(
   )
 }
 
-function reportLength(entries: readonly EntryReport[]): void {
+/** How each question reads in the report, in the standard's own order. */
+const QUESTION_LABEL: Record<LengthQuestion, string> = {
+  domain: 'one domain',
+  reproduced: 'reproduced content',
+  history: 'own history',
+}
+
+function readCause(cause: LengthCause): string {
+  const label = QUESTION_LABEL[cause.question]
+
+  if (cause.state === 'unanswered') return `${label}: open`
+  if (cause.state === 'no') return `${label}: no`
+
+  return `${label}: yes, ${plural(cause.markers ?? 0, 'marker')}`
+}
+
+/**
+ * Names each entry past the checkpoint with the three questions the standard
+ * asks of it, rather than a count a reader has to cross-reference by eye.
+ *
+ * The checkpoint is not a cap, so the legend says what the list is for. An
+ * entry that answers all three and is still long is a correct outcome under a
+ * standard stating there is no hard cap, and a run reporting success as a
+ * smaller count would have adopted the number the standard declines.
+ */
+function reportLength(over: readonly LengthFinding[]): void {
   logStep('Length')
   logInfo(
     `Entries measure rendered lines at ${RENDER_WIDTH} columns, counting frontmatter and fenced blocks.`,
@@ -484,19 +519,26 @@ function reportLength(entries: readonly EntryReport[]): void {
     'A reference-heavy entry therefore ranks by its examples, which the depth check in `aitk markdown audit` excludes.',
   )
 
-  const over = entries
-    .filter((entry) => entry.lines > LENGTH_CHECKPOINT)
-    .sort((a, b) => b.lines - a.lines)
-
   if (over.length === 0) {
     logInfo(`No entry past the ${LENGTH_CHECKPOINT}-line checkpoint.`)
     return
   }
 
   logWarn(`${over.length} past the ${LENGTH_CHECKPOINT}-line checkpoint`)
+  logInfo(
+    'The checkpoint is not a cap. Each entry carries the three questions the standard asks past it, and the fix goes to whichever is true.',
+  )
+  logInfo(
+    'Own history is answered from the provenance markers below. The other two are judgments no measure settles, so they stay open for a reader.',
+  )
   pipeOutput(
     over
-      .map((entry) => `${entry.rel}  ${entry.lines} rendered lines`)
+      .map(
+        (finding) =>
+          `${finding.rel}  ${finding.lines} rendered lines\n  ${finding.causes
+            .map(readCause)
+            .join('  ')}`,
+      )
       .join('\n'),
   )
 }

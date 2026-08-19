@@ -166,6 +166,52 @@ export interface EntryReport {
    * exempt from owing sections rather than from being well formed.
    */
   readonly stub: boolean
+  /**
+   * Whether a content rule reached this entry, which is what parts an empty
+   * `provenance` list that was measured from one that was never scanned. The
+   * length finding reads it, since reporting a clean history for an entry
+   * outside the governed folder answers a question nothing asked.
+   */
+  readonly governed: boolean
+}
+
+/**
+ * The three questions `standards/context.md` asks of an entry past the
+ * checkpoint, in the order it states them.
+ *
+ * The standard calls no entry over the checkpoint wrong. It asks whether the
+ * entry still covers a single domain, whether it has filled with content `ls`
+ * or `--help` reproduces, and whether it has accumulated the history of its own
+ * changes, then directs a fix at whichever is true. A report naming the count
+ * alone leaves all three unasked, which is why the finding carries them.
+ */
+export type LengthQuestion = 'domain' | 'reproduced' | 'history'
+
+/**
+ * What the audit can say about one question for one entry.
+ *
+ * `unanswered` is a state rather than an omission. Two of the three questions
+ * are judgments no measure settles, and dropping them would read as an entry
+ * nothing found rather than one nothing checked.
+ */
+export type QuestionState = 'yes' | 'no' | 'unanswered'
+
+export interface LengthCause {
+  readonly question: LengthQuestion
+  readonly state: QuestionState
+  /**
+   * Markers behind a `yes`, and absent wherever nothing was counted. It cites
+   * the provenance finding rather than restating it, so the two sections of the
+   * report describe the same measurement once.
+   */
+  readonly markers?: number
+}
+
+export interface LengthFinding {
+  readonly rel: string
+  readonly lines: number
+  /** One entry per question in `LengthQuestion` order, never empty. */
+  readonly causes: readonly LengthCause[]
 }
 
 export interface SectionFinding {
@@ -481,7 +527,50 @@ export function measureEntry(
     bareReferences: bareReferences(lines, siblings),
     sections: governsContent ? declaredSections(lines) : [],
     stub: isStubSeed(source),
+    governed: governsContent,
   }
+}
+
+/**
+ * Names each entry past the checkpoint with the standard's three questions
+ * answered as far as anything measures them.
+ *
+ * Only accumulated history is mechanical, and it is already measured by the
+ * provenance check, so this joins that count rather than counting again. The
+ * other two are read by a person: whether an entry still covers one domain is a
+ * judgment about its subject, and recognizing content `ls` or `--help`
+ * reproduces needs a reader who knows what those emit.
+ *
+ * An entry outside the governed folder has no measured question at all, since
+ * provenance is scoped to the standard stating it, and reporting `no` there
+ * would answer from a scan that never ran.
+ *
+ * Sorted longest first, which is the order the report already printed and the
+ * order the questions are worth asking in.
+ */
+export function lengthFindings(
+  entries: readonly EntryReport[],
+): LengthFinding[] {
+  return entries
+    .filter((entry) => entry.lines > LENGTH_CHECKPOINT)
+    .sort((a, b) => b.lines - a.lines)
+    .map((entry) => ({
+      rel: entry.rel,
+      lines: entry.lines,
+      causes: [
+        { question: 'domain', state: 'unanswered' },
+        { question: 'reproduced', state: 'unanswered' },
+        historyCause(entry),
+      ] satisfies LengthCause[],
+    }))
+}
+
+function historyCause(entry: EntryReport): LengthCause {
+  if (!entry.governed) return { question: 'history', state: 'unanswered' }
+
+  return entry.provenance.length > 0
+    ? { question: 'history', state: 'yes', markers: entry.provenance.length }
+    : { question: 'history', state: 'no' }
 }
 
 /**
