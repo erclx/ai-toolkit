@@ -192,14 +192,56 @@ function isUnder(path: string, dir: string): boolean {
  * both, which is how `claude-docs` reads the same line. It accepts `../plans/x.md`
  * and `.claude/plans/x.md` as one file, so a gate reading only the first form
  * would pass the second and strand the plan this exists to protect.
+ *
+ * The resolved path is returned rather than a boolean, because the citation
+ * count below compares two tasks by where their targets land and not by the
+ * strings they wrote. A target outside the live plans folder yields nothing,
+ * which is an archived plan or a pointer into somewhere else entirely.
  */
-function isLivePlan(target: string, dir: string, root: string): boolean {
+export function resolveLivePlan(
+  target: string,
+  dir: string,
+  root: string,
+): string | undefined {
   const plans = join(root, PLANS_DIR)
+  const fromBoard = resolve(dir, target)
+  const fromRoot = resolve(root, target)
 
-  return (
-    isUnder(resolve(dir, target), plans) ||
-    isUnder(resolve(root, target), plans)
+  if (isUnder(fromBoard, plans)) return fromBoard
+  if (isUnder(fromRoot, plans)) return fromRoot
+  return undefined
+}
+
+/**
+ * Names the other live tasks whose `Plan:` line lands on the same file. This is
+ * the rule `claude-docs` applies before it archives a plan, held here so one
+ * question has one implementation: a plan another live task still cites is a
+ * plan the sweep is correct to leave, and a guard that read the folder instead
+ * refused every task sharing one plan and deadlocked the board against the
+ * sweep that was behaving correctly.
+ *
+ * The closing task is excluded by name. It cites the plan itself, so counting
+ * it would never reach zero and the count would answer nothing.
+ */
+export async function otherTasksCitingPlan(
+  dir: string,
+  root: string,
+  plan: string,
+  closing: string,
+): Promise<string[]> {
+  const stems = (await listTaskStems(dir)).filter((stem) => stem !== closing)
+
+  const read = await Promise.all(
+    stems.map(async (stem) => {
+      const target = readPlanTarget(
+        await readFile(join(dir, `${stem}.md`), 'utf8'),
+      )
+      const resolved = target && resolveLivePlan(target, dir, root)
+      return resolved === plan ? stem : undefined
+    }),
   )
+
+  return read.filter((stem): stem is string => stem !== undefined)
 }
 
 export async function listTaskStems(dir: string): Promise<string[]> {
@@ -310,12 +352,21 @@ export async function archiveTask(
   }
 
   const planTarget = readPlanTarget(text)
-  if (planTarget && isLivePlan(planTarget, dir, root)) {
-    return refuse(
-      'plan-unswept',
-      `${stem} still points at a live plan. Run /claude-docs to sweep it first, then archive.`,
-      [planTarget],
-    )
+  const livePlan = planTarget && resolveLivePlan(planTarget, dir, root)
+
+  // A live plan is unswept only when nothing else on the board holds it. A plan
+  // several tasks share stays live by design, so refusing on the folder alone
+  // parked every one of those tasks behind a sweep that was right to decline.
+  if (livePlan) {
+    const shared = await otherTasksCitingPlan(dir, root, livePlan, stem)
+
+    if (shared.length === 0) {
+      return refuse(
+        'plan-unswept',
+        `${stem} is the last task pointing at a live plan. Run /claude-docs to sweep it first, then archive.`,
+        [planTarget],
+      )
+    }
   }
 
   const destination = archiveDir(root)

@@ -242,8 +242,45 @@ describe('archiveTask', () => {
     ).toMatchObject({ ok: false, reason: 'no-board' })
   })
 
-  it('should refuse a task still pointing at a live plan', async () => {
+  it('should refuse the last task pointing at a live plan', async () => {
     const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
+      ok: false,
+      reason: 'plan-unswept',
+    })
+  })
+
+  it('should archive a task whose live plan another task still cites', async () => {
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+    await seedTask({
+      stem: 'v28.2-sibling',
+      plan: '../plans/feature-trigger.md',
+    })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
+      ok: true,
+    })
+  })
+
+  it('should count two spellings of one live plan as a single citation', async () => {
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+    await seedTask({
+      stem: 'v28.2-sibling',
+      plan: '.claude/plans/feature-trigger.md',
+    })
+
+    expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
+      ok: true,
+    })
+  })
+
+  it('should refuse once the last sibling sharing a live plan has archived', async () => {
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+    await seedTask({
+      stem: 'v28.2-sibling',
+      plan: '../plans/feature-other.md',
+    })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
       ok: false,
