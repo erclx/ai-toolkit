@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.100.0](https://github.com/erclx/aitk/compare/v0.99.1...v0.100.0) (2026-08-19)
+
+
+### Features
+
+* **claude:** add a teaching workspace for cross-session learning ([#1008](https://github.com/erclx/aitk/issues/1008)) ([60fc97b](https://github.com/erclx/aitk/commit/60fc97bf01655787379c448ad22853afc687315f))
+
 ## [0.99.1](https://github.com/erclx/aitk/compare/v0.99.0...v0.99.1) (2026-08-19)
 
 
