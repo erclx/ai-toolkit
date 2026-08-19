@@ -13,7 +13,8 @@ stage_setup() {
   log_info "branch-only  : branch bar + no plans, skill uses bar"
   log_info "typed-branch : branch feat/baz + matching plan, target collides and the skill stops before entry"
   log_info "no-deps      : branch qux + matching plan + a manifest with nothing installed, skill reports the install command"
-  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps"
+  log_info "port-offset  : branch corge + matching plan + the port helper installed, skill reports a derived offset"
+  select_or_route_scenario "Which scenario?" "matched-plan" "multi-plan" "branch-only" "typed-branch" "no-deps" "port-offset"
 
   mkdir -p .claude/plans
 
@@ -111,6 +112,39 @@ EOF
     log_info "         package.json present and node_modules missing, so it names bun install"
     log_info "         no scripts/worktree-port.sh here, so the port line names the stack default"
     log_info "         nothing is installed, since the step reports rather than runs"
+    ;;
+  "port-offset")
+    cat <<'EOF' >.claude/plans/feature-corge.md
+# Feature: corge
+
+Stub plan seeded for the port report. The project carries the web layer's port helper, so Step 6 reads a number out of it rather than naming the stack default.
+EOF
+
+    mkdir -p scripts
+    cp "$PROJECT_ROOT/tooling/web/configs/scripts/worktree-port.sh" scripts/worktree-port.sh
+    chmod +x scripts/worktree-port.sh
+    echo ".claude/worktrees/" >>.gitignore
+
+    git add . && git commit -m "feat(scripts): seed corge plan and the port helper" --no-verify -q
+    git checkout -b corge -q
+
+    # A folder left behind after its worktree was removed, which is the state
+    # the helper refuses. It is a sibling rather than the entry target, since
+    # Step 4 registers whatever it creates and a fresh entry never lands on one.
+    mkdir -p .claude/worktrees/stale
+    cat <<'EOF' >.claude/worktrees/stale/package.json
+{
+  "name": "stale",
+  "version": "0.1.0",
+  "private": true
+}
+EOF
+
+    log_step "Scenario ready: port report (Step 6)"
+    log_info "Branch: corge"
+    log_info "Plan:   .claude/plans/feature-corge.md"
+    log_info "Action:  /aitk:claude-worktree"
+    log_info "Expect:  declared in fixtures/claude/worktree/port-offset/expect.toml"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

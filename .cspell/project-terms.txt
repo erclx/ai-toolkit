@@ -29,6 +29,7 @@ codegen
 codenames
 commitlint
 conventionals
+corge
 crystaldba
 cspell
 daringfireball

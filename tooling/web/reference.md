@@ -16,7 +16,7 @@ Golden config files live in `tooling/web/configs/` and are copied into the targe
 - `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for ESLint, Tailwind, Playwright, Vitest.
 - `.github/workflows/verify.yml`: `static-checks`, `unit-tests`, `build-verify`, and `e2e-tests` jobs.
 - `scripts/verify.sh`: extends base verify with typecheck, lint, unit tests, and build in the full order.
-- `scripts/worktree-port.sh`: prints a base port plus this working directory's offset. Called with no argument it prints the offset alone.
+- `scripts/worktree-port.sh`: prints a base port plus this working directory's offset. Called with no argument it prints the offset alone. It refuses a folder left under the worktrees directory after its worktree was removed, rather than printing a port for it.
 
 ## What stays in per-stack adapters
 
@@ -40,6 +40,9 @@ Two worktrees of one repository run the same stack, so a fixed port makes the se
 - Derive every served port from `scripts/worktree-port.sh`. Never write a port literal into a script string.
 - Read `WORKTREE_PORT_OFFSET` in a config and add it to the stack's default port. Unset yields the default, so a plain clone keeps the port it has always served on.
 - Draw the offset from a band of 50, hashed from the worktree folder name. Two worktrees can hash to one offset, so set `WORKTREE_PORT_OFFSET` by hand to break a tie.
+- Expect a non-zero exit and no port from a folder left under `.claude/worktrees/` once its worktree is gone. Git reports the parent repository from inside one, so the helper cannot read it as a worktree and every base it serves would land on the main checkout's port. Both shapes refuse, and they reach differently. A folder whose own `.git` was deleted refuses only under that directory, since location is the only thing separating it from an ordinary subdirectory the base port is correct for. A folder whose `.git` names a pruned administrative directory refuses wherever it sits, because a pointer to nothing is broken regardless of where the folder is.
+- Call it as `VAR=$(bash scripts/worktree-port.sh) && export VAR && <server>`, never as the shorter `VAR=$(bash scripts/worktree-port.sh) <server>`. An assignment prefix discards the exit status of its own substitution, so the shorter form starts the server with `VAR` set to the empty string, every config reads that back as an offset of zero, and the refusal lands on the port it was raised to protect. The assignment alone carries the status, which is what the `&&` reads.
+- Set `WORKTREE_PORT_OFFSET` by hand to serve from such a folder anyway. That is the one override, and it is checked before any directory test.
 - Force-replace `dev` and `preview` through `[scripts.override]`. Both stacks' scaffolds define those keys, and a plain `[scripts]` entry never replaces a key the scaffold already wrote.
 - Set `strictPort` on every dev and preview server. A server that walks to the next free port serves where nothing is looking for it.
 - Set Playwright `reuseExistingServer: false`. Reuse attaches to whatever answers on the port, which reports a pass against another branch's code and prints nothing to say so.

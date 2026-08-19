@@ -9,6 +9,7 @@ bierner
 calibri
 cambria
 canva
+cksum
 clack
 commander
 conftest
