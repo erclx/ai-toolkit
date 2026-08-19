@@ -6,6 +6,7 @@ import { regenOne } from '@/indexes/regen'
 const TASKS_DIR = join('.claude', 'tasks')
 const ARCHIVE_DIR = join('.claude', 'task-archive')
 const PLANS_DIR = join('.claude', 'plans')
+const PLANS_ARCHIVE_DIR = join('.claude', 'plans-archive')
 
 /**
  * Siblings that sit on the board without being tasks: the generated index, the
@@ -242,6 +243,103 @@ export async function otherTasksCitingPlan(
   )
 
   return read.filter((stem): stem is string => stem !== undefined)
+}
+
+/**
+ * Where a task's `Plan:` target resolves, which is what decides whether the
+ * plan is the sweep's to move. `unstated` is a task carrying no line at all,
+ * and it is distinct from a line resolving somewhere unexpected.
+ */
+export const CITATION_LOCATIONS = [
+  'unstated',
+  'live',
+  'archived',
+  'outside',
+] as const
+
+export type CitationLocation = (typeof CITATION_LOCATIONS)[number]
+
+export interface PlanCitations {
+  readonly ok: true
+  readonly stem: string
+  readonly target: string | undefined
+  readonly location: CitationLocation
+  /** Other live tasks landing on the same file. Empty unless `location` is `live`. */
+  readonly citedBy: readonly string[]
+}
+
+export type CitationOutcome = PlanCitations | ArchiveRefused
+
+/**
+ * Answers where one task's plan sits and who else holds it, which is the whole
+ * of the last-live-citation rule. `claude-docs` reads this rather than scanning
+ * the board itself, so the sweep that moves a plan and the gate that refuses a
+ * task archive cannot drift into disagreeing about which plan is free.
+ *
+ * It reports and never writes. The move, the retarget, and the ordering the two
+ * happen in belong to the caller, and a verb that performed them would be
+ * deciding a question the sweep is there to decide.
+ */
+export async function planCitations(
+  root: string,
+  stem: string,
+): Promise<CitationOutcome> {
+  const dir = tasksDir(root)
+
+  if (!existsSync(dir)) {
+    return refuse('no-board', `No task board at ${relative(root, dir)}.`)
+  }
+
+  const stems = await listTaskStems(dir)
+  if (!stems.includes(stem)) {
+    return refuse('no-match', `No task named ${stem} on the board.`, stems)
+  }
+
+  const target = readPlanTarget(await readFile(join(dir, `${stem}.md`), 'utf8'))
+  if (!target) {
+    return {
+      ok: true,
+      stem,
+      target: undefined,
+      location: 'unstated',
+      citedBy: [],
+    }
+  }
+
+  const live = resolveLivePlan(target, dir, root)
+  if (!live) {
+    const location = resolvesUnder(target, dir, root, PLANS_ARCHIVE_DIR)
+      ? 'archived'
+      : 'outside'
+    return { ok: true, stem, target, location, citedBy: [] }
+  }
+
+  return {
+    ok: true,
+    stem,
+    target,
+    location: 'live',
+    citedBy: await otherTasksCitingPlan(dir, root, live, stem),
+  }
+}
+
+/**
+ * Runs the two-spelling resolution `resolveLivePlan` applies against a folder
+ * other than the live one, so an archived plan is read as archived whichever
+ * root the task wrote its path against.
+ */
+function resolvesUnder(
+  target: string,
+  dir: string,
+  root: string,
+  folder: string,
+): boolean {
+  const resolved = join(root, folder)
+
+  return (
+    isUnder(resolve(dir, target), resolved) ||
+    isUnder(resolve(root, target), resolved)
+  )
 }
 
 export async function listTaskStems(dir: string): Promise<string[]> {

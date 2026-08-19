@@ -227,6 +227,8 @@ A board carrying one task written `../plans/x.md` and another written `.claude/p
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
+`aitk tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a target whose installed `aitk` predates the verb answers `unknown command` on exit code 0, so a caller branching on the exit sees success, gets no record, and sweeps nothing while reporting a clean pass. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived none of the two plans it should have and created no `.claude/plans-archive/`. Switch this body to the verb once a release ships it, which is the one change that retires the duplication.
+
 A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.claude/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
 
 - Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.

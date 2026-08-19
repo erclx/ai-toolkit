@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   archiveDir,
   archiveTask,
+  planCitations,
   readOutcomes,
   readPlanTarget,
   readPullRequest,
@@ -360,6 +361,79 @@ describe('archiveTask', () => {
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
       ok: true,
       priorityRowRemoved: false,
+    })
+  })
+})
+
+describe('planCitations', () => {
+  it('should report a live plan no other task holds', async () => {
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+
+    expect(await planCitations(ROOT, stem)).toMatchObject({
+      ok: true,
+      location: 'live',
+      citedBy: [],
+    })
+  })
+
+  it('should name the other live tasks sharing a plan', async () => {
+    const stem = await seedTask({ plan: '../plans/feature-trigger.md' })
+    await seedTask({
+      stem: 'v28.2-sibling',
+      plan: '.claude/plans/feature-trigger.md',
+    })
+
+    expect(await planCitations(ROOT, stem)).toMatchObject({
+      ok: true,
+      location: 'live',
+      citedBy: ['v28.2-sibling'],
+    })
+  })
+
+  it('should report a plan an earlier sweep archived', async () => {
+    const stem = await seedTask({
+      plan: '../plans-archive/feature-trigger.md',
+    })
+
+    expect(await planCitations(ROOT, stem)).toMatchObject({
+      ok: true,
+      location: 'archived',
+      citedBy: [],
+    })
+  })
+
+  it('should report a target resolving outside both plans folders', async () => {
+    const stem = await seedTask({ plan: '../plans-legacy/feature-trigger.md' })
+
+    expect(await planCitations(ROOT, stem)).toMatchObject({
+      ok: true,
+      location: 'outside',
+    })
+  })
+
+  it('should report a task carrying no plan line', async () => {
+    const stem = await seedTask()
+
+    expect(await planCitations(ROOT, stem)).toMatchObject({
+      ok: true,
+      location: 'unstated',
+      target: undefined,
+    })
+  })
+
+  it('should refuse a stem that is not on the board', async () => {
+    await seedTask()
+
+    expect(await planCitations(ROOT, 'v99.9-absent')).toMatchObject({
+      ok: false,
+      reason: 'no-match',
+    })
+  })
+
+  it('should refuse when the board does not exist', async () => {
+    expect(await planCitations(ROOT, 'v28.1-anything')).toMatchObject({
+      ok: false,
+      reason: 'no-board',
     })
   })
 })

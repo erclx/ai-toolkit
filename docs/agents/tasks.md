@@ -36,6 +36,25 @@ Skills branch on the reason rather than on the exit code:
 aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .reason end'
 ```
 
+## Plan citations
+
+`aitk tasks plan-citations <stem>` answers where a task's plan sits and which other live tasks hold it. It reports and never writes.
+
+| Option          | Effect                                      |
+| --------------- | ------------------------------------------- |
+| `--json`        | Emit a machine-readable record on stdout    |
+| `--root <path>` | Board root, defaulting to the main worktree |
+
+The record carries `location`, one of `unstated`, `live`, `archived`, or `outside`, and `citedBy`, the other live tasks whose `Plan:` line lands on the same file. Exit codes: `0` read, `1` refused with `no-board` or `no-match`.
+
+`aitk tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, and an unknown subcommand exits 0 with no record, so a sweep calling a verb the installed `aitk` predates reports a clean pass having archived nothing.
+
+A `live` location with an empty `citedBy` is the sweep to run. One whose `citedBy` names a sibling is a plan several tasks share, which the sweep leaves alone and the archive gate lets through.
+
+```bash
+aitk tasks plan-citations v28.1-trigger-escalation --json | jq -r '.location'
+```
+
 ## Pull request
 
 `aitk tasks pull-request` records the number a branch's pull request carries onto the task that branch closes. It adds `Pull request: #NNN` under the `Plan:`, `Groundwork:`, `Intake:`, or `Issue:` lines the task already holds, and corrects the number in place when the line exists.
