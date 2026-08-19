@@ -107,6 +107,16 @@ The runner is detected rather than prescribed. The operator settled on 2026-08-1
 
 The front door reaches it through the audit offers, which now carry five rows. Four are `aitk` verbs and this one is a skill handoff, so the execute contract governing a CLI run does not reach it. Its second condition is a browser harness, which the front door does not test, because the skill detects that already and a second reader of the same fact answers stale.
 
+## The teaching surface sorts by what the reader is doing
+
+`claude-teach` runs a learning workspace on one subject across sessions, and it is the sixtieth skill. It sits beside the wiki rather than against it, because the two sort on independent axes: a workspace sorts by what the reader is doing, learning rather than looking up, and the wiki test sorts by who owns the subject. A workspace on how a system measures pronunciation accuracy and a workspace on how a feature is implemented here are the same surface with different subjects, which is why the wiki test needs no amendment.
+
+The name is measured rather than chosen. No skill in the catalog is a single word, and every skill owning a record folder under `.claude/` takes that folder's name behind the `claude-` prefix, which `claude-groundwork`, `claude-intake`, `claude-tasks`, and `claude-diagram` all follow with no exception. A workspace at `.claude/teach/<nn>-<topic>/` therefore names its skill `claude-teach`. It carries `disable-model-invocation: true`, so opening a workspace is the learner's call rather than a description match.
+
+The output splits by lifetime and the format follows the split. A lesson is worked through once, carries a quiz with immediate feedback, and is never committed, so it is markup. A reference page is looked up later and is the half a promotion pass would move into a gated corpus, so it is markdown and passes those gates the day it is written rather than at the moment someone tries to promote it. Authoring both as markup was the source's own choice and it puts the promotable half in a format no stage reads.
+
+Three things this repository owes the surface are not here yet. The command surface and the records backup are `v55.6`, the rendered lesson layer with its quiz ordering and exit criteria is `v55.7`, and the promotion pass is `v53.1`. Until the first of those lands, the body resolves the main worktree root itself and changes an existing file by writing it back whole, which is the route `.claude/ARCHITECTURE.md` names as holding until a second caller pays for a verb.
+
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.

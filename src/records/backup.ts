@@ -10,9 +10,10 @@ import { gitEnv } from '@/git-env'
  * enclosing repository already. The list is spelled out rather than read off
  * that group so adding an ignore entry cannot silently enlarge the payload.
  *
- * `RECORD_KINDS` in `validate.ts` overlaps this on four names and carries one
+ * `RECORD_KINDS` in `validate.ts` overlaps this on five names and carries one
  * more that no backup reaches. The two lists differ on purpose: one is what a
- * standard governs, this is what a disk loss would take.
+ * standard governs, this is what a disk loss would take, and `standards` is
+ * tracked so a backup would carry a second copy of committed files.
  */
 export const BACKED_FOLDERS = [
   'groundwork',
@@ -23,6 +24,7 @@ export const BACKED_FOLDERS = [
   'review',
   'task-archive',
   'tasks',
+  'teach',
 ] as const
 
 /** Holds the records history beside the folders it tracks, ignored by the enclosing repository. */
