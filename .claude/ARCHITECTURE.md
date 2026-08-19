@@ -140,8 +140,6 @@ The fold reaching the public docs corpus is the cost, since `docs-sync` owns tha
 
 Quiz option order is drawn by `aitk teach lesson` rather than stated in the skill body. The instruction was the cheaper design and it is the one the source this surface departs from already ships: that source documents answers frequently defaulting to the first option while its stated mitigation addresses a formatting leak instead, so porting the instruction ports the defect with the mitigation attached. An author told to vary a position still varies it by judgment, and a verb is a check where an instruction is a hope.
 
-The same verb reports the numbered lesson path, the shared stylesheet with whether that file exists yet, and the mission's success lines, which is what turns those lines into exit criteria rather than a list nothing reads. It writes nothing, and the stylesheet is why: every lesson after the first links what the first wrote, so a verb writing the file on each lesson would discard what the last one added.
-
 What the split cannot close is that the body remains free to reorder what the verb reports, since nothing downstream compares the two. The sandbox arm records that as a manual entry rather than claiming it, because the order the verb draws is uniform and one run cannot separate a taken order from a chosen one. Position bias is a property over many runs, and an arm sees one.
 
 ## Risks / open questions

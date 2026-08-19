@@ -15,9 +15,13 @@
 # Measured at 23 turns and 1.06 dollars on 2026-08-19, passing every mechanical
 # assertion. The ceiling stays at the runner default: writing a lesson follows
 # whatever the subject turns out to need, which is the variable cost that stays
-# at the default rather than being corrected from one sample. A ceiling above the
-# cap in force asserts nothing at all, since the check compares strictly greater
-# and no envelope can exceed the cap binding it.
+# at the default rather than being corrected from one sample.
+#
+# Never raise it above the cap the run is given. A truncated run reports one turn
+# past the cap, a declaration above the cap is at least that number, and the
+# checker fails an arm only on a count strictly over its ceiling, so the turn
+# assertion goes green on exactly the truncation it exists to catch. A
+# declaration at or under the cap sits below that number and fires.
 #
 # The run needs an `aitk` on PATH carrying the `teach` verbs. A first attempt
 # reached the machine's global install at 0.98.0, which has none of them, and the
