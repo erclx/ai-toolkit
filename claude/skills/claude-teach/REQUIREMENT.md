@@ -19,6 +19,7 @@ Two failures land specifically on where the folder sits. A workspace resolved ag
 
 - Hold the workspace at the main worktree root, so one learner has one history rather than one per worktree
 - Name the write route for a main-root path from a linked worktree, since a body naming only the destination reports a success that did not happen
+- Route every edit inside a workspace file that already exists through a verb resolving the root in-process, since a heredoc reaches a whole-file create alone and the stream editors that would reach the rest are banned
 - Settle the learner's starting point by asking, so difficulty sits above a measured floor
 - Research the subject from sources before teaching it, and record what was read and what was found and not opened
 - Place each lesson from the learning records rather than from the subject's order, and open with retrieval on the last wrong answer
@@ -40,6 +41,6 @@ Two failures land specifically on where the folder sits. A workspace resolved ag
 ## Out of scope
 
 - Promoting a durable page out of the workspace, which is a judgment about public prose and belongs to a separate surface
-- The command surface and the records backup for the folder, which resolve the root in-process and carry the workspace off one disk
+- What the verbs do internally, which is the CLI domain's own contract rather than this skill's, and the records backup that carries the folder off one disk
 - What a lesson renders as and how a quiz behaves once rendered, which the lesson-craft reference shapes and a rendering layer executes
 - Deciding when to fire. The skill is user-invoked through `disable-model-invocation`, so opening a workspace is the learner's call rather than a description match.
