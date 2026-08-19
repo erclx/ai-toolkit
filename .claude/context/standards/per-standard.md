@@ -1,6 +1,6 @@
 ---
 title: Per-standard decisions
-description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, and the cross-reference form split by destination
+description: What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, how a constraint declares its expiry, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, and the cross-reference form split by destination
 ---
 
 # Per-standard decisions
@@ -9,6 +9,7 @@ Five standards in the corpus cost more reasoning than their shape rules show.
 
 - The plan and memory standards were both drafted against a live folder holding two or three files, so the plan standard shipped a rule the whole corpus failed and the memory standard was measured against the pen instead
 - The plan standard costs a second time for an unrelated reason, two rules under separate headings that read as pointing opposite ways
+- The plan standard costs a third time for its constraint block, which is measured against a tree that has moved by the time a worker reads it
 - The tasks standard carries a readiness test that has to admit a row no fact on disk can confirm
 - The architecture standard borrows a marker from a sibling surface that has two writers and gets none of its own
 - The publish standard splits one rule by destination, so the same reference takes opposite spellings on either side of the remote and no check can reach the half that goes wrong
@@ -54,6 +55,24 @@ The measurement was the first candidate for that tell and it does not discrimina
 The deviation also takes one line in the open task's `## Findings`, because the plan is archived at ship and the task is what the board still points at. Naming the plan alone puts the record in a file nobody opens after the fact. The two registers hold different halves, the plan carrying why the pick moved and the task carrying what shipped. `standards/tasks.md` names the finding class from its own side, since a handoff written on one side of a boundary is never checked against the standard on the other, which is the both-sides rule the answer-contract inversion above already follows.
 
 Two occurrences is what the rule is written against. `#891` split a context entry into six files where its plan suggested four, `#907` split another into five where its plan suggested three, and both shipped with the slot blank and the reason off the plan. Both reached a correct outcome after review, so what the change removes is a review dependency rather than a broken artifact.
+
+## When a plan constraint expires
+
+A constraint block names the file set of every track in flight, and a plan sits in the ready queue until a worker picks it up. Across the six plans written and executed on 2026-08-14, three named each other and were live at every branch point, one was planned and dispatched inside a single wave and stayed live, and two named a wave that had merged before their branch existed, so every constraint they carried was dead on arrival.
+
+The two failures share a cause rather than an author error. Both were written during a refill while a wave was still building, which is the moment the sweep says to plan forward, so the constraint was correct when written and expired when read.
+
+The block now opens with `Measured against <commit> on <YYYY-MM-DD>` and the standard says a worker re-tests before honoring it. A log from the stamp to `origin/main` scoped to the paths the constraint names answers the test in one command, which is the bar the stamp had to clear, since a stamp a reader cannot act on costs a line per plan and saves nothing. The pathspec is what makes the read decisive, because a squashed merge carries a pull request number in its subject and the constraint names its track by work and file set.
+
+A date alone was the cheaper stamp and does not discriminate. Two of the six were written the same afternoon and sat either side of three merges, so a reader comparing dates cannot tell which side of a wave a constraint was measured on.
+
+Naming the tracks in the stamp beside the commit was the other candidate. The block already names each track by its work and its file set, so a second list of names is a second place to keep in step for a reader who has the first one directly above.
+
+An unstamped constraint reads as unverified rather than as live, which is what covers the plans already in the queue. Restamping them is a sweep over files a worker may already hold, and confirming one without a stamp costs that worker the open pull request list, since the log has no commit to anchor against.
+
+The rule sits in `standards/plan.md` with `claude-orchestrate` naming the stamp alone, because a worker running the planning skill in its own branch writes constraints too. Stating the obligation in both bodies puts one behavior in two places that ship on different cadences, and stating it only in the orchestrator covers one of the two plan authors.
+
+No check parses the block. Nothing reads a plan's constraints today, and a validator over prose is a larger question than the line this answers, so the rule holds by being read.
 
 ## The memory standard
 
