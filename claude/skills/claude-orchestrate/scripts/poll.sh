@@ -55,11 +55,11 @@ JQ_REPLY_COUNT='
   ] | length
 '
 
-# `claude-pr-review` posts `## Review` only for a pass carrying a critical or a
-# should-fix, so the heading of the last review is what says whether anything
-# blocks the merge. Taking it as well as the commit is what separates a thread
-# waiting on a worker from one a pass left open owing no dispatch. A project
-# editing the two filters above for its own headings edits this one with them.
+# `claude-pr-review` states the threshold and posts `## Review` exactly when a
+# pass carries a finding, so the heading of the last review is what says whether
+# any work is owed on it. Taking it as well as the commit is what separates a
+# thread waiting on a worker from one nothing is owed on. A project editing the
+# two filters above for its own headings edits this one with them.
 #
 # The age of that review comes out of the same selection, because the heading
 # alone cannot separate the two. Under the rule above an open heading means a
@@ -251,11 +251,12 @@ while read -r n head prior resp merges heading age; do
     [ "$prior" = "$head" ] && [ "$age" -ge "$STALE_AFTER" ]; then
     # Three things at once: the last pass is open, it covers the head so no
     # commit followed it, and the two branches above found no reply either. The
-    # open heading is posted only for a critical or should-fix, so a pass owing
-    # no dispatch left it here. Any two of these describe an ordinary review
-    # waiting on a worker, which is why the age carries the third: without it
-    # every dispatched worker is reported minutes into the work it was sent to
-    # do, and a signal firing on the healthy path is one an operator learns to
+    # open heading is posted exactly when a dispatch is owed, per the threshold
+    # `claude-pr-review` states, so a pass owing one left it here at any grade
+    # it carried. Any two of these describe an ordinary review waiting on a
+    # worker, which is why the age carries the third: without it every
+    # dispatched worker is reported minutes into the work it was sent to do,
+    # and a signal firing on the healthy path is one an operator learns to
     # skip. The report still asks for a confirmation rather than asserting.
     echo "STALLED   #$n open at ${head:0:7}, no commit or reply in $((age / 3600))h"
     state=reported
