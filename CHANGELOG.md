@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.102.0](https://github.com/erclx/aitk/compare/v0.101.0...v0.102.0) (2026-08-19)
+
+
+### Features
+
+* **tasks:** order the unplanned group and add a backlog surface ([#1016](https://github.com/erclx/aitk/issues/1016)) ([7b79cd0](https://github.com/erclx/aitk/commit/7b79cd0afa54d59e7ef836d0f0e2434e83e01489))
+
 ## [0.101.0](https://github.com/erclx/aitk/compare/v0.100.0...v0.101.0) (2026-08-19)
 
 
