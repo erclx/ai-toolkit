@@ -1,6 +1,6 @@
 ---
 title: Teach
-description: Listing learning workspaces and the ordinal a new one takes, opening one with its required files, recording sources and glossary terms, the refusal reasons, and why every write here runs through a verb
+description: Listing learning workspaces and the ordinal a new one takes, opening one with its required files, recording sources and glossary terms, resolving what the next lesson needs before it is written, the refusal reasons, and why every write here runs through a verb
 ---
 
 # Teach
@@ -102,6 +102,33 @@ A term already defined is refused rather than replaced. A definition the subject
 
 The entry lands as the standard's shape, leading with the term as a bolded span. A definition not ending in sentence punctuation is terminated before the citation is appended, so a bare phrase does not run into the sentence naming where the term first appears.
 
+## Lesson
+
+`aitk teach lesson` resolves what the next lesson needs before it is written. It reads and never writes.
+
+```bash
+aitk teach lesson regular-expressions \
+  --slug capture-groups \
+  --questions 3 \
+  --options 4
+```
+
+| Option            | Behavior                                                  |
+| ----------------- | --------------------------------------------------------- |
+| `--slug <kebab>`  | The lesson's own topic, required                          |
+| `--questions <n>` | How many questions the quiz carries, required             |
+| `--options <n>`   | How many options each question carries, defaulting to `4` |
+| `--json`          | Emit a machine-readable record on stdout                  |
+| `--root <path>`   | Teach root, defaulting to the main worktree               |
+
+It reports four things. `lesson` is the numbered path the lesson takes, derived from the highest ordinal already in `lessons/` the way an open derives a workspace ordinal. `stylesheet` names the one file every lesson in the workspace links, with `stylesheetExists` saying whether it is on disk yet and `stylesheetHref` carrying what the lesson's own link element holds. `success` carries the mission's success lines, so a session reports progress against the exit criteria without a second read of `MISSION.md`. `quiz` carries one entry per question.
+
+The stylesheet is reported rather than written. A verb that wrote it on every lesson would discard whatever the last lesson added, and the second lesson in a workspace is the one that needs the file the first one left.
+
+Each `quiz` entry carries `order`, the authored option indices in presentation order where index `0` is the correct answer, and `answer`, the one-based position that answer lands in. Both travel together because a caller deriving the position itself is a caller that can derive it wrongly.
+
+The order is drawn here rather than instructed, and that is the point of the verb. An author told to vary the position still varies it by judgment, and the judgment settles on the first slot, which is the defect this design departs from. The draw is uniform over the options, so the position carries no information about which answer is correct.
+
 ## Refusal reasons
 
 | Reason         | Raised when                                                     |
@@ -116,4 +143,4 @@ The entry lands as the standard's shape, leading with the term as a bolded span.
 | `defined`      | A term already carries a glossary entry                         |
 | `bad-input`    | The command line is malformed, before any folder is read        |
 
-A `bad-input` refusal reports the working directory as its root rather than the resolved one, since the command line is rejected before the root is worth resolving.
+A `bad-input` refusal reports the working directory as its root rather than the resolved one, since the command line is rejected before the root is worth resolving. `lesson` raises it for a slug that is not kebab-case, for a quiz carrying no question, and for a question carrying fewer than two options, since a question with one option has nothing to confuse the right answer with.

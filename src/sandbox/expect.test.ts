@@ -332,6 +332,60 @@ describe('checkExpectation on an absent entry carrying a glob', () => {
   })
 })
 
+describe('checkExpectation on a present entry carrying a glob', () => {
+  const LESSON = '.claude/teach/01-regex/lessons/0001-*.html'
+
+  function runGlob(): Verdict {
+    return checkExpectation(
+      {
+        paths: [LESSON],
+        absent: [],
+        content: [{ path: LESSON, pattern: '^<link ' }],
+        writeScope: [],
+        reply: [],
+        manual: [],
+        maxTurns: undefined,
+      },
+      { sandboxDir: sandbox, envelope: CLEAN_ENVELOPE },
+    )
+  }
+
+  it('should pass when a file the run derived its name for matches', () => {
+    write(
+      '.claude/teach/01-regex/lessons/0001-capture-groups.html',
+      '<link rel="stylesheet" href="../assets/course.css">\n',
+    )
+
+    expect(runGlob().state).toBe('pass')
+  })
+
+  it('should fail when nothing matches the glob', () => {
+    write('.claude/teach/01-regex/lessons/0002-quantifiers.html', '<link >\n')
+
+    expect(runGlob().state).toBe('fail')
+  })
+
+  it('should name the matched file rather than the pattern that found it', () => {
+    write(
+      '.claude/teach/01-regex/lessons/0001-capture-groups.html',
+      '<link rel="stylesheet" href="../assets/course.css">\n',
+    )
+
+    expect(runGlob().results).toContainEqual({
+      ok: true,
+      message:
+        'exists: .claude/teach/01-regex/lessons/0001-capture-groups.html',
+    })
+  })
+
+  it('should report a content miss against the entry as written', () => {
+    expect(runGlob().results).toContainEqual({
+      ok: false,
+      message: `no file to match: ${LESSON}`,
+    })
+  })
+})
+
 describe('checkExpectation with no assertion able to run', () => {
   const scopeOnly: Expectation = {
     paths: [],

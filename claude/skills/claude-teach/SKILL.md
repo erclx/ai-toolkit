@@ -40,7 +40,7 @@ From a linked worktree the file-editing tools refuse every path under the main r
 
 A topic the listing already carries is a resume, and anything else is a new workspace. An invocation asking to promote is neither: read the named workspace through the listing and go to Step 6, which teaches nothing and writes no lesson.
 
-On a resume, run `aitk teach list <topic> --json` for the files behind each count, then read `MISSION.md`, the highest-numbered learning record, and `GLOSSARY.md`. Those three carry where the learner stopped and what they got wrong. Report the mission's success lines with what is already met before teaching anything.
+On a resume, run `aitk teach list <topic> --json` for the files behind each count, then read the highest-numbered learning record and `GLOSSARY.md`. Those carry where the learner stopped and what they got wrong. The listing record carries `success`, the mission's success lines, which are the exit criteria this workspace is finished against. Report them with what is already met before teaching anything.
 
 On a new workspace, settle the starting point first, by asking rather than by assuming. Difficulty with no floor under it teaches nobody, and the mission cannot be written without it.
 
@@ -80,8 +80,26 @@ Open with retrieval on what the last session got wrong, before anything new. A l
 
 Two outputs with two lifetimes, and the split decides the format.
 
-- A lesson goes to `lessons/<nnnn>-<slug>.html`, self-contained, carrying its own quiz and the feedback for each answer. It links the shared stylesheet under `assets/` rather than restating styles, and the first lesson in a workspace writes that stylesheet before linking it. A lesson is disposable and is never promoted.
+- A lesson is a self-contained page carrying its own quiz and the feedback for each answer. It links one shared stylesheet rather than restating styles, and it is disposable and never promoted.
 - A reference page goes to `reference/<slug>.md`, written for a reader with no learner in it. This is the half that survives the workspace, so it is written in markdown to pass the authoring gates a promotion would put it through.
+
+Resolve the lesson before writing it, rather than composing its name or its quiz order by hand:
+
+```bash
+aitk teach lesson <topic> --json \
+  --slug <kebab slug for what this lesson covers> \
+  --questions <how many questions the quiz carries> \
+  --options <how many options each question carries>
+```
+
+It writes nothing and reports four things:
+
+- `lesson`, the numbered path the lesson takes. Write it there.
+- `stylesheet` with `stylesheetExists` and `stylesheetHref`. Write the stylesheet only when it reports absent, which is the first lesson in the workspace. Every lesson after that links the file already on disk and adds to it rather than replacing it, since overwriting discards what the last lesson put there.
+- `success`, the mission's success lines, carried here so Step 5 needs no second read.
+- `quiz`, one entry per question, carrying `order` and `answer`.
+
+Write the correct option first, then present the options in the order `order` reports, reading it as authored indices where `0` is the correct one. Take the order as given. Position drawn here rather than chosen is the whole reason the verb exists, and a lesson that reorders on its own judgment puts the answer back in the first slot.
 
 Add every term the lesson defines to `GLOSSARY.md` through the verb, which places the entries alphabetically in the shape the standard fixes:
 
@@ -101,7 +119,7 @@ Write `learning-records/<nnnn>-<slug>.md` before the session ends, carrying the 
 
 Record the wrong answer rather than the count. The next session places the learner from this file, and a tally carries no misconception to work against.
 
-Then restate the mission's success lines with what is now met. A mission whose lines are all met is finished, and saying so is what closes a workspace.
+Then restate the mission's success lines with what is now met, reading them from the `success` the lesson verb already reported rather than from `MISSION.md` by eye. Report each line as met or not met, and name what the learner did that meets it. A mission whose lines are all met is finished, and saying so is what closes a workspace.
 
 ## Step 6: propose where the durable half belongs
 

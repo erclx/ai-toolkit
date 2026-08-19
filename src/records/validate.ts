@@ -9,6 +9,7 @@ import {
   TEACH_RECORDS,
   TEACH_REFERENCE,
   TEACH_RESOURCES,
+  TEACH_SUCCESS_HEADING,
   WORKSPACE_NAME,
 } from '@/teach/workspace'
 
@@ -576,7 +577,6 @@ async function checkDump(dir: string, slug: string): Promise<Finding[]> {
   return [...findings, ...perCluster.flat()]
 }
 
-const TEACH_SUCCESS = /^##[ \t]+Success looks like[ \t]*$/
 const NUMBERED_RECORD = /^\d{4}-[a-z0-9]+(-[a-z0-9]+)*\.md$/
 /**
  * A kebab slug that does not open with an ordinal. The lookahead rejects a
@@ -705,13 +705,15 @@ async function checkWorkspace(dir: string, slug: string): Promise<Finding[]> {
     }
 
     if (
-      !linesOutsideFences(text).some((line) => TEACH_SUCCESS.test(line.trim()))
+      !linesOutsideFences(text).some(
+        (line) => line.trim() === TEACH_SUCCESS_HEADING,
+      )
     ) {
       findings.push(
         finding(
           'section-missing',
           slug,
-          '## Success looks like',
+          TEACH_SUCCESS_HEADING,
           'is absent, so the mission names no observable thing the learner will be able to do.',
         ),
       )
