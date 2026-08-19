@@ -3,6 +3,14 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parseFrontmatter, readField } from '@/indexes/frontmatter'
 import { linesOutsideFences } from '@/markdown/scan'
+import {
+  TEACH_GLOSSARY,
+  TEACH_MISSION,
+  TEACH_RECORDS,
+  TEACH_REFERENCE,
+  TEACH_RESOURCES,
+  WORKSPACE_NAME,
+} from '@/teach/workspace'
 
 export const RECORD_KINDS = [
   'plans',
@@ -568,14 +576,7 @@ async function checkDump(dir: string, slug: string): Promise<Finding[]> {
   return [...findings, ...perCluster.flat()]
 }
 
-const TEACH_MISSION = 'MISSION.md'
-const TEACH_RESOURCES = 'RESOURCES.md'
-const TEACH_GLOSSARY = 'GLOSSARY.md'
-const TEACH_REFERENCE = 'reference'
-const TEACH_RECORDS = 'learning-records'
-
 const TEACH_SUCCESS = /^##[ \t]+Success looks like[ \t]*$/
-const WORKSPACE_NAME = /^\d{2}-[a-z0-9]+(-[a-z0-9]+)*$/
 const NUMBERED_RECORD = /^\d{4}-[a-z0-9]+(-[a-z0-9]+)*\.md$/
 /**
  * A kebab slug that does not open with an ordinal. The lookahead rejects a
