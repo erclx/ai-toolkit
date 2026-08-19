@@ -483,6 +483,7 @@ function reportValidation(
         ok: true,
         root,
         rows: outcome.rows,
+        backlog: outcome.backlog,
         tasks: outcome.tasks,
         findings: outcome.findings,
         untested: outcome.untested,
