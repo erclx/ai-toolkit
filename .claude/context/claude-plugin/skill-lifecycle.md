@@ -49,7 +49,7 @@ The count compares the resolved target rather than the raw string, because a boa
 
 ### What the sweep scans
 
-That sweep scans the whole board rather than the task files the session touched, and Step 8 states the scope in the sentence carrying the instruction rather than as a correction below it. A scope stated as a correction loses to the instruction above it. A step opening with "sweep only scratch that was actually consumed this session" and asserting the opposite for plans four lines later gets read as session-scoped, so a run sweeps its own plan and passes over every task that closed earlier with a plan nothing would move. That is the general lesson and the reason the fix moved words rather than adding a rule.
+That sweep scans the whole board rather than the task files the session touched, and the step states the scope in the sentence carrying the instruction rather than as a correction below it. Naming the step by its title rather than its number is what keeps this reading true, since a step inserted above it renumbers everything after. A scope stated as a correction loses to the instruction above it. A step opening with "sweep only scratch that was actually consumed this session" and asserting the opposite for plans four lines later gets read as session-scoped, so a run sweeps its own plan and passes over every task that closed earlier with a plan nothing would move. That is the general lesson and the reason the fix moved words rather than adding a rule.
 
 ## The board-sweep sandbox arm
 

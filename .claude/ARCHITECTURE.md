@@ -124,11 +124,17 @@ Comparing the bytes the session holds was the obvious design and cannot be built
 
 ### A standard governs an artifact's shape and the skill driving it governs the procedure
 
-`standards/teach.md` fixes the layout, the ordinal naming, the frontmatter, and the mission, learning-record, and glossary formats of a learning workspace. The pedagogy that decides what to teach next sits in `claude/skills/claude-teach/references/`, and no standard carries it. The split is the one `standards/intake.md` already states about itself, applied to a surface built after the rule was written rather than before.
+`standards/teach.md` fixes the layout, the ordinal naming, the frontmatter, and the mission and learning-record formats of a learning workspace. The glossary sits in `standards/glossary.md`, because the shape travels with the file wherever a promotion lands it and a workspace is one of the places it sits rather than the only one. The pedagogy that decides what to teach next sits in `claude/skills/claude-teach/references/`, and no standard carries it. The split is the one `standards/intake.md` already states about itself, applied to a surface built after the rule was written rather than before.
 
 An attribute standard beside `prose.md` was the alternative, and it is declined on the second-reader test: one skill reads the pedagogy, and a standard nothing else cites has no owner to correct it. Folding the pedagogy into `standards/teach.md` was the other candidate, and `591-standard-authoring` rules it out directly, since a standard governs one document type or one attribute rather than both. What the split buys is a shape half a validator walks and a judgment half it does not, which is what makes the sixth record kind possible. What it costs is that a second surface wanting the pedagogy has to lift it with nothing reporting the lift is owed.
 
 The workspace is also the first record folder named `<nn>-<topic>` rather than by a bare slug, so a listing sorts by when each opened. That is free here because the surface is greenfield, and it is not free over the 36 folders that already exist, being 27 groundwork tracks and 9 intake dumps, named in 66 citations across the records tree and 14 across the tracked corpus. Adopting it here settles nothing about those and gives the convention a shipped precedent. Measured at `d957d8a4` on 2026-08-19.
+
+### A producer hands off through a file of its own rather than a shared one
+
+`claude-teach` proposes where a durable page belongs and writes each confirmed one to `.claude/.tmp/teach-promotion/<slug>.md`, which `claude-docs` folds and deletes. Sharing `.claude/.tmp/memory-routing/<slug>.md` was the obvious reuse and it is what the pattern cannot take: that file already has two writers and a reader that deletes it, so a fold triggered by one producer discards whatever the other wrote and never read. A sibling path costs the folding skill one more read and removes the interaction entirely.
+
+The fold reaching the public docs corpus is the cost, since `docs-sync` owns that tree. The carve-out is landing a page whose destination an operator already confirmed, and reconciling that corpus against a diff stays where it was. Splitting the fold across two skills by destination was the alternative and it puts one handoff file under two readers, which is the failure this decision declines in the other direction.
 
 ## Risks / open questions
 

@@ -121,7 +121,7 @@ Then stop and let the operator strike, redirect, or confirm each block.
 
 Write nothing to a destination here. One skill owns the durable writes, and two skills editing one file at one step is the failure that rule exists against. Record each confirmed block in `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root instead, appending when the file exists, with one H2 per destination naming its path, the source page beneath it, and the page body fenced:
 
-`````markdown
+````markdown
 ## <destination path>
 
 Source: .claude/teach/<nn>-<topic>/reference/<slug>.md
@@ -129,7 +129,7 @@ Source: .claude/teach/<nn>-<topic>/reference/<slug>.md
 ```markdown
 <the page body as it should land, with the source line the destination expects>
 ```
-`````
+````
 
 The body is fenced rather than written bare because a reference page carries headings of its own, and the reader splits this file on its H2 lines. An unfenced body turns every section heading in the page into a destination naming no path. Open the body fence with four backticks so a page carrying a fenced code block of its own still closes where it should, and widen both fences together if it carries a four-backtick fence.
 
