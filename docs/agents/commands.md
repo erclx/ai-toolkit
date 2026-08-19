@@ -45,6 +45,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk markdown audit`      | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                    |
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                            |
 | `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD` (`--json`)                                                         |
+| `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                   |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                     |
 
 ## Domain commands
@@ -56,7 +57,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                      |
 | `snippets`  | `list`, `install`, `sync`, `create`                                                         |
 | `standards` | `list`, `install`, `sync`, `<name>`                                                         |
-| `gov`       | `list`, `install`, `sync`, `build`                                                          |
+| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`                                   |
 | `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `setup [dest]` |
 | `wiki`      | `init`                                                                                      |
 | `design`    | `render`                                                                                    |
