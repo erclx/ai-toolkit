@@ -139,9 +139,24 @@ RULE
     log_info "599-sandbox-local.md present, 999-orphan.md gone, 000-constitution.md restored"
     ;;
   "test-order")
+    # Both streams and the status land on disk, because `aitk sandbox check`
+    # reads the tree and nothing else. The record carries a verdict per module
+    # and the status carries the exit, so the arm asserts the classification
+    # separately from the code a finding is meant to produce.
+    #
+    # The status is held rather than left to `set -e`. A finding exits 2 by
+    # design, so an abort would kill the scenario on the outcome the arm exists
+    # to observe. The five arms above `exec` and leave theirs on the terminal.
     log_step "Running: aitk gov test-order --root test-order"
-    log_info "src/parser.ts is the finding, src/reader.ts is satisfied, src/seed.ts is unclassified"
-    exec bun "$PROJECT_ROOT/src/cli.ts" gov test-order --root test-order
+    local order_status=0
+    bun "$PROJECT_ROOT/src/cli.ts" gov test-order --root test-order --json \
+      >test-order-record.json 2>test-order-frame.log || order_status=$?
+    printf '%s\n' "$order_status" >test-order-status.txt
+    cat test-order-frame.log >&2
+    log_info "test-order-record.json carries a verdict per module"
+    log_info "test-order-status.txt  carries the exit the run produced"
+    log_info "Expect: declared in fixtures/infra/gov/test-order/expect.toml"
+    log_info "        Check it with: aitk sandbox check infra:gov test-order"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

@@ -165,7 +165,7 @@ aitk sandbox coverage --skills  # per-skill census, scenario view kept
 
 A skill reports one of three verdicts. `asserted` means an arm paired to it declares a mechanical assertion. `should-be-asserted` is the honest default rather than a work queue, and the rule above decides which of them earns an arm. `exempt` means no arm should be written, and it holds only with a reason.
 
-The denominators disagree on purpose. Fewer skills are asserted than scenarios are armed, because `infra:wiki` and `infra:drift` are both armed and drive a CLI domain rather than a skill, and `--skills` carries `totalSkills` and `asserted` for whoever wants the current pair. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
+The denominators disagree on purpose. Fewer skills are asserted than scenarios are armed, because `infra:wiki`, `infra:drift`, and `infra:gov` are each armed and drive a CLI domain rather than a skill, and `--skills` carries `totalSkills` and `asserted` for whoever wants the current pair. Both numbers print, since replacing the scenario view would lose the rollout `--strict` is written against. The gap widens whenever a command surface earns an arm ahead of the skill that reads it, which is the ordinary order once a skill routes on what the command reports.
 
 ### Pairing a scenario to a skill
 

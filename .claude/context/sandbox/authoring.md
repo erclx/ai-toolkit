@@ -41,6 +41,10 @@ A scenario covering a verb whose subject is git history stages a repository of i
 
 Ordering the commits is what the fixture is for, so a stage folder under `scripts/sandbox/fixtures/` cannot hold it. The files each commit carries are one line apiece and sit inline in the scenario, which keeps the sequence and its content readable in one place.
 
+The arm still owes an expectation, and the fixture folder holds that alone. `aitk sandbox check` reads the tree and nothing else, so the arm writes stdout, stderr, and the exit status to three files rather than reaching the terminal through `exec`. That is what lets the declaration assert the classification, the record shape, and the exit code separately, where an arm printing to the terminal leaves a reader checking output by eye and the verdict reads `UNCHECKED`.
+
+Holding the status is load-bearing for any arm over a command that exits non-zero by design. `set -e` would abort the scenario on the outcome the arm exists to observe, so the run captures the code into a file and the declaration pins it.
+
 ## Fixtures
 
 A scenario's file content lives under `scripts/sandbox/fixtures/<category>/<scenario>/<arm>/<stage>/`, and `stage_fixtures` from `lib/sandbox-fixtures.sh` copies one stage into the sandbox. The scenario keeps its own git operations between the calls, so the script holds logic and the tree holds content.

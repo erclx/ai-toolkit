@@ -195,28 +195,30 @@ function runTestOrder(opts: TestOrderOptions): number {
   const report = readTestOrder(root, { base: opts.base })
   const emitJson = opts.json ?? false
 
+  // The frame renders on stderr in both modes and the record goes to stdout
+  // alone, which is the split `docs/agents/output-shape.md` fixes. A consumer
+  // reading stdout sees pure data either way, and an operator reading the
+  // terminal sees the refusal rather than a command that appeared to do nothing.
   if (report.kind === 'unreadable') {
-    if (emitJson) {
-      // The reason goes to both streams. A caller piping stdout into a parser
-      // reads the record, and an operator watching the terminal sees the
-      // refusal rather than a command that appeared to do nothing.
-      process.stderr.write(`aitk gov test-order refused: ${report.reason}\n`)
-      process.stdout.write(
-        `${JSON.stringify({ ok: false, reason: report.reason })}\n`,
-      )
-      return 1
-    }
-
     intro('aitk gov test-order')
     logStep('Refused')
     logError(report.reason)
     outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: report.reason })}\n`,
+      )
+    }
+
     return 1
   }
 
-  if (!emitJson) reportTestOrder(report, root)
-  else
+  reportTestOrder(report, root)
+
+  if (emitJson) {
     process.stdout.write(`${JSON.stringify({ ok: true, root, ...report })}\n`)
+  }
 
   return report.findings.length > 0 ? 2 : 0
 }

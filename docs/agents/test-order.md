@@ -19,6 +19,8 @@ aitk gov test-order --root ../my-app
 | `--root <path>` | Repository to read, defaulting to the current directory           |
 | `--json`        | Add a machine-readable record on stdout, keeping the frame        |
 
+Under `--json` the record holds stdout alone and the frame still renders on stderr, refusals included, which is the split `output-shape.md` fixes for every mode. A consumer reading stdout sees pure data, and an operator reading the terminal sees why a run refused rather than a command that appeared to do nothing.
+
 ## The range it reads
 
 The default range is the branch against the trunk, resolved as the merge base against `origin/main` and then local `main`. A repository carrying neither falls back to the root commit, so a fresh checkout still answers rather than refusing.
