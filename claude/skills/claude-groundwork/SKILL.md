@@ -21,7 +21,8 @@ Read `.claude/standards/groundwork.md` from the project root before writing any 
 
 - Write only inside `.claude/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
 - One exception, at close only: write one task file recording what the track concluded.
-- A second exception, for experiments: write a fixture a spike needs under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
+- A second exception, for what a spike reads: write an input under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
+- A third exception, for what a spike produces: write evidence a spike file cites under `.claude/groundwork/<slug>/evidence/`. Mode detection matches entries at the top level of the tracks directory, so the sibling that rule guards against cannot be a folder nested inside a track, and the scratch path holds only what can be deleted without loss, which a recording a finding rests on is not.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Every claim about a source outside the project carries a link to it. A source found and not read is listed as a lead and is never cited.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
@@ -36,7 +37,7 @@ A track may run an experiment to settle an open question without stopping to ask
 
 A fixture a headless run is pointed at goes outside the repository, under `mktemp -d`, and never under `.claude/.tmp/`. A session started anywhere beneath the project root loads that project's `CLAUDE.md`, `.claude/rules/`, and `.claude/standards/` through the ancestor chain, so an in-repo fixture measures the repository instead of the arm. Record the fixture as contaminated and re-run it outside if this is discovered after the fact, because the result reads as evidence either way.
 
-Record method, result, measured cost, and caveats in `08-spikes.md`. Reach for a test harness the project already carries before building one, and copy how it isolates its fixture rather than only what it asserts.
+Record method, result, measured cost, and caveats in `08-spikes.md`. Put whatever the run produced that the record cites in `evidence/` beside it, so a reader checking a claim opens the artifact rather than taking the prose for it. Reach for a test harness the project already carries before building one, and copy how it isolates its fixture rather than only what it asserts.
 
 ## Step 1: detect the mode
 
