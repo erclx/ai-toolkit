@@ -21,6 +21,7 @@ import { register as feedback } from '@/commands/feedback'
 import { register as transcripts } from '@/commands/transcripts'
 import { register as tasks } from '@/commands/tasks'
 import { register as intake } from '@/commands/intake'
+import { register as teach } from '@/commands/teach'
 import { register as comments } from '@/commands/comments'
 import { register as context } from '@/commands/context'
 import { register as markdown } from '@/commands/markdown'
@@ -56,6 +57,7 @@ function showHelp(): void {
     `${GREY}│${NC}    transcripts <url>  ${GREY}# Fetch a YouTube transcript with metadata frontmatter${NC}`,
     `${GREY}│${NC}    tasks [cmd]        ${GREY}# Task board commands (archive)${NC}`,
     `${GREY}│${NC}    intake [cmd]       ${GREY}# Intake folders under .claude/intake/ (list, answer)${NC}`,
+    `${GREY}│${NC}    teach [cmd]        ${GREY}# Learning workspaces under .claude/teach/ (list, open, resource, glossary)${NC}`,
     `${GREY}│${NC}    comments [cmd]     ${GREY}# Measure comment density and trend (scan)${NC}`,
     `${GREY}│${NC}    context [cmd]      ${GREY}# Report context folder health (audit)${NC}`,
     `${GREY}│${NC}    markdown [cmd]     ${GREY}# Report markdown against the attribute standards (audit)${NC}`,
@@ -92,6 +94,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk transcripts https://youtu.be/VIDEO_ID`,
     `${GREY}│${NC}    aitk tasks archive --pull-request 673 --json`,
     `${GREY}│${NC}    aitk intake list toolkit-overview --unread --json`,
+    `${GREY}│${NC}    aitk teach list --json`,
     `${GREY}│${NC}    aitk comments scan src --json`,
     `${GREY}│${NC}    aitk context audit --json`,
     `${GREY}│${NC}    aitk markdown audit .claude/rules --json`,
@@ -150,6 +153,7 @@ feedback(program)
 transcripts(program)
 tasks(program)
 intake(program)
+teach(program)
 comments(program)
 context(program)
 markdown(program)
