@@ -209,23 +209,35 @@ export function countMechanicalAssertions(expectation: Expectation): number {
   )
 }
 
+/**
+ * An entry carrying `*` is matched as a glob, so an arm can assert a file whose
+ * name a run derives. Reports the matched path rather than the pattern, since a
+ * pass on `lessons/0001-*.html` says nothing until the name it found is named.
+ */
 function checkPaths(
   expectation: Expectation,
   sandboxDir: string,
 ): AssertionResult[] {
-  return expectation.paths.map((path) =>
-    existsSync(join(sandboxDir, path))
-      ? { ok: true, message: `exists: ${path}` }
-      : { ok: false, message: `missing: ${path}` },
-  )
+  return expectation.paths.map((path) => {
+    const written = writtenUnder(path, sandboxDir)
+
+    return written
+      ? { ok: true, message: `exists: ${written}` }
+      : { ok: false, message: `missing: ${path}` }
+  })
 }
 
 /**
- * An entry carrying `*` is matched as a glob, which is what lets an arm forbid
- * a file whose name a run derives rather than fixes. Pinning one spelling of a
- * derived name passes vacuously against every other spelling, which reads as
- * coverage the arm does not have. Returns the offending path so a failure names
- * the file the run wrote rather than the pattern that caught it.
+ * The first file an entry matches, or undefined when it matches none. An entry
+ * carrying `*` is matched as a glob, which is what lets an arm name a file whose
+ * name a run derives rather than fixes. Pinning one spelling of a derived name
+ * passes vacuously against every other spelling, which reads as coverage the arm
+ * does not have.
+ *
+ * Returning the match rather than a boolean is what lets a result name the file
+ * the run wrote instead of the pattern that found it. A glob matching several
+ * files answers with one of them in no fixed order, so an arm asserting content
+ * through a glob seeds a folder holding one.
  */
 function writtenUnder(pattern: string, sandboxDir: string): string | undefined {
   if (!pattern.includes('*')) {
@@ -260,14 +272,18 @@ function checkAbsent(
  * throwing, since an arm may assert content without also listing the path. A
  * pattern that does not compile is a defect in the declaration, so it fails the
  * assertion it belongs to rather than aborting the whole verdict.
+ *
+ * A path carrying `*` resolves to the file it matched, and falls back to itself
+ * when it matched none so the miss is reported against the entry as written.
  */
 function checkContent(
   expectation: Expectation,
   sandboxDir: string,
 ): AssertionResult[] {
   return expectation.content.map(({ path, pattern }) => {
-    const full = join(sandboxDir, path)
-    const label = `${path} =~ ${pattern}`
+    const matched = writtenUnder(path, sandboxDir) ?? path
+    const full = join(sandboxDir, matched)
+    const label = `${matched} =~ ${pattern}`
 
     let matcher: RegExp
     try {
@@ -279,6 +295,7 @@ function checkContent(
     if (!existsSync(full) || !statSync(full).isFile()) {
       return { ok: false, message: `no file to match: ${path}` }
     }
+
     if (matcher.test(readFileSync(full, 'utf8'))) {
       return { ok: true, message: `matches: ${label}` }
     }
