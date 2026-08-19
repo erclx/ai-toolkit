@@ -25,3 +25,6 @@ node_modules/
 .claude/task-archive/
 .claude/worktrees/
 .claude/tasks/
+
+# Teaching workspace
+.claude/teach/

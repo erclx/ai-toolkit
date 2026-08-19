@@ -23,6 +23,7 @@ dedupe
 dotglob
 dunder
 elif
+enotdir
 errexit
 excalidraw
 execa
