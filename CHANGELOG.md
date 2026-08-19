@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.104.0](https://github.com/erclx/aitk/compare/v0.103.0...v0.104.0) (2026-08-19)
+
+
+### Features
+
+* **teach:** resolve the lesson layer and draw its quiz order in a verb ([#1022](https://github.com/erclx/aitk/issues/1022)) ([42ecbc8](https://github.com/erclx/aitk/commit/42ecbc890fb71466b9a5cb09dc8b1939da3399ca))
+
 ## [0.103.0](https://github.com/erclx/aitk/compare/v0.102.0...v0.103.0) (2026-08-19)
 
 
