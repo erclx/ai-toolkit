@@ -122,6 +122,10 @@ Each spike carries four things:
 
 Cost is a report rather than a limit, and it is what makes the next spike estimable before anyone commits to it. Record it even when it comes to a single read.
 
+A spike also leaves files behind, and they split on whether the track cites them rather than on whether they are markdown. An input the run reads, being a fixture page, an arm script, or a copied asset, is re-runnable and cited by nothing, so it stays outside the track wherever the surface driving the spike puts it. Evidence the record cites, being a recording, a render, or a frame pulled from one, is what a later reader opens to check a claim, so it lives in `evidence/` inside the track beside the file citing it. Name the split rather than the file types, which is what keeps this from going stale on the next kind of artifact a spike produces.
+
+`evidence/` takes no number, since numbering is the read order over the files a reader opens in sequence and an artifact is reached from the claim that cites it instead.
+
 Reach for a test harness the project already carries before building one. A track needing an experiment no existing harness can express has found a finding, and it belongs in the folder rather than in a new abstraction.
 
 One method error is worth naming, because it is made rather than imagined. Counting matches in a transcript overstates whether a file was read, since an instruction naming a path puts that path in the transcript whether or not anything opened it. The check is the tool call.

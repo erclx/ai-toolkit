@@ -135,6 +135,8 @@ Escapes on two of the three runs named three files between them, every one of th
 
 `scripts/sandbox/fixtures/claude/groundwork/` does not exist, so every `claude:groundwork` arm returns `state: unchecked` with nothing asserted and a verdict from it confirms only that the session completed.
 
+What the three arms reach is narrower than the skill. `open`, `resume`, and `decline` cover creating a track, continuing one, and refusing one, and none of them runs a spike or produces an artifact, so the write-scope rule sending evidence to `evidence/` inside a track and an input to the fixtures path has no arm that exercises it. A branch changing that rule ships with a green run behind it that never reached the behavior.
+
 The scenario also cannot be driven by the bare `/aitk:claude-groundwork` prompt the ship-time check specifies. The skill's first guard refuses a missing topic and returns in under four seconds without creating a folder, so the run reports success having exercised nothing past the guard. Each arm names its intended prompt on its own `Action:` line and has to be driven with that topic to reach the creation path. A scenario whose skill guards on an argument is the general case this names, and the check's no-argument rule is what a caller has to override for it.
 
 ### The standards read arm covers a command rather than a skill

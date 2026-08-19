@@ -82,6 +82,8 @@ Estimate an arm's cost from what it reads rather than from what it writes. `boar
 
 Raise the default or set the variable per run. A per-arm budget would need `run.sh` to parse the declaration, which nothing has yet asked for.
 
+Dollar cost spreads wider than the turn count, and the range `aitk-sandbox-check` documents covers the cheap half alone. Its gate table rules out `cost` for a single arm on a stated 0.10 to 0.25 dollars, which a proposal-only arm meets and a provisioning one does not: `claude:groundwork` `open` came in at 1.05 dollars on 2026-08-19, roughly five times the top of that range, because the skill session staged a three-package workspace and wrote a three-file track rather than resolving a route off a few reads. Read the documented range as a floor when the arm's skill does the domain work, and keep the gate ruled out either way, since one arm at a dollar is still affordable against the branch it verifies.
+
 ## Expectations
 
 An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `aitk sandbox check <category>:<command> [arm]` reads it, asserts against the sandbox tree, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
