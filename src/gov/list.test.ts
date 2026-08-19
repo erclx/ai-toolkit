@@ -92,6 +92,31 @@ describe('buildRuleEntries', () => {
   })
 })
 
+/**
+ * Reads the shipped corpus rather than a fixture, because the behavior the
+ * `ui` globs exist for is which rules a session loads when it opens a real
+ * file. A fixture asserting a glob it wrote itself measures nothing.
+ */
+function rulesMatching(domain: string, file: string): string[] {
+  return buildRuleEntries(process.cwd())
+    .filter((entry) => entry.domain === domain)
+    .filter((entry) =>
+      (entry.paths ?? []).some((glob) => new Bun.Glob(glob).match(file)),
+    )
+    .map((entry) => entry.name)
+}
+
+describe('governance/rules/ui', () => {
+  it('should match an Astro component from every extension-scoped rule', () => {
+    expect(rulesMatching('ui', 'src/components/Card.astro')).toEqual([
+      '400-ui',
+      '410-a11y',
+      '420-forms',
+      '430-ux-completeness',
+    ])
+  })
+})
+
 describe('buildGovCatalog', () => {
   it('should carry the rules no stack reaches beside the catalog', () => {
     seedRule('core', '000-a', '# a\n')
