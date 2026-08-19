@@ -9,6 +9,7 @@ import {
 } from '@/tasks/archive'
 
 const ORDERING_FILE = 'priority.md'
+const BACKLOG_FILE = 'backlog.md'
 
 /**
  * The readiness headings `.claude/standards/tasks.md` fixes. The names are the
@@ -60,6 +61,16 @@ export interface Untested {
   readonly message: string
 }
 
+/**
+ * A backlog line, which carries a pointer and nothing else. The backlog is
+ * explicitly unordered, so a line has no position to read and no columns to
+ * resolve.
+ */
+export interface BacklogRow {
+  readonly label: string
+  readonly stem: string | undefined
+}
+
 export interface BoardRow {
   readonly group: BoardGroup
   readonly label: string
@@ -74,6 +85,7 @@ export interface BoardRow {
 export interface ValidateReport {
   readonly ok: true
   readonly rows: number
+  readonly backlog: number
   readonly tasks: number
   readonly findings: readonly Finding[]
   readonly untested: readonly Untested[]
@@ -89,6 +101,10 @@ export type ValidateOutcome = ValidateReport | ValidateRefused
 
 export function orderingPath(root: string): string {
   return join(tasksDir(root), ORDERING_FILE)
+}
+
+export function backlogPath(root: string): string {
+  return join(tasksDir(root), BACKLOG_FILE)
 }
 
 /**
@@ -225,6 +241,39 @@ export function readBoard(text: string): {
   return { rows, groups }
 }
 
+/**
+ * Parses the backlog into one row per bullet carrying a link. The backlog is a
+ * flat list rather than a table, so there is no header to resolve and no group
+ * to sit under, and a bullet holding prose instead of a pointer is skipped.
+ *
+ * Skipping it rather than reporting it is what keeps the intro paragraph and
+ * any explanatory bullet out of the findings. The task that bullet meant to
+ * name is still accounted for, because a stem no line reaches is reported by
+ * `checkMapping` as carrying no row on either surface.
+ */
+export function readBacklog(text: string): readonly BacklogRow[] {
+  const rows: BacklogRow[] = []
+
+  for (const line of text.split('\n')) {
+    if (!/^\s*[-*]\s/.test(line)) continue
+
+    const target = linkTarget(line)
+    if (!target) continue
+
+    // A pointer carrying a directory names something other than a sibling task,
+    // the way `citedStem` reads the same shape on the board.
+    const path = target.split('#')[0] ?? ''
+    if (path.includes('/')) continue
+
+    const stem = stemOf(path)
+    if (stem && isReservedStem(stem)) continue
+
+    rows.push({ label: linkText(line) || line.trim(), stem })
+  }
+
+  return rows
+}
+
 async function listTaskStems(dir: string): Promise<string[]> {
   const entries = await readdir(dir)
 
@@ -247,13 +296,44 @@ function resolves(target: string, dir: string, root: string): boolean {
   return existsSync(resolve(dir, path)) || existsSync(resolve(root, path))
 }
 
+/**
+ * Accounts every task file against both surfaces the board spans. A task sits
+ * on `priority.md` when it would plausibly be planned soon and on `backlog.md`
+ * otherwise, so a file reached by neither is the dropped one this reports and a
+ * file reached by both claims two contradictory things about itself.
+ */
 function checkMapping(
   rows: readonly BoardRow[],
+  backlog: readonly BacklogRow[],
   stems: readonly string[],
   dir: string,
 ): Finding[] {
   const findings: Finding[] = []
   const seen = new Map<string, number>()
+  const listed = new Set<string>()
+
+  for (const row of backlog) {
+    if (!row.stem) {
+      findings.push({
+        kind: 'task-unresolved',
+        group: undefined,
+        subject: row.label,
+        message: 'is a backlog line naming no task file.',
+      })
+      continue
+    }
+
+    listed.add(row.stem)
+
+    if (!existsSync(join(dir, `${row.stem}.md`))) {
+      findings.push({
+        kind: 'task-unresolved',
+        group: undefined,
+        subject: row.stem,
+        message: 'has a backlog line and no task file.',
+      })
+    }
+  }
 
   for (const row of rows) {
     if (!row.stem) {
@@ -287,15 +367,26 @@ function checkMapping(
         message: `carries ${count} rows. A task belongs to exactly one group.`,
       })
     }
+
+    if (listed.has(stem)) {
+      findings.push({
+        kind: 'row-duplicated',
+        group: undefined,
+        subject: stem,
+        message:
+          'carries a row on the board and a line on the backlog. A task sits on one surface.',
+      })
+    }
   }
 
   for (const stem of stems) {
-    if (!seen.has(stem)) {
+    if (!seen.has(stem) && !listed.has(stem)) {
       findings.push({
         kind: 'row-missing',
         group: undefined,
         subject: stem,
-        message: 'is a task file with no row on the board.',
+        message:
+          'is a task file with no row on the board and no line on the backlog.',
       })
     }
   }
@@ -547,11 +638,19 @@ export async function validateBoard(root: string): Promise<ValidateOutcome> {
     )
   }
 
+  // An absent backlog reads as empty rather than refusing. A project that has
+  // never needed the second surface keeps every task on the board, which is the
+  // one-to-one mapping this check ran before the backlog existed.
+  const backlogFile = backlogPath(root)
+  const backlog = existsSync(backlogFile)
+    ? readBacklog(await readFile(backlogFile, 'utf8'))
+    : []
+
   const stems = await listTaskStems(dir)
   const parked = await checkParked(rows, root)
 
   const findings = [
-    ...checkMapping(rows, stems, dir),
+    ...checkMapping(rows, backlog, stems, dir),
     ...checkPlans(rows, dir, root),
     ...checkCollisions(rows),
     ...parked.findings,
@@ -560,6 +659,7 @@ export async function validateBoard(root: string): Promise<ValidateOutcome> {
   return {
     ok: true,
     rows: rows.length,
+    backlog: backlog.length,
     tasks: stems.length,
     findings,
     untested: parked.untested,

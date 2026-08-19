@@ -5,9 +5,11 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { tasksDir } from '@/tasks/archive'
 import {
+  backlogPath,
   type Finding,
   type FindingKind,
   orderingPath,
+  readBacklog,
   readBoard,
   readPaths,
   validateBoard,
@@ -78,6 +80,26 @@ function parkedTable(rows: readonly string[]): string {
     ...rows,
     '',
   ].join('\n')
+}
+
+async function seedBacklog(lines: readonly string[]): Promise<void> {
+  mkdirSync(tasksDir(ROOT), { recursive: true })
+  await writeFile(
+    backlogPath(ROOT),
+    [
+      '---',
+      'title: Backlog',
+      'description: One line on what the backlog holds',
+      '---',
+      '',
+      '# Backlog',
+      '',
+      'Unordered. Nothing here is queued.',
+      '',
+      ...lines,
+      '',
+    ].join('\n'),
+  )
 }
 
 async function seedPlan(stem: string): Promise<void> {
@@ -186,6 +208,34 @@ describe('readBoard', () => {
   })
 })
 
+describe('readBacklog', () => {
+  it('should read one row per bullet carrying a task link', () => {
+    expect(
+      readBacklog(
+        [
+          '- [v9.0 first](v9.0-first.md)',
+          '- [v9.1 second](v9.1-second.md)',
+        ].join('\n'),
+      ),
+    ).toEqual([
+      { label: 'v9.0 first', stem: 'v9.0-first' },
+      { label: 'v9.1 second', stem: 'v9.1-second' },
+    ])
+  })
+
+  it('should skip a bullet carrying prose instead of a pointer', () => {
+    expect(readBacklog('- nothing here is queued')).toEqual([])
+  })
+
+  it('should skip a pointer naming something other than a sibling task', () => {
+    expect(
+      readBacklog(
+        '- [the plan](../plans/feature-x.md) and [priority](priority.md)',
+      ),
+    ).toEqual([])
+  })
+})
+
 describe('validateBoard', () => {
   it('should refuse when the project carries no board', async () => {
     expect(await validateBoard(ROOT)).toMatchObject({
@@ -270,7 +320,7 @@ describe('validateBoard', () => {
     expect(outcome.ok && kinds(outcome.findings)).toEqual(['task-unresolved'])
   })
 
-  it('should report a task file that no row names', async () => {
+  it('should report a task file that neither surface names', async () => {
     await seedTask('v1.0-first')
     await seedTask('v9.0-orphan')
     await seedPlan('v1.0-first')
@@ -281,6 +331,55 @@ describe('validateBoard', () => {
     expect(outcome.ok && outcome.findings).toMatchObject([
       { kind: 'row-missing', subject: 'v9.0-orphan' },
     ])
+  })
+
+  it('should account for a task file the backlog names', async () => {
+    await seedTask('v1.0-first')
+    await seedTask('v9.0-parked')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+    await seedBacklog(['- [v9.0 parked](v9.0-parked.md)'])
+
+    expect(await validateBoard(ROOT)).toMatchObject({
+      backlog: 1,
+      tasks: 2,
+      findings: [],
+    })
+  })
+
+  it('should report a task sitting on the board and the backlog both', async () => {
+    await seedTask('v1.0-first')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+    await seedBacklog(['- [v1.0 first](v1.0-first.md)'])
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      { kind: 'row-duplicated', subject: 'v1.0-first' },
+    ])
+  })
+
+  it('should report a backlog line whose task file is gone', async () => {
+    await seedTask('v1.0-first')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+    await seedBacklog(['- [v9.0 gone](v9.0-gone.md)'])
+
+    const outcome = await validateBoard(ROOT)
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      { kind: 'task-unresolved', subject: 'v9.0-gone' },
+    ])
+  })
+
+  it('should skip the backlog sibling when counting task files', async () => {
+    await seedTask('v1.0-first')
+    await seedPlan('v1.0-first')
+    await seedBoard(boardBody([readyTable([{ stem: 'v1.0-first' }])]))
+    await seedBacklog([])
+
+    expect(await validateBoard(ROOT)).toMatchObject({ tasks: 1, findings: [] })
   })
 
   it('should skip the generated, ordering, and session siblings', async () => {
