@@ -35,6 +35,16 @@ A scenario reading git history through a pipeline ending in an early exit fails 
 
 The failure is timing-dependent, which is what makes it worth writing down. The same pipeline run by hand in an interactive shell returns the match and exits 0, because git finishes writing before grep exits, and it fails inside the provisioning run where it matters. `infra:drift` carries both reads in the shape that survives.
 
+### Staging a history rather than a tree
+
+A scenario covering a verb whose subject is git history stages a repository of its own, since the ordering such a verb reads cannot be expressed as files in a directory. The `test-order` arm of `infra:gov` is the first of these. It runs `git init` into a subdirectory after the outer `stage_setup` commit, so the outer tree never records the nested repository as a gitlink, and it writes one commit per verdict the verb reports.
+
+Ordering the commits is what the fixture is for, so a stage folder under `scripts/sandbox/fixtures/` cannot hold it. The files each commit carries are one line apiece and sit inline in the scenario, which keeps the sequence and its content readable in one place.
+
+The arm still owes an expectation, and the fixture folder holds that alone. `aitk sandbox check` reads the tree and nothing else, so the arm writes stdout, stderr, and the exit status to three files rather than reaching the terminal through `exec`. That is what lets the declaration assert the classification, the record shape, and the exit code separately, where an arm printing to the terminal leaves a reader checking output by eye and the verdict reads `UNCHECKED`.
+
+Holding the status is load-bearing for any arm over a command that exits non-zero by design. `set -e` would abort the scenario on the outcome the arm exists to observe, so the run captures the code into a file and the declaration pins it.
+
 ## Fixtures
 
 A scenario's file content lives under `scripts/sandbox/fixtures/<category>/<scenario>/<arm>/<stage>/`, and `stage_fixtures` from `lib/sandbox-fixtures.sh` copies one stage into the sandbox. The scenario keeps its own git operations between the calls, so the script holds logic and the tree holds content.
