@@ -1,6 +1,6 @@
 ---
 title: Internal skills
-description: The aitk-* skills loaded before editing a toolkit domain, their requirement coverage, and the sandbox verification route
+description: The internal aitk skills loaded before editing a toolkit domain, their requirement coverage, and the sandbox verification route
 ---
 
 # Internal skills
