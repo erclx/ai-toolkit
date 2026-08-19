@@ -115,7 +115,11 @@ The name is measured rather than chosen. No skill in the catalog is a single wor
 
 The output splits by lifetime and the format follows the split. A lesson is worked through once, carries a quiz with immediate feedback, and is never committed, so it is markup. A reference page is looked up later and is the half a promotion pass would move into a gated corpus, so it is markdown and passes those gates the day it is written rather than at the moment someone tries to promote it. Authoring both as markup was the source's own choice and it puts the promotable half in a format no stage reads.
 
-Three things this repository owes the surface are not here yet. The command surface and the records backup are `v55.6`, the rendered lesson layer with its quiz ordering and exit criteria is `v55.7`, and the promotion pass is `v53.1`. Until the first of those lands, the body resolves the main worktree root itself and changes an existing file by writing it back whole, which is the route `.claude/ARCHITECTURE.md` names as holding until a second caller pays for a verb.
+The durable half leaves through a promote step in the same skill, sorted by who owns the subject rather than by what the reader was doing. That is the wiki test unamended, so an outside subject goes to the wiki, an internal one to the matching context entry, and consumer-facing material to the public docs. The step proposes and waits, and it writes nothing to a destination: a confirmed page lands in `.claude/.tmp/teach-promotion/<slug>.md` and `claude-docs` folds it in from a branch, which is the handoff shape `claude-memory-capture` already runs. The file is a sibling of the routed-facts one rather than the same file, because that one is deleted by whichever pass folds it and a third writer on a destructive reader loses another producer's unread work.
+
+Two things carry a cost worth naming. The step is the first caller of the wiki scaffolding verb, which a closed track recorded as creating a folder nothing read, and it refuses rather than scaffolds when a project has no wiki, so the verb stays the operator's call. The fold reaches the public docs corpus, which `docs-sync` otherwise owns, and the carve-out is narrow: `claude-docs` lands a page whose destination is already confirmed and reconciles nothing there against a diff.
+
+One thing this repository owes the surface is not here yet. The rendered lesson layer with its quiz ordering and exit criteria is `v55.7`.
 
 ## Redundancy audit
 

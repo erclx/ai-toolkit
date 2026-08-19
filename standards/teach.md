@@ -1,6 +1,6 @@
 ---
 title: Teach reference
-description: Workspace layout, ordinal naming, frontmatter, and the mission, learning-record, and glossary formats for a learning workspace
+description: Workspace layout, ordinal naming, frontmatter, and the mission and learning-record formats for a learning workspace
 ---
 
 # Teach reference
@@ -11,10 +11,11 @@ The folder is gitignored. Its markdown half is written in a format the authoring
 
 ## Scope
 
-Governs a learning workspace under `.claude/teach/<nn>-<topic>/`: folder layout, ordinal naming, frontmatter, and the mission, learning-record, and glossary formats.
+Governs a learning workspace under `.claude/teach/<nn>-<topic>/`: folder layout, ordinal naming, frontmatter, and the mission and learning-record formats.
 
 Does not govern:
 
+- The frontmatter, entry shape, and ordering of the glossary the workspace holds: `glossary.md`
 - What a lesson teaches, how it sequences difficulty, and what makes one worth returning to, which belong to the surface driving the workspace
 - Where a durable page goes once it leaves the workspace, which belongs to the routing test the destination surface states
 - One question measured in depth before anyone can plan against it: `groundwork.md`
@@ -96,12 +97,9 @@ Record the wrong answer rather than the fact of an error. A wrong answer names t
 
 ## GLOSSARY.md
 
-One entry per term the subject defines, sorted alphabetically.
+Required in every workspace, holding one entry per term the subject defines. `glossary.md` fixes what an entry looks like, how the file orders and groups them, and which terms it carries, so this standard states only that the file exists and sits at the workspace root.
 
-- Lead each entry with the term as a bolded span, then the definition in one or two sentences
-- Define the term without using it
-- Name the lesson or reference page where the term first appears
-- Keep an entry to the meaning. Worked detail belongs on a reference page.
+Name the lesson or reference page a term first appears in as that standard requires. A workspace is the case it was written for, so a glossary here has a first appearance to name.
 
 ## RESOURCES.md
 

@@ -33,6 +33,8 @@ The Skill paths stage runs `scripts/core/check-skill-paths.sh` over the shipped 
 
 The walk reads inside fenced code blocks, which is what makes an illustrative example count. A TOML block demonstrating the label map in `claude/skills/git-pr/references/labels.md` used this repository's own `docs/` and `wiki/` rows and failed the stage. That is a true positive rather than the fenced-example class the Seed independence stage below accepts, since an example is the part of a reference a reader copies, so a target handed one built from this layout learns a folder set it does not have. An example in shipped content invents its paths.
 
+The banned pattern is a bare `wiki/` with no exemption for a body that has a reason to name it. A shipped skill routing a page into a project's wiki has to describe both spellings, and only `.claude/wiki/` survives the match, so the root spelling is stated as a folder named `wiki` rather than as a path. That is the phrasing the promotion routing in `claude-teach` carries.
+
 The failure message assumes a match inside a `references/` folder is a generated copy and directs the fix to `standards/bundled/`. A hand-authored reference under a single skill breaks that assumption, so the recovery it prints names a source file that does not exist and the fix belongs in the reference itself.
 
 ## Hero provenance
