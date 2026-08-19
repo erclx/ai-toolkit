@@ -1,6 +1,6 @@
 ---
 title: Session scratch
-description: Why shared scratch lives at the main worktree root, the two write routes a linked worktree has, how each gitignored folder is indexed and archived, and the second git directory backing them off the disk
+description: Why shared scratch lives at the main worktree root, the two write routes a linked worktree has, how each gitignored folder is indexed and archived, where a spike puts what it reads against what it produces, and the second git directory backing them off the disk
 ---
 
 # Session scratch
@@ -34,6 +34,20 @@ A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, t
 A plan that ships moves to `.claude/plans-archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.
 
 A task that ships moves to `.claude/task-archive/` the same way, through `aitk tasks archive`. The `Pull request:` line `git-pr` writes onto the task is what lets the merge close it, since every merge on `main` is a squash carrying that number in its subject while the branch name never lands. The command owns the move, the `priority.md` row removal, and the index regen as one unit, so the hook and `claude-tasks` cannot archive differently.
+
+### What a spike leaves behind
+
+`claude-groundwork` sent every experiment artifact to `.claude/.tmp/groundwork-fixtures/<slug>/`, and `.claude/ARCHITECTURE.md` defines the scratch tree as holding only what can be deleted without loss. A recording an `08-spikes.md` entry cites as proof of a finding fails that test, so the two rules disagreed and the artifact was what lost. The skill now splits an input a spike reads from evidence a spike produces, and sends each where its own lifetime puts it: the fixtures path keeps the input, and `evidence/` inside the track keeps the output.
+
+The split is input against output rather than markdown against binary. A fixture page, an arm script, and a copied theme file are re-runnable and cited by nothing. A recording and the frames pulled from it are what a later reader opens to check a claim. Measured on the track that produced the change, seven artifacts across three spikes, being three recordings and four frames, against eight inputs, so about half of what a spike run leaves behind is evidence.
+
+The exile rule keeps the half of its reason that holds. Mode detection lists `.claude/groundwork/` and matches entries at its top level, so a sibling sitting there can be taken for a track and a folder nested inside one cannot. The rule was written against the sibling and was being applied to the child.
+
+`aitk records validate groundwork` reports nothing on the new subfolder, and the reason is `listMarkdown` in `src/records/validate.ts`, which filters `readdir` to files ending `.md` at the track's own level. `listFolders` runs once at the groundwork root to enumerate tracks and never descends, so a track's subfolder is outside everything the validator reads. That is checked rather than assumed, because a layout the validator reports on every run is one an author learns to ignore.
+
+Intake needs no equivalent, and the reason is structural rather than an oversight. `claude-intake` routes any finding needing an experiment away to a track, so an intake pass never runs a spike and never produces an artifact to place. Its own gap is separate and smaller: `standards/intake.md` enumerates items and an index and says nothing about a subfolder, while one live folder already carries two, both holding markdown. That is recorded here rather than fixed, since it is a different question from where evidence lives.
+
+Two tracks were patched by hand on 2026-08-19, `demo-recorder` and `diagrams`, and both chose `evidence/` before any rule named it. They are left alone. Conforming them would be a no-op, and the agreement is what settles the folder name, since a repair made without the rule and a rule written after it landed on the same shape.
 
 ### Backing the eight off the disk
 
