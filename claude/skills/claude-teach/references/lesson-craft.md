@@ -13,6 +13,7 @@ A workspace accumulates lessons over weeks. The learner reads them as one body o
 
 - Write the shared stylesheet into the workspace assets on the first lesson, and link it from every lesson after
 - Promote anything used a second time into that stylesheet. A second use makes it a component of the course.
+- Add to that stylesheet rather than replacing it. The lesson writing it is rarely the lesson that needs it changed, and a rewrite drops what every earlier lesson links it for.
 - Keep the structural furniture identical across lessons: where the title sits, where the quiz sits, what a correct answer looks like
 - Do not restate styles inside a lesson. A local override is a decision the next lesson has to either copy or contradict.
 
@@ -39,10 +40,16 @@ Every element competes with the material for attention.
 The quiz is the retrieval, so a leak in its construction turns it into a reading test.
 
 - Write every option to the same length, in words and in characters. A longer option reads as the considered one.
-- Vary which position holds the correct answer, and never let the order follow the order the material was taught in
+- Write the correct option first and let the ordering verb place it. Position is not the author's to pick: an author who varies it by hand still varies it by judgment, and the judgment settles on the first slot.
 - Make each wrong option a misconception someone actually holds. An obviously wrong option removes itself and shrinks the question.
 - Write feedback for every option, including the correct one, saying why rather than whether
 - Give feedback after the attempt, never alongside the question
+
+## Tokens travel with the course
+
+A lesson carries its own values in the shared stylesheet rather than reading a host project's. A workspace runs in any project and most carry no token record at all, so a lesson inheriting one is a lesson that renders unstyled wherever the record is absent, with nothing reporting it.
+
+Pick values the material needs rather than values the project happens to hold. Inheriting is worth offering as something a learner asks for once, and it is the wrong default in every project that cannot answer.
 
 ## What makes a lesson worth returning to
 

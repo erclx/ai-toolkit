@@ -136,9 +136,18 @@ The workspace is also the first record folder named `<nn>-<topic>` rather than b
 
 The fold reaching the public docs corpus is the cost, since `docs-sync` owns that tree. The carve-out is landing a page whose destination an operator already confirmed, and reconciling that corpus against a diff stays where it was. Splitting the fold across two skills by destination was the alternative and it puts one handoff file under two readers, which is the failure this decision declines in the other direction. Measured at `f0f8bd62` on 2026-08-19.
 
+### A rule the model can talk itself out of moves into a verb
+
+Quiz option order is drawn by `aitk teach lesson` rather than stated in the skill body. The instruction was the cheaper design and it is the one the source this surface departs from already ships: that source documents answers frequently defaulting to the first option while its stated mitigation addresses a formatting leak instead, so porting the instruction ports the defect with the mitigation attached. An author told to vary a position still varies it by judgment, and a verb is a check where an instruction is a hope.
+
+The same verb reports the numbered lesson path, the shared stylesheet with whether that file exists yet, and the mission's success lines, which is what turns those lines into exit criteria rather than a list nothing reads. It writes nothing, and the stylesheet is why: every lesson after the first links what the first wrote, so a verb writing the file on each lesson would discard what the last one added.
+
+What the split cannot close is that the body remains free to reorder what the verb reports, since nothing downstream compares the two. The sandbox arm records that as a manual entry rather than claiming it, because the order the verb draws is uniform and one run cannot separate a taken order from a chosen one. Position bias is a property over many runs, and an arm sees one.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects it.
+  - The sandbox is the first place this was observed rather than reasoned about. An arm resolves `aitk` off the machine's PATH, so a `claude:teach` run met a global install carrying no `teach` command at all, refused, and wrote nothing, failing every assertion for a reason the arm is not about.
 - `migration-standards` and `toolkit-operator` each test for a field they read and answer an absent key as unread rather than as empty, a pattern the remaining skills could take rather than a check the repository runs
   - The second was written after a sandbox run against a stale binary reported a clean target, then answered from a filesystem walk of its own, so the skew reaches a reader as a confident wrong answer rather than a failure
 - A marketplace install is a cached copy, which is the same skew in the other direction. Someone who added the marketplace and never updated runs old skills against a current CLI. Neither direction is detected.

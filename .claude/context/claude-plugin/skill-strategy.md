@@ -119,7 +119,11 @@ The durable half leaves through a promote step in the same skill, sorted by who 
 
 Two things carry a cost worth naming. The step is the first caller of the wiki scaffolding verb, which a closed track recorded as creating a folder nothing read, and it refuses rather than scaffolds when a project has no wiki, so the verb stays the operator's call. The fold reaches the public docs corpus, which `docs-sync` otherwise owns, and the carve-out is narrow: `claude-docs` lands a page whose destination is already confirmed and reconciles nothing there against a diff.
 
-One thing this repository owes the surface is not here yet. The rendered lesson layer with its quiz ordering and exit criteria is `v55.7`.
+The rendered layer is the half a session works through rather than consults, and two of its rules moved out of the body into code. Quiz option order is drawn by `aitk teach lesson` rather than instructed, because the source this design departs from reports answers defaulting to the first option while its stated mitigation addresses a formatting leak instead, so porting the instruction ports the defect. The same verb reports the numbered path the lesson takes, the shared stylesheet with whether it is on disk yet, and the mission's success lines, which is what turns those lines into exit criteria a session reports progress against rather than a list nothing reads.
+
+The verb writes nothing, and the stylesheet is the reason. Every lesson after the first links what the first one wrote, so a verb that wrote the file on each lesson would discard what the last one added. Reporting `stylesheetExists` puts the write on the one lesson that needs it and leaves the rest linking.
+
+What the split cannot close is that the body is still free to reorder what the verb reports. The sandbox arm for this layer asserts the ordinal, the link, and the stylesheet, and the ordering is a property over many runs that one arm cannot see, so it is recorded as manual rather than claimed.
 
 ## Redundancy audit
 

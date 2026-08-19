@@ -42,6 +42,8 @@ The prompt is the explicit skill invocation. Use the `/aitk:<skill>` form so `--
 
 Carry the arguments the arm needs. A skill guarding on a missing argument answers the bare form with its own refusal and never reaches the behavior under test, so every assertion fails against a skill that is working correctly. `claude:intake/file` states its invocation on the scenario's own `Action:` line and returns the no-dump refusal without it, failing nine assertions bare and passing fifteen with the documented prompt. Read the `Action:` line before composing the prompt, since it is where an arm records what it expects to be handed. A caller following `aitk-sandbox-check`, which fixes the prompt at `/aitk:<skill-name>` with no arguments, hits this on any such arm and should report the mismatch rather than reading it as a defect in the skill.
 
+A sandbox session resolves `aitk` off the machine's PATH, and the harness manages neither the binary nor the variable. An arm exercising a verb the branch adds therefore runs against whatever is installed globally, and a released binary predating the verb produces a session that refuses and writes nothing, failing every assertion for a reason the arm is not about. The `claude:teach` arms met a global install at `0.98.0` carrying no `teach` command at all, against a repository at `0.102.0`. Put the branch's own CLI ahead on PATH for that one run rather than reading the failure as a defect in the skill, and never repair it by installing over the operator's global.
+
 The JSON envelope carries `is_error`, `result`, `num_turns`, and `total_cost_usd`, plus a `verdict` object holding `state`, `asserted`, `failed`, and `unchecked`. Override the model, allowed tools, turn cap, or permission mode with `AITK_SKILL_TEST_MODEL`, `AITK_SKILL_TEST_TOOLS`, `AITK_SKILL_TEST_MAX_TURNS`, and `AITK_SKILL_TEST_PERMISSION_MODE`.
 
 The envelope alone decides nothing. An arm can return `error=false` having written nothing and meeting none of its scenario's stated expectations, so a suite scoring on the envelope would count it as a pass. `run.sh` snapshots the tree before the session, diffs it after, and hands the result to `aitk sandbox check`, whose exit code becomes the run's outcome.
@@ -84,9 +86,9 @@ Raise the default or set the variable per run. A per-arm budget would need `run.
 
 An arm declares what a correct run leaves behind in `expect.toml`, beside its numbered stage directories. `aitk sandbox check <category>:<command> [arm]` reads it, asserts against the sandbox tree, and prints a verdict. Run it standalone against an already-provisioned sandbox to iterate without paying for another session.
 
-- `paths`: files that must exist after the run
+- `paths`: files that must exist after the run, as an exact path or as a glob
 - `absent`: files that must not exist, as an exact path or as a glob
-- `content`: array of tables, each a `path` and a `pattern` it must match
+- `content`: array of tables, each a `path` and a `pattern` it must match, the path taking either form
 - `write_scope`: globs bounding where the session may write
 - `reply`: substrings the run's reply text must carry
 - `manual`: prose the checker cannot assert, reported as unchecked
@@ -96,9 +98,13 @@ An arm declares what a correct run leaves behind in `expect.toml`, beside its nu
 
 Patterns use TOML literal strings (`'^- \[x\] done'`) so a regex needs no backslash escaping. The split between mechanical and human-judged is per expectation, not per skill: the `claude/docs` `drift` arm produces both kinds in one run, three the checker asserts and two needing a reader.
 
+Every pattern compiles with `m` and nothing else. An inline `(?i)` is not a flag in this engine, so a pattern carrying one fails to compile rather than matching case-insensitively, and the result names it invalid rather than unmatched. Spell the folding as character classes.
+
 A literal string cannot carry an apostrophe, which is what closes it. A pin over prose spells that character `.` instead, costing one character of precision per apostrophe. Switching to a basic string to escape it would reintroduce the backslash doubling the literal form exists to avoid.
 
-An `absent` entry carrying `*` is matched as a glob, and the failure names the file that matched rather than the pattern that caught it. That is what lets an arm forbid a file whose name a run derives rather than fixes, such as the per-session handoff `claude/orchestrate` must not write, where pinning one spelling of the derived name passes vacuously against every other spelling and reads as coverage the arm does not have.
+An entry carrying `*` is matched as a glob under all three of `paths`, `absent`, and `content`, and the result names the file that matched rather than the pattern that found it. That is what lets an arm name a file whose name a run derives rather than fixes, where pinning one spelling of the derived name passes vacuously against every other spelling and reads as coverage the arm does not have. It covers both directions: the per-session handoff `claude/orchestrate` must not write, and the numbered lesson `claude/teach` must, where the ordinal is the derivation worth asserting and the slug behind it is not.
+
+A glob matching several files answers with one of them in no fixed order, so an arm asserting content through one seeds a folder holding a single match. A `content` path matching nothing falls back to itself, which keeps the miss reported against the entry as the declaration spells it.
 
 `content` matches positively, so pinning a block from its first line to its last is how an arm asserts that nothing inside it changed. Both `claude/docs` diagram arms do this, one over frontmatter and one over a mermaid body and the paragraphs under it. Anchor the block below any frontmatter a run is allowed to append to, or the append pushes the closing line and fails a correct run.
 
