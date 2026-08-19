@@ -143,7 +143,13 @@ EOF
 <article><h1>Reading a pattern aloud</h1><p>Generated lesson body.</p></article>
 EOF
 
-  cat <<'EOF' >"$dir/assets/course.css"
+}
+
+# Split out of the workspace seed rather than written inside it. The lesson arm
+# is the one that has to find this file absent, since writing it is what the
+# first lesson in a workspace does and a seeded copy makes that step vacuous.
+seed_stylesheet() {
+  cat <<'EOF' >"$1/assets/course.css"
 body { font-family: system-ui; line-height: 1.6; max-width: 68ch; }
 EOF
 }
@@ -174,12 +180,13 @@ stage_setup() {
   log_info "open   : no workspace folder yet, one has to be opened from nothing"
   log_info "resume : a live workspace at 01-regex with one record carrying two wrong answers"
   log_info "promote: the same workspace beside a wiki, with one reference page to route"
+  log_info "lesson : the same workspace with no stylesheet, so the next lesson writes one"
   log_info ""
   log_info "Invoke the prefixed form. The dev-skill injection copies SKILL.md alone,"
   log_info "so the unprefixed copy cannot resolve the bundled standards/teach.md."
   log_info "Launch with: claude --plugin-dir <worktree-root>/claude --model sonnet"
 
-  select_or_route_scenario "Which scenario?" "open" "resume" "promote"
+  select_or_route_scenario "Which scenario?" "open" "resume" "promote" "lesson"
 
   case "$SELECTED_OPTION" in
   "open")
@@ -208,6 +215,7 @@ stage_setup() {
   "resume")
     seed_project
     seed_workspace ".claude/teach/01-regex"
+    seed_stylesheet ".claude/teach/01-regex"
 
     git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
 
@@ -237,6 +245,7 @@ stage_setup() {
   "promote")
     seed_project
     seed_workspace ".claude/teach/01-regex"
+    seed_stylesheet ".claude/teach/01-regex"
     seed_wiki
 
     git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
@@ -263,6 +272,30 @@ stage_setup() {
     log_info "         naming a path under .claude/wiki/ and the source page under it."
     log_info "         Nothing written into .claude/wiki/ itself, and the lesson"
     log_info "         neither proposed nor carried across."
+    ;;
+  "lesson")
+    seed_project
+    seed_workspace ".claude/teach/01-regex"
+
+    git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
+
+    log_step "Scenario ready: teach writes the rendered layer"
+    log_info "Context: .claude/teach/01-regex/ holds the same workspace the resume arm"
+    log_info "  seeds, with one difference: assets/ is empty, so the shared stylesheet"
+    log_info "  is absent and the next lesson is the one that has to write it"
+    log_info "  The seeded lesson sits at 0001, so a correct derivation lands on 0002"
+    log_info "  The invocation answers the recorded retrieval, since the skill opens"
+    log_info "  on it and a headless run has nobody to answer"
+    log_info ""
+    log_info "Action:  /aitk:claude-teach regex. On the retrieval from last time:"
+    log_info "         a+? matches a single a, because the lazy quantifier takes as"
+    log_info "         few as it can. For (ab)* over ababab, group 1 holds only the"
+    log_info "         last ab."
+    log_info "Expect:  declared in fixtures/claude/teach/lesson/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:teach lesson"
+    log_info "         A lesson at lessons/0002-*.html linking ../assets/course.css,"
+    log_info "         and a stylesheet at assets/course.css that the run wrote."
+    log_info "         The reply reports progress against the mission success lines."
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
