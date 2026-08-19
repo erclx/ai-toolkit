@@ -126,6 +126,7 @@ ultraplan
 uncited
 unconfigured
 undercount
+ungated
 unmatch
 unmigrated
 unminified
