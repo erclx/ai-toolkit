@@ -14,6 +14,11 @@ import {
   mergeExtraRules,
   resolveRules,
 } from '@/gov/stacks'
+import {
+  type PairRecord,
+  readTestOrder,
+  type TestOrderReport,
+} from '@/gov/test-order'
 import { recordStamp, runDomainSync } from '@/sync/engine'
 import { resolveTarget } from '@/target'
 import {
@@ -45,6 +50,12 @@ interface RegenOptions {
 interface ListOptions {
   readonly stacks?: boolean
   readonly rules?: boolean
+  readonly json?: boolean
+}
+
+interface TestOrderOptions {
+  readonly base?: string
+  readonly root?: string
   readonly json?: boolean
 }
 
@@ -133,6 +144,128 @@ export function register(program: Command): void {
     .action((opts: ListOptions) => {
       process.exitCode = runList(opts)
     })
+
+  gov
+    .command('test-order')
+    .description(
+      'Report where an implementation reached history before its test',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--base <ref>', 'Far side of the range, defaulting to the trunk')
+    .option('--root <path>', 'Repository to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Measures the rule in .claude/rules/core/070-planning.md that asks for',
+        'the test before the code. It reports and never gates, because pairing',
+        'a test to an implementation is a judgment.',
+        '',
+        'Coverage:',
+        '  a test sits beside its subject under the same name, minus .test',
+        '  only .ts and .tsx are paired, and every other path is named as read past',
+        '  a module the range modified rather than added is unclassified, since',
+        '  a refactor and a new behavior cannot be told apart from history',
+        '',
+        'Exit codes:',
+        '  0  no implementation reached history ahead of its test',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  at least one implementation reached history ahead of its test',
+        '',
+        'Examples:',
+        '  aitk gov test-order',
+        '  aitk gov test-order --base origin/main --json',
+        '',
+      ].join('\n'),
+    )
+    .action((opts: TestOrderOptions) => {
+      process.exitCode = runTestOrder(opts)
+    })
+}
+
+/**
+ * Reports and never gates, so the finding count moves the exit code without
+ * anything wiring it into a push. `aitk tasks validate` set that shape: a
+ * measure carrying a known false-positive class is what forces contributors to
+ * route around a stage, and the unclassified bucket here is that class.
+ */
+function runTestOrder(opts: TestOrderOptions): number {
+  const root = resolve(opts.root ?? process.cwd())
+  const report = readTestOrder(root, { base: opts.base })
+  const emitJson = opts.json ?? false
+
+  if (report.kind === 'unreadable') {
+    if (emitJson) {
+      // The reason goes to both streams. A caller piping stdout into a parser
+      // reads the record, and an operator watching the terminal sees the
+      // refusal rather than a command that appeared to do nothing.
+      process.stderr.write(`aitk gov test-order refused: ${report.reason}\n`)
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: report.reason })}\n`,
+      )
+      return 1
+    }
+
+    intro('aitk gov test-order')
+    logStep('Refused')
+    logError(report.reason)
+    outro()
+    return 1
+  }
+
+  if (!emitJson) reportTestOrder(report, root)
+  else
+    process.stdout.write(`${JSON.stringify({ ok: true, root, ...report })}\n`)
+
+  return report.findings.length > 0 ? 2 : 0
+}
+
+function describePair(record: PairRecord): string {
+  const test = record.test === null ? 'no test' : record.test
+  return `${record.subject} → ${test}: ${record.reason}`
+}
+
+function reportTestOrder(
+  report: Extract<TestOrderReport, { kind: 'measured' }>,
+  root: string,
+): void {
+  intro('aitk gov test-order')
+
+  logStep('Range')
+  logInfo(`${report.base.slice(0, 8)}..${report.head.slice(0, 8)} in ${root}`)
+
+  logStep(report.findings.length === 0 ? 'Clean' : 'Findings')
+  if (report.findings.length === 0) {
+    logInfo('no implementation reached history ahead of the test covering it')
+  } else {
+    for (const finding of report.findings) logWarn(describePair(finding))
+  }
+
+  logStep('Satisfied')
+  logInfo(`${report.satisfied.length} pair(s) whose test came first`)
+
+  // The unclassified rows carry the warn glyph and move no exit code. A pass
+  // over a change the pairing could not read is the claim this check exists to
+  // avoid making, so the rows are named rather than counted into the clean line.
+  logStep('Unclassified')
+  if (report.unclassified.length === 0) {
+    logInfo('every changed module paired')
+  } else {
+    logWarn(
+      `${report.unclassified.length} change(s) the pairing could not read`,
+    )
+    for (const record of report.unclassified) logWarn(describePair(record))
+  }
+
+  // Coverage is narrower than the rule, and a report that did not say so would
+  // read as a verdict over every behavior in the range.
+  logStep('Read past')
+  logInfo(
+    `${report.ignored.length} path(s) outside ${report.scope.extensions.join(', ')}`,
+  )
+
+  outro()
 }
 
 /**
