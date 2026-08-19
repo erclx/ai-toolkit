@@ -103,9 +103,10 @@ sessions addressing different pull requests never overwrite each other between
 the write and the post. Note any `.claude/` docs refreshed as a result of the
 fixes.
 
-The reply is a rendered-for-human GitHub surface, so follow
-`.claude/standards/prose.md` for voice, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md`
-when the project does not have it, and keep each mapping to a line or two.
+The reply is a rendered-for-human GitHub surface, so load the `write-human`
+skill for voice, follow `.claude/standards/markdown.md` for the banned words, or
+`${CLAUDE_SKILL_DIR}/../../standards/markdown.md` when the project does not have
+it, and keep each mapping to a line or two.
 
 Open the body with the `## Review response` heading so it anchors as a section
 distinct from human threads and stays subordinate to the `## Review` heading the

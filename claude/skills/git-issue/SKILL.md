@@ -12,8 +12,8 @@ Format an issue from session context following the issue standard, then file it 
 Read these in parallel:
 
 - `${CLAUDE_SKILL_DIR}/references/issue.md`: issue title, labels, body sections, and banned phrases
-- `.claude/standards/prose.md` from the project root: voice and banned words for all generated text
-- `.claude/standards/markdown.md` from the project root: punctuation and formatting for all generated text
+- `.claude/standards/markdown.md` from the project root: banned words, punctuation, and formatting for all generated text
+- The `write-human` skill: voice, rhythm, and sentence construction for all generated text
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 

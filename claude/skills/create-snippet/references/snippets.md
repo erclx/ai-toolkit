@@ -13,8 +13,8 @@ Governs a snippet file: what one is for, whether a prompt qualifies as one, how 
 Does not govern:
 
 - Skill folders, which carry frontmatter, references, and scripts a snippet has none of: `skill.md`
-- Voice and word choice in snippet prose: `prose.md`
-- Punctuation and formatting in snippet prose: `markdown.md`
+- Voice, rhythm, and sentence construction in snippet prose: the `write-human` skill
+- Punctuation, formatting, and word choice in snippet prose: `markdown.md`
 
 ## What a snippet is
 

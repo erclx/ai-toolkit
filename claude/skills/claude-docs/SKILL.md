@@ -106,7 +106,7 @@ The verb resolves the board at the main worktree root in-process, which is the r
 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
-- Follow `.claude/standards/prose.md` and `.claude/standards/markdown.md` for all edits.
+- Follow `.claude/standards/markdown.md` and the `write-human` skill for all edits.
 - Close a decision entry in `.claude/ARCHITECTURE.md` with its verification anchor whenever this run writes that entry or amends its reasoning and that reasoning cites a measured number. Re-read the number against the tree first, since the marker records the read rather than the edit. `.claude/standards/architecture.md` fixes the sentence.
 - Leave every decision entry this run did not write alone, anchored or not. The rule is scoped forward, so an entry written before it is dated by blame rather than by a read. Step 6 reports a stale anchor and no step writes one on an entry it did not amend.
 

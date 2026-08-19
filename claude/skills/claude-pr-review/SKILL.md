@@ -111,7 +111,7 @@ An empty result means no response arrived since the prior pass, so this pass wou
 
 The response is also the whole read on a repeated head. Step 2 resolves an empty range, because a commit is its own ancestor and `<prior-oid>..<headRefOid>` spans nothing, so the delta cannot answer whether a prior finding landed. Read that comment for what the worker changed or accepted, and treat an accepted finding as closed rather than restating it.
 
-The comment is a rendered-for-human GitHub surface, so follow `.claude/standards/prose.md` for voice, or `${CLAUDE_SKILL_DIR}/../../standards/prose.md` when the project does not have it: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
+The comment is a rendered-for-human GitHub surface, so load the `write-human` skill for voice and follow `.claude/standards/markdown.md` for the banned words, or `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` when the project does not have it: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
 
 ```markdown
 ## Review

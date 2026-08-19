@@ -27,8 +27,8 @@ Read in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: the project's write location and any rule it states over the folder
 - `.claude/memory/index.md`: existing index, to avoid duplicates
 - `.claude/context/index.md`: the domain catalog Step 3 routes against
-- `.claude/standards/prose.md`: voice and banned words applied to memory file bodies
-- `.claude/standards/markdown.md`: punctuation and formatting applied to memory file bodies
+- `.claude/standards/markdown.md`: banned words, punctuation, and formatting applied to memory file bodies
+- The `write-human` skill: voice, rhythm, and sentence construction applied to memory file bodies
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 

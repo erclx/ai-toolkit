@@ -32,8 +32,8 @@ Read these from the project root on both paths, skipping any that do not exist:
 
 - `CLAUDE.md`: voice, personality, spelling rules
 - `.claude/REQUIREMENTS.md`: the `## Personality` paragraph, worldview, non-goals
-- `.claude/standards/prose.md`: tone constraints
-- `.claude/standards/markdown.md`: punctuation and formatting constraints
+- `.claude/standards/markdown.md`: word, punctuation, and formatting constraints
+- The `write-human` skill: tone and sentence construction constraints
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
@@ -55,7 +55,7 @@ Use the returned content as the target shape. Keep every section heading and eve
 
 ## Step 4: fill the template
 
-Walk each section once. Follow `.claude/standards/markdown.md` for punctuation and `.claude/standards/prose.md` for word choice throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
+Walk each section once. Follow `.claude/standards/markdown.md` for punctuation and word choice throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
 
 Mark any cell not traced to a source value by appending ` ? verify` inside the cell value, never as a trailing column. The cell stays inside the table shape: `| #ffffff ? verify |`. A trailing `| ? verify` after the row breaks the parser. A prose section takes its uncertainty inline instead, for example `Proposed 150ms ease-out, not yet confirmed.`, because a trailing tag on a sentence renders raw in the preview.
 

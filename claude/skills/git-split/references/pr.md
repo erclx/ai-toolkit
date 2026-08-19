@@ -15,8 +15,8 @@ Does not govern:
 - Commit subject format, which shares the title form: `commit.md`
 - Branch naming: `branch.md`
 - Whether a phase label or a semver tag may appear in a title or body: `versioning.md`
-- Voice and banned words in pull request prose: `prose.md`
-- Punctuation and formatting in pull request prose: `markdown.md`
+- Voice, rhythm, and sentence construction in pull request prose: the `write-human` skill
+- Punctuation, formatting, and banned words in pull request prose: `markdown.md`
 
 ## Title
 

@@ -79,7 +79,7 @@ aitk gov sync .
 
 ## Inbound references to verify
 
-- CLAUDE.md:42 references standards/prose.md
+- CLAUDE.md:42 references standards/markdown.md
 - docs/contributing.md:8 references snippets/claude/feature
 
 ## Reminder
