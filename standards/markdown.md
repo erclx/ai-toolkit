@@ -1,22 +1,28 @@
 ---
 title: Markdown reference
-description: Headings, paragraph and list structure, code spans, the date form, punctuation, emphasis, and file references
+description: Headings, paragraph and list structure, code spans, the date form, punctuation, emphasis, file references, banned words, and frontmatter wording
 ---
 
 # Markdown reference
 
-Applies to markdown reference docs, READMEs, and inline documentation in repos. These are mechanics rather than voice, so no surface yields them. A surface stating its own voice claims that yield from `prose.md` and formats by this file regardless.
+Applies to markdown reference docs, READMEs, and inline documentation in repos. Every rule here is a fact a scan can settle rather than a judgment, so no surface yields any of them. A surface stating its own voice claims that yield from the voice guidance and formats and spells by this file regardless.
 
 ## Scope
 
-Governs the markdown mechanics of every markdown file: headings, paragraph and list structure, code spans and fences, the form a date takes, punctuation, emphasis, and file references. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and it carries no template because mechanics are written across every document and have no shape of their own.
+Governs what a check can decide about a markdown file: headings, paragraph and list structure, code spans and fences, the form a date takes, punctuation, emphasis, file references, the closed-set word and spelling bans, what prose may claim about its sources, and the wording of a catalog title and description. It is an attribute standard rather than a document-type one, so it applies over documents whose shape another standard sets, and it carries no template because these rules are written across every document and have no shape of their own.
+
+The two frontmatter fields it reaches are `title` and `description`. They are named here rather than in the statement above, since a backticked token in a scope statement's first sentence is published as the standard's jurisdiction.
+
+The split with the voice guidance is what reads the rule rather than what the rule covers. Every ban below ships as data `aitk markdown audit` and the installed audit hook both read, so a violation is measured on every run. Cadence, rhythm, and information density are judgments a reader settles, and those travel in the `write-human` skill, which a markdown edit routes to.
 
 Does not govern:
 
-- Voice, word choice, what prose may claim, and the wording of a `title` or `description`: `prose.md`
+- Voice, rhythm, sentence construction, and information density, which the `write-human` skill carries
 - What sections a document has, or what belongs in each: the standard for that document type
+- Which frontmatter fields a document carries, which is that standard's own subject. This file governs the wording of a `title` and a `description` and nothing else about them.
 - The text inside a fenced block, which follows the conventions of its own language rather than these
-- The scan that applies the punctuation bans to finished text on its way out: `publish.md`
+- Phase-label and semver discipline: `versioning.md`
+- The scan that applies these bans to finished text on its way out: `publish.md`
 - Whether a pull request or issue number is backticked, which turns on where the text is published rather than on the text: `publish.md`
 
 ## Headings
@@ -58,7 +64,30 @@ Does not govern:
 - Do not use em dashes (`—`) or semicolons (`;`). Rewrite or restructure the sentence to avoid them.
 - Do not use parenthetical asides in prose (`the config (which is optional) controls...`). Split into its own sentence or drop it. Parentheses in rule definitions for grouping examples are fine.
 
-The closed-set word bans sit in `prose.md` under `## Language` rather than here, because a banned word is a word-choice rule and these are character rules. A surface applying both reads both files.
+## Language
+
+- Use American English spelling. Prefer `-ize` over `-ise`, `-or` over `-our`, `-er` over `-re` (`organize`, `analyze`, `summarize`, `recognize`, `behavior`, `color`, `center`)
+- Do not use marketing buzzwords (`seamless`, `robust`, `powerful`, `revolutionary`, `enhanced`, `allows`, `leverage`)
+- Do not use vague qualifiers (`simply`, `just`, `easily`, `quickly`, `very`, `really`)
+- Open a sentence with its subject and action, not filler (`Note that`, `Basically`), a hollow connective (`That being said`, `It's worth noting`), or a gerund windup (`Leveraging the API...`). Substantive transitions that carry a real relationship are fine.
+- Do not use the negative parallelism pattern (`It's not X, it's Y`, `not because X, but because Y`)
+- Do not pad verb phrases or delay the action. Write the shortest form (`in order to` → `to`, `ensure that X is set` → `set X`, `By doing X, you can Y` → state Y directly).
+- Do not address the reader as a participant (`Let's`, `Here's`, `Here are`). State the content directly.
+- Commit to a position. Do not hedge in clusters (`It might be worth considering`) or use false balance (`While X is true, Y is also important`). Recommend, or state the tradeoff.
+- Do not inflate significance. State what a thing does rather than calling it `a major milestone` or `a turning point for the field`.
+- Do not name a person, company, or product to borrow its authority. Name a source only where the claim turns on who made it.
+- Do not attribute a claim to an unnamed authority (`experts say`, `studies show`, `it is widely believed`). Name the source or cut the claim.
+- Do not introduce a fact, name, date, or citation the source does not carry when rewriting existing text. A rewrite changes wording and never claims.
+
+The word bans and the character bans sit under one file because one command reads both. `aitk markdown audit` ships them as package data, so a project that installed no standards is measured the same as one that did, and this section states them for a reader rather than for the parser.
+
+## Frontmatter descriptions
+
+When frontmatter carries a short `title` or `description` used for catalog display:
+
+- `title`: sentence case, identifies the file uniquely against its siblings in the same catalog. Proper nouns retain their casing. No trailing period.
+- `description`: sentence case, names the specific topics covered so a reader can decide whether to open the file. Lead with concrete subjects, strip filler like "guide to", "overview of", or "documentation about". No trailing period, no leading article (`the`, `a`).
+- Do not mechanically reuse the H1 as the description.
 
 ## Emphasis and dividers
 
@@ -82,4 +111,24 @@ Good: See `.claude/context/retrieval.md` for the retrieval flow.
 ```markdown
 Bad: Read [docs/development.md](docs/development.md) before contributing.
 Good: Read the [development guide](docs/development.md) before contributing.
+```
+
+```markdown
+Bad: In order to configure the server, you'll need to ensure that the port is set.
+Good: Set `port` in the server config.
+```
+
+```markdown
+Bad: It's not just a cache. It's a system for intelligent memory management.
+Good: The cache is an LRU store. It evicts the least-recently-used entry when full.
+```
+
+```markdown
+Bad: Leveraging the retry mechanism, developers can build more resilient integrations.
+Good: Use the `retry` option for failed webhooks. Set `maxRetries` to 3.
+```
+
+```markdown
+Bad: It might be worth considering whether to enable caching.
+Good: Enable caching for read-heavy endpoints. Skip it for writes.
 ```

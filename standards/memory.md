@@ -18,8 +18,8 @@ Does not govern:
 - The per-domain entry a domain fact is routed to instead of memory: `context.md`
 - The feature plan a session executes, and its answer contract: `plan.md`
 - The task file tracking what is being built: `tasks.md`
-- Voice and word choice: `prose.md`
-- Headings, punctuation, and file references: `markdown.md`
+- Voice, rhythm, and sentence construction: the `write-human` skill
+- Headings, punctuation, word choice, and file references: `markdown.md`
 - Which facts a project captures at all, and where the folder sits, which are project policy
 
 ## What a working entry looks like

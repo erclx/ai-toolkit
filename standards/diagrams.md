@@ -11,12 +11,12 @@ A diagram entry answers one question about the system with one or more Mermaid d
 
 ## Scope
 
-Governs per-kind diagram entries under `.claude/diagrams/`: which question each answers, the Mermaid source, the accessibility fields, and the explanation prose beneath. It states the voice for that prose, which is the yield `prose.md` grants a surface whose own standard sets one.
+Governs per-kind diagram entries under `.claude/diagrams/`: which question each answers, the Mermaid source, the accessibility fields, and the explanation prose beneath. It states the voice for that prose, which is the yield the `write-human` skill grants a surface whose own standard sets one.
 
 Does not govern:
 
-- Language and word choice in explanation prose and node labels: `prose.md`, whose bans the yield does not lift
-- Punctuation and formatting in explanation prose: `markdown.md`, which the yield does not reach
+- Rhythm and sentence construction in explanation prose: the `write-human` skill, whose rules the yield does not lift beyond voice
+- Language, word choice, punctuation, and formatting in explanation prose and node labels: `markdown.md`, which the yield does not reach
 - The mechanism behind any component a diagram draws: `context.md`
 - UI layout, on-screen copy, and interaction intent: `wireframes.md`
 - The decision record a components diagram is drawn from: `architecture.md`
@@ -94,7 +94,7 @@ A second entry for one kind takes a suffixed name (`request-flow-admin.md`) and 
 - Do not duplicate prose across entries. An entry that restates its neighbor has taken the neighbor's job.
 - The audience is mixed, so vocabulary runs as a gradient across the set. `System context` assumes no knowledge of the repository. `Deployment` may assume the reader has read the others.
 
-This section states the voice for the surface, which is what claims the yield `prose.md` grants to a surface whose own standard sets it. Explanation prose is pedagogical here and the default developer-facing voice does not apply. The yield covers voice alone. The language bans in `prose.md` stay in force, as do the punctuation and formatting rules in `markdown.md`, which grants no yield at all.
+This section states the voice for the surface, which is what claims the yield the `write-human` skill grants to a surface whose own standard sets it. Explanation prose is pedagogical here and the default developer-facing voice does not apply. The yield covers voice alone. The rhythm and density rules that skill carries stay in force, as do the language bans, punctuation, and formatting in `markdown.md`, which grants no yield at all.
 
 ## Verification
 
@@ -121,7 +121,7 @@ Reference the context entry by path when a reader needs the mechanism. The diagr
 - `System context` has no named source signal beyond `.claude/REQUIREMENTS.md`, so nothing tells a session it went stale. Re-read it when the boundary or the set of external dependencies moves.
 - The `claude-docs` sweep watches two things and writes frontmatter only. It appends `stale` when a path an entry cites leaves the tree, and it stubs a kind when a diff adds the source signal that kind is drawn from. Diagram bodies and explanation paragraphs are off limits to it, because a change that removes a module does not carry the new correct shape of the picture.
 - That watch samples thinly. It sees the one or two paths an entry happened to cite and nothing else, so a change elsewhere leaves the entry looking current. `verified` is what covers the gap, and an entry whose date sits far behind the branch is due a read whether or not anything flagged it.
-- The explanation paragraphs around a Mermaid block are prose and follow `prose.md` and `markdown.md`. The fenced block itself is not, which is why a check scoped to prose is the wrong thing to rely on for what sits inside it.
+- The explanation paragraphs around a Mermaid block are prose and follow `markdown.md` and the `write-human` skill. The fenced block itself is not, which is why a check scoped to prose is the wrong thing to rely on for what sits inside it.
 - The punctuation bans still apply to node and subgraph labels, and nothing checks them there. An em dash in a label passes every gate the repository has, so read the labels before shipping the entry.
 
 ## Template

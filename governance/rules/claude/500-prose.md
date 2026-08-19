@@ -1,13 +1,15 @@
 ---
-description: Route markdown edits to the prose standard for voice, language, and frontmatter wording
+description: Route markdown edits to the write-human skill for voice, rhythm, sentence construction, and information density
 paths:
   - '**/*.md'
 ---
 
-# Markdown prose standards
+# Markdown voice standards
 
 ## Authority
 
-- Follow `.claude/standards/prose.md` for voice, language, and the wording of a `title` or `description`. It is the single source.
-- Read it before a substantial prose edit. Do not work the banned words from memory.
-- Punctuation, formatting, and file references are a separate topic. `501-markdown` routes them.
+- Load the `aitk:write-human` skill for voice, rhythm, sentence construction, and information density. It is the single source for all four.
+- Load it before drafting a passage, not after revising one.
+- Report it rather than proceeding silently when the skill does not resolve.
+- Do not work these rules from memory.
+- Banned words, spellings, punctuation, formatting, and file references are a separate topic. `501-markdown` routes them.

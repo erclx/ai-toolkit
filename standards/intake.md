@@ -18,8 +18,8 @@ Does not govern:
 - One question measured in depth before anyone can plan against it: `groundwork.md`
 - The feature plan a promoted item feeds, and the inverted answer contract it keeps: `plan.md`
 - The task file promoting an item onto the board, and the origin line pointing back at the folder: `tasks.md`
-- Voice and word choice: `prose.md`
-- Headings, punctuation, and file references: `markdown.md`
+- Voice, rhythm, and sentence construction: the `write-human` skill
+- Headings, punctuation, word choice, and file references: `markdown.md`
 - Which findings belong in a dump at all, and the procedure that files one, which belong to the surface driving it
 
 ## What a working intake looks like

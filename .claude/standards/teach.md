@@ -20,8 +20,8 @@ Does not govern:
 - Where a durable page goes once it leaves the workspace, which belongs to the routing test the destination surface states
 - One question measured in depth before anyone can plan against it: `groundwork.md`
 - A dump of many findings filed by domain, each carrying its own verdict: `intake.md`
-- Voice and word choice: `prose.md`
-- Headings, punctuation, and file references: `markdown.md`
+- Voice, rhythm, and sentence construction: the `write-human` skill
+- Headings, punctuation, word choice, and file references: `markdown.md`
 - When a workspace opens at all, and the procedure that runs one, which belong to the surface driving it
 
 ## What a working workspace looks like

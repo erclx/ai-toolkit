@@ -19,8 +19,8 @@ Does not govern:
 - A dump of many findings filed by domain, each carrying its own verdict: `intake.md`
 - The task file a plan is linked from, and the origin line pointing back at it: `tasks.md`
 - The transform from a branch name to a slug: `slug.md`
-- Voice and word choice: `prose.md`
-- Headings, punctuation, and file references: `markdown.md`
+- Voice, rhythm, and sentence construction: the `write-human` skill
+- Headings, punctuation, word choice, and file references: `markdown.md`
 - When a plan is written at all, and whether a short one goes to a file or to the conversation, which belong to the surface driving it
 
 ## What a working plan looks like

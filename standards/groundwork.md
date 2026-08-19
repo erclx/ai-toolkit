@@ -18,8 +18,8 @@ Does not govern:
 - A dump of many findings filed by domain, each carrying its own verdict: `intake.md`
 - The feature plan a closed track feeds, and the contract its answer slots keep: `plan.md`
 - The task file a closing track writes, and the origin line pointing back at the folder: `tasks.md`
-- Voice and word choice: `prose.md`
-- Headings, punctuation, and file references: `markdown.md`
+- Voice, rhythm, and sentence construction: the `write-human` skill
+- Headings, punctuation, word choice, and file references: `markdown.md`
 - When a project opens a track at all, and the procedure that runs one, which belong to the surface driving it
 
 ## What a working track looks like
