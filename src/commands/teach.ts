@@ -1,5 +1,6 @@
 import { relative } from 'node:path'
 import type { Command } from 'commander'
+import { type LessonOutcome, planLesson } from '@/teach/lesson'
 import {
   defineTerms,
   type ListOutcome,
@@ -55,6 +56,14 @@ interface ResourceCommandOptions {
   readonly lead?: readonly string[]
   readonly read?: readonly string[]
   readonly root?: string
+}
+
+interface LessonCommandOptions {
+  readonly json?: boolean
+  readonly options?: string
+  readonly questions?: string
+  readonly root?: string
+  readonly slug?: string
 }
 
 interface GlossaryCommandOptions {
@@ -230,6 +239,42 @@ export function register(program: Command): void {
     )
     .action(async (topic: string, opts: GlossaryCommandOptions) => {
       process.exitCode = await runGlossary(topic, opts)
+    })
+
+  teach
+    .command('lesson')
+    .description('Resolve what the next lesson needs before it is written')
+    .argument('<topic>', 'Workspace folder or topic, as in regular-expressions')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--slug <kebab>', "The lesson's own topic, as in capture-groups")
+    .option('--questions <n>', 'How many questions the quiz carries')
+    .option('--options <n>', 'How many options each question carries', '4')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the lesson was planned',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'It writes nothing. It reports the numbered path the lesson takes, the',
+        'shared stylesheet with whether that file exists yet, the mission',
+        'success lines to report progress against, and one option order per',
+        'question.',
+        '',
+        'Write the correct option first and present the options in the order',
+        'reported. Position is drawn here rather than chosen, so an answer',
+        'cannot settle into the first slot.',
+        '',
+        'Examples:',
+        '  aitk teach lesson regular-expressions --slug capture-groups --questions 3 --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string, opts: LessonCommandOptions) => {
+      process.exitCode = await runLesson(topic, opts)
     })
 }
 
@@ -435,6 +480,43 @@ async function runGlossary(
   )
 }
 
+async function runLesson(
+  topic: string,
+  opts: LessonCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+
+  if (!opts.slug) {
+    return reportRefusal(
+      'aitk teach lesson',
+      badInput('No lesson slug. Pass --slug <kebab>.'),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  if (!opts.questions) {
+    return reportRefusal(
+      'aitk teach lesson',
+      badInput('No question count. Pass --questions <n>.'),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const root = await rootFor(opts.root)
+
+  return reportLesson(
+    await planLesson(root, topic, {
+      slug: opts.slug,
+      questions: Number(opts.questions),
+      options: Number(opts.options ?? '4'),
+    }),
+    emitJson,
+    root,
+  )
+}
+
 function reportRefusal(
   title: string,
   refused: TeachRefused,
@@ -545,6 +627,11 @@ function reportWorkspace(
   logStep(workspace.glossary.length > 0 ? 'Glossary' : 'Glossary (empty)')
   for (const entry of workspace.glossary) logInfo(entry)
 
+  logStep(
+    workspace.success.length > 0 ? 'Exit criteria' : 'Exit criteria (none)',
+  )
+  for (const line of workspace.success) logInfo(line)
+
   if (workspace.missing.length > 0) {
     logStep('Missing a required file')
     logWarn(`no ${workspace.missing.join(' and no ')}`)
@@ -644,6 +731,55 @@ function reportGlossary(
   logStep('Defined')
   for (const term of outcome.defined) logInfo(term.term)
   logAdd(relative(root, outcome.path))
+  outro()
+
+  return 0
+}
+
+function reportLesson(
+  outcome: LessonOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    return reportRefusal('aitk teach lesson', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        slug: outcome.slug,
+        path: outcome.path,
+        lesson: outcome.lesson,
+        stylesheet: outcome.stylesheet,
+        stylesheetHref: outcome.stylesheetHref,
+        stylesheetExists: outcome.stylesheetExists,
+        success: outcome.success,
+        quiz: outcome.quiz,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk teach lesson')
+  logStep('Lesson')
+  logInfo(outcome.lesson)
+
+  logStep(outcome.stylesheetExists ? 'Stylesheet' : 'Stylesheet (to write)')
+  logInfo(`${outcome.stylesheet} linked as ${outcome.stylesheetHref}`)
+
+  logStep(outcome.success.length > 0 ? 'Exit criteria' : 'Exit criteria (none)')
+  for (const line of outcome.success) logInfo(line)
+
+  logStep('Option order')
+  for (const question of outcome.quiz) {
+    logInfo(
+      `question ${question.question}: present ${question.order.join(', ')}, correct answer in position ${question.answer}`,
+    )
+  }
+
   outro()
 
   return 0

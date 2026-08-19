@@ -32,6 +32,22 @@ export const TEACH_GLOSSARY = 'GLOSSARY.md'
 export const TEACH_REFERENCE = 'reference'
 export const TEACH_RECORDS = 'learning-records'
 export const TEACH_LESSONS = 'lessons'
+export const TEACH_ASSETS = 'assets'
+
+/**
+ * The one stylesheet every lesson in a workspace links. The name is fixed here
+ * rather than chosen per lesson, because the second lesson has to reach the
+ * file the first one wrote and a name composed twice is a name that can differ.
+ */
+export const TEACH_STYLESHEET = 'course.css'
+
+/**
+ * The mission heading whose list a session reads as exit criteria. The writer,
+ * the reader below, and the record validator all match this one spelling, so a
+ * heading none of them can find fails the validator rather than reading as an
+ * empty list.
+ */
+export const TEACH_SUCCESS_HEADING = '## Success looks like'
 
 /**
  * A workspace folder as the standard names it, capturing the ordinal and the
@@ -79,6 +95,8 @@ export interface WorkspaceDetail extends WorkspaceSummary {
   readonly recordFiles: readonly string[]
   readonly referenceFiles: readonly string[]
   readonly glossary: readonly string[]
+  /** The mission's success lines, which a session reports progress against. */
+  readonly success: readonly string[]
 }
 
 export interface WorkspacesListed {
@@ -141,7 +159,7 @@ export interface OpenRequest {
   readonly date?: string
 }
 
-function refuse(
+export function refuse(
   reason: TeachRefusal,
   message: string,
   detail: readonly string[] = [],
@@ -198,6 +216,30 @@ function glossaryTerms(text: string): string[] {
     .map((line) => line.trim().slice('- '.length))
 }
 
+/**
+ * The mission's success lines, each one an observable thing the learner will be
+ * able to do. A session reads them as exit criteria, so a wrapped entry is
+ * joined back into one line rather than reported as two criteria.
+ *
+ * A mission carrying no such heading yields nothing rather than refusing. The
+ * record validator is what reports the absent section, and a listing that
+ * refused would take the whole workspace down with it.
+ */
+function successLines(text: string): string[] {
+  const lines = text.split('\n')
+  const section = sectionRange(
+    unfenced(text),
+    TEACH_SUCCESS_HEADING,
+    lines.length,
+  )
+
+  if (!section) return []
+
+  return bulletBlocks(lines.slice(section.start, section.end)).map((block) =>
+    block.join(' ').trim().slice('- '.length).replace(/\s+/g, ' ').trim(),
+  )
+}
+
 /** The ordinal a folder name carries, or `NaN` when it carries none. */
 function ordinalOf(slug: string): number {
   const match = WORKSPACE_NAME.exec(slug)
@@ -211,9 +253,11 @@ async function summarize(
 ): Promise<WorkspaceDetail> {
   const match = WORKSPACE_NAME.exec(slug)
   const missionPath = join(dir, TEACH_MISSION)
-  const frontmatter = existsSync(missionPath)
-    ? parseFrontmatter(await readFile(missionPath, 'utf8'))
+  const mission = existsSync(missionPath)
+    ? await readFile(missionPath, 'utf8')
     : undefined
+  const frontmatter =
+    mission === undefined ? undefined : parseFrontmatter(mission)
 
   const glossaryPath = join(dir, TEACH_GLOSSARY)
   const glossary = existsSync(glossaryPath)
@@ -244,6 +288,7 @@ async function summarize(
     recordFiles,
     referenceFiles,
     glossary,
+    success: mission === undefined ? [] : successLines(mission),
   }
 }
 
