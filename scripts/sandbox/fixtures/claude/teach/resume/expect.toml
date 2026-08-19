@@ -15,12 +15,17 @@
 # prompt this arm now carries. 40 is that count with room for a reply that runs
 # longer without the skill having changed.
 #
-# Run this arm with `AITK_SKILL_TEST_MAX_TURNS=60`. The runner defaults to 30 and
-# this arm needs 28, so the default leaves no margin: the first run under it
-# reported 32 and the retry 17, and neither number says anything about the skill.
-# The ceiling is only meaningful under a cap above it, since the check compares
-# strictly greater and no envelope can exceed a cap it is bound by. A ceiling at
-# or above the cap in force asserts nothing at all.
+# Run this arm with `AITK_SKILL_TEST_MAX_TURNS=60`. `scripts/sandbox/run.sh`
+# states the rule at its own `MAX_TURNS` default: this key is a ceiling asserted
+# after the run rather than a cap enforced during it, so a declaration cannot
+# raise what the arm runs under, and an arm needing more than the cap fails the
+# same assertions a reasoning miss does with nothing to separate them.
+#
+# This arm needs 28 against a default of 30, which is inside that margin. Two
+# runs under the default returned 32 and 17, and neither number says anything
+# about the skill. The ceiling is also only meaningful under a cap above it,
+# since the check compares strictly greater and no envelope can exceed the cap
+# binding it, so a ceiling at or above the cap in force asserts nothing at all.
 #
 # An earlier revision put this at 45 and cited the intake arms as the precedent.
 # Both of those sit at 20 and 30, at or below the runner default, so they are the
