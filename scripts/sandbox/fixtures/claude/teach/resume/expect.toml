@@ -11,16 +11,21 @@
 # one belongs to that table in TOML, so a `manual` array written at the bottom
 # parses clean and asserts nothing.
 
-# Measured at 32 turns and 1.11 dollars on 2026-08-19, passing every content and
-# scope assertion and failing this key alone at its first declared value of 30.
+# Measured at 28 turns and 1.07 dollars on 2026-08-19, under a raised cap, on the
+# prompt this arm now carries. 40 is that count with room for a reply that runs
+# longer without the skill having changed.
 #
-# The ceiling sits above the runner's own default cap rather than at the observed
-# count. `scripts/sandbox/run.sh` passes `--max-turns 30`, so a run that reaches
-# the cap reports 31 or 32 whatever it was doing, and a ceiling at or below 30
-# fails on truncation rather than on behavior. 45 is where that leaves it, which
-# matches the intake arms for the same reason. Bring it down to the observed
-# count only if the runner default rises above it.
-max_turns = 45
+# Run this arm with `AITK_SKILL_TEST_MAX_TURNS=60`. The runner defaults to 30 and
+# this arm needs 28, so the default leaves no margin: the first run under it
+# reported 32 and the retry 17, and neither number says anything about the skill.
+# The ceiling is only meaningful under a cap above it, since the check compares
+# strictly greater and no envelope can exceed a cap it is bound by. A ceiling at
+# or above the cap in force asserts nothing at all.
+#
+# An earlier revision put this at 45 and cited the intake arms as the precedent.
+# Both of those sit at 20 and 30, at or below the runner default, so they are the
+# precedent for the opposite rule and the citation was wrong.
+max_turns = 40
 
 # Nothing is pinned under `paths`. The new lesson and the new learning record
 # both carry a model-derived slug behind their ordinal, so an exact path would
@@ -49,6 +54,7 @@ manual = [
   "The resume was detected from the folder rather than asked about. Semantic: a run that asked and was answered leaves the same files as one that read the record.",
   "The reply reports progress against the mission's four success lines. Semantic: the count sits in prose, and a pattern over it either pins one phrasing or matches any digit in the message.",
   "The new learning record names the wrong answer itself rather than a count of errors. Unwired: the record is written at the end of a session the harness does not drive to completion, so a run cut short leaves it absent and the assertion cannot separate that from a run that wrote a tally.",
+  "A run whose invocation leaves the retrieval unanswered asks the two questions and stops. Unwired: that is Step 3 working, and it writes nothing, so it satisfies no assertion here. Measured twice on 2026-08-19 before the prompt carried the answers, at 17 turns writing nothing and at 32 turns writing the artifacts ahead of the answer. Two defensible readings of the same step, which is why the prompt settles it rather than the assertions.",
 ]
 
 # The seeded mission is not rewritten. A resume reads it and reports against it,
