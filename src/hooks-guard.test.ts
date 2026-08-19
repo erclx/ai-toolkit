@@ -129,9 +129,9 @@ beforeAll(() => {
     join(project, 'src'),
     join(fixture, 'bin'),
     join(fixture, 'bin-no-runner'),
-    join(fixture, 'bin-missing-standard'),
+    join(fixture, 'bin-empty-set'),
+    join(fixture, 'bin-no-record'),
     join(fixture, 'no-source'),
-    join(fixture, 'with-standard/.claude/standards'),
     join(fixture, 'elsewhere/tmp'),
   ]) {
     mkdirSync(dir, { recursive: true })
@@ -158,8 +158,8 @@ beforeAll(() => {
   // --json` record, so the acting branch is unreachable with the real binary
   // stripped from PATH. Stubbing both runners pins the output to the fixture
   // rather than to whichever build the machine carries, which is the reason
-  // the strip exists. The seed copy of the same hook parses in awk and reaches
-  // its verdict whether either is on PATH or not.
+  // the strip exists. The seed copy of the same hook reads the same record and
+  // resolves the `aitk` stub alone, since it looks for no checkout source.
   //
   // Each stub reports a `kind` naming itself, which is what lets a test read
   // the runner the hook resolved rather than assume it. The hook prints that
@@ -176,34 +176,28 @@ beforeAll(() => {
     chmodSync(stub, 0o755)
   }
 
-  // A record carrying no ban and a standard the verb found under neither root,
-  // which is the narrowed check the hook reports rather than passing. It stubs
-  // `aitk` alone, so a root without `src/cli.ts` is what routes to it.
-  const narrowed = join(fixture, 'bin-missing-standard/aitk')
+  // A record carrying no ban and a set the verb shipped empty, which is the
+  // narrowed check the hook reports rather than passing. It stubs `aitk` alone,
+  // so a root without `src/cli.ts` is what routes the toolkit hook to it, and
+  // the seed hook resolves no other branch.
+  const narrowed = join(fixture, 'bin-empty-set/aitk')
   writeFileSync(
     narrowed,
-    `#!/usr/bin/env bash\nprintf '%s\\n' '{"entries":[],"bans":{"missingStandards":["prose.md"]}}'\n`,
+    `#!/usr/bin/env bash\nprintf '%s\\n' '{"entries":[],"bans":{"emptySets":["words"]}}'\n`,
   )
   chmodSync(narrowed, 0o755)
+
+  // A verb that declined to measure writes no record at all, which is what it
+  // does outside a git repository. Reading the findings alone reports that as a
+  // clean file, so the stub writes nothing and the hooks answer emptiness.
+  const silent = join(fixture, 'bin-no-record/aitk')
+  writeFileSync(silent, '#!/usr/bin/env bash\nexit 1\n')
+  chmodSync(silent, 0o755)
 
   // An empty file is enough, since the hook tests for the path and the stub
   // runner never reads it. Without it the project root takes the fallback and
   // the branch the hook prefers is exercised by nothing.
   writeFileSync(join(project, 'src/cli.ts'), '')
-
-  // The seed parses its word list out of the project's own prose.md, so a root
-  // carrying one exercises the branch that reads and a root carrying none
-  // exercises the branch that reports. The bullet is the shape the seed greps
-  // for rather than the shipped standard, which would tie the case to a
-  // wording edit.
-  writeFileSync(
-    join(fixture, 'with-standard/.claude/standards/prose.md'),
-    '## Language\n\n- Do not use filler (`simply`)\n',
-  )
-  writeFileSync(
-    join(fixture, 'with-standard/doc.md'),
-    '# Doc\n\nA line that simply reads.\n',
-  )
 
   writeFileSync(
     join(project, 'doc.md'),
@@ -336,8 +330,8 @@ for (const tree of TREES) {
   })
 }
 
-// Scoped to the toolkit copy, which is the only one that shells out. The seed
-// copy parses in awk and has no runner to resolve.
+// Both copies shell out to the audit verb, and this one resolves two runners
+// where the seed resolves one. The describe below covers the seed.
 //
 // The acting case above proves the hook reaches a verdict and says nothing
 // about which runner produced it, so a branch could stop resolving and stay
@@ -396,13 +390,11 @@ describe('.claude/hooks/standards-audit.sh runner', () => {
   )
 
   it.concurrent(
-    'should name the standard the verb found under neither root',
+    'should name a ban set the verb shipped empty',
     async ({ expect }) => {
       // `no-source` carries no `src/cli.ts`, which is what sends the hook past
       // the checkout branch to the stubbed binary.
-      const path = [join(fixture, 'bin-missing-standard'), hookPath].join(
-        delimiter,
-      )
+      const path = [join(fixture, 'bin-empty-set'), hookPath].join(delimiter)
 
       const result = await run(
         hook,
@@ -411,54 +403,102 @@ describe('.claude/hooks/standards-audit.sh runner', () => {
         join(fixture, 'no-source'),
       )
 
-      expect(result.stdout).toContain('prose.md')
+      expect(result.stdout).toContain('words')
       expect(result.stdout).toContain('narrowed set')
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should report a run that returned no record at all',
+    async ({ expect }) => {
+      const path = [join(fixture, 'bin-no-record'), hookPath].join(delimiter)
+
+      const result = await run(
+        hook,
+        payload(),
+        path,
+        join(fixture, 'no-source'),
+      )
+
+      expect(result.stdout).toContain('nothing checked')
+      expect(result.stdout).toContain('no record')
       expect(result.code).toBe(0)
     },
   )
 })
 
-// The seed carries the same defect by another route, parsing its word list out
-// of a standard it may not be able to read. An empty list narrows the awk to
-// the two hardcoded characters, so the pass it reports covers less than a
-// reader would take it to cover.
-describe('seeds standards-audit.sh word list', () => {
+// The seed reaches one runner where the toolkit copy reaches two, so the branch
+// it takes and the two it degrades onto are what these cover. A scaffolded
+// project may carry no binary at all, and the pass a silent hook reports there
+// covers less than a reader would take it to cover.
+describe('seeds standards-audit.sh runner', () => {
   const hook = join(
     ROOT,
     'tooling/claude/seeds/.claude/hooks/standards-audit.sh',
   )
 
-  const payloadFrom = (file: string): string =>
-    JSON.stringify({ tool_input: { file_path: file }, tool_name: 'Write' })
+  const payload = (): string =>
+    JSON.stringify({
+      tool_input: { file_path: join(fixture, 'project/doc.md') },
+      tool_name: 'Write',
+    })
 
   it.concurrent(
-    'should report the standard it could not read',
+    'should read its findings out of the installed binary',
     async ({ expect }) => {
-      const result = await run(
-        hook,
-        payloadFrom(join(fixture, 'project/doc.md')),
-      )
+      // The seed resolves no checkout source, so the `aitk` stub is the only
+      // branch it can take and `via-aitk` is what proves it took one rather
+      // than reaching a verdict some other way.
+      const path = [join(fixture, 'bin'), hookPath].join(delimiter)
 
-      expect(result.stdout).toContain('no word ban checked')
-      expect(result.stdout).toContain('.claude/standards/prose.md')
+      const result = await run(hook, payload(), path)
+
+      expect(result.stdout).toContain('via-aitk')
       expect(result.code).toBe(0)
     },
   )
 
   it.concurrent(
-    'should stay on the parsed list when the standard is present',
+    'should report that nothing ran when the machine carries no binary',
     async ({ expect }) => {
-      const root = join(fixture, 'with-standard')
+      // The linked dependencies and nothing else, so no runner resolves
+      // whatever the machine carries. A missing link would take the run
+      // somewhere silent for a reason this test is not about.
+      const path = join(fixture, 'bin-no-runner')
+      expect(existsSync(join(path, 'bash')), 'no bash found to link').toBe(true)
+      expect(existsSync(join(path, 'jq')), 'no jq found to link').toBe(true)
 
-      const result = await run(
-        hook,
-        payloadFrom(join(root, 'doc.md')),
-        undefined,
-        root,
-      )
+      const result = await run(hook, payload(), path)
 
-      expect(result.stdout).toContain('banned word (simply)')
-      expect(result.stdout).not.toContain('no word ban checked')
+      expect(result.stdout).toContain('nothing checked')
+      expect(result.stdout).toContain(join(fixture, 'project/doc.md'))
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should name a ban set the verb shipped empty',
+    async ({ expect }) => {
+      const path = [join(fixture, 'bin-empty-set'), hookPath].join(delimiter)
+
+      const result = await run(hook, payload(), path)
+
+      expect(result.stdout).toContain('shipped ban set is empty')
+      expect(result.stdout).toContain('words')
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should report a run that returned no record at all',
+    async ({ expect }) => {
+      const path = [join(fixture, 'bin-no-record'), hookPath].join(delimiter)
+
+      const result = await run(hook, payload(), path)
+
+      expect(result.stdout).toContain('nothing checked')
+      expect(result.stdout).toContain('no record')
       expect(result.code).toBe(0)
     },
   )

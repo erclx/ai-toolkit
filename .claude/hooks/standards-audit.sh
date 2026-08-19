@@ -24,15 +24,15 @@ esac
 
 [ -f "$file" ] || exit 0
 
-# The audit verb is the only parse of the ban rules, so the hook an author meets
-# at edit time and the stage that fails the push read one set. The awk this
-# replaces parsed the word bans out of prose.md, hardcoded the em-dash and
-# semicolon, and reached none of the spellings, so a British spelling passed
-# here and failed the push with nothing in between explaining the difference.
+# The audit verb owns the ban sets, so the hook an author meets at edit time and
+# the stage that fails the push read one set. The awk this replaces parsed the
+# word bans out of prose.md, hardcoded the em-dash and semicolon, and reached
+# none of the spellings, so a British spelling passed here and failed the push
+# with nothing in between explaining the difference.
 #
-# The verb resolves the standards under its own cwd, so the project root is
-# named rather than inherited. The payload carries an absolute file path, which
-# is what lets the runner move without taking the argument out of reach.
+# The verb resolves its own paths under the cwd, so the project root is named
+# rather than inherited. The payload carries an absolute file path, which is
+# what lets the runner move without taking the argument out of reach.
 root="${CLAUDE_PROJECT_DIR:-.}"
 
 # A checkout carrying the CLI source runs that source, so this hook and the
@@ -44,7 +44,13 @@ root="${CLAUDE_PROJECT_DIR:-.}"
 # A tree without the source falls back to the binary. A machine with neither
 # reports that nothing ran rather than exiting clean, since an edit nobody
 # checked and an edit carrying no violation are the same silence to a reader.
+#
+# A completed run always writes the record, and a refusal writes nothing, so an
+# empty one means the verb declined to measure rather than measured and found
+# nothing. It refuses outside a git repository, and reading the findings alone
+# reports that as a clean file.
 unread=""
+record=""
 if [ -f "$root/src/cli.ts" ] && command -v bun >/dev/null 2>&1; then
   record=$(cd "$root" 2>/dev/null && bun src/cli.ts markdown audit "$file" --json 2>/dev/null) || true
 elif command -v aitk >/dev/null 2>&1; then
@@ -53,28 +59,32 @@ else
   unread="runner"
 fi
 
+[ -n "$unread" ] || [ -n "$record" ] || unread="record"
+
 # The record decides rather than the exit code, so a binary predating the gate
 # reports its findings here all the same. A refusal and an unparseable payload
 # both yield nothing, which is the same silence a clean file produces.
 hits=$(printf '%s' "$record" |
   jq -r '.entries[]?.bans[]? | ":\(.line):\(.column + 1)  \(.kind)  \(.term)"' 2>/dev/null)
 
-# The verb already reports which standard it found under neither root, and
-# reading the findings alone turned a narrowed check into a clean pass. An
-# empty ban list means one thing when both standards were read and another
-# when neither was.
-missing=$(printf '%s' "$record" |
-  jq -r '[.bans.missingStandards[]?] | join(", ")' 2>/dev/null)
+# A set the verb shipped empty measures nothing and would report a clean file.
+# Reading the findings alone turned that narrowed check into a pass once, back
+# when a standard could go missing, and the sets shipping with the package moves
+# the cause rather than removing it.
+empty=$(printf '%s' "$record" |
+  jq -r '[.bans.emptySets[]?] | join(", ")' 2>/dev/null)
 
-[ -z "$hits" ] && [ -z "$unread" ] && [ -z "$missing" ] && exit 0
+[ -z "$hits" ] && [ -z "$unread" ] && [ -z "$empty" ] && exit 0
 
 nl=$'\n'
 msg=""
 
-if [ -n "$unread" ]; then
+if [ "$unread" = "runner" ]; then
   msg=$(printf 'Standards-audit: nothing checked in %s. Resolved neither the checkout CLI at %s/src/cli.ts nor an installed `aitk` binary. Install one with `bun add -g @erclx/aitk`.' "$file" "$root")
-elif [ -n "$missing" ]; then
-  msg=$(printf 'Standards-audit: no ban read for %s, so %s was checked against a narrowed set. Looked under .claude/standards/ then standards/. Restore it with `aitk standards install`.' "$missing" "$file")
+elif [ "$unread" = "record" ]; then
+  msg=$(printf 'Standards-audit: nothing checked in %s. The audit returned no record, which it does when it declines to measure. It needs a git repository to build its corpus.' "$file")
+elif [ -n "$empty" ]; then
+  msg=$(printf 'Standards-audit: the shipped ban set is empty for %s, so %s was checked against a narrowed set. The sets ship with the package, so this is a defect in the build rather than a missing install.' "$empty" "$file")
 fi
 
 if [ -n "$hits" ]; then
