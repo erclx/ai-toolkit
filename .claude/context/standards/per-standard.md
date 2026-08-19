@@ -62,7 +62,11 @@ A constraint block names the file set of every track in flight, and a plan sits 
 
 The two failures share a cause rather than an author error. Both were written during a refill while a wave was still building, which is the moment the sweep says to plan forward, so the constraint was correct when written and expired when read.
 
-The block now opens with `Measured against <commit> on <YYYY-MM-DD>` and the standard says a worker re-tests before honoring it. A log from the stamp to `origin/main` scoped to the paths the constraint names answers the test in one command, which is the bar the stamp had to clear, since a stamp a reader cannot act on costs a line per plan and saves nothing. The pathspec is what makes the read decisive, because a squashed merge carries a pull request number in its subject and the constraint names its track by work and file set.
+The block now opens with a stamp bullet reading Measured against `<commit>` on <YYYY-MM-DD>, and the standard says a worker re-tests before honoring it. A fetch paired with a log from the stamp to `origin/main`, scoped to the paths the constraint names, answers the test in one command, which is the bar the stamp had to clear, since a stamp a reader cannot act on costs a line per plan and saves nothing.
+
+Two halves of that command carry the weight. The pathspec makes the read decisive, because a squashed merge carries a pull request number in its subject and the constraint names its track by work and file set. The fetch keeps the test honest, because a remote-tracking ref left behind reports fewer merges than have landed and hands back the dead-reads-as-live answer the stamp exists to remove. `claude-tasks` already pairs a fetch with a log in one command for the same reason.
+
+One stamp covers the block however many tracks the constraints below it name, since a plan is written against the tree once. The stamp takes its own leading bullet rather than fusing to the first constraint, which is what leaves a two-track block with no question about which constraint the commit applies to.
 
 A date alone was the cheaper stamp and does not discriminate. Two of the six were written the same afternoon and sat either side of three merges, so a reader comparing dates cannot tell which side of a wave a constraint was measured on.
 

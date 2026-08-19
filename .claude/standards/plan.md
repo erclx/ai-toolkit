@@ -73,9 +73,10 @@ A constraint naming a surface to leave alone forbids two different acts, and it 
 
 A constraint measured against work in flight expires when that work merges, and a plan is read some time after it is written. Stamp the block with what it was measured against so a reader can test whether it still holds.
 
-- Open the block with the commit the constraint was measured against and the date, as `Measured against <commit> on <YYYY-MM-DD>`. A date alone does not separate two plans written the same afternoon on either side of three merges, and the commit is what a reader tests against.
-- Stamp the commit and not the track names. The constraint already names each track by its work and its file set, so a second list of names is a second place to keep in step.
-- Re-test a stamped constraint before honoring it. `git log <commit>..origin/main --oneline -- <the paths the constraint names>` reports what has merged into those paths since the stamp, and any commit there means the track landed and the constraint is dead. Scope the log to the paths rather than reading every subject, since a squashed merge carries a pull request number and the constraint names its track by work and file set.
+- Give the stamp its own leading bullet, written as Measured against `<commit>` on <YYYY-MM-DD>. One stamp covers the whole block however many tracks the constraints below it name, since a plan is written against the tree once.
+- Stamp the commit and not the track names. The constraint already names each track by its work and its file set, so a second list of names is a second place to keep in step. A date alone does not separate two plans written the same afternoon on either side of three merges, which is why the commit is the part a reader tests against.
+- Re-test a stamped constraint before honoring it with `git fetch origin main --quiet && git log <commit>..origin/main --oneline -- <the paths the constraint names>`. Any commit it reports means the track landed and the constraint is dead. Fetch inside the same command, since a remote-tracking ref left behind reports fewer merges than have landed and reads a dead constraint as live, which is the failure the stamp exists to remove.
+- Scope the log to the paths rather than reading every subject. A squashed merge carries a pull request number while the constraint names its track by work and file set, so an unscoped log leaves the reader matching subjects.
 - Read an unstamped constraint as unverified rather than as live. There is no commit to anchor the log against, so confirming one costs the open pull request list against the named paths, which is the work a stamp removes. Every plan written before this rule carries an unstamped block, which is why the default sits here rather than in a sweep over the live folder.
 
 A dead constraint fails silently in the expensive direction. A session honoring one ships the dangling citation the change created and reports success, where a session crossing a live constraint collides visibly and is caught.
@@ -150,7 +151,8 @@ This contract inverts the one an intake folder keeps, where an empty slot means 
 
 **Constraints:**
 
-- Measured against `<commit>` on <YYYY-MM-DD>, <the work in flight and which of the two acts it forbids>
+- Measured against `<commit>` on <YYYY-MM-DD>
+- <the work in flight, its file set, and which of the two acts the constraint forbids>
 - <durable rule the work must respect>
 
 **Files to touch:**
