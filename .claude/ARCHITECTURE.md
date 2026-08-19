@@ -116,6 +116,16 @@ A session loads a skill body once and keeps it, and re-invoking the skill replay
 
 Comparing the bytes the session holds was the obvious design and cannot be built, since a session has no way to read its own loaded body back. What the substitute costs is exactness: the verb reports a file moving rather than a held copy differing, so a ref older than the oldest load over-reports. That direction is the safe one, because confirming a name costs a single read of the body while the failure being answered is silence. Instructing a session to re-invoke the skill was the cheap remedy and it fixes nothing, which is what rules out a one-line answer here.
 
+### A standard governs an artifact's shape and the skill driving it governs the procedure
+
+`standards/teach.md` fixes the layout, the ordinal naming, the frontmatter, and the mission, learning-record, and glossary formats of a learning workspace. The pedagogy that decides what to teach next sits in `claude/skills/claude-teach/references/`, and no standard carries it. The split is the one `standards/intake.md` already states about itself, applied to a surface built after the rule was written rather than before.
+
+An attribute standard beside `prose.md` was the alternative, and the standard-authoring rule permits one across every document. It is declined on the second-reader test: one skill reads the pedagogy, and a standard nothing else cites is a file with no owner to correct it. Folding the pedagogy into `standards/teach.md` was the other candidate and `591-standard-authoring` rules it out directly, since a standard governs one document type or one attribute rather than both, and it would put prose no parser reads beside the shape rules `aitk records validate` walks.
+
+What the split buys is that the shape half is machine-read and the judgment half is not, which is what makes the sixth record kind possible at all. What it costs is that a second surface wanting the same pedagogy has to lift it, and nothing reports that the lift is owed. Revisit when `docs/`, the wiki, or a context entry turns out to want the same rules.
+
+The workspace is the first record folder named `<nn>-<topic>` rather than by a bare slug, so a listing sorts by when each opened. The convention is free here because the surface is greenfield, and it is not free over the 36 record folders that already exist, being 27 groundwork tracks and 9 intake dumps, which are named in 66 citations across the records tree and 14 across the tracked corpus. Adopting it here settles nothing about those and gives the convention a shipped precedent. Measured at `d957d8a4` on 2026-08-19.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects it.

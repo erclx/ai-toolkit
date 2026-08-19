@@ -87,7 +87,7 @@ The plan's shape is fixed by `.claude/standards/plan.md`: the section list, the 
 
 An execution that picks other than the suggestion rewrites the `- Suggested:` line as `overridden at execution to <pick>,` followed by the measurement that moved it, and leaves the slot blank. That fixed phrase is how a reader of the archived plan tells an override from a suggestion the execution accepted, since an authored suggestion often carries a number of its own. The same deviation takes one line in the open task's `## Findings`, which is the register that survives the plan being archived. A deviation from a question somebody already answered goes back to whoever answered it instead, since a filled slot is a decision already made.
 
-`aitk records validate plans` reports where a plan and that standard disagree: a filename that is not `feature-<slug>.md`, a missing required section, a files-to-touch entry naming no file, and a question carrying a suggestion with no answer slot. The same verb takes `groundwork`, `intake`, and `memory`, which are governed the same way and were unreachable for the same reason. Nothing fires it automatically, because all four folders are gitignored and every check the repository runs reads changed files from git. It reports and never writes, since the folders are per-machine scratch with no history to recover a wrong repair from.
+`aitk records validate plans` reports where a plan and that standard disagree: a filename that is not `feature-<slug>.md`, a missing required section, a files-to-touch entry naming no file, and a question carrying a suggestion with no answer slot. The same verb takes `groundwork`, `intake`, `memory`, and `teach`, which are governed the same way and were unreachable for the same reason. Nothing fires it automatically, because all five folders are gitignored and every check the repository runs reads changed files from git. It reports and never writes, since the folders are per-machine scratch with no history to recover a wrong repair from.
 
 `aitk records push` carries these folders off the disk they live on, and `aitk records pull` brings them back. Eight of them are backed: `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `task-archive`, and `tasks`. The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every path a task file cites stays where it is.
 
@@ -276,8 +276,9 @@ This section is the corpus the coverage claim is measured against: every name `a
 | -------------------------- | ------------------------------------------------------------------------------ |
 | `aitk:toolkit-cli`         | Before a sync or install, to learn what it overwrites, merges, or leaves alone |
 | `aitk:youtube-transcripts` | When a video transcript is wanted in the repo as context                       |
+| `aitk:claude-teach`        | To learn a subject across sessions, in a workspace that holds the progress     |
 
-Both rows answer a question rather than mark a point in a project's life, so a phase above would send a reader to the wrong group.
+Every row answers a question rather than marking a point in a project's life, so a phase above would send a reader to the wrong group.
 
 ## Feedback routing
 
