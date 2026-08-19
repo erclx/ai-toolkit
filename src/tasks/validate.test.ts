@@ -227,12 +227,12 @@ describe('readBacklog', () => {
     expect(readBacklog('- nothing here is queued')).toEqual([])
   })
 
-  it('should skip a pointer naming something other than a sibling task', () => {
-    expect(
-      readBacklog(
-        '- [the plan](../plans/feature-x.md) and [priority](priority.md)',
-      ),
-    ).toEqual([])
+  it('should skip a pointer carrying a directory', () => {
+    expect(readBacklog('- [the plan](../plans/feature-x.md)')).toEqual([])
+  })
+
+  it('should skip a pointer naming a reserved sibling', () => {
+    expect(readBacklog('- [priority](priority.md)')).toEqual([])
   })
 })
 
