@@ -26,5 +26,6 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Slug reference](slug.md): Transform from a git branch name to a slug, and the three responses to an empty result
 - [Standard reference](standard.md): Shape and content rules for authoring a standard
 - [Tasks reference](tasks.md): Folder layout, filename convention, readiness groups, and content rules for .claude/tasks/
+- [Teach reference](teach.md): Workspace layout, ordinal naming, frontmatter, and the mission, learning-record, and glossary formats for a learning workspace
 - [Versioning reference](versioning.md): Phase label vs semver discipline across tasks, PRs, reviews, issues, commits, and tags
 - [Wireframe reference](wireframes.md): Shape and content rules for .claude/wireframes/<surface>.md files
