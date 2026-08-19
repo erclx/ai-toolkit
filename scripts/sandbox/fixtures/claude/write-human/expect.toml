@@ -19,11 +19,19 @@ paths = ["docs/cache.md"]
 
 write_scope = ["docs/**"]
 
-# Observed at 8 turns and 0.47 dollars on 2026-08-20. The extent is fixed rather
-# than variable, being one seeded file read and one file rewritten, so a single
-# observation bounds it the way `toolkit-operator/unmigrated` was bounded. The
-# ceiling sits well above the observation anyway, because a run may or may not
-# dereference the tells catalog and that is the one thing here that moves.
+# Observed at 8 turns and 0.47 dollars on 2026-08-20, from one run.
+#
+# This is a judgment rather than a bound, and the distinction is worth stating
+# because the number looks like a measurement. The cost has a moving part: a run
+# may or may not dereference the tells catalog, and the rule calls a cost with
+# something that moves variable, which is why `migration-superseded/retired`
+# sits at the default after a single 17-turn pass. One observation does not
+# bound a variable cost.
+#
+# Twenty against eight is deliberately generous for that reason. It stays under
+# the cap so nothing is masked, and the only exposure it carries is a correct
+# run failing on a count. Correct it downward from the widest of several runs
+# rather than from this one.
 #
 # Never raise this above the runner's cap of 30. A truncated run reports one
 # turn past the cap, so a declaration above it goes green on exactly the
