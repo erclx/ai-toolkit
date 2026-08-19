@@ -1,4 +1,5 @@
 import { execa } from 'execa'
+import { gitEnv } from '@/git-env'
 
 const GIT_TIMEOUT_MS = 10_000
 
@@ -67,7 +68,15 @@ async function readTrunk(
         // same name would otherwise fail the whole read as ambiguous.
         '--',
       ],
-      { reject: false, timeout: GIT_TIMEOUT_MS },
+      // `post-merge` drives the task verbs, and a hook exports the repository
+      // variables git reads ahead of `-C`, so the ambient environment would
+      // answer for whatever repository fired the hook.
+      {
+        reject: false,
+        timeout: GIT_TIMEOUT_MS,
+        env: gitEnv(),
+        extendEnv: false,
+      },
     )
 
     // A missing ref exits non-zero, which is the next ref's turn rather than an
