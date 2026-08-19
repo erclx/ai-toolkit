@@ -63,6 +63,14 @@ The precedent extended is `aitk tasks validate`, which reports against the board
 
 A fifth kind reads this corpus rather than a gitignored folder, and it keeps the reporting discipline on the opposite reason. A standard is tracked, installed into every target, and cited by bare filename, so the risk a write carries is a rename reaching further than the file it moved rather than a repair nothing can undo. `.claude/context/cli/audits.md` holds the check and its two roots.
 
+## Which route a reader actually takes
+
+The two-route citation above is what nearly every body uses, and the command route is what nearly none does. Of the 60 shipped skill bodies, 41 cite `.claude/standards/` and 38 of those name the plugin root as the fallback behind it. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`.
+
+That resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its third root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in a project that installed nothing. `<aitk>` is how a resolve from that root spells itself, since the other two labels are project-relative and a report could join either to a root.
+
+`infra:standards read` is the arm that covers it, and `.claude/context/sandbox/coverage.md` records what the arm reaches and what it leaves to the plugin-root route. Measured on 2026-08-19.
+
 ## Gotchas
 
 - `aitk standards sync` is file-level. "Apply all" overwrites whole files and destroys local customizations. For projects that customize sections, use the `claude-seed-sync` skill, which diffs the preamble plus each `##` section and preserves customizations by default.
