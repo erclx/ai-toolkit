@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.104.1](https://github.com/erclx/aitk/compare/v0.104.0...v0.104.1) (2026-08-19)
+
+
+### Bug Fixes
+
+* **tasks:** count plan citations and settle blockers on the trunk ([#1021](https://github.com/erclx/aitk/issues/1021)) ([57ee746](https://github.com/erclx/aitk/commit/57ee7467b3b936cceb6f8593ab25f617d70011de))
+
 ## [0.104.0](https://github.com/erclx/aitk/compare/v0.103.0...v0.104.0) (2026-08-19)
 
 
