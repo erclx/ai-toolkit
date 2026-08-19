@@ -27,11 +27,11 @@ The two index hooks run with `aitk` dropped from `PATH`, which pins them to the 
 
 Both copies of `standards-audit.sh` depend on something outside themselves, and each reports the dependency it failed to resolve rather than exiting clean. A pass on a file nobody checked reads the same as a pass on a file carrying no violation, and the report is what separates them.
 
-The seed parses its word list out of the project's `.claude/standards/prose.md`, so an absent standard empties the list and narrows the awk to the two hardcoded characters. The path it looked under reaches the session through the same `additionalContext` channel a violation takes, named beside `aitk standards install`. A non-zero exit is the blunter alternative and carries more than a PostToolUse event warrants.
+Neither copy parses a standard any more. Both read a `markdown audit --json` record, so both reach the defect by the same two routes. Resolving no runner reports that nothing ran, and a record naming an empty shipped ban set reports a check narrowed to what the verb could measure. The verb returns that field either way, and reading the findings beside it alone is what let a narrowed check report a pass. The awk each copy replaced parsed its word list out of a standards file, so an absent standard emptied the list and narrowed the check to the two hardcoded characters with nothing said.
 
-The toolkit copy parses no standard and reads a `markdown audit --json` record, so it reaches the same defect by two other routes. Resolving neither the checkout CLI nor an installed binary reports that nothing ran, and a record whose `bans.missingStandards` names a standard reports a check narrowed to what the verb could read. The verb returns that field either way, and reading the findings beside it alone is what let a narrowed check report a pass.
+The seed differs from the toolkit copy in what it can resolve rather than in what it reads. It reaches an installed binary alone, since a scaffolded project has no checkout to run the CLI out of, and it names `bun add -g @erclx/aitk` when the machine carries none. A non-zero exit is the blunter alternative and carries more than a PostToolUse event warrants.
 
-`hooks-guard.test.ts` covers all four branches. The two toolkit cases stub a runner apiece, so the verdict comes from the fixture rather than from whichever build the machine carries, and the two seed cases need no stub because the awk reaches its verdict off a fixture root carrying a `prose.md` or carrying none.
+`hooks-guard.test.ts` covers all four branches, and each case stubs a runner or withholds one, so the verdict comes from the fixture rather than from whichever build the machine carries.
 
 ### The dev command reminder
 

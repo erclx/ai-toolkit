@@ -57,9 +57,11 @@ The change checkpoint does not prompt for it. Its collision question asks which 
 
 The failure is invisible to every check the repository runs. Both sentences are well-formed prose citing nothing, so the drift stages, the markdown audit, and the spell check all pass over a file that now states two incompatible things.
 
-## The parser that reads two standards as input
+## The parser that read a standard as input
 
-`prose.md` and `markdown.md` have a code reader behind them, which no other standard in the corpus does. `src/markdown/bans.ts` anchors on `## Language` and `## Punctuation`, then harvests the single lowercase backticked words and the single non-alphanumeric backticked characters out of every `- Do not use ` bullet under them. The seeded audit hook parses the same shape and ships to every target, so a wording choice in either file changes what a hook bans in every project that resyncs.
+`markdown.md` and the retired `prose.md` had a code reader behind them, which no other standard in the corpus ever did. `src/markdown/bans.ts` anchored on `## Language` and `## Punctuation`, then harvested the single lowercase backticked words and the single non-alphanumeric backticked characters out of every `- Do not use ` bullet under them, and the seeded audit hook parsed the same shape in every target. The sets now ship as data in that file and both readers call `aitk markdown audit` instead, so a wording edit changes what a reader is told and nothing else. Both `## Language` and `## Punctuation` sit in `markdown.md` since the retirement, which is what put every ban a command measures under one heading pair in one file.
+
+The constraint below is kept rather than retired, because it holds the moment anything parses a standard again and the cost of relearning it was an intake pass.
 
 An example chosen to illustrate a pattern therefore becomes a literal ban on that example. A content ban shown with a bare noun bans the noun everywhere it appears rather than banning the pattern it stood for, and nothing reports the difference, because both outcomes are a term in a list. A pattern ban is written with a multi-word phrase, which the parser skips by design and `bans.ts` documents as the reason it skips them.
 
@@ -67,7 +69,7 @@ The two headings are the anchor rather than the bullet's position. Renaming one 
 
 No checker ships for the content bans that landed under `## Language`, covering inflated significance, borrowed authority, vague attribution, and fabrication introduced by a rewrite. Each is a pattern rather than a closed set, which is what already leaves negative parallelism enforcing on a reader alone. A literal match over a pattern reports the compliant text and misses the violation, and `bans.test.ts` asserting the parsed sets against the shipped standards is the check that catches a wording edit widening the closed sets by accident.
 
-The constraint is stated twice on purpose. `prose.md` carries a one-line note under `## Language` so an author meets it while editing, and the reason sits here because it is a fact about a code reader rather than about prose. Before that it was stated only as a doc comment on `parseWordBans`, which is a file no author editing a standard opens, so the constraint held without a single author of the corpus knowing it existed until an intake pass went looking.
+The constraint is stated twice on purpose. `markdown.md` carries a one-line note under `## Language` so an author meets it while editing, and the reason sits here because it is a fact about a code reader rather than about prose. Before that it was stated only as a doc comment on `parseWordBans`, which is a file no author editing a standard opens, so the constraint held without a single author of the corpus knowing it existed until an intake pass went looking.
 
 ## Authoring a new standard
 

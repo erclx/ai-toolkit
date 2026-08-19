@@ -125,6 +125,18 @@ The verb writes nothing, and the stylesheet is the reason. Every lesson after th
 
 What the split cannot close is that the body is still free to reorder what the verb reports. The sandbox arm for this layer asserts the ordinal, the link, and the stylesheet, and the ordering is a property over many runs that one arm cannot see, so it is recorded as manual rather than claimed.
 
+## The writing surface is a skill because nothing reads a standard nobody opens
+
+`write-human` carries voice, rhythm, sentence construction, and information density, and it is the sixty-first skill. Those rules sat in `standards/prose.md` beside the word bans, where the bans were read by a command and the voice half was read by whoever opened the file, which was nobody. The standard is retired: the bans, the spellings, and the frontmatter wording joined `markdown.md`, and this skill took the half no check settles.
+
+The name follows the job rather than the medium. `prose` names what is being written and every other candidate named the defect, where the job is removing machine tells and putting a person back into the writing. It is model-invocable, unlike the eight bodies carrying `disable-model-invocation`, since each of those is a workflow a person starts and this is guidance a session should reach for mid-draft.
+
+Delivery is what makes it different from what it replaces, and the rule is the load-bearing half rather than the body. `500-prose` fires on every markdown edit and carries an explicit instruction to load the skill, so the guidance arrives on a glob match. A skill reachable only by description match reproduces the defect it was built against.
+
+Three references hold what a body cannot. `machine-tells.md` is a diagnostic catalog behind a stated trigger, so a short original draft pays no read for it. `density.md` splits what a compression pass may cut from what it may not, which is the layer a terse register has no answer for. `source-material.md` records what was adopted from outside and what was declined, including the ban on abstract metaphor nouns: `surface` alone appears 593 times in tracked markdown at `57ee7467`, so adopting that item rewrites the corpus or is ignored in silence.
+
+What stays open is the same gap `claude-teach` records about option order. Cadence is a property of a passage over many sentences, nothing compares the output against these rules, and the sandbox arm therefore carries its rhythm claims as manual entries rather than asserting them.
+
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.
