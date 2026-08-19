@@ -63,6 +63,20 @@ describe('BAN_SETS', () => {
   })
 })
 
+describe('.cspell/banned-spellings.txt', () => {
+  it('should list every shipped spelling plus the one only a comment names', async () => {
+    const text = await Bun.file('.cspell/banned-spellings.txt').text()
+    const listed = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith('#'))
+
+    // `analyse` is in no set. A comment in `bans.ts` explains why the old
+    // derivation never reached it, and the word has to spell correctly there.
+    expect(listed).toEqual([...SPELLINGS, 'analyse'].sort())
+  })
+})
+
 describe('emptyBanSets', () => {
   it('should name no set when every one carries a term', () => {
     expect(emptyBanSets()).toEqual([])
