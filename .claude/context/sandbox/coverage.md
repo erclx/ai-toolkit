@@ -137,6 +137,20 @@ Escapes on two of the three runs named three files between them, every one of th
 
 The scenario also cannot be driven by the bare `/aitk:claude-groundwork` prompt the ship-time check specifies. The skill's first guard refuses a missing topic and returns in under four seconds without creating a folder, so the run reports success having exercised nothing past the guard. Each arm names its intended prompt on its own `Action:` line and has to be driven with that topic to reach the creation path. A scenario whose skill guards on an argument is the general case this names, and the check's no-argument rule is what a caller has to override for it.
 
+### The standards read arm covers a command rather than a skill
+
+`infra:standards read` is the first arm whose subject is a resolve order. `src/standards/read.ts` searches three roots and the third is the package corpus, which is what lets a project holding no installed standard still be measured against one. Nothing exercised it outside `src/standards/read.test.ts` until this arm, and that test passes its own roots in, so what stayed unmeasured was the command running from a working directory outside the toolkit checkout, where `PROJECT_ROOT` comes off the module's own location rather than off `pwd`.
+
+The arm runs `aitk standards skill` from `install/`, the clean target the scenario already staged for the install arm, and captures the frame to `install/read-frame.log` and the document to `install/read-body.md`. Both streams go to disk because `aitk sandbox check` reads the tree and nothing else, and splitting them is what lets the resolve be asserted separately from the read. Running from `install/` rather than from the sandbox root is deliberate: the root carries `sync/.claude/standards/`, and a reader checking the premise by eye would have to know the resolve never walks upward to tell the two apart.
+
+`<aitk>` is the whole of what the arm scores. `standardRoots` spells the other two roots as `.claude/standards` and `standards`, both relative to a root a report could join, so the prefix is the one label no project path produces. The two `absent` entries carry the other half, since a resolve that answered from a project copy returns the same document and a content pin on the body alone passes either way. That was measured rather than reasoned: staging a copy at `install/.claude/standards/skill.md` and re-running flipped the verdict to FAIL at 2 failed of 6, on the prefix and the absence, while the body pin passed on both runs.
+
+The arm carries no `max_turns`, for the reason `infra:wiki init` carries none. It runs the CLI with no agent driving it, so no envelope is produced and a ceiling would sit permanently skipped.
+
+What it does not reach is the published layout. `PROJECT_ROOT` derives from `import.meta.url` and the arm runs `bun "$PROJECT_ROOT/src/cli.ts"`, so the third root here is this checkout's own `standards/` rather than the installed package directory a target resolves. The arm therefore scores the resolve order and says nothing about whether `package.json` ships the corpus that order reaches. A task resting on the fallback needs the second half measured somewhere else.
+
+The other thing it does not reach is the catalog. No shipped skill body invokes this verb, so the arm asserts the command and nothing that calls it. The route 38 of the plugin bodies actually take is the plugin root, where `claude/standards` is a symlink carrying the whole corpus, and a body citing `.claude/standards/X.md` with that fallback behind it never reaches `src/standards/read.ts` at all. An arm driving one of those would pass while the route it claims to cover stayed unmeasured, which is why this one drives the command instead and records the split here rather than growing to span both.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
