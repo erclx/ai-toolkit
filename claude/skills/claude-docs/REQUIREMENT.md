@@ -11,6 +11,8 @@ Without this skill, the planning docs describe the scope the session opened with
 
 A decision's verification anchor has the same shape of gap in the other direction. The reasoning keeps reading as current while the number it cites moves underneath, and an amendment written without an anchor leaves nothing recording which numbers were checked and which nobody has read since.
 
+A handoff file has the same shape of gap as an unmarked outcome. A page a learning workspace produced and an operator already picked a destination for sits in gitignored scratch until something lands it, and the session that produced it is gone by the time a branch exists to carry the write. Left unfolded it reads as promoted while the destination holds nothing.
+
 The trigger side carries a gap of its own. "Sync the docs" names either corpus to the person saying it, so a description leaving its corpus to the opening clause alone competes with its public-facing sibling on nothing the routing field states, and the planning surface the request was about goes untouched.
 
 ## Must
@@ -24,6 +26,8 @@ The trigger side carries a gap of its own. "Sync the docs" names either corpus t
 - Retarget a closed task at the archived plan, so the reasoning behind finished work stays reachable
 - Anchor a decision entry this run writes or amends whose reasoning cites a measured number, re-reading the number against the tree before writing the marker
 - Report an anchored decision whose cited path the diff touched, since the number was read before the branch moved what it counted
+- Land each block of a promotion handoff at the destination its heading names, then delete the file so a later run does not fold it twice
+- Take a promotion destination as already decided, since the operator confirmed it where the page was produced
 
 ## Must not
 
@@ -32,6 +36,7 @@ The trigger side carries a gap of its own. "Sync the docs" names either corpus t
 - Widen what a writing step reads when the baseline is unusable. Widening a read is safe and widening a write stubs a surface for every file in the repository.
 - Edit `CLAUDE.md` inline. Every change there goes through a diff-and-approve gate, so this skill only flags.
 - Create a context entry or delete a plan
+- Overwrite a file a promotion block routes to. A destination that already holds a page is a merge for a person, and folding over it discards work this skill never read.
 - Write an anchor onto a decision the run did not amend, or refresh one without re-reading the number. A date from a pass that measured nothing is the false confidence the marker exists to prevent.
 - Anchor an entry written before the rule, which dates it by blame rather than by a read
 
@@ -43,7 +48,8 @@ The trigger side carries a gap of its own. "Sync the docs" names either corpus t
 ## Out of scope
 
 - Creating a task file or moving one off the board, which `claude-tasks` owns
-- Public-facing docs, which `docs-sync` owns. This skill reconciles the `.claude/` planning surface, and both descriptions name their corpus in the trigger so a request saying only "sync the docs" lands on one of the pair rather than on either.
+- Public-facing docs, which `docs-sync` owns, apart from landing a page a promotion handoff already carries a confirmed destination for. This skill reconciles the `.claude/` planning surface, and both descriptions name their corpus in the trigger so a request saying only "sync the docs" lands on one of the pair rather than on either.
+- Deciding where a promoted page belongs, which is settled with the operator by the surface that produced the page
 - Regenerating the task index, owned by a hook
 - Redrawing diagrams, which `claude-diagram` owns. This skill flags staleness and leaves the re-run to the author.
 - Re-measuring an architecture claim to decide whether its number moved. The sweep keys on a cited path entering the diff, so a claim whose number moved with no cited path in the diff goes unflagged.

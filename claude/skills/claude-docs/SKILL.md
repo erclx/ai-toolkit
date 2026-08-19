@@ -51,7 +51,7 @@ Read these in parallel from the current worktree root (`pwd`), not the main work
 
 Read the task board from the main worktree root instead, per Worktrees in `CLAUDE.md`. It is gitignored scratch and never commits with the branch:
 
-- `.claude/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. Step 9 reads every file in the folder for its plans sweep and states that where it gives the instruction.
+- `.claude/tasks/index.md` first, then the task files this session touched. That narrow read serves the marking step. The scratch sweep reads every file in the folder for its plans sweep and states that where it gives the instruction.
 
 ## Step 2: identify what changed
 
@@ -85,7 +85,7 @@ The steps that follow reach past the session, so each earns the reach separately
 - Steps 4 and 5 stub against the diff. These are why the skip is not a stop. A session that changed no docs is exactly when an uncovered surface or diagram kind goes unnoticed.
 - Step 6 reads the architecture record against the diff. A run that amended no decision is the one where an anchored number moves under a reasoning nobody reread, which is the case the marker exists to surface.
 - Step 8 rewrites context entries against the diff and against the facts `claude-memory-capture` routed. The Diff baseline section above groups its diff half with Steps 4 and 5 as a scoped-set step, so a quiet session is no different from any other for it. The routed half reads a named file and runs whatever the diff shows.
-- Step 9 reads the board rather than the session. Its board-wide scan exists to clear a plan an earlier run stranded, and a run that stops at Step 2 can never reach one.
+- The scratch sweep reads the board rather than the session. Its board-wide scan exists to clear a plan an earlier run stranded, and a run that stops at Step 2 can never reach one.
 
 This changes which steps the skill reaches. It does not widen what any of them reads. Steps 4, 5, 6, and 8 still take the same scoped set the Diff baseline section defines, and that section's rule is about the input a step is handed rather than about which steps run.
 
@@ -184,7 +184,30 @@ Add a line naming the handoff when one was consumed:
 
 The base lint-staged config runs `aitk indexes regen` on every committed `*.md`, so `.claude/context/index.md` refreshes automatically on commit. No manual step needed.
 
-## Step 9: sweep consumed scratch
+## Step 9: fold promoted pages
+
+Derive `<slug>` per `.claude/standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root. `claude-teach` writes it, one H2 per destination naming the path, with a source line under the heading and the page body in a fenced block below that. Read the body out of the fence rather than off the heading level, since a reference page carries headings of its own and only the fence separates them from the next destination. Skip this step silently when the file is absent, which is every run where nothing was promoted.
+
+Each block is a page an operator already confirmed a destination for, so this step lands it rather than judging it again. Write to the destination the heading names, at `pwd` rather than at the main root, since every destination here is a tracked file that commits with the branch:
+
+- A wiki page and a public doc arrive as a whole file. Write it as the block gives it, and stop with the block unfolded when the destination path already holds a file, since overwriting a page someone else wrote is not a fold.
+- A context entry is merged into rather than created. Fold the body into the sections it belongs under, the same way the routed facts above are folded, and never add an entry the catalog does not already carry.
+
+Then delete the handoff file so a later run does not fold it twice, and regenerate the index of any folder that carries one.
+
+Output one line per page landed:
+
+`✅ Promoted: <destination path>`
+
+Add a line naming the handoff when one was consumed:
+
+`🧹 Folded: .claude/.tmp/teach-promotion/<slug>.md`
+
+Report a block left unfolded rather than dropping it:
+
+`⚠ Skipped: <destination path> already exists. Merge by hand.`
+
+## Step 10: sweep consumed scratch
 
 Sweep reviews this session consumed, and sweep plans across the whole board. Resolve all paths at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
 
