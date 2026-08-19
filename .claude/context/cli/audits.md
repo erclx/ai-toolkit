@@ -1,11 +1,11 @@
 ---
 title: Audits
-description: The context audit, the markdown audit, the skill audit, the comment census, and the board and record validators, the commands that measure rather than install
+description: The context audit, the markdown audit, the skill audit, the comment census, the board and record validators, and the test-order report, the commands that measure rather than install
 ---
 
 # Audits
 
-`aitk context audit`, `aitk markdown audit`, `aitk claude skills audit`, `aitk comments scan`, `aitk tasks validate`, and `aitk records validate` are the commands that read a tree and report on it instead of writing into one. None installs anything, and three checks across the six gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
+`aitk context audit`, `aitk markdown audit`, `aitk claude skills audit`, `aitk comments scan`, `aitk tasks validate`, `aitk records validate`, and `aitk gov test-order` are the commands that read a tree and report on it instead of writing into one. None installs anything, and three checks across the seven gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
 
 Each splits its engine by reason to change rather than by size. `src/comments/` separates the counting pass (`scan.ts`), the history sampler (`trend.ts`), and the vocabulary loader (`vocabulary.ts`), because counting, sampling, and rule reading are three reasons to change.
 
@@ -284,3 +284,14 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - The item scan skips `00-overview.md` and `99-next-session.md`. Neither holds items, and the overview is where the fenced item-format block is meant to live, so scanning it would report the template as a malformed item.
 - Every scan reads `linesOutsideFences` rather than the raw text, and a plan section closes on any marker-shaped line rather than on a recognized one. Both are the same defect: a reader of markdown that ignores structure reports the document's examples as its content.
 - Measured against the 178 archived plans, the section-close fix took `entry-unreasoned` from 39 to 12 and the fence fix took it to 5, against 80 for the shape that shipped first. The survivors are entries naming no file at all, which is what the rule is for.
+
+## The test-order report
+
+- `aitk gov test-order` is the first check whose subject is git history rather than a tree. The verification run cannot reach the rule it answers by construction, since it executes a suite against one moment and the ordering exists nowhere but history.
+- It sits under `gov` rather than as a top-level command, so it inherits a `list` surface instead of owing a new one. The rule it measures is a governance rule, which is what settles the domain.
+- The blocking shape was considered and rejected on 2026-08-19. A pre-write hook refusing a source file with no test naming the behavior enforces the rule rather than reporting on it, and it fires on refactors, renames, and configuration. Do not reopen it.
+- Nothing wires the verb into `bun run check` or a hook. Exit 2 on findings with no stage behind it is the `aitk tasks validate` shape, taken for the reason the repository already records: gating a measure carrying a known false-positive class forces an escape hatch.
+- Pairing is the whole difficulty and filename proximity is the weakest key available. A test sits beside its subject under one name across this corpus, so the assumption the check makes is the one the corpus already honors, and a behavior split across two modules is what it cannot reach.
+- Three verdicts rather than two. A module the range modified rather than added goes to `unclassified` with its reason stated, because a refactor and a new behavior cannot be told apart from history, and counting it as a pass reports a healthy repository nobody measured.
+- Coverage is stated on every run through `scope` and the read-past count. The rule speaks to every behavior and the verb speaks to `.ts` and `.tsx` pairs, so a summary omitting that is a stronger claim than the measure supports.
+- Measured against the 40 commits behind `57ee7467`, the report found 7 satisfied pairs, 0 findings, 18 unclassified changes, and 125 paths read past. Zero findings is the expected first reading rather than a broken check, and the unclassified figure being the largest is the honest shape.

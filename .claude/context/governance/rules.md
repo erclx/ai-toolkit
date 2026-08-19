@@ -56,6 +56,8 @@ Always-on rules such as the core persona, testing, and error handling emit with 
 - A rule authored under `governance/rules/` in a folder no stack names installs for nobody. `.claude/context/governance/stacks.md` covers which folders close that and which do not.
 - Adding a rule stales a hardcoded count in two entries nothing gates. `.claude/context/development/regeneration.md` states how many rules the toolkit authors and consumes, and `.claude/context/sandbox/authoring.md` states the authored total beside what `base` resolves to. The Hero stage in `scripts/core/verify.sh` gates the count on the README frame and reaches neither of these, so both had drifted by 10 and 8 when they were re-measured on 2026-08-13 at 48 authored, 30 consumed, and 28 resolved by `base`. Re-measure both when a rule lands.
 
+- `core/070-planning.md` is the only rule naming an `aitk` verb, which puts it on the wrong side of the two-speed gap `.claude/ARCHITECTURE.md` records. A rule reaches a target the moment an install copies it, while the verb it names reaches that target only once a release publishes, so a project on an older CLI reads an instruction its binary refuses. A rule citing a verb therefore owes the same release wait a skill body does, and nothing detects the skew.
+
 ## Adding a rule
 
 Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed.
