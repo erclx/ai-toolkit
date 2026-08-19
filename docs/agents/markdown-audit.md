@@ -27,21 +27,25 @@ A bare run measures every markdown file git lists, tracked plus untracked-and-no
 
 ## Where the rules come from
 
-Both ban sets and all five checkpoints are read out of the standards per run, resolved under `.claude/standards/` first, the authoring root second, and the corpus inside the `aitk` package last, so a target project measures against the copy it actually has and a project that installed none is measured all the same. Holding the lists in code was the alternative and it puts each ban in two places, where an author adding one gets no enforcement until someone edits TypeScript.
+The three ban sets and all six checkpoints ship with the `aitk` package as data, in `src/markdown/bans.ts` and `src/markdown/structure.ts`. Every project is measured against the same sets whether or not it installed any standards, and no file has to resolve for a run to mean something.
 
-A project copy wins wherever one exists. An installed standard is a seed a project edits, so a package copy overriding it would discard that edit with nothing said, and the fallback answers absence rather than staleness. The package copy is reachable because `package.json` ships `standards/` beside the code doing the reading, which is what leaves the install optional for every machine consumer.
+Reading them out of the standards per run was the original design. It put a parser contract on two documents authored for people, and `prose.md` had to carry a paragraph of its own warning an author that a one-word backticked example in a `- Do not use ` bullet would be lifted into a literal ban set and ban that word everywhere. A rule existing to protect a parser from the prose it parses is the argument for separating them.
 
-The report names the copy it read on every run, spelling a package copy under `<aitk>/` rather than as a path anything would join to a project root. A published package can lag the toolkit a session reads from, the same two-speed skew `.claude/ARCHITECTURE.md` records between the plugin cache and the CLI, and naming the source is what keeps that diagnosable instead of invisible.
+`markdown.md` and `prose.md` still state every ban and every checkpoint, and a reader follows those rather than the code. Nothing compares the two, so a number moved in one place and left in the other drifts silently. Move both in the same change.
 
-`aitk standards <name>` resolves the same three roots in the same order and prints the standard, so the human catalog reads without a project copy on disk too.
+The sets are closed rather than extensible, so a project cannot add a term by editing a file. What decides that is the measurement behind them: 21 terms across 483 markdown files report a clean exit, and every occurrence of a banned word in the corpus sits inside the ban list itself or inside an example demonstrating the ban. The set is a prior an author already knows rather than a filter that has caught anything, and enumeration cannot close the gap it aims at, since `just`, `allows`, and `very` carry honest uses no literal match separates.
 
-The trade is a reader of prose that a reformat can break. `src/markdown/bans.test.ts` answers it by asserting the parsed sets against the shipped standards, so a rewrite that narrows a set fails there rather than passing quietly. A checkpoint falls back per number rather than per file, and the depth legend names every checkpoint that fell back on the run that used one.
+Freezing the spellings gave up a property worth naming. They were derived by applying the standard's own suffix pairs to its own examples, so an example added there extended the check with no code edit. The set is now carried whole, and `analyse` stays out of it for the reason it was always out: the standard's example is `analyze`, which ends in `-yze` rather than the `-ize` its rule states.
+
+A set shipped empty is reported rather than passed. It finds nothing and would exit clean, which reports a corpus nobody checked as a corpus carrying no violation, so the run names the empty set and exits `1`. The sets ship with the package, so a defect in the build is the only cause left.
+
+`aitk standards <name>` still resolves a standard under `.claude/standards/`, then the authoring root, then the package corpus, and prints it, so the human catalog reads without a project copy on disk.
 
 ## What each check reports
 
 ### Bans
 
-Three closed sets report a hit: the characters `markdown.md` bans under `## Punctuation`, the single lowercase words `prose.md` bans under `## Language`, and the British spellings derived by applying that section's own suffix rules to its own examples.
+Three closed sets report a hit: the characters `markdown.md` bans under `## Punctuation`, the single lowercase words `prose.md` bans under `## Language`, and the British spellings of the American examples that section lists.
 
 Deriving the spellings rather than pattern-matching a suffix is what keeps `exercises`, `promises`, and `revised` out of the report. A suffix pattern over the same corpus produced 46 false positives from words of that shape, and a closed set of whole words reaches none of them.
 
@@ -96,7 +100,9 @@ A bullet, a heading, a table row, a blockquote, a blank line, and a fence each e
 
 ## Exit codes
 
-Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, and `2` for a ban hit. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, so all three report under every code.
+Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, so all three report under every code.
+
+`3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `scripts/core/verify.sh` is right to warn and skip. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
 
 `2` rather than `1` for the gate keeps a measurement that succeeded and found something distinct from the audit declining to measure at all. A caller reading one as the other sends a reader hunting a defect that does not exist, which is the distinction `aitk context audit` and the `verify.sh` seed stage already draw between the same two codes.
 
@@ -118,13 +124,17 @@ A hit the closed set cannot separate from correct prose is the case with no thir
 
 ### Where the rules are enforced
 
-Four surfaces read the ban sets and two of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, and the `Markdown bans` stage in `scripts/core/verify.sh` runs it across the whole corpus before a push. The hook parsed its own copy of the word bans in awk until the gate landed, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
+Four surfaces apply the ban sets and three of them go through this verb. `.claude/hooks/standards-audit.sh` runs it against a single file after each markdown edit, the seed copy a project installs does the same, and the `Markdown bans` stage in `scripts/core/verify.sh` runs it across the whole corpus before a push. Each hook parsed its own copy of the word bans in awk before that, which left a British spelling passing at edit time and failing the push with nothing in between explaining the difference.
 
-The other two read the standards directly and neither is a consolidation left half done. `claude/skills/claude-standards-audit/SKILL.md` greps the banned tokens agent-side, which is a session reading prose rather than a process it can shell out to, and it ships to every target. The seed copy of the hook keeps its awk, because a scaffolded project may carry no `aitk` and `scripts/core/check-seed-independence.sh` exists to catch seed content depending on the toolkit CLI. Both are the likelier place for the next drift, since nothing compares either against the verb.
+The seed copy moved onto the verb when the sets became data, since its awk had nothing left to parse. It resolves one runner where the toolkit copy resolves two, looking for no checkout source, and a machine carrying no `aitk` gets a report naming the binary to install rather than a silent pass. `scripts/core/check-seed-independence.sh` scopes its walk to markdown and leaves the seed hooks outside it, which its own comment records as deliberate.
 
-The hook prefers a checkout's own `src/cli.ts` over a globally installed binary, so it and the push stage read one build. A published binary lags a branch by whatever has not been released, which would put a ban kind added on the branch into the push and not into the edit. It reads its findings out of the `--json` record rather than off the exit code, so an older binary still reports where the fallback applies. It reads `bans.missingStandards` out of the same record, so a standard the verb found under none of the three roots reaches the author as a check narrowed to what it could read.
+The fourth surface reads the standards directly and is not a consolidation left half done. `claude/skills/claude-standards-audit/SKILL.md` greps the banned tokens agent-side, which is a session reading prose rather than a process it can shell out to, and it ships to every target. It is the likeliest place for the next drift, since nothing compares it against the verb.
 
-The package fallback leaves that message reachable in one case rather than none. A CLI running out of a package carrying the corpus always resolves a standard, so the narrowed-check path fires only for a checkout whose own source tree lacks the file. The message stays right for that case and the hook keeps reading the field, since a reader cannot tell a narrowed check from a clean one without it.
+The hook prefers a checkout's own `src/cli.ts` over a globally installed binary, so it and the push stage read one build. A published binary lags a branch by whatever has not been released, which would put a ban kind added on the branch into the push and not into the edit. It reads its findings out of the `--json` record rather than off the exit code, so an older binary still reports where the fallback applies. It reads `bans.emptySets` out of the same record, so a set the verb shipped empty reaches the author as a check narrowed to what it could measure rather than as a clean pass.
+
+That field replaced `bans.missingStandards`, which answered a standard resolving under none of three roots. The sets ship with the package now, so the state it named cannot occur and the narrowed check has one cause left, a defect in the build. The hook keeps reading a field either way, since a reader cannot tell a narrowed check from a clean one without it.
+
+Both hooks answer an absent record as well. A completed run always writes the record and a refusal writes none, so an empty one means the verb declined to measure rather than measured and found nothing. The verb needs a git repository to build its corpus and refuses without one, which is a project the seeded hook can be installed into, and reading the findings alone reported that as a clean file.
 
 A machine with neither runner still blocks no edit, and it says so rather than exiting clean. The push stage holds either way. An edit nobody checked and an edit carrying no violation are one silence to a reader, so the enforcement a machine lacks is reported rather than inferred.
 

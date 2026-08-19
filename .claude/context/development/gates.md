@@ -65,7 +65,9 @@ The match is a bare substring rather than a word boundary, and `grep -w` does no
 
 ### What the walk covers
 
-The walk is scoped by extension rather than by path. Two seed hooks, `tasks-index.sh` and `memory-index.sh`, call the CLI deliberately and each emits a named stale-index warning when the binary is absent, so they keep the dependency and the extension scope leaves them outside the walk with no exemption list to maintain against them.
+The walk is scoped by extension rather than by path. Three seed hooks, `tasks-index.sh`, `memory-index.sh`, and `standards-audit.sh`, call the CLI deliberately and each reports by name when the binary is absent, so they keep the dependency and the extension scope leaves them outside the walk with no exemption list to maintain against them.
+
+`standards-audit.sh` joined that set when the ban sets moved into the CLI, since the standard it used to parse no longer carries them. It is the first of the three whose absent binary leaves a check without a runner rather than an index stale, so it reports that nothing was checked rather than passing, and it answers an empty record the same way, the audit having refused outside a git repository.
 
 Discovery runs through `collect_seed_roots` in `scripts/lib/tooling.sh`, shared with the Seed standards stage, so a stack seeding `.claude/` later is covered with no edit to either caller.
 
