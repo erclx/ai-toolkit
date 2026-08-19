@@ -5,7 +5,7 @@ description: What the plugin domain owns, where its boundary sits, and the layou
 
 # Overview
 
-Owns everything the toolkit ships outward under the Claude domain: the plugin skills in `claude/skills/`, the plugin manifest, and the `aitk claude` CLI that seeds `.claude/` and `CLAUDE.md` into a target project. Internal skills that never leave this repo live in `.claude/context/claude-internal.md`.
+Owns everything the toolkit ships outward under the Claude domain: the plugin skills in `claude/skills/`, the plugin manifest, and the `aitk claude` CLI that seeds `.claude/` and `CLAUDE.md` into a target project. Internal skills that never leave this repo live in `.claude/context/claude-internal/`.
 
 ## Layout
 

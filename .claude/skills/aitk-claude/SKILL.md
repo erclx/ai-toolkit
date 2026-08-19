@@ -5,12 +5,12 @@ description: Claude Code plugin and tooling. Use for adding or modifying plugin 
 
 # Claude
 
-Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `index.md`, and `.claude/context/claude-internal.md` for internal skills and plugin setup, before editing. The plugin folder carries `.claude/context/claude-plugin/distribution.md` for the marketplace and release wiring, `.claude/context/claude-plugin/cli.md` for `aitk claude`, and `.claude/context/claude-plugin/boundaries.md` for built-in feature overlap. Everything about the skills themselves sits in the `skill-*` children that `index.md` lists, one per sub-area.
+Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `index.md`, and `.claude/context/claude-internal/` for internal skills and plugin setup, also starting at its `index.md`, before editing. The plugin folder carries `.claude/context/claude-plugin/distribution.md` for the marketplace and release wiring, `.claude/context/claude-plugin/cli.md` for `aitk claude`, and `.claude/context/claude-plugin/boundaries.md` for built-in feature overlap. Everything about the skills themselves sits in the `skill-*` children that `index.md` lists, one per sub-area.
 
 ## Editing rules
 
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
-- Read `.claude/context/claude-plugin/skill-strategy.md` before adding a plugin skill and `.claude/context/claude-internal.md` before adding an internal one. Run `aitk claude skills list` for the plugin roster, which no entry restates.
+- Read `.claude/context/claude-plugin/skill-strategy.md` before adding a plugin skill and `.claude/context/claude-internal/skills.md` before adding an internal one. Run `aitk claude skills list` for the plugin roster, which no entry restates.
 - Follow `.claude/standards/skill.md` for skill structure and frontmatter conventions.
 - Audit skill bodies against `.claude/standards/skill.md`, `.claude/standards/markdown.md`, and the `write-human` skill. The first covers structure and frontmatter. The second covers the body's word choice, punctuation, and formatting. The third covers its voice and rhythm.
 
@@ -42,14 +42,14 @@ When editing any file under `.claude/` in this repo, also check `tooling/claude/
 When adding a new skill:
 
 - Create the skill folder and `SKILL.md` in `claude/skills/`
-- Add an internal skill to the table in `.claude/context/claude-internal.md`. A plugin skill needs no catalog edit, since `aitk claude skills list` reads the folder and the plugin entries hold reasons rather than a roster. Add a `skill-*` entry under `.claude/context/claude-plugin/` only when the new skill introduces reasoning no existing child covers.
+- Add an internal skill to the table in `.claude/context/claude-internal/skills.md`. A plugin skill needs no catalog edit, since `aitk claude skills list` reads the folder and the plugin entries hold reasons rather than a roster. Add a `skill-*` entry under `.claude/context/claude-plugin/` only when the new skill introduces reasoning no existing child covers.
 - Draft a `scripts/sandbox/<category>/<skill>.sh` scenario alongside `SKILL.md`, even when the skill's output is judgment-driven. The deterministic seeded input is the point. Exception: skills whose body explicitly forbids probing, listing, grepping, or reading project surfaces have nothing for a seeded sandbox to anchor against. Skip the scenario for these and do not list it as a follow-up.
 - Claude sandboxes provision fixture state only. The user runs `claude` from the scenario directory and invokes the skill manually. "Sandbox cannot drive Claude" is not a reason to skip one, because driving is not its job.
 
 When modifying a skill:
 
 - Read the skill's sibling `REQUIREMENT.md` first when one exists. If the change closes no gap it states, change the requirement first or drop the change.
-- Update the matching row in `.claude/context/claude-internal.md` if an internal skill's description changed. A plugin skill's description is read from its own frontmatter, so nothing mirrors it.
+- Update the matching row in `.claude/context/claude-internal/skills.md` if an internal skill's description changed. A plugin skill's description is read from its own frontmatter, so nothing mirrors it.
 - Check if a corresponding sandbox scenario exists in `scripts/sandbox/` and update it if the skill's behavior changed
 - Run `/aitk-sandbox-check` before shipping to audit which skills changed without a paired scenario edit
 
@@ -61,7 +61,7 @@ When modifying either CLAUDE.md:
 ## Reference
 
 - `.claude/context/claude-plugin/`: skill strategy, requirements, lifecycle, review paths and shared procedures, plus distribution and release, aitk claude CLI, built-in feature overlap
-- `.claude/context/claude-internal.md`: internal skills, orchestration, plugin discovery
+- `.claude/context/claude-internal/`: internal skills, orchestration, plugin discovery
 - `.claude/context/context-model.md`: three-tier context model and how entries get populated
 - `.claude/context/snippets.md`: snippets catalog and invocation
 - `.claude/context/indexes.md`: index.md system rationale and contracts

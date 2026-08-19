@@ -61,7 +61,7 @@ Coupling it to the pass number instead was measured wrong on two reviews in five
 
 Sharing a prefix across that family is why the detection matches the first line for equality rather than testing a prefix. A prefix test also accepts `## Review response`, and it happened to be safe only because `claude-address-review` posts through `gh pr comment`, which lands in `.comments` and never in `.reviews`. Nothing recorded that dependency, so the close-out would have started scoping to the worker's reply the day that skill switched to posting a review. An equality test costs the same and owes nothing to a sibling's choice of command.
 
-A finding withdrawn on a reply's argument leaves that count too, so a pass withdrawing every finding it carried reads as a close-out while still owing a body the short close-out line cannot carry, since that line credits a fix nobody made. `.claude/context/claude-internal.md` holds why a reply reaches the thread at all and which class of reply stays off it.
+A finding withdrawn on a reply's argument leaves that count too, so a pass withdrawing every finding it carried reads as a close-out while still owing a body the short close-out line cannot carry, since that line credits a fix nobody made. `.claude/context/claude-internal/orchestration.md` holds why a reply reaches the thread at all and which class of reply stays off it.
 
 ### One threshold under the heading and the dispatch
 
