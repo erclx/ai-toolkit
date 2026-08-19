@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.99.0](https://github.com/erclx/aitk/compare/v0.98.0...v0.99.0) (2026-08-19)
+
+
+### Features
+
+* **plan:** stamp a constraint with the commit it was measured against ([#1007](https://github.com/erclx/aitk/issues/1007)) ([487f58c](https://github.com/erclx/aitk/commit/487f58ca889075c0106e701803f767150ec449b1))
+
 ## [0.98.0](https://github.com/erclx/aitk/compare/v0.97.1...v0.98.0) (2026-08-14)
 
 
