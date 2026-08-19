@@ -51,8 +51,6 @@ Does not govern:
 
 The character bans sit in `markdown.md` under `## Punctuation` rather than here, because an em dash and a semicolon are typography and the bans here reach the words a sentence chooses and the claims it makes. A surface applying both reads both files.
 
-Illustrate a pattern ban with a multi-word phrase. An audit reading this section harvests the single lowercase backticked words out of every `- Do not use ` bullet into a literal ban set, so a one-word example bans that word everywhere it appears rather than banning the pattern it stands for. Both the toolkit command and the audit hook a project installs parse that shape, so the constraint holds wherever this file lands.
-
 ## Frontmatter descriptions
 
 When frontmatter carries a short `title` or `description` used for catalog display:
