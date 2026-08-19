@@ -147,7 +147,9 @@ The arm runs `aitk standards skill` from `install/`, the clean target the scenar
 
 The arm carries no `max_turns`, for the reason `infra:wiki init` carries none. It runs the CLI with no agent driving it, so no envelope is produced and a ceiling would sit permanently skipped.
 
-What it does not reach is the catalog. No shipped skill body invokes this verb, so the arm asserts the command and nothing that calls it. The route 38 of the plugin bodies actually take is the plugin root, where `claude/standards` is a symlink carrying the whole corpus, and a body citing `.claude/standards/X.md` with that fallback behind it never reaches `src/standards/read.ts` at all. An arm driving one of those would pass while the route it claims to cover stayed unmeasured, which is why this one drives the command instead and records the split here rather than growing to span both.
+What it does not reach is the published layout. `PROJECT_ROOT` derives from `import.meta.url` and the arm runs `bun "$PROJECT_ROOT/src/cli.ts"`, so the third root here is this checkout's own `standards/` rather than the installed package directory a target resolves. The arm therefore scores the resolve order and says nothing about whether `package.json` ships the corpus that order reaches. A task resting on the fallback needs the second half measured somewhere else.
+
+The other thing it does not reach is the catalog. No shipped skill body invokes this verb, so the arm asserts the command and nothing that calls it. The route 38 of the plugin bodies actually take is the plugin root, where `claude/standards` is a symlink carrying the whole corpus, and a body citing `.claude/standards/X.md` with that fallback behind it never reaches `src/standards/read.ts` at all. An arm driving one of those would pass while the route it claims to cover stayed unmeasured, which is why this one drives the command instead and records the split here rather than growing to span both.
 
 ### The gap the rule names
 
