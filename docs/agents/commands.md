@@ -32,6 +32,10 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk tasks validate`      | Report board rows whose plan, task file, group, file set, or blocker does not hold (`--json`)                                             |
 | `aitk intake list`         | Report intake folder counts, or one folder's items, keeping what is unread with `--unread` (`--json`)                                     |
 | `aitk intake answer`       | Write selections into one cluster's answer slots, repeating `--set <item>=<answer>` (`--json`)                                            |
+| `aitk teach list`          | Report learning workspaces and the ordinal a new one takes, or what one workspace holds (`--json`)                                        |
+| `aitk teach open`          | Open a workspace at the next ordinal with its mission, resources, and glossary files (`--json`)                                           |
+| `aitk teach resource`      | Record sources and leads in a workspace, repeating `--read` or `--lead` as `<title>=<url>` (`--json`)                                     |
+| `aitk teach glossary`      | Add terms to a workspace glossary alphabetically, repeating `--term <term>=<definition>` (`--json`)                                       |
 | `aitk records validate`    | Report a session record or a standard against the standard governing it, per kind (`--json`)                                              |
 | `aitk records push`        | Commit the eight backed record folders and push them to a private records remote (`--json`)                                               |
 | `aitk records pull`        | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                   |
@@ -59,6 +63,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `slides`    | `render`, `list`                                                                            |
 | `tasks`     | `archive`, `validate`                                                                       |
 | `intake`    | `list`, `answer`                                                                            |
+| `teach`     | `list`, `open`, `resource`, `glossary`                                                      |
 | `comments`  | `scan`                                                                                      |
 | `context`   | `audit`                                                                                     |
 | `markdown`  | `audit`                                                                                     |

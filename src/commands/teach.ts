@@ -1,0 +1,650 @@
+import { relative } from 'node:path'
+import type { Command } from 'commander'
+import {
+  defineTerms,
+  type ListOutcome,
+  listWorkspaces,
+  type OpenOutcome,
+  openWorkspace,
+  type ReadOutcome,
+  readWorkspace,
+  recordSources,
+  type Source,
+  type SourceOutcome,
+  type TeachRefused,
+  type Term,
+  type TermOutcome,
+  type WorkspaceSummary,
+} from '@/teach/workspace'
+import {
+  intro,
+  logAdd,
+  logError,
+  logInfo,
+  logStep,
+  logWarn,
+  outro,
+  pipeOutput,
+} from '@/ui'
+import { mainWorktreeRoot } from '@/worktree'
+
+/**
+ * A pair as the command line spells it, split on the first `=` so a value
+ * carrying its own separator survives. A source URL is the case that needs it.
+ */
+const PAIR = /^([^=]+)=([\s\S]+)$/
+
+interface ListCommandOptions {
+  readonly json?: boolean
+  readonly root?: string
+}
+
+interface OpenCommandOptions {
+  readonly date?: string
+  readonly json?: boolean
+  readonly outOfScope?: readonly string[]
+  readonly root?: string
+  readonly startingPoint?: string
+  readonly subject?: string
+  readonly success?: readonly string[]
+  readonly title?: string
+}
+
+interface ResourceCommandOptions {
+  readonly json?: boolean
+  readonly lead?: readonly string[]
+  readonly read?: readonly string[]
+  readonly root?: string
+}
+
+interface GlossaryCommandOptions {
+  readonly firstSeen?: string
+  readonly json?: boolean
+  readonly root?: string
+  readonly term?: readonly string[]
+}
+
+export function register(program: Command): void {
+  const teach = program
+    .command('teach')
+    .description('Manage learning workspaces in .claude/teach/')
+    .helpOption('-h, --help', 'Show this help message')
+
+  teach
+    .command('list')
+    .description('List learning workspaces, or what one workspace holds')
+    .argument('[topic]', 'Workspace folder or topic, as in regular-expressions')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the workspaces or their contents were listed',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'With no topic it reports one line per workspace and the ordinal an',
+        'open would take. With one it reports the files behind each count.',
+        '',
+        'A workspace not named NN-<topic> is still listed. It sorts last and',
+        'moves no ordinal, since dropping it hides the folder needing a fix.',
+        '',
+        'Examples:',
+        '  aitk teach list',
+        '  aitk teach list regular-expressions --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string | undefined, opts: ListCommandOptions) => {
+      process.exitCode = await runList(topic, opts)
+    })
+
+  teach
+    .command('open')
+    .description('Open a workspace at the next ordinal with its required files')
+    .argument('<topic>', 'Kebab-case topic, as in regular-expressions')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--subject <line>', 'One line stating what the workspace covers')
+    .option('--starting-point <text>', 'What the learner already knows')
+    .option(
+      '--success <line>',
+      'Observable thing the learner will be able to do, repeatable',
+      collect,
+      [] as string[],
+    )
+    .option(
+      '--out-of-scope <line>',
+      'What this workspace does not cover, repeatable',
+      collect,
+      [] as string[],
+    )
+    .option('--title <text>', 'Title, defaulting to the topic in sentence case')
+    .option('--date <YYYY-MM-DD>', 'Opening date, defaulting to today')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  the workspace was created',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'It derives the ordinal from the highest already present and writes',
+        'MISSION.md, RESOURCES.md, and GLOSSARY.md. A topic another workspace',
+        'already covers is refused, since a second one forks the records.',
+        '',
+        'Examples:',
+        '  aitk teach open regular-expressions --subject "Reading and writing regular expressions" \\',
+        '    --starting-point "Comfortable with the shell, has never written a group" \\',
+        '    --success "Write a pattern matching a date" --success "Explain a backreference"',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string, opts: OpenCommandOptions) => {
+      process.exitCode = await runOpen(topic, opts)
+    })
+
+  teach
+    .command('resource')
+    .description('Record sources and leads in a workspace RESOURCES.md')
+    .argument('<topic>', 'Workspace folder or topic, as in regular-expressions')
+    .helpOption('-h, --help', 'Show this help message')
+    .option(
+      '--read <title=url>',
+      'Source that stands behind the material, repeatable',
+      collect,
+      [] as string[],
+    )
+    .option(
+      '--lead <title=url>',
+      'Source found and not opened, repeatable',
+      collect,
+      [] as string[],
+    )
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  every source was written',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'The pair splits on the first =, so a URL carrying one survives. Say',
+        'in the title which claims rest on the source, since the entry is the',
+        'only place a later session reads that from.',
+        '',
+        'A URL already listed under either heading is refused rather than',
+        'repeated, because two entries split what rests on one source.',
+        '',
+        'Examples:',
+        '  aitk teach resource regular-expressions --read "MDN regular expressions=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions"',
+        '  aitk teach resource regular-expressions --lead "RE2 syntax=https://github.com/google/re2/wiki/Syntax" --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string, opts: ResourceCommandOptions) => {
+      process.exitCode = await runResource(topic, opts)
+    })
+
+  teach
+    .command('glossary')
+    .description('Add terms to a workspace GLOSSARY.md, alphabetically')
+    .argument('<topic>', 'Workspace folder or topic, as in regular-expressions')
+    .helpOption('-h, --help', 'Show this help message')
+    .option(
+      '--term <term=definition>',
+      'Term the subject defines, repeatable',
+      collect,
+      [] as string[],
+    )
+    .option(
+      '--first-seen <file>',
+      'Lesson or reference page the batch first defines these in',
+    )
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Teach root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Exit codes:',
+        '  0  every term now carries an entry',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'One call writes one file, which is what keeps a batch from racing on',
+        'the glossary every term shares. --first-seen names one page for the',
+        'whole batch, since a batch comes from one lesson.',
+        '',
+        'A term already defined is refused rather than replaced. A definition',
+        'the subject has moved under is a revision of the entry it has.',
+        '',
+        'Examples:',
+        '  aitk teach glossary regular-expressions --term "capture group=A parenthesised part of a pattern whose match is kept" --first-seen 0002-groups.html',
+        '',
+      ].join('\n'),
+    )
+    .action(async (topic: string, opts: GlossaryCommandOptions) => {
+      process.exitCode = await runGlossary(topic, opts)
+    })
+}
+
+function collect(value: string, previous: string[]): string[] {
+  return [...previous, value]
+}
+
+/**
+ * Splits every pair or reports the ones that carry no separator. Both halves
+ * are reported together, so a caller passing four pairs learns about all the
+ * broken ones from one run rather than from four.
+ */
+function parsePairs(
+  raw: readonly string[],
+): { pairs: Array<[string, string]> } | { invalid: string[] } {
+  const pairs: Array<[string, string]> = []
+  const invalid: string[] = []
+
+  for (const entry of raw) {
+    const match = PAIR.exec(entry)
+    const left = match?.[1].trim()
+    const right = match?.[2].trim()
+
+    if (!left || !right) {
+      invalid.push(entry)
+      continue
+    }
+
+    pairs.push([left, right])
+  }
+
+  return invalid.length > 0 ? { invalid } : { pairs }
+}
+
+function badInput(
+  message: string,
+  detail: readonly string[] = [],
+): TeachRefused {
+  return { ok: false, reason: 'bad-input', message, detail }
+}
+
+async function rootFor(given: string | undefined): Promise<string> {
+  return given ?? (await mainWorktreeRoot())
+}
+
+async function runList(
+  topic: string | undefined,
+  opts: ListCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const root = await rootFor(opts.root)
+
+  if (topic === undefined) {
+    return reportList(await listWorkspaces(root), emitJson, root)
+  }
+
+  return reportWorkspace(await readWorkspace(root, topic), emitJson, root)
+}
+
+async function runOpen(
+  topic: string,
+  opts: OpenCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+
+  if (!opts.subject) {
+    return reportRefusal(
+      'aitk teach open',
+      badInput('No subject. Pass --subject <line>.'),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  if (!opts.startingPoint) {
+    return reportRefusal(
+      'aitk teach open',
+      badInput(
+        'No starting point. Pass --starting-point <text>, so difficulty has a floor.',
+      ),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const root = await rootFor(opts.root)
+
+  return reportOpen(
+    await openWorkspace(root, {
+      topic,
+      subject: opts.subject,
+      startingPoint: opts.startingPoint,
+      success: opts.success ?? [],
+      outOfScope: opts.outOfScope ?? [],
+      title: opts.title,
+      date: opts.date,
+    }),
+    emitJson,
+    root,
+  )
+}
+
+async function runResource(
+  topic: string,
+  opts: ResourceCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const raw = [...(opts.read ?? []), ...(opts.lead ?? [])]
+
+  if (raw.length === 0) {
+    return reportRefusal(
+      'aitk teach resource',
+      badInput('No source given. Pass --read or --lead as <title>=<url>.'),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const parsed = parsePairs(raw)
+
+  if ('invalid' in parsed) {
+    return reportRefusal(
+      'aitk teach resource',
+      badInput(
+        `Not a title and url: ${parsed.invalid.join(', ')}`,
+        parsed.invalid,
+      ),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const readCount = (opts.read ?? []).length
+  const sources: Source[] = parsed.pairs.map(([title, url]) => ({ title, url }))
+  const root = await rootFor(opts.root)
+
+  return reportResource(
+    await recordSources(
+      root,
+      topic,
+      sources.slice(0, readCount),
+      sources.slice(readCount),
+    ),
+    emitJson,
+    root,
+  )
+}
+
+async function runGlossary(
+  topic: string,
+  opts: GlossaryCommandOptions,
+): Promise<number> {
+  const emitJson = opts.json ?? false
+  const raw = opts.term ?? []
+
+  if (raw.length === 0) {
+    return reportRefusal(
+      'aitk teach glossary',
+      badInput('No term given. Pass --term <term>=<definition>.'),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const parsed = parsePairs(raw)
+
+  if ('invalid' in parsed) {
+    return reportRefusal(
+      'aitk teach glossary',
+      badInput(
+        `Not a term and definition: ${parsed.invalid.join(', ')}`,
+        parsed.invalid,
+      ),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const terms: Term[] = parsed.pairs.map(([term, definition]) => ({
+    term,
+    definition,
+  }))
+
+  const duplicated = terms
+    .map((term) => term.term.toLowerCase())
+    .filter((term, index, all) => all.indexOf(term) !== index)
+
+  if (duplicated.length > 0) {
+    return reportRefusal(
+      'aitk teach glossary',
+      badInput(`Two definitions for ${[...new Set(duplicated)].join(', ')}.`),
+      emitJson,
+      process.cwd(),
+    )
+  }
+
+  const root = await rootFor(opts.root)
+
+  return reportGlossary(
+    await defineTerms(root, topic, terms, opts.firstSeen),
+    emitJson,
+    root,
+  )
+}
+
+function reportRefusal(
+  title: string,
+  refused: TeachRefused,
+  emitJson: boolean,
+  root: string,
+): number {
+  // The framed branch reaches stderr through logError, so the bare write is
+  // what keeps the JSON mode from reporting the reason on stdout alone.
+  if (emitJson) {
+    process.stderr.write(`${refused.message}\n`)
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: false,
+        root,
+        reason: refused.reason,
+        message: refused.message,
+        detail: refused.detail,
+      })}\n`,
+    )
+    return 1
+  }
+
+  intro(title)
+  logStep('Refused')
+  logError(refused.message)
+  if (refused.detail.length > 0) pipeOutput(refused.detail.join('\n'))
+  outro()
+
+  return 1
+}
+
+function describe(workspace: WorkspaceSummary): string {
+  return `${workspace.slug}: ${workspace.lessons} lesson(s), ${workspace.records} record(s), ${workspace.reference} reference page(s), ${workspace.terms} term(s)`
+}
+
+function reportList(
+  outcome: ListOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok)
+    return reportRefusal('aitk teach list', outcome, emitJson, root)
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        workspaces: outcome.workspaces,
+        next: outcome.next,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk teach list')
+  logStep(outcome.workspaces.length > 0 ? 'Workspaces' : 'No workspaces')
+
+  for (const workspace of outcome.workspaces) logInfo(describe(workspace))
+
+  const incomplete = outcome.workspaces.filter(
+    (workspace) => workspace.missing.length > 0,
+  )
+
+  if (incomplete.length > 0) {
+    logStep('Missing a required file')
+    for (const workspace of incomplete) {
+      logWarn(`${workspace.slug}: no ${workspace.missing.join(' and no ')}`)
+    }
+  }
+
+  logStep('Next ordinal')
+  logInfo(outcome.next)
+  outro()
+
+  return 0
+}
+
+function reportWorkspace(
+  outcome: ReadOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok)
+    return reportRefusal('aitk teach list', outcome, emitJson, root)
+
+  const workspace = outcome.workspace
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ok: true, root, workspace })}\n`)
+    return 0
+  }
+
+  intro('aitk teach list')
+  logStep(workspace.slug)
+  logInfo(`${workspace.title ?? 'no title'}, opened ${workspace.opened ?? '?'}`)
+  logInfo(workspace.path)
+
+  for (const [label, files] of [
+    ['Lessons', workspace.lessonFiles],
+    ['Learning records', workspace.recordFiles],
+    ['Reference', workspace.referenceFiles],
+  ] as const) {
+    logStep(files.length > 0 ? label : `${label} (none)`)
+    for (const file of files) logInfo(file)
+  }
+
+  logStep(workspace.glossary.length > 0 ? 'Glossary' : 'Glossary (empty)')
+  for (const entry of workspace.glossary) logInfo(entry)
+
+  if (workspace.missing.length > 0) {
+    logStep('Missing a required file')
+    logWarn(`no ${workspace.missing.join(' and no ')}`)
+  }
+
+  outro()
+
+  return 0
+}
+
+function reportOpen(
+  outcome: OpenOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok)
+    return reportRefusal('aitk teach open', outcome, emitJson, root)
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        slug: outcome.slug,
+        path: outcome.path,
+        created: outcome.created,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk teach open')
+  logStep('Opened')
+  logInfo(outcome.slug)
+  for (const file of outcome.created) logAdd(file)
+  outro()
+
+  return 0
+}
+
+function reportResource(
+  outcome: SourceOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    return reportRefusal('aitk teach resource', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        slug: outcome.slug,
+        path: relative(root, outcome.path),
+        read: outcome.read,
+        leads: outcome.leads,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk teach resource')
+  logStep('Recorded')
+  for (const source of outcome.read) logInfo(`read: ${source.title}`)
+  for (const source of outcome.leads) logInfo(`lead: ${source.title}`)
+  logAdd(relative(root, outcome.path))
+  outro()
+
+  return 0
+}
+
+function reportGlossary(
+  outcome: TermOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    return reportRefusal('aitk teach glossary', outcome, emitJson, root)
+  }
+
+  if (emitJson) {
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        root,
+        slug: outcome.slug,
+        path: relative(root, outcome.path),
+        defined: outcome.defined,
+      })}\n`,
+    )
+    return 0
+  }
+
+  intro('aitk teach glossary')
+  logStep('Defined')
+  for (const term of outcome.defined) logInfo(term.term)
+  logAdd(relative(root, outcome.path))
+  outro()
+
+  return 0
+}

@@ -18,31 +18,54 @@ The shape of the workspace is fixed by `.claude/standards/teach.md`, or `${CLAUD
 - Write nothing outside the workspace folder. A durable page stays in `reference/` until a promotion pass moves it, and this skill runs no promotion.
 - Do not open a second workspace on a subject one already covers. Resume that one.
 
-## Step 0: resolve the workspace root
+## Step 0: let the CLI resolve the workspace root
 
 Workspaces live at the main worktree root, never inside a linked worktree. A copy per worktree forks the learning records, and the learner is one person.
 
+Every `aitk teach` verb resolves that root in-process, so no step below composes a path to a workspace file. Read the folder through the CLI rather than deriving its location:
+
 ```bash
-git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-
+aitk teach list --json
 ```
 
-Fall back to the current directory when that reports nothing. Workspaces sit under `<main-root>/.claude/teach/`.
+It reports every workspace with its path, its counts, and the ordinal a new one would take. A `no-teach` refusal means the project has opened none yet, which is the new-workspace path in Step 1 rather than a reason to stop. The open verb creates the folder.
 
-From a linked worktree the file-editing tools refuse every path under that root and offer a worktree copy instead, which is a second file no later session reads. Never take that redirect. Create a file as one plain shell command carrying a heredoc, and change a file that already exists by reading it and writing it back whole through the same route.
+From a linked worktree the file-editing tools refuse every path under the main root and offer a worktree copy instead, which is a second file no later session reads. Never take that redirect. The route splits by what the write does to the file:
+
+- Creating a whole file that does not exist yet, which is a lesson, a reference page, and a learning record, goes out as one plain shell command carrying a heredoc
+- Changing a line inside a file that already exists goes through the verb that owns it, since the stream editors are banned and no other shell route reaches it
 
 ## Step 1: open or resume
 
-List the folders under the workspace root. A folder whose topic matches the invocation is a resume, and anything else is a new workspace.
+A topic the listing already carries is a resume, and anything else is a new workspace.
 
-On a resume, read `MISSION.md`, the highest-numbered learning record, and `GLOSSARY.md`. Those three carry where the learner stopped and what they got wrong. Report the mission's success lines with what is already met before teaching anything.
+On a resume, run `aitk teach list <topic> --json` for the files behind each count, then read `MISSION.md`, the highest-numbered learning record, and `GLOSSARY.md`. Those three carry where the learner stopped and what they got wrong. Report the mission's success lines with what is already met before teaching anything.
 
 On a new workspace, settle the starting point first, by asking rather than by assuming. Difficulty with no floor under it teaches nobody, and the mission cannot be written without it.
 
-Then take the ordinal from the highest one present, incremented, create the folder as `<nn>-<topic>`, and write all three files the standard requires: `MISSION.md` to the template it carries, `RESOURCES.md` with whatever Step 2 read, and `GLOSSARY.md`, empty of terms until a lesson defines one. A workspace missing any of the three fails its own conformance check the moment anything walks it.
+Then open the workspace, which derives the ordinal and writes all three required files:
+
+```bash
+aitk teach open <topic> --json \
+  --subject "<one line stating the subject>" \
+  --starting-point "<what the learner already knows>" \
+  --success "<an observable thing the learner will be able to do>" \
+  --out-of-scope "<what this workspace does not cover>"
+```
+
+Repeat `--success` and `--out-of-scope` per line. The verb refuses a topic another workspace already covers, which is the guard against opening a second one on the same subject.
 
 ## Step 2: research before teaching
 
-Read the subject from sources rather than from recall. Record every source in `RESOURCES.md` with its link, and list under a leads heading anything found and not opened.
+Read the subject from sources rather than from recall. Record what was read and what was only found through the verb that owns the file:
+
+```bash
+aitk teach resource <topic> --json \
+  --read "<title, naming which claims rest on it>=<url>" \
+  --lead "<title>=<url>"
+```
+
+Each flag repeats, and the pair splits on the first `=` so a URL carrying one survives. A URL already listed is refused rather than repeated.
 
 A claim nothing was read for is the failure this step exists against. Where no source is reachable, say so in the lesson and mark what rests on recall.
 
@@ -59,7 +82,15 @@ Two outputs with two lifetimes, and the split decides the format.
 - A lesson goes to `lessons/<nnnn>-<slug>.html`, self-contained, carrying its own quiz and the feedback for each answer. It links the shared stylesheet under `assets/` rather than restating styles, and the first lesson in a workspace writes that stylesheet before linking it. A lesson is disposable and is never promoted.
 - A reference page goes to `reference/<slug>.md`, written for a reader with no learner in it. This is the half that survives the workspace, so it is written in markdown to pass the authoring gates a promotion would put it through.
 
-Add every term the lesson defines to `GLOSSARY.md`, in the entry shape the standard fixes.
+Add every term the lesson defines to `GLOSSARY.md` through the verb, which places the entries alphabetically in the shape the standard fixes:
+
+```bash
+aitk teach glossary <topic> --json \
+  --term "<term>=<definition, written without using the term>" \
+  --first-seen <the lesson or reference page this batch comes from>
+```
+
+`--term` repeats and one call writes the file once, which is what keeps a batch of terms from racing on it. A term already defined is refused, since a definition the subject has moved under is a revision of the entry rather than a second one.
 
 Follow `${CLAUDE_SKILL_DIR}/references/lesson-craft.md` for what makes a lesson worth returning to. Keep every quiz answer the same length, so formatting leaks no clue about which one is correct.
 
