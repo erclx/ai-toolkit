@@ -11,8 +11,16 @@
 # one belongs to that table in TOML, so a `manual` array written at the bottom
 # parses clean and asserts nothing.
 
-# Declared rather than observed, for the reason the open arm states.
-max_turns = 30
+# Measured at 32 turns and 1.11 dollars on 2026-08-19, passing every content and
+# scope assertion and failing this key alone at its first declared value of 30.
+#
+# The ceiling sits above the runner's own default cap rather than at the observed
+# count. `scripts/sandbox/run.sh` passes `--max-turns 30`, so a run that reaches
+# the cap reports 31 or 32 whatever it was doing, and a ceiling at or below 30
+# fails on truncation rather than on behavior. 45 is where that leaves it, which
+# matches the intake arms for the same reason. Bring it down to the observed
+# count only if the runner default rises above it.
+max_turns = 45
 
 # Nothing is pinned under `paths`. The new lesson and the new learning record
 # both carry a model-derived slug behind their ordinal, so an exact path would

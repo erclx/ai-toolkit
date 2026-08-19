@@ -11,9 +11,10 @@
 # one belongs to that table in TOML, so a `manual` array written at the bottom
 # parses clean and asserts nothing.
 
-# Declared rather than observed. No recorded run for this arm survives, so the
-# ceiling sits where the running narrative puts an uncalibrated one and comes
-# down whenever a pass is measured.
+# Measured at 22 turns and 0.92 dollars on 2026-08-19, passing every assertion.
+# The ceiling stays at 30, which is the observed count with room for a reply that
+# runs longer without the skill having changed. Its sibling arm sits higher
+# because it reaches the runner's own cap and this one does not.
 max_turns = 30
 
 # The topic is pinned by the invocation rather than left to the run, matching
@@ -47,10 +48,11 @@ write_scope = [".claude/teach/**"]
 reply = [".claude/teach/01-regex/"]
 
 manual = [
-  "The session asked what the learner already knows before writing the starting point. Semantic: the starting point is prose either way, and a pattern over it cannot tell an answer from an assumption.",
+  "The starting point in the mission reflects what the invocation supplied rather than a guess. Semantic: the section is prose either way, and a pattern over it cannot tell an answer from an assumption.",
+  "A run whose invocation omits the starting point asks for it and writes nothing. Unwired: that is the correct behavior and it satisfies no assertion here, so this arm carries the starting point in the prompt and covers the write instead. The first measured run of this arm, at 8 turns and 0.29 dollars, failed every content assertion for exactly that reason.",
   "The success lines name things the learner can be asked to do rather than things they will understand. Semantic: both forms are bullets under the same heading, and the difference is the verb.",
   "Nothing in the mission or the glossary rests on recall without saying so. Unwired: the sandbox has no network, so the research step cannot run at all, and this arm asserts the workspace shape rather than the sourcing.",
-  "No lesson was written on the opening pass. Semantic: a run that opened the workspace and taught nothing and a run that taught immediately both satisfy every assertion above, and which is correct depends on whether the starting point was settled.",
+  "Whether the opening pass should teach as well as open. Semantic: the measured run wrote a lesson, a reference page, a learning record, and the shared stylesheet on the same pass, and a run that opened the workspace and stopped satisfies every assertion above just as well. Nothing here decides which is correct.",
 ]
 
 # The mission frontmatter. `date` is the day the workspace opened and it is the
@@ -87,7 +89,7 @@ pattern = '^## Out of scope$'
 # is what stops a link to an unopened page being cited as a source.
 [[content]]
 path = ".claude/teach/01-regex/RESOURCES.md"
-pattern = '(?i)^#+ leads$'
+pattern = '^#+ [Ll]eads'
 
 [[content]]
 path = ".claude/teach/01-regex/GLOSSARY.md"

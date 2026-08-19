@@ -92,6 +92,7 @@ soffice
 stackr
 statusline
 streamable
+stylesheet
 subgraph
 subshell
 syscall
