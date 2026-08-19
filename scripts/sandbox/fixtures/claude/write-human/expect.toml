@@ -1,0 +1,41 @@
+# What a correct `/aitk:write-human` run leaves behind on the seeded passage.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+#
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so a `manual` array written at the bottom
+# parses clean and silently asserts nothing.
+#
+# This arm asserts less than most and says so rather than padding the count.
+# The defect seeded here is a distribution over a passage, and the checker reads
+# one pattern at a time, so every rhythm claim sits under `manual` by
+# construction. The vocabulary claims sit there too, because each one is an
+# absence inside a file and `absent` takes paths rather than content: a run that
+# leaves `The buffer` standing passes every mechanical assertion below.
+
+paths = ["docs/cache.md"]
+
+write_scope = ["docs/**"]
+
+# The frontmatter and the setting names survive the revision. A rewrite dropping
+# either has reformatted the file rather than revised the prose, and those two
+# outcomes are indistinguishable in a report that only counts what left.
+[[content]]
+path = "docs/cache.md"
+pattern = 'title: Cache'
+
+[[content]]
+path = "docs/cache.md"
+pattern = 'maxEntries'
+
+manual = [
+  "The revision varies sentence length rather than trading one uniform cadence for another. Semantic: length spread is a property of the passage, and a pattern over the file counts no words per sentence. This is the reported failure the skill exists against, so read it first.",
+  "Consecutive sentences no longer open on the same grammatical shape. Semantic: two sentences can open on different words and share one shape, which no literal match separates.",
+  "The two fragments were given verbs rather than deleted. Semantic: deleting them clears the fragment and loses the claim, and both outcomes leave the file shorter.",
+  "One name survives for the cached thing, so `store`, `buffer`, and `layer` are gone. Unwired: this is an absence inside a file, and `absent` asserts over paths rather than content.",
+  "The invented triad and the false range are gone, being `fast, simple, and reliable` and `everything from lookups to deployments`. Unwired: an absence inside a file, for the reason above.",
+  "The two propping adverbs left with a measurement or with nothing, rather than with a synonym. Unwired: an absence inside a file, and a swap for a near-synonym reads identically to a cut in any count.",
+  "The Configuration block states what the subject holds rather than three of anything. Semantic: the seeded block has three real settings, so a correct run may leave three bullets standing. The tell is whether the count was counted or reached for.",
+  "The run read `references/machine-tells.md` before revising. Unwired: the claim is about which files were loaded, which the envelope does not carry.",
+  "No banned word entered the file during the rewrite. Wired elsewhere: `aitk markdown audit` gates this over the corpus, and the seeded passage passes it before the run, so an arm asserting it here would go green whether or not the skill did anything.",
+]
