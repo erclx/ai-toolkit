@@ -1,6 +1,6 @@
 ---
 title: Tasks
-description: Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
+description: Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board and backlog checks validate runs, and why the board root defaults to the main worktree
 ---
 
 # Tasks
@@ -95,10 +95,14 @@ Five checks run. Plan and Collisions reach one half each of the `## Run now` tes
 | Check      | What it reports                                                                      |
 | ---------- | ------------------------------------------------------------------------------------ |
 | Plan       | A `## Run now` row whose Plan column carries no link, or one resolving to no file    |
-| Mapping    | A row naming no task file, and a task file no row names                              |
-| Grouping   | A task carrying a row in more than one readiness group                               |
+| Mapping    | A row or backlog line naming no task file, and a task file neither surface names     |
+| Grouping   | A task carrying a row in more than one readiness group, or on both surfaces          |
 | Collisions | Two `## Run now` rows whose Touches columns name a path in common                    |
 | Blockers   | A parked row whose blocker has stopped holding, or whose cited task resolves nowhere |
+
+Mapping spans two surfaces, because a task sits on `priority.md` when it would plausibly be planned soon and on `backlog.md` otherwise. A task file either surface names is accounted for, a file neither names is `row-missing`, and a file both name is `row-duplicated` for the reason a task in two groups is: it claims two things about itself and only one can hold. One check across both is what lets a task move between them without the move reading as a dropped file.
+
+A backlog line is a bullet carrying a link to a sibling task, since the backlog is a flat unordered list rather than a table. A bullet holding prose is skipped rather than reported, which keeps the file's own intro out of the findings, and the task that bullet meant to name is still reported as reaching neither surface. A project carrying no `backlog.md` reads as an empty backlog rather than a refusal, which leaves the one-to-one mapping this check ran before the second surface existed.
 
 The collision check is the one a person cannot run by eye. Paths come from the backticked spans in the Touches column, a span naming no file is dropped, and a directory collides with any file beneath it. A `## Run now` row whose column parses to nothing is reported rather than skipped, since a row stating no file set makes a claim nothing can check.
 
@@ -126,7 +130,7 @@ An untested row is not a finding and moves no exit code. Reading a clean finding
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one finding. The `reason` field carries which gate refused: `no-board`, `no-ordering`, or `no-groups`. A board grouping under headings of its own trips `no-groups` rather than being read against columns it never declared.
 
-Columns are read from each table's own header rather than by position, so a project whose board differs from this one is reported for what it lacks. The `index` and `priority` siblings are skipped, along with every pre-compaction handoff, which takes one file per session under a `session-` prefix. None of them is a task, and a handoff counted as one would be reported as a task carrying no row on every session that wrote one.
+Columns are read from each table's own header rather than by position, so a project whose board differs from this one is reported for what it lacks. The `index`, `priority`, and `backlog` siblings are skipped, along with every pre-compaction handoff, which takes one file per session under a `session-` prefix. None of them is a task, and a handoff counted as one would be reported as a task carrying no row on every session that wrote one.
 
 Skills branch on the findings rather than on the exit code:
 

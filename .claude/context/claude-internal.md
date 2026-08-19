@@ -78,6 +78,18 @@ Both artifacts are gitignored, which is what limits the board to one orchestrato
 
 Being gitignored also puts the citations these artifacts carry outside every check. A task file names its origin as a `Groundwork:` or `Plan:` link, `priority.md` carries a plan link per row, and a memory entry names archive paths in its `How to apply:` line. None of those appear in a diff, the citation half of `aitk context audit` covers `.claude/context/` alone, and no drift stage reads the folder, so a path rename anywhere under `.claude/` has to sweep the board and the memory folder by hand or it ships with every pointer broken and each check still green.
 
+### Two surfaces rather than a fourth group
+
+The three readiness groups answer whether a task can start, which is mechanical and checkable. Nothing answered which task is worth starting, and at 34 unplanned rows against 41 that judgment stopped fitting in one reading, so the board could not say what to do next. Measured 2026-08-19.
+
+Row position under `## Needs a plan` now carries that judgment, and `backlog.md` holds what is not near-term. A fourth readiness group was the obvious shape and the standard bars it directly, since the three names are a contract anything counting rows under a heading reads by. The bar holds on its own terms here: a backlog states that nobody has scheduled the task, which is a fact about attention rather than about whether the work can start, so it is not a readiness group whatever it is called.
+
+Sorting the whole group and leaving it on the board was the alternative, and it is what the cut declines. State shifts under a row sitting ten deep, so planning it now is wasted, and carrying it as a board row claims a commitment nobody made. A backlog line costs a pointer where a board row costs a position, a rationale, and a slot in every count. The intake folder was the third candidate and it holds findings before anyone decides they are work, while these are decisions already taken that nobody has scheduled.
+
+What the split costs is a judgment restated on every sweep rather than a rule applied once. A mechanical test over age or origin would need no restating and predicts nothing about what gets picked, which is the whole thing the ordering exists to carry, so the cost is taken deliberately and the sweep in `claude-orchestrate` is where it is paid.
+
+Sequencing rationale had no home under either arrangement, because the tasks standard sent it to the roadmap and a live task retires that surface. It now rides in the `Waiting on` cell the row already carries, one line per row, which is the shape that cell already had. A separate document would be the roadmap under another name.
+
 ### Validating a row
 
 `aitk tasks validate` checks what a row claims once the sweep has rewritten it. It is a verb rather than a hook because the board is gitignored per-machine scratch, so a `PostToolUse` hook would fire on intermediate states mid-restructure and run nowhere but an interactive session. It reads and never writes, since a row is the orchestrator's claim about readiness and a validator repairing one would assert the claim it exists to test.
@@ -93,6 +105,8 @@ Both halves gate on the cell rather than on a column beside it. The collision ha
 A citation resolving in neither folder is `blocker-unresolved` rather than a settled row. Reading an absent file as archived states a specific fact about a file nobody wrote, which is what a renamed task or a typo produces, and the two want different findings because only a task that genuinely closed releases the row.
 
 The three kinds resting on judgment go to a second array rather than to the findings, because a check reporting only what it can settle is trusted past its reach. A clean findings list on a board whose parked rows were never testable reads as a clean board, so the untested array is what keeps the reach visible without moving an exit code.
+
+The mapping check counts a task file against both surfaces, since it was the mechanical blocker on the cut. It reported a row and a task file that did not map one to one, which is exactly the state a backlogged task is in, so moving rows off while keeping their files would have failed the check on every run with each finding correct. Reading a marker inside the task file was the alternative and it puts the same fact in two places, where the backlog line already says it. One check across both surfaces is also what lets a task move between them without the move looking like a dropped file, and a task named by both is reported for the reason a task in two groups is.
 
 ### Orchestrator runbooks
 
@@ -112,7 +126,9 @@ The handoff carries the second recovery, since the body is what a compaction tak
 
 `session-resume` reads the newest map ahead of the board and reports it under a `Carried over` slot, which closes the loop for every session that holds no orchestrating role. It reads and never writes, since the write happens at the close of a session and the read at its start, and it names the standard when a session asks how to leave a handoff behind rather than routing that request to a skill of its own. Absence stays silent, because most projects carry no map and a line reporting that every run trains a reader to skip the line on the run where one exists.
 
-The one file per session lands on the board catalog, which filters nothing and gains a row per session that ever wrote a handoff, with nothing pruning them. That is the catalog behaving as a catalog rather than a defect in it, so the filter sits in the reader: `session-resume` drops the `index`, `priority`, and `session-` rows before calling what remains the backlog. Teaching the generator to skip them was the alternative and it breaks the one thing the catalog is for, which is naming every file in the folder.
+The one file per session lands on the board catalog, which filters nothing and gains a row per session that ever wrote a handoff, with nothing pruning them. That is the catalog behaving as a catalog rather than a defect in it, so the filter sits in the reader: `session-resume` drops the `index`, `priority`, `backlog`, and `session-` rows before calling what remains the task list. Teaching the generator to skip them was the alternative and it breaks the one thing the catalog is for, which is naming every file in the folder.
+
+Every sibling added to the folder has to reach that reader, which is the cost of putting the filter there. `backlog.md` is the case that proved it: the catalog gained its row the moment the file landed, and a reader filtering three names by hand counts the second board surface as a task.
 
 Capture sits in the handoff rather than in the sweep because a pass per batch of merges bills the operator a wait while nothing is being built. The sweep reports the debt in its output block and the handoff pays it, which keeps the signal without the wait.
 

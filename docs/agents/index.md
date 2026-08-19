@@ -25,5 +25,5 @@ CLI catalog and invocation rules for agents, split by command domain. Start with
 - [Scripting](scripting.md): The runtime catalogs that replace hardcoded names, what each carries, and a headless invocation per domain
 - [Sessions](sessions.md): Resolving live peer sessions to the worktree and branch each holds, the liveness confidence field, the unresolved reasons, and what the read depends on
 - [Skill audit](skills-audit.md): Measuring both skill corpora against standards/skill.md, the checks it reads, the requirement gate that is the only failing one, and the drift verb that names bodies rewritten since a ref
-- [Tasks](tasks.md): Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board checks validate runs, and why the board root defaults to the main worktree
+- [Tasks](tasks.md): Selecting a shipped task by stem or pull request, recording a number and closing an outcome, the refusal reasons, the board and backlog checks validate runs, and why the board root defaults to the main worktree
 - [Teach](teach.md): Listing learning workspaces and the ordinal a new one takes, opening one with its required files, recording sources and glossary terms, the refusal reasons, and why every write here runs through a verb
