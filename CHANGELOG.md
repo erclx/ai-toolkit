@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.101.0](https://github.com/erclx/aitk/compare/v0.100.0...v0.101.0) (2026-08-19)
+
+
+### Features
+
+* **teach:** add a command surface for learning workspaces ([#1013](https://github.com/erclx/aitk/issues/1013)) ([2dd3a7f](https://github.com/erclx/aitk/commit/2dd3a7f79f64c6be32017745fff63f93a3b081a3))
+
+
+### Bug Fixes
+
+* **review:** open the heading at any finding and state it once ([#1012](https://github.com/erclx/aitk/issues/1012)) ([56d93c1](https://github.com/erclx/aitk/commit/56d93c135be7f9be0c61f47ccf5379053f40d0bc))
+
 ## [0.100.0](https://github.com/erclx/aitk/compare/v0.99.1...v0.100.0) (2026-08-19)
 
 
