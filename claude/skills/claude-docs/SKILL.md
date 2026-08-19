@@ -227,6 +227,10 @@ A board carrying one task written `../plans/x.md` and another written `.claude/p
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
+`aitk tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `aitk` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.claude/plans-archive/`.
+
+Nothing in the exit code reports that. Branch on the record's `ok` and `reason` fields and never on the exit, which is the rule every task verb already carries: an operator's shell profile may wrap `aitk` in a function that runs the binary and then another command, taking its status from the second, and one measured here masks every non-zero exit rather than only an absent verb. The binary itself exits 1 for an unknown subcommand and 1 for an ordinary refusal alike. Switching this body to the verb needs a release that carries it and a read of the record rather than the exit, which together retire the duplication.
+
 A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.claude/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
 
 - Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.

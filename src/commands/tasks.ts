@@ -1,6 +1,12 @@
 import { relative } from 'node:path'
 import type { Command } from 'commander'
-import { type ArchiveOutcome, archiveTask } from '@/tasks/archive'
+import {
+  type ArchiveOutcome,
+  archiveTask,
+  type CitationOutcome,
+  type PlanCitations,
+  planCitations,
+} from '@/tasks/archive'
 import {
   type CloseOutcome,
   closeOutcomes,
@@ -38,6 +44,11 @@ interface ArchiveCommandOptions {
 }
 
 interface ValidateCommandOptions {
+  readonly json?: boolean
+  readonly root?: string
+}
+
+interface CitationsCommandOptions {
   readonly json?: boolean
   readonly root?: string
 }
@@ -124,6 +135,41 @@ export function register(program: Command): void {
     )
     .action(async (opts: ValidateCommandOptions) => {
       process.exitCode = await runValidate(opts)
+    })
+
+  tasks
+    .command('plan-citations')
+    .description('Report where a task plan sits and which live tasks hold it')
+    .argument('<task>', 'Task filename stem, as in v28.1-trigger-escalation')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Emit a machine-readable record on stdout')
+    .option('--root <path>', 'Board root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Locations:',
+        '  unstated  the task carries no Plan: line',
+        '  live      the target resolves inside .claude/plans/',
+        '  archived  the target resolves inside .claude/plans-archive/',
+        '  outside   the target resolves somewhere else',
+        '',
+        'Exit codes:',
+        '  0  the citations were read',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'It reports and never writes. A live plan whose citedBy list is empty',
+        'is the sweep to run, and one a sibling still holds is left alone.',
+        'The archive gate reads the same answer, so neither can drift.',
+        '',
+        'Examples:',
+        '  aitk tasks plan-citations v28.1-trigger-escalation',
+        '  aitk tasks plan-citations v28.1-trigger-escalation --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (task: string, opts: CitationsCommandOptions) => {
+      process.exitCode = await runCitations(task, opts)
     })
 
   tasks
@@ -424,6 +470,67 @@ async function runValidate(opts: ValidateCommandOptions): Promise<number> {
   const outcome = await validateBoard(root)
 
   return reportValidation(outcome, opts.json ?? false, root)
+}
+
+async function runCitations(
+  task: string,
+  opts: CitationsCommandOptions,
+): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await planCitations(root, task)
+
+  return reportCitations(outcome, opts.json ?? false, root)
+}
+
+function reportCitations(
+  outcome: CitationOutcome,
+  emitJson: boolean,
+  root: string,
+): number {
+  if (!outcome.ok) {
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: outcome.reason, message: outcome.message })}\n`,
+      )
+      return 1
+    }
+
+    intro('aitk tasks plan-citations')
+    logStep('Refused')
+    logError(outcome.message)
+    outro()
+    return 1
+  }
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ...outcome, root })}\n`)
+    return 0
+  }
+
+  intro('aitk tasks plan-citations')
+  logStep(outcome.stem)
+  logInfo(describeCitations(outcome))
+  outro()
+
+  return 0
+}
+
+function describeCitations(outcome: PlanCitations): string {
+  if (outcome.location === 'unstated') return 'carries no Plan: line.'
+
+  if (outcome.location === 'archived') {
+    return `points at ${outcome.target}, which an earlier sweep already archived.`
+  }
+
+  if (outcome.location === 'outside') {
+    return `points at ${outcome.target}, which resolves outside both plans folders.`
+  }
+
+  if (outcome.citedBy.length === 0) {
+    return `is the last live task citing ${outcome.target}, so the sweep may archive it.`
+  }
+
+  return `shares ${outcome.target} with ${outcome.citedBy.join(', ')}, so the sweep leaves it.`
 }
 
 function reportValidation(

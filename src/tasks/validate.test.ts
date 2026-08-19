@@ -13,6 +13,7 @@ import {
   readBoard,
   readPaths,
   validateBoard,
+  type ValidateOptions,
 } from '@/tasks/validate'
 
 let ROOT: string
@@ -57,13 +58,25 @@ async function seedBoard(text: string): Promise<void> {
   await writeFile(orderingPath(ROOT), text)
 }
 
-async function seedTask(stem: string, outcomes = ''): Promise<void> {
+async function seedTask(
+  stem: string,
+  outcomes = '',
+  pullRequest?: number,
+): Promise<void> {
   mkdirSync(tasksDir(ROOT), { recursive: true })
+  const origin = pullRequest ? `Pull request: #${pullRequest}\n\n` : ''
   await writeFile(
     join(tasksDir(ROOT), `${stem}.md`),
-    `# ${stem}\n\n## Outcomes\n\n${outcomes}\n`,
+    `# ${stem}\n\n${origin}## Outcomes\n\n${outcomes}\n`,
   )
 }
+
+/** Answers the trunk from a fixture, so no test reaches for a git history. */
+function trunkHolding(...landed: readonly number[]): ValidateOptions {
+  return { trunk: async (number) => landed.includes(number) }
+}
+
+const UNREACHABLE_TRUNK: ValidateOptions = { trunk: async () => undefined }
 
 async function seedArchivedTask(stem: string): Promise<void> {
   const archive = join(ROOT, '.claude', 'task-archive')
@@ -562,7 +575,50 @@ describe('validateBoard', () => {
     ])
   })
 
-  it('should report a parked row whose cited task closed every outcome', async () => {
+  it('should report a parked row whose cited pull request reached the trunk', async () => {
+    await seedTask('v1.0-first', '- [x] shipped', 673)
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [v1.0-first](v1.0-first.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT, trunkHolding(673))
+
+    expect(outcome.ok && outcome.findings).toMatchObject([
+      {
+        kind: 'blocker-settled',
+        message:
+          'waits on v1.0-first, whose pull request #673 reached the trunk.',
+      },
+    ])
+  })
+
+  it('should leave a parked row whose cited pull request is not on the trunk unreported', async () => {
+    await seedTask('v1.0-first', '- [x] shipped', 673)
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [v1.0-first](v1.0-first.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT, trunkHolding())
+
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.untested).toEqual([])
+  })
+
+  it('should park a row whose cited task closed every outcome but names no pull request', async () => {
     await seedTask('v1.0-first', '- [x] shipped')
     await seedTask('v2.0-second')
     await seedPlan('v1.0-first')
@@ -575,12 +631,39 @@ describe('validateBoard', () => {
       ]),
     )
 
-    const outcome = await validateBoard(ROOT)
+    const outcome = await validateBoard(ROOT, trunkHolding(673))
 
-    expect(outcome.ok && outcome.findings).toMatchObject([
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.untested).toMatchObject([
       {
-        kind: 'blocker-settled',
-        message: 'waits on v1.0-first, which carries no open outcome.',
+        subject: 'v2.0-second',
+        message:
+          'waits on v1.0-first, which closed every outcome but names no pull request, so nothing tests whether the work reached the trunk.',
+      },
+    ])
+  })
+
+  it('should park a row whose trunk could not be read', async () => {
+    await seedTask('v1.0-first', '- [x] shipped', 673)
+    await seedTask('v2.0-second')
+    await seedPlan('v1.0-first')
+    await seedBoard(
+      boardBody([
+        readyTable([{ stem: 'v1.0-first', touches: '`src/a.ts`' }]),
+        parkedTable([
+          '| [v2.0-second](v2.0-second.md) | `src/a.ts` | [v1.0-first](v1.0-first.md) |',
+        ]),
+      ]),
+    )
+
+    const outcome = await validateBoard(ROOT, UNREACHABLE_TRUNK)
+
+    expect(outcome.ok && outcome.findings).toEqual([])
+    expect(outcome.ok && outcome.untested).toMatchObject([
+      {
+        subject: 'v2.0-second',
+        message:
+          'waits on v1.0-first, whose pull request #673 could not be read against the trunk.',
       },
     ])
   })
@@ -621,6 +704,7 @@ describe('validateBoard', () => {
     await seedTask(
       'v1.0-first',
       '- [x] shipped\n\n```markdown\n- [ ] a sample the task displays\n```',
+      673,
     )
     await seedTask('v2.0-second')
     await seedPlan('v1.0-first')
@@ -633,7 +717,7 @@ describe('validateBoard', () => {
       ]),
     )
 
-    const outcome = await validateBoard(ROOT)
+    const outcome = await validateBoard(ROOT, trunkHolding(673))
 
     expect(outcome.ok && kinds(outcome.findings)).toEqual(['blocker-settled'])
   })
