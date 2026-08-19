@@ -113,8 +113,13 @@ The last line is what keeps the step honest on a stack this skill cannot read. E
 
 Then report the port this worktree derives, on a second line:
 
-- `scripts/worktree-port.sh` present: run `bash scripts/worktree-port.sh` and emit `Port offset <n>. Every served port adds it to the stack default.`
+- `scripts/worktree-port.sh` present and exiting zero: run `bash scripts/worktree-port.sh` and emit `Port offset <n>. Every served port adds it to the stack default.`
+- Present and exiting non-zero: emit `The port helper refuses this directory, so no server here has a port. <its stderr>`
 - Absent: `No port derivation installed, so every served port is the stack default.`
+
+Branch on the exit rather than on the output, since the helper prints nothing to stdout when it refuses and reading that as a number reports an offset of zero, which is the main checkout's.
+
+The helper refuses a folder left behind after its worktree was removed, which Step 4 cannot land on, since it registers whatever it creates. The branch is here so a refusal is never read back as an offset of zero, which is the main checkout's port and the collision the helper exists to prevent.
 
 The offset is what `claude-orchestrate` sends a reader here to read rather than assign, and what an operator overrides through `WORKTREE_PORT_OFFSET` when two worktrees derive the same value. Deriving it correctly and printing it nowhere leaves both instructions naming a number no surface emits.
 
