@@ -29,7 +29,7 @@ const CITATION = /`([^`\n]+?\.md)`/g
 const DELEGATION_START = /^Does not govern:/
 const HEADING = /^#{1,6}\s/
 
-/** Accepts `prose` and `prose.md` alike, since the catalog lists both spellings. */
+/** Accepts `skill` and `skill.md` alike, since the catalog lists both spellings. */
 export function normalizeName(raw: string): string {
   const name = raw.trim()
   return name.endsWith('.md') ? name : `${name}.md`

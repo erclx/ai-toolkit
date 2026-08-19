@@ -16,7 +16,7 @@ Whether a session that has never seen the standard can author a conforming entry
 
 A synthetic tool, `feedwatch`, that polls RSS and Atom feeds and fans items to delivery sinks. Synthetic rather than a real domain: all 17 domains in this repo carry entries as of 2026-07-31, so the plan's fallback in question 4 is the only honest option. A real domain with an existing entry would let the session pattern-match from prior exposure rather than from the standard.
 
-Each arm holds the tool, a copy of the standard under test at `.claude/standards/`, a copy of `prose.md`, and an empty destination folder. No `CLAUDE.md` at any level, verified: no user-level `~/.claude/CLAUDE.md` exists on this machine, and the fixture sits outside the toolkit repo so the repo's own `CLAUDE.md` cannot load through the ancestor chain.
+Each arm holds the tool, a copy of the standard under test at `.claude/standards/`, a copy of `markdown.md`, and an empty destination folder. No `CLAUDE.md` at any level, verified: no user-level `~/.claude/CLAUDE.md` exists on this machine, and the fixture sits outside the toolkit repo so the repo's own `CLAUDE.md` cannot load through the ancestor chain.
 
 ## Planted decisions, context arm
 

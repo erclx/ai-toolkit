@@ -323,8 +323,8 @@ if [ "$arm" = seed ]; then
   cli=("bun" "run" "$REPO_ROOT/src/cli.ts")
 
   # `aitk claude init` seeds .claude/ and CLAUDE.md but installs no standards,
-  # while the seeded standards-audit hook reads .claude/standards/prose.md to
-  # build its banned-word list and the base stack's rules cite the same folder.
+  # while the base stack's rules cite .claude/standards/ for the banned words
+  # and the formatting rules the seeded hooks report against.
   # Without this second call the arm measures a half-installed project.
   AITK_NON_INTERACTIVE=1 "${cli[@]}" claude init "$fixture" >&2
   AITK_NON_INTERACTIVE=1 "${cli[@]}" standards install "$fixture" >&2
@@ -351,9 +351,9 @@ if [ "$arm" = seed ]; then
 else
   mkdir -p "$fixture/.claude/standards" "$fixture/$(dirname "$dest")"
   cp "$REPO_ROOT/standards/$standard" "$fixture/.claude/standards/$standard"
-  # Both halves, since a standard under test cites whichever governs it and a
-  # missing half leaves the citation dangling in the arm rather than in the repo.
-  cp "$REPO_ROOT/standards/prose.md" "$fixture/.claude/standards/prose.md"
+  # The attribute standard too, since a standard under test cites whichever
+  # governs it and a missing one leaves the citation dangling in the arm rather
+  # than in the repo.
   cp "$REPO_ROOT/standards/markdown.md" "$fixture/.claude/standards/markdown.md"
 fi
 

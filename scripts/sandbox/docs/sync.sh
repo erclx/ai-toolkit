@@ -31,7 +31,7 @@ EOF
 
   mkdir -p .claude/standards
   echo "Mock readme rules" >.claude/standards/readme.md
-  echo "Mock prose rules" >.claude/standards/prose.md
+  echo "Mock markdown rules" >.claude/standards/markdown.md
 
   git add . && git commit -m "feat(server): add base config and start function" -q
 

@@ -62,18 +62,18 @@ describe('resolveStandard', () => {
   })
 
   it('should fall back to the package copy when the project installed none', () => {
-    const resolved = resolveStandard(ROOT, 'prose.md')
+    const resolved = resolveStandard(ROOT, 'markdown.md')
 
     expect(resolved).toEqual({
-      path: join(PROJECT_ROOT, 'standards', 'prose.md'),
-      source: join('<aitk>', 'standards', 'prose.md'),
+      path: join(PROJECT_ROOT, 'standards', 'markdown.md'),
+      source: join('<aitk>', 'standards', 'markdown.md'),
     })
   })
 
   it('should spell the package source so nothing joins it to a project root', () => {
     // The field promises a repo-relative path everywhere else, and a package
     // copy is the one source that promise cannot cover.
-    expect(resolveStandard(ROOT, 'prose.md')?.source).toContain('<aitk>')
+    expect(resolveStandard(ROOT, 'markdown.md')?.source).toContain('<aitk>')
   })
 
   it('should take a name carrying no extension', () => {

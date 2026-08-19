@@ -6,7 +6,7 @@
 # The domain scan lists only domains it finds installed, so a fully unmigrated
 # project reported zero entries and read as clean.
 
-paths = ["drift-report.json", "standards/prose.md"]
+paths = ["drift-report.json", "standards/markdown.md"]
 
 absent = [".claude/standards"]
 
