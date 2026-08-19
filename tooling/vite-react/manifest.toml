@@ -11,13 +11,13 @@ packages = [
 ]
 
 [scripts]
-"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) vite"
+"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && vite"
 "build" = "tsc --noEmit && vite build"
-"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) vite preview"
+"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && vite preview"
 "typecheck" = "tsc --noEmit"
 "setup" = "./scripts/setup.sh"
 
 [scripts.override]
 "build" = "tsc --noEmit && vite build"
-"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) vite"
-"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) vite preview"
+"dev" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && vite"
+"preview" = "WORKTREE_PORT_OFFSET=$(bash scripts/worktree-port.sh) && export WORKTREE_PORT_OFFSET && vite preview"
