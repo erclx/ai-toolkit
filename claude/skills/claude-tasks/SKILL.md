@@ -43,7 +43,15 @@ Never write a `Pull request:` line here. `git-pr` adds it when a pull request op
 
 Write it immediately. Claude Code's tool permission dialog is the confirmation gate. Do not pause for approval.
 
-### Step 4: report unlinked origins
+### Step 4: place it on a surface
+
+A task file with no row is a dropped task, so name the surface it lands on in the same pass that creates it. A task that would plausibly be planned within the next few waves takes a row under `## Needs a plan` in `.claude/tasks/priority.md`, positioned by where it sits against the rows already there, with the reason for that position in its `Waiting on` cell. Anything else takes a line in `.claude/tasks/backlog.md`, which is unordered and where in the file it goes means nothing.
+
+The test and both file shapes are in `.claude/standards/tasks.md`. From a linked worktree the file-editing tools refuse the main root, so a row lands through the same `Bash` route the file itself took.
+
+Say which surface it went to and why in the report. The call is a judgment restated on every sweep rather than a property of the task, and a placement with no stated reason is one the next sweep re-derives from nothing.
+
+### Step 5: report unlinked origins
 
 Scan for work that has been decided and would otherwise be forgotten. List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
 
@@ -105,6 +113,7 @@ Create:
 ✅ Created: .claude/tasks/vXX.Y-<slug>.md
 
 <label> sits between <neighbor> and <neighbor>.
+<board or backlog, and why it landed there>.
 
 **Origin with no task:**
 

@@ -9,11 +9,16 @@ const PLANS_DIR = join('.claude', 'plans')
 
 /**
  * Siblings that sit on the board without being tasks: the generated index, the
- * hand-maintained ordering, and a handoff a session wrote before the file took
- * one name per session. `validate` reads the same list, so neither verb can
- * count a sibling as a task the other does not.
+ * hand-maintained ordering, the unordered backlog beside it, and a handoff a
+ * session wrote before the file took one name per session. `validate` reads the
+ * same list, so neither verb can count a sibling as a task the other does not.
  */
-export const RESERVED_STEMS = ['index', 'priority', 'session'] as const
+export const RESERVED_STEMS = [
+  'index',
+  'priority',
+  'backlog',
+  'session',
+] as const
 
 /** The pre-compaction handoff takes one file per session, so its stems vary. */
 const SESSION_MAP_PREFIX = 'session-'

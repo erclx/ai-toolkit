@@ -13,7 +13,7 @@ The folder is gitignored. Board state changes when work ships rather than when a
 
 ## Scope
 
-Governs the task board under `.claude/tasks/`: folder layout, filenames, frontmatter, file format, origin lines, execution ordering, and archiving.
+Governs the task board under `.claude/tasks/`: folder layout, filenames, frontmatter, file format, origin lines, execution ordering, the backlog beside it, and archiving.
 
 Does not govern:
 
@@ -30,6 +30,7 @@ Does not govern:
 .claude/tasks/
 ├── index.md              ← generated, never hand-edited
 ├── priority.md           ← hand-maintained execution order
+├── backlog.md            ← unordered, what is not being scheduled
 ├── session-<slug>.md     ← optional, what a compaction is about to destroy
 ├── v09.0-sync-paths.md
 └── v13.0-toolkit-drift.md
@@ -37,7 +38,9 @@ Does not govern:
 
 One file per task is what keeps the board safe under parallel sessions. Two sessions working different tasks never write the same file, which matters because a gitignored board has no history to recover a clobbered write from.
 
-Siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md` and `priority.md` are governed here. Every `session-` file is a pre-compaction handoff governed by `session.md`, and each is optional: a project whose sessions never approach a compaction carries none. Anything filtering the folder to tasks skips all of them, so a name outside the set is a task whatever it holds.
+Siblings sit in the folder without being tasks, and each earns its place by being governed somewhere. `index.md`, `priority.md`, and `backlog.md` are governed here. Every `session-` file is a pre-compaction handoff governed by `session.md`, and each is optional: a project whose sessions never approach a compaction carries none. Anything filtering the folder to tasks skips all of them, so a name outside the set is a task whatever it holds.
+
+`backlog.md` is optional too. A project small enough that every task it holds would be planned soon carries none, and the ordering rules below then describe the whole board.
 
 The handoff takes one file per session for the reason a task does. A single shared path puts two sessions closing near each other on one file that neither can watch the other write, and the loser leaves no trace on a board with no history behind it.
 
@@ -49,7 +52,7 @@ The `claude-tasks` skill creates and archives task files. `claude-docs` marks ou
 
 ## Ordering
 
-`priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Why the order is what it is belongs in `.claude/ROADMAP.md`, which is committed because that rationale has no substitute record.
+`priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Why one version sequences against another belongs in `.claude/ROADMAP.md`, which is committed because that rationale has no substitute record. Why a row sits where it does inside its group is stated on the row itself, in the column that already carries what the task is waiting on.
 
 Group tasks by readiness rather than by status, one row per task, under the columns each group fixes below. Keep it to links and blockers: tables, plus at most one sentence per section. A paragraph in `priority.md` is a defect whatever it says. Stating the shape this way is what lets a single diff fail, since a size cap only trips after the fact and every addition looks defensible on its own.
 
@@ -61,11 +64,15 @@ Readiness is three groups under fixed headings, `## Run now`, `## Up next`, and 
 
 Each group fixes its own columns, which follow from the test above it rather than from preference. Neither half of the `## Run now` test is checkable without the file set and the plan sitting beside the task.
 
+Row position inside `## Needs a plan` is the order those tasks get planned in, top first. The three tests answer whether a task can start, which is mechanical, and none of them answers which task is worth starting, which is a judgment no column holds. Position is where that judgment is recorded, so the top row is the answer to what to plan next and a reader needs no other surface to get it. The other two groups take the same reading, and it costs them little, since a group holding what is already planned is short by construction.
+
+Position alone carries it, and no rank column exists. A number beside each row is a second thing to keep in step with the order it duplicates, and the file is edited by one session at a time, so the order the rows are written in is already unambiguous. State on each row why it sits where it does, in the same cell that carries what it is waiting on. A position with no stated reason is re-derived from memory by the next session, which is the failure the ordering replaces rather than moves.
+
 The `Waiting on` column under `## Up next` carries that reason in one of three forms. `## Needs a plan` states no file set at all, because a task with no plan has no bounded one to state. A group with no rows keeps its heading and its header row.
 
 Under `## Up next` a collision names the file held by the task already running, a sibling task names that task, and an external condition names both the condition and what would satisfy it. Naming what would satisfy it is what separates a blocked row from one nobody has examined, so a cell stating a condition with no way out of it fails the test. The header text is the contract the way the group names are, because anything reading the cell resolves the column by header rather than by position.
 
-`aitk tasks validate` reads those columns and reports where a row's claim and the tree disagree: a plan pointer resolving to no file, a row and a task file that do not map one to one, a task in two groups, and two `## Run now` rows touching a path in common. It also re-takes the two blocker kinds a command can settle, reporting a parked row whose cited task is archived or has closed every outcome and one whose cited file nothing under `## Run now` still holds. Both halves read a citation out of the cell rather than parsing it into fields, and a row citing neither is reported as untested, which is where the three kinds resting on a person's judgment land. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on. It reports and never writes, so a session fixes the row it names.
+Under `## Needs a plan` the cell carries two halves and each takes one clause: what the task needs before it can be planned, then why it sits at this position. A cell running past that is the paragraph this file already deletes, arriving one row at a time rather than all at once, and the group is where it costs the most, since it holds the rows nobody has read recently and is the longest group on any board that needs a backlog at all.
 
 ```markdown
 ---
@@ -88,12 +95,46 @@ description: One line on what the board covers
 
 ## Needs a plan
 
-| Task                            | Waiting on                                     |
-| ------------------------------- | ---------------------------------------------- |
-| [vXX.Y <slug>](vXX.Y-<slug>.md) | <what the task needs before it can be planned> |
+| Task                            | Waiting on                                                     |
+| ------------------------------- | -------------------------------------------------------------- |
+| [vXX.Y <slug>](vXX.Y-<slug>.md) | <what it needs before it can be planned, and why it sits here> |
 ```
 
 The tests live here so the board does not carry them. Writing them as a sentence under each heading produces the paragraph the rule above deletes, and a criterion with no home gets restated from memory every time the board is touched.
+
+## The backlog
+
+A task sits on the board when it would plausibly be planned within the next few waves, and on `backlog.md` otherwise. The call is a judgment, so restate it whenever the board is swept rather than making it once: a backlogged task rises when the work in front of it lands or the world changes under it, and a board row falls to the backlog when it stops being near-term.
+
+A mechanical test over age or origin was the alternative and neither predicts what gets picked next, which is the judgment the ordering exists to carry. Leaving everything on the board is the other alternative, and it is what produces a group too long to rank, where the ordering means nothing because nobody can hold the whole list in one reading.
+
+What the split buys is that the board is short enough for its order to be read, and what it costs is a second surface to keep. That trade only pays while the backlog stays honest about what it is, which is why it carries no order, no groups, and no readiness claim.
+
+Nothing is deleted. A backlogged task keeps its file, its findings, and its frontmatter, and the backlog row is a pointer at that file. The folder is gitignored and has no history behind it, so a row dropped without landing somewhere readable is gone with nothing to recover it from.
+
+The backlog is a flat list of links under one heading, sorted by filename. Sorting mechanically is what keeps it from reading as a queue: the order is the same order the index already sorts in, so no position on it means anything.
+
+```markdown
+---
+title: Backlog
+description: One line on what the backlog holds
+---
+
+# Backlog
+
+Unordered. Nothing here is scheduled, and a task rises to `priority.md` when it becomes near-term.
+
+- [vXX.Y <slug>](vXX.Y-<slug>.md)
+- [vXX.Y <slug>](vXX.Y-<slug>.md)
+```
+
+Add no fourth readiness group in place of this file. The three group names are the contract, and a backlog is a separate surface rather than a group because it makes no readiness claim at all: it says nobody has scheduled the task, which is a fact about attention rather than about whether the work can start.
+
+## Validation
+
+`aitk tasks validate` reads the columns above and reports where a row's claim and the tree disagree: a plan pointer resolving to no file, a task file reached by neither surface, a task on both surfaces or in two groups, and two `## Run now` rows touching a path in common. It also re-takes the two blocker kinds a command can settle, reporting a parked row whose cited task is archived or has closed every outcome and one whose cited file nothing under `## Run now` still holds. Both halves read a citation out of the cell rather than parsing it into fields, and a row citing neither is reported as untested, which is where the three kinds resting on a person's judgment land. Run it when the readiness claim is made rather than on a schedule, since the board is gitignored per-machine scratch and no shared moment exists to hang it on. It reports and never writes, so a session fixes the row it names.
+
+A task file is accounted for when a row on `priority.md` or a line on `backlog.md` names it, and reported when neither does. One check across both surfaces is what lets a task move between them without the move looking like a dropped file, and a task named by both is reported for the same reason a task in two groups is: it claims two things about itself and only one of them can hold. A project carrying no `backlog.md` is read as an empty backlog rather than refused, which leaves the one-to-one mapping this check ran before the second surface existed.
 
 ## Filenames
 
@@ -195,7 +236,7 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 - Architectural reasoning that outlives the task. A finding explains why this task is shaped as it is. A decision the system keeps after the task closes belongs in `.claude/ARCHITECTURE.md`.
 - Narrative of the session that produced the task. A finding states what constrains the task, so what was probed, what it cost, and who decided belongs in the groundwork folder the `Groundwork:` line names. A task with no groundwork folder cuts the narrative rather than relocating it, since the board is not the fallback destination for it.
 - "In progress" or "Blocked" headings. Note status inline on the outcome instead.
-- Sequencing rationale or which version is active. Those belong in `.claude/ROADMAP.md`, which is committed because that reasoning has no substitute record.
+- Sequencing rationale or which version is active. Why this task is planned before its neighbors goes on its row in `priority.md`, in the cell that already carries what it is waiting on. Why one version sequences against another belongs in `.claude/ROADMAP.md`, which is committed because that reasoning has no substitute record.
 
 ## Archiving
 
@@ -204,6 +245,8 @@ Never delete a task file. A shipped task moves to `.claude/task-archive/` under 
 Two callers reach that command. The `claude-tasks` skill runs it inside a session, and the `post-merge` hook runs it unattended after a pull that merged the work. Both go through the command rather than moving the file themselves, so the two paths cannot drift into archiving differently. Every gate the command applies refuses with a non-zero exit rather than reporting, because a caller with nobody watching cannot act on a warning.
 
 One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/plans-archive/` and stays gitignored, so an archived task does not start appearing in diffs. The cost is that the folder is unbacked, which is the same cost the plans archive already carries.
+
+The archive clears a row from `priority.md` and reads no other surface, which holds because a task reaches a merge by being planned and handed out, and both steps move it onto the board first. A task archived straight off the backlog therefore leaves its line standing, and the validator reports that line as naming a file that is gone rather than the board losing it silently.
 
 Archiving a task does not archive its plan. `claude-docs` owns the plans sweep and moves a plan only when the closing task is its last live citation. The archive clears the task's row from `priority.md` itself, since a shipped task left in the ordering reads as ready to hand a worker. It leaves prose naming the task alone for a person to resolve.
 

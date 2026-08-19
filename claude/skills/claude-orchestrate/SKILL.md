@@ -25,6 +25,7 @@ session's review are different passes, and how a feature is sized.
 Read the board in parallel, resolving the paths at the main worktree root per Worktrees in `CLAUDE.md`:
 
 - `.claude/tasks/priority.md`: execution order and what each task is waiting on
+- `.claude/tasks/backlog.md`: what is not being scheduled, when the file exists
 - `.claude/tasks/index.md`: what is queued
 - `.claude/plans/*.md`: features already planned and ready to hand off
 - `.claude/ROADMAP.md`: sequencing rationale, when the file exists
@@ -33,6 +34,8 @@ Read the board in parallel, resolving the paths at the main worktree root per Wo
 Then output the state of play so the human knows what to launch, review, and merge.
 
 `priority.md` is the ordering source. `index.md` sorts by filename and says nothing about order, so read the sequence from the first and never infer it from the second. When `priority.md` is absent, report the queue and say the order is unrecorded.
+
+Row position under `## Needs a plan` is what gets planned next, top first, per `.claude/standards/tasks.md`. `backlog.md` carries what nobody is scheduling and is explicitly unordered, so read it for what exists and never as a queue. Report a backlog count rather than its rows, since listing them puts the length back in front of the reader the cut took it away from.
 
 The roadmap is optional and this skill does not require it. It carries why a sequence is what it is, changes only when strategy changes, and is absent in a project whose scope has already shipped. Report what it says and name it as the source. Never assert an active version the file does not state, and say nothing about one when the file is missing.
 
@@ -155,7 +158,8 @@ It counts unclaimed plans against workers rather than reading the reserve in ste
    - A task whose outcomes are all `[x]` runs `claude-docs` for the plan sweep, then `claude-tasks` to archive
    - A task whose outcomes describe standing policy rather than a deliverable never closes on its own, so hand it to a worker to encode the policy where it is enforced, then cut the outcomes with the reason recorded and archive once that branch merges. Encoding it from this session would write a tracked file, which Boundaries forbids.
 4. Read `.claude/tasks/priority.md` and count entries under its `## Run now` heading that carry a written plan. Keep one in reserve beyond what is running.
-5. Promote by whether a task establishes functionality rather than by age. Prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
+5. Promote from the top of `## Needs a plan`, which is where the last sweep recorded what to plan next. Depart from that order when something has changed under it and say what changed, since a position nobody honors is the ordering going stale on the surface built to hold it. What sets the order in the first place is whether a task establishes functionality rather than how old it is, so prefer a task that adds or proves a mechanism over one that trims, tidies, or audits an existing surface.
+   - Re-take the board-or-backlog call while the file is open. A row that has stopped being near-term moves to `backlog.md`, and a backlogged task the last wave made near-term moves onto the board. Both are one line removed from one surface and written to the other, and the standard states the test.
 6. Before promoting a candidate, list the files it touches against every task already running, per Parallelism below. Name the overlap and serialize when the sets are not disjoint.
    - A candidate held by something outside the tree stays where it is whatever those sets show. A collision is one of the reasons a task cannot start, so disjointness clears that reason alone and leaves an external condition standing.
 7. Write a plan for each newly promoted task with `claude-feature`, carrying the in-flight constraint that The loop above states, then report:
@@ -166,6 +170,7 @@ Findings placed: <finding> → <destination>
 Archived: <task>
 Promoted: <task>, touches <surfaces>, parallel with <task> because <disjoint sets>
 Serialized: <task> behind <task>, both write <file>
+Backlogged: <task>, because <what stopped being near-term>
 Ready now: <tasks with plans, and what each waits on>
 ```
 
@@ -179,9 +184,11 @@ Do not promote a task to fill the queue when nothing qualifies. A thin queue is 
 
 ### Writing the board
 
-Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, and this session is the only writer apart from `aitk tasks archive`.
+Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, and this session is the only writer apart from `aitk tasks archive`. Moving a task between the board and `.claude/tasks/backlog.md` writes both files, and this session is that file's only writer.
 
 - Edit the file with the file-editing tool. A shell stream editor and an inline string replace both exit clean on a non-match, so a promotion that matched nothing leaves the board wrong with nothing reporting it, and the file-editing tool errors instead.
+- Write both halves of a move before reporting it. A row removed from one surface and not written to the other leaves a task file nothing names, and the folder is gitignored with no history to recover the row from. `aitk tasks validate` reports that state, so run it after any move.
+- Put the reason a row sits where it does in its Waiting on cell. Position is the ordering and the cell is where the ordering's rationale lives, so a row promoted with the cell left alone carries an order the next sweep cannot check.
 - Put a pointer in the Plan column, never prose. `## Run now` claims a written plan covers every open outcome, and `claude-autoship` refuses at its guard when it follows the column and finds no plan, which spends a worker dispatch to learn what the row should have said.
 - Name the file set in the Touches column. The disjointness call in step 6 is only checkable later when the sets are written down rather than reasoned once and discarded.
 - Re-resolve every Plan pointer after anything archives a plan

@@ -104,7 +104,7 @@ export function register(program: Command): void {
         '',
         'Checks:',
         '  every Run now row points at a plan file that resolves',
-        '  every row maps to a task file and every task file to a row',
+        '  every task file carries a board row or a backlog line, never both',
         '  no task carries more than one row',
         '  no two Run now rows touch the same file',
         '',
@@ -450,12 +450,14 @@ function reportValidation(
     intro('aitk tasks validate')
     logStep('Board')
     logInfo(
-      `${outcome.rows} row(s) across the readiness groups, ${outcome.tasks} task file(s)`,
+      `${outcome.rows} row(s) across the readiness groups, ${outcome.backlog} backlog line(s), ${outcome.tasks} task file(s)`,
     )
 
     logStep(outcome.findings.length === 0 ? 'Clean' : 'Findings')
     if (outcome.findings.length === 0) {
-      logInfo('every row resolves, maps one to one, and touches its own files')
+      logInfo(
+        'every row resolves, every task sits on one surface, and each touches its own files',
+      )
     } else {
       for (const finding of outcome.findings) logWarn(describe(finding))
     }
@@ -481,6 +483,7 @@ function reportValidation(
         ok: true,
         root,
         rows: outcome.rows,
+        backlog: outcome.backlog,
         tasks: outcome.tasks,
         findings: outcome.findings,
         untested: outcome.untested,
