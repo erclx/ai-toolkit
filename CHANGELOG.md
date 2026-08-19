@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.103.0](https://github.com/erclx/aitk/compare/v0.102.0...v0.103.0) (2026-08-19)
+
+
+### Features
+
+* **teach:** promote a durable page out of a learning workspace ([#1017](https://github.com/erclx/aitk/issues/1017)) ([4bd3a66](https://github.com/erclx/aitk/commit/4bd3a668e430c299091f5cfae4dfe616f9041727))
+
 ## [0.102.0](https://github.com/erclx/aitk/compare/v0.101.0...v0.102.0) (2026-08-19)
 
 
