@@ -89,7 +89,7 @@ A later pass applies the same axes to the delta, and adds one check the first pa
 
 A prior finding can also be settled by argument rather than by a fix. A reply naming the plan question that already declined it, or a constraint this session could not see, withdraws the finding or moves its grade. State that outcome in the body under the finding it changes, naming the fact that produced it, whether the argument arrived on the thread or through the channel that carried the dispatch. Dropping the finding from this body instead leaves a reader unable to tell a withdrawal from an oversight, and the reasoning goes with the session that heard it. A withdrawal removes the finding from the count, so a pass that withdrew every finding it carried is a close-out. Write the withdrawal and its cause into that body rather than taking the short close-out line Step 4 supplies, which reports prior findings addressed and would credit a fix nobody made.
 
-Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor` (visibility only).
+Use severity: `critical` (blocks merge), `should-fix` (fix before merge), `minor` (blocks nothing). The ladder ranks a finding and decides nothing about who acts on it, since every grade takes the open heading and owes a dispatch under the threshold Step 4 states.
 
 ## Step 4: post to the PR
 
