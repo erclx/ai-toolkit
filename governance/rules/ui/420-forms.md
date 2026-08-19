@@ -1,8 +1,9 @@
 ---
-description: Form validation timing, save-blocking, and derived state for React forms
+description: Form validation timing, save-blocking, and derived state for rendered forms
 paths:
   - '**/*.tsx'
   - '**/*.jsx'
+  - '**/*.astro'
 ---
 
 # Form standards
