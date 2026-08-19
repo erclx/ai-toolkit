@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.99.1](https://github.com/erclx/aitk/compare/v0.99.0...v0.99.1) (2026-08-19)
+
+
+### Bug Fixes
+
+* **rules:** match astro files from the four ui rules ([#1006](https://github.com/erclx/aitk/issues/1006)) ([5f78204](https://github.com/erclx/aitk/commit/5f7820490ea30c1c4cc8c70da11ed1f43aaa4f6c))
+
 ## [0.99.0](https://github.com/erclx/aitk/compare/v0.98.0...v0.99.0) (2026-08-19)
 
 
