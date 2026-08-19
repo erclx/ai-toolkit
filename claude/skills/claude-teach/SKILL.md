@@ -36,7 +36,9 @@ List the folders under the workspace root. A folder whose topic matches the invo
 
 On a resume, read `MISSION.md`, the highest-numbered learning record, and `GLOSSARY.md`. Those three carry where the learner stopped and what they got wrong. Report the mission's success lines with what is already met before teaching anything.
 
-On a new workspace, take the ordinal from the highest one present, incremented, and create the folder as `<nn>-<topic>`. Write `MISSION.md` first, to the template the standard carries, and settle the starting point by asking rather than by assuming. Difficulty with no floor under it teaches nobody.
+On a new workspace, settle the starting point first, by asking rather than by assuming. Difficulty with no floor under it teaches nobody, and the mission cannot be written without it.
+
+Then take the ordinal from the highest one present, incremented, create the folder as `<nn>-<topic>`, and write all three files the standard requires: `MISSION.md` to the template it carries, `RESOURCES.md` with whatever Step 2 read, and `GLOSSARY.md`, empty of terms until a lesson defines one. A workspace missing any of the three fails its own conformance check the moment anything walks it.
 
 ## Step 2: research before teaching
 
