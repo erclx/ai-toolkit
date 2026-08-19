@@ -9,8 +9,8 @@ disable-model-invocation: true
 Read these files from the project root in parallel:
 
 - `.claude/standards/skill.md`: skill structure, skill types, frontmatter fields, invocation rules
-- `.claude/standards/prose.md`: voice and banned words for skill body text
-- `.claude/standards/markdown.md`: punctuation and formatting for skill body text
+- `.claude/standards/markdown.md`: banned words, punctuation, and formatting for skill body text
+- The `write-human` skill: voice, rhythm, and sentence construction for skill body text
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 

@@ -1,11 +1,11 @@
 ---
 title: Prose influences
-description: Industry style guides behind prose.md and markdown.md, plus AI-specific additions
+description: Industry style guides behind markdown.md and the write-human skill, plus AI-specific additions
 ---
 
 # Prose influences
 
-The rules in `.claude/standards/prose.md` and `.claude/standards/markdown.md` draw from three industry style guides plus AI-specific additions. The first holds voice and word choice and the second holds punctuation and formatting, so a rule below is attributed to whichever half states it. Source: Google, Microsoft, and Apple, whose guides are linked in the table below.
+The rules in `.claude/standards/markdown.md` and the `write-human` skill draw from three industry style guides plus AI-specific additions. The standard holds word choice, punctuation, and formatting, and the skill holds voice and cadence, so a rule below is attributed to whichever carrier states it. Source: Google, Microsoft, and Apple, whose guides are linked in the table below.
 
 ## Industry guides
 
@@ -40,23 +40,23 @@ Five patterns left this list on 2026-08-02. Participant address and padded verb 
 
 ## Positive guidance
 
-The bans above subtract slop. They also push output toward a uniform staccato cadence, so `prose.md` pairs them with construction guidance: vary sentence length and opening structure, use substantive connectives where flow matters, and never pad for rhythm. This guidance is soft judgment, not a fixed pattern, so the standards audit does not score it mechanically.
+The bans above subtract slop. They also push output toward a uniform staccato cadence, so the `write-human` skill pairs them with construction guidance: vary sentence length and opening structure, use substantive connectives where flow matters, and never pad for rhythm. This guidance is soft judgment rather than a fixed pattern, so the standards audit does not score it mechanically.
 
 The cadence half is Google's. [Voice and tone](https://developers.google.com/style/tone) names `Starting all sentences with the same phrase (such as You can or To do)` and `Choppy or long-winded sentences` under things to avoid, and the same page reads `Use transitions between sentences. Phrases like Though or This way can make paragraphs less stilted.` The no-padding half is Microsoft's, from [Use simple words, concise sentences](https://learn.microsoft.com/en-us/style-guide/word-choice/use-simple-words-concise-sentences), which reads `remove words that don't add substance`. Both read 2026-08-02 against `a37d18a2`.
 
 ## What we left out
 
-Four principles these guides state did not reach `prose.md`, and none is a disagreement.
+Four principles these guides state did not reach either carrier, and none is a disagreement.
 
-Google's [guidance on person](https://developers.google.com/style/person) says to address the reader as _you_ rather than _we_, and permits first-person plural where the authoring organization is a clear antecedent. `prose.md` takes no position on person at all.
+Google's [guidance on person](https://developers.google.com/style/person) says to address the reader as _you_ rather than _we_, and permits first-person plural where the authoring organization is a clear antecedent. Neither carrier takes a position on person at all.
 
-Microsoft states [three voice principles](https://learn.microsoft.com/en-us/style-guide/brand-voice-above-all-simple-human), "Warm and relaxed", "Crisp and clear", and "Ready to lend a hand". Only the middle one reached `prose.md`, whose opening voice bullet is close to a paraphrase of it. The same page names contractions under its "Talk like a person" style tip.
+Microsoft states [three voice principles](https://learn.microsoft.com/en-us/style-guide/brand-voice-above-all-simple-human), "Warm and relaxed", "Crisp and clear", and "Ready to lend a hand". Only the middle one was adopted, and the skill's opening voice bullet is close to a paraphrase of it. The same page names contractions under its "Talk like a person" style tip.
 
 Both address a reader that terse reference prose does not serve, and both land in the `## Voice` section of `standards/readme.md` instead, scoped to the README at a repository root. The guides were adopted by surface rather than in full.
 
 Apple devotes a [chapter to writing inclusively](https://support.apple.com/guide/applestyleguide/intro-to-inclusive-writing-apdcb2a65d68/web) covering gender identity, disability, and representation, on the stated principle that "The people who use Apple products reflect the diversity of the world at large." No standard in the repository takes a position on it.
 
-Apple's [`while, although, whereas` entry](https://support.apple.com/guide/applestyleguide/w-apsg48ccd3b3/web) reads `While means during the time that and implies concurrent activities` and sends contrast to _although_. `prose.md` bans the false balance that `While X is true, Y is also important` carries but takes no position on the connective itself, so a sentence can clear `prose.md` and still misuse `while` by Apple's rule. Read 2026-08-02 against `a37d18a2`. The three entries above it predate the citation convention `#711` introduced and carry no date.
+Apple's [`while, although, whereas` entry](https://support.apple.com/guide/applestyleguide/w-apsg48ccd3b3/web) reads `While means during the time that and implies concurrent activities` and sends contrast to _although_. `markdown.md` bans the false balance that `While X is true, Y is also important` carries but takes no position on the connective itself, so a sentence can clear the ban and still misuse `while` by Apple's rule. Read 2026-08-02 against `a37d18a2`. The three entries above it predate the citation convention `#711` introduced and carry no date.
 
 ## Where we diverge
 
@@ -74,7 +74,7 @@ Google's guide permits "Note that" in specific contexts. We ban it entirely.
 
 ### Jargon and audience
 
-Apple's [`jargon` entry](https://support.apple.com/guide/applestyleguide/j-apsgf88bd162/web) says to avoid jargon whenever possible and define technical terminology on first occurrence. `prose.md` assumes developer-level technical knowledge and skips hand-holding explanations, which reverses the entry for reference docs written for developers.
+Apple's [`jargon` entry](https://support.apple.com/guide/applestyleguide/j-apsgf88bd162/web) says to avoid jargon whenever possible and define technical terminology on first occurrence. The `write-human` skill assumes developer-level technical knowledge and skips hand-holding explanations, which reverses the entry for reference docs written for developers.
 
 ### Parenthetical asides
 

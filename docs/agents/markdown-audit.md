@@ -5,7 +5,7 @@ description: Running the audit over any markdown path, where its bans and checkp
 
 # Markdown audit
 
-`aitk markdown audit [path...]` reports any markdown file against the two attribute standards, `markdown.md` and `prose.md`. An attribute standard governs a file rather than a folder, so this resolves no folder and requires no `index.md`, which is what puts `.claude/rules/`, `governance/`, and `snippets/` in reach. Folder-shaped findings stay in `aitk context audit`, described in `context-audit.md`.
+`aitk markdown audit [path...]` reports any markdown file against the attribute standard `markdown.md`. An attribute standard governs a file rather than a folder, so this resolves no folder and requires no `index.md`, which is what puts `.claude/rules/`, `governance/`, and `snippets/` in reach. Folder-shaped findings stay in `aitk context audit`, described in `context-audit.md`.
 
 ```bash
 aitk markdown audit
@@ -29,9 +29,9 @@ A bare run measures every markdown file git lists, tracked plus untracked-and-no
 
 The three ban sets and all six checkpoints ship with the `aitk` package as data, in `src/markdown/bans.ts` and `src/markdown/structure.ts`. Every project is measured against the same sets whether or not it installed any standards, and no file has to resolve for a run to mean something.
 
-Reading them out of the standards per run was the original design. It put a parser contract on two documents authored for people, and `prose.md` had to carry a paragraph of its own warning an author that a one-word backticked example in a `- Do not use ` bullet would be lifted into a literal ban set and ban that word everywhere. A rule existing to protect a parser from the prose it parses is the argument for separating them.
+Reading them out of the standards per run was the original design. It put a parser contract on a document authored for people, and the standard had to carry a paragraph of its own warning an author that a one-word backticked example in a `- Do not use ` bullet would be lifted into a literal ban set and ban that word everywhere. A rule existing to protect a parser from the prose it parses is the argument for separating them.
 
-`markdown.md` and `prose.md` still state every ban and every checkpoint, and a reader follows those rather than the code. Nothing compares the two, so a number moved in one place and left in the other drifts silently. Move both in the same change.
+`markdown.md` still states every ban and every checkpoint, and a reader follows it rather than the code. Nothing compares the two, so a number moved in one place and left in the other drifts silently. Move both in the same change.
 
 The sets are closed rather than extensible, so a project cannot add a term by editing a file. What decides that is the measurement behind them: 21 terms across 483 markdown files report a clean exit, and every occurrence of a banned word in the corpus sits inside the ban list itself or inside an example demonstrating the ban. The set is a prior an author already knows rather than a filter that has caught anything, and enumeration cannot close the gap it aims at, since `just`, `allows`, and `very` carry honest uses no literal match separates.
 
@@ -45,7 +45,7 @@ A set shipped empty is reported rather than passed. It finds nothing and would e
 
 ### Bans
 
-Three closed sets report a hit: the characters `markdown.md` bans under `## Punctuation`, the single lowercase words `prose.md` bans under `## Language`, and the British spellings of the American examples that section lists.
+Three closed sets report a hit: the characters `markdown.md` bans under `## Punctuation`, the single lowercase words it bans under `## Language`, and the British spellings of the American examples that section lists.
 
 Deriving the spellings rather than pattern-matching a suffix is what keeps `exercises`, `promises`, and `revised` out of the report. A suffix pattern over the same corpus produced 46 false positives from words of that shape, and a closed set of whole words reaches none of them.
 
@@ -120,7 +120,7 @@ Rewrite the sentence rather than swapping the banned token for a near-synonym. T
 
 A code span clears the report too, since the ban scan walks around one, and it is the answer only where the token is genuinely an identifier under discussion. `## Code and identifiers` in `markdown.md` reserves the span for commands, API names, file paths, and identifiers, so backticking a quoted utterance spends one rule to satisfy another and leaves the corpus no cleaner.
 
-A hit the closed set cannot separate from correct prose is the case with no third option. `prose.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so the temporal `just` reports as the vague one. The rule as written reaches neither, and rewriting the sentence is what the toolkit settled on over building an exemption path, for the reasons below.
+A hit the closed set cannot separate from correct prose is the case with no third option. `markdown.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so the temporal `just` reports as the vague one. The rule as written reaches neither, and rewriting the sentence is what the toolkit settled on over building an exemption path, for the reasons below.
 
 ### Where the rules are enforced
 
@@ -150,9 +150,9 @@ Masking took 7 of the weight-only paragraphs the checkpoint reported at 400 and 
 
 ### How the ban count reached zero
 
-Eight word hits stood between the baseline and a gate, and only three carried the sense `prose.md` bans. `leverage` sat in the requirements worldview, `allows` in the claude stack reference, and one `just` was the vague qualifier in a skill body. Those three lost the qualifier rather than the word.
+Eight word hits stood between the baseline and a gate, and only three carried the sense the standard bans. `leverage` sat in the requirements worldview, `allows` in the claude stack reference, and one `just` was the vague qualifier in a skill body. Those three lost the qualifier rather than the word.
 
-The other five were correct prose the closed set cannot separate from a violation. Four were the temporal `just`, meaning a moment ago, in phrases like the implementation `just` completed and the field the user `just` edited. The fifth quoted an anti-pattern a skill exists to forbid. `prose.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so the rule as written reaches none of the five while the scan reaches all of them.
+The other five were correct prose the closed set cannot separate from a violation. Four were the temporal `just`, meaning a moment ago, in phrases like the implementation `just` completed and the field the user `just` edited. The fifth quoted an anti-pattern a skill exists to forbid. `markdown.md` bans vague qualifiers and lists the tokens those qualifiers happen to spell, so the rule as written reaches none of the five while the scan reaches all of them.
 
 ### Why they were rewritten rather than exempted
 

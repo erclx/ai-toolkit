@@ -35,7 +35,9 @@ A standard states its rule and never what enforces it here. These files install 
 
 That prohibition runs one direction only. A path-scoped rule may carry the operative directives of the standard it points at, since the rule arrives attached to the edit while a pointer reaches a session only if that session opens the file. The standard keeps the full specification and the rule keeps what a session must have on arrival, so a drift is a rule falling behind rather than two files disagreeing. Nothing checks it.
 
-Two standards are exempt permanently. A seeded audit hook parses the word bans out of `prose.md`, so a rule restating that list is two sources for one list with a machine reading one of them, and `markdown.md` carries its character bans on the same terms. Both keep pointer-only rules.
+That exemption is empty and the reason it emptied is recorded in `.claude/ARCHITECTURE.md`. The three ban sets ship as package data `aitk markdown audit` reads, so no standard is parsed and the rule pointing at `markdown.md` may carry operative directives like any other.
+
+`500-prose` stays pointer-only on a different argument. What it routes to is the `write-human` skill rather than a standard, and the guidance there is judgment stated across a body and three references, so a rule reproducing five bullets of it would ship the compressible half and leave the half that does the work behind. Routing to a skill from a rule was previously declined on the ground that it trades a certain load for a probable one, and the operator overturned that on 2026-08-19. The trade the objection describes is not the one this design makes: the rule still loads on the glob and carries an explicit instruction to load the skill, so the instruction arrives with certainty and what follows is an instruction being followed rather than a description being matched.
 
 The rule lives in `standards/standard.md` under `## Scoping rules`, routed to every standards edit by `591-standard-authoring`, because a decision recorded here governs nothing an author reads while editing. Audit the whole corpus for a violation of it rather than the files that prompted it, since a pass scoped to one plan's file list leaves the rest reading clean.
 
@@ -43,13 +45,15 @@ Every standard declares its own jurisdiction in a `## Scope` section, above the 
 
 No single step has to look wrong for a standard to reach a second owner's rules, which is why the statement is what a step fails against. A sibling `REQUIREMENT.md` per standard was the alternative and it restates what a standard already is, since a standard is a specification and a skill body is not.
 
-A scope statement declares its boundaries from both sides. A yield, an exemption, or a handoff written into one standard alone is never read by the standard on the other side of it, which is how `prose.md` came to grant a voice yield that only two of its four eligible siblings ever claimed. Both halves are cheap to write and only the pair is checkable.
+A scope statement declares its boundaries from both sides. A yield, an exemption, or a handoff written into one standard alone is never read by the standard on the other side of it, which is how the retired `prose.md` came to grant a voice yield that only two of its four eligible siblings ever claimed. Both halves are cheap to write and only the pair is checkable.
 
 ## When a standard splits
 
-A standard splits when one half is machine-checkable and the other is a read a session either performs or does not. `prose.md` held both and shipped as one advisory file, so `markdown.md` now takes the headings, lists, code spans, punctuation, emphasis, and file references, and `prose.md` keeps voice, language, and frontmatter wording.
+A standard splits when one half is machine-checkable and the other is a read a session either performs or does not. `prose.md` held both and shipped as one advisory file. The first split gave `markdown.md` the headings, lists, code spans, punctuation, emphasis, and file references, and left voice, language, and frontmatter wording behind.
 
-Scoping the audit tighter inside one file was the alternative and it leaves the enforceable rules reading as advice, which is the defect. The seam costs a citation split across 79 files and a hook that reads one half while enforcing a rule stated in the other, named in both standards and in the hook rather than papered over.
+The second split retired the file. Language and frontmatter wording joined `markdown.md`, which is where every ban a command measures now sits, and voice, rhythm, and information density went to the `write-human` skill, which a markdown edit routes to. Splitting by subject was what the first pass did and it left one file still holding a measured half and an advisory one, so the second pass split by what reads each half instead.
+
+Scoping the audit tighter inside one file was the alternative and it leaves the enforceable rules reading as advice, which is the defect. The seam cost a citation sweep across 79 files the first time and roughly 90 the second.
 
 ## The scope statement
 
@@ -67,7 +71,7 @@ The first repair narrowed that gap rather than closing it, which is the part wor
 
 The `description` is the surface to check last and the one that reaches furthest. It becomes the index link label on install, so it is rendered into the catalog of every tree the standard ships to and is the only one of the three a reader meets without opening the file.
 
-`prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
+The retired `prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
 
 ## How the scope statement is parsed
 
@@ -81,4 +85,4 @@ A second consumer now reads the statement, the `standards` kind of the record va
 
 Every backticked token in that first sentence is read as a path, and the `*` resolution for an attribute standard fires only when the sentence carries none. A field name or a file extension backticked there is published as the standard's jurisdiction, so a consumer mapping a changed file through `appliesTo` matches nothing and reports the file clean.
 
-`prose.md` and `markdown.md` both shipped that way for one commit, emitting `title,description` and `.md`. An attribute standard therefore keeps its first sentence free of backticks and names the identifiers it governs in a later one.
+`markdown.md` and the retired `prose.md` both shipped that way for one commit, emitting `.md` and `title,description`. An attribute standard therefore keeps its first sentence free of backticks and names the identifiers it governs in a later one.

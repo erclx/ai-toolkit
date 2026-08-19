@@ -25,8 +25,8 @@ EOF
     sed -i 's/before changes, when present\./before edits\./' CLAUDE.md
   fi
 
-  if [ -f ".claude/standards/prose.md" ]; then
-    sed -i 's/^- Use active voice\./- Use active voice and present tense./' .claude/standards/prose.md
+  if [ -f ".claude/standards/markdown.md" ]; then
+    sed -i 's/^- Use sentence case for all headings/- Use sentence case for every heading/' .claude/standards/markdown.md
   fi
 
   # An explicit branch rather than whatever `git init` inherited. The proposal
@@ -37,7 +37,7 @@ EOF
   git add . && git commit -m "chore(claude): trim CLAUDE.md and drift standards" --no-verify -q
 
   log_step "Scenario ready: seed sync with drift across seeds and standards"
-  log_info "Context: project with installed seeds and standards, CLAUDE.md truncated, one Context bullet mutated, .claude/standards/prose.md drifted"
+  log_info "Context: project with installed seeds and standards, CLAUDE.md truncated, one Context bullet mutated, .claude/standards/markdown.md drifted"
   log_info "Action:  /claude-seed-sync"
   log_info "Expect:  drift report covering both seeds and standards, scope table grouped by source"
 }

@@ -10,7 +10,7 @@ import type { BanSets } from '@/markdown/scan'
 const CHARACTERS = ['—', ';'] as const
 
 /**
- * Single lowercase words `prose.md` bans under `## Language`.
+ * Single lowercase words `markdown.md` bans under `## Language`.
  *
  * A multi-word ban is absent by the same test the character set applies. The
  * standard bans a pattern like `It's not X, it's Y` with a placeholder standing
@@ -34,7 +34,7 @@ const WORDS = [
 ] as const
 
 /**
- * British spellings of the American examples `prose.md` lists.
+ * British spellings of the American examples `markdown.md` lists.
  *
  * The set is carried whole rather than derived from a suffix rule, because a
  * suffix pattern run over prose produced 46 of the 58 false positives measured

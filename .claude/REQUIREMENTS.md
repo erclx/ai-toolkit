@@ -83,4 +83,4 @@ The scope that followed the MVP. What the toolkit has to achieve for a user who 
 - JSON output on `list` commands must pipe clean through any wrapper. UI and logs go to stderr.
 - The toolkit is the authoritative source. Target projects consume via install and sync, never author in place.
 - Skills detect and call the CLI. They do not reimplement CLI logic.
-- Authored content follows `.claude/standards/prose.md` and `.claude/standards/markdown.md`. No em dashes, no semicolons, no marketing buzzwords.
+- Authored content follows `.claude/standards/markdown.md` and the `write-human` skill. No em dashes, no semicolons, no marketing buzzwords.

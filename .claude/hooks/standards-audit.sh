@@ -26,7 +26,7 @@ esac
 
 # The audit verb owns the ban sets, so the hook an author meets at edit time and
 # the stage that fails the push read one set. The awk this replaces parsed the
-# word bans out of prose.md, hardcoded the em-dash and semicolon, and reached
+# word bans out of a standards file, hardcoded the em-dash and semicolon, and reached
 # none of the spellings, so a British spelling passed here and failed the push
 # with nothing in between explaining the difference.
 #
@@ -88,7 +88,7 @@ elif [ -n "$empty" ]; then
 fi
 
 if [ -n "$hits" ]; then
-  found=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite the sentence (do not lazy-swap). A code span is the answer only where the token is genuinely an identifier under discussion.\n%s' "$file" "$hits")
+  found=$(printf 'Standards-audit: markdown.md violations in %s. Rewrite the sentence (do not lazy-swap). A code span is the answer only where the token is genuinely an identifier under discussion.\n%s' "$file" "$hits")
   msg="${msg:+$msg$nl}$found"
 fi
 

@@ -15,8 +15,8 @@ Does not govern:
 
 - The folder a learning workspace lays out around its glossary, and the other files in it: `teach.md`
 - Which surface a glossary moves to once it leaves the material that produced it, which belongs to the surface driving that move
-- Voice and word choice: `prose.md`
-- Headings, punctuation, and file references: `markdown.md`
+- Voice, rhythm, and sentence construction: the `write-human` skill
+- Headings, punctuation, word choice, and file references: `markdown.md`
 
 ## What a working glossary looks like
 

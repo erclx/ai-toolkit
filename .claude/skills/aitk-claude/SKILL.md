@@ -12,7 +12,7 @@ Read `.claude/context/claude-plugin/` for the shipped plugin, starting at its `i
 - When updating an internal skill, write to `{base-dir}/SKILL.md` where `{base-dir}` is the path shown in the skill header at load time.
 - Read `.claude/context/claude-plugin/skill-strategy.md` before adding a plugin skill and `.claude/context/claude-internal.md` before adding an internal one. Run `aitk claude skills list` for the plugin roster, which no entry restates.
 - Follow `.claude/standards/skill.md` for skill structure and frontmatter conventions.
-- Audit skill bodies against `.claude/standards/skill.md`, `.claude/standards/prose.md`, and `.claude/standards/markdown.md`. The first covers structure and frontmatter. The second covers the body's voice and word choice. The third covers its punctuation and formatting.
+- Audit skill bodies against `.claude/standards/skill.md`, `.claude/standards/markdown.md`, and the `write-human` skill. The first covers structure and frontmatter. The second covers the body's word choice, punctuation, and formatting. The third covers its voice and rhythm.
 
 ## Authoring conventions
 

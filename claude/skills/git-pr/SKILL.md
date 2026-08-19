@@ -12,8 +12,8 @@ Read these files in parallel:
 - `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
 - `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
 - `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/pr-labels.toml`.
-- `.claude/standards/prose.md` from the project root: voice and banned words for all generated text
-- `.claude/standards/markdown.md` from the project root: punctuation and formatting for all generated text
+- `.claude/standards/markdown.md` from the project root: banned words, punctuation, and formatting for all generated text
+- The `write-human` skill: voice, rhythm, and sentence construction for all generated text
 - `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
 
 Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.

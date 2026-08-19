@@ -8,8 +8,8 @@ description: Audits changed markdown files against every authoring standard that
 ## Guards
 
 - Resolve the base ref first, per Diff baseline below, then scope the file list exactly as Step 1 does, fallback included. If no markdown files changed, stop: `✅ No markdown changes to audit.` A guard that reads bare local `main`, or that skips the unusable-baseline fallback, passes the skill clean on a branch it never read.
-- If neither `.claude/standards/prose.md` nor `${CLAUDE_SKILL_DIR}/../../standards/prose.md` is present, stop: `❌ prose.md standard not found. Install toolkit standards first.` Test the file rather than the directory, since a project that installed standards before a given file existed keeps the directory without ever receiving that file.
-- Apply the same test to `markdown.md`, stopping with its own name. It carries the character bans and the formatting rules, so a run reaching only `prose.md` reports word choice against a clean file and calls the pass complete.
+- If neither `.claude/standards/markdown.md` nor `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` is present, stop: `❌ markdown.md standard not found. Install toolkit standards first.` Test the file rather than the directory, since a project that installed standards before a given file existed keeps the directory without ever receiving that file.
+- `markdown.md` is the one standard testable before the mapping runs, since its scope statement declares an attribute and every changed markdown file therefore maps to it. Every other standard is tested in Step 3, where the mapping has named which ones the run needs.
 
 ## Diff baseline
 
@@ -68,12 +68,14 @@ Every mapping names a changed markdown file, which is the only thing Step 1 prod
 
 ## Step 3: read standards and audit
 
-Read each applicable standard once. For each changed file, audit against every rule:
+Read each applicable standard once, testing `.claude/standards/<name>` and `${CLAUDE_SKILL_DIR}/../../standards/<name>` before reading it. A standard the mapping named and neither path carries is reported as a finding against the file that mapped to it rather than skipped, since a standard read from nowhere reports every file under it clean.
+
+For each changed file, audit against every rule:
 
 - **Pattern rules**: grep the file for every token the standard bans. Grep is authoritative. Reading alone misses occurrences.
 - **Judgment rules**: check each rule in context against the standard that states it.
 
-Every changed markdown file gets the prose pattern pass, since `.claude/standards/prose.md` and `.claude/standards/markdown.md` both apply to all of them. Take the banned tokens from those standards at read time rather than from a list held here. The banned words sit in the first and the banned characters in the second, so a pass reading one file finds half the tokens.
+Every changed markdown file gets the pattern pass, since `.claude/standards/markdown.md` applies to all of them. Take the banned tokens from that standard at read time rather than from a list held here. It carries the banned words, the banned spellings, and the banned characters together, so one read covers every token this pass greps for.
 
 ## Step 4: report
 
@@ -84,13 +86,13 @@ path/to/file.md
 
 - L12: `markdown.md`, em dash in prose
 - L34: `markdown.md`, semicolon used to join clauses
-- L51: `prose.md`, vague qualifier `simply`
+- L51: `markdown.md`, vague qualifier `simply`
 - L67: `context.md`, decision entry names no rejected alternative
 ```
 
 If clean, respond with `✅ No violations.`
 
-Reporting only. Do not rewrite any file, swap any punctuation, or propose fixes inline. Fixes are a separate user-initiated step because lazy swaps (semicolon to period, em dash to comma) violate the prose rule against shallow substitution.
+Reporting only. Do not rewrite any file, swap any punctuation, or propose fixes inline. Fixes are a separate user-initiated step because a lazy swap (semicolon to period, em dash to comma) leaves the sentence in the shape the ban exists to remove.
 
 ## Output
 

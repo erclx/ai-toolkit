@@ -38,7 +38,7 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 ## Extract skill
 
-`aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, `.claude/standards/prose.md`, and `.claude/standards/markdown.md`, fill the same seed, and end at the same render.
+`aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `.claude/standards/markdown.md`, load the `write-human` skill for tone, fill the same seed, and end at the same render.
 
 The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`.
 

@@ -1,6 +1,6 @@
 ---
 name: aitk-standards
-description: Standards system and docs. Use when editing files in `standards/` or `docs/`, including authoring conventions, install, and sync. Do not load this skill to read `prose.md` or `markdown.md`. Read them directly.
+description: Standards system and docs. Use when editing files in `standards/` or `docs/`, including authoring conventions, install, and sync. Do not load this skill to read `markdown.md`. Read it directly.
 ---
 
 # Standards
@@ -9,7 +9,7 @@ Read `.claude/context/standards/overview.md` for the system overview and `.claud
 
 ## Prose rules
 
-Read `.claude/standards/prose.md` and `.claude/standards/markdown.md` before writing or editing any prose in `standards/` or `docs/`. The first is the canonical voice and language reference. The second is the canonical formatting and punctuation reference.
+Read `.claude/standards/markdown.md` and load the `write-human` skill before writing or editing any prose in `standards/` or `docs/`. The first is the canonical reference for banned words, spellings, formatting, and punctuation. The second carries voice, rhythm, and sentence construction, which no check settles.
 
 ## Cross-references
 
@@ -27,6 +27,6 @@ When adding a standard:
 ## Reference
 
 - `.claude/context/standards/index.md`: the domain catalog, with the overview, the scope model, authoring, and install vs sync as sub-areas
-- `.claude/standards/prose.md`: voice, language, and frontmatter wording rules
-- `.claude/standards/markdown.md`: heading, list, code, punctuation, and file-reference rules
+- `.claude/standards/markdown.md`: heading, list, code, punctuation, file-reference, banned-word, and frontmatter wording rules
+- The `write-human` skill: voice, rhythm, sentence construction, and information density
 - `.claude/standards/standard.md`: the meta-standard for a standard's shape, scope, and frontmatter

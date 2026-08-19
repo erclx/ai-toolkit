@@ -67,7 +67,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 ## After editing
 
 - Update the corresponding skill body in `.claude/skills/`. Load `aitk-claude` and follow `.claude/standards/skill.md` conventions.
-- Update per-domain narrative in `.claude/context/<X>.md` (follow `.claude/standards/context.md`) and any affected consumer docs in `docs/`. Load `aitk-standards` and follow `.claude/standards/prose.md` and `.claude/standards/markdown.md`.
+- Update per-domain narrative in `.claude/context/<X>.md` (follow `.claude/standards/context.md`) and any affected consumer docs in `docs/`. Load `aitk-standards` and follow `.claude/standards/markdown.md` and the `write-human` skill.
 
 ## Conventions
 
