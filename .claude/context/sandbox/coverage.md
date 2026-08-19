@@ -151,6 +151,16 @@ What it does not reach is the published layout. `PROJECT_ROOT` derives from `imp
 
 The other thing it does not reach is the catalog. No shipped skill body invokes this verb, so the arm asserts the command and nothing that calls it. The route 38 of the plugin bodies actually take is the plugin root, where `claude/standards` is a symlink carrying the whole corpus, and a body citing `.claude/standards/X.md` with that fallback behind it never reaches `src/standards/read.ts` at all. An arm driving one of those would pass while the route it claims to cover stayed unmeasured, which is why this one drives the command instead and records the split here rather than growing to span both.
 
+### The port-offset arm scores a number the skill reads rather than states
+
+`claude:worktree/port-offset` is the first armed arm on a scenario that carried five manual ones, so `claude-worktree` moves to `asserted` while four of its arms score nothing. Read the verdict as covering the one arm rather than the skill.
+
+The arm stages the web layer's port helper into the target and pins the reply to `Port offset 27`, which is the cksum of the worktree folder name modulo the band of 50, plus one. Pinning the number rather than its shape is what separates a session that read the helper from one that printed a plausible integer, and the arm can pin it because the folder name is derived from the plan the branch matches rather than chosen by the run. The dependency line above it lands on the last of Step 6's four bullets, since the arm seeds no manifest inside the worktree and no other arm reaches that bullet.
+
+A run on 2026-08-19 passed at 4 asserted and 0 failed with 2 unchecked, in 43 seconds. Escapes came back naming five files under the main root, all of them scratch a concurrent session in another worktree wrote during the window, which is a limit of reading escapes by mtime rather than a finding against the arm.
+
+What the arm cannot reach is the refusal branch the same change added to the skill body. Step 4 registers whatever it creates, so a fresh entry always lands on a worktree the helper answers for, and no staging puts the entry itself onto a leftover folder. The scenario seeds one as a sibling so a reader can drive the helper against it by hand, and the arm says as much in a `manual` entry rather than claiming coverage. The branch is covered instead by `src/worktree-port.test.ts`, which drives the helper directly across the directory shapes.
+
 ### The gap the rule names
 
 The rule selects `git-stage` and `git-split` ahead of everything else and the harness cannot assert either, which is the sixth standing limit in `.claude/context/sandbox/overview.md`. A rule that selects what nothing can check is working correctly. It names the gap instead of hiding it behind a skill nobody nominated.
