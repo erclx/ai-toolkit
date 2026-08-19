@@ -40,8 +40,8 @@ One feature travels this path end to end.
 2. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
 3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
 4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
-5. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target from a session listing taken at that moment and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made.
-6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds a critical or a should-fix and under `## Review closed` otherwise, so a reader learns the merge decision from the heading and the counts from the line under it. Repeat from step 5 until a pass closes the review.
+5. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target from a session listing taken at that moment and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.
+6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds anything and under `## Review closed` when it finds nothing, so a reader learns from the heading whether work is still owed and takes the merge decision from the counts on the line under it. Repeat from step 5 until a pass closes the review.
 7. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
 
 There is no loop construct here. Each worker is a single build that halts at the
@@ -103,12 +103,13 @@ re-read costs a full pass rather than a delta, since the prior reviewed commit n
 longer reaches the head, and `claude-pr-review` detects that itself.
 
 The heading carries the state rather than the pass number. A pass carrying a
-critical or a should-fix takes `## Review` and every other pass takes
-`## Review closed`, so a thread can be scanned for what still blocks a merge
-without opening a comment. The heading and the dispatch answer two questions
-rather than one: a minors-only pass closes the heading and still sends a worker,
-so the dispatch reads the counts on the summary line rather than the heading
-above them. A minor the worker declines goes to the findings of the task the
+finding at any severity takes `## Review` and a pass carrying nothing takes
+`## Review closed`, so a thread can be scanned for what still owes work without
+opening a comment. One threshold governs the heading and the dispatch alike, and
+`claude-pr-review` is where it is stated, so every other surface cites that skill
+rather than restating the grades. The merge decision comes off the counts on the
+summary line, since an open heading now covers a minor as well as a critical.
+A minor the worker declines goes to the findings of the task the
 branch closes, since a thread does not survive the merge. The feedback
 becomes a durable artifact both sessions read, survives a session ending, and
 anchors to the change. That removes the copy-paste that otherwise routes review

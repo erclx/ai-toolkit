@@ -158,13 +158,13 @@ EOF
     log_step "Configuring pr-review unchanged-head environment ($ANCHOR_REPO)"
     seed_reviewable_pr
 
-    # A pass carrying only a minor takes the closed heading, so the seed models
-    # the state a conforming pass leaves rather than an open one nothing owes.
-    # Both headings are in the family the next pass matches, so its commit.oid
-    # is still the head that pass reads.
-    gh pr review "$PR_URL" --comment --body "## Review closed
+    # A pass carrying a finding at any severity takes the open heading, so the
+    # seed models the state a conforming minors-only pass leaves. Both headings
+    # are in the family the next pass matches, so its commit.oid is still the
+    # head that pass reads.
+    gh pr review "$PR_URL" --comment --body "## Review
 
-0 critical, 0 should-fix, 1 minor. Nothing blocks the merge. Reviewed against project docs and roadmap.
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
 
 **\`src/tasks.ts\`**
 
@@ -182,7 +182,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
       log_info "Could not seed the response. Post one manually before testing."
 
     log_step "Scenario ready: a second pass at a head the first pass already covered"
-    log_info "Context: open PR with a posted ## Review closed, a ## Review response, and no commit since"
+    log_info "Context: open PR with a posted ## Review, a ## Review response, and no commit since"
     log_info "Action:  /claude-pr-review"
     log_info "Expect:  finds the prior review's commit and sees it equal to headRefOid"
     log_info "         reads the ## Review response rather than a delta, which spans nothing"
@@ -195,9 +195,9 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
     log_step "Configuring pr-review answered-head environment ($ANCHOR_REPO)"
     seed_reviewable_pr
 
-    gh pr review "$PR_URL" --comment --body "## Review closed
+    gh pr review "$PR_URL" --comment --body "## Review
 
-0 critical, 0 should-fix, 1 minor. Nothing blocks the merge. Reviewed against project docs and roadmap.
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
 
 **\`src/tasks.ts\`**
 
