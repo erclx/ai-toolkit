@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.105.0](https://github.com/erclx/aitk/compare/v0.104.1...v0.105.0) (2026-08-19)
+
+
+### Features
+
+* **gov:** report an implementation that reached history before its test ([#1025](https://github.com/erclx/aitk/issues/1025)) ([a1537ba](https://github.com/erclx/aitk/commit/a1537ba0cf4fcc5b7ef1cd27dec841bb98d3b8c1))
+
+
+### Bug Fixes
+
+* **groundwork:** send a spike's evidence into the track that cites it ([#1026](https://github.com/erclx/aitk/issues/1026)) ([ac9f87b](https://github.com/erclx/aitk/commit/ac9f87ba81c24d9fbeb2623f9c40565b9a41343f))
+* **tooling:** refuse a leftover worktree folder instead of the base port ([#1027](https://github.com/erclx/aitk/issues/1027)) ([acef267](https://github.com/erclx/aitk/commit/acef2672cfd06a6dc42cc5c5dab8c9de6d3f0bf6))
+
 ## [0.104.1](https://github.com/erclx/aitk/compare/v0.104.0...v0.104.1) (2026-08-19)
 
 
