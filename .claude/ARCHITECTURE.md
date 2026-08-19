@@ -134,7 +134,7 @@ The workspace is also the first record folder named `<nn>-<topic>` rather than b
 
 `claude-teach` proposes where a durable page belongs and writes each confirmed one to `.claude/.tmp/teach-promotion/<slug>.md`, which `claude-docs` folds and deletes. Sharing `.claude/.tmp/memory-routing/<slug>.md` was the obvious reuse and it is what the pattern cannot take: that file already has two writers and a reader that deletes it, so a fold triggered by one producer discards whatever the other wrote and never read. A sibling path costs the folding skill one more read and removes the interaction entirely.
 
-The fold reaching the public docs corpus is the cost, since `docs-sync` owns that tree. The carve-out is landing a page whose destination an operator already confirmed, and reconciling that corpus against a diff stays where it was. Splitting the fold across two skills by destination was the alternative and it puts one handoff file under two readers, which is the failure this decision declines in the other direction.
+The fold reaching the public docs corpus is the cost, since `docs-sync` owns that tree. The carve-out is landing a page whose destination an operator already confirmed, and reconciling that corpus against a diff stays where it was. Splitting the fold across two skills by destination was the alternative and it puts one handoff file under two readers, which is the failure this decision declines in the other direction. Measured at `f0f8bd62` on 2026-08-19.
 
 ## Risks / open questions
 

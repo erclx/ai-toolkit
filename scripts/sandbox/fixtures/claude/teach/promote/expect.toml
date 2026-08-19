@@ -11,8 +11,10 @@
 # one belongs to that table in TOML, so a `manual` array written at the bottom
 # parses clean and asserts nothing.
 
-# Unmeasured. The ceiling matches the open arm, which reads one workspace and
-# writes three files, against this arm reading one workspace and writing one.
+# Measured at 21 turns and 0.70 dollars on 2026-08-19, passing every mechanical
+# assertion. The ceiling stays at the default on one sample, because this is a
+# proposal-only arm resolving several files against several standards and its
+# count moves with how a run orders those reads.
 max_turns = 30
 
 # The handoff name comes off the branch slug, which the arm pins to
@@ -36,7 +38,17 @@ absent = [
 # One skill owns the durable writes, so this pass reaches the handoff and
 # nothing else. A run that edited the wiki index to list its own page fails here
 # rather than in a reading.
-write_scope = [".claude/.tmp/teach-promotion/**"]
+#
+# The second entry is not a skill write. A `PreToolUse` hook drops a marker under
+# the session's own project directory whenever a search reaches a folder carrying
+# an `index.md`, and this skill's body sends every run to the standards folder to
+# resolve a fallback path. Arms scoping `.claude/**` absorb it silently, and this
+# is the first arm narrow enough to report it, so the entry is named here rather
+# than exempted in the checker for every arm at once.
+write_scope = [
+  ".claude/.tmp/teach-promotion/**",
+  ".claude/.tmp/index-reminder/**",
+]
 
 # The reply names the destination it proposed. The wiki prefix is the
 # load-bearing token: a reply naming the page without a destination reads the
@@ -44,8 +56,9 @@ write_scope = [".claude/.tmp/teach-promotion/**"]
 reply = [".claude/wiki/"]
 
 manual = [
-  "The destination sits in the wiki folder that matches who owns the subject, rather than in whichever one came first. Semantic: both folders exist and both are under the prefix the reply assertion checks, so the sub-folder choice is a judgment no pattern separates.",
-  "The proposal names what the destination expects that the page does not carry, which is the sentence naming who owns the subject. Semantic: the page body in the handoff is prose either way, and a pattern over it cannot tell a supplied source line from a copied paragraph.",
+  "The destination sits in the wiki folder that matches who owns the subject, rather than in whichever one came first. Semantic: both folders exist and both are under the prefix the reply assertion checks, so the sub-folder choice is a judgment no pattern separates. The measured run landed on the concepts folder, which is correct for a subject no single vendor owns.",
+  "The proposal names what the destination expects that the page does not carry, which is the sentence naming who owns the subject. Semantic: the page body in the handoff is prose either way, and a pattern over it cannot tell a supplied source line from a copied paragraph. The measured run supplied one.",
+  "The page body arrives inside a fence, so a heading in the page is not read as a second destination. Semantic: a pattern over the fence line passes on a body that carries no heading to protect, which is the case it exists for. The measured run fenced it.",
   "A run against a project with no wiki folder refuses and names the command that creates one. Unwired: this arm seeds a wiki, because the refusal path writes nothing and would assert none of the routing. Splitting it into a second arm is the way to cover it.",
   "The lesson was neither proposed nor carried into the handoff. Semantic: a promoted lesson lands as a second block inside the same file, and no path assertion separates one block from two.",
   "The glossary was considered alongside the reference page rather than passed over. Semantic: a run that proposes one page and a run that proposes both satisfy every assertion above, and nothing here decides which is correct.",
