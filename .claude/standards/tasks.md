@@ -262,7 +262,9 @@ The gate counts the other live tasks citing the same plan rather than reading wh
 
 The count resolves the target against `.claude/tasks/` and against the project root both, so `../plans/x.md` and `.claude/plans/x.md` land on the same file and one plan two tasks spelled differently counts once. `aitk tasks plan-citations` exposes that count for a caller that wants it, and the gate reads it.
 
-The `claude-docs` sweep states the rule rather than calling that verb, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `aitk` predates gets `unknown command` on exit code 0: the caller reads success, receives no record, and sweeps nothing while reporting a clean pass. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
+The `claude-docs` sweep states the rule rather than calling that verb, which is a duplication accepted with a reason rather than an oversight. A skill reaches a target the moment it merges and the CLI reaches one only when a release publishes, so a body calling a verb the installed `aitk` predates gets no record back and sweeps nothing. The two spellings therefore have to agree by hand until a release carries the verb, and the failure they guard against is a plan stranded by the form its citation was written in.
+
+A caller reads the outcome off the record's `reason` field and never off the exit code. An operator's shell profile may wrap `aitk` in a function that runs the binary and then another command, taking its status from the second, which masks an ordinary refusal exactly as it masks an absent verb.
 
 Surviving a shared plan is not the same as sanctioning one. `standards/plan.md` puts one concern in one plan file, so a plan serving several tasks is a shape to correct rather than to build on, and the gate only stops it from deadlocking the board.
 

@@ -47,7 +47,9 @@ aitk tasks archive --pull-request 673 --json | jq -r 'if .ok then .task else .re
 
 The record carries `location`, one of `unstated`, `live`, `archived`, or `outside`, and `citedBy`, the other live tasks whose `Plan:` line lands on the same file. Exit codes: `0` read, `1` refused with `no-board` or `no-match`.
 
-`aitk tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, and an unknown subcommand exits 0 with no record, so a sweep calling a verb the installed `aitk` predates reports a clean pass having archived nothing.
+`aitk tasks archive` gates on this same answer, so a caller wanting the count reads it here rather than scanning the board. The `claude-docs` plans sweep is the exception and still states the rule in its own body, because a plugin skill reaches a target on merge while the CLI reaches one on release, so a sweep calling a verb the installed `aitk` predates gets no record back and archives nothing.
+
+Branch on `reason` rather than on the exit code, which is the rule the archive section above already states and which this verb needs for a second reason. An operator's shell profile may wrap `aitk` in a function that runs the binary and then another command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
 
 A `live` location with an empty `citedBy` is the sweep to run. One whose `citedBy` names a sibling is a plan several tasks share, which the sweep leaves alone and the archive gate lets through.
 
