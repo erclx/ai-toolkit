@@ -148,16 +148,38 @@ body { font-family: system-ui; line-height: 1.6; max-width: 68ch; }
 EOF
 }
 
+# The promote arm alone. A project with no wiki folder gets a refusal from the
+# skill rather than a scaffold, so the arm that drives a proposal has to seed
+# one, and it seeds the `.claude/` spelling a scaffolded target carries.
+seed_wiki() {
+  mkdir -p .claude/wiki/tools .claude/wiki/concepts
+
+  cat <<'EOF' >.claude/wiki/index.md
+---
+title: Wiki
+subtitle: Reference pages for tools, workflows, and concepts
+---
+
+# Wiki
+
+Reference pages for tools, workflows, and concepts.
+
+- [Tools](tools/): pages whose subject a vendor other than this project owns
+- [Concepts](concepts/): pages whose subject no single vendor owns
+EOF
+}
+
 stage_setup() {
   log_step "Teach sandbox"
   log_info "open   : no workspace folder yet, one has to be opened from nothing"
   log_info "resume : a live workspace at 01-regex with one record carrying two wrong answers"
+  log_info "promote: the same workspace beside a wiki, with one reference page to route"
   log_info ""
   log_info "Invoke the prefixed form. The dev-skill injection copies SKILL.md alone,"
   log_info "so the unprefixed copy cannot resolve the bundled standards/teach.md."
   log_info "Launch with: claude --plugin-dir <worktree-root>/claude --model sonnet"
 
-  select_or_route_scenario "Which scenario?" "open" "resume"
+  select_or_route_scenario "Which scenario?" "open" "resume" "promote"
 
   case "$SELECTED_OPTION" in
   "open")
@@ -211,6 +233,36 @@ stage_setup() {
     log_info "         The next lesson opens on the two recorded wrong answers"
     log_info "         before anything new, and lands at 0002 in both lessons/"
     log_info "         and learning-records/. No second workspace is opened."
+    ;;
+  "promote")
+    seed_project
+    seed_workspace ".claude/teach/01-regex"
+    seed_wiki
+
+    git add . && git commit -m "feat(cli): slugify helper" --no-verify -q
+
+    # An explicit branch rather than whatever `git init` inherited. The handoff
+    # file takes its name from the branch slug, so an arm asserting that file by
+    # name has to fix the branch the slug comes off.
+    git checkout -b feat/promote-regex -q
+
+    log_step "Scenario ready: teach proposes where a durable page belongs"
+    log_info "Context: .claude/teach/01-regex/ holds one reference page, one lesson,"
+    log_info "  and a glossary. The project carries .claude/wiki/ with a tools and a"
+    log_info "  concepts folder, so the routing test has somewhere to land a page"
+    log_info "  whose subject belongs to someone outside the project"
+    log_info "  The invocation confirms the proposal in advance, because the step"
+    log_info "  proposes and waits and a headless run has nobody to confirm"
+    log_info ""
+    log_info "Action:  /aitk:claude-teach promote regex. Confirm whatever you propose"
+    log_info "         for the reference page, I approve it in advance."
+    log_info "Expect:  declared in fixtures/claude/teach/promote/expect.toml"
+    log_info "         Check it with: aitk sandbox check claude:teach promote"
+    log_info "         A handoff at .claude/.tmp/teach-promotion/promote-regex.md"
+    log_info "         carrying one heading"
+    log_info "         naming a path under .claude/wiki/ and the source page under it."
+    log_info "         Nothing written into .claude/wiki/ itself, and the lesson"
+    log_info "         neither proposed nor carried across."
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"
