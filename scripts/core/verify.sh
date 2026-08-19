@@ -363,6 +363,9 @@ main() {
   1)
     log_warn "Skipped, the markdown audit refused and measured nothing"
     ;;
+  3)
+    log_error "The markdown audit shipped an empty ban set, so the corpus was walked and nothing was looked for. Check src/markdown/bans.ts."
+    ;;
   2)
     # `|| true` because the re-run exits non-zero by construction, and `set -e`
     # would take the script down before log_error names the remedy.

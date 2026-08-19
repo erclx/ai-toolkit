@@ -24,30 +24,17 @@ const BLOCKQUOTE = /^\s*>/
  */
 const SENTENCE_END = /[.!?]["'’”)\]]*(?=\s+(?:["'“(\[]*[A-Z]|`)|\s*$)/g
 
-const NUMBER_WORDS: Record<string, number> = {
-  one: 1,
-  two: 2,
-  three: 3,
-  four: 4,
-  five: 5,
-  six: 6,
-  seven: 7,
-  eight: 8,
-  nine: 9,
-  ten: 10,
-}
-
 /**
- * Checkpoints as `standards/markdown.md` states them today.
+ * Checkpoints the structural measures run against.
  *
- * These are the fallback rather than the definition. Each is read out of the
- * standard per run, and this stands in for one the standard no longer states in
- * a shape the reader recognizes, so a rewording degrades a number rather than
- * the whole check. The report's legend names every checkpoint that fell back,
- * because a stale number quietly measuring the wrong thing is the failure mode
- * a silent default would ship.
+ * These are the definition rather than a fallback. Reading each number out of
+ * the sentence `standards/markdown.md` states it in was the alternative, and it
+ * put a parser contract on a document authored for people, where a rewording
+ * degraded a number and the report had to carry a legend saying which one. The
+ * standard still states every number for a reader, and moving one is an edit to
+ * both.
  */
-export const DEFAULT_CHECKPOINTS = {
+export const CHECKPOINTS = {
   run: 40,
   peerBullet: 130,
   bullet: 400,
@@ -56,15 +43,13 @@ export const DEFAULT_CHECKPOINTS = {
   renderWidth: 80,
 } as const
 
-export type CheckpointName = keyof typeof DEFAULT_CHECKPOINTS
-
 /**
  * Columns a source line wraps at when rendered.
  *
  * Nothing in this repository sets a line width and entries are authored one
  * line per bullet, so the rendered width is the viewer's rather than the file's.
  */
-export const RENDER_WIDTH: number = DEFAULT_CHECKPOINTS.renderWidth
+export const RENDER_WIDTH: number = CHECKPOINTS.renderWidth
 
 export interface Checkpoints {
   readonly run: number
@@ -73,8 +58,6 @@ export interface Checkpoints {
   readonly paragraph: number
   readonly sentences: number
   readonly renderWidth: number
-  /** Names that fell back, so the report can say which number is not the standard's. */
-  readonly fellBack: readonly CheckpointName[]
 }
 
 export interface BulletFinding {
@@ -97,51 +80,6 @@ export interface StructureReport {
   readonly longestRunLine: number
   readonly heavyBullets: readonly BulletFinding[]
   readonly heavyParagraphs: readonly ParagraphFinding[]
-}
-
-const PATTERNS: Record<CheckpointName, RegExp> = {
-  run: /Past roughly (\d+) rendered lines/,
-  peerBullet: /averaging under roughly (\d+) characters/,
-  bullet: /Past roughly (\d+) characters in one top-level bullet/,
-  paragraph: /Past roughly (\d+) characters in one paragraph/,
-  sentences: /Keep paragraphs to ([a-z]+|\d+) sentences or fewer/,
-  renderWidth: /wrapping each source line at (\d+) columns/,
-}
-
-/**
- * Reads each checkpoint out of the standard stating it.
- *
- * A number held in code is a second place the rule lives, and the two drift
- * silently because nothing compares them. What this buys is that raising a
- * checkpoint is an edit to the sentence a reader is pointed at, and what it
- * costs is a reader of prose, which is bounded by falling back per checkpoint
- * rather than per file.
- */
-export function parseCheckpoints(markdown: string): Checkpoints {
-  const fellBack: CheckpointName[] = []
-
-  const read = (name: CheckpointName): number => {
-    const match = markdown.match(PATTERNS[name])
-    const raw = match?.[1]
-    const value = raw ? (NUMBER_WORDS[raw] ?? Number(raw)) : Number.NaN
-
-    if (!Number.isFinite(value) || value <= 0) {
-      fellBack.push(name)
-      return DEFAULT_CHECKPOINTS[name]
-    }
-
-    return value
-  }
-
-  return {
-    run: read('run'),
-    peerBullet: read('peerBullet'),
-    bullet: read('bullet'),
-    paragraph: read('paragraph'),
-    sentences: read('sentences'),
-    renderWidth: read('renderWidth'),
-    fellBack,
-  }
 }
 
 /**

@@ -26,7 +26,13 @@ The second route already delivers the self-containment a proposal would build. S
 
 Moving the flat corpus into the fan-out was the alternative, and what declines it is a measurement rather than a preference. The fan-out writes one copy per consumer and stands at eleven copies from six sources, so the most-cited standard, named by eighteen skill bodies across the two catalogs, would land a copy in each. That scales the duplication the fan-out exists to prevent, and it breaks every pointer rule and all three machine consumers of the installed tree at once.
 
-A machine-parsed standard is permanently exempt from any design inlining a standard into the rule that cites it, because a rule restating the list a parser reads is two sources for one list. `prose.md` and `markdown.md` are the current members, and stating the rule rather than the pair is what survives a third parser arriving. Measured at `0e1a8eb6` on 2026-08-19.
+A machine-parsed standard is permanently exempt from any design inlining a standard into the rule that cites it, because a rule restating the list a parser reads is two sources for one list. The set is empty: `prose.md` and `markdown.md` were the two members and neither is parsed any more, since the three ban sets and the six structural checkpoints now ship as data in `src/markdown/`. Stating the rule rather than the pair is what leaves it standing for a parser that arrives later. Measured at `60fc97bf` on 2026-08-19.
+
+Moving the sets is what emptied it, and the reasoning it rests on admits the move rather than forbidding it. The bar is on inlining a list into the rule that cites it, and it rests on there being two sources for one list, so relocating the list to a single source the machine owns satisfies the bar. The standards still state every ban and every checkpoint for a reader, which is the ordinary arrangement everywhere else in the corpus.
+
+What the move costs is that the prose and the shipped numbers can now drift with nothing comparing them, and that a project can no longer tune a set by editing a file. The spelling set in particular stops being derived from the standard's own suffix examples, so an example added there no longer extends the check.
+
+Both costs are accepted on the same measurement. The sets are a prior an author already knows rather than a filter that has caught anything: 21 terms across 483 markdown files reported a clean exit, and each of the 70 occurrences of a banned word sat inside the ban list itself or inside an example demonstrating it. Enumeration cannot close the gap they aim at either, since `just`, `allows`, and `very` carry honest uses no literal match separates, so the set is closed rather than extensible.
 
 ### The toolkit consumes its own output
 

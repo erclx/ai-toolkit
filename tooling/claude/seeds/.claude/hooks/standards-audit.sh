@@ -24,66 +24,62 @@ esac
 
 [ -f "$file" ] || exit 0
 
-# Read the closed-set word bans from the standard so the hook never carries a
-# second copy. Every "Do not use ... (`a`, `b`)" bullet contributes its
-# single-word backticked terms, which skips the multi-word and punctuation bans.
+# The audit verb owns the ban sets, so this hook carries no copy of them. The
+# awk this replaces parsed the word bans out of the project's own prose.md,
+# hardcoded the em-dash and semicolon, and reached none of the spellings, so a
+# British spelling passed at edit time and a corpus check caught it later with
+# nothing in between explaining the difference. A ban class added to the verb
+# now reaches this hook without an edit here.
 #
-# The word bans sit in prose.md and the em-dash and semicolon bans in
-# markdown.md, so this parses the first and hardcodes the second. A "Do not use"
-# bullet added to markdown.md is parsed by nothing and enforces silently.
-standard="${CLAUDE_PROJECT_DIR:-.}/.claude/standards/prose.md"
-words=""
+# The verb resolves its own paths under the cwd, so the project root is named
+# rather than inherited. The payload carries an absolute file path, which is
+# what lets the runner move without taking the argument out of reach.
+root="${CLAUDE_PROJECT_DIR:-.}"
+
+# A machine without the binary reports that nothing ran rather than exiting
+# clean. An edit nobody checked and an edit carrying no violation are the same
+# silence to a reader, so the enforcement a machine lacks is reported.
+#
+# A completed run always writes the record, and a refusal writes nothing, so an
+# empty one means the verb declined to measure rather than measured and found
+# nothing. It refuses outside a git repository, which is a project this hook can
+# be installed into, and reading the findings alone reports that as a clean file.
 unread=""
-if [ -f "$standard" ]; then
-  words=$(grep '^- Do not use ' "$standard" |
-    grep -o '`[^`]*`' |
-    tr -d '`' |
-    grep -x '[a-z][a-z]*' |
-    sort -u |
-    paste -sd '|' -)
+record=""
+if command -v aitk >/dev/null 2>&1; then
+  record=$(cd "$root" 2>/dev/null && aitk markdown audit "$file" --json 2>/dev/null) || true
+  [ -n "$record" ] || unread="record"
 else
-  # An absent standard empties the word list, and the awk below reads an empty
-  # list as nothing to look for rather than as nothing found. The path is kept
-  # so the report names what could not be read, since a file carrying no banned
-  # word and a file nobody checked produce the same silence otherwise.
-  unread="$standard"
+  unread="runner"
 fi
 
-hits=$(awk -v words="$words" '
-  BEGIN { if (words != "") banned = "(^|[^a-z])(" words ")([^a-z]|$)" }
-  /^```/ { in_code = !in_code; next }
-  in_code { next }
-  /—/ { print NR ": em-dash: " $0 }
-  /;/  { print NR ": semicolon: " $0 }
-  banned != "" {
-    prose = tolower($0)
-    gsub(/`[^`]*`/, "", prose)
-    found = ""
-    delete seen
-    while (match(prose, banned)) {
-      word = substr(prose, RSTART, RLENGTH)
-      gsub(/[^a-z]/, "", word)
-      if (word != "" && !(word in seen)) {
-        seen[word] = 1
-        found = found (found == "" ? "" : ", ") word
-      }
-      prose = substr(prose, RSTART + RLENGTH)
-    }
-    if (found != "") print NR ": banned word (" found "): " $0
-  }
-' "$file")
+# The record decides rather than the exit code, so a binary predating a ban
+# class still reports what it does measure. A refusal and an unparseable payload
+# both yield nothing, which is the same silence a clean file produces.
+hits=$(printf '%s' "$record" |
+  jq -r '.entries[]?.bans[]? | ":\(.line):\(.column + 1)  \(.kind)  \(.term)"' 2>/dev/null)
 
-[ -z "$hits" ] && [ -z "$unread" ] && exit 0
+# A set the verb shipped empty measures nothing and would report a clean file.
+# Reading the findings alone turns that narrowed check into a pass, so the field
+# is read beside them.
+empty=$(printf '%s' "$record" |
+  jq -r '[.bans.emptySets[]?] | join(", ")' 2>/dev/null)
+
+[ -z "$hits" ] && [ -z "$unread" ] && [ -z "$empty" ] && exit 0
 
 nl=$'\n'
 msg=""
 
-if [ -n "$unread" ]; then
-  msg=$(printf 'Standards-audit: no word ban checked in %s. Found no standard at %s, so only the character bans ran. Restore it with `aitk standards install`.' "$file" "$unread")
+if [ "$unread" = "runner" ]; then
+  msg=$(printf 'Standards-audit: nothing checked in %s. Found no `aitk` binary on PATH. Install one with `bun add -g @erclx/aitk`.' "$file")
+elif [ "$unread" = "record" ]; then
+  msg=$(printf 'Standards-audit: nothing checked in %s. `aitk markdown audit` returned no record, which it does when it declines to measure. It needs a git repository to build its corpus.' "$file")
+elif [ -n "$empty" ]; then
+  msg=$(printf 'Standards-audit: the shipped ban set is empty for %s, so %s was checked against a narrowed set. Reinstall the toolkit with `bun add -g @erclx/aitk`.' "$empty" "$file")
 fi
 
 if [ -n "$hits" ]; then
-  found=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite or restructure (do not lazy-swap).\n%s' "$file" "$hits")
+  found=$(printf 'Standards-audit: prose.md and markdown.md violations in %s. Rewrite the sentence (do not lazy-swap). A code span is the answer only where the token is genuinely an identifier under discussion.\n%s' "$file" "$hits")
   msg="${msg:+$msg$nl}$found"
 fi
 

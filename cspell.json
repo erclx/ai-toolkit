@@ -26,11 +26,13 @@
   "overrides": [
     {
       "filename": [
+        "src/markdown/bans.ts",
         "src/markdown/bans.test.ts",
         "src/markdown/gate.test.ts",
         "src/markdown/scan.test.ts",
         "src/markdown/scan.ts",
         ".claude/context/cli/audits.md",
+        ".claude/context/development/verification.md",
         "docs/agents/markdown-audit.md"
       ],
       "dictionaries": ["banned-spellings"]

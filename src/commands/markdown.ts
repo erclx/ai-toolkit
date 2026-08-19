@@ -1,14 +1,19 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
-import { type BanReport, banReport, loadStandards } from '@/markdown/bans'
+import { BAN_SETS, emptyBanSets } from '@/markdown/bans'
 import { resolveMarkdown } from '@/markdown/files'
 import { isGating } from '@/markdown/gate'
-import { type BanFinding, bodyLines, scanBans } from '@/markdown/scan'
 import {
+  type BanFinding,
+  type BanSets,
+  bodyLines,
+  scanBans,
+} from '@/markdown/scan'
+import {
+  CHECKPOINTS,
   type Checkpoints,
   measureStructure,
-  parseCheckpoints,
   type StructureReport,
 } from '@/markdown/structure'
 import {
@@ -21,7 +26,18 @@ import {
   plural,
 } from '@/ui'
 
+const EXIT_REFUSED = 1
 const EXIT_GATE = 2
+
+/**
+ * A set shipped empty, so the run measured a corpus against nothing.
+ *
+ * Distinct from `EXIT_REFUSED` because the two want different responses. A
+ * refusal means no corpus was built and a push stage is right to skip, while an
+ * empty set means the corpus was walked and nothing was looked for, which is a
+ * defect in the build and has to fail.
+ */
+const EXIT_UNUSABLE = 3
 
 interface AuditCommandOptions {
   readonly json?: boolean
@@ -58,6 +74,7 @@ export function register(program: Command): void {
         '  0  the audit completed with no gating finding',
         '  1  refused, with the reason on stderr',
         '  2  a banned character, word, or spelling is present',
+        '  3  a shipped ban set is empty, so the run measured nothing',
         '',
         'A ban hit is a fact and gates unconditionally. Bullet, paragraph, and',
         'depth weight are judgments a reader settles, so all three report and',
@@ -68,12 +85,11 @@ export function register(program: Command): void {
         'where the token is genuinely an identifier under discussion, which is',
         'what markdown.md reserves the span for.',
         '',
-        'Bans and checkpoints are read from markdown.md and prose.md, resolved',
-        'under .claude/standards/, then standards/, then the corpus inside the',
-        'aitk package, so a project that installed neither is still measured.',
-        'The report names the copy it read. No folder has to resolve and no',
-        'index.md has to exist, so .claude/rules/, governance/, and snippets/',
-        'are in reach.',
+        'Bans and checkpoints ship with the aitk package rather than being read',
+        'out of a standards file, so a project that installed no standards is',
+        'measured the same as one that did. markdown.md and prose.md still state',
+        'every rule for a reader. No folder has to resolve and no index.md has',
+        'to exist, so .claude/rules/, governance/, and snippets/ are in reach.',
         '',
         'Examples:',
         '  aitk markdown audit',
@@ -110,9 +126,9 @@ async function runAudit(
     )
   }
 
-  const standards = await loadStandards(root)
-  const bans = banReport(standards)
-  const checkpoints = parseCheckpoints(standards.markdown?.text ?? '')
+  const bans = BAN_SETS
+  const empty = emptyBanSets(bans)
+  const checkpoints = CHECKPOINTS
 
   const reports: FileReport[] = await Promise.all(
     scope.files.map(async (rel) => {
@@ -127,7 +143,7 @@ async function runAudit(
 
   intro('aitk markdown audit')
   reportScope(scope.files, scope.unmatched)
-  reportBans(reports, bans)
+  reportBans(reports, bans, empty)
   reportBullets(reports, checkpoints)
   reportParagraphs(reports, checkpoints)
   reportDepth(reports, checkpoints)
@@ -143,8 +159,7 @@ async function runAudit(
           characters: bans.characters,
           words: bans.words,
           spellings: bans.spellings,
-          sources: bans.sources,
-          missingStandards: bans.missing,
+          emptySets: empty,
         },
         checkpoints: {
           run: checkpoints.run,
@@ -153,7 +168,6 @@ async function runAudit(
           paragraph: checkpoints.paragraph,
           sentences: checkpoints.sentences,
           renderWidth: checkpoints.renderWidth,
-          fellBack: checkpoints.fellBack,
         },
         entries: reports.map((report) => ({
           path: report.rel,
@@ -166,6 +180,10 @@ async function runAudit(
       })}\n`,
     )
   }
+
+  // An empty set finds nothing and would exit clean, which reports a corpus
+  // nobody checked as a corpus carrying no violation.
+  if (empty.length > 0) return EXIT_UNUSABLE
 
   const gating = isGating({
     bans: reports.flatMap((report) => report.bans),
@@ -180,7 +198,7 @@ function refuse(message: string): number {
   logStep('Refused')
   logWarn(message)
   outro()
-  return 1
+  return EXIT_REFUSED
 }
 
 function reportScope(
@@ -203,18 +221,22 @@ function reportScope(
  * the sentence and every voice rule is a judgment, so a report listing hits
  * without naming those would read as a verdict on the whole standard.
  */
-function reportBans(reports: readonly FileReport[], bans: BanReport): void {
+function reportBans(
+  reports: readonly FileReport[],
+  bans: BanSets,
+  empty: readonly string[],
+): void {
   logStep('Bans')
 
-  if (bans.missing.length > 0) {
+  if (empty.length > 0) {
     logWarn(
-      `Not measured. Found no copy of: ${bans.missing.join(', ')}. Looked under .claude/standards/, then standards/, then the aitk package.`,
+      `Not measured. The shipped set is empty for: ${empty.join(', ')}. The sets ship with the aitk package, so an empty one is a defect in the build rather than a missing install.`,
     )
-    if (bans.sources.length === 0) return
+    return
   }
 
   logInfo(
-    `${plural(bans.characters.length, 'character')}, ${plural(bans.words.length, 'word')}, and ${plural(bans.spellings.length, 'spelling')} read from ${bans.sources.join(' and ')}`,
+    `${plural(bans.characters.length, 'character')}, ${plural(bans.words.length, 'word')}, and ${plural(bans.spellings.length, 'spelling')} shipped with the aitk package`,
   )
   logInfo(
     'Frontmatter, fenced blocks, code spans, and link destinations are excluded.',
@@ -378,12 +400,6 @@ function reportDepth(
   logInfo(
     'A run that is entirely table rows is excluded too, since a heading inside a table splits the table rather than the run.',
   )
-
-  if (checkpoints.fellBack.length > 0) {
-    logWarn(
-      `Read no number from the standard for: ${checkpoints.fellBack.join(', ')}. Measured against the shipped default instead.`,
-    )
-  }
 
   const over = reports
     .filter((report) => report.structure.longestRun > checkpoints.run)
