@@ -124,6 +124,8 @@ What arrives there does not become a record by being read, so place it by what i
 
 A plan written here is written against a tree several branches are already changing, so it names the file set of every track in flight as a constraint, one set per track, read from the Touches column of that track's row. State for each set which of the two acts it forbids, per Constraints in `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. A bare path list leaves the worker guessing, which is how a plan ends up forbidding the repair of a citation the change broke.
 
+Stamp the block with the commit this session read the tree at, which the same section fixes the form of. A plan written during a refill sits in the ready queue while the wave it names merges, so the constraint is true when written and false when a worker reads it. The stamp is what lets that worker test the difference, and the standard carries the test.
+
 ## Boundaries
 
 - Run one orchestrator at a time. The board is gitignored, so a second session sees none of this one's writes: two task files land minutes apart under different labels for the same work, one session archives a task mid-sweep in the other, and each archives a plan the other had retargeted. An Owner column does not fix this, since neither session can read the other's rows.

@@ -71,6 +71,15 @@ A constraint naming a surface to leave alone forbids two different acts, and it 
 - Never forbid retargeting a pointer the change breaks. A rename, a split, or a deletion that leaves a citation behind ships a dangling reference, so repairing it is required work rather than scope creep.
 - Decide both acts for every surface the constraint names. Carving the distinction out for one file and leaving its siblings under the bare wording ships one correct call beside one broken reference.
 
+A constraint measured against work in flight expires when that work merges, and a plan is read some time after it is written. Stamp the block with what it was measured against so a reader can test whether it still holds.
+
+- Open the block with the commit the constraint was measured against and the date, as `Measured against <commit> on <YYYY-MM-DD>`. A date alone does not separate two plans written the same afternoon on either side of three merges, and the commit is what a reader tests against.
+- Stamp the commit and not the track names. The constraint already names each track by its work and its file set, so a second list of names is a second place to keep in step.
+- Re-test a stamped constraint before honoring it. `git log <commit>..origin/main --oneline -- <the paths the constraint names>` reports what has merged into those paths since the stamp, and any commit there means the track landed and the constraint is dead. Scope the log to the paths rather than reading every subject, since a squashed merge carries a pull request number and the constraint names its track by work and file set.
+- Read an unstamped constraint as unverified rather than as live. There is no commit to anchor the log against, so confirming one costs the open pull request list against the named paths, which is the work a stamp removes. Every plan written before this rule carries an unstamped block, which is why the default sits here rather than in a sweep over the live folder.
+
+A dead constraint fails silently in the expensive direction. A session honoring one ships the dangling citation the change created and reports success, where a session crossing a live constraint collides visibly and is caught.
+
 ### Risks
 
 - Name the collision rather than the category. A risk a reader cannot act on is padding.
@@ -141,6 +150,7 @@ This contract inverts the one an intake folder keeps, where an empty slot means 
 
 **Constraints:**
 
+- Measured against `<commit>` on <YYYY-MM-DD>, <the work in flight and which of the two acts it forbids>
 - <durable rule the work must respect>
 
 **Files to touch:**
