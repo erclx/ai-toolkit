@@ -26,6 +26,7 @@
   "overrides": [
     {
       "filename": [
+        "src/markdown/bans.ts",
         "src/markdown/bans.test.ts",
         "src/markdown/gate.test.ts",
         "src/markdown/scan.test.ts",

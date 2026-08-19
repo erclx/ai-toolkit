@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { bodyLines } from '@/markdown/scan'
 import {
+  CHECKPOINTS,
   type Checkpoints,
-  DEFAULT_CHECKPOINTS,
   measureStructure,
-  parseCheckpoints,
   RENDER_WIDTH,
 } from '@/markdown/structure'
 
@@ -17,7 +16,6 @@ const PEER_COUNT = 55
 const CATALOG_BULLET = 94
 const PARAGRAPH_BULLET = 394
 
-const CHECKPOINTS: Checkpoints = { ...DEFAULT_CHECKPOINTS, fellBack: [] }
 const RUN_CHECKPOINT = CHECKPOINTS.run
 const BULLET_CHECKPOINT = CHECKPOINTS.bullet
 const PARAGRAPH_CHECKPOINT = CHECKPOINTS.paragraph
@@ -78,34 +76,20 @@ function sentences(count: number, width = 20): string {
   ).join(' ')
 }
 
-describe('parseCheckpoints', () => {
-  it('should read every checkpoint out of the shipped standard', async () => {
-    const standard = await Bun.file('standards/markdown.md').text()
-
-    const checkpoints = parseCheckpoints(standard)
-
-    expect(checkpoints.fellBack).toEqual([])
-    expect(checkpoints).toMatchObject(DEFAULT_CHECKPOINTS)
-  })
-
-  it('should read a sentence count the standard spells as a word', () => {
-    const standard = 'Keep paragraphs to six sentences or fewer.'
-
-    expect(parseCheckpoints(standard).sentences).toBe(6)
-  })
-
-  it('should name each checkpoint it could not read rather than failing quietly', () => {
-    const checkpoints = parseCheckpoints('# Nothing stated here\n')
-
-    expect(checkpoints.fellBack).toEqual([
-      'run',
-      'peerBullet',
-      'bullet',
-      'paragraph',
-      'sentences',
-      'renderWidth',
-    ])
-    expect(checkpoints.bullet).toBe(DEFAULT_CHECKPOINTS.bullet)
+describe('CHECKPOINTS', () => {
+  it('should ship the numbers the structural measures run against', () => {
+    // Asserted rather than read back off `standards/markdown.md`, which is what
+    // the parser this replaced did. The standard states each number for a
+    // reader and no machine reads it, so a number moving in one place and not
+    // the other is caught by whoever edits rather than by a stage.
+    expect(CHECKPOINTS).toEqual({
+      run: 40,
+      peerBullet: 130,
+      bullet: 400,
+      paragraph: 700,
+      sentences: 4,
+      renderWidth: 80,
+    })
   })
 })
 
