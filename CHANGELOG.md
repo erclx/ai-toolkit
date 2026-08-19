@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.106.0](https://github.com/erclx/aitk/compare/v0.105.0...v0.106.0) (2026-08-19)
+
+
+### Features
+
+* **standards:** carry the writing rules in a skill and retire prose.md ([#1028](https://github.com/erclx/aitk/issues/1028)) ([34ce48e](https://github.com/erclx/aitk/commit/34ce48e629c107c0992cd982d67c1909c3bbd653))
+
 ## [0.105.0](https://github.com/erclx/aitk/compare/v0.104.1...v0.105.0) (2026-08-19)
 
 
