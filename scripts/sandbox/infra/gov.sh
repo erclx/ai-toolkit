@@ -67,14 +67,50 @@ RULE
   git add .
   git commit -m "chore(sandbox): scaffold gov test directories" --no-verify -q
 
+  # A repository of its own, built after the outer commit so the outer tree
+  # never records it as a gitlink. `test-order` reads history rather than a
+  # tree, so its fixture has to be commits in an order rather than files in a
+  # directory. The three commits below produce one verdict each.
+  git init -q --initial-branch=main test-order
+  git -C test-order config user.email "sandbox@example.com"
+  git -C test-order config user.name "Sandbox"
+
+  mkdir -p test-order/src
+  echo "export const seed = 1" >test-order/src/seed.ts
+  echo "// covers seed" >test-order/src/seed.test.ts
+  git -C test-order add .
+  git -C test-order commit -q -m "chore: seed the tree"
+  git -C test-order checkout -q -b feat/parser
+
+  echo "export const parser = 1" >test-order/src/parser.ts
+  git -C test-order add .
+  git -C test-order commit -q -m "feat: add the parser"
+
+  echo "// covers parser" >test-order/src/parser.test.ts
+  git -C test-order add .
+  git -C test-order commit -q -m "test: cover the parser"
+
+  echo "// covers reader" >test-order/src/reader.test.ts
+  git -C test-order add .
+  git -C test-order commit -q -m "test: cover the reader"
+
+  echo "export const reader = 1" >test-order/src/reader.ts
+  git -C test-order add .
+  git -C test-order commit -q -m "feat: add the reader"
+
+  echo "export const seed = 2" >test-order/src/seed.ts
+  git -C test-order add .
+  git -C test-order commit -q -m "refactor: rewrite the seed"
+
   log_step "Governance sandbox"
   log_info "install/ : clean target, no rules present"
   log_info "sync/    : stale .claude/rules/ present"
   log_info "build/   : full .claude/rules/ present, generates .claude/.tmp/gov/rules.md"
   log_info "list     : read-only catalog dump, no target needed"
   log_info "regen/   : toolkit-shaped root, orphan and drifted rule present"
+  log_info "test-order/ : own history, one pair per verdict on feat/parser"
 
-  select_or_route_scenario "Which scenario?" "install" "sync" "build" "list" "regen"
+  select_or_route_scenario "Which scenario?" "install" "sync" "build" "list" "regen" "test-order"
 
   case "$SELECTED_OPTION" in
   "install")
@@ -101,6 +137,11 @@ RULE
     log_step "Produced regen/.claude/rules"
     find regen/.claude/rules -type f -name "*.md" | sort | sed "s|^regen/.claude/rules/||"
     log_info "599-sandbox-local.md present, 999-orphan.md gone, 000-constitution.md restored"
+    ;;
+  "test-order")
+    log_step "Running: aitk gov test-order --root test-order"
+    log_info "src/parser.ts is the finding, src/reader.ts is satisfied, src/seed.ts is unclassified"
+    exec bun "$PROJECT_ROOT/src/cli.ts" gov test-order --root test-order
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

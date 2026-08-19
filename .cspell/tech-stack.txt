@@ -33,6 +33,7 @@ firecrawl
 flowchart
 fromdateiso
 gitattributes
+gitlink
 glama
 gsub
 heredoc
