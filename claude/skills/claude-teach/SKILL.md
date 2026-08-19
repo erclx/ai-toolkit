@@ -1,22 +1,23 @@
 ---
 name: claude-teach
-description: Opens and runs a learning workspace on one subject, holding a mission, resources, numbered lessons, reference pages, a glossary, and learning records that survive across sessions. Use when asked to "teach me X", "open a learning workspace", "I want to learn X", "quiz me on this", "continue the lesson", or "resume my workspace on X". Do NOT use to write project documentation, which belongs to the surface owning that document, and do NOT use to answer one question, which is an ordinary reply.
+description: Opens and runs a learning workspace on one subject, holding a mission, resources, numbered lessons, reference pages, a glossary, and learning records that survive across sessions, and proposes where a durable page from one belongs once it outgrows the workspace. Use when asked to "teach me X", "open a learning workspace", "I want to learn X", "quiz me on this", "continue the lesson", "resume my workspace on X", or "promote this reference page". Do NOT use to write project documentation, which belongs to the surface owning that document, and do NOT use to answer one question, which is an ordinary reply.
 disable-model-invocation: true
-argument-hint: <subject to learn, or the topic of the workspace to resume>
+argument-hint: <subject to learn, or the topic of a workspace to resume or promote>
 ---
 
 # Claude teach
 
 Run a learning workspace on one subject across sessions. The workspace holds what the learner has been through, so a session weeks later resumes from the folder rather than from the conversation.
 
-The shape of the workspace is fixed by `.claude/standards/teach.md`, or `${CLAUDE_SKILL_DIR}/../../standards/teach.md` when the project does not have that file. Read it before writing anything into the folder. The pedagogy sits in `${CLAUDE_SKILL_DIR}/references/pedagogy.md` and the lesson craft in `${CLAUDE_SKILL_DIR}/references/lesson-craft.md`.
+The shape of the workspace is fixed by `.claude/standards/teach.md`, or `${CLAUDE_SKILL_DIR}/../../standards/teach.md` when the project does not have that file. Read it before writing anything into the folder. The glossary answers to `.claude/standards/glossary.md`, or `${CLAUDE_SKILL_DIR}/../../standards/glossary.md` when the project does not have it. The pedagogy sits in `${CLAUDE_SKILL_DIR}/references/pedagogy.md`, the lesson craft in `${CLAUDE_SKILL_DIR}/references/lesson-craft.md`, and the promotion routing in `${CLAUDE_SKILL_DIR}/references/promotion.md`.
 
 ## Guards
 
 - If the invocation names no subject and no existing workspace matches, stop: `❌ No subject. Invoke with the subject to learn, or the topic of a workspace to resume.`
 - Never trust recall for what the subject says. Research first, cite what was read, and say what was not.
-- Write nothing outside the workspace folder. A durable page stays in `reference/` until a promotion pass moves it, and this skill runs no promotion.
+- Write nothing outside the workspace folder, apart from the one handoff file Step 6 names. A durable page stays in `reference/` and is copied out by the skill that owns the destination, never by this one.
 - Do not open a second workspace on a subject one already covers. Resume that one.
+- Never promote a lesson. It is generated markup carrying a quiz and a learner, and no request makes it promotable.
 
 ## Step 0: let the CLI resolve the workspace root
 
@@ -37,7 +38,7 @@ From a linked worktree the file-editing tools refuse every path under the main r
 
 ## Step 1: open or resume
 
-A topic the listing already carries is a resume, and anything else is a new workspace.
+A topic the listing already carries is a resume, and anything else is a new workspace. An invocation asking to promote is neither: read the named workspace through the listing and go to Step 6, which teaches nothing and writes no lesson.
 
 On a resume, run `aitk teach list <topic> --json` for the files behind each count, then read `MISSION.md`, the highest-numbered learning record, and `GLOSSARY.md`. Those three carry where the learner stopped and what they got wrong. Report the mission's success lines with what is already met before teaching anything.
 
@@ -102,6 +103,42 @@ Record the wrong answer rather than the count. The next session places the learn
 
 Then restate the mission's success lines with what is now met. A mission whose lines are all met is finished, and saying so is what closes a workspace.
 
+## Step 6: propose where the durable half belongs
+
+Run this when the invocation asks for it, or offer it in one line when a mission finishes, since that is when the workspace stops growing and its reference pages stop changing. Never run it unasked mid-course.
+
+Read `${CLAUDE_SKILL_DIR}/references/promotion.md` first. It carries what may be promoted, the routing test, both spellings of the wiki folder, the refusal when a project has none, and what each destination expects a page to carry.
+
+Propose and wait. A promoted page is public prose that needs a line naming who owns its subject, which is a judgment about ownership rather than a move a session makes on its own reading. Present one block per candidate page:
+
+```plaintext
+reference/<slug>.md → <destination path>
+Subject owner: <who owns it, in a few words>
+Still owed:    <what the destination expects that the page does not carry yet>
+```
+
+Then stop and let the operator strike, redirect, or confirm each block.
+
+Write nothing to a destination here. One skill owns the durable writes, and two skills editing one file at one step is the failure that rule exists against. Record each confirmed block in `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root instead, appending when the file exists, with one H2 per destination naming its path, the source page beneath it, and the page body fenced:
+
+`````markdown
+## <destination path>
+
+Source: .claude/teach/<nn>-<topic>/reference/<slug>.md
+
+```markdown
+<the page body as it should land, with the source line the destination expects>
+```
+`````
+
+The body is fenced rather than written bare because a reference page carries headings of its own, and the reader splits this file on its H2 lines. An unfenced body turns every section heading in the page into a destination naming no path. Open the body fence with four backticks so a page carrying a fenced code block of its own still closes where it should, and widen both fences together if it carries a four-backtick fence.
+
+Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+
+The handoff is its own file rather than a shared one. The routed-facts file another skill writes is deleted by whichever pass folds it, so a second producer's unread work goes with it, and a sibling path costs the folding skill one more read and removes the interaction.
+
+An append is a whole-file operation, so send it as a plain single `Bash` command carrying a heredoc, per Step 0. Then tell the operator that `/claude-docs` folds the file in from a branch. The proposal costs nothing tracked and runs anywhere, while the page it describes is a tracked file, so the fold is a worktree operation and the workspace it came from is not.
+
 ## Output
 
 ```plaintext
@@ -113,3 +150,12 @@ Progress:  <n> of <m> success lines met
 ```
 
 Omit the reference line where the lesson produced no durable page. Emit every path from the project root, in the form the project's instruction file sets.
+
+A promotion pass reports its own shape instead, one line per page the operator confirmed and one naming the handoff:
+
+```plaintext
+➡️ Promoting: .claude/teach/<nn>-<topic>/reference/<slug>.md → <destination path>
+→ Confirmed pages wait at .claude/.tmp/teach-promotion/<slug>.md. Run /claude-docs from a branch to fold them in.
+```
+
+A pass where the operator confirmed nothing writes no handoff file and reports that alone.
