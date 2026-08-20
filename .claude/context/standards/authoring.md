@@ -11,7 +11,7 @@ The meta-standard `standards/standard.md` governs itself, so it is both the rule
 
 A standard governing a document type carries one fenced template of that document, and an attribute standard carries none. The rule lives in `standards/standard.md` under `## Template`, and `standard.md` governs itself, so it carries the template it demands. A paragraph describing a shape is advisory and a fenced block is something a check can compare against.
 
-The rule generalizes a section four standards already had rather than inventing one. `architecture.md`, `requirements.md`, and `bundled/roadmap.md` carried `## Template`, and `tasks.md` carried the same block inside `## File format`. Both placements stay legal, since a template beside the rules it satisfies is one read and a fixed heading would have moved the `tasks.md` block away from them.
+The rule generalizes a section several standards already had rather than inventing one. `architecture.md` and `requirements.md` carried `## Template`, and `tasks.md` carried the same block inside `## File format`. Both placements stay legal, since a template beside the rules it satisfies is one read and a fixed heading would have moved the `tasks.md` block away from them. A fourth carrier under `bundled/` was retired with the surface it governed, which cost the rule a case and none of its reasoning.
 
 The binding condition is what keeps the rule honest. `publish.md`, `slug.md`, and `versioning.md` govern a scan, a string, and a label, so a template would have had nothing to show. Each names its own exemption in the sentence declaring it an attribute standard, which is the both-sides rule applied to a claim that would otherwise be a silence.
 

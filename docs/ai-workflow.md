@@ -75,9 +75,9 @@ When features are independent, run them in parallel instead of sequentially. Use
 - Ship each worktree separately with `aitk:git-ship`
 - For full autonomy per worktree, invoke `aitk:claude-autoship` instead of the manual chain. Approve the plan, walk away, come back to draft PRs.
 
-To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It owns the roadmap, handing a needed draft or resequence to a worker that runs `aitk:claude-roadmap` in its branch, plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, then tells the session holding that branch to run `aitk:claude-address-review` whenever the pass posted a finding at any severity, which is the same threshold `aitk:claude-pr-review` states and posts its open heading under. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
+To run several worktrees as a coordinated flow rather than ad hoc, assert the orchestrator role in one warm session with `aitk:claude-orchestrate`. It plans each feature, refills the ready queue so a free worker never waits, and reviews each worker's PR with `aitk:claude-pr-review`, then tells the session holding that branch to run `aitk:claude-address-review` whenever the pass posted a finding at any severity, which is the same threshold `aitk:claude-pr-review` states and posts its open heading under. The human launches workers and merges. See [operating model](operating-model.md) for the full loop.
 
-Roadmap ownership holds while a scope exists to sequence. Once the MVP list in `.claude/REQUIREMENTS.md` has shipped, later work arrives as discrete items and the orchestrator reads `.claude/tasks/priority.md` for execution order instead.
+Execution order comes off `.claude/tasks/priority.md` and nothing sequences work into versions. Scope stays in `.claude/REQUIREMENTS.md` as a statement of what is wanted, and it reaches the board as discrete tasks the orchestrator orders by readiness.
 
 Run one orchestrator at a time. The board is gitignored, so a second session reads none of the first one's writes and the two collide on labels and archives. No fixed number caps the worker tracks underneath it. Collision between file sets is what binds, so a candidate opens only when its files are disjoint from every track in flight, and the ceiling in practice is how many outputs one session can still review properly.
 
@@ -193,7 +193,6 @@ This section is the corpus the coverage claim is measured against: every name `a
 | `aitk:claude-intake-answer` | When an intake folder holds unread slots waiting on your decision               |
 | `aitk:claude-groundwork`    | When the state is unmeasured and more than one approach is live                 |
 | `aitk:decision-escalate`    | When open decisions turn on your preference and want batching into one set      |
-| `aitk:claude-roadmap`       | When MVP scope needs sequencing into ordered versions                           |
 | `aitk:claude-tasks`         | When a decided item needs a file on the board, or a shipped one needs archiving |
 | `aitk:claude-feature`       | When the approach is settled and the next step is a plan                        |
 

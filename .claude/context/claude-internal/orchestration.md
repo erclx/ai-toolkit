@@ -44,7 +44,9 @@ Sorting the whole group and leaving it on the board was the alternative, and it 
 
 What the split costs is a judgment restated on every sweep rather than a rule applied once. A mechanical test over age or origin would need no restating and predicts nothing about what gets picked, which is the whole thing the ordering exists to carry, so the cost is taken deliberately and the sweep in `claude-orchestrate` is where it is paid.
 
-Sequencing rationale had no home under either arrangement, because the tasks standard sent it to the roadmap and a live task retires that surface. It now rides in the `Waiting on` cell the row already carries, one line per row, which is the shape that cell already had. A separate document would be the roadmap under another name.
+Sequencing rationale had no home under either arrangement, because the tasks standard sent it to a version-sequencing document the toolkit has since retired. It now rides in the `Waiting on` cell the row already carries, one line per row, which is the shape that cell already had. A separate document would be that surface under another name.
+
+The cell holds one row's reasoning and nothing wider. Why one group of work runs before another is carried by no surface at all, which the tasks standard now states rather than pointing at a file, so a session wanting it asks whoever ordered the board.
 
 ## Validating a row
 

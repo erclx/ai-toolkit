@@ -29,7 +29,7 @@ The fallback deliberately does not key on `historyUnavailable`, which was the sh
 
 `migration-superseded` reads the `superseded` array off the same report and takes the opposite branch when the key is absent. It stops and names the CLI rather than degrading to a listing, because the two detections fail differently. `unmigrated` pairs against domain folders whose worst listing error is an unfiltered count, while `superseded` pairs against the seed subdirectory names and an uppercase stem is not the test.
 
-A listing of `.claude/*.md` also reaches `ARCHITECTURE.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `DESIGN.md`, each a single file the layout intends to stay one, so the fallback that costs a count on one skill costs four shredded documents on the other. A fallback is worth having when its failure is an imprecision and worth refusing when its failure is a proposal nobody can undo.
+A listing of `.claude/*.md` also reaches `ARCHITECTURE.md`, `REQUIREMENTS.md`, and `DESIGN.md`, each a single file the layout intends to stay one, so the fallback that costs a count on one skill costs three shredded documents on the other. A fallback is worth having when its failure is an imprecision and worth refusing when its failure is a proposal nobody can undo.
 
 The destination standard is the second place the skill declines a route every sibling takes. `skill.md` has a body cite `.claude/standards/X.md` first and name the plugin copy under `${CLAUDE_SKILL_DIR}` as the fallback, which is correct for a standard the skill follows itself. Here the standard is the project's own agreement about the shape of a folder, resolved by matching the replacement path against the `appliesTo` the standards catalog declares.
 

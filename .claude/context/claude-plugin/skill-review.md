@@ -1,25 +1,23 @@
 ---
 title: Skill review paths
-description: The roadmap gate that stopped an unsourced version claim, the two-pass model a pull request review posts under, and the rebase stage the worker's return leg carries
+description: The version-sequencing surface that was gated and then retired, the two-pass model a pull request review posts under, and the rebase stage the worker's return leg carries
 ---
 
 # Skill review paths
 
-## The roadmap gate
+## The version-sequencing surface, gated and then retired
 
-`claude-orchestrate` asserted an active version from a roadmap this repository never had. `.claude/ROADMAP.md` is specified by `standards/bundled/roadmap.md`, written by `claude-roadmap`, and read by `claude-orchestrate` and `claude-pr-review`, and the file has never existed here. Every read path skips a missing file by instruction, so nothing failed loudly and the `Active: vX.Y` output line was unsourced on every run since the skill shipped.
+`claude-orchestrate` asserted an active version from a roadmap this repository never had. The file was specified by a bundled standard, written by a `claude-roadmap` skill, and read by `claude-orchestrate` and `claude-pr-review`, and it never existed here. Every read path skips a missing file by instruction, so nothing failed loudly and the `Active: vX.Y` output line was unsourced on every run since the skill shipped.
 
-Drafting the roadmap was the obvious fix and the standard forbids it. All eight MVP features in `.claude/REQUIREMENTS.md` have shipped, and the Lifecycle section of `standards/bundled/roadmap.md` says the scope is exhausted once the last version ships, with later work arriving as discrete items rather than extending the roadmap. A table of the current maintenance labels would satisfy the format and break the lifecycle rule in the same file.
+Drafting the file was the obvious fix and its own standard forbade it. All eight MVP features in `.claude/REQUIREMENTS.md` have shipped, and the standard's Lifecycle section said the scope is exhausted once the last version ships, with later work arriving as discrete items. A table of the current maintenance labels would have satisfied the format and broken the lifecycle rule in the same file.
 
-So the claim was stripped rather than sourced. The skill reads `priority.md` for order, keeps `index.md` for what is queued, and treats the roadmap as optional, reporting what it says with a date from `git log` instead of naming a version as fact. The date is what keeps the report honest when the file is old, since trading an unsourced claim for a confidently stale one repeats the defect by another route. Sequencing read from a committed roadmap returns when a requirements pass defines a next scope, which the distribution work shipped without.
+So the claim was stripped rather than sourced, and a gate was added to the writer so invoking it directly could not draft over an exhausted scope either. Both were repairs to a surface whose own lifecycle rule ends its usefulness at the last MVP version, which is what the retirement then acted on: the skill, the standard, the scenario, and every read of the file are gone, and the two consumers report the board instead.
 
-### Where the gate sits
+### What the retirement left open
 
-The writer kept drafting over that same exhausted scope for another cycle. `claude-orchestrate` gained the gate and `claude-roadmap` did not, so invoking the skill directly still produced the document the standard forbids. Its only guard tested that `.claude/REQUIREMENTS.md` exists and names MVP features, which a fully delivered scope satisfies exactly as a fresh one does. The gate sits in the writer now, where a refusal reaches every caller rather than the one that happened to carry it.
+Cross-version sequencing rationale now has no home. A row's `Waiting on` cell in `.claude/tasks/priority.md` carries why that row sits where it does, one line per row, and reasoning spanning several rows reaches a later session only through whoever remembers it. Both skills already ran correctly against a missing file, so nothing broke, and stating the gap is the honest end state rather than inventing a second document that would be the retired surface under another name.
 
-What the gate reads is a section's presence rather than a shipped flag. `standards/requirements.md` gained a Lifecycle section stating that later scope arrives as a new section and that a roadmap sequences the MVP list alone, so a file carrying a section the standard names nowhere is one whose MVP list has already shipped. Nothing was added to mark a feature shipped, because the same section forbids annotating MVP entries with status and a flag would have been the thing it bans.
-
-`## Distribution` stays outside the trigger set. The standard tells a project shipping to outside consumers to include that section from the start, so a greenfield project carries it before a single feature ships and a gate reading it would stop the loop at step one while asserting a scope was sequenced that never was. The cost is that a project whose only later scope is that section passes the gate, which this repository is, since the distribution work landed here without the requirements pass that would have named a section freely. Both remaining gaps under-fire rather than stop wrongly, which is the direction a guard reading a convention should fail in.
+`standards/requirements.md` keeps its Lifecycle section, which now says that later scope arrives as a new section and that nothing sequences either list into versions. The gate it fed is gone with the writer, so the section is read by a person rather than by a guard, and the `## Distribution` carve-out that kept a greenfield project from tripping that guard went with it.
 
 ## Asserting a routing decision
 
@@ -33,9 +31,9 @@ Where a handoff may legitimately continue into the skill it names, as a fresh ta
 
 ## The review two-pass model
 
-`claude-pr-review` reads that same roadmap path and asserts nothing from it, so it carries no defect to fix there. Its read informs a review comment, and the body sits inside a rewrite's file set where an edit would have bought a rebase for no behavior change.
+`claude-pr-review` read that same path and asserted nothing from it, so it carried no defect to fix there. Its read informed a review comment, and the body sat inside a rewrite's file set where an edit would have bought a rebase for no behavior change. The retirement pointed it at `.claude/tasks/priority.md` instead, which is a read of the same kind against a file that exists.
 
-That rewrite landed as a second pass the skill had never described. `claude-pr-review` posts twice over a pull request's life, a first pass and a close-out, and `claude-orchestrate` step 7 assumed the second one while the skill body defined only the first. The body path carries the head commit now, `body-<number>-<short-sha>.md`, because keying on the pull request number alone stops two sessions reviewing different pull requests from colliding and says nothing about one session posting twice.
+That rewrite landed as a second pass the skill had never described. `claude-pr-review` posts twice over a pull request's life, a first pass and a close-out, and `claude-orchestrate` step 6 assumed the second one while the skill body defined only the first. The body path carries the head commit now, `body-<number>-<short-sha>.md`, because keying on the pull request number alone stops two sessions reviewing different pull requests from colliding and says nothing about one session posting twice.
 
 Callers invented five spellings for the second file across roughly twenty-five scratch files, and the sessions that had already written the defect down overwrote their first-pass body anyway. A name the caller has to choose is a name the caller gets wrong, so the fix is that the second segment is derived.
 
