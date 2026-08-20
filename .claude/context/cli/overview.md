@@ -35,6 +35,8 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 ### Wiring and output
 
 - Exit and stream discipline moved to `internal/rules/core/095-cli-output.md`, which globs `src/**/*.ts` so it loads on an edit here rather than waiting to be looked up. It holds the `process.exitCode` requirement and the stderr-in-every-mode rule.
+- Color goes through `palette(stream)` in `src/ui.ts`, which reads `NO_COLOR` and the stream's `isTTY` at write time and hands back a blank set when either says no. Ask about the stream being written to rather than about the process, since `showHelp` in `src/cli.ts` frames on stdout while every other writer frames on stderr, and `process.stdin.isTTY` is a third question about prompting.
+- No file outside `src/ui.ts` defines an escape constant. `src/ui.test.ts` walks the tree and fails the build on one, because sixteen files each spelling their own grey is what made color impossible to turn off in the first place.
 - Exit-code coverage spawns the CLI from `src/commands/exit-code.test.ts`, because an action imported in process would set the code on the test runner. The two `feedback.ts` branches gated on `isToolkitSource` need a copy of `src/` under a temp root, since `PROJECT_ROOT` resolves from the CLI's own location rather than from the working directory.
 - A linked worktree carries an empty `node_modules` and resolves packages from an ancestor, so a fixture symlinking `node_modules` walks up for the populated one rather than naming the repository root.
 - The `feedback` guard on `process.stdin.isTTY` is the one error path a pipe cannot reach. `script -qec` allocates a pty and forwards the child status, both util-linux spellings, so that case skips off Linux.
