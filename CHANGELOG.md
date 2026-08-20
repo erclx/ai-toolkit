@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.107.2](https://github.com/erclx/aitk/compare/v0.107.1...v0.107.2) (2026-08-20)
+
+
+### Bug Fixes
+
+* **context:** match the provenance markers to the rule they cite ([#1034](https://github.com/erclx/aitk/issues/1034)) ([b2c6e28](https://github.com/erclx/aitk/commit/b2c6e28121dc84c6816a068e8ef45a3c635eaa0c))
+* **skills:** read the aitk record rather than an exit a wrapper masks ([#1035](https://github.com/erclx/aitk/issues/1035)) ([6c27332](https://github.com/erclx/aitk/commit/6c273324b175f8d76eb385d494de49a311206119))
+
 ## [0.107.1](https://github.com/erclx/aitk/compare/v0.107.0...v0.107.1) (2026-08-20)
 
 
