@@ -34,6 +34,7 @@ crystaldba
 cspell
 daringfireball
 dbaeumer
+declaratives
 deprioritized
 diffable
 disjointness

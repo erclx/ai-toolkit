@@ -536,10 +536,45 @@ function measureParagraph(block: readonly BodyLine[]): CadenceFinding {
  * absence of something, so no addition to that set catches a paragraph whose
  * sentences are all one length. The measure stops at what is countable. A
  * sentence's grammatical shape and whether it carries a finite verb are the two
- * rules `write-human` states that this does not implement, because identifying
- * either needs a parse rather than a match, and an imperative or a heading
- * fragment would read as a defect. Reporting them wrong is worse than not
- * reporting them, since they name the exact failure this exists to measure.
+ * rules `write-human` states that this does not implement. Reporting them wrong
+ * is worse than not reporting them, since they name the exact failure this
+ * exists to measure.
+ *
+ * That was a prediction and it has now been measured, against two parsers
+ * rather than against the idea of one. Both ran over 11,389 paragraph sentences
+ * across 503 markdown files at `c7e92612` on 2026-08-20, and they disagree by
+ * a factor of four on a number one of them has to be wrong about.
+ *
+ * `compromise` reported 2 percent. It tags a fronted past participle as a
+ * finite past-tense verb, so all twelve of those sentences in
+ * `.claude/ARCHITECTURE.md` read as carrying one, eleven opening `Measured at`
+ * and one `Overturned by`, which is the exact shape the measure exists to
+ * catch. It is not even consistent with itself there: `Measured at` tags a verb
+ * and `Measured against` tags an adjective.
+ *
+ * `wink-pos-tagger` reported 9 percent and fixes that class, tagging the
+ * participle `VBN`. Roughly three quarters of what it flags is still wrong:
+ * hand-classifying every 21st of the 1,071 flagged sentences put 12 of 51
+ * genuinely verbless. Two classes split the other 39 almost evenly and neither
+ * is a tuning problem. Nineteen are imperatives, which this instructional
+ * corpus is full of and whose verb tags as a proper noun as often as a verb.
+ * Twenty are ordinary declaratives whose predicate is noun-ambiguous and tags
+ * as a noun outright, so `Each maps to a skill.` and `Nothing checks either
+ * one.` both report verbless. This corpus is built from exactly those words:
+ * reports, answers, checks, maps, holds, names, carries, records, measures.
+ *
+ * Separating them needs to know which token is the predicate, which is syntax
+ * rather than a tag. Neither tagger carries one and nothing was found worth
+ * taking for a number nothing gates on, so the rule the deferral set is met and
+ * still returns no: a parse was tried, twice, and neither produced a number
+ * worth printing beside two that hold.
+ *
+ * Where a shape sits is a different question and is already answered. A heading
+ * fragment, a list item, and a table cell are all legitimately verbless and
+ * none of them reaches this measure, because `paragraphBlocks` ends a paragraph
+ * on each. That exclusion is structural and needs no grammar. The imperative is
+ * the one that sits in paragraph prose, and it is what neither parser could
+ * separate out.
  *
  * A paragraph under the floor is skipped rather than scored. A two-sentence
  * configuration note has no spread worth reading, and the opener rule is
