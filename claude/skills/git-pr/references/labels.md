@@ -27,7 +27,13 @@ web = ["apps/web/", "packages/ui/"]
 
 A label takes more than one prefix when two folders read as one surface. Two labels may claim overlapping prefixes, and a path under both earns both.
 
-The map is authored by hand and nothing detects a directory it fails to cover, so a surface added after the map was written labels nothing until someone adds a row.
+Matching is prefix-anchored, so a row written for an authoring root reaches nothing under the copy a project consumes. A surface living only under a dotted folder carries its own prefix on the row that owns its subject, and a folder holding several subjects rather than one splits across the rows that own them.
+
+The map is authored by hand and nothing detects a directory it fails to cover, so a surface added after the map was written labels nothing until someone adds a row. A map that has been censused against its own history says in its comment where that check is owned, so a reader meeting the gap is sent somewhere rather than left with the prediction.
+
+## Paths a map declines to label
+
+A path that moves only when a release or a generator rewrites it earns no row. Release automation applies its own label, and a domain label on a generated file gives a mechanical edit a subject it does not have. Neither is covered, so both are recorded in the map's comment with the reason, which is what separates a path nobody has gotten to from one somebody decided against.
 
 ## Matching
 
