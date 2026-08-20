@@ -69,6 +69,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - A manifest edit shipping a stale reference is what widened that glob. The rule matched the reference alone, and the manifest is the side that moves first
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
 - Bun's script shell expands command substitution and a leading environment assignment, so a script value may carry `VAR=$(bash scripts/x.sh) command`. Verified 2026-08-13 against `bun run`.
+- This repository's own `.gitignore` splits its Claude entries across two headers, with `.claude/teach/` under `# Teaching workspace` rather than under `# Claude`. Diffing the manifest group against the first header alone therefore reads one entry short, so compare against every `.claude/` line in the file. `.claude/README.md` is the one difference that stays, since no seed writes one into a target.
 
 ### Sync and layering
 
@@ -125,6 +126,8 @@ packages = []
 ```
 
 `[dependencies.dev]` injects into `devDependencies`, adding only missing packages. `[scripts]` injects into the `scripts` block, adding only missing keys. `[gitignore]` appends each group as a comment header plus one line per path. Group keys use single-word labels (`# VSCode`, `# Python`) so headers stay stable across renames.
+
+`mergeSections` in `src/tooling/gitignore.ts` writes that header only when the whole group is missing from the target. A group the target already carries takes its new entries bare at the end of the file, so an entry added to a shipped group does reach an already-scaffolded project on the next sync, sitting detached from the header it belongs under. Presence is re-tested against the growing file and ignores a trailing slash, so `.claude/.tmp` and `.claude/.tmp/` count as one entry.
 
 ```toml
 [verify]
