@@ -23,7 +23,9 @@ Ordering the rows by start time and matching them against the order the worktree
 
 The record each session writes for itself carries more than the listing renders, including the working directory. Reading those records resolves a name to a branch by an exact match on one file rather than by a guess across two orderings, which is what a consumer should prefer over the ordering. The file layout is an implementation detail rather than a published interface, so a consumer depending on it states what it is relying on and reports when the read is unavailable rather than falling back silently.
 
-A consumer that has built the read keeps a row it could not settle and marks it, rather than dropping it. A session holding no branch and a session the read never reached are different answers, and a consumer that renders both as an absence hides the second behind the first. Liveness carries the same obligation, since the registry is not pruned and a process identifier can be reused, so a record outliving its session reads as live to anything that only probes the identifier. A branch name is also a name inside one repository rather than across a machine, so a consumer matching on one scopes the match or reaches a session working somewhere else. `aitk sessions list --branch` is one consumer's answer of this shape, and any consumer can build its own.
+A consumer that has built the read marks a row it could not settle rather than dropping it. A session holding no branch and a session the read never reached are different answers, and rendering both as an absence hides the second behind the first. Liveness carries the same obligation, since the registry is not pruned and a process identifier can be reused, so a record outliving its session reads as live to anything that only probes the identifier.
+
+A branch name identifies a branch inside one repository rather than across a machine, so a consumer matching on one scopes the match or reaches a session working elsewhere. `aitk sessions list --branch` is one consumer's answer of this shape, and any consumer can build its own.
 
 ## Addressing a session
 
