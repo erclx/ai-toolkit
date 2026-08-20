@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.107.1](https://github.com/erclx/aitk/compare/v0.107.0...v0.107.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **verify:** pin the plugin CLI and guard the stage on a runnable one ([#1036](https://github.com/erclx/aitk/issues/1036)) ([b991791](https://github.com/erclx/aitk/commit/b9917910f966e3e7bd1db43b8d7c36c180da7680))
+
 ## [0.107.0](https://github.com/erclx/aitk/compare/v0.106.0...v0.107.0) (2026-08-20)
 
 
