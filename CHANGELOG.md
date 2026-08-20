@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.111.0](https://github.com/erclx/aitk/compare/v0.110.0...v0.111.0) (2026-08-20)
+
+
+### Features
+
+* **version:** report when the installed binary is behind ([#1048](https://github.com/erclx/aitk/issues/1048)) ([6ad2cb2](https://github.com/erclx/aitk/commit/6ad2cb2549466a67e1821da4f9d2c00ee8393095))
+
 ## [0.110.0](https://github.com/erclx/aitk/compare/v0.109.0...v0.110.0) (2026-08-20)
 
 
