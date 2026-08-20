@@ -35,6 +35,7 @@ flowchart
 fromdateiso
 getline
 gitattributes
+gitdir
 gitlink
 glama
 gsub
@@ -81,6 +82,7 @@ pydantic
 pyproject
 pytest
 pytestmark
+readlink
 realpath
 repr
 rerank

@@ -46,3 +46,21 @@ Consumed by `scripts/tooling/{ref,verify,create}.sh` for discovery and name vali
 Sourced by `scripts/docs/list.sh`, `scripts/standards/list.sh`, and `scripts/core/regen-skill-references.sh`. The index engine that used to sit alongside this function is TypeScript now, in `src/indexes/`.
 
 - `read_frontmatter_field`: read a YAML field from a markdown file's frontmatter. Strips wrapping quotes
+
+## Gotchas
+
+### Sweep callers by path, not by function name
+
+Before deleting a bash script or lib, grep for the file path in `source`, `exec`, and `bash <path>` form rather than for the names of the functions it defines. Deleting `lib/inject.sh` and `tooling/sync.sh` in migration step 2, a function-name audit found 2 callers where 17 existed: twelve sandbox scripts carried a dead `source` line and five call sites shelled the script, including `manage-init.sh`, which silently stopped installing base tooling. `bun run check:install` still passed, because `run_domain` swallows a failed domain and the gate asserts only on files the tooling stack does not provide. Step 3 repeated it, finding five callers of `manage-gov.sh` where the plan named two. Confirm the gate you cite actually asserts on the deleted code's output rather than trusting its exit code.
+
+### A guard inside a substitution cannot stop the run
+
+A fatal precondition placed inside a helper that callers invoke as `$(helper)` cannot stop the run, because `exit 1` there kills the subshell and leaves the caller holding an empty string. Centralizing eleven hardcoded URLs behind `sandbox_anchor_url` put its `GITHUB_ORG` check inside the substitution, and a probe with the variable empty printed the error, ran `git remote add origin ""`, which succeeds, continued past the failure, and exited 0. Split validation into a `require_*` function invoked from the main shell before the first call, and prove it end to end, since `set -e` does not fire on a substitution whose empty output the next command accepts.
+
+### A library must not declare a hook the dispatcher probes for
+
+When a dispatcher branches on whether a hook is defined, export a named helper for the hook to call rather than declaring the hook in shared code. `manage-sandbox.sh` chooses between cloning an anchor and starting empty on `type -t use_anchor`, and nine scenarios collapsed their identical `use_anchor` stubs into `lib/sandbox-git.sh`. Declaring the hook there would have handed an anchor to `git/commit.sh`, `git/stage.sh`, and `infra/indexes.sh`, which source the file only for the identity helpers. Grep for the dispatcher's presence test and list every file that sources the library before moving a hook body.
+
+### Read a helper's body before porting its call
+
+Porting a call to a bash helper means reading the helper's body rather than what its name advertises, because shell idioms validate as a side effect of resolving. `wiki init` called `guard_root "$target"`, which reads as a toolkit-root check while its body is `cd "$target" && pwd`, so it also rejected a target that did not exist. The port kept only the root comparison, and `mkdir -p` downstream then scaffolded a typo'd path into a whole new tree, or exited on an unhandled `ENOTDIR` when the target was a file. `cd`, `realpath`, and `readlink -f` all fail on a missing path and are the usual carriers.

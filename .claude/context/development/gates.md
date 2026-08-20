@@ -98,3 +98,23 @@ The stage still warns when an audit genuinely did not report, and the aggregate 
 Three of the twelve verbs run at their own gating stages earlier in the same script, so this stage walks those trees a second time. Measured at 0.8 seconds of wall clock against 4.4 seconds of processor for all twelve together, which is under every other stage here, because the verbs share no state and run concurrently.
 
 Running only the verbs the earlier stages skip was the cheaper shape and it gives up what the aggregate is for. One verdict over the whole set is the product, and a stage measuring a subset reports a health nobody took.
+
+## Gotchas
+
+### A regen-then-assert stage clears one round at a time
+
+The indexes and consumed-copy gates in `scripts/core/verify.sh` regenerate and then assert with `git diff --exit-code` against the index, so a correct regen fails the run until the rewritten files are staged. The gates are sequential and each halts the run, so clearing the consumed-copy stage only reveals the skill-reference stage behind it, and a change touching `standards/bundled/` costs two stage-and-rerun rounds rather than one. Expecting a single staging to clear the run is what makes the second failure read as a real mismatch. `bun run check:install` reads one step further out, since `scripts/core/install-check.sh` runs `git clone` against the project root and therefore tests the last commit and never the index or working tree, so commit before citing it.
+
+`assert_no_drift` pairs the diff with `git ls-files --others --exclude-standard`, so a regen emitting a never-committed file fails rather than passing, and because it is scoped by folder glob a hand-authored file inside a generated folder trips it too. Editing `claude/skills/setup-plugins/references/plugin-catalog.md`, which no bundled standard generates, failed the skill-references stage with "commit the updated reference files" as if regen had written it. Read the failing path before believing the message names its cause.
+
+### The forced staging narrows the next review
+
+`claude-review` Step 2 uses `git diff --staged` as its scope whenever that is non-empty, so a review fired after a check reads only the regeneration. On one branch the staged set was three regenerated files while the branch carried fifteen, including every `src/` file the run existed to review. Both behaviors are documented and correct on their own, so nothing reports the gap, and it compounds when the base equals HEAD, which is every autoship run before its first commit. Check whether the staged set matches the branch before invoking a review, and say which scope was read.
+
+### A fence is exempt from the prose gate and not from the spell gate
+
+The prose-standards hook treats a fenced code block as exempt and `bun run check:spell` does not, so an invented short identifier inside a mermaid fence passes every prose gate and fails the check that blocks the commit. A four-letter sequence-diagram participant alias abbreviating the word session produced four cspell failures in one diagram entry after it had cleared the prose rules, and `standards/diagrams.md` names the fence exemption for the prose hook while saying nothing about the spell stage, so the exemption reads wider than it is. Spell participant aliases and node ids as whole words. The punctuation bans apply inside labels with nothing checking them.
+
+### A write grant has to agree with the formatter
+
+Any tool granted write access to a format-checked file has to agree with the formatter, and a release configuration's `extra-files` mechanism is that kind of grant. `release-please` bumps the version in `claude/.claude-plugin/plugin.json` and re-serializes the whole file, expanding `keywords` to one string per line, while prettier collapses any array fitting the print width, so the first release pull request the automation produced landed a file failing `bun run check` and would have done so at every future release. Run the tool and the formatter over the same content and diff the two before wiring the grant. A real file with a fixed name takes a formatter ignore entry, unlike sample content, which takes a suffix.

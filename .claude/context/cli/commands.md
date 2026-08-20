@@ -87,3 +87,7 @@ Every `aitk` verb is registered in commander and either handled in TypeScript or
 - A malformed argument describes the command line instead, so it refuses as `bad-input` and falls to that skill's report branch. Sharing a reason across the two classes puts a caller defect inside a swallowed set, which is the silent loss the verbs exist to prevent.
 - All three task verbs carry that split, not only the two a swallowing caller drives. `archive` answered both selectors with `ambiguous`, which routes `claude-tasks` to repair a task citation that is fine, so one mistake read as three different board defects depending on which verb saw it.
 - A taxonomy that holds for one verb in a domain and not its siblings is read as a distinction rather than as the omission it is
+
+## An argument added for testability widens the guards
+
+Turning a hardcoded path into an argument for testability widens the input domain, so the guards need re-auditing against what the argument now admits. Giving `aitk claude setup` a `[dest]` argument let the settings merge be covered without pointing a test at a real home directory. The bash hardcoded `$HOME/.claude` and needed no target guard, while the argument made `aitk claude setup .claude` from the toolkit root rewrite the tracked `.claude/settings.json`. The guard had to be added by exact path rather than by prefix, since the sandbox scenario legitimately writes under the repo.

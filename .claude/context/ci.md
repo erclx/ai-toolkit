@@ -47,11 +47,21 @@ The runner installs the plugin CLI so the manifest stage gates rather than skips
 
 The release itself is not what broke. `2.1.237` sitting on the authoring machine answers `claude --version` in 0.068 seconds and passes `claude plugin validate --strict` on both manifests, so the failure is a condition of `bun install -g` against that release on a fresh runner rather than a defect in the published package. Raising the pin therefore has to be tested on a runner and cannot be cleared by running the new version locally.
 
+The published tarball is what settles why the health guard fires rather than the presence test alone. `bin/claude.exe` as shipped is a shell stub that prints the native-binary error and exits 1 on any invocation, and the postinstall replaces that stub with the real binary. A global install landing the wrapper alone therefore leaves a name that resolves and a command that fails, which is exactly what `claude --version` tests. Confirmed on 2026-08-20 by unpacking `2.1.237` and running the stub with `--version` for exit 1.
+
 Validation needs no credential, confirmed by running it under `env -i` with a fresh `HOME`, so this is an install step rather than a secret. The stage still skips on a machine where the CLI is absent or cannot run, and fails instead when `CI` is set, because a silent skip on the runner would report the pass the stage exists to withhold.
 
 `check:install` stays out of CI. It is the slowest thing available and it is not in the local gate either, so adding it would widen the gate past parity.
 
 `typescript` is a declared devDependency rather than a hoisted peer of `@astrojs/check`. It is pinned to the v5 line those peers expect, so a `bun add -D typescript` that selects v7 would be a compiler upgrade, not a dependency fix.
+
+## Gotchas
+
+Read `no checks reported on the '<branch>' branch` as a possible merge conflict rather than as CI lag. A `pull_request` workflow runs against a merge ref GitHub computes from the head and the base, and a conflicting branch has no such ref, so the run is never queued and nothing reports why. One pull request sat with no run for several minutes while siblings from the same afternoon showed green Verify runs, and `gh pr view --json mergeable,mergeStateStatus` returned `CONFLICTING` and `DIRTY` because `main` had advanced two commits, one of which edited the file the branch deleted. Rebasing and force-pushing queued the run within a minute. Autoship's CI watch has no timeout distinguishing the two, so a conflicting branch polls until the operator intervenes.
+
+A shields.io badge URL returns HTTP 200 whether or not the query resolves, so verifying a badge by status code alone passes one that renders `no status`. `verify.yml` triggers on `pull_request` and `workflow_dispatch` only, so the CI badge written as `?branch=main` had no run to report and rendered `build: no status` behind a 200, and dropping the branch filter gave `build: passing`. Curl the URL and grep the rendered `<title>` for the value it reports, since a branch-filtered workflow-status badge needs the workflow to actually trigger on that branch.
+
+An exit-code flag may count only states some documented action can drive to zero, since a permanent condition makes the gate unpassable rather than informative. `aitk sync --check --exit-code` counted `orphaned`, so a single local rule in `.claude/rules/` returned 1 on every run with no remedy, verified against a fresh install. For each state a gate counts, name the action that clears it, and where there is none, exclude it and report it separately.
 
 ## Releases
 

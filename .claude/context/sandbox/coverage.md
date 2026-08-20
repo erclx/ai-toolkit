@@ -214,3 +214,19 @@ An arm reports as `<category>:<command>/<arm>` rather than bare. A skill two sce
 Losing an exemption is invisible in the counts, because the skill reclassifies to `should-be-asserted` and rejoins a queue someone already ruled it out of. So the parser throws on a file that does not parse and on a table carrying no usable `reason`, rather than reporting the smaller set that survived. `runCoverage` catches both and frames them, for the reason `resolveVerdict` catches its own parse: a typo in a declaration reads the way a pattern that does not compile does rather than as a stack trace.
 
 `aitk sandbox check` takes `--strict` as well, which turns a single `unchecked` verdict into a non-zero exit. Both flags stay opt-in so the undeclared majority keeps running.
+
+## Gotchas
+
+### A scope that admits everything asserts nothing
+
+A bounding key whose only passing value admits the whole tree asserts nothing. The `claude:setup-init` `fresh` arm runs the real installer with `bun install` behind it, so the narrowest `write_scope` glob admitting a correct run was `**`, and the first pass reported 7772 in-scope `node_modules` paths and 0 failures, a green count no wrong run could have moved. Dropping the key left ten assertions that can each fail. Before declaring a bounding key, name the wrong run it would catch. Where none falls outside it, the honest form is its absence plus a stated reason and a `manual` entry keeping the gap in the unchecked count.
+
+### A declaration can bind to the wrong scope and still count as armed
+
+TOML binds a bare key under a `[[table]]` header to that table, so a misplaced key asserts nothing while existence-only coverage counts the file as armed. `claude/ui-test`'s `expect.toml` carried `max_turns` and all five `manual` entries below its last `[[content]]` block, so the turn ceiling never asserted, the entries never reached the unchecked count, and `aitk sandbox coverage` read the arm as armed throughout, because it tests only for the file's existence. Place every top-level key above the first `[[table]]` header and reject unknown keys inside the table so a misplacement fails loudly. A coverage number built on file existence measures declarations present, never declarations that work.
+
+### Two families report `no scenario` for opposite reasons
+
+`aitk-sandbox-check` Step 2a splits a skill name on its first `-`, so `aitk-claude` resolves to `scripts/sandbox/aitk/claude.sh` and no `aitk/` category exists. `scripts/sandbox/` holds only plugin-skill prefixes, internal skills carry the reserved `aitk-` prefix, and the missing file is correct by design, so answer `none` and do not invent the category.
+
+The `create-*` family is the opposite case: all four of `create-rule`, `create-skill`, `create-snippet`, and `create-standard` report `no scenario` and `scripts/sandbox/exempt.toml` carries none of them, so the coverage surface calls them should-be-asserted rather than exempt. One branch took a `none` opt-out on both of its changed skills and shipped them unverified. Answer `none` when the ship is not the place to write a scenario, but record the gap rather than reading `NONE` as settled coverage.

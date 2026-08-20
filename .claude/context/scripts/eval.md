@@ -35,6 +35,8 @@ Retention is additive. A failure to write either record warns and the verdict st
 
 Both therefore quote paths, seed bullets, and rules as they stood on the run date. A repository-wide sweep excludes them, and a path inside one that no longer resolves is the record doing its job rather than drift to repair.
 
+The three frozen records do not carry banners of equal strength, so a sweep cannot exclude them as one class. `result-context.md` and `result-wireframes.md` refuse every edit outright. `result-seed.md` refuses edits to its quoted and machine-derived blocks alone and states that the operator-written judgment sections after them do follow prose standards, which puts those sections inside a prose sweep rather than outside it. Read the banner per file before excluding one.
+
 ### The `Subject` column
 
 A `Subject` commit an ablation pair regenerates from gets a pushed tag under `eval/`, and an ordinary run does not. Rows pointing at a commit that lives on one local branch and nothing else are one branch cleanup or one lost disk away from losing the entry point while the content stays committed. A tag survives that deletion, and the `eval/` prefix keeps it clear of the `v*` release tags. `run.sh` does not create the ref, so the next ablation can recreate the same state, which is accepted on the same grounds the citation check was cut.
@@ -55,3 +57,15 @@ The row is appended with `>>` and anchors on no existing line, so its table has 
 A harness that reports writes by diffing one directory cannot see a write outside it, and both harnesses here have that shape. `scripts/eval/` compares a before-and-after hash of the fixture, and a cut half of the memory ablation wrote into `~/.claude/projects/<fixture>/memory/` while the run reported no files changed, which is true of the fixture and false of the machine. The sandbox harness reports `write_scope` from a manifest diff over its sandbox tree and carries the same blind spot rather than a different one, recorded in `.claude/context/sandbox/overview.md`. Read the transcript alongside the file list in either, and clear the stray path afterward.
 
 The sandbox picked a boundary, watching the four shared-scratch directories under each toolkit root and naming what it leaves out, so the deciding is done rather than deferred and the eval fixture can copy the shape or state its own.
+
+### A fixture under the project root inherits its instructions
+
+A fixture a headless or subagent run is pointed at has to live outside the repository under `mktemp -d`, because a session started anywhere beneath the project root loads that project's `CLAUDE.md`, `.claude/rules/`, and `.claude/standards/` through the ancestor chain. One spike permission named `.claude/.tmp/groundwork-fixtures/<slug>/` for every fixture, and review caught that a headless arm run there would measure this repository rather than the arm, while `scripts/standards/authoring-test/run.sh` already extracts to `mktemp -d` and states the reason in a comment. Split fixture paths by who reads them: one the current session provisions and reads itself can sit in-repo, and anything an independent agent run is pointed at goes outside.
+
+### A format spec is not an instruction
+
+A coverage audit reading a standard can mistake documenting the shape of X for instructing X, and the two are indistinguishable in a grep. The Tasks ablation was pre-registered as a predicted null because `standards/tasks.md` covers the `Plan:` link, the `../plans/` path, and the archive destination in full, and both pairs falsified it, since the cut halves created no plan at all and the standard only specifies a pointer's format while the seed bullets carry the instruction to create one.
+
+### An unrelated arm is a control
+
+When every arm in a batch emits the same observable, the arms testing something else are a free control group for how often the rule gets followed anyway. The Output pair looked like clean discrimination until the other three pairs were read for the same behavior: with the section present the canonical grouping appeared 8 times in 10, so a 2-in-10 miss rate already existed and two cut observations could not carry a verdict alone. Count the same observable across every arm that left the rule intact and report that base rate beside the difference.

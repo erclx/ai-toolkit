@@ -39,6 +39,7 @@ deprioritized
 diffable
 disjointness
 distractor
+docstrings
 dogfooded
 dogfoods
 dontAsk
@@ -131,11 +132,13 @@ ultraplan
 uncited
 unconfigured
 undercount
+undercounts
 ungated
 unmatch
 unmigrated
 unminified
 unparseable
+unpassable
 unrequested
 unreviewed
 unrouted

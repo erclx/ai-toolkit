@@ -24,3 +24,7 @@ sandbox = ["scripts/sandbox/"]
 docs = ["docs/", "wiki/"]
 # `scripts/core/` reaches the whole folder, maintenance scripts included.
 ci = [".github/", "scripts/core/"]
+# Internal narrative and the always-loaded record, which `docs` does not reach.
+# Matching is prefix-anchored, so a `.claude/` path earns no row written for an
+# authoring root: `standards/` never matches `.claude/standards/`.
+context = [".claude/context/", ".claude/ARCHITECTURE.md"]

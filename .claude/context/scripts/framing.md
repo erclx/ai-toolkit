@@ -37,3 +37,7 @@ Once both sides of a call are TypeScript the flag stops being needed at all. `ai
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - `exec` replaces the process and drops the parent trap, so every subcommand re-arms `trap close_timeline EXIT` itself before any early exit, including `--json` paths.
 - Subcommand scripts never emit their own `┌`. The dispatcher already did, and a second one produces two frames per invocation.
+
+## The first option is what a headless run takes
+
+`select_option` and `select({nonInteractiveDefault})` return the first option under `AITK_NON_INTERACTIVE=1`, so an option list ordered for a human at a terminal decides what an agent does. In `aitk sync` the first option was `Commit and open PR` whenever `gh` was installed, which made the documented headless path push a branch and open a pull request on the target's repository with no confirmation, reproduced against a throwaway repo with a bare remote before the port. Ask what the first option does rather than whether the list reads well. Reordering is enough for a local write, and an action reaching outside the machine refuses headlessly and reports what it would have done, which is what `runGitWorkflow` and the standards sync refusal both do.

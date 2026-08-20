@@ -58,6 +58,8 @@ Always-on rules such as the core persona, testing, and error handling emit with 
 
 - `core/070-planning.md` is the only rule naming an `aitk` verb, which puts it on the wrong side of the two-speed gap `.claude/ARCHITECTURE.md` records. A rule reaches a target the moment an install copies it, while the verb it names reaches that target only once a release publishes, so a project on an older CLI reads an instruction its binary refuses. A rule citing a verb therefore owes the same release wait a skill body does, and nothing detects the skew.
 
+A rule that publishes a heading some command parses is program input, so adding one is a code change and the reading command runs against the tree before the commit. `src/comments/vocabulary.ts` reads its terms out of whichever rule publishes `## Degradation vocabulary`, so `governance/rules/core/090-code-comments.md` turned a sweep that had only ever reported skipped into one returning six hits, four of them against the matcher's own doc comment naming the terms it matches. Grep for a reader of the heading or filename before writing the rule, and read every hit before treating any as a defect.
+
 ## Adding a rule
 
 Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed.

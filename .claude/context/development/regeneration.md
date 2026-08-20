@@ -25,6 +25,10 @@ Stack names come from `aitk tooling list --json` rather than from a walk of `too
 
 The whole file is asserted rather than the block alone, since a drift check over a fragment needs a parser and the file has one writer for that region and one author for the rest. What that costs is a stage that goes red when the surrounding prose is edited and left unstaged, which is the Consumed copies shape above and clears the same way.
 
+## Sample content on disk
+
+Sample content committed at its real filename gets rewritten by every repo-wide write pass that claims that filename. Moving the docs scenario's heredocs to disk put an `index.md` and a `package.json` on disk, and `aitk indexes regen` rebuilds any `index.md` from sibling frontmatter, so `bun run check` rewrote a fixture whose body deliberately disagreed with its sibling and then failed its own drift gate, while prettier reformatted the JSON and the leading blank line an append fixture depends on. Store such content under a `.fixture` suffix stripped on copy, which beats ignore-file entries and beats pruning a shared walker because it changes nothing for that walker's consumers. cspell still reads suffixed files, so spell coverage survives the move.
+
 ## Hero
 
 The Hero stage runs `scripts/core/regen-hero.sh`, which fills `assets/hero.html.tmpl` from five catalogs and writes `assets/hero.html`, then asserts no drift on that file. The shape applies to a documentation image so no count on the README frame is maintained by hand.

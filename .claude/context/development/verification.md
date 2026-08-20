@@ -33,9 +33,15 @@ A passing `bun run check` prints three `Failed, run manually` lines. Vitest pass
 
 The gate runs `aitk init --stack base` rather than a bare `init`, which now resolves to the same install since `base` is the default. The explicit flag stays because it pins what the assertions cover rather than inheriting whatever the default becomes. A domain that installs conditionally needs its condition met in the gate invocation, beyond having a path in the loop.
 
+### Rank a stage by processor seconds
+
+Rank verification stages by CPU seconds rather than by elapsed time, because a stage that fans across cores finishes fast and costs the most. `bun run check` timed by wall clock made the 415 tests look like the cheapest stage at 931ms, which led to recommending the duplicate prettier pass be dropped instead. Re-timing with `/usr/bin/time -f 'user %U sys %S wall %e cpu %P'` showed the tests are the most expensive stage at 11.76 CPU seconds and 1169 percent peak CPU, 38 percent of a roughly 31 CPU second total, delivered in one wall second. State which measure a cost claim rests on. Wall clock still answers how long a human waits, which is a separate question.
+
 ### The other stages
 
-A single test file runs through `bun --bun vitest run <path>` and never `bunx vitest run <path>`, which is the form `package.json` already spells in its `test` script. The `bunx` form resolves vitest under node, where a module reaching git through `$` from `bun` fails to import at collection time and the file reports zero tests rather than a failure. Every module that shells out does so through that import, so the wrong form reads as a clean run over exactly the code whose behavior lives outside the process.
+A single test file runs through `bun --bun vitest run <path>` and never `bunx vitest run <path>` or `bun run vitest run <path>`, which is the form `package.json` already spells in its `test` script. Without `--bun`, vitest resolves under node, where a module reaching git through `$` from `bun` fails to import at collection time and the file reports zero tests rather than a failure. Every module that shells out does so through that import, so the wrong form reads as a clean run over exactly the code whose behavior lives outside the process.
+
+The other reading is worse, because the wrong form can report failures a green tree does not have. Scoping to `src/context/` through `bunx` reported `3 failed | 1 passed` while `bun run check` was green on the same tree, which reads as a regression the change introduced. `src/context/citations.ts` and `src/indexes/walk.ts` both import Bun globals, so most of that suite trips it. A collection failure naming a package the project depends on, such as `Cannot find package 'bun' imported from src/git-ignore.ts`, is the signature, since a real regression fails an assertion instead.
 
 Nothing typechecked until `check:types` was added, so a dropped import shipped green through format, spell, shell, and the test suite. The suite catches one only where a test covers the caller, and the migration keeps adding untested call sites. Declare `typescript` in `devDependencies` rather than relying on it hoisting from an astro peer, or the gate resolves by accident.
 

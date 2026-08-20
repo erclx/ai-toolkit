@@ -71,6 +71,8 @@ No checker ships for the content bans that landed under `## Language`, covering 
 
 The constraint is stated twice on purpose. `markdown.md` carries a one-line note under `## Language` so an author meets it while editing, and the reason sits here because it is a fact about a code reader rather than about prose. Before that it was stated only as a doc comment on `parseWordBans`, which is a file no author editing a standard opens, so the constraint held without a single author of the corpus knowing it existed until an intake pass went looking.
 
+A second reader takes prose rather than a list, and it needs a bounded span and a loud miss. `read_applies_to` in `scripts/standards/list.sh` reads a standard's `## Scope` line, and the whole statement pulled sibling names out of its second sentence while two standards named an unanchored folder a suffix match could not tell from a same-named folder elsewhere. Bounding to the first sentence plus two new shape rules in `standards/standard.md` is what made all thirteen resolve. Ship the parser's span rule as a shape rule in the standard governing the prose, in the same change, since a silently unparsed entry is indistinguishable from a conforming one downstream.
+
 ## Authoring a new standard
 
 Follow `standards/standard.md`. It is the meta-standard: the success criterion, the scope rules, the frontmatter contract, heading and structure conventions, imperative rule bullets, and when to include examples. It governs itself, so it is also the worked example. `591-standard-authoring` routes any edit under `standards/` or `.claude/standards/` to it.
