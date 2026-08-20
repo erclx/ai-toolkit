@@ -24,6 +24,8 @@ It reads and never writes. The question it answers is which session to address w
 
 Exit codes: `0` the roster was read, `1` refused. The refusal carries a `reason` of `no-registry` or `no-repository`.
 
+An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `reason` rather than the exit when a skill consumes this.
+
 ## Scope and count
 
 `--branch` scopes the match to the repository the command runs in, and refuses outside one. A branch name identifies a branch inside a repository and nothing across a machine, so an unscoped match reaches a session working in a different project, and `main` collides on every machine running two of them.
