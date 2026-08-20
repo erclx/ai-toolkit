@@ -24,7 +24,7 @@ The toolkit seed in `tooling/claude/seeds/.claude/DESIGN.md` ships a token-table
 
 The `aitk:claude-design-extract` skill drafts the file, sourcing tokens from a project's existing prose and CLI UI surfaces, or proposing them from `.claude/REQUIREMENTS.md` and a `## Personality` paragraph when no UI code exists yet. `aitk design render` writes an HTML plus CSS preview to `.claude/review/design/` for eyeballing the current system without leaving Claude Code. See `.claude/context/design.md`.
 
-A cell no source anchors ends in `? verify`, and the preview shows that marker beside the value rather than folding it in, so a swatch and a font sample stay built from the value alone. A confidence line above the sections names how many values are anchored against how many are tagged, which is what tells a reader whether they are looking at a record of the code or a proposal about it. The proposal path tags nearly every cell, so that count reads low on day one by design.
+A cell no source anchors ends in `? verify`, and the preview shows that marker beside the value rather than folding it in, so a swatch and a font sample stay built from the value alone. A confidence line above the sections names how many cells are anchored against how many are tagged, which is what tells a reader whether they are looking at a record of the code or a proposal about it. It reads the columns a source could anchor and leaves out the row names, so the ratio is not diluted by cells no tag could ever reach. The proposal path tags nearly all of them, so that count reads low on day one by design.
 
 ### Tools
 

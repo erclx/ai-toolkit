@@ -40,6 +40,8 @@ A cell no source anchors ends in ` ? verify`, written inside the cell rather tha
 
 The renderer splits the tag off the value, so a swatch and a font sample are built from the value alone and the marker shows beside it. The preview also reports how many cells are anchored against how many are tagged, which is the reading a reviewer takes the record's overall confidence from.
 
+Which columns that ratio reads is fixed by the table rather than by the record. The first column of each table names its row, and `Multiplier` and `When used` restate what the row already carries, so none of them is something a source could anchor and none is counted. That leaves `Intent` and `Value` in Color, `Family`, `Weight`, `Size`, and `Line height` in Typography, `Value` in Spacing, and `Radius` and `Width` in Borders. A cell tagged outside that set counts anyway, so a marker the preview draws is never missing from the ratio beside it.
+
 A prose section takes its uncertainty inline instead, in a sentence saying what is proposed and what has yet to confirm it. A tag appended to a paragraph renders verbatim.
 
 ## Sections

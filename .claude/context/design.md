@@ -25,7 +25,9 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 - No surface consumes `.claude/DESIGN.md`. The hero, the slide theme, the token preview, the terminal framing, and the capture pipeline each carry their own values, so the record names all five as independent rather than listing a consumer it would be predicting.
 - The parser carries the uncertainty tag instead of discarding it. A parsed cell is a `{ value, tagged }` pair rather than a string, so `Row` is a map of cells and every swatch, sample, bar, and custom property is built from the value while the marker renders beside it as its own element. Leaving the marker inside the string was the alternative, and it puts the strip back in every emitter where one that forgets writes the tag into a `style` attribute.
 - A tagged cell wrapping itself in a code span keeps the span. The tag is matched against the cell with any surrounding span removed, then the span is restored around the clean value, because dropping it outright would change how an untagged code-span cell renders. Holding an untagged record byte-identical is what decides that, and it is checked against the module as it stood before the tag survived.
-- The preview reports a confidence count over the four token tables, reading every cell that carries a value or a tag and leaving a blank cell out of both halves. A record with no tagged cell gets neither the count nor the marker style, so nothing about it moves.
+- The confidence count reads the columns a source could anchor rather than every cell. Each table's first column names its row, and `Multiplier` and `When used` restate what the row already carries, so none of the four is counted. A cell tagged outside that set counts anyway, which keeps a marker the preview draws from sitting outside the ratio beside it.
+- Counting every non-blank cell was the first shape and it shipped a denominator of 120 against the toolkit's own record, 43 of which could only ever be anchored. It read 93 percent confidence over a record carrying eight proposals. The scoped count reads 64 of 72.
+- A record with no tagged cell gets neither the count nor the marker style, so nothing about it moves.
 
 ## Gotchas
 
@@ -72,7 +74,7 @@ The scenario picks between `source`, which stages the tokenized notes app, and `
 
 `aitk design render` reads `.claude/DESIGN.md` and writes an HTML plus CSS preview to `.claude/review/design/`. The HTML shows color swatches, typography samples, spacing bars, and border exemplars. The CSS holds tokens as custom properties for copy-paste into a project stylesheet.
 
-A cell no source anchors shows a `? verify` marker beside its value, and a confidence line above the sections names how many values are anchored against how many are tagged. `src/design/parse.test.ts` and `src/design/render.test.ts` cover both tag spellings, the count, and the untagged render.
+A cell no source anchors shows a `? verify` marker beside its value, and a confidence line above the sections names how many cells are anchored against how many are tagged. `src/design/parse.test.ts` and `src/design/render.test.ts` cover both tag spellings, the count and the columns it reads, and the untagged render.
 
 Flags:
 

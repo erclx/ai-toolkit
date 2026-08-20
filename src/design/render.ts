@@ -55,18 +55,40 @@ interface Confidence {
 }
 
 /**
- * A cell counts when it says something, so a blank the record left unfilled is
- * neither anchored nor tagged and stays out of both halves of the ratio.
+ * The columns the confidence ratio reads, fixed by `standards/design.md`. The
+ * first column of each table names its row, and `Multiplier` and `When used`
+ * restate what the row already carries, so none of them is something a source
+ * could anchor and none belongs in the denominator.
+ */
+const ANCHORABLE = {
+  borders: ['Radius', 'Width'],
+  color: ['Intent', 'Value'],
+  spacing: ['Value'],
+  typography: ['Family', 'Weight', 'Size', 'Line height'],
+} as const
+
+/**
+ * A cell counts when it carries a tag, or when it holds a value in a column a
+ * source could anchor. A blank the record left unfilled is neither, and so is a
+ * row name. Counting a tagged cell whichever column it sits in is what keeps a
+ * marker the preview draws from sitting outside the ratio printed beside it.
  */
 function confidence(doc: DesignDoc): Confidence {
-  const rows = [...doc.color, ...doc.typography, ...doc.spacing, ...doc.borders]
+  const tables: ReadonlyArray<readonly [Row[], readonly string[]]> = [
+    [doc.color, ANCHORABLE.color],
+    [doc.typography, ANCHORABLE.typography],
+    [doc.spacing, ANCHORABLE.spacing],
+    [doc.borders, ANCHORABLE.borders],
+  ]
   let tagged = 0
   let total = 0
-  for (const row of rows) {
-    for (const c of Object.values(row)) {
-      if (!c.value && !c.tagged) continue
-      total += 1
-      if (c.tagged) tagged += 1
+  for (const [rows, columns] of tables) {
+    for (const row of rows) {
+      for (const [key, c] of Object.entries(row)) {
+        if (!c.tagged && (!c.value || !columns.includes(key))) continue
+        total += 1
+        if (c.tagged) tagged += 1
+      }
     }
   }
   return { tagged, total }
@@ -129,7 +151,7 @@ function buildHtml(doc: DesignDoc): string {
     : ''
   const verb = tagged === 1 ? 'carries' : 'carry'
   const summary = tagged
-    ? `\n<p class="note">${total - tagged} of ${total} values are anchored to a source. The other ${tagged} ${verb} <code>? verify</code>, so nothing anchors them yet.</p>`
+    ? `\n<p class="note">${total - tagged} of ${total} cells are anchored to a source. The other ${tagged} ${verb} <code>? verify</code>, so nothing anchors them yet.</p>`
     : ''
   return `<!doctype html>
 <html lang="en">

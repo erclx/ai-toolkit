@@ -42,6 +42,15 @@ const bordersTable = (rows: string[]): string[] => [
   '',
 ]
 
+const spacingTable = (rows: string[]): string[] => [
+  '## Spacing',
+  '',
+  '| Step | Multiplier | Value |',
+  '| ---- | ---------- | ----- |',
+  ...rows,
+  '',
+]
+
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'design-render-'))
 })
@@ -116,8 +125,33 @@ describe('renderDesignDoc', () => {
     )
 
     expect(html).toContain(
-      '5 of 6 values are anchored to a source. The other 1 carries <code>? verify</code>',
+      '3 of 4 cells are anchored to a source. The other 1 carries <code>? verify</code>',
     )
+  })
+
+  it('should leave a row name out of the ratio', () => {
+    const { html } = render(
+      doc(colorTable(['| accent | primary action | #e0724b ? verify |'])),
+    )
+
+    expect(html).toContain('1 of 2 cells are anchored to a source.')
+  })
+
+  it('should leave a multiplier and a when-used cell out of the ratio', () => {
+    const { html } = render(
+      doc([
+        ...spacingTable(['| xs | 1 | 6px ? verify |']),
+        ...bordersTable(['| panel | 10px | 1px | cards |']),
+      ]),
+    )
+
+    expect(html).toContain('2 of 3 cells are anchored to a source.')
+  })
+
+  it('should count a cell tagged outside the anchorable columns', () => {
+    const { html } = render(doc(spacingTable(['| xs ? verify | 1 | 6px |'])))
+
+    expect(html).toContain('1 of 2 cells are anchored to a source.')
   })
 
   it('should count a blank cell as neither anchored nor tagged', () => {
@@ -130,7 +164,7 @@ describe('renderDesignDoc', () => {
       ),
     )
 
-    expect(html).toContain('4 of 5 values are anchored to a source.')
+    expect(html).toContain('2 of 3 cells are anchored to a source.')
   })
 
   it('should pluralize the tagged count when more than one cell carries a tag', () => {
