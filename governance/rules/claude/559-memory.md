@@ -8,7 +8,7 @@ paths:
 
 ## Routing
 
-- Write no memory entry for a fact a per-domain context entry already owns. Memory keeps the residue, which in practice is feedback about how to work.
+- Write no memory entry for a fact a per-domain context entry already owns.
 
 ## The pen
 

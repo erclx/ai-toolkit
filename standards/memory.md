@@ -46,7 +46,7 @@ Four types, and the type decides both the filename prefix and the body shape.
 
 Hold a feedback entry to the higher bar. A first-occurrence slip is noise, and a folder that records every one of them buries the rules that were paid for.
 
-Write no entry for a fact another surface already owns. A fact about a domain belongs in that domain's entry, where sessions working the domain already read it, and the same fact in memory sits in a folder nothing opens. Memory keeps the residue, which in practice is feedback about how to work.
+Write no entry for a fact another surface already owns. A fact about a domain belongs in that domain's entry, where sessions working the domain already read it, and the same fact in memory sits in a folder nothing opens. Memory keeps the residue, which is whatever the ownership test leaves rather than any one type.
 
 ## Filename
 

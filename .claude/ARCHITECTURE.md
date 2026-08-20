@@ -170,6 +170,12 @@ That inverts the contract for every caller, which is the accepted cost. Four int
 
 The interactive prompt is untouched. Inverting a default that already behaves correctly would churn the one path that never caused the damage, so the fix sits on the headless branch alone. Measured at `0c953078` on 2026-08-20.
 
+### The memory pen is bounded by an ownership test rather than by a type
+
+`.claude/memory/` keeps whatever no context entry owns, and the four types are equal members of that residue. The routing rule used to close on "which in practice is feedback about how to work", which is a prediction about the pen's distribution rather than a rule, and the pen falsified it: 145 of 236 entries carried the `project` type on 2026-08-20, against 85 feedback. Reading all 145 against the 16-domain catalog put 98 with a domain entry, 44 with no owner at all, and 3 already promoted elsewhere, so the clause was wrong about the majority in both directions at once.
+
+Moving the pen to match the sentence was the alternative and it is declined on that middle number. The 44 state an approach governing how the agent works and no context entry owns any of them, so a pass retiring every `project` entry would delete rules the folder exists to hold. The ownership test survives untouched because it was never the part that failed, and `standards/memory.md` already admitted `project` as a first-class type in the table two sections above the clause that contradicted it. What the split costs is that the pen and the rule agree only once the 98 fold into their entries and retire, which lands as one pull request per destination domain rather than here, so the folder sits knowingly out of conformance in between. Measured at `653bbb15` on 2026-08-20.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects that call.
