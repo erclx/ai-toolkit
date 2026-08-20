@@ -59,18 +59,18 @@ list_text() {
   done < <(find "$STANDARDS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
 }
 
+# No `target` field. It named where a standard installed, and nothing installs
+# one now, so every value it could carry is either a path only this repository
+# has or a duplicate of what `aitk standards <name>` reports. `content` already
+# carries the document, which is what a consumer wanted the path for.
 list_json() {
   local first=1
-  local file name title target applies_to
+  local file name title applies_to
   printf '['
   while IFS= read -r file; do
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
     title=$(read_frontmatter_field "$file" "description")
-    # The authoring root, which is what `standardRoots` reads first and the only
-    # project spelling left. It named `.claude/standards/` while the corpus
-    # installed into a target, and no target holds one now.
-    target="standards/$(basename "$file")"
     applies_to=$(read_applies_to "$file")
     if [ "$first" -eq 0 ]; then
       printf ','
@@ -78,10 +78,9 @@ list_json() {
     jq -nc \
       --arg name "$name" \
       --arg description "$title" \
-      --arg target "$target" \
       --argjson appliesTo "$applies_to" \
       --rawfile content "$file" \
-      '{name: $name, description: $description, target: $target, appliesTo: $appliesTo, content: $content}'
+      '{name: $name, description: $description, appliesTo: $appliesTo, content: $content}'
     first=0
   done < <(find "$STANDARDS_DIR" -maxdepth 1 -type f -name "*.md" | sort)
   printf ']'

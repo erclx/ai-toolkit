@@ -39,7 +39,7 @@ Run `aitk standards list` for the catalog of installable standards and their des
 
 Run `aitk standards --help` for the verbs and what each one does. Flags and arguments live in `docs/agents/scripting.md`.
 
-`--json` emits `{standards: [{name, description, target, appliesTo, content}]}`. The shape mirrors `aitk claude seeds list --json`, plus `appliesTo`. `target` is the authoring path `standards/<name>.md` rather than an install destination, since nothing installs.
+`--json` emits `{standards: [{name, description, appliesTo, content}]}`. It carried a `target` naming where each standard installed, dropped when nothing installed any more: every value left was either a path only this repository has or a second spelling of what `aitk standards <name>` already reports, and `content` carries the document a consumer wanted the path for.
 
 `appliesTo` is the paths a standard's `## Scope` statement declares, parsed by `read_applies_to` in `scripts/standards/list.sh`. It reads the backticked paths in the first sentence of the statement, resolves an attribute standard to `*`, and emits an empty array for a statement it cannot read.
 
