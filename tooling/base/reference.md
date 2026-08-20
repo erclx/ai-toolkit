@@ -8,7 +8,7 @@ A repository with several language roots layers this stack once at the root and 
 
 ## What ships as golden configs
 
-Golden config files live in `tooling/base/configs/` and are copied into the target on `aitk tooling sync base .`. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
+Golden config files live in `tooling/base/configs/` and are copied into the target on `aitk tooling sync base . --write`, replacing whatever sits at those paths. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
 
 - `.prettierrc`: `semi: false`, `singleQuote: true`, plus a parser override per non-standard extension (`.mdx` to `markdown`).
 - `.shellcheckrc`: `external-sources=true`. Required for shellcheck to follow `source` directives.
