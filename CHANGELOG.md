@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/erclx/aitk/compare/v1.0.0...v1.0.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **memory:** drop the distribution claim from the routing rule ([#1055](https://github.com/erclx/aitk/issues/1055)) ([ca0bb4c](https://github.com/erclx/aitk/commit/ca0bb4c4e5c3279c8a1f9a6db05015b4a7dac965))
+
 ## [1.0.0](https://github.com/erclx/aitk/compare/v0.112.0...v1.0.0) (2026-08-20)
 
 
