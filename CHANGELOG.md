@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/erclx/aitk/compare/v2.0.0...v2.1.0) (2026-08-20)
+
+
+### Features
+
+* **sandbox:** rename the anchor remote and probe for it before use ([#1084](https://github.com/erclx/aitk/issues/1084)) ([e65201f](https://github.com/erclx/aitk/commit/e65201ff8de33c496da88acf6f3c0ac8f185d7dc))
+
 ## [2.0.0](https://github.com/erclx/aitk/compare/v1.7.1...v2.0.0) (2026-08-20)
 
 
