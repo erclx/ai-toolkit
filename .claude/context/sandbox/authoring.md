@@ -89,7 +89,6 @@ A skill reading that diff saw a half-migration, correctly declined to mark the o
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"  # skip auto-commit after stage_setup
   export SANDBOX_INJECT_SEEDS="true"      # inject tooling/claude/seeds/ into sandbox root
-  export SANDBOX_INJECT_STANDARDS="true"  # inject standards into .claude/standards/
   export SANDBOX_INJECT_GOV="true"        # inject .claude/rules/ into sandbox
 }
 ```

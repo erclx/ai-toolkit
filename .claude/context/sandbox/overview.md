@@ -79,9 +79,9 @@ The fold is lexical and the guard follows no symlink. It runs before provisionin
 
 A declaration that exists and declares no mechanical assertion fails. That is the silent-truncation failure `scripts/core/install-check.sh` documents in its own comment, where a domain with no assertion stays green while its output shrinks to nothing. Prose in `manual` does not count towards the total, or an arm could carry five lines a checker cannot read and still report green.
 
-Three arms assert a standards citation through the filename their run produces. `claude/review`, `claude/ui-test`, and `claude/memory-review` each declare no `SANDBOX_INJECT_STANDARDS`, so the project copy of `standards/skill.md` is absent and the plugin fallback is the only route to the slug transform.
+Three arms assert a standards citation through the filename their run produces. `claude/review`, `claude/ui-test`, and `claude/memory-review` each run against a target holding no standards folder, which is what every target holds now, so the plugin root is the only route to the slug transform.
 
-Each stages a branch carrying a `/`, and the transform replacing it with `-` appears in no skill body, so the output filename is evidence the citation resolved rather than evidence about the skill. Each also asserts that `.claude/standards/skill.md` is absent, which is what makes a later edit adding the flag go red at the point it lands rather than quietly voiding the arm's premise.
+Each stages a branch carrying a `/`, and the transform replacing it with `-` appears in no skill body, so the output filename is evidence the citation resolved rather than evidence about the skill. Each also asserts that `.claude/standards/skill.md` and `standards/skill.md` are both absent, which is what makes a later arm staging a copy of its own go red at the point it lands rather than quietly voiding the premise.
 
 Five of those entries assert mechanically, two in `claude/review` and three in `claude/memory-review`. Each was verified against a real run's output rather than declared from the fixture, which is the standard an entry meets before it leaves `manual`.
 

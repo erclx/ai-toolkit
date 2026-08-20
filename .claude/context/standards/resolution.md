@@ -41,13 +41,13 @@ The audit pairs the field with the location, because the fan-out copies frontmat
 
 `standards/groundwork.md` and `standards/intake.md` are the two that went the other way, out of a skill's `references/` and into the flat root. A skill-local reference is right for a file only that skill reads, and both of these govern a folder edited routinely by sessions that never invoked the skill, so the readership test that kept the orchestrator runbooks local sends these two out.
 
-The reference is deleted rather than left beside the standard, since publishing on both surfaces makes two sources for one text. Each skill now cites its standard through the two-route form, the installed path first and the bundled path when the project has no installed standards.
+The reference is deleted rather than left beside the standard, since publishing on both surfaces makes two sources for one text. Each skill now cites its standard at the plugin root alone, which is the single form every shipped body took once nothing installed a project copy for a first branch to try.
 
 Both govern a gitignored folder no check reaches, which puts them in one class with the plan and memory standards rather than leaving each to find its own answer. `.claude/hooks/standards-audit.sh` exits early on the scratch paths and the audit skill reads changed files from git, which never lists a gitignored one, so all four were enforced by a session reading them and by nothing else.
 
 The precedent extended is `aitk tasks validate`, which reports against the board without writing, and reporting is what makes a verb safe over a folder with no history to recover from. `aitk records validate <kind>` now covers all four, `memory` having landed with its standard rather than as a second command.
 
-A fifth kind reads this corpus rather than a gitignored folder, and it keeps the reporting discipline on the opposite reason. A standard is tracked, installed into every target, and cited by bare filename, so the risk a write carries is a rename reaching further than the file it moved rather than a repair nothing can undo. `.claude/context/cli/audits.md` holds the check and its two roots.
+A fifth kind reads this corpus rather than a gitignored folder, and it keeps the reporting discipline on the opposite reason. A standard is tracked and cited by bare filename across the tree, so the risk a write carries is a rename reaching further than the file it moved rather than a repair nothing can undo. `.claude/context/cli/audits.md` holds the check and its two roots.
 
 ## Which route a reader actually takes
 
