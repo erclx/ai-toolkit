@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import type { DesignDoc, Row } from '@/design/parse'
+import type { Cell, DesignDoc, Row } from '@/design/parse'
 import { parseDesignDoc } from '@/design/parse'
 
 export interface RenderResult {
@@ -28,29 +28,77 @@ function slug(s: string): string {
     .replace(/(^-|-$)/g, '')
 }
 
+function cell(row: Row, key: string): Cell {
+  return row[key] ?? { value: '', tagged: false }
+}
+
+/** The value alone. Every swatch, sample, and custom property is built from it. */
+function val(row: Row, key: string): string {
+  return cell(row, key).value
+}
+
+/** The marker, rendered beside a value rather than inside it. */
+function mark(row: Row, key: string): string {
+  return cell(row, key).tagged
+    ? ' <span class="verify" title="No source anchors this value">? verify</span>'
+    : ''
+}
+
+/** A displayed cell: its escaped text, then its marker when it carries one. */
+function cellText(row: Row, key: string): string {
+  return escape(val(row, key)) + mark(row, key)
+}
+
+interface Confidence {
+  tagged: number
+  total: number
+}
+
+/**
+ * A cell counts when it says something, so a blank the record left unfilled is
+ * neither anchored nor tagged and stays out of both halves of the ratio.
+ */
+function confidence(doc: DesignDoc): Confidence {
+  const rows = [...doc.color, ...doc.typography, ...doc.spacing, ...doc.borders]
+  let tagged = 0
+  let total = 0
+  for (const row of rows) {
+    for (const c of Object.values(row)) {
+      if (!c.value && !c.tagged) continue
+      total += 1
+      if (c.tagged) tagged += 1
+    }
+  }
+  return { tagged, total }
+}
+
 function buildCss(doc: DesignDoc): string {
   const lines: string[] = [':root {']
   for (const row of doc.color) {
-    if (row['Value']) {
-      lines.push(`  --color-${slug(row['Role'])}: ${row['Value']};`)
+    if (val(row, 'Value')) {
+      lines.push(`  --color-${slug(val(row, 'Role'))}: ${val(row, 'Value')};`)
     }
   }
   for (const row of doc.spacing) {
-    if (row['Value']) {
-      lines.push(`  --space-${slug(row['Step'])}: ${row['Value']};`)
+    if (val(row, 'Value')) {
+      lines.push(`  --space-${slug(val(row, 'Step'))}: ${val(row, 'Value')};`)
     }
   }
   for (const row of doc.typography) {
-    if (row['Size']) {
-      lines.push(`  --type-${slug(row['Role'])}-size: ${row['Size']};`)
+    if (val(row, 'Size')) {
+      lines.push(
+        `  --type-${slug(val(row, 'Role'))}-size: ${val(row, 'Size')};`,
+      )
     }
-    if (row['Line height']) {
-      lines.push(`  --type-${slug(row['Role'])}-lh: ${row['Line height']};`)
+    if (val(row, 'Line height')) {
+      lines.push(
+        `  --type-${slug(val(row, 'Role'))}-lh: ${val(row, 'Line height')};`,
+      )
     }
   }
   for (const row of doc.borders) {
-    if (row['Radius']) {
-      lines.push(`  --radius-${slug(row['Role'])}: ${row['Radius']};`)
+    if (val(row, 'Radius')) {
+      lines.push(`  --radius-${slug(val(row, 'Role'))}: ${val(row, 'Radius')};`)
     }
   }
   lines.push('}')
@@ -75,6 +123,14 @@ function buildHtml(doc: DesignDoc): string {
     sectionLine('Motion', doc.motion),
     sectionLine('Iconography', doc.iconography),
   ]
+  const { tagged, total } = confidence(doc)
+  const verifyStyle = tagged
+    ? '\n  .verify { color: #a4471c; font-size: 12px; font-weight: 600; margin-left: 0.35rem; white-space: nowrap; }'
+    : ''
+  const verb = tagged === 1 ? 'carries' : 'carry'
+  const summary = tagged
+    ? `\n<p class="note">${total - tagged} of ${total} values are anchored to a source. The other ${tagged} ${verb} <code>? verify</code>, so nothing anchors them yet.</p>`
+    : ''
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -91,12 +147,12 @@ function buildHtml(doc: DesignDoc): string {
   .swatch { display: inline-block; width: 1.5rem; height: 1.5rem; border-radius: 4px; border: 1px solid #ddd; vertical-align: middle; margin-right: 0.5rem; }
   .bar { display: inline-block; height: 1rem; background: #888; border-radius: 2px; vertical-align: middle; }
   .note { color: #666; font-size: 13px; margin-top: 0.5rem; }
-  .empty { color: #999; font-style: italic; }
+  .empty { color: #999; font-style: italic; }${verifyStyle}
 </style>
 </head>
 <body>
 <h1>Design tokens</h1>
-<p class="note">Generated from <code>.claude/DESIGN.md</code> by <code>aitk design render</code>. Token preview only, not a screen mock.</p>
+<p class="note">Generated from <code>.claude/DESIGN.md</code> by <code>aitk design render</code>. Token preview only, not a screen mock.</p>${summary}
 ${sections.join('\n')}
 </body>
 </html>
@@ -112,11 +168,12 @@ function sectionColor(rows: Row[]): string {
   if (!rows.length) return ''
   const body = rows
     .map((r) => {
-      const swatch = r['Value']
-        ? `<span class="swatch" style="background:${escape(r['Value'])}"></span>`
+      const value = val(r, 'Value')
+      const swatch = value
+        ? `<span class="swatch" style="background:${escape(value)}"></span>`
         : '<span class="swatch"></span>'
-      const value = r['Value'] || '<span class="empty">unset</span>'
-      return `<tr><td>${swatch}${escape(r['Role'] ?? '')}</td><td>${escape(r['Intent'] ?? '')}</td><td><code>${value}</code></td></tr>`
+      const shown = value ? escape(value) : '<span class="empty">unset</span>'
+      return `<tr><td>${swatch}${cellText(r, 'Role')}</td><td>${cellText(r, 'Intent')}</td><td><code>${shown}</code>${mark(r, 'Value')}</td></tr>`
     })
     .join('\n')
   return `<h2>Color</h2>\n<table><thead><tr><th>Role</th><th>Intent</th><th>Value</th></tr></thead><tbody>${body}</tbody></table>`
@@ -126,12 +183,12 @@ function sectionTypography(rows: Row[]): string {
   if (!rows.length) return ''
   const body = rows
     .map((r) => {
-      const family = r['Family'] || 'system-ui'
-      const weight = r['Weight'] || '400'
-      const size = r['Size'] || '16px'
-      const lh = r['Line height'] || '1.4'
+      const family = val(r, 'Family') || 'system-ui'
+      const weight = val(r, 'Weight') || '400'
+      const size = val(r, 'Size') || '16px'
+      const lh = val(r, 'Line height') || '1.4'
       const sample = `<span style="font-family:${escape(family)};font-weight:${escape(weight)};font-size:${escape(size)};line-height:${escape(lh)}">The quick brown fox</span>`
-      return `<tr><td>${escape(r['Role'] ?? '')}</td><td>${escape(family)}</td><td>${escape(weight)}</td><td>${escape(size)}</td><td>${escape(lh)}</td><td>${sample}</td></tr>`
+      return `<tr><td>${cellText(r, 'Role')}</td><td>${escape(family)}${mark(r, 'Family')}</td><td>${escape(weight)}${mark(r, 'Weight')}</td><td>${escape(size)}${mark(r, 'Size')}</td><td>${escape(lh)}${mark(r, 'Line height')}</td><td>${sample}</td></tr>`
     })
     .join('\n')
   return `<h2>Typography</h2>\n<table><thead><tr><th>Role</th><th>Family</th><th>Weight</th><th>Size</th><th>Line height</th><th>Sample</th></tr></thead><tbody>${body}</tbody></table>`
@@ -141,11 +198,11 @@ function sectionSpacing(rows: Row[]): string {
   if (!rows.length) return ''
   const body = rows
     .map((r) => {
-      const value = r['Value'] || ''
+      const value = val(r, 'Value')
       const bar = value
         ? `<span class="bar" style="width:${escape(value)}"></span>`
         : '<span class="empty">unset</span>'
-      return `<tr><td>${escape(r['Step'] ?? '')}</td><td>${escape(r['Multiplier'] ?? '')}</td><td><code>${escape(value || 'unset')}</code></td><td>${bar}</td></tr>`
+      return `<tr><td>${cellText(r, 'Step')}</td><td>${cellText(r, 'Multiplier')}</td><td><code>${escape(value || 'unset')}</code>${mark(r, 'Value')}</td><td>${bar}</td></tr>`
     })
     .join('\n')
   return `<h2>Spacing</h2>\n<table><thead><tr><th>Step</th><th>Multiplier</th><th>Value</th><th>Sample</th></tr></thead><tbody>${body}</tbody></table>`
@@ -155,10 +212,10 @@ function sectionBorders(rows: Row[]): string {
   if (!rows.length) return ''
   const body = rows
     .map((r) => {
-      const radius = r['Radius'] || '0'
-      const width = r['Width'] || '1px'
+      const radius = val(r, 'Radius') || '0'
+      const width = val(r, 'Width') || '1px'
       const sample = `<span style="display:inline-block;width:2rem;height:1.5rem;background:#eee;border:${escape(width)} solid #888;border-radius:${escape(radius)};vertical-align:middle"></span>`
-      return `<tr><td>${escape(r['Role'] ?? '')}</td><td><code>${escape(radius)}</code></td><td><code>${escape(width)}</code></td><td>${escape(r['When used'] ?? '')}</td><td>${sample}</td></tr>`
+      return `<tr><td>${cellText(r, 'Role')}</td><td><code>${escape(radius)}</code>${mark(r, 'Radius')}</td><td><code>${escape(width)}</code>${mark(r, 'Width')}</td><td>${cellText(r, 'When used')}</td><td>${sample}</td></tr>`
     })
     .join('\n')
   return `<h2>Borders</h2>\n<table><thead><tr><th>Role</th><th>Radius</th><th>Width</th><th>When used</th><th>Sample</th></tr></thead><tbody>${body}</tbody></table>`
