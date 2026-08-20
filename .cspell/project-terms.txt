@@ -94,6 +94,8 @@ Pushback
 rawfile
 recompiles
 regen
+repoint
+repoints
 rescope
 resequence
 resequences
