@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { bodyLines } from '@/markdown/scan'
 import {
+  BASELINE,
   CHECKPOINTS,
   type Checkpoints,
   measureStructure,
@@ -68,6 +69,23 @@ function links(count: number): string {
   ).join(' ')
 }
 
+/**
+ * A paragraph whose sentences carry the stated word counts and opening words,
+ * so spread and opener repetition vary independently of each other.
+ */
+function passage(
+  lengths: readonly number[],
+  openers?: readonly string[],
+): string {
+  return lengths
+    .map((length, index) => {
+      const opener = openers?.[index] ?? `Word${index}`
+      const rest = Array.from({ length: length - 1 }, () => 'filler')
+      return `${[opener, ...rest].join(' ')}.`
+    })
+    .join(' ')
+}
+
 /** Sentences of a stated length, so weight and count vary independently. */
 function sentences(count: number, width = 20): string {
   return Array.from(
@@ -89,7 +107,30 @@ describe('CHECKPOINTS', () => {
       paragraph: 700,
       sentences: 4,
       renderWidth: 80,
+      cadence: 3,
+      spread: 5,
+      opener: 2,
     })
+  })
+})
+
+describe('BASELINE', () => {
+  it('should ship the reading a cadence rate is compared against', () => {
+    // Asserted the way `CHECKPOINTS` is, and for a different reason. No measure
+    // reads these, so nothing else in the suite would notice one moving, and
+    // the report prints all five straight into the legend a reader acts on.
+    expect(BASELINE).toEqual({
+      flatShare: 8,
+      floor: 10,
+      low: 0,
+      median: 6,
+      high: 21,
+    })
+  })
+
+  it('should sit the median inside the range it is drawn from', () => {
+    expect(BASELINE.median).toBeGreaterThanOrEqual(BASELINE.low)
+    expect(BASELINE.median).toBeLessThanOrEqual(BASELINE.high)
   })
 })
 
@@ -363,5 +404,115 @@ describe('heavyParagraphs', () => {
     // finds none of the four these spans open.
     const [found] = measure(source).heavyParagraphs
     expect(found.sentences).toBe(5)
+  })
+})
+
+describe('measureCadence', () => {
+  it('should report a paragraph whose sentences are all one length as flat', () => {
+    const source = `${FRONTMATTER}# CI\n\n${passage([10, 10, 10])}\n`
+
+    const { measured, flat, flattest } = measure(source).cadence
+    expect(measured).toBe(1)
+    expect(flat).toBe(1)
+    expect(flattest?.spread).toBe(0)
+  })
+
+  it('should leave a paragraph whose sentence lengths vary unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n${passage([4, 12, 22])}\n`
+
+    const { measured, flat, flattest } = measure(source).cadence
+    expect(measured).toBe(1)
+    expect(flat).toBe(0)
+    expect(flattest).toBeUndefined()
+  })
+
+  it('should report a spread sitting exactly on the checkpoint', () => {
+    const spread = CHECKPOINTS.spread
+    const source = `${FRONTMATTER}# CI\n\n${passage([10, 10, 10 + spread])}\n`
+
+    // The skill calls a longest and shortest sentence within roughly five words
+    // of each other one cadence, so the checkpoint is the last flat value
+    // rather than the first varied one.
+    expect(measure(source).cadence.flat).toBe(1)
+  })
+
+  it('should leave a spread one word past the checkpoint unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\n${passage([10, 10, 11 + CHECKPOINTS.spread])}\n`
+
+    expect(measure(source).cadence.flat).toBe(0)
+  })
+
+  it('should report a paragraph where one word opens three sentences', () => {
+    const openers = ['The', 'The', 'The']
+    const source = `${FRONTMATTER}# CI\n\n${passage([4, 12, 22], openers)}\n`
+
+    const { repeating, mostRepeated } = measure(source).cadence
+    expect(repeating).toBe(1)
+    expect(mostRepeated?.opener).toBe('the')
+    expect(mostRepeated?.repeats).toBe(3)
+  })
+
+  it('should leave two sentences opening alike unreported as coincidence', () => {
+    const openers = ['The', 'The', 'Beta']
+    const source = `${FRONTMATTER}# CI\n\n${passage([4, 12, 22], openers)}\n`
+
+    const { repeating, mostRepeated } = measure(source).cadence
+    expect(repeating).toBe(0)
+    expect(mostRepeated).toBeUndefined()
+  })
+
+  it('should read an opener through the code span that carries it', () => {
+    const openers = ['`aitk`', '`aitk`', '`aitk`']
+    const source = `${FRONTMATTER}# CI\n\n${passage([4, 12, 22], openers)}\n`
+
+    // A sentence opening on a command name repeats as plainly as one opening on
+    // a word, and the backticks are punctuation a reader does not hear.
+    expect(measure(source).cadence.mostRepeated?.opener).toBe('aitk')
+  })
+
+  it('should leave a paragraph under the sentence floor unmeasured', () => {
+    const source = `${FRONTMATTER}# CI\n\n${passage([4, 22])}\n`
+
+    // A two-sentence configuration note carries a spread of 18 words and says
+    // nothing about cadence, which is the case the floor exists for.
+    expect(measure(source).cadence).toEqual({
+      measured: 0,
+      flat: 0,
+      repeating: 0,
+      flattest: undefined,
+      mostRepeated: undefined,
+    })
+  })
+
+  it('should count the words a reader is shown rather than the source tokens', () => {
+    const linked = 'Alpha <https://x.test/one> <https://x.test/two> omega.'
+    const source = `${FRONTMATTER}# CI\n\n${linked} ${passage([2, 2])}\n`
+
+    // Raw the linked sentence carries four tokens against two a reader reads,
+    // which would report a spread the page does not have.
+    expect(measure(source).cadence.flattest?.spread).toBe(0)
+  })
+
+  it('should name the narrowest paragraph as the file worst', () => {
+    const wide = passage([8, 8, 12])
+    const narrow = passage([9, 9, 9])
+    const source = `${FRONTMATTER}# CI\n\n${wide}\n\n${narrow}\n`
+
+    const { measured, flat, flattest } = measure(source).cadence
+    expect(measured).toBe(2)
+    expect(flat).toBe(2)
+    expect(flattest?.line).toBe(10)
+  })
+
+  it('should ignore a paragraph that is an example inside a fenced block', () => {
+    const source = `${FRONTMATTER}# CI\n\n\`\`\`markdown\n${passage([10, 10, 10])}\n\`\`\`\n`
+
+    expect(measure(source).cadence.measured).toBe(0)
+  })
+
+  it('should leave a bullet to the bullet measure rather than reading its cadence', () => {
+    const source = `${FRONTMATTER}# CI\n\n- ${passage([10, 10, 10])}\n`
+
+    expect(measure(source).cadence.measured).toBe(0)
   })
 })

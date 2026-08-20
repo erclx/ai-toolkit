@@ -11,6 +11,7 @@ import {
   scanBans,
 } from '@/markdown/scan'
 import {
+  BASELINE,
   CHECKPOINTS,
   type Checkpoints,
   measureStructure,
@@ -58,7 +59,7 @@ export function register(program: Command): void {
   markdown
     .command('audit')
     .description(
-      'Fail on a banned character, word, or spelling, and report bullet, paragraph, and depth weight',
+      'Fail on a banned character, word, or spelling, and report bullet, paragraph, cadence, and depth',
     )
     .argument(
       '[path...]',
@@ -79,6 +80,10 @@ export function register(program: Command): void {
         'A ban hit is a fact and gates unconditionally. Bullet, paragraph, and',
         'depth weight are judgments a reader settles, so all three report and',
         'none of them fails a run.',
+        '',
+        'Cadence reports the same way and carries one more caveat. Its range is',
+        'drawn from prose a person reads, so terse reference prose sits below',
+        'it correctly and a flat paragraph there is not a defect.',
         '',
         'Rewrite the sentence carrying a hit rather than swapping the token for',
         'a near-synonym. A code span clears the report and is the answer only',
@@ -146,6 +151,7 @@ async function runAudit(
   reportBans(reports, bans, empty)
   reportBullets(reports, checkpoints)
   reportParagraphs(reports, checkpoints)
+  reportCadence(reports, checkpoints)
   reportDepth(reports, checkpoints)
   outro()
 
@@ -168,6 +174,9 @@ async function runAudit(
           paragraph: checkpoints.paragraph,
           sentences: checkpoints.sentences,
           renderWidth: checkpoints.renderWidth,
+          cadence: checkpoints.cadence,
+          spread: checkpoints.spread,
+          opener: checkpoints.opener,
         },
         entries: reports.map((report) => ({
           path: report.rel,
@@ -176,6 +185,7 @@ async function runAudit(
           longestRunLine: report.structure.longestRunLine,
           heavyBullets: report.structure.heavyBullets,
           heavyParagraphs: report.structure.heavyParagraphs,
+          cadence: report.structure.cadence,
         })),
       })}\n`,
     )
@@ -373,6 +383,99 @@ function reportParagraphs(
             )
             .join('\n')}`,
       )
+      .join('\n'),
+  )
+}
+
+/**
+ * Reports the distribution rather than a verdict, which is what separates this
+ * step from the three above it.
+ *
+ * Bullet, paragraph, and depth weight each report a count against a checkpoint
+ * a reader settles. Cadence reports a count as well, and the range behind it is
+ * drawn from one surface class rather than from the corpus, so the step states
+ * where the numbers came from beside them. A reader whose file is terse
+ * reference prose is meant to read a flat paragraph as correct, and a number
+ * printed with no comparison beside it reads as a finding whatever the step is
+ * called.
+ */
+function reportCadence(
+  reports: readonly FileReport[],
+  checkpoints: Checkpoints,
+): void {
+  logStep('Cadence')
+  logInfo(
+    `Paragraphs of ${checkpoints.cadence} sentences or more measure the words between their longest and shortest sentence, and the times one word opens a sentence.`,
+  )
+  logInfo(
+    `A spread of ${checkpoints.spread} words or under reads as one cadence, and a word opening more than ${checkpoints.opener} sentences is a pattern rather than a coincidence.`,
+  )
+  logInfo(
+    'Both numbers are stated under Rhythm in the write-human skill, which writes them about prose a person reads.',
+  )
+  logInfo(
+    'A shorter paragraph stays unmeasured, since a two-sentence note carries no spread worth reading.',
+  )
+  logInfo(
+    'A healthy range differs by surface, so neither number gates and neither names a file wrong. Terse reference prose sits below the range a page written for a reader sits in.',
+  )
+  logInfo(
+    `The corpus these numbers were read against measured ${BASELINE.flatShare} percent flat overall, and its files carrying ${BASELINE.floor} or more measured paragraphs ran from ${BASELINE.low} to ${BASELINE.high} percent with a median near ${BASELINE.median}. Compare a rate against that rather than against zero.`,
+  )
+
+  const measured = reports.reduce(
+    (sum, report) => sum + report.structure.cadence.measured,
+    0,
+  )
+
+  if (measured === 0) {
+    logInfo(
+      `No paragraph reached ${checkpoints.cadence} sentences, so nothing was measured.`,
+    )
+    return
+  }
+
+  const flat = reports.reduce(
+    (sum, report) => sum + report.structure.cadence.flat,
+    0,
+  )
+  const repeating = reports.reduce(
+    (sum, report) => sum + report.structure.cadence.repeating,
+    0,
+  )
+
+  logInfo(
+    `${plural(measured, 'paragraph')} measured, ${flat} at or under the spread checkpoint (${Math.round((flat / measured) * 100)} percent) and ${repeating} past the opener checkpoint.`,
+  )
+
+  const carrying = reports
+    .filter(
+      (report) =>
+        report.structure.cadence.flattest ||
+        report.structure.cadence.mostRepeated,
+    )
+    .sort(
+      (a, b) =>
+        b.structure.cadence.flat +
+        b.structure.cadence.repeating -
+        (a.structure.cadence.flat + a.structure.cadence.repeating),
+    )
+
+  if (carrying.length === 0) return
+
+  pipeOutput(
+    carrying
+      .map((report) => {
+        const { flattest, mostRepeated } = report.structure.cadence
+        const lines = [
+          flattest &&
+            `  :${flattest.line}  ${plural(flattest.sentences, 'sentence')}, spread ${plural(flattest.spread, 'word')}`,
+          mostRepeated &&
+            `  :${mostRepeated.line}  ${plural(mostRepeated.sentences, 'sentence')}, "${mostRepeated.opener}" opens ${mostRepeated.repeats}`,
+        ].filter(Boolean)
+
+        return `${report.rel}\n${lines.join('\n')}`
+      })
       .join('\n'),
   )
 }

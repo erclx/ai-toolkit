@@ -33,6 +33,14 @@ const SENTENCE_END = /[.!?]["'’”)\]]*(?=\s+(?:["'“(\[]*[A-Z]|`)|\s*$)/g
  * degraded a number and the report had to carry a legend saying which one. The
  * standard still states every number for a reader, and moving one is an edit to
  * both.
+ *
+ * The last three come from the `## Rhythm` section of the `write-human` skill
+ * rather than from a standard. That skill states what good rhythm is and this
+ * measures against the statement, so the numbers are read off the sentences
+ * that already carry them: a longest and shortest sentence within roughly five
+ * words of each other is one cadence, an opening word repeating twice is
+ * coincidence and three times is a pattern, and both rules are written about a
+ * paragraph, which needs a third sentence before either says anything.
  */
 export const CHECKPOINTS = {
   run: 40,
@@ -41,6 +49,37 @@ export const CHECKPOINTS = {
   paragraph: 700,
   sentences: 4,
   renderWidth: 80,
+  cadence: 3,
+  spread: 5,
+  opener: 2,
+} as const
+
+/**
+ * The reading a cadence rate is compared against, rather than a checkpoint.
+ *
+ * A count with nothing beside it reads as a finding, and the two counts the
+ * cadence step reports have no range a reader can place them in: twelve flat
+ * paragraphs out of forty says the same as two without one. Naming that a
+ * healthy range differs by surface states that a range exists rather than what
+ * it looks like, so the reading travels with the command.
+ *
+ * This is an observation rather than a rule, which is why it sits apart from
+ * `CHECKPOINTS`. Nothing compares a run against it and no exit code reads it. A
+ * project whose corpus is entirely terse reference prose is expected to sit
+ * above the high end, and that is the measure working.
+ *
+ * Read across 483 markdown files at `6c273324` on 2026-08-20. A number here
+ * goes stale against the corpus it describes with nothing comparing the two, so
+ * re-measure before moving one.
+ */
+export const BASELINE = {
+  /** Share of every measured paragraph sitting at or under the spread checkpoint. */
+  flatShare: 8,
+  /** Measured paragraphs a file needs before its own rate means anything. */
+  floor: 10,
+  low: 0,
+  median: 6,
+  high: 21,
 } as const
 
 /**
@@ -58,6 +97,12 @@ export interface Checkpoints {
   readonly paragraph: number
   readonly sentences: number
   readonly renderWidth: number
+  /** Sentences a paragraph needs before its cadence is measured at all. */
+  readonly cadence: number
+  /** Words between the longest and shortest sentence, at or under which the paragraph reads as one cadence. */
+  readonly spread: number
+  /** Times one opening word may open a sentence in a paragraph before it is a pattern. */
+  readonly opener: number
 }
 
 export interface BulletFinding {
@@ -72,6 +117,47 @@ export interface ParagraphFinding {
   readonly characters: number
 }
 
+/**
+ * One measured paragraph, carrying both cadence numbers rather than one.
+ *
+ * A paragraph reported for a narrow spread is usually worth reading for its
+ * openers too, and splitting the two into separate finding types would name the
+ * same line twice with half the picture on each.
+ */
+export interface CadenceFinding {
+  readonly line: number
+  readonly sentences: number
+  /** Words between the longest and shortest sentence. */
+  readonly spread: number
+  /** Times the most repeated opening word opens a sentence here. */
+  readonly repeats: number
+  /** The opening word behind `repeats`, lowercased and stripped of punctuation. */
+  readonly opener: string
+}
+
+/**
+ * A file's cadence distribution, reported rather than listed finding by finding.
+ *
+ * Both numbers are advisory in a way even the weight checkpoints are not. A
+ * healthy range differs by surface, so terse reference prose and a page written
+ * for a reader sit at different spreads and one range applied across the corpus
+ * would report the surfaces that are correct. The counts are what a reader
+ * compares against the stated range, and the two worst paragraphs are where
+ * they open the file.
+ */
+export interface CadenceReport {
+  /** Paragraphs carrying at least the floor sentence count. */
+  readonly measured: number
+  /** Measured paragraphs at or under the spread checkpoint. */
+  readonly flat: number
+  /** Measured paragraphs past the opener checkpoint. */
+  readonly repeating: number
+  /** Narrowest paragraph among the flat ones, or undefined when none is flat. */
+  readonly flattest: CadenceFinding | undefined
+  /** Most repetitive paragraph among the repeating ones, or undefined when none repeats. */
+  readonly mostRepeated: CadenceFinding | undefined
+}
+
 export interface StructureReport {
   readonly rel: string
   /** Rendered lines at the render width, not source lines. */
@@ -80,6 +166,7 @@ export interface StructureReport {
   readonly longestRunLine: number
   readonly heavyBullets: readonly BulletFinding[]
   readonly heavyParagraphs: readonly ParagraphFinding[]
+  readonly cadence: CadenceReport
 }
 
 /**
@@ -275,48 +362,46 @@ export function heavyBullets(
   return findings
 }
 
+/**
+ * Splits a paragraph into the sentences terminal punctuation closes.
+ *
+ * A trailing span no punctuation closes is dropped rather than returned, which
+ * keeps this and the count below one definition. The pattern already matches a
+ * paragraph's final period through its end-of-text alternative, so the only
+ * span this drops is a paragraph genuinely ending without terminal punctuation,
+ * which is a fragment rather than a sentence to either measure.
+ */
+function splitSentences(text: string): string[] {
+  const sentences: string[] = []
+  let start = 0
+
+  for (const match of text.matchAll(SENTENCE_END)) {
+    const end = match.index + match[0].length
+    sentences.push(text.slice(start, end).trim())
+    start = end
+  }
+
+  return sentences
+}
+
 function countSentences(text: string): number {
-  return [...text.matchAll(SENTENCE_END)].length
+  return splitSentences(text).length
 }
 
 /**
- * Finds the prose paragraphs past either half of the standard's checkpoint.
+ * Splits the body into its prose paragraphs, each a run of consecutive lines.
  *
- * Both halves are stated in the standard and both are read from it. The weight
- * half was added there rather than borrowed from the bullet checkpoint, which
- * governs a different construct: one number feeding both would move the
- * paragraph rule whenever the bullet rule was changed, and an author reading
- * the sentence cap would find no weight rule to read at all.
- *
- * The two numbers coincide today because paragraph and bullet weight measure
- * one population, sharing a median near 170 characters with no gap behind
- * either candidate. They are separate checkpoints regardless, so either moves
- * without dragging the other.
- *
- * A paragraph is a run of consecutive prose lines. A heading, a list item, a
- * table row, a blockquote, a blank line, and a fence each end one, so a bullet
- * is measured by `heavyBullets` alone and never twice.
+ * A heading, a list item, a table row, a blockquote, a blank line, and a fence
+ * each end one, so a bullet is measured by `heavyBullets` alone and never
+ * twice. Both paragraph measures walk this rather than one each, since two
+ * walks deciding what a paragraph is would drift apart.
  */
-export function heavyParagraphs(
-  lines: readonly BodyLine[],
-  checkpoints: Checkpoints,
-): ParagraphFinding[] {
-  const findings: ParagraphFinding[] = []
+function paragraphBlocks(lines: readonly BodyLine[]): BodyLine[][] {
+  const blocks: BodyLine[][] = []
   let block: BodyLine[] = []
 
   const close = (): void => {
-    if (block.length > 0) {
-      const text = block.map((line) => line.text.trim()).join(' ')
-      const sentences = countSentences(text)
-      const characters = visibleText(text).length
-
-      if (
-        sentences > checkpoints.sentences ||
-        characters > checkpoints.paragraph
-      ) {
-        findings.push({ line: block[0].number, sentences, characters })
-      }
-    }
+    if (block.length > 0) blocks.push(block)
     block = []
   }
 
@@ -340,7 +425,166 @@ export function heavyParagraphs(
 
   close()
 
+  return blocks
+}
+
+/** Folds a paragraph's source lines into the one line they would have wrapped from. */
+function paragraphText(block: readonly BodyLine[]): string {
+  return block.map((line) => line.text.trim()).join(' ')
+}
+
+/**
+ * Finds the prose paragraphs past either half of the standard's checkpoint.
+ *
+ * Both halves are stated in the standard and both are read from it. The weight
+ * half was added there rather than borrowed from the bullet checkpoint, which
+ * governs a different construct: one number feeding both would move the
+ * paragraph rule whenever the bullet rule was changed, and an author reading
+ * the sentence cap would find no weight rule to read at all.
+ *
+ * The two numbers coincide today because paragraph and bullet weight measure
+ * one population, sharing a median near 170 characters with no gap behind
+ * either candidate. They are separate checkpoints regardless, so either moves
+ * without dragging the other.
+ */
+export function heavyParagraphs(
+  lines: readonly BodyLine[],
+  checkpoints: Checkpoints,
+): ParagraphFinding[] {
+  const findings: ParagraphFinding[] = []
+
+  for (const block of paragraphBlocks(lines)) {
+    const text = paragraphText(block)
+    const sentences = countSentences(text)
+    const characters = visibleText(text).length
+
+    if (
+      sentences > checkpoints.sentences ||
+      characters > checkpoints.paragraph
+    ) {
+      findings.push({ line: block[0].number, sentences, characters })
+    }
+  }
+
   return findings
+}
+
+/** Punctuation either side of a word, so an opener is compared on its letters. */
+const WORD_EDGE = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu
+
+/**
+ * The word a sentence opens on, lowercased and stripped of punctuation.
+ *
+ * A sentence opening on a code span yields the command inside it rather than a
+ * backtick, which is the word a reader hears. Casing is dropped because an
+ * opener repeating is a repetition whether or not one of the two sits mid-list
+ * and lost its capital.
+ */
+function openingWord(sentence: string): string {
+  const [first = ''] = sentence.split(/\s+/)
+  return first.replace(WORD_EDGE, '').toLowerCase()
+}
+
+/**
+ * Measures one paragraph's spread and its most repeated opener.
+ *
+ * Words are counted off the text a reader is shown, so a link contributes its
+ * anchor text and a destination contributes nothing. The sentence boundaries do
+ * not move with that masking, since the pattern requires whitespace after the
+ * terminal punctuation and no destination or autolink carries any.
+ */
+function measureParagraph(block: readonly BodyLine[]): CadenceFinding {
+  const sentences = splitSentences(visibleText(paragraphText(block)))
+  const lengths = sentences.map(
+    (sentence) => sentence.split(/\s+/).filter(Boolean).length,
+  )
+
+  const counts = new Map<string, number>()
+  for (const sentence of sentences) {
+    const word = openingWord(sentence)
+    if (word !== '') counts.set(word, (counts.get(word) ?? 0) + 1)
+  }
+
+  let opener = ''
+  let repeats = 0
+  for (const [word, count] of counts) {
+    if (count > repeats) {
+      opener = word
+      repeats = count
+    }
+  }
+
+  // A paragraph closing no sentence at all has no spread rather than a
+  // negative one, and the floor drops it before either number is read.
+  const spread =
+    lengths.length === 0 ? 0 : Math.max(...lengths) - Math.min(...lengths)
+
+  return {
+    line: block[0].number,
+    sentences: sentences.length,
+    spread,
+    repeats,
+    opener,
+  }
+}
+
+/**
+ * Reports how a file's prose is distributed across sentence length and opening
+ * word, which is the layer the ban sets cannot reach.
+ *
+ * A banned-word list expresses negatives and every symptom this answers is the
+ * absence of something, so no addition to that set catches a paragraph whose
+ * sentences are all one length. The measure stops at what is countable. A
+ * sentence's grammatical shape and whether it carries a finite verb are the two
+ * rules `write-human` states that this does not implement, because identifying
+ * either needs a parse rather than a match, and an imperative or a heading
+ * fragment would read as a defect. Reporting them wrong is worse than not
+ * reporting them, since they name the exact failure this exists to measure.
+ *
+ * A paragraph under the floor is skipped rather than scored. A two-sentence
+ * configuration note has no spread worth reading, and the opener rule is
+ * written about a third sentence turning a coincidence into a pattern, so
+ * neither measure says anything before the floor is reached.
+ */
+export function measureCadence(
+  lines: readonly BodyLine[],
+  checkpoints: Checkpoints,
+): CadenceReport {
+  const measured = paragraphBlocks(lines)
+    .map(measureParagraph)
+    .filter((finding) => finding.sentences >= checkpoints.cadence)
+
+  const flat = measured.filter(
+    (finding) => finding.spread <= checkpoints.spread,
+  )
+  const repeating = measured.filter(
+    (finding) => finding.repeats > checkpoints.opener,
+  )
+
+  return {
+    measured: measured.length,
+    flat: flat.length,
+    repeating: repeating.length,
+    flattest: worst(flat, (finding) => -finding.spread),
+    mostRepeated: worst(repeating, (finding) => finding.repeats),
+  }
+}
+
+/**
+ * The file's worst paragraph on one measure, earliest line breaking a tie.
+ *
+ * Only paragraphs already past their checkpoint are passed in, so a file
+ * reading healthy names nothing rather than naming its least healthy paragraph,
+ * which a reader would take for a finding.
+ */
+function worst(
+  findings: readonly CadenceFinding[],
+  rank: (finding: CadenceFinding) => number,
+): CadenceFinding | undefined {
+  return findings.reduce<CadenceFinding | undefined>(
+    (held, finding) => (!held || rank(finding) > rank(held) ? finding : held),
+    undefined,
+  )
 }
 
 export function measureStructure(
@@ -356,5 +600,6 @@ export function measureStructure(
     longestRunLine: run.line,
     heavyBullets: heavyBullets(lines, checkpoints),
     heavyParagraphs: heavyParagraphs(lines, checkpoints),
+    cadence: measureCadence(lines, checkpoints),
   }
 }

@@ -16,6 +16,13 @@ function makeStructure(
     longestRunLine: 0,
     heavyBullets: [],
     heavyParagraphs: [],
+    cadence: {
+      measured: 0,
+      flat: 0,
+      repeating: 0,
+      flattest: undefined,
+      mostRepeated: undefined,
+    },
     ...overrides,
   }
 }
@@ -72,6 +79,36 @@ describe('isGating', () => {
       structure: [
         makeStructure({
           heavyParagraphs: [{ line: 30, sentences: 3, characters: 780 }],
+        }),
+      ],
+    })
+
+    expect(isGating(input)).toBe(false)
+  })
+
+  it('should leave a flat cadence advisory', () => {
+    const input = makeInput({
+      structure: [
+        makeStructure({
+          cadence: {
+            measured: 4,
+            flat: 3,
+            repeating: 1,
+            flattest: {
+              line: 12,
+              sentences: 4,
+              spread: 1,
+              repeats: 3,
+              opener: 'the',
+            },
+            mostRepeated: {
+              line: 12,
+              sentences: 4,
+              spread: 1,
+              repeats: 3,
+              opener: 'the',
+            },
+          },
         }),
       ],
     })

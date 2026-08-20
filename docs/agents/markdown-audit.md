@@ -27,7 +27,9 @@ A bare run measures every markdown file git lists, tracked plus untracked-and-no
 
 ## Where the rules come from
 
-The three ban sets and all six checkpoints ship with the `aitk` package as data, in `src/markdown/bans.ts` and `src/markdown/structure.ts`. Every project is measured against the same sets whether or not it installed any standards, and no file has to resolve for a run to mean something.
+The three ban sets and all nine checkpoints ship with the `aitk` package as data, in `src/markdown/bans.ts` and `src/markdown/structure.ts`. Every project is measured against the same sets whether or not it installed any standards, and no file has to resolve for a run to mean something.
+
+Six of the nine are stated in `markdown.md` and the three cadence numbers are stated in the `write-human` skill. That split is the content boundary rather than an accident: `markdown.md` carries the enforced rules a scan can decide, and the skill carries the rhythm rules a ban list cannot express. A cadence number moved in the skill and left in the code drifts the same way, so move both.
 
 Reading them out of the standards per run was the original design. It put a parser contract on a document authored for people, and the standard had to carry a paragraph of its own warning an author that a one-word backticked example in a `- Do not use ` bullet would be lifted into a literal ban set and ban that word everywhere. A rule existing to protect a parser from the prose it parses is the argument for separating them.
 
@@ -98,9 +100,29 @@ That re-sample ran once the scan stopped counting link syntax as prose. Findings
 
 A bullet, a heading, a table row, a blockquote, a blank line, and a fence each end a paragraph, so a heavy bullet is reported by the bullet check alone and never counted twice.
 
+### Cadence
+
+Uniform cadence is the failure a ban list cannot express. A ban set states negatives, and fragments, verbless clauses, and sentences that all run one length are each the absence of something, so no addition to the thirteen banned words reaches any of them. The shape layer already measured a bullet, a paragraph, and a run, and stopped one level above where that failure lives.
+
+Cadence measures a paragraph on two numbers. The spread is the words between its longest and shortest sentence, and the opener count is the times one word opens a sentence in it. A spread of five words or under reads as one cadence, and a word opening more than two sentences is a pattern rather than a coincidence. Both come from `## Rhythm` in the `write-human` skill, which states them about prose a person reads, and this measures against that statement rather than setting a threshold of its own.
+
+Words are counted off the text a reader is shown. A link contributes its anchor text, an autolink contributes nothing, and the sentence boundaries do not move under that masking, since the boundary pattern requires whitespace after the terminal punctuation and no destination carries any. An opening word is lowercased and stripped of punctuation, so a sentence opening on a backticked command name reports the command.
+
+A paragraph carrying fewer than three sentences is skipped rather than scored. A two-sentence configuration note has no spread worth reading, and the opener rule is written about a third sentence turning a coincidence into a pattern, so neither number says anything before the floor. That is the cheap form of a wider exemption: a shape-aware one, exempting a short reference block by what it is rather than by how many sentences it holds, waits on a second case.
+
+The unit is the paragraph and each file names its worst on each measure, which follows the depth check rather than setting a precedent. A file's flattest paragraph and its most repetitive one are named only when each crosses its checkpoint, so a file reading healthy names nothing rather than offering its least healthy paragraph as a finding.
+
+Neither number gates and neither names a file wrong. This is a weaker claim than the one the weight checkpoints make, because a healthy range differs by surface: a catalog entry is several short sentences carrying one fact each, and a page arguing a decision is not, so one range applied across the corpus would report the surfaces that are correct. The run therefore states where the numbers came from beside them, and the counts are what a reader compares against.
+
+Measured at `6c273324` across the corpus, 2119 paragraphs reached the floor, 165 sat at or under the spread checkpoint and 50 past the opener checkpoint. Over the 60 files carrying at least ten measured paragraphs the flat rate runs from zero to 21 percent with a median near 6, which is the spread that makes the measure worth reading. Two wiki pages sit at either end of it: a server catalog reports 19 percent, its flattest paragraph five sentences within four words of each other and three of them verbless, while a page arguing where the prose rules came from reports none.
+
+That reading travels with the command rather than staying here. `BASELINE` in `src/markdown/structure.ts` carries the overall share, the per-file range, and the ten-paragraph floor beneath which a file's own rate says nothing, and the run prints all four in the legend beside the rate it measured. A count with no range beside it reads as a finding, and naming that a healthy range differs by surface states that a range exists rather than what it looks like. This page is toolkit-internal, so a reader running the command in a project that installed no standards would otherwise have two counts and nothing to place them against.
+
+Two of the rules `write-human` states are deliberately not implemented. A sentence's grammatical shape and whether it carries a finite verb each need a parse rather than a match, and an imperative or a heading fragment would read as a defect under a pattern that approximated either. The verbless share is the measure closest to the reported symptom, which is exactly why shipping it wrong would discredit the two that hold. It ships when something can identify a finite verb rather than guess at one.
+
 ## Exit codes
 
-Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, so all three report under every code.
+Exit codes are `0` for a completed run with no gating finding, `1` for a refusal, `2` for a ban hit, and `3` for a shipped ban set that arrived empty. A banned character, word, or spelling fails the run. Bullet, paragraph, and depth weight are judgments a reader settles, and cadence is a distribution whose healthy range moves with the surface, so all four report under every code.
 
 `3` is separate from `1` because the two want different responses from a caller. A refusal means no corpus was built, and the `Markdown bans` stage in `scripts/core/verify.sh` is right to warn and skip. An empty set means the corpus was walked and nothing was looked for, so that stage fails the push on `3` rather than skipping.
 
