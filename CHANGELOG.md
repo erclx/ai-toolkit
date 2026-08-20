@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.109.0](https://github.com/erclx/aitk/compare/v0.108.0...v0.109.0) (2026-08-20)
+
+
+### Features
+
+* **standards:** record a destination for every standard in the corpus ([#1044](https://github.com/erclx/aitk/issues/1044)) ([c6923ae](https://github.com/erclx/aitk/commit/c6923ae2f86d54c8fb780ebe5423654011761e46))
+
 ## [0.108.0](https://github.com/erclx/aitk/compare/v0.107.2...v0.108.0) (2026-08-20)
 
 
