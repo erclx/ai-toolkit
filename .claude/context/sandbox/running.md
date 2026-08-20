@@ -15,7 +15,7 @@ gh auth login   # required for any scenario declaring use_anchor
 
 Provisioning itself is offline now that the starting tree comes from a fixture, so the first network call is the probe `configure_sandbox_anchor_remote` runs before it adds the remote. That probe turns a missing credential or an unreachable host into a named error at the top of the run rather than a raw push failure partway through it. `GIT_TERMINAL_PROMPT=0` keeps a credential failure immediate instead of a blocked prompt.
 
-An absent repository reports separately and refuses, naming both repairs, and `SANDBOX_ANCHOR_CREATE=1` opts into creation instead. `.claude/context/sandbox/authoring.md` covers why the default refuses and how the two sibling verbs differ. Org membership is a real requirement and not an accident of the setup, since HTTPS fixes transport rather than authorization and a contributor outside the org still cannot run the anchor scenarios.
+An absent repository reports separately and refuses, naming both repairs, and `SANDBOX_ANCHOR_CREATE=true` opts into creation instead. `.claude/context/sandbox/authoring.md` covers why the default refuses and how the two sibling verbs differ. Org membership is a real requirement and not an accident of the setup, since HTTPS fixes transport rather than authorization and a contributor outside the org still cannot run the anchor scenarios.
 
 ## Running
 

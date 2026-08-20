@@ -96,11 +96,16 @@ ensure_sandbox_anchor_repo() {
   # default and creating is the opt-in, the shape `aitk tooling sync --write`
   # already sets. `aitk records push` refuses outright for the reason
   # `.claude/context/development/scratch.md` records, so the two still differ.
-  if [ "${SANDBOX_ANCHOR_CREATE:-}" != "1" ]; then
-    log_error "${GITHUB_ORG}/${repo_name} does not exist. Check GITHUB_ORG and whether a rename is pending, then create it with 'gh repo create ${GITHUB_ORG}/${repo_name} --private' or re-run with SANDBOX_ANCHOR_CREATE=1."
-  fi
+  # The sibling SANDBOX_ flags are presence tests, so any non-empty value turns
+  # them on. This one allowlists instead, because a presence test would have
+  # SANDBOX_ANCHOR_CREATE=false provisioning a repository. Both spellings are
+  # accepted so the `true` those siblings are set to does not land on a refusal.
+  case "${SANDBOX_ANCHOR_CREATE:-}" in
+  1 | true) ;;
+  *) log_error "${GITHUB_ORG}/${repo_name} does not exist. Check GITHUB_ORG and whether a rename is pending, then create it with 'gh repo create ${GITHUB_ORG}/${repo_name} --private' or re-run with SANDBOX_ANCHOR_CREATE=true." ;;
+  esac
 
-  log_warn "${GITHUB_ORG}/${repo_name} does not exist and SANDBOX_ANCHOR_CREATE=1 is set. Creating it as private."
+  log_warn "${GITHUB_ORG}/${repo_name} does not exist and SANDBOX_ANCHOR_CREATE is set. Creating it as private."
   if ! gh_error="$(gh repo create "${GITHUB_ORG}/${repo_name}" --private 2>&1)"; then
     log_error "Could not create ${GITHUB_ORG}/${repo_name}: ${gh_error}"
   fi
