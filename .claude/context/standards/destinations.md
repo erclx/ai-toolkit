@@ -13,7 +13,7 @@ Records where each standard's guidance lives once the corpus stops being a folde
 
 A standard already declares which branch it takes, in the first sentence of its own `## Scope`. A document-type standard names the backticked paths it governs, and an attribute standard says so and resolves to `*`. `read_applies_to` in `scripts/standards/list.sh` already parses that sentence for `appliesTo`, so the routing signal is measured rather than assigned.
 
-- **A document type a project authors** goes to the governance rule that globs that document. The rule reaches the author while the file is open, which is the moment the guidance has to arrive. Fifteen already have one.
+- **A document type a project authors** goes to the governance rule that globs that document. The rule reaches the author while the file is open, which is the moment the guidance has to arrive. Seventeen have one.
 - **An attribute with no document** cannot be globbed, so it goes to the CLI when a verb can compute or check it, and to the skills that run it otherwise.
 - **A procedure only one surface runs** goes to that surface's `references/`, through the bundled fan-out.
 - **Nothing reaches it** and it is dropped, with the readership recorded. The bucket is empty.
@@ -31,13 +31,13 @@ Three attribute standards land on the CLI for the same reason, which is that a t
 ## Gotchas
 
 - The meta-standard's subject is the corpus this census is dissolving. `standard.md` routes to `591-standard-authoring.md` while standards remain a document type someone authors, and it is the one entry whose destination expires if the corpus does. Nothing detects that, because a rule globbing an empty folder reports the same as one globbing a full folder.
-- Two standards need a rule that does not exist yet, so their destination names a rule to be written rather than one to point at. A destination recorded against a missing carrier reads identically to one recorded against a live carrier, and only the roster below separates them.
+- A destination recorded against a carrier nobody has built reads identically to one recorded against a live carrier, and only the marker below separates them. Four still name a carrier to write, being two verbs and two skill destinations.
 - `internal/standards/tooling-reference.md` is outside this census. It never installs into a target, so it has no corpus to leave, and `595-tooling-reference.md` already carries it.
 - A destination is not an install channel. Recording a home for every standard leaves the folder in place and leaves it installing, so the outcome about nothing living only in an installed folder stays open until the sweep and the install removal behind it run.
 
 ## Destinations
 
-Twenty-seven standards, being 22 at the flat root and five under `bundled/`. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and `to write` marks a carrier this census names and does not create.
+Twenty-seven standards, being 22 at the flat root and five under `bundled/`. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and `to write` marks a carrier the census named without building. The two rules it named have since landed, and four carriers remain.
 
 ### To the CLI
 
@@ -58,15 +58,12 @@ Twenty-seven standards, being 22 at the flat root and five under `bundled/`. Eac
 - `readme.md` fixes the voice and structure of the page a project leads with. `580-readme.md`.
 - `requirements.md` fixes the problem, goals, and non-goals record. `530-requirements.md`.
 - `rule.md` fixes a path-scoped governance rule. `590-rule-authoring.md`.
+- `session.md` fixes the pre-compaction handoff. `562-session.md`, which globs the `session-` file alone because `555-tasks.md` globs the board around it and one rule over both shapes would carry two.
 - `skill.md` fixes the skill folder, its frontmatter, and its invocation contract. `570-skill.md`.
 - `standard.md` fixes a standard's frontmatter, scope statement, and success criterion. `591-standard-authoring.md`.
 - `tasks.md` fixes the board, its filenames, and its readiness groups. `555-tasks.md`.
+- `teach.md` fixes the learning workspace layout, its ordinal naming, and its mission and record formats. `561-teach.md`, whose frontmatter states that most targets open no workspace for it to fire on. The pedagogy stays in `claude-teach`, which is the split the architecture record already fixes.
 - `wireframes.md` fixes layout and interaction intent before any UI exists. `520-wireframes.md`.
-
-### To a governance rule that has to be written
-
-- `teach.md` fixes the learning workspace layout, its ordinal naming, and its mission and record formats. A rule globbing `.claude/teach/`, to write. The pedagogy stays in `claude-teach`, which is the split the architecture record already fixes.
-- `session.md` fixes the pre-compaction handoff. A rule globbing the session map under `.claude/tasks/`, to write. `555-tasks.md` globs the board around it and hands the handoff off by name, so folding it in would put two shapes under one rule.
 
 ### To a skill, through the bundled fan-out
 
