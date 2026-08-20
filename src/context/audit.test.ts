@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   CATALOG_ROW_CHECKPOINT,
   LENGTH_CHECKPOINT,
+  lengthFindings,
   measureEntry,
   measureFolders,
   missingSections,
@@ -404,6 +405,62 @@ describe('measureEntry', () => {
     // across entry types, so it keeps reaching every audited folder.
     expect(measureEntry('components.md', source, false).lines).toBeGreaterThan(
       LENGTH_CHECKPOINT / 3,
+    )
+  })
+})
+
+describe('lengthFindings', () => {
+  /** A body long enough to pass the checkpoint on plain prose alone. */
+  function long(extra = ''): string {
+    return `${FRONTMATTER}# CI\n\n${extra}${prose(LENGTH_CHECKPOINT + 10)}\n`
+  }
+
+  it('should leave an entry under the checkpoint out of the findings', () => {
+    const entry = measureEntry('ci.md', `${FRONTMATTER}# CI\n\n${prose(3)}\n`)
+
+    expect(lengthFindings([entry])).toEqual([])
+  })
+
+  it('should answer accumulated history from the markers the entry carries', () => {
+    const entry = measureEntry(
+      'ci.md',
+      long('Shipped 2026-08-20 in #1030.\n\n'),
+    )
+
+    expect(lengthFindings([entry])[0].causes).toEqual([
+      { question: 'domain', state: 'unanswered' },
+      { question: 'reproduced', state: 'unanswered' },
+      { question: 'history', state: 'yes', markers: 2 },
+    ])
+  })
+
+  it('should answer accumulated history as no for a long entry carrying none', () => {
+    const entry = measureEntry('ci.md', long())
+
+    expect(lengthFindings([entry])[0].causes).toContainEqual({
+      question: 'history',
+      state: 'no',
+    })
+  })
+
+  it('should leave every question open outside the governed folder', () => {
+    // Provenance is scoped to the standard stating it, so a clean list there
+    // is a scan that never ran rather than an entry that narrates nothing.
+    const entry = measureEntry('components.md', long(), false)
+
+    expect(lengthFindings([entry])[0].causes).toEqual([
+      { question: 'domain', state: 'unanswered' },
+      { question: 'reproduced', state: 'unanswered' },
+      { question: 'history', state: 'unanswered' },
+    ])
+  })
+
+  it('should order the findings longest first', () => {
+    const longer = measureEntry('ci.md', long(`${prose(40)}\n\n`))
+    const shorter = measureEntry('cli.md', long())
+
+    expect(lengthFindings([shorter, longer]).map((found) => found.rel)).toEqual(
+      ['ci.md', 'cli.md'],
     )
   })
 })
