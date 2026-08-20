@@ -50,7 +50,7 @@ A project installed before the diagram surface became a folder still holds `.cla
 
 ## Gitignore
 
-- `# Claude`: `.claude/.tmp/`, `.claude/groundwork/`, `.claude/intake/`, `.claude/memory/`, `.claude/plans/`, `.claude/plans-archive/`, `.claude/review/`, `.claude/review-archive/`, `.claude/task-archive/`, `.claude/worktrees/`, `.claude/tasks/`
+- `# Claude`: `.claude/.records.git/`, `.claude/.tmp/`, `.claude/groundwork/`, `.claude/intake/`, `.claude/memory/`, `.claude/plans/`, `.claude/plans-archive/`, `.claude/review/`, `.claude/review-archive/`, `.claude/task-archive/`, `.claude/worktrees/`, `.claude/tasks/`, `.claude/teach/`
 
 ## CLI
 

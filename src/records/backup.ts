@@ -5,10 +5,17 @@ import { gitEnv } from '@/git-env'
 
 /**
  * The folders a backup carries, relative to `.claude/`. They are the `# Claude`
- * group in `.gitignore` minus `.claude/.tmp`, which is defined as deletable
- * without loss, and `.claude/worktrees/`, whose contents belong to the
- * enclosing repository already. The list is spelled out rather than read off
- * that group so adding an ignore entry cannot silently enlarge the payload.
+ * group the claude manifest ships, minus three: `.claude/.tmp`, which is
+ * defined as deletable without loss, `.claude/worktrees/`, whose contents
+ * belong to the enclosing repository already, and `.claude/.records.git/`,
+ * which is the history the other ten are pushed into. The list is spelled out
+ * rather than read off that group so adding an ignore entry cannot silently
+ * enlarge the payload.
+ *
+ * The manifest group is the one this reads rather than the enclosing
+ * repository's own `.gitignore`, which spreads the same entries across two
+ * headers and carries `.claude/README.md` that no target receives. Subtracting
+ * three from that file instead yields eleven names against this list of ten.
  *
  * `RECORD_KINDS` in `validate.ts` overlaps this on five names and carries one
  * more that no backup reaches. The two lists differ on purpose: one is what a
