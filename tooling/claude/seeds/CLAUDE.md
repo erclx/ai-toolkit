@@ -40,7 +40,7 @@
 - Read `CLAUDE_CODE_ENTRYPOINT` once, at the first response that emits a path, and reuse it for the rest of the session. The surface cannot change mid-session, so a second read only confirms the first.
 - When it reads `claude-desktop`, emit each path as a markdown link carrying the path as its text and an absolute `file://` URI as its target, resolving a relative path against the main project root to build that target. The desktop file tree hides dotted folders, so a bare path into one names a file the reader cannot reach.
 - On every other value, including unset, emit the path bare. A terminal emulator makes it clickable through its own path detection, and link markup defeats that.
-- Both forms govern a path emitted in a response. A path written into a markdown file follows `.claude/standards/markdown.md` instead, which backticks a file reference and never repeats it as a link label.
+- Both forms govern a path emitted in a response. A path written into a markdown file follows the markdown standard instead, which backticks a file reference and never repeats it as a link label.
 - Use the path the user's editor can resolve. The editor is rooted at the main project root.
 - In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
 - In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
@@ -78,7 +78,7 @@
 - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`
 - A fact about a domain goes to that domain's `.claude/context/` entry, not to memory. `claude-memory-capture` routes it there and `claude-docs` folds it in. Memory keeps only what no context entry owns.
 - Never delete a memory entry. Retire one by moving it to `.claude/.tmp/memory-archive/`. A bulk retire runs through the shell, where no file edit fires a path-scoped rule, and the folder is gitignored with nothing to recover from.
-- Follow `.claude/standards/memory.md` for the filename and type prefix, the frontmatter, the body shape each type carries, and the lifecycle. Check every entry in the pen against that standard and fix what breaks it, since nothing keeps the folder conforming on its own.
+- Follow the memory standard for the filename and type prefix, the frontmatter, the body shape each type carries, and the lifecycle. Check every entry in the pen against that standard and fix what breaks it, since nothing keeps the folder conforming on its own.
 
 ## Scratch
 

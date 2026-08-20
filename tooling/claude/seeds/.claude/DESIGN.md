@@ -1,6 +1,6 @@
 # Design
 
-Authoring guidance: `.claude/standards/design.md`.
+Authoring guidance: the design standard, which your toolkit resolves by name.
 
 ## Personality
 
