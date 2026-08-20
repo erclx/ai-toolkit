@@ -22,4 +22,5 @@ tooling = ["tooling/"]
 cli = ["src/"]
 sandbox = ["scripts/sandbox/"]
 docs = ["docs/", "wiki/"]
+# `scripts/core/` whole: 8 of its 13 scripts are gate stages, 5 are maintenance.
 ci = [".github/", "scripts/core/"]
