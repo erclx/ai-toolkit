@@ -42,6 +42,12 @@ function buildReport(
     unmigrated: [],
     newSkills: [],
     reverse: emptyReverseReport(),
+    skew: {
+      state: 'current',
+      name: '@erclx/aitk',
+      installed: '0.0.0',
+      latest: '0.0.0',
+    },
     ...overrides,
   }
 }
@@ -308,6 +314,32 @@ describe('hasDrift', () => {
     expect(hasDrift(buildReport([{ state: 'customized', rel: 'a.md' }]))).toBe(
       true,
     )
+  })
+
+  it('should not report drift for a binary behind the published version', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      skew: {
+        state: 'behind',
+        name: '@erclx/aitk',
+        installed: '0.109.0',
+        latest: '0.110.0',
+      },
+    })
+
+    expect(hasDrift(report)).toBe(false)
+  })
+
+  it('should not report drift when the registry could not be reached', () => {
+    const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
+      skew: {
+        state: 'unknown',
+        name: '@erclx/aitk',
+        installed: '0.110.0',
+        reason: 'Registry lookup failed: offline',
+      },
+    })
+
+    expect(hasDrift(report)).toBe(false)
   })
 
   it('should report drift for an unmigrated domain', () => {
