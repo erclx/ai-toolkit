@@ -16,6 +16,5 @@ paths:
 
 ## Authority
 
-- Follow `standards/tasks.md` inside the aitk plugin for filenames, frontmatter, what belongs, and the task file format. It is the single source.
-- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+- Follow the tasks standard for filenames, frontmatter, what belongs, and the task file format. It is the single source. Read it with `aitk standards tasks`.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it from sibling frontmatter.

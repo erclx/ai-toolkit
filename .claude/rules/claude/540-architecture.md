@@ -18,5 +18,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/architecture.md` inside the aitk plugin for the overview, named decision entries, and risks. It is the single source.
-- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+- Follow the architecture standard for the overview, named decision entries, and risks. It is the single source. Read it with `aitk standards architecture`.

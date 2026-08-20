@@ -68,9 +68,9 @@ A plugin skill reads a catalog through `aitk <domain> list --json`, matches it a
 
 The rule covers a catalog and stops at a document. A skill learns which rules, stacks, or snippets exist through a verb, and it reads a standard by path, because `claude/standards` is a symlink an install dereferences and every plugin cache therefore holds the whole corpus. 38 shipped bodies name `${CLAUDE_SKILL_DIR}/../../standards/` for that reason, and 7 more call `aitk standards` where a resolved root rather than a named file is what they want.
 
-A rule takes that same path and cannot take the other one. It is markdown a glob match loads with no code between its text and the file it names, so no verb is reachable from it and a two-branch citation has nothing to choose between. The 18 rules citing a standard therefore name the plugin corpus, and each carries a bullet telling a session to report the gap rather than proceed, since a rule ships with the CLI while the corpus ships with the plugin.
+A rule cannot take that path and reaches the corpus by the verb instead. It is markdown a glob match loads with no skill context, so `${CLAUDE_SKILL_DIR}` expands to nothing and a path spelled against the plugin is prose describing a location rather than a location. What a rule can do is name a command for a session to run, which is what the paragraph above already has every skill doing for a catalog read. The 18 rules citing a standard therefore name `aitk standards <name>`, whose resolver falls through to the corpus the package ships.
 
-Naming an installed tree was the shape that shipped until the corpus stopped installing, and its failure is silent, because an unresolved path in a rule produces no error until someone opens the file it names. Measured at c7e92612 on 2026-08-20.
+Naming the verb closes the split rather than reporting it. The verb and the rule both ship with the CLI, so they arrive together and no rule owes the report-the-gap bullet `561-teach` carries for a file that sits inside a skill. Describing the plugin corpus in prose was tried first and converts a working citation into a reported failure, while reading ambiguously against the project-root `standards/` folder wherever one exists. Measured at c7e92612 on 2026-08-20.
 
 ### TypeScript with a bash exec boundary
 

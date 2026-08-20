@@ -16,5 +16,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/design.md` inside the aitk plugin for visual intent, the token tables, and the render contract. It is the single source.
-- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+- Follow the design standard for visual intent, the token tables, and the render contract. It is the single source. Read it with `aitk standards design`.

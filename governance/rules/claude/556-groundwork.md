@@ -13,5 +13,4 @@ paths:
 
 ## Authority
 
-- Follow `standards/groundwork.md` inside the aitk plugin for reserved numbering, frontmatter and dating, what each required file holds, and the conventions a track keeps. It is the single source.
-- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+- Follow the groundwork standard for reserved numbering, frontmatter and dating, what each required file holds, and the conventions a track keeps. It is the single source. Read it with `aitk standards groundwork`.

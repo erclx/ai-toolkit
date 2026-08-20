@@ -9,8 +9,7 @@ paths:
 
 ## Authority
 
-- Follow `standards/diagrams.md` inside the aitk plugin for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source.
-- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+- Follow the diagrams standard for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source. Read it with `aitk standards diagrams`.
 - A diagram entry carries structure and flow, not implementation. Read the standard before adding or revising a kind.
 
 ## Scope
