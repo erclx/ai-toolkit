@@ -43,9 +43,11 @@ The types stage runs in CI rather than only in the pre-push hook because a missi
 
 The runner installs the plugin CLI so the manifest stage gates rather than skips. The plugin is the toolkit's second delivery path, and while the binary was absent from the runner every manifest was validated on the author's machine alone, so a malformed one reached a marketplace install with no check between.
 
-`bun install -g @anthropic-ai/claude-code@2` lands the binary in the directory `setup-bun` already put on `PATH` and cost 1.08 seconds against a 49-second gate on its first run. The `@2` pin is the same reproducibility rule the workflow applies to its actions, since a major that changed what `plugin validate --strict` accepts would fail `main` with no commit behind it.
+`bun install -g @anthropic-ai/claude-code@2.1.236` lands the binary in the directory `setup-bun` already put on `PATH` and cost 1.08 seconds against a 49-second gate on its first run. The version is pinned exactly rather than to a major, because `2.1.237` installed one package and no platform-native dependency and left a wrapper on `PATH` that could not run. Three pull requests failed the manifest stage inside six minutes on 2026-08-20 and none of them had touched it. Whether a later release repairs the install on its own is unmeasured, so raising the pin is a move someone makes and reads the run for, rather than one the registry makes overnight.
 
-Validation needs no credential, confirmed by running it under `env -i` with a fresh `HOME`, so this is an install step rather than a secret. The stage still skips on a machine without the CLI and fails instead when `CI` is set, because a silent skip on the runner would report the pass the stage exists to withhold.
+The release itself is not what broke. `2.1.237` sitting on the authoring machine answers `claude --version` in 0.068 seconds and passes `claude plugin validate --strict` on both manifests, so the failure is a condition of `bun install -g` against that release on a fresh runner rather than a defect in the published package. Raising the pin therefore has to be tested on a runner and cannot be cleared by running the new version locally.
+
+Validation needs no credential, confirmed by running it under `env -i` with a fresh `HOME`, so this is an install step rather than a secret. The stage still skips on a machine where the CLI is absent or cannot run, and fails instead when `CI` is set, because a silent skip on the runner would report the pass the stage exists to withhold.
 
 `check:install` stays out of CI. It is the slowest thing available and it is not in the local gate either, so adding it would widen the gate past parity.
 
