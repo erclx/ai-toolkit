@@ -151,7 +151,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 ## Memory
 
 - Write all memory files to `.claude/memory/`, not `~/.claude/projects/`.
-- A fact about a domain goes to that domain's `.claude/context/` entry, not to memory. `claude-memory-capture` routes it there through `.claude/.tmp/memory-routing/<slug>.md` and `claude-docs` folds it in. Memory keeps only what no context entry owns, which in practice is feedback about how to work.
+- A fact about a domain goes to that domain's `.claude/context/` entry, not to memory. `claude-memory-capture` routes it there through `.claude/.tmp/memory-routing/<slug>.md` and `claude-docs` folds it in. Memory keeps only what no context entry owns.
 - Never delete a memory entry. Retire one by moving it to `.claude/.tmp/memory-archive/`. A bulk retire runs through the shell, where no file edit fires a path-scoped rule, and the folder is gitignored with nothing to recover from.
 - Follow `.claude/standards/memory.md` for the filename and type prefix, the frontmatter, the body shape each type carries, and the lifecycle. Run `aitk records validate memory` to check the pen against it.
 
