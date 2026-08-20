@@ -1,11 +1,11 @@
 ---
 title: Context audit checks
-description: What each non-gating check reports, the unit each checkpoint is measured in, which folders each check reaches, and what moved to the attribute tier
+description: What each non-gating check reports, the unit each checkpoint is measured in, the architecture record's length gate and claim coverage, which folders each check reaches, and what moved to the attribute tier
 ---
 
 # Context audit checks
 
-What each finding from `aitk context audit` means. The command surface, its flags, and the one gating check are in `context-audit.md`.
+What each finding from `aitk context audit` means. The command surface, its flags, and the two gating checks are in `context-audit.md`.
 
 ## Required sections
 
@@ -86,6 +86,20 @@ Precision is the whole value, so recall is the accepted exposure, and two shapes
 A rejected alternative is a back-reference in the past tense by construction, and the standard keeps what was tried and why it lost, so a legitimate hit exists and no measure separates it from a violation. The report states that on every run, which is why the finding names a line to read rather than a line to delete.
 
 The JSON record carries the findings per entry as `entries[].narration` and the sets as `checkpoints.narration`, which is absent under `--citations-only` where the run never loads them and null where no rule publishes both.
+
+## The architecture record
+
+Two findings read `.claude/ARCHITECTURE.md` rather than a folder, and only the first is a fact.
+
+The length check compares the record against the ceiling it derives for itself. `standards/architecture.md` sets no length rule, so the number comes from the record's own risks section, which states a frame allowance plus an allowance per decision and puts the ceiling at the frame plus the allowance times the decision count. Both numbers are held in code beside the context checkpoints, for the reason the required-section list is: a parser over that paragraph breaks on a rewrite of its wording rather than on the record growing. The JSON record carries them as `checkpoints.recordFrame` and `checkpoints.recordPerDecision`, and the reading as `architecture.lines` against `architecture.ceiling`.
+
+What the derivation costs is that the ceiling rises when a decision is added and falls for nothing, so the check passes exactly when the file grew. It gates anyway, because the record states the limit for itself and the count makes it computable, which is what separates it from every judgment below.
+
+The coverage report classifies each decision as carrying a countable claim, a structural invariant, or neither, then reports each testable entry against whether it names a check that exists. A countable claim carries a figure a run could recompute, and an invariant quantifies over a named tree closely enough that a walk could falsify it. A check is a `scripts/**.sh` path the entry spells that is on disk, or an `aitk` invocation matching a registered audit, so coverage reads the entry rather than the tree and a claim some check happens to cover without the entry saying so reads as unchecked.
+
+Three limits are stated on every run rather than hidden. The countable signal reads digits alone, so a measured claim written in words reads as uncounted. Entries are counted by heading, and one heading holding several decisions counts once. Nothing is stored, so an entry rewritten tomorrow is classified afresh the next time the verb runs and no verdict goes stale.
+
+The report gates nothing. Deciding whether a sentence states a claim is a judgment no parser settles, so the output names candidates for a reader. This answers a different question from the verification anchors `.claude/standards/architecture.md` describes, which record that one cited number was re-read. That mechanism says whether a marked figure held, and this one says how much of the record could be checked at all.
 
 ## Which folders each check reaches
 
