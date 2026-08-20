@@ -174,6 +174,17 @@ Reuse the diff from the baseline above, names and content both. For each existin
 - For each relevant entry, rewrite only the sections affected by the diff. Same pattern as `docs-sync`. Do not touch unrelated sections.
 - Write a reference to another entry as the path that entry sits at, rather than as its bare filename. `${CLAUDE_SKILL_DIR}/../../standards/context.md` states the form, and a bare name strands the reference once a domain splits into subfolders.
 
+### When the diff removes a capability
+
+The mapping above is scoped by file, and a removal invalidates claims that mapping cannot reach. Run this only when the diff deletes a command, a flag, a constant, or a folder. Ordinary feature work takes the narrow rule alone, since widening it on every ship churns prose nothing put in doubt.
+
+Grep the tree for the name that went, rather than for the paths the diff carries. A capability removed by name is cited by that name, which reaches a file the diff never touched.
+
+- An entry this run already rewrote is read whole before it is left. A refresh that updates the top and leaves a contradicting claim below reads worse than an untouched entry, because the current opening lends authority to the stale remainder. This is the one case that overrides "do not touch unrelated sections", and it overrides it only inside an entry the run edited anyway.
+- A claim comparing two surfaces is checked even where its file is outside the diff. Such a claim holds only while both surfaces do, so moving one inverts it with nobody editing the file it sits in.
+
+Report each hit as an ordinary rewrite. `.claude/context/context-model.md` carries the two shapes and the case that produced them.
+
 Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `${CLAUDE_SKILL_DIR}/../../standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
 
 Write each updated entry immediately. Output one line per file:
