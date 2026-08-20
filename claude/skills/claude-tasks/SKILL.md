@@ -21,7 +21,7 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` before writing any file. It 
 
 ### Step 1: require an origin
 
-Every task traces to a plan, a groundwork folder, or a GitHub issue. Ask for it when the request does not carry one, and stop rather than guessing: `❌ No origin. Name the plan, groundwork folder, or issue this task comes from.`
+Every task traces to a plan, a groundwork folder, an intake folder, or a GitHub issue. Ask for it when the request does not carry one, and stop rather than guessing: `❌ No origin. Name the plan, groundwork folder, intake folder, or issue this task comes from.`
 
 A task with no origin is either lost context or work nobody decided to do. This is the only moment the invariant is enforceable, because it is the only moment a task file comes into existence.
 
@@ -53,9 +53,25 @@ Say which surface it went to and why in the report. The call is a judgment resta
 
 ### Step 5: report unlinked origins
 
-Scan for work that has been decided and would otherwise be forgotten. List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
+Scan for work that has been decided and would otherwise be forgotten. Three origins carry it, and every run reads all three.
 
-Report rather than prompt. A track can be opened long after its task would have been written, so an offer to create one for each is noise on most runs.
+List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
+
+Read the dumps through `aitk intake list --json`, which reports items, open, and unread per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/task-archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
+
+A dump is the stronger case for this scan rather than the weaker one. A track holds one question and stays visible, while a dump holds dozens of items whose verdicts were reached and then left with nothing carrying them forward.
+
+Those two reads give three states, and the first two earn a line each:
+
+- Every item answered, and neither the board nor the archive cites the folder. Decided work nobody promoted, which is what this step exists to find.
+- Unread items. The folder is waiting on the operator rather than forgotten, so it takes its own wording and never lands in the block above.
+- The archive cites it. Promoted and shipped, so say nothing.
+
+Say which read fired. "No task points at this" is true of both reported states and useful about neither.
+
+Report rather than prompt. A track can be opened long after its task would have been written, so an offer to create one for each is noise on most runs, and that reasoning covers a dump unchanged.
+
+Say the origins were read even when nothing comes back, which is the ordinary result. A step going silent on a clean pass is indistinguishable from one that never ran.
 
 ## Archive
 
@@ -120,10 +136,15 @@ Create:
 **Origin with no task:**
 
 - `.claude/groundwork/<slug>/`: open, touched <date>
+- `.claude/intake/<slug>/`: every item answered, nothing promoted
 - #NNN: <issue title>
+
+**Waiting on you:**
+
+- `.claude/intake/<slug>/`: <n> of <n> items unread
 ```
 
-Omit the origin block when everything is linked.
+Drop either block when it carries no rows. When both are empty, which is the ordinary result, replace them with one line naming what was read: `Read <n> tracks, <n> dumps, and <n> open issues. Nothing unlinked.`
 
 Archive, reporting the paths the command returned:
 
