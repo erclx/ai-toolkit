@@ -150,6 +150,8 @@ If capture wrote at least one memory file, `claude-memory-review` then proposes 
 
 Run `claude-memory-review` standalone to curate the whole pen. An entry it retires moves to `.claude/.tmp/memory-archive/` rather than being deleted, since the folder is gitignored and a bulk pass has no undo.
 
+The receipt is collected once every item on it has been decided, and it survives untouched while any item is still pending. Whichever runs first takes it: Apply collects the receipt it has resolved, and `claude-docs` scans the folder on every shipped branch for one an earlier session left behind. Before the file goes, each declined item is folded into the entry it was about, since a promotion survives in its target and in git while a decline is recorded nowhere else. `aitk standards memory` states what a fold writes and which entry types take one.
+
 ### UI polish
 
 Verify the change manually in the browser. Invoke `aitk:claude-ui-test` if you need e2e tests and a visual verification checklist for the session. For the fix itself, describe the change in Claude Code directly.
