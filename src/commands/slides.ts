@@ -5,12 +5,7 @@ import { LAYOUTS } from '@/slides/layouts'
 import { openDeck } from '@/slides/open'
 import { renderSlidesDoc } from '@/slides/render'
 import type { Variant } from '@/slides/styles'
-import { intro, outro } from '@/ui'
-
-const GREY = '\x1b[0;90m'
-const GREEN = '\x1b[0;32m'
-const RED = '\x1b[0;31m'
-const NC = '\x1b[0m'
+import { intro, outro, palette } from '@/ui'
 
 export function register(program: Command): void {
   const slides = program
@@ -44,6 +39,7 @@ export function register(program: Command): void {
           }
           const variant = parseVariant(opts.variant)
           const mirror = resolveMirror(opts.mirror)
+          const { GREEN, GREY, NC, RED } = palette(process.stderr)
           intro('Render slides')
           const result = await renderSlidesDoc(sourcePath, outDir, {
             variant,
@@ -81,6 +77,7 @@ export function register(program: Command): void {
         process.stdout.write(`${JSON.stringify(LAYOUTS)}\n`)
         return
       }
+      const { GREEN, GREY, NC } = palette(process.stderr)
       intro('Slide layouts')
       for (const layout of LAYOUTS) {
         process.stderr.write(
@@ -121,6 +118,7 @@ function fail(message: string): never {
  */
 function reportFailure(error: unknown): void {
   if (!(error instanceof SlidesError)) throw error
+  const { GREY, NC, RED } = palette(process.stderr)
   process.stderr.write(
     `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${error.message}\n${GREY}└${NC}\n`,
   )

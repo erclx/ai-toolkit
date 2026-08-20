@@ -28,11 +28,9 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   select,
 } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
 
 const PASS_THROUGH_VERBS = ['ref', 'create', 'verify'] as const
 
@@ -256,6 +254,7 @@ async function runSync(
   report(result, includeReferences)
 
   const mode = resolveWriteMode(opts)
+  const { GREEN, NC } = palette(process.stderr)
 
   if (result.totalChanges === 0) {
     // The stamp is a write like any other, so a run with no authority to write

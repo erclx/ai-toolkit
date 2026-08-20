@@ -81,6 +81,7 @@ The scope that followed the MVP. What the toolkit has to achieve for a user who 
 
 - Every command must have a non-interactive path via args or `AITK_NON_INTERACTIVE=1`. Never require a TTY.
 - JSON output on `list` commands must pipe clean through any wrapper. UI and logs go to stderr.
+- Human-readable output carries color only where a destination renders one. `NO_COLOR` and a destination that is not a terminal each turn it off, asked per stream rather than once for the process, and the frame survives either way.
 - The toolkit is the authoritative source. Target projects consume via install and sync, never author in place.
 - Skills detect and call the CLI. They do not reimplement CLI logic.
 - Authored content follows `.claude/standards/markdown.md` and the `write-human` skill. No em dashes, no semicolons, no marketing buzzwords.

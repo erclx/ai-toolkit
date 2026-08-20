@@ -29,12 +29,9 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
 } from '@/ui'
 import { describeSkew } from '@/version/skew'
-
-const GREY = '\x1b[0;90m'
-const YELLOW = '\x1b[0;33m'
-const NC = '\x1b[0m'
 
 const SYNC_ARGS: Record<SyncDomain, readonly string[]> = {
   standards: ['standards', 'sync'],
@@ -180,6 +177,7 @@ function renderCheck(report: CheckReport): void {
   )
   if (uncovered.length === 0) return
 
+  const { GREY, NC } = palette(process.stderr)
   process.stderr.write(
     `${GREY}Unstamped: ${uncovered.join(', ')}. Run the matching sync to record one.${NC}\n`,
   )
@@ -338,6 +336,7 @@ async function runSync(target: string): Promise<number> {
   if (typeof resolved === 'number') return resolved
 
   const git = createGitRunner(resolved)
+  const { GREY, NC, YELLOW } = palette(process.stderr)
 
   logStep('Checking working tree')
   if (!isTreeClean(await git.status([]))) {

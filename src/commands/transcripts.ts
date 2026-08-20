@@ -1,12 +1,7 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { ensureYtDlp, fetchOne } from '@/transcripts/fetch'
-
-const GREY = '\x1b[0;90m'
-const WHITE = '\x1b[1;37m'
-const RED = '\x1b[0;31m'
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
+import { palette } from '@/ui'
 
 interface TranscriptOptions {
   out: string
@@ -24,6 +19,7 @@ export function register(program: Command): void {
     )
     .action(async (url: string, opts: TranscriptOptions) => {
       const outDir = resolve(process.cwd(), opts.out)
+      const { GREEN, GREY, NC, RED, WHITE } = palette(process.stderr)
       process.stderr.write(
         `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}aitk transcripts${NC}\n`,
       )

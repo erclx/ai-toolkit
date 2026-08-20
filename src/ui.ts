@@ -1,11 +1,60 @@
-const GREEN = '\x1b[0;32m'
-const RED = '\x1b[0;31m'
-const YELLOW = '\x1b[0;33m'
-const WHITE = '\x1b[1;37m'
-const GREY = '\x1b[0;90m'
-const NC = '\x1b[0m'
+export interface Palette {
+  readonly GREEN: string
+  readonly RED: string
+  readonly YELLOW: string
+  readonly WHITE: string
+  readonly GREY: string
+  readonly NC: string
+}
+
+const COLOR: Palette = {
+  GREEN: '\x1b[0;32m',
+  RED: '\x1b[0;31m',
+  YELLOW: '\x1b[0;33m',
+  WHITE: '\x1b[1;37m',
+  GREY: '\x1b[0;90m',
+  NC: '\x1b[0m',
+}
+
+/**
+ * The blank palette keeps every frame character and drops only the escapes, so
+ * a captured run still reads as one block.
+ */
+const PLAIN: Palette = {
+  GREEN: '',
+  RED: '',
+  YELLOW: '',
+  WHITE: '',
+  GREY: '',
+  NC: '',
+}
+
+/**
+ * `NO_COLOR` follows the published convention, where any non-empty value turns
+ * color off whatever the value says.
+ */
+export function supportsColor(stream: { isTTY?: boolean }): boolean {
+  const optOut = process.env.NO_COLOR
+  if (optOut !== undefined && optOut !== '') return false
+  return stream.isTTY === true
+}
+
+/**
+ * The question is asked per stream rather than once for the process. The framed
+ * output goes to stderr and a structured record to stdout, so a run piping only
+ * its data keeps a terminal on stderr and keeps its color there. This is a
+ * third question again from `isNonInteractive`, which answers whether a caller
+ * can be prompted rather than whether a destination renders escapes.
+ *
+ * Read at write time rather than at import, so nothing freezes an answer taken
+ * before the caller's environment was in place.
+ */
+export function palette(stream: { isTTY?: boolean }): Palette {
+  return supportsColor(stream) ? COLOR : PLAIN
+}
 
 export function intro(title: string): void {
+  const { GREY, NC, WHITE } = palette(process.stderr)
   process.stderr.write(`${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}${title}${NC}\n`)
 }
 
@@ -15,18 +64,22 @@ export function intro(title: string): void {
  * leaving stdout clean for JSON and lists.
  */
 export function logInfo(message: string): void {
+  const { GREEN, GREY, NC } = palette(process.stderr)
   process.stderr.write(`${GREY}│${NC} ${GREEN}✓${NC} ${message}\n`)
 }
 
 export function logWarn(message: string): void {
+  const { GREY, NC, YELLOW } = palette(process.stderr)
   process.stderr.write(`${GREY}│${NC} ${YELLOW}!${NC} ${message}\n`)
 }
 
 export function logAdd(message: string): void {
+  const { GREEN, GREY, NC } = palette(process.stderr)
   process.stderr.write(`${GREY}│${NC} ${GREEN}+${NC} ${message}\n`)
 }
 
 export function logRemove(message: string): void {
+  const { GREY, NC, RED } = palette(process.stderr)
   process.stderr.write(`${GREY}│${NC} ${RED}-${NC} ${message}\n`)
 }
 
@@ -36,14 +89,17 @@ export function logRemove(message: string): void {
  * exit code rather than terminating mid-write.
  */
 export function logError(message: string): void {
+  const { GREY, NC, RED } = palette(process.stderr)
   process.stderr.write(`${GREY}│${NC} ${RED}✗${NC} ${message}\n`)
 }
 
 export function logStep(message: string): void {
+  const { GREY, NC, WHITE } = palette(process.stderr)
   process.stderr.write(`${GREY}│${NC}\n${GREY}├${NC} ${WHITE}${message}${NC}\n`)
 }
 
 export function outro(): void {
+  const { GREY, NC } = palette(process.stderr)
   process.stderr.write(`${GREY}└${NC}\n`)
 }
 
@@ -53,6 +109,7 @@ export function outro(): void {
  * such as a pull request body or the output of a git mutation.
  */
 export function pipeOutput(text: string): void {
+  const { GREY, NC } = palette(process.stderr)
   const lines = text.replace(/\n$/, '').split('\n')
   process.stderr.write(
     `${lines.map((line) => `${GREY}│${NC}  ${line}`).join('\n')}\n`,
@@ -65,12 +122,14 @@ export function plural(count: number, noun: string): string {
 }
 
 export function frameError(message: string): void {
+  const { GREY, NC, RED } = palette(process.stderr)
   process.stderr.write(
     `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${message}\n${GREY}└${NC}\n`,
   )
 }
 
 export function frameSuccess(command: string, target: string): void {
+  const { GREEN, GREY, NC, WHITE } = palette(process.stderr)
   process.stderr.write(
     `${GREY}┌${NC}\n${GREY}│${NC} ${WHITE}${command}${NC}\n${GREY}│${NC}\n${GREY}│${NC} ${GREEN}✓${NC} ${target}\n${GREY}└${NC}\n`,
   )
@@ -92,6 +151,7 @@ export async function select<Value>(opts: {
   nonInteractiveDefault?: boolean
 }): Promise<Value> {
   const { message, options } = opts
+  const { GREEN, GREY, NC, RED, WHITE } = palette(process.stderr)
   const count = options.length
   let cursor = 0
 

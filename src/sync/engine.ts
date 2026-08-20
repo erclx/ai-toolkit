@@ -22,11 +22,9 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   select,
 } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
 
 /**
  * One installed file in three path flavours: absolute, relative to the
@@ -304,6 +302,7 @@ export async function runDomainSync(
   }
 
   const plan = planSync(adapter, resolved)
+  const { GREEN, GREY, NC } = palette(process.stderr)
 
   if (
     !existsSync(adapter.installedRoot(resolved)) &&
@@ -358,7 +357,7 @@ export async function runDomainSync(
 
   outro()
   process.stderr.write(
-    `${GREEN}✓ Sync complete${NC} \x1b[0;90m(${count} ${adapter.unit})${NC}\n`,
+    `${GREEN}✓ Sync complete${NC} ${GREY}(${count} ${adapter.unit})${NC}\n`,
   )
   return 0
 }

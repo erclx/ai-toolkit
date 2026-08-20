@@ -2,12 +2,7 @@ import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { renderDesignDoc } from '@/design/render'
-
-const GREY = '\x1b[0;90m'
-const WHITE = '\x1b[1;37m'
-const RED = '\x1b[0;31m'
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
+import { palette } from '@/ui'
 
 export function register(program: Command): void {
   const design = program
@@ -22,6 +17,7 @@ export function register(program: Command): void {
     .action((opts: { source: string; out: string }) => {
       const sourcePath = resolve(process.cwd(), opts.source)
       const outDir = resolve(process.cwd(), opts.out)
+      const { GREEN, GREY, NC, RED, WHITE } = palette(process.stderr)
       if (!existsSync(sourcePath)) {
         process.stderr.write(
           `${GREY}┌${NC}\n${GREY}│${NC} ${RED}✗${NC} ${opts.source} not found\n${GREY}└${NC}\n`,

@@ -28,12 +28,12 @@ import { register as sessions } from '@/commands/sessions'
 import { register as audits } from '@/commands/audits'
 import { register as upgrade } from '@/commands/upgrade'
 import { readInstalled, UNKNOWN_LABEL } from '@/version/installed'
-
-const GREY = '\x1b[0;90m'
-const WHITE = '\x1b[1;37m'
-const NC = '\x1b[0m'
+import { palette } from '@/ui'
 
 function showHelp(): void {
+  // The help text is the one framed surface written to stdout, so it asks
+  // about that stream rather than the stderr every other writer here uses.
+  const { GREY, NC, WHITE } = palette(process.stdout)
   const lines = [
     `${GREY}┌${NC}`,
     `${GREY}├${NC} ${WHITE}Usage:${NC} aitk [command]`,

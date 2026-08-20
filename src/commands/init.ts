@@ -6,11 +6,7 @@ import { type InitFlags, parseSkip, planInit } from '@/init/plan'
 import { runDomains } from '@/init/run'
 import { buildSteps } from '@/init/steps'
 import { resolveTarget } from '@/target'
-import { intro, logInfo, logStep, logWarn, outro, select } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const YELLOW = '\x1b[0;33m'
-const NC = '\x1b[0m'
+import { intro, logInfo, logStep, logWarn, outro, palette, select } from '@/ui'
 
 interface InitOptions {
   /** Always present: the option falls back to `DEFAULT_STACK`. */
@@ -106,6 +102,8 @@ async function runInit(
 
   outro()
   process.stderr.write('\n')
+
+  const { GREEN, NC, YELLOW } = palette(process.stderr)
 
   if (failed.length === 0) {
     process.stderr.write(
