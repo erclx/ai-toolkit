@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.107.0](https://github.com/erclx/aitk/compare/v0.106.0...v0.107.0) (2026-08-20)
+
+
+### Features
+
+* **context:** report why an entry is long, not only that it is ([#1031](https://github.com/erclx/aitk/issues/1031)) ([2aec7f8](https://github.com/erclx/aitk/commit/2aec7f812c8796ed3d8a5d70c061b29241d35427))
+
 ## [0.106.0](https://github.com/erclx/aitk/compare/v0.105.0...v0.106.0) (2026-08-19)
 
 
