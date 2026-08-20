@@ -36,7 +36,7 @@ Being gitignored also puts the citations these artifacts carry outside every che
 
 ## Two surfaces rather than a fourth group
 
-The three readiness groups answer whether a task can start, which is mechanical and checkable. Nothing answered which task is worth starting, and at 34 unplanned rows against 41 that judgment stopped fitting in one reading, so the board could not say what to do next.
+The three readiness groups answer whether a task can start, which is mechanical and checkable. Nothing answered which task is worth starting, and at 34 unplanned rows against 41 that judgment stopped fitting in one reading, so the board could not say what to do next. Measured 2026-08-19.
 
 Row position under `## Needs a plan` now carries that judgment, and `backlog.md` holds what is not near-term. A fourth readiness group was the obvious shape and the standard bars it directly, since the three names are a contract anything counting rows under a heading reads by. The bar holds on its own terms here: a backlog states that nobody has scheduled the task, which is a fact about attention rather than about whether the work can start, so it is not a readiness group whatever it is called.
 
@@ -114,7 +114,7 @@ The script is tracked and its baseline is not. State lives at `.claude/.tmp/pr-p
 
 ## The handback dispatch
 
-A posted finding reaches the worker as a message from the reviewing session, which is the one step in the loop where that session already knows what a specific live session should do next. `ListAgents` and `SendMessage` carry it and `wiki/claude/claude-sessions.md` holds the transport, with the relay through a person as the alternative that lost. A trial across seven reviewed pull requests is what the shipped step encodes rather than what the transport permits.
+A posted finding reaches the worker as a message from the reviewing session, which is the one step in the loop where that session already knows what a specific live session should do next. `ListAgents` and `SendMessage` carry it and `wiki/claude/claude-sessions.md` holds the transport, with the relay through a person as the alternative that lost. A trial across the seven pull requests reviewed on 2026-08-13 is what the shipped step encodes rather than what the transport permits.
 
 Three findings shape the rule. Any posted finding is the gate, which is the threshold `claude-pr-review` states and posts its open heading under, so the heading and the counts beneath it answer the dispatch question alike. A session resolves at the moment of sending and never from a stored map, because names rotate and one written down earlier in a session failed inside the hour. A message carries plain text, so the step names a skill for the reader to run rather than embedding an invocation that would arrive as text.
 

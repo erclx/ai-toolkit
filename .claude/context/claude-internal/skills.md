@@ -7,15 +7,16 @@ description: The internal aitk skills loaded before editing a toolkit domain, th
 
 Internal skills live in `.claude/skills/` and are toolkit-only. They are not installed into target projects.
 
-| Skill                | Description                                                                                                 |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or the Claude context entries                        |
-| `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                       |
-| `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                            |
-| `aitk-snippets`      | Load before editing snippets                                                                                |
-| `aitk-standards`     | Load before editing standards or docs                                                                       |
-| `aitk-tooling`       | Load before editing tooling stacks or golden configs                                                        |
-| `aitk-sandbox-check` | Audit changed skills and scripts for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check` |
+| Skill                | Description                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `aitk-ask`           | Answer a repository-knowledge question from the indexes before opening any file, user-invoked via `/aitk-ask` |
+| `aitk-claude`        | Load before editing plugin skills, the CLAUDE.md seed, or the Claude context entries                          |
+| `aitk-governance`    | Load before editing Cursor rules or stack definitions                                                         |
+| `aitk-scripts`       | Load before editing scripts or sandbox scenarios                                                              |
+| `aitk-snippets`      | Load before editing snippets                                                                                  |
+| `aitk-standards`     | Load before editing standards or docs                                                                         |
+| `aitk-tooling`       | Load before editing tooling stacks or golden configs                                                          |
+| `aitk-sandbox-check` | Audit changed skills and scripts for missing sandbox scenario edits, user-invoked via `/aitk-sandbox-check`   |
 
 ## Requirement coverage
 

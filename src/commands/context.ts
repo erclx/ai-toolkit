@@ -204,7 +204,7 @@ async function runAudit(
       )
   const drift = gateOnly ? [] : await auditIndexes(folders)
   const sections = gateOnly ? [] : missingSections(root, folders, entries)
-  const length = lengthFindings(entries)
+  const length = gateOnly ? undefined : lengthFindings(entries)
 
   if (gateOnly) {
     reportGate(citations)
@@ -214,7 +214,7 @@ async function runAudit(
     reportCitations(citations, cited)
     reportReferenceForm(entries, folders)
     reportSections(sections, folders)
-    reportLength(length)
+    reportLength(length ?? [])
     reportTables(entries)
     reportProvenance(entries, folders)
     reportNarration(entries, folders, narration)
@@ -243,6 +243,11 @@ async function runAudit(
         // it from `entries` means restating which question the provenance count
         // answers, and one wrong restatement is a cause reported against the
         // wrong entry.
+        //
+        // Absent rather than empty under `--citations-only`, for the reason
+        // `checkpoints.narration` below carries. That mode measures no entry,
+        // so an empty array here reads as a corpus with nothing past the
+        // checkpoint rather than as a run that never looked.
         length,
         missingSections: sections,
         indexDrift: drift,

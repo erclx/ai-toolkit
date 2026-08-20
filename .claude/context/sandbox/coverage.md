@@ -71,7 +71,7 @@ Its first run is why the arm carries two guards. The `aitk` on that machine was 
 
 Provisioning therefore refuses a CLI that attributes no unclaimed folder, which is the two-speed release risk `ARCHITECTURE.md` records arriving in the harness rather than in a target. Reading attribution rather than the bare key is what makes the guard prove the walk reached the staged folder instead of proving only that the field exists.
 
-The refusal fired against a CLI at 0.83.0, which is why the message names causes rather than a version to install. A guard reading attribution cannot separate a binary predating the walk from a walk that ran and reached nothing, so it names both and leaves the reader to tell them apart. Driving the arm needs a walk that reaches the staged folder, which no message produces.
+The refusal fired on 2026-08-13 against a CLI at 0.83.0, which is why the message names causes rather than a version to install. A guard reading attribution cannot separate a binary predating the walk from a walk that ran and reached nothing, so it names both and leaves the reader to tell them apart. Driving the arm needs a walk that reaches the staged folder, which no message produces.
 
 Writing that guard is what surfaced the deeper defect. Every section of the report, the reverse walk included, is gated on `isManagedTarget`, and the arm staged a `package.json` and a dropped folder and none of the three markers that gate reads. The section came back empty for that reason rather than for the CLI's, and the first probe that appeared to work had run after `stage_setup` returned, against a tree the harness had since given a `.claude/skills/` copy of the skill under test.
 
@@ -79,9 +79,9 @@ An arm inheriting its premise from dev-skill injection holds only while the bran
 
 The declaration also pins the folder name beside the verdict, against the general rule that a name history decides does not belong in a pin, because the second guard fails provisioning the moment that root comes back and a reader sees the fragility where it is rather than inside a declaration going quietly vacuous.
 
-The `audits`, `gitignore`, and `unclaimed` arms were driven and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. Both keep the default cap, since a failed run and a refusal each bound nothing, while `audits` has since been driven to a pass and takes its ceiling from that run.
+The `audits`, `gitignore`, and `unclaimed` arms were driven on 2026-08-13 and two of them produced a verdict. `gitignore` failed at 4 asserted and 1 failed, on a `.gitignore` that never gained `node_modules/`, in 7 turns at 0.28 dollars. `unclaimed` refused to provision and never ran, which is the guard above working. Both keep the default cap, since a failed run and a refusal each bound nothing, while `audits` has since been driven to a pass and takes its ceiling from that run.
 
-The other four arms passed, the first time either skill was executed by anything.
+The other four arms passed on 2026-08-04, which is the first time either skill was executed by anything.
 
 Two of them cost 6 turns and end where the route is named. The other two carry on into the skill they routed to, `installed` reaching `claude-seed-sync` once the headless standards sync refuses and `fresh` reaching `setup-init` and installing six domains, and both hold their ceiling at the default. `installed` holds there because a cost that moves with how far the route runs needs more than one sample before a ceiling comes down to it. `fresh` holds there because its turn count is not recorded at all, since `record_run` failed to write it and the envelope went with it.
 
@@ -97,7 +97,7 @@ The arm pins `setup-init` beside the two audit commands, which scores that ranki
 
 ### The audits arm passes on the repaired route
 
-A run passed at 5 asserted and 0 failed with 5 unchecked, in 7 turns at 0.32 dollars over 38 seconds, and escapes came back empty. The reply named the scaffold handoff first and then offered the two staged audits, withheld the comment scan with a reason, and named `plans` as the only record kind. All five manual entries held on reading, and reading is not scoring, so the two figures belong beside each other rather than one under the other. The runs folder is per-machine scratch, so these figures are the durable record rather than a pointer to one.
+A run on 2026-08-14 passed at 5 asserted and 0 failed with 5 unchecked, in 7 turns at 0.32 dollars over 38 seconds, and escapes came back empty. The reply named the scaffold handoff first and then offered the two staged audits, withheld the comment scan with a reason, and named `plans` as the only record kind. All five manual entries held on reading, and reading is not scoring, so the two figures belong beside each other rather than one under the other. The runs folder is per-machine scratch, so these figures are the durable record rather than a pointer to one.
 
 The ceiling comes off that run at 12, which is 7 with room for a reply that runs longer without the skill having changed. It matches `unmigrated`, the only other `toolkit-operator` arm bounded by an observation, and it is provisional against a sample of one. The failing second run cost 6 turns against the passing 7, so the spread is unmeasured and a later run that widens it reads as data rather than as a regression.
 
@@ -109,7 +109,7 @@ What the pass does not reach is whether the ranking holds on a target shaped dif
 
 Three `absent` entries name the destination folders, and `.claude/hooks` carries the extra weight: no standard declares `appliesTo` over it, so a run proposing a shape there had to invent one, which the absence catches whether or not the reply admitted to it. The reply pins name the standard each entry resolved to rather than the destination folder, because the folder comes free off the report while the standard separates a shape read from the project's installed copy from one the run made up.
 
-A run scored the arm for the first time and it passed, at 13 asserted and 0 failed with 5 unchecked, in 17 turns at 0.58 dollars. The count moves from 10 to 13 under a run because the three `reply` pins score only against an envelope, so the standalone figure describes ten no-write claims holding on a tree the skill never touched. The cap stays at 30 against that one observation, which is a floor on what a correct run costs rather than a bound on it.
+A run on 2026-08-13 scored the arm for the first time and it passed, at 13 asserted and 0 failed with 5 unchecked, in 17 turns at 0.58 dollars. The count moves from 10 to 13 under a run because the three `reply` pins score only against an envelope, so the standalone figure describes ten no-write claims holding on a tree the skill never touched. The cap stays at 30 against that one observation, which is a floor on what a correct run costs rather than a bound on it.
 
 Only the three `reply` pins separate a correct proposal from a session that did nothing. An arm whose tree assertions are all negative earns that note rather than the count it prints, which generalizes past this one: a proposal-only skill cannot be covered by tree assertions alone.
 
@@ -125,7 +125,7 @@ The pins split the skill's one routing decision. `.claude/plans/feature-log-entr
 
 The fixture gained a second task row to make that split reachable. Its board staged one task and that task had a plan, so the needs-a-plan branch could never fire, and the first run failed the `claude-feature` pin against a session that had read the board correctly. A roadmap naming a feature no task carries does not put it on the ready list, so the row is what the expectation was always describing.
 
-A run passed at 6 asserted and 0 failed with 5 unchecked, in 4 turns at 0.21 dollars. Read the unchecked figure beside the asserted one rather than under it. Three of the five `manual` entries are scenario expectations no substring reaches, a fourth qualifies the `Next:` pin that reaches its slot and not the singleness behind it, and the fifth bounds what the two absences can claim, so this arm adds to the `asserted` count while covering one decision. The cap stays at 30 against a run that cost a seventh of it, since a proposal-only skill pays for however it reads the tree and one observation is a floor rather than a bound.
+A run on 2026-08-13 passed at 6 asserted and 0 failed with 5 unchecked, in 4 turns at 0.21 dollars. Read the unchecked figure beside the asserted one rather than under it. Three of the five `manual` entries are scenario expectations no substring reaches, a fourth qualifies the `Next:` pin that reaches its slot and not the singleness behind it, and the fifth bounds what the two absences can claim, so this arm adds to the `asserted` count while covering one decision. The cap stays at 30 against a run that cost a seventh of it, since a proposal-only skill pays for however it reads the tree and one observation is a floor rather than a bound.
 
 A third run drove the arm against a copy of the skill carrying one rewritten routing line, and it failed that pin and held the other five. A run that scores shows a declaration can pass and leaves the other half unmeasured, so the rewritten line is what shows this one can also fail on the behavior it was written for.
 
@@ -159,7 +159,7 @@ The other thing it does not reach is the catalog. No shipped skill body invokes 
 
 The arm stages the web layer's port helper into the target and pins the reply to `Port offset 27`, which is the cksum of the worktree folder name modulo the band of 50, plus one. Pinning the number rather than its shape is what separates a session that read the helper from one that printed a plausible integer, and the arm can pin it because the folder name is derived from the plan the branch matches rather than chosen by the run. The dependency line above it lands on the last of Step 6's four bullets, since the arm seeds no manifest inside the worktree and no other arm reaches that bullet.
 
-A run passed at 4 asserted and 0 failed with 2 unchecked, in 43 seconds. Escapes came back naming five files under the main root, all of them scratch a concurrent session in another worktree wrote during the window, which is a limit of reading escapes by mtime rather than a finding against the arm.
+A run on 2026-08-19 passed at 4 asserted and 0 failed with 2 unchecked, in 43 seconds. Escapes came back naming five files under the main root, all of them scratch a concurrent session in another worktree wrote during the window, which is a limit of reading escapes by mtime rather than a finding against the arm.
 
 What the arm cannot reach is the refusal branch the same change added to the skill body. Step 4 registers whatever it creates, so a fresh entry always lands on a worktree the helper answers for, and no staging puts the entry itself onto a leftover folder. The scenario seeds one as a sibling so a reader can drive the helper against it by hand, and the arm says as much in a `manual` entry rather than claiming coverage. The branch is covered instead by `src/worktree-port.test.ts`, which drives the helper directly across the directory shapes.
 
