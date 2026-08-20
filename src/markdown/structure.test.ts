@@ -515,4 +515,39 @@ describe('measureCadence', () => {
 
     expect(measure(source).cadence.measured).toBe(0)
   })
+
+  it('should keep a heading fragment out of the paragraph below it', () => {
+    const source = `${FRONTMATTER}# CI\n\n## Facts before opinion\n\n${passage([10, 10, 10])}\n`
+
+    // A heading is legitimately verbless and legitimately one length, so a
+    // measure that let one join the paragraph under it would read the author's
+    // own signpost as a defect in the prose.
+    const { measured, flattest } = measure(source).cadence
+    expect(measured).toBe(1)
+    expect(flattest?.sentences).toBe(3)
+  })
+
+  it('should keep a table cell out of the paragraphs either side of it', () => {
+    const rows = table(['| `aitk one` | Facts before opinion |'])
+    const source = `${FRONTMATTER}# CI\n\n${passage([10, 10, 10])}\n\n${rows}\n\n${passage([9, 9, 9])}\n`
+
+    // A cell is written as a fragment by design. Both paragraphs measure, and
+    // neither absorbs the row between them.
+    const { measured, flat } = measure(source).cadence
+    expect(measured).toBe(2)
+    expect(flat).toBe(2)
+  })
+
+  it('should measure a paragraph of imperatives the way it measures any other', () => {
+    const openers = ['Run', 'Check', 'Load']
+    const source = `${FRONTMATTER}# CI\n\n${passage([10, 10, 10], openers)}\n`
+
+    // The three shapes above are excluded by where they sit, which needs no
+    // grammar. An imperative sits in ordinary paragraph prose and is separated
+    // from a verbless clause by grammar alone, which is why the verbless share
+    // stays unimplemented while these two measures ship. See `measureCadence`.
+    const { measured, flat } = measure(source).cadence
+    expect(measured).toBe(1)
+    expect(flat).toBe(1)
+  })
 })
