@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/erclx/aitk/compare/v1.7.1...v2.0.0) (2026-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **standards:** close the install channel and collapse the resolver ([#1082](https://github.com/erclx/aitk/issues/1082))
+
+### Features
+
+* **standards:** close the install channel and collapse the resolver ([#1082](https://github.com/erclx/aitk/issues/1082)) ([3d2332c](https://github.com/erclx/aitk/commit/3d2332c85973170022f14f49f3583b88a3e712fa))
+
 ## [1.7.1](https://github.com/erclx/aitk/compare/v1.7.0...v1.7.1) (2026-08-20)
 
 
