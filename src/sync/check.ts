@@ -27,6 +27,7 @@ import { createStandardsAdapter } from '@/standards/adapter'
 import { isDirectory } from '@/target'
 import { loadManifest } from '@/tooling/manifest'
 import { scan } from '@/tooling/scan'
+import { readSkew, type SkewReport } from '@/version/skew'
 
 /**
  * Domains the sync engine walks file by file. Tooling is a stamp domain without
@@ -163,6 +164,17 @@ export interface CheckReport {
    * the same question correctly. See `@/sync/reverse`.
    */
   readonly reverse: ReverseReport
+  /**
+   * The binary running the check, not the target. It reports on an unmanaged
+   * target too, since a reader told to run `aitk init` is better off knowing
+   * first whether the binary about to install is the current one.
+   *
+   * `hasDrift` deliberately ignores it. A registry lookup inside a check that
+   * gates would fail CI on an offline machine for a condition the check never
+   * measured, and the state reaching the reader is the point rather than the
+   * exit code.
+   */
+  readonly skew: SkewReport
 }
 
 export function installedStampDomains(target: string): ScannedDomain[] {
@@ -300,6 +312,10 @@ export async function buildCheckReport(
 ): Promise<CheckReport> {
   const stamp = readStamp(target)
 
+  // Started before the local scan and awaited after it, so the network wait
+  // overlaps work the report needs anyway rather than adding to it.
+  const skewRead = readSkew()
+
   const domains = await Promise.all(
     installedStampDomains(target).map((domain) =>
       buildDomainReport(toolkitRoot, target, stamp, domain),
@@ -324,6 +340,7 @@ export async function buildCheckReport(
       unmigrated: [],
       newSkills: [],
       reverse: emptyReverseReport(),
+      skew: await skewRead,
     }
   }
 
@@ -337,6 +354,7 @@ export async function buildCheckReport(
     unmigrated,
     newSkills: await readNewSkills(toolkitRoot, anchors),
     reverse: buildReverseReport(toolkitRoot, target),
+    skew: await skewRead,
   }
 }
 

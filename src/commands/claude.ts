@@ -48,6 +48,7 @@ import {
   plural,
   select,
 } from '@/ui'
+import { describeSkew, readSkew, type SkewReport } from '@/version/skew'
 
 const GREEN = '\x1b[0;32m'
 const GREY = '\x1b[0;90m'
@@ -249,14 +250,18 @@ export function register(program: Command): void {
         'copy. Passing a ref older than the oldest load over-reports, which is',
         'the safe direction. Confirm a name by reading the body.',
         '',
+        'Every run also reports the installed version against the newest',
+        'published one. That report never changes the exit code, so an offline',
+        'machine reads it as unknown rather than as a failure.',
+        '',
         'Examples:',
         '  aitk claude skills drift HEAD~20',
         '  aitk claude skills drift 02d7b265 --json',
         '',
       ].join('\n'),
     )
-    .action((ref: string, opts: SkillsDriftOptions) => {
-      process.exitCode = runSkillsDrift(ref, opts)
+    .action(async (ref: string, opts: SkillsDriftOptions) => {
+      process.exitCode = await runSkillsDrift(ref, opts)
     })
 }
 
@@ -506,16 +511,28 @@ function runSkillsList(opts: SkillsListOptions): number {
  * it answers every run with nothing moved, which is the silence this reports
  * against.
  */
-function runSkillsDrift(ref: string, opts: SkillsDriftOptions): number {
+async function runSkillsDrift(
+  ref: string,
+  opts: SkillsDriftOptions,
+): Promise<number> {
   const root = process.cwd()
   const report = readDrift(root, ref)
+  const skew = await readSkew()
 
   if (report.kind === 'measured') {
     intro('aitk claude skills drift')
+    reportSkew(skew)
     reportDrift(report, ref)
     outro()
   } else {
     frameError(report.reason)
+    // The refusal path names the binary too. A project consuming the plugin
+    // from a marketplace cache is refused here for having no history, and that
+    // is the moment a skew warning is worth most, since an old binary is one
+    // reason the cache and the CLI disagree in the first place.
+    if (skew.state === 'behind') {
+      process.stderr.write(`${GREY}${describeSkew(skew)}${NC}\n`)
+    }
   }
 
   if (opts.json) {
@@ -528,13 +545,26 @@ function runSkillsDrift(ref: string, opts: SkillsDriftOptions): number {
               base: report.base,
               head: report.head,
               moved: report.moved,
+              skew,
             }
-          : { root, ref, unreadable: report.reason },
+          : { root, ref, unreadable: report.reason, skew },
       )}\n`,
     )
   }
 
   return report.kind === 'measured' ? 0 : 1
+}
+
+/**
+ * The binary reports before the range does, for the reason the range section
+ * states about itself: the command answers what changed on disk, and a binary
+ * behind the published one is a second way the tree a session reads differs
+ * from the tree it holds.
+ */
+function reportSkew(skew: SkewReport): void {
+  logStep('Toolkit version')
+  if (skew.state === 'behind') logWarn(describeSkew(skew))
+  else logInfo(describeSkew(skew))
 }
 
 /**

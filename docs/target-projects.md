@@ -114,6 +114,12 @@ When the toolkit updates, target projects pull changes per domain. There is one 
 
 `aitk sync --check <path>` reports what has drifted without writing anything. It splits each difference by cause, which is the question that decides what to do next.
 
+#### The binary first
+
+The report opens by naming the binary running it. The installed version reads against the newest published one, and a version behind that points you at `aitk upgrade`, since every section under it is a reading taken by whichever toolkit you happen to have. An unreachable registry reports unknown with its reason rather than failing, so `--exit-code` still gates on the drift the check measured locally and an offline machine stays green.
+
+#### Then the causes
+
 A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `aitk:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `aitk:migration-standards` handles.
 
 That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes. Standards, snippets, and governance record a hash per installed file. Tooling records the stack chain it resolved instead, since its install runs no per-file walk to attribute.

@@ -1,7 +1,5 @@
 #!/usr/bin/env bun
 
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { Command } from 'commander'
 import { register as init } from '@/commands/init'
 import { register as sandbox } from '@/commands/sandbox'
@@ -28,7 +26,8 @@ import { register as markdown } from '@/commands/markdown'
 import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
 import { register as audits } from '@/commands/audits'
-import { PROJECT_ROOT } from '@/project-root'
+import { register as upgrade } from '@/commands/upgrade'
+import { readInstalled, UNKNOWN_LABEL } from '@/version/installed'
 
 const GREY = '\x1b[0;90m'
 const WHITE = '\x1b[1;37m'
@@ -65,6 +64,7 @@ function showHelp(): void {
     `${GREY}│${NC}    records [cmd]      ${GREY}# Session records under .claude/ (validate, push, pull)${NC}`,
     `${GREY}│${NC}    sessions [cmd]     ${GREY}# Resolve live sessions to worktree and branch (list)${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
+    `${GREY}│${NC}    upgrade            ${GREY}# Reinstall the CLI globally with the manager that installed it${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
     `${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}`,
@@ -104,31 +104,16 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk records push --json`,
     `${GREY}│${NC}    aitk sessions list --json`,
     `${GREY}│${NC}    aitk audits run --json`,
+    `${GREY}│${NC}    aitk upgrade --json`,
     `${GREY}└${NC}`,
   ]
   console.log(lines.join('\n'))
 }
 
-/**
- * Read at runtime rather than inlined, because a literal here is a second place
- * the version lives and it stopped tracking `package.json` at `0.1.0`. The
- * release tool writes one file and this follows it. `package.json` ships in
- * every npm tarball regardless of the `files` list, so the read resolves from a
- * registry install as well as from a clone.
- */
-function readVersion(): string {
-  try {
-    const raw = readFileSync(join(PROJECT_ROOT, 'package.json'), 'utf8')
-    return (JSON.parse(raw) as { version?: string }).version ?? 'unknown'
-  } catch {
-    return 'unknown'
-  }
-}
-
 const program = new Command()
 program
   .name('aitk')
-  .version(readVersion())
+  .version(readInstalled().version ?? UNKNOWN_LABEL)
   .enablePositionalOptions()
   .helpOption(false)
 program.action(() => showHelp())
@@ -163,5 +148,6 @@ markdown(program)
 records(program)
 sessions(program)
 audits(program)
+upgrade(program)
 
 program.parse()

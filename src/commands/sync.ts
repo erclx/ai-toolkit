@@ -30,6 +30,7 @@ import {
   logWarn,
   outro,
 } from '@/ui'
+import { describeSkew } from '@/version/skew'
 
 const GREY = '\x1b[0;90m'
 const YELLOW = '\x1b[0;33m'
@@ -99,6 +100,8 @@ async function runCheck(target: string, options: SyncOptions): Promise<number> {
 
 function renderCheck(report: CheckReport): void {
   intro('aitk sync --check')
+
+  renderSkew(report)
 
   if (!report.managed) {
     logStep('Not a toolkit project')
@@ -180,6 +183,24 @@ function renderCheck(report: CheckReport): void {
   process.stderr.write(
     `${GREY}Unstamped: ${uncovered.join(', ')}. Run the matching sync to record one.${NC}\n`,
   )
+}
+
+/**
+ * The binary reports before any domain does, since a stale binary is what makes
+ * every section below it a reading from the wrong toolkit. It prints on all
+ * three states rather than only when behind: a check that goes quiet when the
+ * registry is unreachable is indistinguishable from one that found nothing.
+ */
+function renderSkew(report: CheckReport): void {
+  const { skew } = report
+  logStep('toolkit version')
+
+  if (skew.state === 'behind') {
+    logWarn(describeSkew(skew))
+    return
+  }
+
+  logInfo(describeSkew(skew))
 }
 
 /**

@@ -13,7 +13,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `aitk init [path]`         | Bootstrap a project with selected toolkit domains                                                                                         |
 | `aitk sync [path]`         | Sync all installed domains in a target project                                                                                            |
-| `aitk sync --check`        | Report toolkit drift without writing (`--json`, `--exit-code`)                                                                            |
+| `aitk sync --check`        | Report toolkit drift and the installed version against the newest published (`--json`, `--exit-code`)                                     |
 | `aitk sandbox [cat:cmd]`   | Run sandbox scenarios (interactive or routed), toolkit-only like the tree it reads                                                        |
 | `aitk sandbox reset`       | Reset sandbox to baseline                                                                                                                 |
 | `aitk sandbox clean`       | Wipe the sandbox                                                                                                                          |
@@ -44,11 +44,12 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk context audit`       | Report required sections, length, cited paths, reference form, catalog tables, provenance, superseded-decision narration, and index drift |
 | `aitk markdown audit`      | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                    |
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                            |
-| `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD` (`--json`)                                                         |
+| `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD`, and the installed version against the newest published (`--json`) |
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                   |
 | `aitk audits run`          | Run every audit as one set, report per check under one verdict, and compare each count to the recorded baseline (`--json`, `--record`)    |
 | `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                 |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                     |
+| `aitk upgrade`             | Reinstall the CLI globally with the package manager the install path names (`--json`)                                                     |
 
 ## Domain commands
 
@@ -78,3 +79,17 @@ Common patterns:
 - `install <name> <path>` → install a specific entry into a target project.
 - `sync <path>` → reapply all installed entries in a target project.
 - `create [name]` → scaffold a new authoring entry in this repo.
+
+## Version skew
+
+`aitk sync --check` and `aitk claude skills drift` are the two moments a target
+already stops to reconcile with the toolkit, so each reports the installed
+version against the newest published one. No other command performs the lookup,
+which keeps a registry round trip out of the catalog reads an agent runs in a
+loop.
+
+The report carries three states and never changes an exit code. `behind` names
+`aitk upgrade` as the remedy, `current` says so, and `unknown` carries the
+reason the registry could not be reached. Branch on the `skew.state` field in
+the JSON record rather than on the exit, since an offline machine has to read as
+unmeasured rather than as a failing check.
