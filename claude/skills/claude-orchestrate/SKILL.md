@@ -28,7 +28,6 @@ Read the board in parallel, resolving the paths at the main worktree root per Wo
 - `.claude/tasks/backlog.md`: what is not being scheduled, when the file exists
 - `.claude/tasks/index.md`: what is queued
 - `.claude/plans/*.md`: features already planned and ready to hand off
-- `.claude/ROADMAP.md`: sequencing rationale, when the file exists
 - open PRs via `gh pr list --json number,title,headRefName,isDraft`
 
 Then output the state of play so the human knows what to launch, review, and merge.
@@ -37,7 +36,7 @@ Then output the state of play so the human knows what to launch, review, and mer
 
 Row position under `## Needs a plan` is what gets planned next, top first, per `.claude/standards/tasks.md`. `backlog.md` carries what nobody is scheduling and is explicitly unordered, so read it for what exists and never as a queue. Report a backlog count rather than its rows, since listing them puts the length back in front of the reader the cut took it away from.
 
-The roadmap is optional and this skill does not require it. It carries why a sequence is what it is, changes only when strategy changes, and is absent in a project whose scope has already shipped. Report what it says and name it as the source. Never assert an active version the file does not state, and say nothing about one when the file is missing.
+No surface carries cross-version sequencing, so report none. A row's `Waiting on` cell states why that row sits where it does, and reasoning spanning several rows reaches this session only through whoever remembers it. Say nothing about an active version, since nothing in the tree states one and a version asserted from the board is the unsourced claim this omission exists against.
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do.
 
@@ -55,8 +54,6 @@ That routing lives in this body and this skill is user-invoked, so a session tha
 
 ```plaintext
 Orchestrator ready.
-
-Roadmap: vX.Y, <the Now row's outcome>, as of <date>.
 
 Ready to build (hand each to its own worker):
 
@@ -80,9 +77,7 @@ Next: <the single most useful action>
 
 Omit any section with nothing in it. Recommend a handoff only for a plan whose file set is disjoint from every track already in flight, per Parallelism below.
 
-Omit the `Roadmap` line when `.claude/ROADMAP.md` is absent. Quote the `Now` row rather than restating it, and date the line from `git log -1 --format=%ad --date=short -- .claude/ROADMAP.md` so an old sequence reads as old instead of as the state of play.
-
-That command returns nothing for a roadmap that exists but has never been committed, which is the state `claude-roadmap` leaves behind when it writes the file and declines to stage it. Write `uncommitted` as the date in that case. A blank there would read as a formatting slip rather than as the newest possible sequence.
+The block opens on the board rather than on a version, because no committed file states one. Adding a version line here would restate what a reader can already see on the rows, dated by nothing, which is how the retired sequencing surface produced an unsourced claim on every run.
 
 ### Every later turn
 
@@ -103,18 +98,15 @@ Write no shape for a correction. A correction is a sentence, and a format for ad
 
 ## The loop
 
-1. Own the roadmap while a scope exists to sequence.
-   - Capture a needed draft or resequence of `.claude/ROADMAP.md` in the plan or a task file, naming the MVP list in `.claude/REQUIREMENTS.md` as the source, so a worker runs `claude-roadmap` in its branch and the tracked edit ships in a PR rather than dirtying main
-   - Stop owning it once that list has shipped, since later work then arrives as discrete items rather than as versions
-2. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. Every plan written from here also carries a constraint per track in flight, which the paragraph below this list states.
-3. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
-4. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
-5. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
-6. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate.
+1. Plan the next feature. Run `claude-feature` here, with the cross-feature context, to write a plan to `.claude/plans/`. Planning stays in this warm session so the plan front-loads reasoning a cold worker would otherwise re-derive. Every plan written from here also carries a constraint per track in flight, which the paragraph below this list states.
+2. Decide parallelism and merge order. Note which plans touch a shared wiring seam so their PRs merge in sequence, not at once.
+3. Verify the plan against the tree. Reading it is not enough, since a plan goes stale from whatever merged after it was written. Grep for each construct it names and count the sites against the count it claims. Check that every phase label it cites is still open. Open each file it describes rather than trusting its account of the contents. Correct the plan before handing it over.
+4. Hand off. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The orchestrator does not spawn workers.
+5. Review the PR. When a worker opens a PR, run `claude-pr-review` to post findings to it. This is the deep, independent pass. The worker's autoship self-review was only the green gate.
    - Learning that a PR moved is the mechanical half, so read `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` and start the poll it carries on the first dispatch rather than checking the board by hand. That runbook holds the routing, and a summary of it here is a second source that drifts from it.
-7. Dispatch the handback. A pass posting a finding at any severity tells the session holding that branch to run `claude-address-review`, rather than waiting for a person to relay it. Re-review when the answer lands, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
+6. Dispatch the handback. A pass posting a finding at any severity tells the session holding that branch to run `claude-address-review`, rather than waiting for a person to relay it. Re-review when the answer lands, then the human merges. Tell the trailing worker to rebase when its branch shares a seam with the merged one.
    - Read the threshold off `claude-pr-review`, which states it once and governs the heading with it, so an open heading and an owed dispatch answer the same question and either one is enough to send
-   - Resolve the target at the moment of sending with `aitk sessions list --branch`, never from a mapping written down earlier, since names rotate as sessions end and one recorded earlier in a session has failed inside the hour. The runbook read at step 6 routes on the count and the confidence it answers with
+   - Resolve the target at the moment of sending with `aitk sessions list --branch`, never from a mapping written down earlier, since names rotate as sessions end and one recorded earlier in a session has failed inside the hour. The runbook read at step 5 routes on the count and the confidence it answers with
    - Open the message with the worktree and branch the sender believes the reader holds, asking to be corrected, whenever that mapping is inferred rather than confirmed
    - Name the skill for the reader to run rather than writing an invocation, which arrives as text
    - Read the pull request's own draft flag rather than the state a worker reports, since two reported a draft that read ready inside ninety seconds
@@ -134,7 +126,7 @@ Stamp the block with the commit this session read the tree at, which the same se
 - Run one orchestrator at a time. The board is gitignored, so a second session sees none of this one's writes: two task files land minutes apart under different labels for the same work, one session archives a task mid-sweep in the other, and each archives a plan the other had retargeted. An Owner column does not fix this, since neither session can read the other's rows.
 - Do not implement features in this session. Hand the plan to a worker.
 - Do not merge. Recommend merge or changes. The human merges.
-- Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR. The handback dispatch in step 7 reaches a session the human already launched, so it leaves this boundary where it is.
+- Do not spawn worker sessions with agents. The human launches each worktree so every build is an independent, steerable stream with its own PR. The handback dispatch in step 6 reaches a session the human already launched, so it leaves this boundary where it is.
 - Do not edit tracked files from this session, at any size. The boundary offers no proportionality exception and nothing enforces it.
 - Do not hand a worker anything but a plan, since scope lives there. A plan carries exact diffs only when they are already known, otherwise it states the scope and the open questions and lets the worker write the diff.
 

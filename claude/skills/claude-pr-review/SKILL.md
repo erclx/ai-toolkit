@@ -1,6 +1,6 @@
 ---
 name: claude-pr-review
-description: Reviews an open pull request from an independent session and posts findings as a review comment on the PR. Posts a first pass against the whole change and every later pass against only the commits added since, under `## Review` while any finding is open and `## Review closed` once a pass carries none. Reads project docs and the roadmap for cross-feature context a self-review lacks. Use when asked to "review the PR", "review this feature's PR", "post a PR review", "re-review the PR", "close out the review", "confirm the findings are fixed", or acting as the orchestrator reviewing a worker's PR. Do NOT use to review local uncommitted changes. That is `claude-review`.
+description: Reviews an open pull request from an independent session and posts findings as a review comment on the PR. Posts a first pass against the whole change and every later pass against only the commits added since, under `## Review` while any finding is open and `## Review closed` once a pass carries none. Reads project docs and the task board for cross-feature context a self-review lacks. Use when asked to "review the PR", "review this feature's PR", "post a PR review", "re-review the PR", "close out the review", "confirm the findings are fixed", or acting as the orchestrator reviewing a worker's PR. Do NOT use to review local uncommitted changes. That is `claude-review`.
 ---
 
 # Claude PR review
@@ -32,7 +32,7 @@ Read these in parallel from the project root, skipping any that do not exist:
 - `CLAUDE.md`: project type, conventions, and commands
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
 - `.claude/ARCHITECTURE.md`: technical design decisions
-- `.claude/ROADMAP.md`: where this feature sits and what depends on it
+- `.claude/tasks/priority.md`: where this feature sits on the board and what each neighboring row waits on. Resolve this one at the main worktree root per Worktrees in `CLAUDE.md`, since the board is gitignored and a linked worktree holds no copy of it
 - `.claude/plans/feature-<slug>.md` for the branch, when present: the intent the PR should satisfy
 
 Coding standards from `.claude/rules/` are auto-loaded by Claude Code.
@@ -79,7 +79,7 @@ Read each changed file in scope. Skip deleted files. Run reads in parallel.
 
 Review the diff and files for the same axes as `claude-review` (bugs, edge cases, error handling, logic flaws, security, rule violations), then add the three lenses a self-review structurally cannot apply:
 
-- Integration: does this fit the roadmap sequence, the shared wiring seam, and any sibling PR in flight?
+- Integration: does this fit the board's order, the shared wiring seam, and any sibling PR in flight?
 - Contract: does a contract downstream features depend on land correctly, and should the plan itself be questioned?
 - Consumers: when the change touches a resource with more than one consumer, enumerate them and check the rule against each. A rule written for the consumer the change targets can be wrong for a sibling that writes.
 
@@ -116,7 +116,7 @@ The comment is a rendered-for-human GitHub surface, so load the `write-human` sk
 ```markdown
 ## Review
 
-X critical, Y should-fix, Z minor. Reviewed against project docs and roadmap.
+X critical, Y should-fix, Z minor. Reviewed against project docs and the board.
 
 **`path/to/file.ext`**
 
@@ -172,14 +172,14 @@ Before posting, run the scan in `.claude/standards/publish.md` against the body,
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md
 ```
 
-A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No findings. Reviewed against project docs and roadmap.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
+A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No findings. Reviewed against project docs and the board.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
 
 A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. Keep whichever scope sentence the pass owes on the summary line:
 
 ```markdown
 ## Review
 
-0 critical, 0 should-fix, Z minor. Reviewed against project docs and roadmap.
+0 critical, 0 should-fix, Z minor. Reviewed against project docs and the board.
 
 **`path/to/file.ext`**
 

@@ -14,7 +14,7 @@ Governs the product-scope document at `.claude/REQUIREMENTS.md`: problem, goals,
 Does not govern:
 
 - Rationale for a technical choice: `architecture.md`
-- Sequencing the scope into ordered versions: `roadmap.md`
+- Execution order across the work the scope generates: `tasks.md`
 - Per-domain structure and narrative: `context.md`
 
 ## What goes in
@@ -39,7 +39,7 @@ Use `## Problem`, `## Goals`, `## Non-goals`, `## MVP features`, `## Tech stack`
 
 The MVP list is a historical record of the original scope. Once those features ship it stays as written. Do not renumber it, do not append to it, and do not annotate entries with status. A reader telling the original scope apart from what followed depends on the first one staying legible.
 
-Later scope arrives as a new section rather than as an extension of the MVP list. Name the section for what it delivers and state its entries as outcomes, the same way the goals are stated. A roadmap sequences the MVP list alone, so a later scope section is sequenced by a fresh pass rather than folded into the roadmap that already shipped. The roadmap standard sends a project here once its last version ships, and this is the pass it means.
+Later scope arrives as a new section rather than as an extension of the MVP list. Name the section for what it delivers and state its entries as outcomes, the same way the goals are stated. Nothing sequences either list into versions. Work reaches the board as discrete tasks under `tasks.md`, which orders them by readiness, so a section here states what is wanted and never when it lands.
 
 ## Distribution
 
