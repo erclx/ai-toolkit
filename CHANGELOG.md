@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/erclx/aitk/compare/v0.112.0...v1.0.0) (2026-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **tooling:** require an explicit flag before a sync writes ([#1054](https://github.com/erclx/aitk/issues/1054))
+
+### Features
+
+* **tooling:** require an explicit flag before a sync writes ([#1054](https://github.com/erclx/aitk/issues/1054)) ([31d5921](https://github.com/erclx/aitk/commit/31d5921e73c61b17ae1fed2dd50c8b24b7e4a0e3))
+
 ## [0.112.0](https://github.com/erclx/aitk/compare/v0.111.1...v0.112.0) (2026-08-20)
 
 
