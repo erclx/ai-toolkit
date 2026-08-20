@@ -8,8 +8,11 @@ REPORT="drift-report.json"
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
-  export SANDBOX_INJECT_STANDARDS="true"
   export SANDBOX_INJECT_SEEDS="true"
+  # Governance is the scanned domain the arms stage against. Standards installs
+  # into no target, so it leaves no copy to make stale and no root layout to
+  # find unmigrated.
+  export SANDBOX_INJECT_GOV="true"
 }
 
 # Every arm runs unstamped. No target on disk carries `.claude/aitk.json`, so the
@@ -28,13 +31,15 @@ stage_setup() {
   "stale")
     local -a stale=()
     while IFS= read -r file; do
-      local filename
-      filename=$(basename "$file")
-      [ -f ".claude/standards/$filename" ] || continue
-      echo "<!-- stale -->" >>".claude/standards/$filename"
-      stale+=("$filename")
+      echo "# stale" >>"$file"
+      stale+=("${file#.claude/rules/}")
       [ "${#stale[@]}" -eq 2 ] && break
-    done < <(find "$PROJECT_ROOT/standards" -maxdepth 1 -type f -name "*.md" ! -name "index.md" | sort)
+    done < <(find .claude/rules -type f -name "*.md" | sort)
+
+    if [ "${#stale[@]}" -eq 0 ]; then
+      log_error "Fixture staged no stale rule. The arm would assert against a clean target."
+      return 1
+    fi
 
     echo "" >>CLAUDE.md
     echo "## Project rule the seed never shipped" >>CLAUDE.md
@@ -43,7 +48,7 @@ stage_setup() {
 
     log_step "Scenario ready: correct layout, content behind"
     log_info "Context: the state three of six real targets sit in"
-    log_info "  Stale standards: ${stale[*]}"
+    log_info "  Stale rules: ${stale[*]}"
     log_info "  CLAUDE.md carries a section the seed does not"
     log_info ""
     log_info "Expect:  declared in fixtures/infra/drift/stale/expect.toml"
@@ -70,26 +75,31 @@ stage_setup() {
     ;;
 
   "unmigrated")
-    mkdir -p standards
-    cp .claude/standards/*.md standards/
-    rm -rf .claude/standards
+    # Snippets is the one domain left that an older toolkit installed at the
+    # root, so it is what `detectUnmigrated` still walks. The files are copied
+    # flat, which is the layout the root install wrote and the layout
+    # `countToolkitOwned` matches by basename.
+    mkdir -p snippets
+    find "$PROJECT_ROOT/snippets" -type f -name '*.md' ! -name 'index.md' \
+      -exec cp {} snippets/ \;
+    rm -rf .claude/snippets
 
     # The arm asserts that an unmigrated domain is reported. A copy that staged
     # nothing would produce a report correctly finding none, and the failure
     # would read as a defect in the detection rather than in the fixture.
     local staged
-    staged=$(find standards -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')
+    staged=$(find snippets -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')
     if [ "$staged" -eq 0 ]; then
-      log_error "Fixture staged no standards. The arm would assert against an empty root."
+      log_error "Fixture staged no snippets. The arm would assert against an empty root."
       return 1
     fi
 
     write_report
 
     log_step "Scenario ready: root layout, never migrated"
-    log_info "Context: a project scaffolded before standards moved under .claude/"
-    log_info "  standards/ holds $staged files"
-    log_info "  .claude/standards/ does not exist"
+    log_info "Context: a project scaffolded before snippets moved under .claude/"
+    log_info "  snippets/ holds $staged files"
+    log_info "  .claude/snippets/ does not exist"
     log_info ""
     log_info "Before this arm existed the report called this target clean, because"
     log_info "the domain scan lists only domains it finds installed."
@@ -101,7 +111,7 @@ stage_setup() {
   "tooling")
     write_report
 
-    log_step "Scenario ready: standards installed, tooling never recorded"
+    log_step "Scenario ready: rules installed, tooling never recorded"
     log_info "Context: every target installed before the tooling record shipped"
     log_info "  .claude/aitk.json carries no tooling chain"
     log_info ""

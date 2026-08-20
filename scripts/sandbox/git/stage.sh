@@ -6,7 +6,6 @@ source "$PROJECT_ROOT/scripts/lib/sandbox-git.sh"
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
-  export SANDBOX_INJECT_STANDARDS="true"
 }
 
 stage_setup() {

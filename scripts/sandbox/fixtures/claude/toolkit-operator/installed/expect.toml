@@ -1,18 +1,21 @@
 # What a correct `/aitk:toolkit-operator` run replies on a target whose installed
-# standards have fallen behind. Read by `aitk sandbox check`. Patterns use TOML
+# snippets have fallen behind. Read by `aitk sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 #
 # The arm scores the route a drifted domain takes. Both staged files are flat
-# toolkit standards, so the report attributes both as drift a sync could close
+# toolkit snippets, so the report attributes both as drift a sync could close
 # rather than as content the project authored.
+#
+# Snippets rather than standards. The corpus installs into no target, so there is
+# no installed standard to fall behind and no `aitk standards sync` to route to.
 
 # A clean run cost 21 turns on 2026-08-04 against the default cap of 30. The
 # ceiling holds at the default rather than coming down to that observation,
-# because the route continues into `claude-seed-sync` once the sync refuses,
-# which is where the turns go, and the re-check after the write adds a pass on
-# top of that 21. One sample of a cost that moves with how far the route runs,
-# so a truncation here is a signal to split the arm rather than to raise a
-# ceiling already at the cap.
+# because the route continues into `claude-seed-sync` after the sync, which is
+# where the turns go, and the re-check after the write adds a pass on top of that
+# 21. One sample of a cost that moves with how far the route runs, so a
+# truncation here is a signal to split the arm rather than to raise a ceiling
+# already at the cap.
 max_turns = 30
 
 # The route, named as the command rather than as a skill, because this is the
@@ -22,7 +25,12 @@ max_turns = 30
 # A domain sync is what separates this from the two routes beside it. A
 # drifted install is neither a fresh scaffold nor a root layout, and both of
 # those are reachable from the same report.
-reply = ["aitk standards sync"]
+reply = ["aitk snippets sync"]
+
+# The two staged files still exist after the route. A sync that deleted rather
+# than updated them would leave a target missing what the domain provides, and
+# the report would still read as drift closed.
+paths = [".claude/snippets/align.md", ".claude/snippets/compact-summary.md"]
 
 # Prose the checker cannot assert, each with the reason it stays here.
 manual = [
@@ -31,18 +39,5 @@ manual = [
   "The sync ran under `AITK_NON_INTERACTIVE=1`. Unwired: the claim is about how a command was invoked, which the envelope does not carry",
   "The run re-checked the target after the sync and reported the difference against the report it read in `## Diagnose`. Semantic: a reply restating the second report in full carries every token a comparison would",
   "The re-check named the two staged files as what its own write moved, and claimed nothing about a file it did not touch. Semantic: the distinction is between two readings of the same field, which no substring separates",
+  "The `<!-- stale -->` marker is gone from both files, since the snippets adapter applies rather than refusing headlessly. Unwired: the declaration carries no assertion that a pattern is absent from a file, and pinning the upstream text instead passes whether or not the sync ran, because the drifted copy holds that text too",
 ]
-
-# The marker survives, which is what proves the router left the managed file
-# alone. `aitk standards sync` declares a `refuse` policy for a headless run, so
-# a correct route reports the refusal and its hint rather than rewriting the
-# file. A run that stripped the marker either edited a managed file by hand,
-# which `## Boundaries` forbids outright, or forced the sync past a refusal the
-# adapter exists to hold.
-[[content]]
-path = ".claude/standards/architecture.md"
-pattern = '<!-- stale -->'
-
-[[content]]
-path = ".claude/standards/context.md"
-pattern = '<!-- stale -->'

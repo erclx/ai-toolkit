@@ -2,14 +2,15 @@
 set -e
 set -o pipefail
 
-# No SANDBOX_INJECT_STANDARDS, deliberately. The absent project copy is what
-# forces `claude-review` onto the `${CLAUDE_SKILL_DIR}/../../standards/skill.md`
-# fallback, and the branch name below turns that citation into a report filename
-# a reader can check by eye. `expect.toml` carries that claim as a manual entry
-# rather than an assertion, because the report lands at a root no run determines.
-# Adding the flag here resolves the project path instead and the arm stops being
-# about the fallback at all, so the declaration asserts the absence to make that
-# edit go red rather than pass quietly.
+# No project copy of the corpus, which is what every target looks like now. The
+# absence forces `claude-review` onto the
+# `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch name
+# below turns that citation into a report filename a reader can check by eye.
+# `expect.toml` carries that claim as a manual entry rather than an assertion,
+# because the report lands at a root no run determines. An arm that staged a copy
+# of its own resolves the project path instead and stops being about the fallback
+# at all, so the declaration asserts the absence to make that edit go red rather
+# than pass quietly.
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"

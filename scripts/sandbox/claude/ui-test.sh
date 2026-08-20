@@ -2,8 +2,8 @@
 set -e
 set -o pipefail
 
-# No SANDBOX_INJECT_STANDARDS, deliberately, for the same reason `claude/review.sh`
-# declares none. The absent project copy forces `claude-ui-test` onto the
+# No project copy of the corpus, for the same reason `claude/review.sh` carries
+# none. The absent project copy forces `claude-ui-test` onto the
 # `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch name
 # below turns that citation into a checklist filename a reader can check by eye.
 # `expect.toml` carries that claim as a manual entry rather than an assertion,

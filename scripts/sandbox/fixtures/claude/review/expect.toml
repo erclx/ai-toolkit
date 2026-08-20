@@ -7,12 +7,11 @@
 # worktree, so the report lands inside the tree and the assertions over it run.
 
 # The one mechanical claim that is about provisioning rather than about the run.
-# `claude/review.sh` declares no `SANDBOX_INJECT_STANDARDS`, so the project copy
-# of the standard is absent and `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is
-# the only route left. A later edit adding the flag would resolve the project
-# path instead and void the whole premise of this arm, so the absence is asserted
-# where that edit lands.
-absent = [".claude/standards/skill.md"]
+# No corpus installs into a target, so the project copy of the standard is absent
+# and `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is the only route left. The
+# absence is asserted rather than assumed, since an arm that staged a copy of its
+# own would resolve the project path instead and void the whole premise here.
+absent = [".claude/standards/skill.md", "standards/skill.md"]
 
 # The filename is the evidence, not the file. `review-feat-user-batch.md` is the
 # slug transform in `standards/skill.md` applied to branch `feat/user-batch`, and

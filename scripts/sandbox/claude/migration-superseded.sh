@@ -6,7 +6,6 @@ source "$PROJECT_ROOT/scripts/lib/sandbox-fixtures.sh"
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
-  export SANDBOX_INJECT_STANDARDS="true"
 }
 
 stage_setup() {
@@ -96,16 +95,18 @@ EOF
       return 1
     fi
 
-    # The destination shape is read from the project's own copy, and this arm
-    # asserts a proposal rather than the refusal an absent standard produces.
+    # The destination shape is read through `aitk standards <name>`, which is the
+    # only route a target has now that no corpus installs into one. The guard
+    # asserts the read resolves, since an arm whose standards were unreachable
+    # would score a refusal rather than the proposal declared below.
     local missing=""
     for standard in tasks diagrams; do
-      if [ ! -f ".claude/standards/$standard.md" ]; then
+      if ! AITK_NON_INTERACTIVE=1 aitk standards "$standard" >/dev/null 2>&1; then
         missing="$missing $standard"
       fi
     done
     if [ -n "$missing" ]; then
-      log_error "Standards install left$missing absent. The arm would score the not-installed refusal instead."
+      log_error "aitk standards could not resolve$missing. The arm would score the unresolved refusal instead."
       return 1
     fi
 
@@ -130,9 +131,9 @@ EOF
     log_info "  TASKS.md is tracked and ignored, so the untrack has to precede the entry"
     log_info "  DIAGRAMS.md carries two kinds the destination folder fixes filenames for"
     log_info "  HOOKS.md pairs to a folder no standard declares, so it earns no proposal"
-    log_info "  Standards are installed, so the destination shapes are the project's own"
+    log_info "  Standards resolve through aitk standards, which is the target's only route"
     log_info "Action:  /aitk:migration-superseded"
-    log_info "Expect:  proposes both splits from the installed standards, declines the third,"
+    log_info "Expect:  proposes both splits from the resolved standards, declines the third,"
     log_info "         names git rm --cached ahead of the ignore entry, and writes nothing"
     log_info "Assert:  declared in fixtures/claude/migration-superseded/retired/expect.toml"
     ;;

@@ -29,10 +29,8 @@ start();
 ```
 EOF
 
-  mkdir -p .claude/standards
-  echo "Mock readme rules" >.claude/standards/readme.md
-  echo "Mock markdown rules" >.claude/standards/markdown.md
-
+  # No mock standards folder. A target holds none, so `docs-sync` reaches the
+  # standards it reads through `aitk standards <name>` here as it would anywhere.
   git add . && git commit -m "feat(server): add base config and start function" -q
 
   case "$SELECTED_OPTION" in

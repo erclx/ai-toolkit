@@ -18,11 +18,11 @@ max_turns = 30
 # this path does not move with the machine's `init.defaultBranch`.
 paths = [".claude/review/seed-audit-chore-seed-drift.md"]
 
-# Propose writes the proposal and nothing else. Step 5 applies edits to
-# `CLAUDE.md` and the installed standards one at a time behind a permission
-# dialog, which a headless propose pass never reaches, so a run that touched
-# those files applied without approval. The 2026-08-03 run wrote exactly the one
-# file this glob admits, so the scope is measured rather than projected.
+# Propose writes the proposal and nothing else. Step 5 applies edits to the
+# seed files one at a time behind a permission dialog, which a headless propose
+# pass never reaches, so a run that touched those files applied without approval.
+# The 2026-08-03 run wrote exactly the one file this glob admits, so the scope is
+# measured rather than projected.
 write_scope = [".claude/review/**"]
 
 manual = [
@@ -53,10 +53,3 @@ pattern = '^## Scope'
 [[content]]
 path = ".claude/review/seed-audit-chore-seed-drift.md"
 pattern = '^## 1\. 📝 '
-
-# The standards stage ran. `seed-sync.sh` drifts this file and it is the only
-# evidence the pass merged the standards catalog into the seed one rather than
-# stopping at seeds.
-[[content]]
-path = ".claude/review/seed-audit-chore-seed-drift.md"
-pattern = '\.claude/standards/prose\.md'

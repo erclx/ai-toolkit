@@ -8,12 +8,12 @@
 # so the escape is closed, and what keeps the checklist demoted is that the skill
 # decides whether to write one at all.
 
-# The precondition, asserted rather than described. `claude/ui-test.sh` declares
-# no `SANDBOX_INJECT_STANDARDS`, so the project copy is absent and the plugin
-# fallback is the only route to the slug transform. Injecting standards later
-# would resolve the project path and void the premise of this arm, so the absence
-# is asserted where that edit lands.
-absent = [".claude/standards/skill.md"]
+# The precondition, asserted rather than described. No corpus installs into a
+# target, so the project copy is absent and the plugin fallback is the only route
+# to the slug transform. An arm that staged a copy of its own would resolve the
+# project path and void the premise here, so the absence is asserted where that
+# edit lands.
+absent = [".claude/standards/skill.md", "standards/skill.md"]
 
 paths = ["e2e/ui.test.ts"]
 

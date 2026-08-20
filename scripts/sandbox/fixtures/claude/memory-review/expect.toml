@@ -7,12 +7,12 @@
 # provisions outside the toolkit worktree now, so the proposal lands inside the
 # tree and the assertions over it run.
 
-# The precondition, asserted rather than described. `claude/memory-review.sh`
-# declares no `SANDBOX_INJECT_STANDARDS`, so the project copy is absent and the
-# plugin fallback is the only route to the slug transform. Injecting standards
-# later would resolve the project path and void the premise of this arm, so the
-# absence is asserted where that edit lands.
-absent = [".claude/standards/skill.md"]
+# The precondition, asserted rather than described. No corpus installs into a
+# target, so the project copy is absent and the plugin fallback is the only route
+# to the slug transform. An arm that staged a copy of its own would resolve the
+# project path and void the premise here, so the absence is asserted where that
+# edit lands.
+absent = [".claude/standards/skill.md", "standards/skill.md"]
 
 # The filename is the evidence. `memory-review-chore-memory-sweep.md` is the slug
 # transform in `standards/skill.md` applied to branch `chore/memory-sweep`, and
