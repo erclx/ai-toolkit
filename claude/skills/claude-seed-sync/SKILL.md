@@ -50,7 +50,7 @@ Note on `settings.json`: the seed now ships only the PostToolUse hook block. If 
 For each seed file present in both sides, parse the body into a preamble (everything between H1 and the first H2) plus one part per `##` header, then compare part by part. Treat the preamble as a single unit with the same verdicts as a section. Use `(preamble)` as its label in the proposal.
 
 - **Identical:** ignore.
-- **Toolkit-only section** (present in source, absent in target): candidate to **Add**.
+- **Toolkit-only section** (present in source, absent in target): candidate to **Add**. Number it whatever the file's own verdict is. The verdict rules below govern a section present in both, and a section the project never had cannot be the customization a `drifted` file is being credited with. A pass that reads the file-level verdict first proposes nothing on a target missing eleven sections, which is the shape this bullet exists to catch.
 - **Target-only section** (present in target, absent in source): preserve, never propose removal. These are user customizations.
 - **Drifted section** (present in both, content differs): candidate to **Update**.
   - Read the file's verdict from the report rather than judging it by eye. `drifted` means the content matches no version the toolkit ever published, so the project wrote it: call it **Customized**, default to skip, record in the scope table only, never numbered.
