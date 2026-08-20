@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/erclx/aitk/compare/v1.5.0...v1.6.0) (2026-08-20)
+
+
+### Features
+
+* **memory:** collect a review receipt once its items resolve ([#1073](https://github.com/erclx/aitk/issues/1073)) ([ea3e420](https://github.com/erclx/aitk/commit/ea3e42046a252b5ad64e6aa3e588c9d7ead7e0b8))
+
 ## [1.5.0](https://github.com/erclx/aitk/compare/v1.4.0...v1.5.0) (2026-08-20)
 
 
