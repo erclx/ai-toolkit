@@ -63,6 +63,7 @@ describe('command action exit codes', () => {
   let workDir: string
   let emptyPath: string
   let relocatedCli: string
+  let namelessCli: string
 
   /**
    * `isToolkitSource` reads `.claude/` under `PROJECT_ROOT`, which resolves
@@ -85,6 +86,27 @@ describe('command action exit codes', () => {
     )
     await symlink(findInstalledModules(), join(relocatedRoot, 'node_modules'))
     relocatedCli = join(relocatedRoot, 'src', 'cli.ts')
+
+    /**
+     * A root a package manager owns, holding a manifest with no `name`. The
+     * relocated copy above sits under no install tree, so `upgrade` refuses
+     * there on the manager check and never reaches the name check this covers.
+     */
+    const namelessRoot = join(workDir, 'node_modules', 'nameless')
+    await cp(join(relocatedRoot, 'src'), join(namelessRoot, 'src'), {
+      recursive: true,
+    })
+    await cp(
+      join(REPO_ROOT, 'tsconfig.json'),
+      join(namelessRoot, 'tsconfig.json'),
+    )
+    await symlink(findInstalledModules(), join(namelessRoot, 'node_modules'))
+    await writeFile(
+      join(namelessRoot, 'package.json'),
+      JSON.stringify({ version: '0.1.0' }),
+      'utf8',
+    )
+    namelessCli = join(namelessRoot, 'src', 'cli.ts')
   }, SETUP_TIMEOUT_MS)
 
   afterAll(async () => {
@@ -207,6 +229,35 @@ describe('command action exit codes', () => {
     })
 
     expect(JSON.parse(result.stdout).state).toBe('refused')
+  })
+
+  /**
+   * The manifest name reaches a global install command, so a manifest that
+   * parsed without one would install whatever sits under the placeholder. The
+   * prompt defaults to yes headlessly, which leaves this refusal as the only
+   * thing between a broken manifest and that install.
+   */
+  it('should exit 1 when upgrade finds a manifest carrying no package name', async () => {
+    const result = await runCli(['upgrade'], {
+      cwd: workDir,
+      cli: namelessCli,
+      emptyPath,
+    })
+
+    expect(result.exitCode).toBe(1)
+    expect(result.stderr).toContain('No package name in')
+  })
+
+  it('should never name a package it could not read out of the manifest', async () => {
+    const result = await runCli(['upgrade', '--json'], {
+      cwd: workDir,
+      cli: namelessCli,
+      emptyPath,
+    })
+
+    const record = JSON.parse(result.stdout)
+    expect(record.state).toBe('refused')
+    expect(record.command).toBeUndefined()
   })
 
   it('should exit 1 when transcripts cannot find yt-dlp', async () => {

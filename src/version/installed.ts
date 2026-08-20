@@ -2,12 +2,19 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { PROJECT_ROOT } from '@/project-root'
 
-/** What a `package.json` read reports when the file is absent or malformed. */
-export const UNKNOWN_VERSION = 'unknown'
+/** What a reader prints in place of a field the manifest did not carry. */
+export const UNKNOWN_LABEL = 'unknown'
 
+/**
+ * Either field is absent when the manifest could not be read or did not carry
+ * it. They are optional rather than sentinel strings so a caller has to narrow
+ * before using one, which is what makes a name the manifest never supplied
+ * impossible to interpolate into a shell command. A sentinel typed `string`
+ * reads as an ordinary value at every call site and hides that case.
+ */
 export interface InstalledPackage {
-  readonly name: string
-  readonly version: string
+  readonly name?: string
+  readonly version?: string
 }
 
 /**
@@ -26,11 +33,8 @@ export function readInstalled(root: string = PROJECT_ROOT): InstalledPackage {
     const raw = readFileSync(join(root, 'package.json'), 'utf8')
     const parsed = JSON.parse(raw) as { name?: string; version?: string }
 
-    return {
-      name: parsed.name ?? UNKNOWN_VERSION,
-      version: parsed.version ?? UNKNOWN_VERSION,
-    }
+    return { name: parsed.name, version: parsed.version }
   } catch {
-    return { name: UNKNOWN_VERSION, version: UNKNOWN_VERSION }
+    return {}
   }
 }

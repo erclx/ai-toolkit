@@ -10,7 +10,7 @@ import {
   outro,
   select,
 } from '@/ui'
-import { readInstalled } from '@/version/installed'
+import { readInstalled, UNKNOWN_LABEL } from '@/version/installed'
 import { detectManager, installCommand, type Manager } from '@/version/manager'
 import {
   describeSkew,
@@ -72,18 +72,32 @@ export function register(program: Command): void {
  */
 async function runUpgrade(opts: UpgradeOptions): Promise<number> {
   const installed = readInstalled()
+  const before = installed.version ?? UNKNOWN_LABEL
 
   intro('aitk upgrade')
   logStep('Installed')
-  logInfo(`${installed.name} ${installed.version}`)
+  logInfo(`${installed.name ?? UNKNOWN_LABEL} ${before}`)
   logInfo(PROJECT_ROOT)
 
   const manager = detectManager(PROJECT_ROOT)
   if (manager === undefined) {
     return refuse(
       opts,
-      installed.version,
+      before,
       `No package manager owns ${PROJECT_ROOT}. A source checkout is upgraded by pulling, not by reinstalling over it.`,
+    )
+  }
+
+  // A manifest that did not parse, or carried no `name`, would otherwise reach
+  // `installCommand` and produce a global install of whatever sits under that
+  // placeholder on the registry. The prompt below defaults to yes headlessly,
+  // so nothing downstream would stop it.
+  if (installed.name === undefined) {
+    return refuse(
+      opts,
+      before,
+      `No package name in ${PROJECT_ROOT}/package.json, so there is nothing safe to reinstall. Repair the manifest, or reinstall by name yourself.`,
+      manager,
     )
   }
 
@@ -99,14 +113,14 @@ async function runUpgrade(opts: UpgradeOptions): Promise<number> {
   if (skew.state === 'current') {
     outro()
     emit(opts, {
-      ...base(installed.version, manager, command, skew),
-      after: installed.version,
+      ...base(before, manager, command, skew),
+      after: before,
       state: 'current',
     })
     return 0
   }
 
-  return await applyUpgrade(opts, installed.version, skew, manager, command)
+  return await applyUpgrade(opts, before, skew, manager, command)
 }
 
 /**
@@ -163,7 +177,7 @@ async function applyUpgrade(
     )
   }
 
-  const after = readInstalled().version
+  const after = readInstalled().version ?? UNKNOWN_LABEL
   logStep('Installed')
   logInfo(after === before ? `${after}, unchanged` : `${before} to ${after}`)
   outro()

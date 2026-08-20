@@ -1,9 +1,11 @@
+import { PROJECT_ROOT } from '@/project-root'
 import { compareVersions, parseVersion } from '@/version/compare'
 import {
   type InstalledPackage,
   readInstalled,
-  UNKNOWN_VERSION,
+  UNKNOWN_LABEL,
 } from '@/version/installed'
+import { detectManager } from '@/version/manager'
 
 const REGISTRY = 'https://registry.npmjs.org'
 
@@ -65,25 +67,33 @@ export interface SkewOptions {
 export async function readSkew(options: SkewOptions = {}): Promise<SkewReport> {
   const installed = options.installed ?? readInstalled()
   const lookup = options.lookup ?? fetchLatest
+  const { name, version } = installed
 
-  if (installed.version === UNKNOWN_VERSION) {
+  if (version === undefined) {
     return unknown(
       installed,
       'No version in the package manifest, so there is nothing to compare.',
     )
   }
 
-  const local = parseVersion(installed.version)
+  if (name === undefined) {
+    return unknown(
+      installed,
+      'No name in the package manifest, so the registry has nothing to look up.',
+    )
+  }
+
+  const local = parseVersion(version)
   if (local === undefined) {
     return unknown(
       installed,
-      `Installed version ${installed.version} is not a version this can parse.`,
+      `Installed version ${version} is not a version this can parse.`,
     )
   }
 
   let raw: string
   try {
-    raw = await lookup(installed.name)
+    raw = await lookup(name)
   } catch (error) {
     return unknown(installed, `Registry lookup failed: ${describe(error)}`)
   }
@@ -98,8 +108,8 @@ export async function readSkew(options: SkewOptions = {}): Promise<SkewReport> {
 
   return {
     state: compareVersions(local, published) < 0 ? 'behind' : 'current',
-    name: installed.name,
-    installed: installed.version,
+    name,
+    installed: version,
     latest: raw,
   }
 }
@@ -107,8 +117,8 @@ export async function readSkew(options: SkewOptions = {}): Promise<SkewReport> {
 function unknown(installed: InstalledPackage, reason: string): SkewReport {
   return {
     state: 'unknown',
-    name: installed.name,
-    installed: installed.version,
+    name: installed.name ?? UNKNOWN_LABEL,
+    installed: installed.version ?? UNKNOWN_LABEL,
     reason,
   }
 }
@@ -154,15 +164,29 @@ async function fetchLatest(name: string): Promise<string> {
  * One line naming the state, for a caller that renders the skew beside sections
  * it does not own. Held here so `aitk sync --check` and `aitk claude skills
  * drift` cannot word the same three states differently.
+ *
+ * The remedy is chosen by the same detection `aitk upgrade` runs, because both
+ * callers run from a source checkout routinely and that is where the verb
+ * refuses. Naming it unconditionally sends a contributor whose clone sits a
+ * release behind to a command that declines. The read is a match against the
+ * root string rather than a filesystem call, so the line stays cheap.
  */
-export function describeSkew(report: SkewReport): string {
+export function describeSkew(
+  report: SkewReport,
+  root: string = PROJECT_ROOT,
+): string {
   if (report.state === 'unknown') {
     return `Installed ${report.installed}, published unknown. ${report.reason}`
   }
 
-  if (report.state === 'behind') {
-    return `Installed ${report.installed}, published ${report.latest}. Run \`aitk upgrade\`.`
+  if (report.state === 'current') {
+    return `Installed ${report.installed}, which is the newest published.`
   }
 
-  return `Installed ${report.installed}, which is the newest published.`
+  const remedy =
+    detectManager(root) === undefined
+      ? 'This is a source checkout, so pull rather than reinstalling.'
+      : 'Run `aitk upgrade`.'
+
+  return `Installed ${report.installed}, published ${report.latest}. ${remedy}`
 }

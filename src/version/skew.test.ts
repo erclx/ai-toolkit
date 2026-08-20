@@ -65,7 +65,21 @@ describe('readSkew', () => {
   it('should report an unreadable manifest as unknown without calling out', async () => {
     let called = false
     const report = await readSkew({
-      installed: { name: 'unknown', version: 'unknown' },
+      installed: {},
+      lookup: async () => {
+        called = true
+        return '1.0.0'
+      },
+    })
+
+    expect(report.state).toBe('unknown')
+    expect(called).toBe(false)
+  })
+
+  it('should refuse to look up a manifest carrying no name', async () => {
+    let called = false
+    const report = await readSkew({
+      installed: { version: '0.110.0' },
       lookup: async () => {
         called = true
         return '1.0.0'
@@ -88,15 +102,34 @@ describe('readSkew', () => {
 })
 
 describe('describeSkew', () => {
-  it('should name the remedy when the binary is behind', () => {
-    const line = describeSkew({
-      state: 'behind',
-      name: '@erclx/aitk',
-      installed: '0.110.0',
-      latest: '0.111.0',
-    })
+  const BEHIND = {
+    state: 'behind',
+    name: '@erclx/aitk',
+    installed: '0.110.0',
+    latest: '0.111.0',
+  } as const
+
+  it('should name the upgrade verb when a manager owns the install', () => {
+    const line = describeSkew(
+      BEHIND,
+      '/home/u/.bun/install/global/node_modules',
+    )
 
     expect(line).toContain('aitk upgrade')
+  })
+
+  it('should send a source checkout to pull rather than to a verb that refuses', () => {
+    const line = describeSkew(BEHIND, '/home/u/repos/ai/aitk')
+
+    expect(line).not.toContain('aitk upgrade')
+    expect(line).toContain('pull')
+  })
+
+  it('should name both versions whichever remedy it picks', () => {
+    const line = describeSkew(BEHIND, '/home/u/repos/ai/aitk')
+
+    expect(line).toContain('0.110.0')
+    expect(line).toContain('0.111.0')
   })
 
   it('should carry the reason when the state is unknown', () => {

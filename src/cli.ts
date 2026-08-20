@@ -27,7 +27,7 @@ import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
 import { register as audits } from '@/commands/audits'
 import { register as upgrade } from '@/commands/upgrade'
-import { readInstalled } from '@/version/installed'
+import { readInstalled, UNKNOWN_LABEL } from '@/version/installed'
 
 const GREY = '\x1b[0;90m'
 const WHITE = '\x1b[1;37m'
@@ -113,7 +113,7 @@ function showHelp(): void {
 const program = new Command()
 program
   .name('aitk')
-  .version(readInstalled().version)
+  .version(readInstalled().version ?? UNKNOWN_LABEL)
   .enablePositionalOptions()
   .helpOption(false)
 program.action(() => showHelp())
