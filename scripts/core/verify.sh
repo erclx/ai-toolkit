@@ -595,6 +595,7 @@ main() {
   log_step "Shell"
   if has_changed '\.sh$|^package\.json$'; then
     run_check "bun run check:shell" "Shell check failed"
+    run_check "bash $PROJECT_ROOT/scripts/core/check-color-source.sh" "A color escape is defined outside scripts/lib/ui.sh."
     log_info "Shell check passed"
   else
     log_info "Skipped, no shell changes"
