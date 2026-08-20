@@ -13,6 +13,11 @@ paths:
 
 - Read the skill's sibling `REQUIREMENT.md` when one exists. If the change closes no gap it states, change the requirement first or drop the change.
 
+## After editing
+
+- Re-read a skill body this session edited before invoking that skill again in the same session
+- Do not read a resolved file path in a held body as evidence the body is current
+
 ## Authority
 
 - Follow `.claude/standards/skill.md` for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source.
