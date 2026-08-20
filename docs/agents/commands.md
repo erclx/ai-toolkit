@@ -46,6 +46,8 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                            |
 | `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD` (`--json`)                                                         |
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                   |
+| `aitk audits run`          | Run every audit as one set, report per check under one verdict, and compare each count to the recorded baseline (`--json`, `--record`)    |
+| `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                 |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                     |
 
 ## Domain commands
@@ -68,6 +70,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `comments`  | `scan`                                                                                      |
 | `context`   | `audit`                                                                                     |
 | `markdown`  | `audit`                                                                                     |
+| `audits`    | `run`, `list`                                                                               |
 
 Common patterns:
 

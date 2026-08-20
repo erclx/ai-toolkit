@@ -11,15 +11,16 @@ What a skill or script reads to discover names at runtime, and how each domain i
 
 Use these to discover what's available instead of hardcoding names.
 
-| Command                          | Returns                                              |
-| -------------------------------- | ---------------------------------------------------- |
-| `aitk tooling list --json`       | Stacks, extends chain, dep and script counts         |
-| `aitk snippets list --json`      | Presets and categories with their slugs              |
-| `aitk standards list --json`     | Standards docs and the paths each governs            |
-| `aitk gov list --json`           | Governance stacks, rule sets, and unreferenced rules |
-| `aitk claude seeds list --json`  | Seed doc sources with content                        |
-| `aitk claude skills list --json` | Plugin skills, descriptions, requirement flag        |
-| `aitk docs list --json`          | Consumer docs plus per-domain context                |
+| Command                          | Returns                                                          |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `aitk tooling list --json`       | Stacks, extends chain, dep and script counts                     |
+| `aitk snippets list --json`      | Presets and categories with their slugs                          |
+| `aitk standards list --json`     | Standards docs and the paths each governs                        |
+| `aitk gov list --json`           | Governance stacks, rule sets, and unreferenced rules             |
+| `aitk claude seeds list --json`  | Seed doc sources with content                                    |
+| `aitk claude skills list --json` | Plugin skills, descriptions, requirement flag                    |
+| `aitk docs list --json`          | Consumer docs plus per-domain context                            |
+| `aitk audits list --json`        | Audits the set runs, the corpus each reads, and whether it gates |
 
 ### Catalog fields
 
@@ -129,4 +130,7 @@ AITK_NON_INTERACTIVE=1 aitk wiki init /path/to/project
 
 # Run a sandbox scenario non-interactively
 SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
+
+# Read every audit as one record. Exit 2 is a fact, 3 an audit that did not report
+aitk audits run --json
 ```
