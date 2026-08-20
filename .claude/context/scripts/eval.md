@@ -35,6 +35,8 @@ Retention is additive. A failure to write either record warns and the verdict st
 
 Both therefore quote paths, seed bullets, and rules as they stood on the run date. A repository-wide sweep excludes them, and a path inside one that no longer resolves is the record doing its job rather than drift to repair.
 
+The three frozen records do not carry banners of equal strength, so a sweep cannot exclude them as one class. `result-context.md` and `result-wireframes.md` refuse every edit outright. `result-seed.md` refuses edits to its quoted and machine-derived blocks alone and states that the operator-written judgment sections after them do follow prose standards, which puts those sections inside a prose sweep rather than outside it. Read the banner per file before excluding one.
+
 ### The `Subject` column
 
 A `Subject` commit an ablation pair regenerates from gets a pushed tag under `eval/`, and an ordinary run does not. Rows pointing at a commit that lives on one local branch and nothing else are one branch cleanup or one lost disk away from losing the entry point while the content stays committed. A tag survives that deletion, and the `eval/` prefix keeps it clear of the `v*` release tags. `run.sh` does not create the ref, so the next ablation can recreate the same state, which is accepted on the same grounds the citation check was cut.

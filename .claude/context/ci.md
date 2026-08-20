@@ -47,6 +47,8 @@ The runner installs the plugin CLI so the manifest stage gates rather than skips
 
 The release itself is not what broke. `2.1.237` sitting on the authoring machine answers `claude --version` in 0.068 seconds and passes `claude plugin validate --strict` on both manifests, so the failure is a condition of `bun install -g` against that release on a fresh runner rather than a defect in the published package. Raising the pin therefore has to be tested on a runner and cannot be cleared by running the new version locally.
 
+The published tarball is what settles why the health guard fires rather than the presence test alone. `bin/claude.exe` as shipped is a shell stub that prints the native-binary error and exits 1 on any invocation, and the postinstall replaces that stub with the real binary. A global install landing the wrapper alone therefore leaves a name that resolves and a command that fails, which is exactly what `claude --version` tests. Confirmed on 2026-08-20 by unpacking `2.1.237` and running the stub with `--version` for exit 1.
+
 Validation needs no credential, confirmed by running it under `env -i` with a fresh `HOME`, so this is an install step rather than a secret. The stage still skips on a machine where the CLI is absent or cannot run, and fails instead when `CI` is set, because a silent skip on the runner would report the pass the stage exists to withhold.
 
 `check:install` stays out of CI. It is the slowest thing available and it is not in the local gate either, so adding it would widen the gate past parity.
