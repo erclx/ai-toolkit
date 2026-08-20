@@ -88,6 +88,11 @@ export function register(program: Command): void {
         '  aitk tooling sync base --check',
         '  AITK_NON_INTERACTIVE=1 aitk tooling sync base --write',
         '',
+        'To gate CI on tooling drift, run headlessly with neither flag. That',
+        'exits 1 when a file would be replaced and 0 when none would, which is',
+        'what `aitk sync --check --exit-code` spells with a flag. Pass --check',
+        'to report the same list and always exit 0.',
+        '',
       ].join('\n'),
     )
     .action(

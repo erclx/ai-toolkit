@@ -92,17 +92,19 @@ AITK_NON_INTERACTIVE=1 aitk init \
 
 Omit any flag whose resolved value is empty.
 
-Step 2: `aitk tooling sync <tooling-stack>` installs stack deps, scripts, gitignore entries, seeds, golden configs, and drops the reference doc. The extends chain is walked, so syncing `vite-react` also pulls `web` and `base` configs. Skip if the tooling stack is `base` (already synced by `aitk init`).
+Step 2: `aitk tooling sync <tooling-stack> --write` installs stack deps, scripts, gitignore entries, seeds, golden configs, and drops the reference doc. The extends chain is walked, so syncing `vite-react` also pulls `web` and `base` configs. Skip if the tooling stack is `base` (already synced by `aitk init`).
+
+`--write` is required. A headless run without it reports what it would replace and exits 1, since golden configs overwrite whatever the target holds at those paths. Scaffolding into a fresh target has nothing to lose, so pass it directly rather than reading a report first.
 
 ```bash
-AITK_NON_INTERACTIVE=1 aitk tooling sync <tooling-stack> <target>
+AITK_NON_INTERACTIVE=1 aitk tooling sync <tooling-stack> <target> --write
 ```
 
 Monorepo with multiple language roots: run `aitk init` once at the repo root so `base` (husky, prettier, cspell, commitlint, CI) lands single, then sync each subtree with `--skip base` so the shared layer is not re-dropped.
 
 ```bash
-AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react ./frontend --skip base
-AITK_NON_INTERACTIVE=1 aitk tooling sync python ./backend --skip base
+AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react ./frontend --skip base --write
+AITK_NON_INTERACTIVE=1 aitk tooling sync python ./backend --skip base --write
 ```
 
 Without `--skip base`, each subtree re-drops husky, and git honors only one `core.hooksPath`, so the extra hook dirs silently break. Each subtree keeps its own framework configs and its own `.claude/tooling/<stack>.md` audit docs.

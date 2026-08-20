@@ -166,9 +166,9 @@ The category the contract called golden configs turned out to hold 41 files acro
 
 An opt-in `--dry-run` was the alternative and it is what the filed issue proposed. It is declined because a flag you have to remember is one nobody passes the first time, and the first time is when the target still holds the work. The safe path has to be the one a caller reaches by typing nothing, so the dangerous path is what carries the flag.
 
-That inverts the contract for every caller, which is the accepted cost. Seven internal call sites now pass `--write` explicitly, and anything outside this repository relying on `AITK_NON_INTERACTIVE=1` to mean yes is broken by the change. Exiting 1 rather than 0 is what keeps that loud: a caller that forgets the flag fails rather than reporting a clean run it never performed, which is the same reasoning the wrapper defect in the risks below leaves standing everywhere an exit code is read.
+That inverts the contract for every caller, which is the accepted cost. Four internal call sites pass `--write` explicitly, being the scaffold step, the stack verifier, and two in the sandbox, while the three interactive sandbox invocations keep prompting because the prompt is what they demonstrate. Anything outside this repository relying on `AITK_NON_INTERACTIVE=1` to mean yes is broken by the change. Exiting 1 rather than 0 is what keeps that loud: a caller that forgets the flag fails rather than reporting a clean run it never performed, which is the same reasoning the wrapper defect in the risks below leaves standing everywhere an exit code is read.
 
-The interactive prompt is untouched. Inverting a default that already behaves correctly would churn the one path that never caused the damage, so the fix sits on the headless branch alone. Measured at `1725dd91` on 2026-08-20.
+The interactive prompt is untouched. Inverting a default that already behaves correctly would churn the one path that never caused the damage, so the fix sits on the headless branch alone. Measured at `0c953078` on 2026-08-20.
 
 ## Risks / open questions
 

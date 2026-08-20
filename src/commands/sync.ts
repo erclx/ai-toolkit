@@ -218,7 +218,9 @@ function renderTooling(report: CheckReport): void {
         ? 'Not stamped. No chain recorded, so tooling drift is unmeasured.'
         : `Recorded chain names no stack this toolkit ships: ${tooling.chain.join(' < ')}.`,
     )
-    logInfo('Run `aitk tooling sync <stack>` to record what this target holds.')
+    logInfo(
+      'Run `aitk tooling sync <stack> --write` to record what this target holds.',
+    )
     return
   }
 
@@ -235,7 +237,9 @@ function renderTooling(report: CheckReport): void {
   for (const [category, count] of Object.entries(tooling.counts)) {
     if (count > 0) logWarn(`${count} ${category}`)
   }
-  logInfo('Run `aitk tooling sync` to reconcile these.')
+  logInfo(
+    'Run `aitk tooling sync --check` to see which files, `--write` to apply.',
+  )
 }
 
 /**
