@@ -188,6 +188,27 @@ describe('command action exit codes', () => {
     },
   )
 
+  /**
+   * A checkout is the one place `upgrade` must not run, and it is also the
+   * place every contributor invokes the CLI from. The refusal lands before the
+   * registry lookup, so the case asserts over no network at all.
+   */
+  it('should exit 1 when upgrade is run against a source checkout', async () => {
+    const result = await runCli(['upgrade'], { cwd: workDir, emptyPath })
+
+    expect(result.exitCode).toBe(1)
+    expect(result.stderr).toContain('No package manager owns')
+  })
+
+  it('should record the refusal when upgrade is asked for JSON', async () => {
+    const result = await runCli(['upgrade', '--json'], {
+      cwd: workDir,
+      emptyPath,
+    })
+
+    expect(JSON.parse(result.stdout).state).toBe('refused')
+  })
+
   it('should exit 1 when transcripts cannot find yt-dlp', async () => {
     const result = await runCli(
       ['transcripts', 'https://youtu.be/dQw4w9WgXcQ'],
