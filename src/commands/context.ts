@@ -15,6 +15,16 @@ import {
   REQUIRED_SECTIONS,
   type SectionFinding,
 } from '@/context/audit'
+import {
+  type ArchitectureReport,
+  coveredCount,
+  DECISION_ALLOWANCE,
+  FRAME_ALLOWANCE,
+  isOverLength,
+  measureArchitecture,
+  RECORD_REL,
+  testableCount,
+} from '@/context/architecture'
 import { auditCitations, type CitationReport } from '@/context/citations'
 import {
   type AuditedFolder,
@@ -65,7 +75,7 @@ export function register(program: Command): void {
   context
     .command('audit')
     .description(
-      'Report required sections, entry length, citations, reference form, catalog tables, provenance, superseded-decision narration, and index drift',
+      'Report required sections, entry length, citations, reference form, catalog tables, provenance, superseded-decision narration, index drift, and the architecture record against its own ceiling',
     )
     .argument('[path]', 'Project root, defaulting to the current directory')
     .helpOption('-h, --help', 'Show this help message')
@@ -88,11 +98,13 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '  2  a gating finding is present',
         '',
-        'An unresolved citation always gates. --gate widens the gate to the',
+        'An unresolved citation always gates. An architecture record longer',
+        'than the ceiling it derives for itself gates on a full run, and',
+        '--citations-only never measures it. --gate widens the gate to the',
         'other two findings that are facts rather than judgments: a missing',
-        'required section and index drift. Length, reference form, table,',
-        'provenance, and narration findings are judgments and stay advisory',
-        'under both.',
+        'required section and index drift. Entry length, reference form,',
+        'table, provenance, narration, and the record claim classification',
+        'are judgments and stay advisory under both.',
         '',
         'Depth and bullet weight are stated over every markdown file rather',
         'than over a context entry, so `aitk markdown audit` measures them.',
@@ -205,6 +217,12 @@ async function runAudit(
   const drift = gateOnly ? [] : await auditIndexes(folders)
   const sections = gateOnly ? [] : missingSections(root, folders, entries)
   const length = gateOnly ? undefined : lengthFindings(entries)
+  // Absent under `--citations-only` and null when the project carries no
+  // record, for the reason `checkpoints.narration` states about its own two
+  // absences. A run that never looked and a project with nothing to look at
+  // are different answers, and one value for both reports the second as the
+  // first.
+  const record = gateOnly ? undefined : await measureArchitecture(root)
 
   if (gateOnly) {
     reportGate(citations)
@@ -219,6 +237,7 @@ async function runAudit(
     reportProvenance(entries, folders)
     reportNarration(entries, folders, narration)
     reportDrift(drift)
+    reportRecord(record)
     outro()
   }
 
@@ -251,11 +270,17 @@ async function runAudit(
         length,
         missingSections: sections,
         indexDrift: drift,
+        // Null says the run opened the project and found no record, which a
+        // target that never wrote one is entitled to. Absent says the run
+        // never looked, which is `--citations-only`.
+        architecture: gateOnly ? undefined : (record ?? null),
         checkpoints: {
           lines: LENGTH_CHECKPOINT,
           renderWidth: RENDER_WIDTH,
           provenanceFolder: PROVENANCE_FOLDER,
           requiredSections: REQUIRED_SECTIONS,
+          recordFrame: FRAME_ALLOWANCE,
+          recordPerDecision: DECISION_ALLOWANCE,
           // Three states rather than two, so a record showing no finding says
           // which terms were looked for. The key is absent when the run never
           // scanned, which is `--citations-only`, and null when it scanned and
@@ -277,6 +302,7 @@ async function runAudit(
 
   const gating = isGating({
     unresolvedCitations: citations.unresolved.length,
+    recordOverLength: record !== undefined && isOverLength(record),
     sections,
     drift,
     widened,
@@ -692,6 +718,91 @@ function reportNarration(
             )
             .join('\n')}`,
       )
+      .join('\n'),
+  )
+}
+
+/** How each classification reads in the report. */
+const CLAIM_LABEL: Record<string, string> = {
+  countable: 'countable claim',
+  invariant: 'structural invariant',
+  neither: 'reasoning only',
+}
+
+/**
+ * Reports the architecture record against the ceiling it states for itself and
+ * against what a machine could test in it.
+ *
+ * The length reading is a fact and gates. Everything below it names candidates
+ * a reader adjudicates, because deciding whether a sentence states a claim is a
+ * judgment no parser settles, and a stored verdict would age the way the
+ * anchors it sits beside already do. Nothing is stored: every run reclassifies,
+ * so an entry rewritten tomorrow is read as it stands then.
+ */
+function reportRecord(report: ArchitectureReport | undefined): void {
+  logStep('Architecture record')
+
+  if (report === undefined) {
+    logInfo(
+      `Out of scope. The project carries no ${RECORD_REL}, so there was no record to measure.`,
+    )
+    return
+  }
+
+  logInfo(
+    `Covers ${report.rel} alone, whose own risks section derives its ceiling as ${FRAME_ALLOWANCE} lines of frame plus ${DECISION_ALLOWANCE} a decision.`,
+  )
+
+  const decisions = report.decisions.length
+  if (isOverLength(report)) {
+    logError(
+      `${report.lines} lines against a ceiling of ${report.ceiling} from ${plural(decisions, 'decision')}`,
+    )
+  } else {
+    logInfo(
+      `${report.lines} lines against a ceiling of ${report.ceiling} from ${plural(decisions, 'decision')}.`,
+    )
+  }
+  logInfo(
+    'The ceiling rises with the decision count, so adding a decision buys six lines and the check passes exactly when the file grew.',
+  )
+
+  if (decisions === 0) {
+    logWarn('The record declares no decision, so nothing was classified.')
+    return
+  }
+
+  const testable = testableCount(report)
+  const covered = coveredCount(report)
+
+  logInfo(
+    'A countable claim carries a figure a run could recompute and an invariant quantifies over a named tree a walk could falsify. Both are candidates a reader settles, and neither gates.',
+  )
+  logInfo(
+    'A figure spelled in words reads as uncounted, since a cardinal in this prose is pronominal more often than measured. Entries are counted by heading, and the record states that at least one heading holds three decisions.',
+  )
+  const line = `${testable} of ${decisions} carry a claim a machine could test, ${covered} of which name a check that exists`
+  // A record whose every testable claim names a check has nothing to act on,
+  // and so does one carrying no testable claim at all. Warning on both is how
+  // a section becomes one nobody reads after the second run.
+  if (testable > covered) logWarn(line)
+  else logInfo(`${line}.`)
+  logInfo(
+    'Coverage reads the entry rather than the tree, so a claim some check happens to cover without the entry naming it reads as unchecked.',
+  )
+
+  pipeOutput(
+    report.decisions
+      .map((entry) => {
+        const kind = CLAIM_LABEL[entry.claim] ?? entry.claim
+        const evidence =
+          entry.figures.length > 0 ? `  ${entry.figures.join(' ')}` : ''
+        const checks =
+          entry.checks.length > 0
+            ? `\n  checked by ${entry.checks.join(', ')}`
+            : ''
+        return `${report.rel}:${entry.line}  ${kind}${evidence}\n  ${entry.heading}${checks}`
+      })
       .join('\n'),
   )
 }
