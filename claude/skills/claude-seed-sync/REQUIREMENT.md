@@ -7,7 +7,7 @@ description: Scope boundary for section-granular seed reconciliation against the
 
 ## Gap
 
-Without this skill, a project that edited an installed seed or standard has two ways to take an upstream change and both lose something. `aitk standards install` overwrites every file, so the edits are gone with no record of what they were. `aitk standards sync` updates only files it already finds and adds none, so a standard written after the project installed never arrives at all. Neither can deliver one upstream section into a file the project has customized, which is the case a grown project is always in.
+Without this skill, a project that edited a seed has no way to take an upstream change without losing something. No `aitk` command touches a seed at all, so the only route is a hand copy that overwrites the file and takes the edits with it, unrecorded. Nothing can deliver one upstream section into a file the project has customized, which is the case a grown project is always in.
 
 A whole-file diff does not close it either. It cannot separate a section the user rewrote on purpose from a section the toolkit moved on without them, so the choice reaches the user as accept everything or lose everything, and the safe answer is always to skip.
 
@@ -17,7 +17,7 @@ Two failures belong to the audit rather than to the diff. A decision taken in ch
 
 ## Must
 
-- Read seed and standard content from the CLI rather than holding a copy, so the audit and the install cannot disagree
+- Read seed content from the CLI rather than holding a copy, so the audit and the install cannot disagree
 - Diff per section, treating the preamble as a section of its own
 - Separate a customized section from a stale one by reading the attribution the drift report records, not by how the section looks, and default the customized one to no action
 - Fall back to appearance only when attribution is unavailable, and mark every verdict reached that way as unverified

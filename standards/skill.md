@@ -231,13 +231,13 @@ A skill reads from two roots. Know which one a file lives under before referenci
 
 ### Citing a standard
 
-A standard reaches a skill by two routes, and a body that names only the first breaks in a project that installed the plugin without running `aitk standards install`.
+No standard installs into a project, so a body cites one place rather than choosing between two.
 
-- Cite `.claude/standards/X.md` first, then name `${CLAUDE_SKILL_DIR}/../../standards/X.md` as the fallback. The plugin ships the whole standards folder beside `skills/`, so the second path resolves in every install.
-- The project copy wins when it exists, which keeps a target's local edits authoritative. The fallback only covers the case where the project lacks that file.
-- Condition the fallback on the standard, never on the `.claude/standards/` directory. `aitk standards sync` updates only filenames it already finds and never adds one, so a project that installed before a standard existed keeps the directory and never receives that file. A directory test passes there, no fallback engages, and the standard reads as absent.
-- State the fallback once per body, at the site that reads the standard. A later mention of a standard the body already read stays bare, since repeating the fallback at every mention is noise rather than instruction.
-- A guard on a standard's presence names the file and tests both paths before it stops. A guard that tests only `.claude/standards/` refuses to run in a plugin-only project that has the file, and a guard that tests the directory passes in the partial-install case it exists to catch.
+- Cite `${CLAUDE_SKILL_DIR}/../../standards/X.md`. The plugin ships the whole standards folder beside `skills/`, so the path resolves in every install and needs no fallback behind it.
+- Never cite `.claude/standards/X.md` from a shipped body. A target holds no such folder, and one left behind by an older toolkit is a stale copy no resolver reads.
+- Name `aitk standards X` instead where the body wants the document rather than a path to open, such as a value it captures or reports. That verb resolves `standards/` at the project root and then the corpus inside the package.
+- State the path once per body, at the site that reads the standard. A later mention of a standard the body already read stays bare, since repeating the path at every mention is noise rather than instruction.
+- A guard on a standard's presence names the file rather than the folder holding it, since a folder test answers for a sibling that happens to be there.
 - Use `${CLAUDE_SKILL_DIR}`, never a bare `../../` and never `${CLAUDE_PLUGIN_ROOT}`. Only `${CLAUDE_SKILL_DIR}` is expanded before the body reaches the model. The other two leave the model to infer a base path, which it may resolve against the session cwd instead.
 - Cite a shared procedure, never restate it. A procedure two or more skills execute gets one definition in a standard and a citation in each body. Nothing catches a restatement that drifts, because the drift assertion covers generated copies and a hand-written one is not generated, so the guarantee is only that a single definition exists to correct.
 - Keep the trigger in the body and the procedure in the standard. The citing skill states when the procedure runs and what it runs against, since that varies per skill and the standard cannot know it.

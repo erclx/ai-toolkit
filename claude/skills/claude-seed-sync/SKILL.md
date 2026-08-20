@@ -14,27 +14,24 @@ Surfaces drift between the toolkit's current seed docs and what was installed in
 
 ## Step 1: read toolkit sources and the drift report
 
-Run all three in parallel from the project root:
+Run both in parallel from the project root:
 
 ```bash
 aitk claude seeds list --json 2>/dev/null
-aitk standards list --json 2>/dev/null
 aitk sync --check . --json 2>/dev/null
 ```
 
-Seeds emit an array of `{name, source, target, content}`. Standards emit `{standards: [{name, description, target, content}]}`. In both cases `target` is the path relative to the project root where the file installs. Merge the two into one list of entries tagged by source (`seed` or `standard`).
+Seeds emit an array of `{name, source, target, content}`, where `target` is the path relative to the project root where the file installs.
 
-If the target project has no `.claude/standards/` directory, skip the standards stage silently.
+Seeds are the whole subject. No standard installs into a project, so there is no installed copy to audit and nothing to reconcile against the corpus. A standard a session needs is read with `aitk standards <name>`, which resolves against the copy inside the package.
 
 ### Narrow the set by attribution
 
-The report is what separates a file the project edited from one the toolkit moved on without it. Read `seeds.entries` for seed paths and `domains[].entries` for standards, then drop from the merged list every entry the report attributes as `stale`. A stale file matches a version the toolkit published, so it carries no edits to lose and `aitk standards sync` takes it whole. Section-merging it is work with no decision behind it.
+The report is what separates a file the project edited from one the toolkit moved on without it. Read `seeds.entries` for seed paths.
 
 Keep every seed regardless of state. `CLAUDE.md` is the file a project edits most, and its `drifted` verdict is the case this skill exists for.
 
-Record the dropped standards as one line in the scope table rather than as rows: `<n> standards stale, taken by aitk standards sync`.
-
-Read the `toolkit-cli` skill before naming that command in the output. It states which surfaces a sync overwrites, merges, or writes once, and this skill hands the user a command against files its own attribution pass cleared as carrying no edits.
+Read the `toolkit-cli` skill before naming a sync command in the output. It states which surfaces a sync overwrites, merges, or writes once.
 
 Fall back to the appearance heuristic in step 3 when the report cannot attribute, which is `historyUnavailable` set on the relevant section or the command failing outright. Say so in the summary block, because a fallback audit reports guesses rather than facts.
 
@@ -87,16 +84,15 @@ How to respond: fill in `Decision:` per item (`apply` or `skip`), then ping. Cha
 
 ## Scope
 
-Group rows by source. `Seeds` first, then `Standards`. Mark target-only files (present in target, absent in source) as `local-only` and leave them untouched.
+Mark target-only files (present in target, absent in source) as `local-only` and leave them untouched.
 
-| Source   | File       | Status     | Note                         |
-| -------- | ---------- | ---------- | ---------------------------- |
-| seed     | `<target>` | diffed     | <counts>                     |
-| seed     | `<target>` | in sync    |                              |
-| seed     | `<target>` | skipped    | non-text, compare manually   |
-| seed     | `<target>` | customized | <section> skipped by default |
-| standard | `<target>` | diffed     | <counts>                     |
-| standard | `<target>` | local-only | not in toolkit, preserved    |
+| Source | File       | Status     | Note                         |
+| ------ | ---------- | ---------- | ---------------------------- |
+| seed   | `<target>` | diffed     | <counts>                     |
+| seed   | `<target>` | in sync    |                              |
+| seed   | `<target>` | skipped    | non-text, compare manually   |
+| seed   | `<target>` | customized | <section> skipped by default |
+| seed   | `<target>` | local-only | not in toolkit, preserved    |
 
 ## 1. 📝 Update → `<target-path>` / <section>
 
