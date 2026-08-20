@@ -7,13 +7,15 @@ description: Prerequisites, the command surface, headless skill testing, and the
 
 ## Prerequisites
 
-Nine scenarios push to a real GitHub remote. They need an authenticated `gh` and membership in the org that owns `toolkit-sandbox`, which is private. Everything else runs offline against an empty sandbox.
+Nine scenarios push to a real GitHub remote. They need an authenticated `gh` and membership in the org that owns `aitk-sandbox`, which is private. Everything else runs offline against an empty sandbox.
 
 ```bash
 gh auth login   # required for any scenario declaring use_anchor
 ```
 
-Provisioning itself is offline now that the starting tree comes from a fixture, so the first network call is the scenario's own `configure_sandbox_anchor_remote` and the push that follows. No precondition checks `gh auth status`, so a missing credential surfaces as a push failure naming the host rather than as a named precondition error. `GIT_TERMINAL_PROMPT=0` is what keeps that immediate instead of a blocked prompt. Org membership is a real requirement and not an accident of the setup, since HTTPS fixes transport rather than authorization and a contributor outside the org still cannot run the anchor scenarios.
+Provisioning itself is offline now that the starting tree comes from a fixture, so the first network call is the probe `configure_sandbox_anchor_remote` runs before it adds the remote. That probe turns a missing credential or an unreachable host into a named error at the top of the run rather than a raw push failure partway through it. `GIT_TERMINAL_PROMPT=0` keeps a credential failure immediate instead of a blocked prompt.
+
+An absent repository reports separately and the probe creates it as private, which `.claude/context/sandbox/authoring.md` covers along with why the records backup refuses the same move. Org membership is a real requirement and not an accident of the setup, since HTTPS fixes transport rather than authorization and a contributor outside the org still cannot run the anchor scenarios.
 
 ## Running
 

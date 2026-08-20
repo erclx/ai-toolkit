@@ -115,7 +115,7 @@ use_anchor() {
 }
 ```
 
-`ANCHOR_REPO` carries no default. Every declaring scenario calls `use_sandbox_anchor` with no argument and resolves to `toolkit-sandbox`, so a fallback would sit permanently unreached.
+`ANCHOR_REPO` carries no default. Every declaring scenario calls `use_sandbox_anchor` with no argument and resolves to `aitk-sandbox`, so a fallback would sit permanently unreached.
 
 The library exports `use_sandbox_anchor` rather than declaring `use_anchor` itself. `manage-sandbox.sh` keys off `type -t use_anchor` to decide between staging the anchor fixture and starting empty, so a hook declared at source time would hand an anchor to `git/commit.sh`, `git/stage.sh`, and `infra/indexes.sh`, which source the file for the identity helpers alone.
 
@@ -123,9 +123,13 @@ The library exports `use_sandbox_anchor` rather than declaring `use_anchor` itse
 
 After `stage_setup` completes, `manage-sandbox.sh` unions the `claude/skills/**/SKILL.md` diff against `main` with any untracked new skill folders and copies each into `<sandbox>/.claude/skills/<name>/SKILL.md`. That diff lists a skill the branch deleted alongside one it changed, so the loop skips a path no longer in the tree and a branch retiring a skill provisions without a failed copy. This covers dev skills authored in the current branch whether or not they are committed yet. Project-scoped skills take priority over the installed plugin, so invoking `/<skill-name>` in the sandbox session exercises the dev version without `--plugin-dir` or `--bare`.
 
-## Disposable GitHub remote (`toolkit-sandbox`)
+## Disposable GitHub remote (`aitk-sandbox`)
 
-Set `ANCHOR_REPO="toolkit-sandbox"` when a scenario needs a real GitHub remote for `gh` calls (open PRs, push branches, merge, edit PR bodies). The repo at `${GITHUB_ORG}/toolkit-sandbox` exists for this purpose and is treated as fully disposable. Any scenario for a `gh`-dependent skill should default to this pattern.
+Set `ANCHOR_REPO="aitk-sandbox"` when a scenario needs a real GitHub remote for `gh` calls (open PRs, push branches, merge, edit PR bodies). The repo at `${GITHUB_ORG}/aitk-sandbox` exists for this purpose and is treated as fully disposable. Any scenario for a `gh`-dependent skill should default to this pattern.
+
+`configure_sandbox_anchor_remote` probes for that repository before it adds the remote, so an absent one is named before the scenario stages its tree rather than surfacing as a push failure partway through. The probe creates it as private when it is missing and says so. Creating is safe here because the contents are synthetic and a wrong-org run costs a stray empty repository and nothing else. `aitk records push` refuses that same move for the reason `.claude/context/development/scratch.md` records, and the asymmetry is deliberate rather than an inconsistency to unify.
+
+`gh` reports an absent repository and an unreachable host with the same exit status, so the probe separates them on the 404 alone and treats anything else as a network or credential fault. That keeps a transient failure from reading as a missing remote across all nine declaring scenarios.
 
 Each scenario owns its own reset:
 
