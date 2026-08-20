@@ -18,8 +18,6 @@ import {
 import {
   type ArchitectureReport,
   coveredCount,
-  DECISION_ALLOWANCE,
-  FRAME_ALLOWANCE,
   isOverLength,
   measureArchitecture,
   RECORD_REL,
@@ -98,13 +96,14 @@ export function register(program: Command): void {
         '  1  refused, with the reason on stderr',
         '  2  a gating finding is present',
         '',
-        'An unresolved citation always gates. An architecture record longer',
-        'than the ceiling it derives for itself gates on a full run, and',
-        '--citations-only never measures it. --gate widens the gate to the',
-        'other two findings that are facts rather than judgments: a missing',
-        'required section and index drift. Entry length, reference form,',
-        'table, provenance, narration, and the record claim classification',
-        'are judgments and stay advisory under both.',
+        'An unresolved citation always gates. An architecture record that',
+        'states its own line allowances gates when it is past the ceiling',
+        'those derive, on any run except --citations-only, which never',
+        'measures it. A record stating no allowance is reported and never',
+        'gated. --gate widens the gate to the other two findings that are',
+        'facts rather than judgments: a missing required section and index',
+        'drift. Entry length, reference form, table, provenance, narration,',
+        'and the record claim classification are judgments under both.',
         '',
         'Depth and bullet weight are stated over every markdown file rather',
         'than over a context entry, so `aitk markdown audit` measures them.',
@@ -279,8 +278,6 @@ async function runAudit(
           renderWidth: RENDER_WIDTH,
           provenanceFolder: PROVENANCE_FOLDER,
           requiredSections: REQUIRED_SECTIONS,
-          recordFrame: FRAME_ALLOWANCE,
-          recordPerDecision: DECISION_ALLOWANCE,
           // Three states rather than two, so a record showing no finding says
           // which terms were looked for. The key is absent when the run never
           // scanned, which is `--citations-only`, and null when it scanned and
@@ -749,23 +746,33 @@ function reportRecord(report: ArchitectureReport | undefined): void {
     return
   }
 
-  logInfo(
-    `Covers ${report.rel} alone, whose own risks section derives its ceiling as ${FRAME_ALLOWANCE} lines of frame plus ${DECISION_ALLOWANCE} a decision.`,
-  )
-
   const decisions = report.decisions.length
-  if (isOverLength(report)) {
-    logError(
-      `${report.lines} lines against a ceiling of ${report.ceiling} from ${plural(decisions, 'decision')}`,
+  const { allowances } = report
+
+  if (allowances === undefined) {
+    logInfo(
+      `Covers ${report.rel} alone. No standard sets a length rule for it and this record states none, so its ${plural(report.lines, 'line')} across ${plural(decisions, 'decision')} are reported and nothing is gated.`,
+    )
+    logInfo(
+      'A record declaring an allowance for its frame and one a decision is measured against the ceiling those two derive. That rule belongs to whichever record writes it, never to the toolkit.',
     )
   } else {
     logInfo(
-      `${report.lines} lines against a ceiling of ${report.ceiling} from ${plural(decisions, 'decision')}.`,
+      `Covers ${report.rel} alone, which states its own allowance of ${plural(allowances.frame, 'line')} for the frame and ${allowances.perDecision} a decision.`,
+    )
+    if (isOverLength(report)) {
+      logError(
+        `${report.lines} lines against a ceiling of ${report.ceiling} from ${plural(decisions, 'decision')}`,
+      )
+    } else {
+      logInfo(
+        `${report.lines} lines against a ceiling of ${report.ceiling} from ${plural(decisions, 'decision')}.`,
+      )
+    }
+    logInfo(
+      `The ceiling rises with the decision count, so adding a decision buys ${allowances.perDecision} lines and the check passes exactly when the file grew.`,
     )
   }
-  logInfo(
-    'The ceiling rises with the decision count, so adding a decision buys six lines and the check passes exactly when the file grew.',
-  )
 
   if (decisions === 0) {
     logWarn('The record declares no decision, so nothing was classified.')
@@ -779,7 +786,7 @@ function reportRecord(report: ArchitectureReport | undefined): void {
     'A countable claim carries a figure a run could recompute and an invariant quantifies over a named tree a walk could falsify. Both are candidates a reader settles, and neither gates.',
   )
   logInfo(
-    'A figure spelled in words reads as uncounted, since a cardinal in this prose is pronominal more often than measured. Entries are counted by heading, and the record states that at least one heading holds three decisions.',
+    'A figure spelled in words reads as uncounted, since a cardinal in prose is pronominal more often than measured. Entries are counted by heading, so a heading carrying several decisions counts once and the total reads low by however many it holds.',
   )
   const line = `${testable} of ${decisions} carry a claim a machine could test, ${covered} of which name a check that exists`
   // A record whose every testable claim names a check has nothing to act on,

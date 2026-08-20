@@ -90,6 +90,21 @@ describe('reading counts out of each record shape', () => {
   })
 
   /**
+   * Zero here would read as a record measured against a ceiling and found
+   * conforming, where the truth is that it declared none to measure against.
+   */
+  it('should omit the length key for a record stating no ceiling', () => {
+    const { ceiling, ...architecture } = contextRecord.architecture
+    const counts = countsFor(specFor('context'), {
+      ...contextRecord,
+      architecture,
+    })
+
+    expect(counts).not.toHaveProperty('recordOverLength')
+    expect(counts?.recordUnverifiable).toBe(1)
+  })
+
+  /**
    * A project entitled to carry no architecture record still has context
    * folders worth counting, and a zero under the record keys there would read
    * as a conforming record rather than as an absent one.

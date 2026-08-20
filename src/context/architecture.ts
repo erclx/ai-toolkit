@@ -7,23 +7,24 @@ import { bodyLines } from '@/markdown/scan'
  * The record this measures, relative to the project root.
  *
  * One fixed path rather than a folder walk, because the standard governing it
- * names one document and every rule quoted below is stated by that document
- * about itself.
+ * names one document, and the length rule this measures is stated by whichever
+ * record sits there rather than by the standard or by this file.
  */
 export const RECORD_REL = '.claude/ARCHITECTURE.md'
 
 /**
- * Lines the record's own formula grants everything that is not a decision.
+ * The line allowances a record states for itself, absent when it states none.
  *
- * Quoted from `## Risks / open questions`, which restates a flat 150-line total
- * as a frame plus a per-decision allowance. Held here the way the context
- * checkpoints are, since a parser over that paragraph would break on a rewrite
- * of its wording rather than on the record growing.
+ * No standard sets a length rule for this document, so the numbers belong to
+ * whichever record declares them rather than to the toolkit. Holding a pair in
+ * code and gating every project against it audits a target against a rule it
+ * never adopted, which is the failure `canResolveAtRoot` already answers on the
+ * folder side. A record stating no rule is measured and never gated.
  */
-export const FRAME_ALLOWANCE = 34
-
-/** Lines the formula grants a decision: a heading, two paragraphs, and blanks. */
-export const DECISION_ALLOWANCE = 6
+export interface Allowances {
+  readonly frame: number
+  readonly perDecision: number
+}
 
 /**
  * What a machine could do with the entry's reasoning, which is a candidate
@@ -55,8 +56,10 @@ export interface DecisionReport {
 export interface ArchitectureReport {
   readonly rel: string
   readonly lines: number
-  /** `FRAME_ALLOWANCE` plus `DECISION_ALLOWANCE` per decision. */
-  readonly ceiling: number
+  /** What the record declared, absent when it states no length rule. */
+  readonly allowances?: Allowances
+  /** The frame plus the per-decision allowance, absent alongside it. */
+  readonly ceiling?: number
   readonly decisions: readonly DecisionReport[]
 }
 
@@ -191,10 +194,10 @@ interface RawDecision {
  * A heading inside a fenced block is skipped, since the seed template shows the
  * shape it asks a project to write and a template entry is not a decision.
  *
- * Counting entries by heading undercounts, and the record says so: one entry
- * carries three decisions under one heading. The report states that rather than
- * parsing for it, because splitting a decision from its heading needs a marker
- * the record deliberately does not carry.
+ * A heading carrying several decisions counts once, so the total reads low by
+ * however many it holds. The report states that rather than parsing for it,
+ * because splitting a decision from its heading needs a marker the standard
+ * does not ask a record to carry.
  */
 export function splitDecisions(source: string): RawDecision[] {
   const lines = bodyLines(source)
@@ -229,6 +232,52 @@ export function splitDecisions(source: string): RawDecision[] {
   return decisions
 }
 
+/** Cardinals a record spells rather than writes, which the corpus does for both. */
+const SPELLED: Record<string, number> = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
+}
+
+const CARDINAL = String.raw`(\d+|${Object.keys(SPELLED).join('|')})`
+const FRAME_CLAUSE = new RegExp(String.raw`${CARDINAL}-line frame`, 'i')
+const PER_DECISION_CLAUSE = new RegExp(
+  String.raw`${CARDINAL}\s+lines?\s+a\s+decision`,
+  'i',
+)
+
+function readCardinal(token: string | undefined): number | undefined {
+  if (token === undefined) return undefined
+  const spelled = SPELLED[token.toLowerCase()]
+  if (spelled !== undefined) return spelled
+
+  const digits = Number.parseInt(token, 10)
+  return Number.isNaN(digits) ? undefined : digits
+}
+
+/**
+ * Reads the allowances a record declares for itself, or nothing.
+ *
+ * Both clauses have to be present, because half a formula is not one. A record
+ * whose wording drifts past these clauses falls back to reporting rather than
+ * to a stale ceiling held here, so the failure is visible in the run's own
+ * output instead of gating a project on a rule nobody can point at.
+ */
+export function readAllowances(source: string): Allowances | undefined {
+  const frame = readCardinal(source.match(FRAME_CLAUSE)?.[1])
+  const perDecision = readCardinal(source.match(PER_DECISION_CLAUSE)?.[1])
+
+  if (frame === undefined || perDecision === undefined) return undefined
+  return { frame, perDecision }
+}
+
 /** Whether a read failed because nothing sits at the path. */
 function isMissing(error: unknown): boolean {
   const code = (error as { code?: unknown }).code
@@ -236,8 +285,8 @@ function isMissing(error: unknown): boolean {
 }
 
 /** The ceiling the record's own formula derives from its decision count. */
-export function ceilingFor(decisions: number): number {
-  return FRAME_ALLOWANCE + DECISION_ALLOWANCE * decisions
+export function ceilingFor(allowances: Allowances, decisions: number): number {
+  return allowances.frame + allowances.perDecision * decisions
 }
 
 /**
@@ -264,6 +313,7 @@ export async function measureArchitecture(
     return undefined
   }
 
+  const allowances = readAllowances(source)
   const raw = splitDecisions(source)
   const decisions = await Promise.all(
     raw.map(async (entry) => {
@@ -282,14 +332,23 @@ export async function measureArchitecture(
   return {
     rel: RECORD_REL,
     lines: source.replace(/\n$/, '').split('\n').length,
-    ceiling: ceilingFor(raw.length),
+    ...(allowances !== undefined && {
+      allowances,
+      ceiling: ceilingFor(allowances, raw.length),
+    }),
     decisions,
   }
 }
 
-/** Whether the record is longer than the ceiling it derives for itself. */
+/**
+ * Whether the record is longer than the ceiling it derives for itself.
+ *
+ * False for a record declaring no allowances, which has no ceiling to be past.
+ * That is the answer rather than a gap, since the length rule is the record's
+ * own and a project that never wrote one owes nothing to it.
+ */
 export function isOverLength(report: ArchitectureReport): boolean {
-  return report.lines > report.ceiling
+  return report.ceiling !== undefined && report.lines > report.ceiling
 }
 
 /** How many entries carry a claim a machine could test. */

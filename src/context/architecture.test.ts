@@ -4,9 +4,8 @@ import {
   ceilingFor,
   classifyDecision,
   coveredCount,
-  DECISION_ALLOWANCE,
-  FRAME_ALLOWANCE,
   isOverLength,
+  readAllowances,
   splitDecisions,
   testableCount,
 } from '@/context/architecture'
@@ -17,6 +16,7 @@ function makeReport(
   return {
     rel: '.claude/ARCHITECTURE.md',
     lines: 100,
+    allowances: { frame: 34, perDecision: 6 },
     ceiling: 100,
     decisions: [],
     ...overrides,
@@ -166,14 +166,51 @@ describe('splitting the record into decisions', () => {
   })
 })
 
+describe('reading the allowances a record states for itself', () => {
+  it('should read a frame written in digits and a decision spelled in words', () => {
+    const source =
+      'The self-imposed 150-line total is restated as a 34-line frame plus six lines a decision.'
+
+    expect(readAllowances(source)).toEqual({ frame: 34, perDecision: 6 })
+  })
+
+  it('should read both halves written in digits', () => {
+    const source = 'A 20-line frame plus 4 lines a decision.'
+
+    expect(readAllowances(source)).toEqual({ frame: 20, perDecision: 4 })
+  })
+
+  it('should read nothing from a record stating no length rule', () => {
+    const source = [
+      '# Architecture',
+      '',
+      '## Risks / open questions',
+      '',
+      '- The deploy target is undecided.',
+    ].join('\n')
+
+    expect(readAllowances(source)).toBeUndefined()
+  })
+
+  it('should read nothing when only one half of the formula is stated', () => {
+    expect(readAllowances('A 34-line frame and nothing else.')).toBeUndefined()
+    expect(readAllowances('Six lines a decision and no frame.')).toBeUndefined()
+  })
+})
+
 describe('the ceiling the record derives for itself', () => {
+  const stated = { frame: 34, perDecision: 6 }
+
   it('should grant the frame plus an allowance per decision', () => {
-    expect(ceilingFor(24)).toBe(FRAME_ALLOWANCE + DECISION_ALLOWANCE * 24)
-    expect(ceilingFor(24)).toBe(178)
+    expect(ceilingFor(stated, 24)).toBe(178)
   })
 
   it('should grant the frame alone to a record holding no decision', () => {
-    expect(ceilingFor(0)).toBe(FRAME_ALLOWANCE)
+    expect(ceilingFor(stated, 0)).toBe(stated.frame)
+  })
+
+  it('should derive from the allowances the record stated, not a fixed pair', () => {
+    expect(ceilingFor({ frame: 20, perDecision: 4 }, 3)).toBe(32)
   })
 
   it('should pass a record at its ceiling', () => {
@@ -182,6 +219,21 @@ describe('the ceiling the record derives for itself', () => {
 
   it('should fail a record one line past its ceiling', () => {
     expect(isOverLength(makeReport({ lines: 179, ceiling: 178 }))).toBe(true)
+  })
+
+  /**
+   * A project that never wrote a length rule owes nothing to one. Gating it
+   * against a pair held in code audits a target against a rule it never
+   * adopted, which is the failure the folder scope already answers.
+   */
+  it('should never fail a record that states no allowances', () => {
+    const report = makeReport({
+      lines: 620,
+      allowances: undefined,
+      ceiling: undefined,
+    })
+
+    expect(isOverLength(report)).toBe(false)
   })
 })
 

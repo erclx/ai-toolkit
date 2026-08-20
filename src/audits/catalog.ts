@@ -124,11 +124,15 @@ function architectureCounts(
   if (
     record === undefined ||
     !Array.isArray(decisions) ||
-    typeof record.lines !== 'number' ||
-    typeof record.ceiling !== 'number'
+    typeof record.lines !== 'number'
   ) {
     return undefined
   }
+
+  // A record stating no length rule has no ceiling to be past, and reporting
+  // zero there would read as one measured and found conforming.
+  const ceiling =
+    typeof record.ceiling === 'number' ? record.ceiling : undefined
 
   let unverifiable = 0
   let unchecked = 0
@@ -144,8 +148,11 @@ function architectureCounts(
 
   return {
     // A boolean, counted so the aggregate reads it the way it reads every
-    // other measure. The verb gates on it separately.
-    recordOverLength: record.lines > record.ceiling ? 1 : 0,
+    // other measure. The verb gates on it separately, and the key is absent
+    // rather than zero on a record that declared no ceiling.
+    ...(ceiling !== undefined && {
+      recordOverLength: record.lines > ceiling ? 1 : 0,
+    }),
     recordUnverifiable: unverifiable,
     recordUnchecked: unchecked,
   }
