@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/erclx/aitk/compare/v1.6.0...v1.7.0) (2026-08-20)
+
+
+### Features
+
+* **ui:** carry the color opt-out across the exec boundary ([#1077](https://github.com/erclx/aitk/issues/1077)) ([3ac31a0](https://github.com/erclx/aitk/commit/3ac31a09e1726a4e809f68274de04db1961f7c75))
+
 ## [1.6.0](https://github.com/erclx/aitk/compare/v1.5.0...v1.6.0) (2026-08-20)
 
 
