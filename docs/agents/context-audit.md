@@ -5,7 +5,7 @@ description: Running the audit, its flags and folder scope, the exit codes, the 
 
 # Context audit
 
-`aitk context audit [path]` reports the structural state of the folders following the index-plus-entry contract, meaning a generated `index.md` beside entries carrying frontmatter. It reads and reports. Fixing what it finds is separate work. What each finding means is in `context-audit-checks.md`.
+`aitk context audit [path]` reports the structural state of the folders following the index-plus-entry contract, meaning a generated `index.md` beside entries carrying frontmatter, and it measures `.claude/ARCHITECTURE.md` beside them. It reads and reports. Fixing what it finds is separate work. What each finding means is in `context-audit-checks.md`.
 
 Findings stated over every markdown file rather than over a context entry are measured by `aitk markdown audit`, described in `markdown-audit.md`. That command resolves no folder, so it reaches trees this one refuses.
 
@@ -37,7 +37,7 @@ A run where no requested name resolves refuses, whichever list it read. Naming t
 
 ## Exit codes
 
-Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. Length, reference form, table, provenance, and narration findings print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around. Narration is the weakest of the five, since whether two bullets share a subject is a call the measure approximates from structure alone, and one of the shapes it matches is the rejected alternative the standard asks an entry to keep.
+Exit codes are `0` for a clean run, `1` for a refusal, and `2` for a gating finding. An unresolved citation gates under every mode. An architecture record that states its own line allowances gates when it is past the ceiling those derive, on any run that measures it, which is every mode except `--citations-only`, and a record stating none is reported and never gated. Entry length, reference form, table, provenance, narration, and the record's claim classification print and return `0` under every mode, because each is a judgment and failing a push on one would make the check something to route around. Narration is the weakest of the five, since whether two bullets share a subject is a call the measure approximates from structure alone, and one of the shapes it matches is the rejected alternative the standard asks an entry to keep.
 
 Required-section and index findings sit between the two. Both are answerable from the file rather than weighed, so `--gate` promotes them to failing codes while a bare run leaves them advisory. The toolkit runs the bare form against itself and the widened form against the seed tree, described below.
 
@@ -47,7 +47,7 @@ Required-section and index findings sit between the two. Both are answerable fro
 
 The widened gate is correct here and wrong at the project root. A seed is authored once and read by every target, while a context entry in a live project is edited under time pressure by the people who own it. A missing section in the first is a defect shipping outward, and in the second it is a threshold worth reporting and not worth blocking a push over.
 
-Coverage follows the index-plus-entry contract, so it reaches seeded entries and the indexes beside them. Seed files sitting directly under `.claude/`, currently `ARCHITECTURE.md`, `DESIGN.md`, and `REQUIREMENTS.md`, belong to no audited folder and stay outside it.
+Coverage follows the index-plus-entry contract, so it reaches seeded entries and the indexes beside them. `DESIGN.md` and `REQUIREMENTS.md` sitting directly under `.claude/` belong to no audited folder and stay outside it, while `ARCHITECTURE.md` is measured on its own path. The seed record states no line allowance, so it is reported rather than gated, which is what a seed template showing the shape of a record should be.
 
 The stage prints the entries it measured per root and warns on a root that measured none. A root can resolve an audited folder and hold no entry in it, which `tooling/claude/seeds` does today, so a single pass line over the set would report coverage of a tree nothing opened.
 

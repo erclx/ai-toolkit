@@ -18,6 +18,7 @@ function makeSection(overrides: Partial<SectionFinding> = {}): SectionFinding {
 function makeInput(overrides: Partial<GateInput> = {}): GateInput {
   return {
     unresolvedCitations: 0,
+    recordOverLength: false,
     sections: [],
     drift: [],
     widened: false,
@@ -60,6 +61,16 @@ describe('isGating', () => {
 
   it('should fail an unresolved citation under the widened gate', () => {
     const input = makeInput({ unresolvedCitations: 1, widened: true })
+
+    expect(isGating(input)).toBe(true)
+  })
+
+  it('should fail a record past its own ceiling under the narrow gate', () => {
+    expect(isGating(makeInput({ recordOverLength: true }))).toBe(true)
+  })
+
+  it('should fail a record past its own ceiling under the widened gate', () => {
+    const input = makeInput({ recordOverLength: true, widened: true })
 
     expect(isGating(input)).toBe(true)
   })

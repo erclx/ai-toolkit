@@ -1,11 +1,11 @@
 ---
 title: Context audit checks
-description: What each non-gating check reports, the unit each checkpoint is measured in, which folders each check reaches, and what moved to the attribute tier
+description: What each non-gating check reports, the unit each checkpoint is measured in, the architecture record's length gate and claim coverage, which folders each check reaches, and what moved to the attribute tier
 ---
 
 # Context audit checks
 
-What each finding from `aitk context audit` means. The command surface, its flags, and the one gating check are in `context-audit.md`.
+What each finding from `aitk context audit` means. The command surface, its flags, and the two gating checks are in `context-audit.md`.
 
 ## Required sections
 
@@ -86,6 +86,22 @@ Precision is the whole value, so recall is the accepted exposure, and two shapes
 A rejected alternative is a back-reference in the past tense by construction, and the standard keeps what was tried and why it lost, so a legitimate hit exists and no measure separates it from a violation. The report states that on every run, which is why the finding names a line to read rather than a line to delete.
 
 The JSON record carries the findings per entry as `entries[].narration` and the sets as `checkpoints.narration`, which is absent under `--citations-only` where the run never loads them and null where no rule publishes both.
+
+## The architecture record
+
+Two findings read `.claude/ARCHITECTURE.md` rather than a folder, and only the first is a fact.
+
+The length check compares the record against the ceiling it derives for itself, and only a record that states its own allowances has one. No standard sets a length rule for this document, so the numbers belong to whichever record declares them. The check reads a frame allowance and an allowance per decision out of the record's own prose and puts the ceiling at the frame plus the allowance times the decision count. The JSON record carries what it read as `architecture.allowances` and the reading as `architecture.lines` against `architecture.ceiling`.
+
+A record stating no such rule is measured and reported and never gated, which is the ordinary shape of a project that wrote an architecture record and no convention about its length. Holding a pair of numbers in the toolkit and gating every project against them would fail a record on a ceiling that project never agreed to, and the framed line would credit the rule to a file that does not state it.
+
+What the derivation costs where it does apply is that the ceiling rises when a decision is added and falls for nothing, so the check passes exactly when the file grew. It gates anyway, because a record that states a limit for itself and makes it computable from a count has turned it into a fact, which is what separates it from every judgment below. A rewrite of the declaring sentence past the clauses the check reads falls back to reporting rather than to a stale ceiling, so the failure shows up in the run's own output.
+
+The coverage report classifies each decision as carrying a countable claim, a structural invariant, or neither, then reports each testable entry against whether it names a check that exists. A countable claim carries a figure a run could recompute, and an invariant quantifies over a named tree closely enough that a walk could falsify it. A check is a `scripts/**.sh` path the entry spells that is on disk, or an `aitk` invocation matching a registered audit, so coverage reads the entry rather than the tree and a claim some check happens to cover without the entry saying so reads as unchecked.
+
+Three limits are stated on every run rather than hidden. The countable signal reads digits alone, so a measured claim written in words reads as uncounted. Entries are counted by heading, and one heading holding several decisions counts once. Nothing is stored, so an entry rewritten tomorrow is classified afresh the next time the verb runs and no verdict goes stale.
+
+The report gates nothing. Deciding whether a sentence states a claim is a judgment no parser settles, so the output names candidates for a reader. This answers a different question from the verification anchors `.claude/standards/architecture.md` describes, which record that one cited number was re-read. That mechanism says whether a marked figure held, and this one says how much of the record could be checked at all.
 
 ## Which folders each check reaches
 
