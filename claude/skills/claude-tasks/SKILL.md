@@ -57,15 +57,18 @@ Scan for work that has been decided and would otherwise be forgotten. Three orig
 
 List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
 
-Read the dumps through `aitk intake list --json`, which reports items, open, and unread per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/task-archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
+Read the dumps through `aitk intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/task-archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
 
 A dump is the stronger case for this scan rather than the weaker one. A track holds one question and stays visible, while a dump holds dozens of items whose verdicts were reached and then left with nothing carrying them forward.
 
-Those two reads give three states, and the first two earn a line each:
+Those two reads give four states, and the first three earn a line each:
 
-- Every item answered, and neither the board nor the archive cites the folder. Decided work nobody promoted, which is what this step exists to find.
+- Every item answered, `malformed` at zero, and neither the board nor the archive cites the folder. Decided work nobody promoted, which is what this step exists to find.
 - Unread items. The folder is waiting on the operator rather than forgotten, so it takes its own wording and never lands in the block above.
+- `malformed` above zero. An item carrying no answer slot can be reached by no verb, so name the folder as a file to repair rather than as work in either state above.
 - The archive cites it. Promoted and shipped, so say nothing.
+
+`malformed` is why the first state tests two counts rather than one. A malformed item is neither unread nor answered, so reading `unread` alone folds it onto the answered side and reports a broken file as decided work nobody promoted.
 
 Say which read fired. "No task points at this" is true of both reported states and useful about neither.
 
@@ -142,6 +145,7 @@ Create:
 **Waiting on you:**
 
 - `.claude/intake/<slug>/`: <n> of <n> items unread
+- `.claude/intake/<slug>/`: <n> items carry no answer slot, so no verb reaches them
 ```
 
 Drop either block when it carries no rows. When both are empty, which is the ordinary result, replace them with one line naming what was read: `Read <n> tracks, <n> dumps, and <n> open issues. Nothing unlinked.`
