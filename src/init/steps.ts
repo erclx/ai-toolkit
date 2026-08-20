@@ -23,7 +23,7 @@ export function buildSteps(
     {
       kind: 'run',
       label: 'Base tooling',
-      run: child(['tooling', 'sync', 'base', resolved]),
+      run: child(['tooling', 'sync', 'base', resolved, '--write']),
     },
     {
       kind: 'run',

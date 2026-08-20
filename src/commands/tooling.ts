@@ -20,7 +20,16 @@ import {
 } from '@/tooling/manifest'
 import { scan, type ScanResult } from '@/tooling/scan'
 import { recordToolingChain } from '@/tooling/stamp'
-import { intro, logAdd, logInfo, logStep, logWarn, outro, select } from '@/ui'
+import {
+  intro,
+  isNonInteractive,
+  logAdd,
+  logInfo,
+  logStep,
+  logWarn,
+  outro,
+  select,
+} from '@/ui'
 
 const GREEN = '\x1b[0;32m'
 const NC = '\x1b[0m'
@@ -30,6 +39,8 @@ const PASS_THROUGH_VERBS = ['ref', 'create', 'verify'] as const
 interface SyncOptions {
   readonly ref?: boolean
   readonly skip?: string
+  readonly check?: boolean
+  readonly write?: boolean
 }
 
 interface InjectOptions {
@@ -66,6 +77,19 @@ export function register(program: Command): void {
     .helpOption('-h, --help', 'Show this help message')
     .option('--no-ref', 'Skip dropping reference docs')
     .option('--skip <stack>', 'Drop a layer from the extends chain')
+    .option('--check', 'Report what would change and write nothing')
+    .option('--write', 'Apply every change without prompting')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Examples:',
+        '  aitk tooling sync base',
+        '  aitk tooling sync base --check',
+        '  AITK_NON_INTERACTIVE=1 aitk tooling sync base --write',
+        '',
+      ].join('\n'),
+    )
     .action(
       async (stack: string | undefined, target: string, opts: SyncOptions) => {
         process.exitCode = await runSync(stack, target, opts)
@@ -193,6 +217,12 @@ async function runSync(
 ): Promise<number> {
   intro('aitk tooling sync')
 
+  if (opts.check === true && opts.write === true) {
+    logWarn('Pass --check or --write, not both.')
+    outro()
+    return 1
+  }
+
   const selected = stack ?? (await promptForStack())
   if (selected === undefined) {
     logWarn('No tooling stacks found')
@@ -220,26 +250,33 @@ async function runSync(
 
   report(result, includeReferences)
 
+  const mode = resolveWriteMode(opts)
+
   if (result.totalChanges === 0) {
-    await stampChain(prepared.chain, prepared.target)
+    // The stamp is a write like any other, so a run with no authority to write
+    // leaves the target's record alone rather than claiming a sync it never
+    // performed.
+    if (mode === 'apply' || mode === 'prompt') {
+      await stampChain(prepared.chain, prepared.target)
+    }
     outro()
     process.stderr.write(`${GREEN}✓ Everything up to date${NC}\n`)
     return 0
   }
 
-  const shouldApply = await select({
-    message: `Apply ${result.totalChanges} changes (${summarize(result)})?`,
-    options: [
-      { value: true, label: 'Apply all' },
-      { value: false, label: 'Cancel' },
-    ],
-    nonInteractiveDefault: true,
-  })
+  const decision = await decideApply(result, mode)
 
-  if (!shouldApply) {
-    logWarn('Sync cancelled')
+  if (decision !== 'apply') {
+    logWarn(
+      decision === 'cancelled'
+        ? 'Sync cancelled'
+        : `Reported ${result.totalChanges} changes (${summarize(result)}). Nothing written.`,
+    )
+    if (decision === 'unauthorized') {
+      logInfo('Re-run with --write to apply them, or --check to silence this.')
+    }
     outro()
-    return 0
+    return decision === 'unauthorized' ? 1 : 0
   }
 
   if (result.configs.some((entry) => entry.state !== 'matching')) {
@@ -263,6 +300,46 @@ async function runSync(
   outro()
   process.stderr.write(`${GREEN}✓ Tooling sync complete${NC}\n`)
   return 0
+}
+
+type WriteMode = 'apply' | 'prompt' | 'report' | 'unauthorized'
+
+type ApplyDecision = 'apply' | 'cancelled' | 'reported' | 'unauthorized'
+
+/**
+ * Golden configs carry the CI workflow, the end-to-end harness, and the shell
+ * scripts under `scripts/`, so an overwrite reaches work no one would consent
+ * to losing. A headless caller therefore has no authority to write without
+ * `--write`, since a confirm prompt carrying `nonInteractiveDefault` resolves
+ * to its first option and would read silence as consent.
+ */
+function resolveWriteMode(opts: SyncOptions): WriteMode {
+  if (opts.check === true) return 'report'
+  if (opts.write === true) return 'apply'
+  return isNonInteractive() ? 'unauthorized' : 'prompt'
+}
+
+/**
+ * Exit 1 follows `unauthorized`, so a caller that forgets `--write` fails
+ * rather than reporting a sync it never performed.
+ */
+async function decideApply(
+  result: ScanResult,
+  mode: WriteMode,
+): Promise<ApplyDecision> {
+  if (mode === 'report') return 'reported'
+  if (mode === 'apply') return 'apply'
+  if (mode === 'unauthorized') return 'unauthorized'
+
+  const shouldApply = await select({
+    message: `Apply ${result.totalChanges} changes (${summarize(result)})?`,
+    options: [
+      { value: true, label: 'Apply all' },
+      { value: false, label: 'Cancel' },
+    ],
+  })
+
+  return shouldApply ? 'apply' : 'cancelled'
 }
 
 /**

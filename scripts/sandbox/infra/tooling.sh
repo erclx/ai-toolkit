@@ -22,16 +22,18 @@ EOF
   log_step "Tooling sandbox"
   log_info "sync        : syncs configs, seeds, deps, gitignore, and reference docs for a stack"
   log_info "sync-drift  : sync with a pre-drifted markdown seed in place; seed must stay unchanged"
+  log_info "sync-headless: headless run refuses to write without --write, then applies with it"
   log_info "ref         : drops reference docs only"
   log_info "monorepo    : base at root, subtree synced with --skip base; only one .husky expected"
   log_info "create      : creates a new stack stub"
   log_info "list        : read-only catalog dump, no target needed"
 
-  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "ref" "monorepo" "create" "list"
+  select_or_route_scenario "Which scenario?" "sync" "sync-drift" "sync-headless" "ref" "monorepo" "create" "list"
 
   case "$SELECTED_OPTION" in
   "sync")
     log_step "Running: aitk tooling sync"
+    log_info "Expected: the report lists every path, then a prompt asks before anything is written."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
     ;;
   "sync-drift")
@@ -56,7 +58,19 @@ EOF
     log_step "Running: aitk tooling sync base"
     log_info "docs/development.md is pre-populated with a drifted copy."
     log_info "After sync, diff HEAD -- docs/development.md should be empty."
+    log_info "The report names it before the prompt, so the drift is visible ahead of the write."
     exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
+    ;;
+  "sync-headless")
+    log_step "Running: AITK_NON_INTERACTIVE=1 aitk tooling sync base ."
+    log_info "Expected: the report lists every path, nothing is written, and the exit is 1."
+    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . || log_info "Exit: $?"
+    log_info "Expected: git status is clean, since the refusal wrote nothing."
+    git status --short
+
+    log_step "Running the same command with --write"
+    log_info "Expected: every reported path lands and the exit is 0."
+    exec bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
     ;;
   "ref")
     log_step "Running: aitk tooling ref"
@@ -64,7 +78,7 @@ EOF
     ;;
   "monorepo")
     log_step "Staging base tooling at repo root"
-    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base .
+    AITK_NON_INTERACTIVE=1 bun "$PROJECT_ROOT/src/cli.ts" tooling sync base . --write
     bunx husky
     mkdir -p frontend
 
