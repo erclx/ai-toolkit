@@ -1,0 +1,72 @@
+---
+title: Resolution
+description: The two roots a standard resolves against, why the install channel closed and what closing it removed, the bundled fan-out and its consumers field, and the reading gotchas
+---
+
+# Resolution
+
+No standard installs into a project. A reader resolves one instead, and everything below follows from that: which roots answer, which route a shipped body actually takes, and which standards the fan-out reaches rather than the flat corpus.
+
+## The two roots
+
+`standardRoots` in `src/standards/read.ts` returns `standards/` at the caller's working directory, then the corpus inside the aitk package. The first is this repository's authoring root and a project's own folder anywhere else, so a repository that writes standards governs its own copy. The second answers everywhere else, which is every target.
+
+`.claude/standards/` is not a root. Here it is the generated mirror `regen-claude-copies.sh` writes and `bun run check` asserts, read by a session opening a cited path rather than by the resolver. In a target it is a stale artifact an older toolkit left, and nothing reads it.
+
+Two entries rather than one because a checkout of this repository would otherwise resolve an edit in progress against whatever the installed package holds. A target carries neither the first root nor a copy of the second, so only one answers there and no precedence is left to reason about.
+
+## What closing the channel removed
+
+`aitk standards install` copied the flat root into a target and `aitk standards sync` reconciled it afterward. Both are gone, with `src/standards/install.ts`, `src/standards/adapter.ts`, `src/standards/index-refresh.ts`, and `src/standards/closure.ts`. The domain left `SCANNED_DOMAINS`, `SYNC_DOMAINS`, `STAMP_DOMAINS`, and the root layouts `detectUnmigrated` walks, and `aitk init` lost its `Standards` step and its `--standards` flag.
+
+Every copy was a file sync had to reconcile forever, and a filed issue measured what that cost when the source layout moved: five standards relocated into a subfolder were skipped as not in toolkit source and sat 12 to 45 lines behind, with no command able to refresh them.
+
+The closure machinery went with the flag it served. A selection expanded to the transitive closure of what its standards cited so a subset could not land a dangling reference, and with nothing copied there is no subset and no dangling reference. The measurement behind it is worth keeping even so: following both citation classes, the mean closure over a single name was 14.1 of 15, because nearly all the corpus density sits inside `Does not govern:` lists. Following dependencies alone the mean was 1.4. A reader who needs a handed-off concern runs the verb again for that name.
+
+Two things the channel supported have no user left. `NonInteractivePolicy` in `src/sync/engine.ts` carries a `refuse` branch that standards was the only adapter to declare, so it is now unreachable, and `hasUnattributedDrift` is read only from inside it. The type stays because it is the extension point `.claude/ARCHITECTURE.md` records a reason for, and removing it would delete that reason along with the code. Decide it deliberately rather than by drift.
+
+## The consumers field
+
+A handwritten reference that lives only in one skill's `references/` omits `consumers:`. The field marks a file as fan-out output, so carrying it on a skill-local file claims a generated origin no script maintains.
+
+`regen-skill-references.sh` walks `standards/bundled/` alone, which leaves the mistake inert there, but the field also gates the standards audit, so a mistaken one silences the audit on that file.
+
+Every name in the list is a copy on disk, so the field's cost tracks its length rather than the file it sits on. Six sources currently produce eleven copies, three of the six listing more than one consumer and `branch.md` alone listing four. That ratio is what decided against moving the flat corpus here, since `markdown.md` is named by eighteen skill bodies across the two catalogs and would arrive as eighteen copies. `.claude/ARCHITECTURE.md` carries the decision and the route that made it unnecessary.
+
+The audit pairs the field with the location, because the fan-out copies frontmatter verbatim and the field alone matches the six sources under `standards/bundled/` as well as the eleven copies. Keying on the field alone left a bundled standard audited against nothing, and keying on the folder alone would drop the seven hand-authored references the skill standard governs.
+
+`standards/bundled/` is unaffected by the channel closing. Those six never installed into a target, reaching a consumer through its `references/` folder instead, so the route they take is the one they always took.
+
+## Standards that moved out of a skill
+
+`standards/groundwork.md` and `standards/intake.md` are the two that went the other way, out of a skill's `references/` and into the flat root. A skill-local reference is right for a file only that skill reads, and both of these govern a folder edited routinely by sessions that never invoked the skill, so the readership test that kept the orchestrator runbooks local sends these two out.
+
+The reference is deleted rather than left beside the standard, since publishing on both surfaces makes two sources for one text. Each skill now cites its standard through the two-route form, the installed path first and the bundled path when the project has no installed standards.
+
+Both govern a gitignored folder no check reaches, which puts them in one class with the plan and memory standards rather than leaving each to find its own answer. `.claude/hooks/standards-audit.sh` exits early on the scratch paths and the audit skill reads changed files from git, which never lists a gitignored one, so all four were enforced by a session reading them and by nothing else.
+
+The precedent extended is `aitk tasks validate`, which reports against the board without writing, and reporting is what makes a verb safe over a folder with no history to recover from. `aitk records validate <kind>` now covers all four, `memory` having landed with its standard rather than as a second command.
+
+A fifth kind reads this corpus rather than a gitignored folder, and it keeps the reporting discipline on the opposite reason. A standard is tracked, installed into every target, and cited by bare filename, so the risk a write carries is a rename reaching further than the file it moved rather than a repair nothing can undo. `.claude/context/cli/audits.md` holds the check and its two roots.
+
+## Which route a reader actually takes
+
+A shipped body names one path for a standard, and the command route is what nearly none takes. Of the 60 shipped bodies, 38 name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` and 7 call `aitk standards` where a resolved root rather than a named file is what they want. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`.
+
+The two-branch citation those 38 replaced named an installed path first and the plugin root behind it. Both branches resolved while the corpus still installed, which is what hid a partial sweep, so the collapse ran as one pass rather than riding along with each skill's next edit.
+
+A grep for the installed prefix does not come back empty, and two classes account for every survivor now that the channel is closed. A write destination naming where a promoted entry lands is the first, covering `claude-memory-review`. A `paths` glob is the second, covering `591-standard-authoring` alone. The three migration skills, `claude-seed-sync`, and `create-standard` were the third class and no longer name the path, since a target holds no installed tree for them to be about. Read a survivor against those two before calling it a missed citation.
+
+The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its second root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in any target. `<aitk>` is how a resolve from that root spells itself, since the other label is project-relative and a report could join it to a root.
+
+`infra:standards read` is the arm that covers it, and `.claude/context/sandbox/coverage.md` records what the arm reaches and what it leaves to the plugin-root route. Measured on 2026-08-20.
+
+## Gotchas
+
+- A target holding `.claude/standards/` from an older toolkit resolves nothing through it. The folder is inert rather than authoritative, and deleting it is safe.
+- A project that wants a standard of its own writes `standards/<slug>.md` at its root, which the resolver reads ahead of the package. `create-standard` writes there in the toolkit and in a target alike.
+- Do not hand-edit `standards/index.md` here. `regen-indexes.sh` rewrites it from the frontmatter of whatever is present, and a standard missing `title` or `description` fails that regen.
+- `bun run check` regenerates both the consumed copy and the skill-reference fan-out, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches.
+- A grep for `standards install` or `standards sync` in a skill body or a doc is a stale citation, not a verb. Neither exists.
+
+A plan's measured claim that nothing covers an artifact can be false when the covering file sits in a source subfolder the mirror and the index both exclude, since every catalog read then reports it missing. One plan measured `standards/` at twelve files and concluded nothing governed a standard, while `standards/bundled/standard.md` already carried the overview, frontmatter, structure, rule, success-criterion, and example sections. `mirror_dir` excludes `*/bundled/*` and `standards/index.md` never lists it, so the listing the plan trusted was accurate and the conclusion drawn from it was not. Writing the planned new file would have duplicated it near-wholesale. Glob the domain root recursively rather than reading its `index.md`, and where a match turns up in an excluded subfolder the change is usually a promotion plus the one missing rule.

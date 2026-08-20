@@ -96,7 +96,9 @@ use_config() {
 
 `SANDBOX_INJECT_SEEDS` is a raw copy of `tooling/claude/seeds/.` into the sandbox root, not a run of `aitk claude init`. It drops `CLAUDE.md` and `.claude/*` seed files before `stage_setup` runs. Hooks ride along in that tree, which is what makes a hook change observable to a run.
 
-`SANDBOX_INJECT_STANDARDS` and `SANDBOX_INJECT_GOV` run `aitk standards install` and `aitk gov install` against the sandbox rather than copying source trees. The installer decides what lands, so the sandbox cannot drift from what a target receives, and provisioning exercises the installer as a side effect. `SANDBOX_GOV_STACK` picks the stack and defaults to `base`.
+`SANDBOX_INJECT_GOV` runs `aitk gov install` against the sandbox rather than copying a source tree. The installer decides what lands, so the sandbox cannot drift from what a target receives, and provisioning exercises the installer as a side effect. `SANDBOX_GOV_STACK` picks the stack and defaults to `base`.
+
+There is no standards injection. Nothing installs the corpus into a project, so a sandbox holding no standards folder is the shape a scaffolded target has, and a scenario driving a skill that reads a standard exercises the resolve a real project takes rather than a staged copy.
 
 A stack install narrows what arrives. The copy it replaced took all 51 rules under `governance/rules`, while `base` resolves to 30, which is what a real target holds since no project carries both the React and FastAPI rules. A scenario needing a framework's rules sets `SANDBOX_GOV_STACK` rather than assuming every rule is present.
 
@@ -141,9 +143,9 @@ An anchor arm that declares `use_anchor` and never calls `configure_sandbox_anch
 
 ### Diff a fixture against what the real verb installs
 
-An injector that reproduces by hand what a real CLI verb installs drifts silently, and the cheap proof is running the verb into a scratch target and diffing the two trees. `inject_documentation` was wrong in three independent ways at once and only the first was on record: the layout was wrong, `cp -r` pulled in `bundled/` and `aitk/` which never install into a target, and it shipped a source `index.md` that install rebuilds. A diff against `aitk standards install` named all three in one run and confirmed the twelve remaining files byte-identical.
+An injector that reproduces by hand what a real CLI verb installs drifts silently, and the cheap proof is running the verb into a scratch target and diffing the two trees. The standards injector was wrong in three independent ways at once and only the first was on record: the layout was wrong, `cp -r` pulled in `bundled/` and `aitk/` which never reached a target, and it shipped a source `index.md` that the install rebuilt. A diff against the verb named all three in one run and confirmed the twelve remaining files byte-identical. The lesson outlived the injector, which went with the install channel.
 
-Running the genuine CLI is not enough on its own, since a fixture that skips a domain measures a project shape nobody ships: an eval arm installed seeds and standards without governance and its finding about a routing rule was confounded, because the rules carrying that routing were never there. Where the artifact is a git repository, its leftover git state is part of what gets diffed, so compare `git ls-files -s` for modes and blob hashes, the commit subjects in order, the checked-out branch, and `git status --porcelain`, since a scenario skipping auto-commit ends deliberately dirty and commit SHAs carry timestamps that never match.
+Running the genuine CLI is not enough on its own, since a fixture that skips a domain measures a project shape nobody ships: an eval arm installed seeds without governance and its finding about a routing rule was confounded, because the rules carrying that routing were never there. Where the artifact is a git repository, its leftover git state is part of what gets diffed, so compare `git ls-files -s` for modes and blob hashes, the commit subjects in order, the checked-out branch, and `git status --porcelain`, since a scenario skipping auto-commit ends deliberately dirty and commit SHAs carry timestamps that never match.
 
 ### A positional fixture pick stops testing as the tree grows
 

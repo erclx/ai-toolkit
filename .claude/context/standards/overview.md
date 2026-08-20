@@ -39,20 +39,18 @@ Run `aitk standards list` for the catalog of installable standards and their des
 
 Run `aitk standards --help` for the verbs and what each one does. Flags and arguments live in `docs/agents/scripting.md`.
 
-`--json` emits `{standards: [{name, description, target, appliesTo, content}]}`, and drift-auditing skills consume `target` and `content` to diff installed copies part by part. The shape mirrors `aitk claude seeds list --json`, plus `appliesTo`.
+`--json` emits `{standards: [{name, description, target, appliesTo, content}]}`. The shape mirrors `aitk claude seeds list --json`, plus `appliesTo`. `target` is the authoring path `standards/<name>.md` rather than an install destination, since nothing installs.
 
 `appliesTo` is the paths a standard's `## Scope` statement declares, parsed by `read_applies_to` in `scripts/standards/list.sh`. It reads the backticked paths in the first sentence of the statement, resolves an attribute standard to `*`, and emits an empty array for a statement it cannot read.
 
 The first sentence is the bound rather than the whole statement, since a later sentence names sibling standards and excluded paths that would otherwise land in the same list. `standards/bundled/` stays out because the walk runs at `-maxdepth 1`, which is right rather than a gap: those six govern a commit message, a branch name, a pull request body, and an issue, none of which is a file in a diff.
 
-`install` and `sync` are both TypeScript, and `list` forwards to `scripts/standards/list.sh`. The two write verbs are peers, so the `index.md` replace-then-regen they share sits in `src/standards/index-refresh.ts` rather than inside either one.
-
-`install` walks the flat `standards/` root only, which is the same set the sync adapter matches installed files against, so a standard in a source subfolder such as `bundled/` stays out of both.
+The domain has no write verb. `<name>` prints one standard from `src/commands/standards.ts` and `list` forwards to `scripts/standards/list.sh`, and both read rather than copy. `.claude/context/standards/resolution.md` carries the roots each reads and what the closed install channel took with it.
 
 ## Workflow
 
 ```bash
-aitk standards install ../my-app                # copies all standards into .claude/standards/
-aitk standards install --only slug ../my-app    # copies one, plus what it depends on
-aitk standards sync ../my-app                   # diffs what is already present
+aitk standards markdown              # prints one standard, frame on stderr
+aitk standards markdown >house.md    # the document alone, since the frame is separate
+aitk standards list --json           # the catalog, with appliesTo per standard
 ```

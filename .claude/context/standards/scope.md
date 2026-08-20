@@ -13,7 +13,7 @@ The root is the authoring source and `.claude/standards/` is a generated consume
 
 A convention governing a surface only the toolkit has lives in `internal/standards/`, a tree no CLI entry point and no plugin symlink reads. A filter at each entry point was the alternative, and it cannot see a symlink an installer dereferences. Location is what enforces the boundary, so nothing has to remember to exclude it.
 
-A convention consumed by a specific skill rather than authored by a project lives in `standards/bundled/`. Each carries a `consumers:` field, and the fan-out copies it into every listed skill's `references/`, so the skill works in a project that never ran `aitk standards install`.
+A convention consumed by a specific skill rather than authored by a project lives in `standards/bundled/`. Each carries a `consumers:` field, and the fan-out copies it into every listed skill's `references/`, so the skill carries what it reads rather than resolving it.
 
 Narrow readership is the criterion, not portability, and `.claude/ARCHITECTURE.md` records why the two came apart. The fan-out writes one copy per consumer, so a standard several surfaces read costs a copy each time it moves here, while the plugin symlink already puts the flat root on disk for anyone who installed the plugin. A file the whole corpus cites therefore stays in the flat root however portable the bundled folder looks.
 
