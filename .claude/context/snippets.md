@@ -59,6 +59,8 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - The toolkit-feedback flow is the `toolkit-feedback` plugin skill plus the `aitk feedback` CLI, not a snippet.
 - The memory review phases (challenge, discuss, apply, cleanup) live in the `claude-memory-review` skill body rather than in snippets of their own. Re-ping the skill with the matching phase phrase.
 
+Counting what depends on a prose contract means scanning `snippets/` alongside `claude/skills/`, since a snippet carries a procedure that reads the same strings a skill does and is invisible to a skills-only grep. The plan for the board-heading contract recorded one consumer of `## Run now` and named the second, `snippets/claude/orchestrator-resume.md`, nowhere. Had the fix moved the dependency out of `claude-orchestrate` rather than into `standards/tasks.md`, the snippet would have been left reading a string no standard fixed. Grep `claude/`, `snippets/`, `governance/`, `standards/`, and `internal/` in one pass and account for every hit, including the ones that turn out to be labels rather than reads. An undercount is the dangerous direction, because it is the count a Files-to-touch list is scoped from.
+
 ## Presets and categories
 
 Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Both are valid arguments to `aitk snippets install`. Run `aitk snippets list` for the catalog of both, and `--entries` for the slugs in each.

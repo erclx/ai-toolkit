@@ -107,6 +107,10 @@ The split between the two surfaces is what keeps the citation honest. The standa
 
 Nothing detects a body that restates a procedure instead of citing it. `assert_no_drift` covers generated copies and a hand-written restatement is not generated, so the guarantee is only that a single definition exists to correct.
 
+## The routing handoff drains per session
+
+The memory-routing handoff queue drains per session rather than accumulating unread, so a file sitting in it is evidence about one session rather than about the mechanism. The folder held four files at one reading and two of them were gone eighteen minutes later with no session touching them but the two locked worktrees carrying those exact names, which says each producing session ran `claude-docs` and folded its own. What was left is a two-file backlog months old, and that is the shape to expect: a handoff outlives its producer only when that producer never reached its own ship chain. Read an aged file as a session that stopped early rather than as a queue with no consumer, and check the modification time against the live worktree list before concluding the mechanism is unread.
+
 ### A main-root write names its route or the guard silently takes it
 
 Eleven bodies write shared session scratch at the main worktree root, and Claude Code refuses any such write from a linked worktree, naming the worktree copy as the destination instead. The redirected write still succeeds, so a body stating only the destination reports success and loses the file, and no stage reports the miss. That is the whole defect: the instruction and the guard disagreed, the guard won, and nothing said so.
@@ -116,3 +120,41 @@ Each body now names the route beside the destination rather than the destination
 Two structured edits earned verbs, `aitk tasks pull-request` and `aitk tasks outcome`, chosen over a body instruction because the board is the write with a measured cost and a verb is the only part of this a test can reach. A structured edit no verb covers, such as `claude-docs` retargeting a `Plan:` line or `claude-memory-review` flipping an item's emoji, reads the file and writes it back whole. That stays a body instruction until a second caller wants the same edit, which is the point a third verb would pay for itself.
 
 The read sites were left alone. `Read` resolves against the main root normally, so the six bodies that only read were correct as written and rewriting them would have added diff with no behavior behind it.
+
+## Ship-chain hazards
+
+### The chain sweeps the receipt its own output cites
+
+The ship chain deletes the receipt its own closing line cites. `claude-autoship` Step 6 leaves minor findings in `.claude/review/review-<slug>.md` and its output block names that path, while Step 7 invokes `claude-docs`, whose Step 8 sweeps the same file as consumed scratch. Seven runs recorded the collision across two days. Whether the receipt survives is not a decision anyone takes: on one branch it survived only because `claude-review` derived its slug before `git-branch` renamed the branch, so the sweep looked for a name the review had not written. The durable record is the pull request's `## Technical Context`, folded before `claude-docs` runs. What stays open is which of the two bodies owns the sweep, and whether the slug is pinned once at chain entry rather than derived per step.
+
+### The plans sweep reaches past the session
+
+`claude-docs` Step 8 carries two further hazards. It sweeps every task on the board rather than the session's own, which once matched a task whose plan was live in a locked parallel worktree and growing mid-session, where archiving would have moved it out from under that session with no history to recover from. It decides whether a plan is still cited by scanning `Plan:` lines alone, so a table row in `.claude/tasks/priority.md` carrying no such line left the count at zero and the row pointing at a moved file. Grepping the whole `.claude/tasks/` folder for the plan's filename is what catches that row.
+
+### A cross-cutting entry never refreshes from the diff
+
+An entry describing a cross-cutting rule never refreshes from the diff. `claude-docs` picks entries whose prose references files the diff touched, so an entry referencing no path at all is skipped by construction. Seeding a development context entry made the claim in `.claude/context/context-model.md` that new entries are not created automatically false, and the sweep would have shipped a rule the code no longer follows. Sort entries into the kind a diff refreshes and the kind the enforcing change is what invalidates, and edit the second by hand.
+
+### A stub never refires when its real signal arrives late
+
+The uncovered-kinds trigger in `claude-docs` Step 5 fires only when a diff adds a signal and no entry covers that kind, so an entry already drawn from something weaker is never told its real source now exists. `standards/diagrams.md` specifies the components diagram as drawn from `.claude/ARCHITECTURE.md`, the entry predated that file and named a code scan instead, and the commit creating `.claude/ARCHITECTURE.md` added exactly that signal while the sweep emitted nothing. The `stale` half keys on a cited path leaving the tree, so it does not cover this either.
+
+### Pull request detection hits a merged namesake
+
+`gh pr view` resolves by head ref name and ignores state, so a branch name reused after its first pull request merged sends `git-pr`'s create-or-edit conditional down the edit arm and rewrites a merged record. It has fired three times against three different merged records. The push reports `* [new branch]` either way, so nothing in the output suggests a collision. Detect with `gh pr list --head <branch> --state open` and create with an explicit `--head`. Recovery takes the squash merge subject for the title and GraphQL `userContentEdits(last: 1)` for the body.
+
+### The draft conversion reports a write it did not make
+
+`gh pr ready --undo` prints its conversion line on a run that changed nothing. On one pull request it reported success twice while `gh pr view --json isDraft` returned `false` after each, and the `convertPullRequestToDraft` GraphQL mutation against the node id set it on the first call. The flag also reverted after a later force-push, so the read-back is worth repeating whenever the branch is pushed again.
+
+### A failed commit leaks into the next group
+
+When a sequence of grouped commits runs unattended and one is rejected by a hook, its files stay staged and the next group's `git add` absorbs them, so the failure lands as a wrong commit rather than a missing one. A 74-character subject failed `header-max-length` and the 24 files it carried committed under the following group's message, while the run reported a passing final `git log` because the commit count was the only thing short.
+
+### A format change strands the predicates routing on it
+
+When a format a skill parses changes shape, every predicate routing on the old shape has to move with it. Converting the task `Plan:` line to a markdown link taught both `claude-docs` Step 8 and `claude-tasks` Archive Step 2 to read the target out of the parentheses while their routing bullets still named `.claude/plans/`, so a link-form task matched no bullet and fell to the final warn-and-skip, which archives nothing.
+
+### A ported condition keeps the test its source could afford
+
+Lifting a conditional from another skill copies the clause rather than what it tests. `claude-docs` calls a diff baseline unusable when it came from local `main` and equals HEAD, which misses `origin/main` resolving a merge base equal to HEAD, the shape of every feature branch before its first commit. It never pays for the gap because it unions the committed, working, and untracked sets, and ported verbatim into four skills reading the committed half alone it would have blinded them.

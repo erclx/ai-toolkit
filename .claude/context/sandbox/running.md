@@ -50,6 +50,8 @@ The envelope alone decides nothing. An arm can return `error=false` having writt
 
 ### One tree, so runs serialize
 
+The sandbox tree resolves from `$XDG_STATE_HOME/aitk/sandbox`, defaulting to `~/.local/state/aitk/sandbox`, with `AITK_SANDBOX_DIR` overriding it and a path back inside the repository refused. It sat at `<worktree>/.sandbox` before, which put the toolkit's own `CLAUDE.md` on the ancestor chain of the session `run.sh` spawned and sent a skill's shared session scratch into the toolkit on roughly one run in two, and gave each worktree its own tree so a run checked against the wrong root read as a scenario that never staged. One shared tree replaces both, at the cost below.
+
 The sandbox path resolves to a single tree per machine, so two sessions running arms at once provision over each other. The second session's provisioning lands between the first's session and its verdict, and the first is then scored against a fixture it never staged. Nothing detects it.
 
 The reply half still passes, because the reply comes off the envelope the run produced, while every path, absence, and content assertion reads the tree that replaced it, so the arm reports a mixed verdict that looks like a skill defect rather than a collision. One `claude:migration-standards` run was lost this way on 2026-08-04, reporting five failures against a tree holding another scenario's anchor fixture.

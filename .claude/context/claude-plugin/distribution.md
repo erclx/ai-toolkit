@@ -61,7 +61,13 @@ The shape that narrows in this layout is a curated root holding one symlink per 
 
 What that shape drops is the standards fallback. Install copies the named skill directories alone, so no `standards/` sibling arrives, and a skill sitting one level under the curated root rather than two under the plugin root resolves `${CLAUDE_SKILL_DIR}/../../standards/X.md` to nothing. That reaches 37 of the 59 shipped bodies, which all lose their fallback at once, and a curated entry has to answer it before one ships.
 
+### The install ref reads as malformed
+
+`claude plugin install aitk@aitk` is `<plugin>@<marketplace>` with both names set to `aitk`, and the GitHub owner never enters the ref. It reads as malformed against the npm `@erclx/aitk` form, where `@` marks an owner scope, and the two identifier systems collide on one symbol. Renaming the marketplace to `erclx` would yield `aitk@erclx` and was rejected, since it breaks the install string in every README, doc, and installed `settings.json`.
+
 ### What a shape change does to an installed cache
+
+An installed plugin follows its marketplace where auto-update is on, which it is for the `aitk` marketplace on the authoring machine, so a version lag is no longer the usual failure. Earlier measurements caught the older one, where the cache sat 38 releases behind and served a skill the repository had replaced. What remains is a shape change.
 
 A change to an entry's `skills` array reaches the reported inventory as soon as the marketplace refreshes and never reaches the cache. Adding a fifth skill made `claude plugin details` report five while the cache directory still held four, so the command answers from the entry rather than from what an install materialized. `claude plugin update` declined the work and reported the plugin already current, because the version key had not moved. Uninstall followed by install reconciled both.
 

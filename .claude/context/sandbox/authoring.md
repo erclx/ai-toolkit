@@ -134,3 +134,33 @@ Each scenario owns its own reset:
 4. Recreates branches and opens PRs
 
 Wrap each cleanup call with `2>/dev/null || true` so a missing branch or PR from the prior run does not abort the scenario.
+
+An anchor arm that declares `use_anchor` and never calls `configure_sandbox_anchor_remote` runs the full anchor provisioning path with no network call and no force-push to the shared remote, which the other eight anchor arms all make. `provision_sandbox` dispatches on `type -t use_anchor` alone, so a throwaway scenario declaring it with a no-op `stage_setup` serves the same purpose. Reach for one of those when checking provisioning behavior and spend a pushing arm only on the run that has to prove the remote path.
+
+## Gotchas
+
+### Diff a fixture against what the real verb installs
+
+An injector that reproduces by hand what a real CLI verb installs drifts silently, and the cheap proof is running the verb into a scratch target and diffing the two trees. `inject_documentation` was wrong in three independent ways at once and only the first was on record: the layout was wrong, `cp -r` pulled in `bundled/` and `aitk/` which never install into a target, and it shipped a source `index.md` that install rebuilds. A diff against `aitk standards install` named all three in one run and confirmed the twelve remaining files byte-identical.
+
+Running the genuine CLI is not enough on its own, since a fixture that skips a domain measures a project shape nobody ships: an eval arm installed seeds and standards without governance and its finding about a routing rule was confounded, because the rules carrying that routing were never there. Where the artifact is a git repository, its leftover git state is part of what gets diffed, so compare `git ls-files -s` for modes and blob hashes, the commit subjects in order, the checked-out branch, and `git status --porcelain`, since a scenario skipping auto-commit ends deliberately dirty and commit SHAs carry timestamps that never match.
+
+### A positional fixture pick stops testing as the tree grows
+
+A scenario picking its fixture files positionally with `find ... | sort | head -n N` stops testing anything once the source tree grows, and it keeps exiting 0. Three scenarios broke this way in three consecutive migration steps: `infra:snippets` got two internal-category files once `snippets/aitk/` existed and reported everything up to date while validating nothing, `infra:standards` got `aitk/tooling-reference.md`, which flattens to a name with no flat source, and `infra:sync` broke the same way when `standards/` grew subfolders. The mode has since progressed from silently passing to hard failing, with `infra:sync` dying during provisioning because the positional pick names a file the anchor repo does not carry. Select by the property the scenario needs rather than by sort position, and when a sandbox gate fails mid-migration run it on unmodified `main` before assuming the branch caused it.
+
+### A fallback message names one cause and catches every cause
+
+A failure arm naming its expected cause still fires for causes nobody anticipated. `scripts/sandbox/claude/pr-review.sh` passed `-q` to `gh pr create`, which takes no such flag, so every provisioning run since the scenario shipped failed straight into its fallback log line and created no pull request, while the scenario reported ready. Give a fallback arm a message naming the failure rather than a guess at its cause, and follow any setup step whose success is a precondition with a read proving the artifact exists.
+
+### A seeded file defeats an add trigger
+
+A trigger keyed to a file entering the tree never fires when the seed already put it there. With `SANDBOX_INJECT_SEEDS` on, the setup commit already carries `.claude/REQUIREMENTS.md` and `.claude/ARCHITECTURE.md`, so a later fixture writing one produces `M` rather than `A`. The `diagram-sweep` arm staged `.claude/REQUIREMENTS.md` at stage 02 to make `claude-docs` stub an uncovered kind, provisioned green, and read correct in the scenario output while `git show --name-status` showed `M`, so it could never have exercised the branch it existed to test. Run `git show --name-status --format="" HEAD` inside the tree after provisioning any new arm, and `rm -f` a seeded path before the initial commit whenever the arm depends on it being added later.
+
+### A deletion branch is where a missing existence check surfaces
+
+A helper that builds a work list from `git diff --name-only` or `git ls-files` treats every path as present, so a delete-only branch is where the missing existence check first surfaces. `inject_changed_skills` in `scripts/manage-sandbox.sh` unions the `claude/skills/**/SKILL.md` diff against `main` with untracked folders and copies each hit, and the diff lists a deleted skill exactly like a changed one, so removing one skill made every run print `cp: cannot stat`. Provisioning still completed, which is why the defect survived: it degrades to noise rather than a failure. Fix the guard in the same branch as the deletion, and treat a non-fatal error printed mid-run as a defect, since a helper that reports a failed copy and continues provisions a tree nobody verified.
+
+### A pending verdict pins the format its fixture asserts
+
+Defer a format change that would retarget an assertion belonging to a verification nobody has run yet. The `claude-tasks` plan proposed turning `Plan:` into a markdown link, which retargets the anchored regex in the `claude/docs` `drift` fixture, and that arm's verdict was another task's open outcome, so a failing run afterward could be read as neither skill defect nor format change. Grep the fixtures for assertions on a format before editing it and check whether any owning task still carries an unchecked verification outcome.

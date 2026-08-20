@@ -59,6 +59,26 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - Porting a guard means porting its side effects. The bash `guard_root` ran `cd "$target"`, which validated the target existed as a by-product of resolving it. A port that reproduces only the stated purpose drops that check, and `mkdir -p` downstream then scaffolds a typo'd path into a new tree.
 - Preserving a destination's mode and indent width moved to `internal/rules/core/096-operator-files.md`, which globs `src/**/*.ts`. `writeSettings` is the live implementation of the mode half, after `merge_user_setting` silently tightened `~/.claude/settings.json` from 644 to 600 on every run, and `detectIndent` plus `serializeSettings` are the indent half.
 
+### A catalog command reads the installation, not the branch
+
+Every `aitk` command taking `PROJECT_ROOT` reads the installation the CLI was linked from rather than `pwd`, because `src/exec.ts` sets it to `resolve(import.meta.dir, '..')`. A catalog run inside a linked worktree therefore reports that installation's tree rather than the branch's: during a requirement-coverage batch `aitk claude skills list --json` reported 30 skills lacking a file while the branch already held 16. A registry-installed binary is staler again, answering 56 skills with published descriptions while the checkout held 59, dropping the three most recently merged. Verify a branch's own tree by walking the filesystem, and treat any task or plan whose test strategy names a catalog command as untestable from a worktree.
+
+### A command module cannot be imported by a test
+
+Logic under `src/commands/` that needs a unit test moves to a pure module under the domain folder, because a test importing a command file cannot run at all. `src/exec.ts` evaluates `resolve(import.meta.dir, '..')` at module scope and `import.meta.dir` is undefined under the vitest transform even with `bun --bun vitest`, so importing `@/commands/init` failed the whole suite with `paths[0] must be of type string` before a case ran. `src/commands/feedback.test.ts` targets `feedback-format.ts` for exactly this reason, and `flagsProvided` moved to `src/init/flags.ts` on the same grounds. Check whether the logic reaches `@/exec` or `@/cli-run`, move it to a sibling importing neither, and have the command file supply impure factories as arguments.
+
+### Driving a prompt needs a PTY
+
+`select` in `src/ui.ts` exits when `process.stdin.isTTY` is false, so every branch behind a prompt is unreachable from vitest and from a plain shell run. `script -qec "<command>" /dev/null` allocates a PTY, and piping timed keystrokes into it exercises the real apply path, with `j` and `\r` moving and confirming. The `aitk sync` commit path had no other route to verification: a fake `GitRunner` proved the decision logic, and only the PTY run proved the narrowed staging actually stages the changed paths and that `git` output pipes into the open frame. Order the sleeps against the domain work that runs before the prompt.
+
+### Map a ported conditional to the matching predicate
+
+Porting a bash conditional means mapping the operator to the matching predicate rather than to a bare existence check. `-d` is `isDirectory`, `-f` is `isFile`, and `-e` alone is what `existsSync` provides. `collect_files_for_category` tested `[ ! -d "$dir" ]` and reported a clean `Category not found`, while the port using `existsSync` let `aitk snippets install snippets.toml` resolve to the real file sitting beside the category folders and crash with an unhandled `ENOTDIR`. The trap fires wherever a directory of folders also holds files.
+
+### Promoting a repo utility
+
+A repo utility is promoted by reimplementing it in TypeScript under `src/<domain>/`, generalizing repo-specific paths to flags and leaving deeply-coupled layers behind as a follow-up. Both `aitk slides` and `aitk transcripts` reimplemented career-repo tools rather than lifting Python, which keeps the repo single-stack and covered by `bun run check`. Treat external binaries as user-installed dependencies the way `git` and `gh` already are, and drop repo defaults.
+
 ## CLI
 
 The command surface and its flags live in `docs/agents/`. That folder is the canonical invocation contract for agents.

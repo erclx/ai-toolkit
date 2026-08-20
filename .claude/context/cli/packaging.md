@@ -48,3 +48,7 @@ Version stays owned by release-please, which already writes `claude/.claude-plug
 ## Gotchas
 
 - A scoped package defaults to restricted access. `publishConfig.access` is set to `public` in the manifest, since a restricted first publish succeeds and only surfaces as an install failure for everyone outside the scope.
+
+A packed tarball's file list proves inclusion and nothing about whether the installed CLI runs. The registry-publish plan named its own check as packing and listing the contents by hand. That listing came back clean at 467 files with every catalog present, and it could not see that `aitk docs list` wrote a raw `find` error to stderr, because `.claude/context/` is a second read root the package deliberately does not ship. Installing the tarball into a scratch directory and running `aitk init` surfaced it on the first command. A path the package omits fails at read time rather than at pack time.
+
+A pointer body naming the release that removes it is asserting what `release-please` will do, and the bump comes from the commit types in the branch rather than from the sentence. Two pointers shipped naming the release that ships them and the one that removes them, and the same pair repeats in two context entries and two catalog rows, so a `refactor`-only branch cutting a patch release would have falsified all six lines at once. Pick the commit type that produces the version and say so in the plan or the pull request, and prefer one release claim repeated by reference over the pair copied into every surface.

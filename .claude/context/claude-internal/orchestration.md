@@ -145,3 +145,31 @@ The runbook holds the routing and the skill body points at it, after a rewrite i
 ## Phase label containment
 
 Phase labels stay inside the task board, in both the filename and the title. They never appear in PR titles or bodies, review comments, issues, commit messages, or git tags. What catches a leak on the way out is the scan in `.claude/standards/publish.md`, which reads the label rule from `.claude/standards/versioning.md` beside it. See that file for the rules and the why.
+
+A phase label absent from the live board can already belong to an archived task, since archiving moves the file to `.claude/task-archive/` under its own name. `claude-tasks` Step 2 lists the live folder and reads `index.md`, and neither reaches the archive, so the obvious next label after one shipped row was a duplicate held by an archived sibling. Treat the union of both folders as the taken set.
+
+## Gotchas
+
+### A blank answer is a decision nobody took
+
+A blank `Answer:` field is not a decision anyone took, and a pipeline guard that checks only for the plan file admits a plan whose Questions section is entirely unresolved. Six autoship runs cleared that guard across two days with every answer blank. The shape that works splits the section rather than taking it whole: ask on the answers that change what the diff contains, change a published surface, or reverse a stated rule, batch those into one round, and take the rest unasked, including any that defer an outward action rather than performing it. On one plan a suggestion reversed an explicit instruction on a rendered GitHub surface, and adopting all four unasked would have settled that on the author's behalf. On another a suggestion carrying the words "needs your call" went unasked until the glob that would have settled it silently was already written. Write every answer back into the plan before implementing, so the file stops reading as unresolved.
+
+### The numbered questions are coupled
+
+The numbered questions are presented as independent and are not. On one plan question 3 suggested the source rule live in the bundled reference alone because the skill body already points there, and question 5 then added a close-mode step reporting claims that violate the rule, which cannot point at a reference for the criterion it enforces. Taking both suggestions unchanged would have shipped a check with no stated rule in the body it runs from. After settling every question, re-read the answers as one set and look for a pair where the later answer adds a mechanism the earlier answer chose not to supply.
+
+### A narrowed answer leaves its outcome open
+
+A question answered by narrowing scope leaves the board outcome it dropped still `[ ]`, so the task stays live and `claude-docs` archives no plan. One plan's question 3 picked the read-or-write axis over classifying each consumer by what a wrong value costs it, which is what the board's second outcome asked for, and the plan stayed put with two of three outcomes shipped. Where an outcome instead names a count that does not reproduce against the tree, deliver the substance, cut the outcome, and record the measurement in Findings. One task asked after six harness docstrings at ten lines or more and two independent measurements found three blocks at nine, eight, and eight. Leaving the box open holds a row with no branch behind it, and a check mark answers a number that was never there.
+
+### Board findings decay
+
+Board findings decay silently, because the board is gitignored and nothing in git records when a finding stopped being true. One plan re-measured four residuals and two had already shipped. A count decays upward as well as dead: one task said three banned words survived and the tree carried nine across five pages, the second miscount in that task's own history. Where a plan converts a stale count into a scope constraint, the constraint caps the work below the outcome it serves and the outcome wins. A finding about live external state needs the same check by query rather than by grep, as on one branch where the task said the sandbox remote carried branches under the old name and `git ls-remote` found none because each scenario run sweeps them.
+
+### The plan pointer's form gates the sweep
+
+A task's plan pointer decides whether the sweep can see it at all. A plan carried as an intro-paragraph link rather than a `Plan:` line under the title is skipped silently by `claude-docs` Step 8 and by `git-pr`'s task-number write, so the plan never archives and `Pull request: #NNN` never lands. Neither skill errors, since skipping is the documented behavior when no line matches. The no-pointer variant fails the same way and is harder to see: one task carried no reference in any form while its plan sat beside it matched only by slug, so the gitignored plan was stranded with no record it existed. Two task files sharing one `Plan:` line fail at the other end, tripping `git-pr`'s more-than-one-match guard so the number write skips and `aitk tasks archive` never fires for the batch that closed. `.claude/standards/tasks.md` is the authority on the form and the Tasks bullet in `CLAUDE.md` is the surface that drifts.
+
+### Archiving a plan strands the priority link
+
+Archiving a plan at ship time leaves `.claude/tasks/priority.md` pointing at a path the file has left. `claude-docs` Step 8 retargets the closing task's `Plan:` line and reads `priority.md` not at all, and `aitk tasks archive` drops the row only when the hook calls it on merge, so every task sits with a dead plan link between its ship run and its merge. One board carried two at once and only one was that session's. Resolve the task file's own `Plan:` line, which the archive keeps current, and read a dead link in `priority.md` as the ordinary post-ship state.
