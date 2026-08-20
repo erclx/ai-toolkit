@@ -21,7 +21,10 @@ A pen the caller cannot face is the same gap wearing a different shape. Routing 
 - Write the proposal to a receipt on disk and take no action until the user decides per item
 - Route every decision channel through the receipt, writing a decision given in chat into its item's slot before the parse reads the file, so a channel the skill advertises drains the pen rather than passing over it
 - Keep a promotion on its own commit, since a change to how the agent operates should not ride inside a feature a reviewer is vetting for something else
-- Confine the pass that runs after application to the one receipt it tested, so tidying up removes a file whose decisions are known to be resolved and leaves the pen and every untested receipt alone
+- Collect a receipt as soon as its last item resolves, rather than waiting for an operator to ask, since a collection nobody triggers is a folder that only grows
+- Fold each declined item into its memory entry before the receipt goes, because a promoted item survives in its target and in git while a decline is recorded nowhere else
+- Record that decline by rewriting the entry rather than appending to it, so the file states one current claim
+- Confine the pass that runs after application to the one receipt it tested, so tidying up removes a file whose decisions are known to be resolved and leaves every untested receipt alone
 
 ## Must not
 

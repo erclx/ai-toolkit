@@ -103,6 +103,19 @@ Link a related entry as `[[name]]`, where `name` is the target's filename stem w
 
 The catalog is generated from sibling frontmatter rather than authored. Never hand-edit it, since the next regeneration discards whatever was added by hand.
 
+## Collecting a review receipt
+
+A review of the pen writes a receipt recording what it proposed per entry and what was decided. The receipt is collected once every item on it has resolved, and it is held while any item is still pending, since a pending item is decision state the next round reads back.
+
+Fold the declines before the receipt goes. A promoted entry survives in its target and in git and a retired one survives in the archive, so the one thing a receipt uniquely holds is the record that a rule was considered and turned down.
+
+- Fold into the entry the item was about, and only into that entry. A decline whose proposed target was another surface still lands here.
+- Fold a `feedback` or `project` entry alone. The decline belongs in the `**Why:**` line, which is what a later reader tests the rule against.
+- Fold nothing into a `user` or `reference` entry. Its body is one sentence carrying neither marker, and such an entry is declined for having no in-repo target, which its type already states. Writing that on the entry restates the type and breaks the body shape.
+- Record the decline by rewriting the entry, never by appending to it, per the lifecycle rule above.
+
+Which surface runs the collection is project policy. More than one may, so a collector finding no receipt has been beaten to it rather than misconfigured.
+
 ## Anti-patterns
 
 - **The domain fact filed as memory.** It reads as a capture and lands in the one folder no session opens while working that domain.
