@@ -51,6 +51,7 @@ For each seed file present in both sides, parse the body into a preamble (everyt
 
 - **Identical:** ignore.
 - **Toolkit-only section** (present in source, absent in target): candidate to **Add**. Number it whatever the file's own verdict is. The verdict rules below govern a section present in both, and a section the project never had cannot be the customization a `drifted` file is being credited with. A pass that reads the file-level verdict first proposes nothing on a target missing eleven sections, which is the shape this bullet exists to catch.
+  - A deliberate removal reads the same as one that never arrived, and no decline is carried between runs, so a section the user skips is proposed again on the next branch. Say so beside the item rather than letting a reader meet it a third time wondering. The way to settle it for good is to keep the heading and write the project's own content under it, which moves the section onto the drifted path above, where the customization rule protects it and stops numbering it.
 - **Target-only section** (present in target, absent in source): preserve, never propose removal. These are user customizations.
 - **Drifted section** (present in both, content differs): candidate to **Update**.
   - Read the file's verdict from the report rather than judging it by eye. `drifted` means the content matches no version the toolkit ever published, so the project wrote it: call it **Customized**, default to skip, record in the scope table only, never numbered.
