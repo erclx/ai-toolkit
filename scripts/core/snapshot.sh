@@ -2,19 +2,13 @@
 set -e
 set -o pipefail
 
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-WHITE='\033[1;37m'
-GREY='\033[0;90m'
-NC='\033[0m'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# shellcheck source=/dev/null
+source "$PROJECT_ROOT/scripts/lib/ui.sh"
 
 NESTED="${VERIFY_NESTED:-false}"
-
-log_info() { echo -e "${GREY}│${NC} ${GREEN}✓${NC} $1"; }
-log_error() {
-  echo -e "${GREY}│${NC} ${RED}✗${NC} $1"
-  exit 1
-}
 
 OUTPUT_FILE=".claude/.tmp/project/PROJECT-SNAPSHOT.md"
 
@@ -117,15 +111,23 @@ write_snapshot() {
 main() {
   check_dependencies
 
-  if [ "$NESTED" = false ]; then echo -e "${GREY}┌${NC}"; fi
+  if [ "$NESTED" = false ]; then open_timeline; fi
 
-  echo -e "${GREY}├${NC} ${WHITE}Snapshot${NC}"
+  log_step "Snapshot"
   write_snapshot
   log_info "Written to $OUTPUT_FILE"
 
+  # The whole frame goes to stderr, since the run writes its document to a file
+  # and leaves stdout carrying nothing. Edges on stdout with the body on stderr
+  # would capture as a frame with no body inside it.
   if [ "$NESTED" = false ]; then
-    echo -e "${GREY}└${NC}\n"
-    echo -e "${GREEN}✓ Snapshot complete${NC}"
+    close_timeline
+    # All six are declared to scope what `set_palette` assigns, so the four this
+    # line never spells stay out of the globals a sourcing script reads.
+    # shellcheck disable=SC2034
+    local GREEN RED YELLOW WHITE GREY NC
+    set_palette 2
+    echo -e "\n${GREEN}✓ Snapshot complete${NC}" >&2
   fi
 }
 
