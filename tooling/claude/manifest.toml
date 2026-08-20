@@ -8,4 +8,4 @@ runtime = ""
 scaffold = ""
 
 [gitignore]
-"# Claude" = [".claude/.tmp/", ".claude/groundwork/", ".claude/intake/", ".claude/memory/", ".claude/plans/", ".claude/plans-archive/", ".claude/review/", ".claude/task-archive/", ".claude/worktrees/", ".claude/tasks/"]
+"# Claude" = [".claude/.tmp/", ".claude/groundwork/", ".claude/intake/", ".claude/memory/", ".claude/plans/", ".claude/plans-archive/", ".claude/review/", ".claude/review-archive/", ".claude/task-archive/", ".claude/worktrees/", ".claude/tasks/"]

@@ -74,7 +74,7 @@ For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/st
 
 ## Size
 
-`aitk records size` reports what each record folder holds and how much of it is recent. It reads the nine backed folders named under Push and pull, plus `.claude/.tmp`, and it gates nothing.
+`aitk records size` reports what each record folder holds and how much of it is recent. It reads the ten backed folders named under Push and pull, plus `.claude/.tmp`, and it gates nothing.
 
 ```bash
 aitk records size
@@ -110,9 +110,9 @@ aitk records push --json
 aitk records pull
 ```
 
-The backed folders are `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `task-archive`, `tasks`, and `teach`, all under `.claude/`. They are the gitignored Claude group minus `.claude/.tmp`, which is deletable without loss, and `.claude/worktrees/`, whose contents belong to the project repository already. The list is a constant rather than configuration, matching the four folder names `validate` hardcodes.
+The backed folders are `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `review-archive`, `task-archive`, `tasks`, and `teach`, all under `.claude/`. They are the gitignored Claude group minus `.claude/.tmp`, which is deletable without loss, and `.claude/worktrees/`, whose contents belong to the project repository already. The list is a constant rather than configuration, matching the four folder names `validate` hardcodes.
 
-Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the nine folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched.
+Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the ten folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched.
 
 ### Setup
 
@@ -141,7 +141,7 @@ Point it at a private repository, and at one that is not a remote of the project
 | `local-ahead`       | `pull` found local commits that never reached the origin                             |
 | `git-failed`        | A git call failed, with its stderr in the message                                    |
 
-The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the nine has nothing to lose, so a restore onto a fresh checkout runs straight through.
+The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the ten has nothing to lose, so a restore onto a fresh checkout runs straight through.
 
 ### When it runs
 

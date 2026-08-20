@@ -22,6 +22,7 @@ node_modules/
 .claude/plans/
 .claude/plans-archive/
 .claude/review/
+.claude/review-archive/
 .claude/task-archive/
 .claude/worktrees/
 .claude/tasks/

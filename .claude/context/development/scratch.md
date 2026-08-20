@@ -29,9 +29,11 @@ The task board is a folder of one file per task, which is what keeps two concurr
 
 ### Where each folder archives to
 
-A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, the one archive that stayed under the scratch tree the other three left. Nothing cites a retired memory the way a task file cites a plan or a groundwork track, and a phase label derives from the task archive while no surface reads this one, so it is an undo buffer for a bulk pass rather than a record a later session opens. Deletion was never safe here: the folder is gitignored, so a wrong call over a folder this size has nothing to recover from.
+A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, the one archive that stayed under the scratch tree the other four left. Nothing cites a retired memory the way a task file cites a plan or a groundwork track, and a phase label derives from the task archive while no surface reads this one, so it is an undo buffer for a bulk pass rather than a record a later session opens. Deletion was never safe here: the folder is gitignored, so a wrong call over a folder this size has nothing to recover from.
 
 A plan that ships moves to `.claude/plans-archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.
+
+A memory-review receipt a triage takes out of `.claude/review/` moves to `.claude/review-archive/`. It sat in the scratch tree first and failed the deletable test on content: the pass that filled it carried 154 receipts holding 261 undecided items, which `aitk standards memory` calls decision state the next round reads back, and nothing there reaches the records remote. A receipt whose items have all resolved needs no archive at all, since the collection rule folds its declines into the entries and deletes the file.
 
 A task that ships moves to `.claude/task-archive/` the same way, through `aitk tasks archive`. The `Pull request:` line `git-pr` writes onto the task is what lets the merge close it, since every merge on `main` is a squash carrying that number in its subject while the branch name never lands. The command owns the move, the `priority.md` row removal, and the index regen as one unit, so the hook and `claude-tasks` cannot archive differently.
 
