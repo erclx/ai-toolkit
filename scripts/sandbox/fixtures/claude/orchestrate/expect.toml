@@ -40,26 +40,40 @@ absent = [
   ".claude/tasks/session-*.md",
 ]
 
-# Three of the scenario's six expectations reach a load-bearing token. Each pin is
+# Two of the scenario's five expectations reach a load-bearing token. Each pin is
 # a positive, since a negative substring passes on every reply that phrases the
 # thing differently.
 #
 # The plan path proves the run opened `.claude/plans/` rather than reporting the
-# task board alone. `claude-autoship` is the route that path earns, and
-# `claude-feature` is the route the unplanned feature earns, so the pair separates
-# a run that read the board against the plans folder from one that reported the
-# single queued task and stopped.
+# task board alone, and `claude-autoship` is the route that path earns. Both read
+# the same staged file, so the pair separates a run that read the board against
+# the plans folder from one that reported the single queued task and stopped.
 #
-# Both routes are spelled without a leading slash. A session invoking through the
-# plugin writes `/aitk:claude-autoship`, which carries the bare name and not the
-# slashed one, so the shorter token survives either spelling.
+# The route the unplanned task earns is `claude-feature`, and it was pinned here
+# until 2026-08-20. Nothing in the fixture fixes that token, so it moved to
+# `manual` under the `Judgment:` label rather than staying a pin whose verdict
+# moves between identical runs. `claude-autoship` keeps its pin on the difference
+# the fixture makes: the planned task carries a staged plan file, so the run has a
+# concrete path to name and the pin reads a consequence of provisioning.
+#
+# What that pin reaches is the token anywhere in the reply rather than the row it
+# is written about. A negative on 2026-08-20 rewrote the ready-to-build row to
+# route to `/git-ship`, and the run followed it and still passed at 5 asserted and
+# 0 failed, because the skill's own `Next:` line names `claude-autoship` from a
+# different part of its body. The entry below records the row the pin cannot
+# isolate, and anchoring it is not available here, since `reply` matches plain
+# substrings and a regex over prose goes red on any rewording.
+#
+# The surviving route is spelled without a leading slash. A session invoking
+# through the plugin writes `/aitk:claude-autoship`, which carries the bare name
+# and not the slashed one, so the shorter token survives either spelling.
 #
 # `Next:` is the output contract's last slot. It asserts the slot rather than the
-# singleness the scenario expects, which the manual entry below carries.
+# singleness the scenario expects or the route it names, both of which the manual
+# entries below carry.
 reply = [
   ".claude/plans/feature-log-entry.md",
   "claude-autoship",
-  "claude-feature",
   "Next:",
 ]
 
@@ -68,5 +82,7 @@ manual = [
   "The In review section is omitted where the fixture has no open pull request. Semantic: a negative, and an entry asserting what a run must not have written passes on every spelling that phrases it differently.",
   "Execution order is read from priority.md rather than inferred from index.md. Unwired: the two staged rows sit in filename order in both files, and readiness is recoverable from the plans folder alone, so a run that never opened priority.md reports the same board.",
   "The Next line proposes a single action. Semantic: a substring finds the slot and cannot count what follows it, so a reply offering three actions under one heading passes.",
+  "The Next line routes the unplanned task to claude-feature. Judgment: the fixture stages nothing naming that route, so the token is one the run chooses rather than one provisioning fixes. Two runs against one unchanged fixture on 2026-08-20 disagreed on it while every other entry held, which is what moved it out of the pins above.",
+  "The ready-to-build row for the planned task routes to claude-autoship. Semantic: the pin above matches that token anywhere in the reply, and the skill names it on the Next line from a separate part of its body, so a run routing the row elsewhere still passes. Measured 2026-08-20 against a copy of the skill whose row read /git-ship.",
   "The session wrote nothing at all. Unwired: an absence names a path, and the paths a wrong run would invent are unbounded, so the two entries above cover the two a wrong run most plausibly writes and nothing catches the rest.",
 ]
