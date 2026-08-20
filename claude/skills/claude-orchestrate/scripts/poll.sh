@@ -48,11 +48,19 @@ JQ_LAST_REVIEWED_HEAD='
              | . == "## Review" or . == "## Review closed")
   ] | last | .commit.oid // empty
 '
-JQ_REPLY_COUNT='
+# The count alone answers whether a reply is new to this script, which is not
+# the same question as whether it is newer than the pass it answers. The stamp
+# of the newest reply comes out of the same selection so the recency test costs
+# no second filter, and it is the one this file compares against `submittedAt`.
+JQ_REPLY_STATE='
   [ .comments[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")
              | . == "## Review response" or . == "## Rebase")
-  ] | length
+  ] as $replies
+  | ($replies | length | tostring)
+    + " "
+    + ([ $replies[] | .createdAt // empty | fromdateiso8601 | floor ]
+       | max // 0 | tostring)
 '
 
 # `claude-pr-review` states the threshold and posts `## Review` exactly when a
@@ -69,18 +77,28 @@ JQ_REPLY_COUNT='
 # script runs wherever the plugin is installed. A review carrying no stamp reads
 # as age zero and classifies nothing, which is the same answer the carry-forward
 # path gives a pull request this run could not read.
+#
+# The stamp itself is emitted as a third field beside the age it was derived
+# from, because the reply test below compares against the instant rather than
+# against the elapsed seconds. A missing stamp reads as zero there too, where it
+# sends a reply to be reported rather than suppressed. The two readers therefore
+# fail in opposite directions on the same absent field, since zero silences the
+# age test above and zero is the value the reply test reports on.
 JQ_LAST_REVIEW_STATE='
   [ .reviews[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")
              | . == "## Review" or . == "## Review closed")
   ] | last
-  | if . == null then "none 0"
-    else ((.body | split("\n")[0] | rtrimstr("\r")
-           | if . == "## Review" then "open" else "closed" end)
-          + " "
-          + (if .submittedAt == null then "0"
-             else ((now - (.submittedAt | fromdateiso8601)) | floor | tostring)
-             end))
+  | if . == null then "none 0 0"
+    else (if .submittedAt == null then 0
+          else (.submittedAt | fromdateiso8601 | floor)
+          end) as $at
+      | ((.body | split("\n")[0] | rtrimstr("\r")
+          | if . == "## Review" then "open" else "closed" end)
+         + " "
+         + (if $at == 0 then "0" else (((now | floor) - $at) | tostring) end)
+         + " "
+         + ($at | tostring))
     end
 '
 
@@ -102,7 +120,10 @@ carry_forward() {
   old=$(grep "^$n " "$STATE" || true)
   if [ -n "$old" ]; then
     # Every other classification compares a field against itself on a carried
-    # line, so it fires nothing. STALLED reads a heading that is carried too, so
+    # line, so it fires nothing. That is also what keeps the two stamps unread
+    # here: the baseline never held them, so both arrive empty, and the count
+    # test in front of them fails before either reaches a numeric comparison.
+    # STALLED reads a heading that is carried too, so
     # the field is blanked to a value no branch matches. Echoing it intact would
     # classify a pull request this run never reached while stderr below says the
     # opposite, and one successful read restores it a run later. An already
@@ -146,9 +167,14 @@ snapshot() {
     fi
 
     prior=$(jq -r "$JQ_LAST_REVIEWED_HEAD" <<<"$payload")
-    resp=$(jq -r "$JQ_REPLY_COUNT" <<<"$payload")
-    # Two space-separated fields, so the line below carries them as its own
-    # sixth and seventh rather than needing a split.
+    # Split here rather than carried whole, because the count keeps the fourth
+    # column every baseline written so far already reads, and the stamp goes to
+    # the end of the line beside the pass stamp it is compared against.
+    reply_state=$(jq -r "$JQ_REPLY_STATE" <<<"$payload")
+    resp=${reply_state%% *}
+    reply_at=${reply_state##* }
+    # Three space-separated fields, so the line below carries them as its own
+    # sixth, seventh, and eighth rather than needing a split.
     review_state=$(jq -r "$JQ_LAST_REVIEW_STATE" <<<"$payload")
 
     # `gh pr view --json mergeable` reports UNKNOWN until GitHub finishes
@@ -168,7 +194,7 @@ snapshot() {
       merges=conflict
     fi
 
-    echo "$n $head ${prior:-none} $resp $merges $review_state"
+    echo "$n $head ${prior:-none} $resp $merges $review_state $reply_at"
   done
 }
 
@@ -185,7 +211,7 @@ CHANGED=0
 # would fire on every later run and the board would never read "No movement."
 FINAL=""
 
-while read -r n head prior resp merges heading age; do
+while read -r n head prior resp merges heading age pass_at reply_at; do
   [ -z "$n" ] && continue
   state=$heading
   old=$(grep "^$n " "$STATE" || true)
@@ -244,7 +270,26 @@ while read -r n head prior resp merges heading age; do
       fi
     fi
     CHANGED=1
-  elif [ "$resp" -gt "$old_resp" ]; then
+  elif [ "$resp" -gt "$old_resp" ] &&
+    { [ "$pass_at" = 0 ] || [ "$reply_at" -gt "$pass_at" ]; }; then
+    # The count says the reply is new to this script and the stamp says it is
+    # newer than the pass, and both are needed. A worker answers a finding and
+    # the reviewing session closes out seconds later, so the count alone reports
+    # an answered thread on the next run and the session spends a turn learning
+    # `claude-pr-review` will refuse it. The gaps observed were 96, 24, and 35
+    # seconds, which is a reviewing session reading a reply and posting, so this
+    # is the ordinary handback rather than a race.
+    #
+    # A pull request carrying no pass at all reads as stamp zero and reports,
+    # which is the case the count was the right test for: a reply with nothing
+    # behind it is a worker talking to nobody and worth the turn. The test is
+    # strictly greater to match the guard `claude-pr-review` states on the same
+    # two fields, which drops a reply landing inside the same second as the
+    # pass, a narrower failure than the one it removes.
+    #
+    # The gate sits in the condition rather than in the body so a suppressed
+    # reply falls through to STALLED below, which is a thread this run should
+    # still be able to reach.
     echo "RESPONSE  #$n answered with no new commit"
     CHANGED=1
   elif [ "$heading" = open ] && [ "$old_heading" != reported ] &&
