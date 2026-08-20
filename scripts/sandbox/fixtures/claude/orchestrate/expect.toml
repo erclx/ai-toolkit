@@ -23,11 +23,11 @@ max_turns = 30
 # both are claims about what the session did rather than about provisioning.
 #
 # `feature-streak-view.md` is the boundary between reporting a route and taking
-# it. The board carries a task under `## Needs a plan` and the roadmap's now-row
-# names the feature behind it, so a run that wrote that plan itself did the
-# planning step it was meant to route. The slug follows the task filename, which
-# is where a plan for it would take its name, and a run choosing another one
-# passes this entry vacuously, which is a miss rather than a false pass.
+# it. The board carries a task under `## Needs a plan`, so a run that wrote that
+# plan itself did the planning step it was meant to route. The slug follows the
+# task filename, which is where a plan for it would take its name, and a run
+# choosing another one passes this entry vacuously, which is a miss rather than
+# a false pass.
 #
 # `session-*.md` is the handoff. The skill writes it on a request to save the
 # session and on nothing else, so a bare invocation that produced one wrote
@@ -47,7 +47,7 @@ absent = [
 # The plan path proves the run opened `.claude/plans/` rather than reporting the
 # task board alone. `claude-autoship` is the route that path earns, and
 # `claude-feature` is the route the unplanned feature earns, so the pair separates
-# a run that read the roadmap against the plans folder from one that reported the
+# a run that read the board against the plans folder from one that reported the
 # single queued task and stopped.
 #
 # Both routes are spelled without a leading slash. A session invoking through the
@@ -64,7 +64,7 @@ reply = [
 ]
 
 manual = [
-  "The Roadmap line quotes the now-row and dates it rather than asserting an active version as fact. Semantic: a negative, and any rephrasing that states the version as fact still carries the quoted words.",
+  "The reply names no active version at all, since the fixture stages no file stating one. Semantic: a negative, and a substring cannot reach a version string the run invented from the task filenames.",
   "The In review section is omitted where the fixture has no open pull request. Semantic: a negative, and an entry asserting what a run must not have written passes on every spelling that phrases it differently.",
   "Execution order is read from priority.md rather than inferred from index.md. Unwired: the two staged rows sit in filename order in both files, and readiness is recoverable from the plans folder alone, so a run that never opened priority.md reports the same board.",
   "The Next line proposes a single action. Semantic: a substring finds the slot and cannot count what follows it, so a reply offering three actions under one heading passes.",

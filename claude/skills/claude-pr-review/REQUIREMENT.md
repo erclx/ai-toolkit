@@ -7,7 +7,7 @@ description: What the independent pull request review is for, the gaps it closes
 
 ## Gap
 
-Without this skill, a pull request is reviewed only by the session that wrote it, which cannot see the roadmap sequence or a sibling branch in flight. Findings land in chat, where they are read once and leave the thread with no record. A review that opens and never closes is worse than none, since a reader scanning the thread cannot tell an unanswered review from a confirmed one, and the author's claim that findings are fixed is the only evidence they are.
+Without this skill, a pull request is reviewed only by the session that wrote it, which cannot see the board's order or a sibling branch in flight. Findings land in chat, where they are read once and leave the thread with no record. A review that opens and never closes is worse than none, since a reader scanning the thread cannot tell an unanswered review from a confirmed one, and the author's claim that findings are fixed is the only evidence they are.
 
 A finding also stops being true by argument rather than by a fix. A worker naming the plan question that already declined it, or a constraint the pass could not see, settles it in the exchange that carried the answer, and the pass that accepts the argument drops the finding from its next body. A reader then sees a finding raised once and never mentioned again, which is indistinguishable from one everyone forgot.
 

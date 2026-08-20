@@ -27,7 +27,7 @@ Stop on any of three conditions, naming which one fired:
 
 Test for the key rather than for emptiness. A current CLI reporting `"superseded": []` has looked and found nothing, which is the pass above, and reading an absent key as an empty answer reports a clean layout to the projects this skill exists for.
 
-No listing substitutes for the field. The pairing runs against the seed folder names the toolkit ships, and an uppercase stem is not the test, so a listing of `.claude/*.md` also reaches `ARCHITECTURE.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `DESIGN.md`. Each of those is a single file the layout intends to stay one. A fallback that proposed splitting them would shred four documents to avoid reporting a stale CLI, which is why this skill stops where its siblings degrade.
+No listing substitutes for the field. The pairing runs against the seed folder names the toolkit ships, and an uppercase stem is not the test, so a listing of `.claude/*.md` also reaches `ARCHITECTURE.md`, `REQUIREMENTS.md`, and `DESIGN.md`. Each of those is a single file the layout intends to stay one. A fallback that proposed splitting them would shred three documents to avoid reporting a stale CLI, which is why this skill stops where its siblings degrade.
 
 ## Step 2: resolve the destination standard
 

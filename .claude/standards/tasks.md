@@ -19,7 +19,6 @@ Does not govern:
 
 - The plan file a task cites, its sections, and its answer contract: `plan.md`
 - Phase-label format and which surfaces a label may appear on: `versioning.md`
-- Sequencing across versions and why the order is what it is: `roadmap.md`
 - Architectural reasoning that outlives a task: `architecture.md`
 - The pre-compaction handoff sitting in the folder, its filename and its sections: `session.md`
 - When a project opens a task at all, which is project policy rather than a shape rule
@@ -52,7 +51,9 @@ The `claude-tasks` skill creates and archives task files. `claude-docs` marks ou
 
 ## Ordering
 
-`priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Why one version sequences against another belongs in `.claude/ROADMAP.md`, which is committed because that rationale has no substitute record. Why a row sits where it does inside its group is stated on the row itself, in the column that already carries what the task is waiting on.
+`priority.md` carries execution order and what each task is waiting on. The generated index sorts by filename and says nothing about order, so without this file board state gets reconstructed by hand every session. Why a row sits where it does inside its group is stated on the row itself, in the column that already carries what the task is waiting on, one line per row.
+
+That cell is the only home sequencing rationale has. Rationale spanning several rows, why one group of work runs before another, is carried by nothing and reaches a later session only through whoever remembers it. Naming the gap is deliberate: a second document holding it would be the version-sequencing surface this board replaced, and a row already states what it waits on, which is the part of the reasoning a reader acts on.
 
 Group tasks by readiness rather than by status, one row per task, under the columns each group fixes below. Keep it to links and blockers: tables, plus at most one sentence per section. A paragraph in `priority.md` is a defect whatever it says. Stating the shape this way is what lets a single diff fail, since a size cap only trips after the fact and every addition looks defensible on its own.
 
@@ -240,7 +241,7 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 - Architectural reasoning that outlives the task. A finding explains why this task is shaped as it is. A decision the system keeps after the task closes belongs in `.claude/ARCHITECTURE.md`.
 - Narrative of the session that produced the task. A finding states what constrains the task, so what was probed, what it cost, and who decided belongs in the groundwork folder the `Groundwork:` line names. A task with no groundwork folder cuts the narrative rather than relocating it, since the board is not the fallback destination for it.
 - "In progress" or "Blocked" headings. Note status inline on the outcome instead.
-- Sequencing rationale or which version is active. Why this task is planned before its neighbors goes on its row in `priority.md`, in the cell that already carries what it is waiting on. Why one version sequences against another belongs in `.claude/ROADMAP.md`, which is committed because that reasoning has no substitute record.
+- Sequencing rationale or which version is active. Why this task is planned before its neighbors goes on its row in `priority.md`, in the cell that already carries what it is waiting on. Rationale wider than one row has no home at all, so cut it rather than filing it here.
 
 ## Archiving
 

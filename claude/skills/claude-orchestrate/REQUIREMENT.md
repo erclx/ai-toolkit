@@ -45,7 +45,6 @@ The session also records nothing of what it learns. Both other callers of memory
 - List a candidate's file set against every track in flight, and serialize when the sets are not disjoint
 - Place every finding a merged pull request produced against the surface that owns it
 - Place what the return leg carries by what it changes, sending an answer that settles a finding onto the pull request and one that corrects this session's model of the world to the task owning that surface, since neither becomes a record by being read
-- Date the roadmap line from that file's last commit, so an old sequence reads as old
 - Keep one planned, non-conflicting task in reserve beyond what is running
 - Refill the queue while a wave is still building, rather than on a merge and a thinning list alone, since neither of those fires across the window planning costs nothing
 - Carry a constraint naming each in-flight track's file set in every plan written from here, stating per set which of the two acts it forbids, since a bare path list leaves a broken citation in place
@@ -86,8 +85,7 @@ The session also records nothing of what it learns. Both other callers of memory
 ## Guards
 
 - Priority file absent: report the queue and say the order is unrecorded rather than inferring it from the index
-- Roadmap absent: omit the roadmap line rather than asserting a version the file does not state
-- Roadmap present but never committed: report the date as uncommitted, since a blank reads as a formatting slip
+- Cross-version sequencing asked for: say no surface carries it, rather than asserting an active version the tree does not state
 - This body dropped from a long session approaching a compaction: name the re-invocation and the runbook paths, since the routing lives in the body and a user-invoked skill routes nothing once it is gone
 - Blocker only an operator can clear: record the row as untestable this pass and name the action owed, rather than re-measuring what no session can move
 

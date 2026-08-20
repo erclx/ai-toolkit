@@ -17,10 +17,10 @@ order, port collisions), see [Claude Code and git worktrees](../wiki/claude/clau
 
 The split is by vantage, not by capability. Both are Claude Code sessions.
 
-| Role         | Session                               | Owns                                           | Does not                      |
-| ------------ | ------------------------------------- | ---------------------------------------------- | ----------------------------- |
-| Orchestrator | One warm, long-lived session          | Roadmap, planning, deep PR review, merge order | Edit tracked files, merge PRs |
-| Worker       | One cold worktree session per feature | Implement, self-check, open PR                 | Question the plan, merge      |
+| Role         | Session                               | Owns                                  | Does not                      |
+| ------------ | ------------------------------------- | ------------------------------------- | ----------------------------- |
+| Orchestrator | One warm, long-lived session          | Planning, deep PR review, merge order | Edit tracked files, merge PRs |
+| Worker       | One cold worktree session per feature | Implement, self-check, open PR        | Question the plan, merge      |
 
 The orchestrator is worth asserting explicitly at the start of a session with
 `claude-orchestrate`, which loads the loop and its boundaries. It is framing and
@@ -36,13 +36,12 @@ and no later session recovers that vantage.
 
 One feature travels this path end to end.
 
-1. Orchestrator captures a needed roadmap draft or resequence in the plan or a task file, naming `.claude/REQUIREMENTS.md` as the scope source, and a worker runs `claude-roadmap` in its branch so the tracked edit ships in a PR. The skill stops when that file carries a later scope section, since the MVP list it sequences has shipped and a fresh requirements pass owns what follows.
-2. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
-3. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
-4. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
-5. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target then with `aitk sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.
-6. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds anything and under `## Review closed` when it finds nothing, so a reader learns from the heading whether work is still owed and takes the merge decision from the counts on the line under it. Repeat from step 5 until a pass closes the review.
-7. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
+1. Orchestrator plans the next feature with `claude-feature`, writing a plan to `.claude/plans/`. Planning stays in the warm session because good planning is cross-feature. It needs the contract other features consume and the shared wiring seam. A cold session would re-derive or guess.
+2. The human opens a worker worktree with `claude-worktree` and runs `claude-autoship` against the plan. The worker builds, self-checks, opens a PR, and stops at the PR boundary.
+3. Orchestrator reviews the PR with `claude-pr-review` and posts findings to it.
+4. Orchestrator tells the session holding that branch to run `claude-address-review` once the pass posted a finding at any severity, resolving the target then with `aitk sessions list --branch` and reporting the invocation for the human when no live session holds it. The worker addresses the findings, rebases onto `origin/main` when a sibling landed first and left the branch unable to merge, then pushes a follow-up. A pass carrying only minor findings dispatches too, since the grade runs low often enough that a floor at should-fix loses fixes a worker would have made. `claude-pr-review` states that threshold and the heading follows it, so an open heading is itself the signal to send.
+5. Orchestrator closes the review out with `claude-pr-review` again. The second pass reads only the commits the follow-up added, or the worker's response alone when the follow-up added none, and posts under `## Review` when it finds anything and under `## Review closed` when it finds nothing, so a reader learns from the heading whether work is still owed and takes the merge decision from the counts on the line under it. Repeat from step 4 until a pass closes the review.
+6. The human reads the result and merges. The orchestrator tells any trailing worker whose branch shares a seam with the merged one to run `claude-address-review`, which rebases whether or not the review left anything open.
 
 There is no loop construct here. Each worker is a single build that halts at the
 PR. The merge stays a manual human gate. Reliability comes from the plan being
@@ -55,7 +54,7 @@ The worker's self-review and the orchestrator's review are not the same pass run
 twice. They differ by vantage.
 
 - Worker self-review, inside `claude-autoship`: the session that wrote the code. Its job is "did I build the plan and does it pass?" Mechanical, and structurally blind to its own misreadings, because the same misreading wrote both the code and the review. This is the green gate that decides whether the PR opens.
-- Orchestrator review, via `claude-pr-review`: a fresh session with cross-feature context (the roadmap, a sibling PR in flight, a downstream contract). Its job is "is this right and does it fit?" It can question the plan itself. This is the merge gate.
+- Orchestrator review, via `claude-pr-review`: a fresh session with cross-feature context (the board, a sibling PR in flight, a downstream contract). Its job is "is this right and does it fit?" It can question the plan itself. This is the merge gate.
 
 They collide only if the worker also runs a deep pass. Keep the worker's review
 light and let the orchestrator own the deep, independent one. The human read at
@@ -127,19 +126,19 @@ coordination costs more than the change it was too small.
 
 ## Where work comes from
 
-Three tiers hold work at different altitudes.
+Two tiers hold work at different altitudes.
 
-- Roadmap (`.claude/ROADMAP.md`): versions as themes, sequenced. Committed, low churn. Shape governed by `standards/bundled/roadmap.md`.
-- Tasks (`.claude/tasks/`): the active few pulled into the current turn, one file each. Gitignored, high churn. Shape governed by `standards/tasks.md`.
+- Tasks (`.claude/tasks/`): the active few pulled into the current turn, one file each. Gitignored, high churn. Shape governed by `standards/tasks.md`. `priority.md` beside them carries execution order, and `backlog.md` carries what nobody is scheduling.
 - Edits: a few lines, done immediately with no ceremony.
 
-Pre-MVP the roadmap is the backlog, because the scope is finite and known.
-Post-MVP the backlog moves to tracked issues, per item, and the roadmap thins to
-occasional theme-setting.
+Nothing above these sequences work into versions. Scope is stated in
+`.claude/REQUIREMENTS.md` and reaches the board as discrete tasks, so why one
+task runs before its neighbors is on its row and why one group of work runs
+before another is carried nowhere at all.
 
 ## Parallelism
 
-The binding constraint is the human and the shared files, not the roadmap. Cap
+The binding constraint is the human and the shared files, not the board. Cap
 at two or three worker tracks and split them across the stack so they do not
 collide on the same files.
 

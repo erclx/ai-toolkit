@@ -28,15 +28,6 @@ EOF
 3. Trend chart: weekly and monthly completion chart
 EOF
 
-  cat <<'EOF' >.claude/ROADMAP.md
-# Roadmap
-
-| Version | Status | Outcome | Features | Depends on |
-| ------- | ------ | ------- | -------- | ---------- |
-| v0.1 | Now | Log a habit and see the streak | Log entry, Streak view | none |
-| v0.2 | Next | See completion trends over time | Trend chart | v0.1, for the logged entries |
-EOF
-
   mkdir -p .claude/tasks
   cat <<'EOF' >.claude/tasks/index.md
 ---
@@ -110,12 +101,12 @@ None identified.
 None identified.
 EOF
 
-  git add . && git commit -m "docs(project): roadmap, tasks, and log-entry plan" --no-verify -q
+  git add . && git commit -m "docs(project): requirements, tasks, and log-entry plan" --no-verify -q
 
   log_step "Scenario ready: orchestrator board readout"
-  log_info "Context: ROADMAP now-row at v0.1, priority.md groups the board, a plan for log-entry, none for streak-view"
+  log_info "Context: priority.md groups the board, a plan for log-entry, none for streak-view"
   log_info "Action:  /claude-orchestrate"
-  log_info "Expect:  a Roadmap line quoting the v0.1 now-row and dating it, never asserting Active: v0.1 as fact,"
+  log_info "Expect:  no version line at all, since no file states one,"
   log_info "         order read from priority.md rather than inferred from index.md,"
   log_info "         log-entry ready to hand to a worker (has plan), streak-view needs /claude-feature first,"
   log_info "         a single Next action, and In review omitted (no open PRs in this fixture)"

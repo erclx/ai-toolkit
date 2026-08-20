@@ -53,14 +53,6 @@ EOF
 2. Create task: POST /tasks adds a task
 EOF
 
-  cat <<'EOF' >.claude/ROADMAP.md
-# Roadmap
-
-| Version | Status | Outcome | Features | Depends on |
-| ------- | ------ | ------- | -------- | ---------- |
-| v0.1 | Now | List and create tasks | List tasks, Create task | none |
-EOF
-
   mkdir -p src
   cat <<'EOF' >src/tasks.ts
 export function createTask(title: string) {
@@ -102,7 +94,7 @@ stage_setup() {
     seed_reviewable_pr
 
     log_step "Scenario ready: PR review from an independent session"
-    log_info "Context: open draft PR on feat/create-endpoint, project docs and ROADMAP present"
+    log_info "Context: open draft PR on feat/create-endpoint, project docs present"
     log_info "Action:  /claude-pr-review"
     log_info "Expect:  reviews the PR diff against docs, posts findings to the PR via gh pr review --comment"
     log_info "         opens the comment with the ## Review heading"
@@ -117,7 +109,7 @@ stage_setup() {
     # Seed the first pass against the pre-fix head, so its commit.oid bounds the delta.
     gh pr review "$PR_URL" --comment --body "## Review
 
-0 critical, 1 should-fix, 0 minor. Reviewed against project docs and roadmap.
+0 critical, 1 should-fix, 0 minor. Reviewed against project docs and the board.
 
 **\`src/tasks.ts\`**
 
@@ -164,7 +156,7 @@ EOF
     # head that pass reads.
     gh pr review "$PR_URL" --comment --body "## Review
 
-0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and the board.
 
 **\`src/tasks.ts\`**
 
@@ -197,7 +189,7 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
 
     gh pr review "$PR_URL" --comment --body "## Review
 
-0 critical, 0 should-fix, 1 minor. Reviewed against project docs and roadmap.
+0 critical, 0 should-fix, 1 minor. Reviewed against project docs and the board.
 
 **\`src/tasks.ts\`**
 
