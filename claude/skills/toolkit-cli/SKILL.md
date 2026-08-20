@@ -9,18 +9,17 @@ What each `aitk` sync or install command does to existing files in a target proj
 
 ## Overwrite contract
 
-| Surface                                                  | Command                  | Effect on existing files                                         |
-| -------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
-| Golden configs, listed in full below                     | `aitk tooling sync`      | Overwritten once `--write` is passed. Local edits are lost.      |
-| Dictionary seeds (`.cspell/*.txt`)                       | `aitk tooling sync`      | Merged and sorted. Existing terms preserved.                     |
-| Other seeds (`cspell.json`, `.lintstagedrc`, state docs) | `aitk tooling sync`      | Copy-once. Dropped on first install, untouched after.            |
-| Standards                                                | `aitk standards install` | All overwritten.                                                 |
-| Standards                                                | `aitk standards sync`    | Only files already present are updated. None are added.          |
-| Seed docs and `CLAUDE.md`                                | `aitk claude init`       | Skipped when present. Never overwritten.                         |
-| Seed docs                                                | `aitk claude sync`       | Never touched. Only `.gitignore` is written.                     |
-| References (`.claude/tooling/<stack>.md`)                | `aitk tooling ref`       | Overwritten.                                                     |
-| `.gitignore`, deps, scripts                              | any sync                 | Additive. Existing entries preserved. Deps re-pin on major skew. |
-| Generated `index.md`                                     | any sync or regen        | Rewritten from target state. Hand edits are lost.                |
+| Surface                                                  | Command             | Effect on existing files                                          |
+| -------------------------------------------------------- | ------------------- | ----------------------------------------------------------------- |
+| Golden configs, listed in full below                     | `aitk tooling sync` | Overwritten once `--write` is passed. Local edits are lost.       |
+| Dictionary seeds (`.cspell/*.txt`)                       | `aitk tooling sync` | Merged and sorted. Existing terms preserved.                      |
+| Other seeds (`cspell.json`, `.lintstagedrc`, state docs) | `aitk tooling sync` | Copy-once. Dropped on first install, untouched after.             |
+| Standards                                                | none                | Nothing installs. `aitk standards <name>` reads and never writes. |
+| Seed docs and `CLAUDE.md`                                | `aitk claude init`  | Skipped when present. Never overwritten.                          |
+| Seed docs                                                | `aitk claude sync`  | Never touched. Only `.gitignore` is written.                      |
+| References (`.claude/tooling/<stack>.md`)                | `aitk tooling ref`  | Overwritten.                                                      |
+| `.gitignore`, deps, scripts                              | any sync            | Additive. Existing entries preserved. Deps re-pin on major skew.  |
+| Generated `index.md`                                     | any sync or regen   | Rewritten from target state. Hand edits are lost.                 |
 
 ## What a tooling sync can overwrite
 
@@ -94,8 +93,8 @@ Run `aitk tooling sync <stack> <target> --check` for the list resolved against a
 - Run `--check` first when the project carries local edits to any path above. The report names each file it would replace, which is the warning the user needs before the write.
 - An interactive run still prompts. `--write` skips the prompt, and `--check` refuses to write even with a TTY.
 - Seeds are user-owned. Dictionary `.txt` files merge and sort. Other seeds are copy-once, so re-seeding a structured file means deleting it and syncing again.
-- Prefer `aitk standards sync` over `install` on an existing project. `install` overwrites every standard.
-- For section-level customizations of a standard or seed doc, use the `claude-seed-sync` skill, not `aitk ... sync`. It diffs per section and preserves edits.
+- No command writes a standard into a project. A `.claude/standards/` folder from an older toolkit is inert, and deleting it costs nothing.
+- For section-level customizations of a seed doc, use the `claude-seed-sync` skill, not `aitk ... sync`. It diffs per section and preserves edits.
 
 ## CLAUDE.md
 

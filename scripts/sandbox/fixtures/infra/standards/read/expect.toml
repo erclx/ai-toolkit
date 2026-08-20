@@ -1,9 +1,9 @@
 # What `aitk standards skill` leaves behind when it runs from a target holding
-# neither project spelling. Read by `aitk sandbox check`. Patterns use TOML
+# no standards folder of its own. Read by `aitk sandbox check`. Patterns use TOML
 # literal strings so a regex needs no backslash escaping.
 #
-# This is the arm for the third root in `src/standards/read.ts`, the package
-# corpus that answers a project which installed nothing. `src/standards/read.test.ts`
+# This is the arm for the last root in `src/standards/read.ts`, the package
+# corpus that is the only root a target has. `src/standards/read.test.ts`
 # already covers the resolve against fixture roots. What only this arm reaches is
 # the command running from a working directory outside the toolkit checkout,
 # where `PROJECT_ROOT` comes off the module's own location rather than off `pwd`.
@@ -11,9 +11,12 @@
 paths = ["install/read-frame.log", "install/read-body.md"]
 
 # The premise, asserted rather than assumed from the banner. A resolve that
-# answered from either of these would report the same document and a content pin
-# on the body alone would pass, so the absence is what makes the `<aitk>` prefix
-# below mean the third root won rather than the first or second.
+# answered from the authoring root would report the same document and a content
+# pin on the body alone would pass, so the absence is what makes the `<aitk>`
+# prefix below mean the package corpus won rather than a project copy.
+#
+# `.claude/standards` is named alongside it because a target left holding one
+# from an older install must not resolve through it any more.
 absent = ["install/.claude/standards", "install/standards"]
 
 # Declared above the content blocks deliberately. A bare key below a

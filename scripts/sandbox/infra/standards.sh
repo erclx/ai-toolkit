@@ -9,50 +9,30 @@ use_config() {
 stage_setup() {
   mkdir -p install
   touch install/.gitkeep
-  mkdir -p sync/.claude/standards
 
-  local src_standards="$PROJECT_ROOT/standards"
-
-  while IFS= read -r file; do
-    cp "$file" "sync/.claude/standards/$(basename "$file")"
-  done < <(find "$src_standards" -maxdepth 1 -type f -name "*.md" | sort)
-
-  local drifted
-  drifted=$(find "$src_standards" -maxdepth 1 -type f -name "*.md" -not -name "index.md" | sort | head -n 2)
-  while IFS= read -r file; do
-    echo "<!-- stale -->" >>"sync/.claude/standards/$(basename "$file")"
-  done <<<"$drifted"
-
+  # A standard this project authored at its own root. Nothing installs the
+  # toolkit corpus into a target any more, so the root folder is the only
+  # project spelling left and the arm below reads past it to the package copy.
+  mkdir -p authored/standards
   printf -- '---\ntitle: Project own\ndescription: A standard this project authored\n---\n\n# Project own\n' \
-    >"sync/.claude/standards/project-own.md"
-  echo "<!-- stale index -->" >>"sync/.claude/standards/index.md"
+    >"authored/standards/project-own.md"
 
   git add .
   git commit -m "chore(sandbox): scaffold standards test directories" --no-verify -q
 
   log_step "Standards sandbox"
-  log_info "install/ : clean target, no standards present"
-  log_info "sync/    : two drifted standards, a project-authored one, a stale index"
-  log_info "           headless runs refuse to apply, since standards are seeds projects edit"
   log_info "list     : read-only catalog dump, no target needed"
-  log_info "read     : resolves one standard from install/, where neither project"
-  log_info "           spelling exists, so only the package corpus can answer"
+  log_info "read     : resolves one standard from install/, where the project"
+  log_info "           spelling does not exist, so only the package corpus can answer"
+  log_info "authored/: a project-authored standard at the root the resolver reads first"
 
-  select_or_route_scenario "Which scenario?" "install" "sync" "list" "read"
+  select_or_route_scenario "Which scenario?" "list" "read"
 
   case "$SELECTED_OPTION" in
-  "install")
-    log_step "Running: aitk standards install"
-    exec bun "$PROJECT_ROOT/src/cli.ts" standards install install/
-    ;;
-  "sync")
-    log_step "Running: aitk standards sync"
-    exec bun "$PROJECT_ROOT/src/cli.ts" standards sync sync/
-    ;;
   "read")
     # Run from `install/` rather than from the sandbox root. The root carries
-    # `sync/.claude/standards/`, and a reader checking the premise by eye would
-    # have to know the resolve never walks upward to tell the two apart.
+    # `authored/standards/`, and a reader checking the premise by eye would have
+    # to know the resolve never walks upward to tell the two apart.
     #
     # Both streams land on disk because `aitk sandbox check` reads the tree and
     # nothing else. The frame carries the root that answered and the body carries
@@ -60,8 +40,7 @@ stage_setup() {
     # separately from the read.
     # The status is held rather than left to `set -e`. A miss writes its warning
     # and the whole catalog to the log file, so an abort here would kill the
-    # scenario with the one diagnostic the command produced sitting unread. The
-    # three arms above `exec` and leave theirs on the terminal.
+    # scenario with the one diagnostic the command produced sitting unread.
     log_step "Running: aitk standards skill (from install/, which holds none)"
     local read_status=0
     (
@@ -81,7 +60,7 @@ stage_setup() {
     "$PROJECT_ROOT/scripts/standards/list.sh"
     log_step "Running: aitk standards list --json | jq '.standards[0] | keys'"
     "$PROJECT_ROOT/scripts/standards/list.sh" --json | jq '.standards[0] | keys'
-    log_info "Expect keys: description, name, target, content"
+    log_info "Expect keys: appliesTo, content, description, name"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

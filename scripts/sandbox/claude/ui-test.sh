@@ -2,8 +2,8 @@
 set -e
 set -o pipefail
 
-# No SANDBOX_INJECT_STANDARDS, deliberately, for the same reason `claude/review.sh`
-# declares none. The absent project copy forces `claude-ui-test` onto the
+# No project copy of the corpus, for the same reason `claude/review.sh` carries
+# none. The absent project copy forces `claude-ui-test` onto the
 # `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch name
 # below turns that citation into a checklist filename a reader can check by eye.
 # `expect.toml` carries that claim as a manual entry rather than an assertion,
@@ -137,7 +137,7 @@ EOF
   log_info "This arm also checks the standards citation, not the skill alone."
   log_info "  .claude/standards/ is absent, so the skill must reach the plugin copy"
   log_info "  the slug transform lives only in standards/skill.md, never in the skill body"
-  log_info "  so ui-checklist-feat-task-filter.md is evidence the fallback resolved"
+  log_info "  so ui-checklist-task-filter.md is evidence the fallback resolved"
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
   log_info "Playwright installs, and the tests cannot pass. There is no app entry"

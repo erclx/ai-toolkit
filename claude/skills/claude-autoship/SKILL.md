@@ -75,11 +75,11 @@ The two causes want different responses. A plan that has yet to produce its outp
 
 The skip needs both tests to pass: every changed file matches `*.md` or `*.txt`, and no changed file sits under a behavior path. On a pass, skip review entirely and continue to Step 7. Otherwise invoke `aitk:claude-review`.
 
-Behavior paths carry two spellings, the one a surface authors at and the one it installs to, so the rule reads the same in a toolkit and in a project that consumed one:
+Behavior paths carry two spellings, the one a surface authors at and the one it reaches a session at, so the rule reads the same in a toolkit and in a project that consumed one:
 
 - `claude/skills/` and `.claude/skills/`
 - `governance/rules/` and `.claude/rules/`
-- `standards/` and `.claude/standards/`
+- `standards/` and `.claude/standards/`, which is the authoring root and this repository's generated mirror rather than an install destination, since the corpus installs into no project
 - `snippets/` and `.claude/snippets/`
 - `internal/` and `tooling/`, which hold the stack references and the seed documents a target is handed
 - `CLAUDE.md` at the repository root, named as a file because a path prefix reaches nothing that sits in no folder

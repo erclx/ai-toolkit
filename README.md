@@ -67,7 +67,7 @@ Each domain has a canonical source in this repo and a thin install or sync CLI o
 
 - [Claude Code plugin](.claude/context/claude-plugin/index.md): skills for planning, review, docs sync, and the git ship chain
 - [Governance rules](.claude/context/governance/index.md): Claude rules and stacks, installable per project
-- [Standards](.claude/context/standards/index.md): shared authoring conventions, synced to projects
+- [Standards](.claude/context/standards/index.md): shared authoring conventions, read by name rather than installed
 - [Snippets](.claude/context/snippets.md): reusable prompts for Claude and Gemini chat
 - [Tooling stacks](.claude/context/tooling.md): golden configs, seeds, and references per framework
 - [Design system](.claude/context/design.md): `DESIGN.md` token shape, extract skill and its two paths, render command
@@ -116,7 +116,7 @@ git init
 aitk init
 ```
 
-`aitk init` installs base tooling configs, Claude seeds, governance rules, standards, and snippets in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/` alongside the standards they route to. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. Run `aitk tooling list --json` to see the catalog.
+`aitk init` installs base tooling configs, Claude seeds, governance rules, and snippets in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/`. Each rule names the standard it answers to and reads it with `aitk standards <name>`, so no corpus is copied into your project. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. Run `aitk tooling list --json` to see the catalog.
 
 For the full journey from scaffold through adding a domain later to syncing upstream drift, see [target projects](docs/target-projects.md).
 

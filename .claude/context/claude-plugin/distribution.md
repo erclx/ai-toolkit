@@ -21,15 +21,15 @@ Validation proves the manifest parses and nothing about whether it works. `claud
 
 ### Reaching a standard
 
-Delivering a standard and reaching it are separate problems. The shipped skills cite `.claude/standards/X.md`, which resolves against the target project, so in a project with no standards installed a skill once resolved the citation to the project root, found nothing, and never looked in its own plugin root. The cache copies were inert until a skill was told to fall back to them.
+Delivering a standard and reaching it are separate problems. The shipped skills once cited `.claude/standards/X.md`, which resolves against the target project, so in a project with no standards installed a skill resolved the citation to the project root, found nothing, and never looked in its own plugin root. The cache copies were inert until a skill was told to look at them.
 
-Each citing body now names `${CLAUDE_SKILL_DIR}/../../standards/X.md` as the fallback, which lands on the dereferenced symlink beside `skills/`. The project copy is still tried first, so a target that installed standards and edited them keeps its override.
+Each citing body now names `${CLAUDE_SKILL_DIR}/../../standards/X.md` alone, which lands on the dereferenced symlink beside `skills/`. One path rather than two, because no corpus installs into a project and there is no project copy for a first branch to try.
 
-The fallback conditions on the file, never on the `.claude/standards/` directory. `aitk standards sync` updates only filenames it already finds and never adds one, so a project that installed before a standard existed keeps the directory and never receives that file. A directory test passes there while the file is missing, which is the partial install the fallback exists to cover rather than an edge case. `git-commit` citing `versioning.md` is the concrete shape.
+The two-branch citation that preceded it needed a rule about what the fallback tested, since a project could hold the directory and not the file. That whole class is gone with the channel: a target has no directory to test and a body naming the installed path resolves nothing rather than resolving to a stale copy. `git-commit` citing `versioning.md` is the concrete shape of the single-path form.
 
 Only `${CLAUDE_SKILL_DIR}` survives to the model. Measured across three probe skills in a project with no `.claude/`, the body arrived with that variable already expanded to an absolute path, while `${CLAUDE_PLUGIN_ROOT}` reached the model as a literal string and a bare `../../` arrived unresolved. The latter two happened to work because the model inferred a base, which is the inference `standards/skill.md` bans a bare relative path to avoid.
 
-A guard on a standard's presence has to test both paths, since one testing only `.claude/standards/` refuses to run in a plugin-only project that has the file. `create-skill` and `claude-standards-audit` each carried such a guard.
+A guard on a standard's presence names the file under the plugin root rather than a directory in the target. `create-skill` and `claude-standards-audit` each carried a directory guard that refused to run in a project holding the file by the other route.
 
 ### The first executable in a skill
 

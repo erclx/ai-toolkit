@@ -5,7 +5,6 @@ set -o pipefail
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"
-  export SANDBOX_INJECT_STANDARDS="true"
 }
 
 stage_setup() {

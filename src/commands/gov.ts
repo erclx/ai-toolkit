@@ -5,7 +5,7 @@ import type { Command } from 'commander'
 import { PROJECT_ROOT } from '@/project-root'
 import { createGovAdapter } from '@/gov/adapter'
 import { regenConsumedRules } from '@/gov/consumed'
-import { hasStandards, installRules, lookupRules } from '@/gov/install'
+import { installRules, lookupRules } from '@/gov/install'
 import { buildGovCatalog, describeRule, describeStack } from '@/gov/list'
 import { buildRulesPayload, listRuleFiles } from '@/gov/payload'
 import {
@@ -452,12 +452,6 @@ async function runInstall(
   logStep('Installing rules')
   for (const rel of await installRules(found, resolved)) logAdd(rel)
   await recordStamp(createGovAdapter(PROJECT_ROOT), resolved, new Date())
-
-  if (!hasStandards(resolved)) {
-    logWarn(
-      `Rules reference .claude/standards/. Run 'aitk standards install ${target}' or 'aitk init' so the references resolve.`,
-    )
-  }
 
   const { GREEN, NC } = palette(process.stderr)
   outro()

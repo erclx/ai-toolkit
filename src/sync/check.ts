@@ -23,7 +23,6 @@ import {
   stampedCommit,
   type StampDomain,
 } from '@/sync/stamp'
-import { createStandardsAdapter } from '@/standards/adapter'
 import { isDirectory } from '@/target'
 import { loadManifest } from '@/tooling/manifest'
 import { scan } from '@/tooling/scan'
@@ -32,10 +31,11 @@ import { readSkew, type SkewReport } from '@/version/skew'
 /**
  * Domains the sync engine walks file by file. Tooling is a stamp domain without
  * being one of these, because `src/tooling/` never calls `planSync`, so the
- * three lookups below have no entry to offer it.
+ * three lookups below have no entry to offer it. Standards left the list with
+ * the install channel: nothing writes the corpus into a target, so there is no
+ * installed copy to attribute.
  */
 export const SCANNED_DOMAINS = [
-  'standards',
   'snippets',
   'governance',
 ] as const satisfies readonly StampDomain[]
@@ -48,19 +48,16 @@ export type ScannedDomain = (typeof SCANNED_DOMAINS)[number]
  * never go stale and belong in the read-only section instead.
  */
 const SYNCED_SOURCES: Record<ScannedDomain, string> = {
-  standards: 'standards/',
   snippets: 'snippets/',
   governance: 'governance/rules/',
 }
 
 const ADAPTERS: Record<ScannedDomain, (root: string) => SyncAdapter> = {
-  standards: createStandardsAdapter,
   snippets: createSnippetsAdapter,
   governance: createGovAdapter,
 }
 
 const INSTALL_MARKERS: Record<ScannedDomain, readonly string[]> = {
-  standards: ['.claude', 'standards'],
   snippets: ['.claude', 'snippets'],
   governance: ['.claude', 'rules'],
 }
@@ -304,7 +301,7 @@ export function hasDrift(report: CheckReport): boolean {
 /**
  * Bounds each domain's upstream read by that domain's own anchor and its own
  * source path. A shared anchor would let a gov sync advance the revision
- * standards measures from, silently dropping a standards change out of the read.
+ * snippets measures from, silently dropping a snippets change out of the read.
  */
 export async function buildCheckReport(
   toolkitRoot: string,

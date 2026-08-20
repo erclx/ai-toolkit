@@ -24,8 +24,6 @@ max_turns = 30
 paths = [
   "CLAUDE.md",
   ".claude/rules/core/000-constitution.md",
-  ".claude/standards/markdown.md",
-  ".claude/standards/skill.md",
   ".claude/snippets/meta-prompt.md",
   ".claude/wiki/index.md",
   "commitlint.config.js",
@@ -40,6 +38,7 @@ absent = [
   ".claude/rules/framework/200-react.md",
   "vite.config.ts",
   "eslint.config.js",
+  ".claude/standards",
 ]
 
 # No `write_scope`. `aitk init` writes a whole project scaffold and `setup-verify`
@@ -56,9 +55,10 @@ manual = [
   "The run reaches nothing outside the sandbox tree. Semantic: the install legitimately writes the whole tree, so no `write_scope` glob distinguishes a correct run from a wrong one and the claim has no mechanical form here",
 ]
 
-# All three domains stamped their manifest. A run that installed governance and
+# Both domains stamped their manifest. A run that installed governance and
 # stopped leaves a well-formed `aitk.json` carrying one entry, which every path
-# above still passes.
+# above still passes. Standards is not among them and `.claude/standards` is
+# asserted absent above, since the corpus installs into no target.
 [[content]]
 path = ".claude/aitk.json"
-pattern = '"covers": \["standards", "snippets", "governance"\]'
+pattern = '"covers": \["snippets", "governance"\]'

@@ -14,14 +14,13 @@ never adds new ones. A rule the toolkit does not ship is left alone, which is
 how project-authored rules survive. It also removes a stale `.claude/GOV.md`
 from the retired build. Use `aitk gov install` to add rules.
 
-`aitk standards sync` matches by filename against `.claude/standards/` and
-regenerates that folder's `index.md` on every completed run. It is the one sync
-that refuses under `AITK_NON_INTERACTIVE=1` when drift exists, logging a warning
-and exiting 0 without writing, because standards are seeds a project edits. Run
-it interactively, or use the `claude-seed-sync` skill for a per-section audit
-that preserves customizations.
+There is no `aitk standards sync` and no `aitk standards install`. The corpus
+installs into no project, so the domain has nothing in a target to reconcile.
+`aitk standards <name>` prints one, resolving `standards/` at the working root
+and then the corpus inside the package, and `aitk standards list --json` carries
+the catalog.
 
-`aitk snippets sync` behaves the same way against `.claude/snippets/`. It
+`aitk snippets sync` matches by path relative to `.claude/snippets/`. It
 matches by path relative to that directory, so a snippet the toolkit no longer
 ships, or one authored directly in the target, is reported and skipped rather
 than deleted. It is not preset-aware, so a project that installed `essentials`
@@ -44,33 +43,22 @@ headlessly, so a call that names its stack or category is unchanged.
 `aitk snippets install`. Both resolve the target before anything else, so a path
 that does not exist fails rather than being scaffolded.
 
-## Standards selection
+## Standards resolution
 
-`aitk standards install --only <names>` takes a comma-separated list and
-defaults to `all`, so a call that omits it installs the whole corpus as before.
+`aitk standards <name>` writes the document to stdout and the root it answered
+from to stderr, so a caller capturing with `$(...)` receives the document alone.
 A name resolves with or without its `.md` extension, and one that matches no
-standard fails the run with exit 1 rather than being dropped, because a typo
-would otherwise omit a standard silently and compute the closure over the wrong
-set. `aitk init --standards <selection>` passes the same value through.
+standard exits 1 after listing the catalog on stderr.
 
-The selection expands to the standards it depends on, so nothing lands with a
-dangling reference. A citation is a backticked filename in a standard's body,
-resolved case-exactly against the flat `standards/` root, which is what drops a
-citation naming a target's own `.claude/ARCHITECTURE.md` or a bundled standard
-install never copies. Whatever the expansion adds is listed under its own step
-in the output.
+Two roots answer, in order: `standards/` at the working directory, then the
+corpus inside the package. A project that authors standards of its own uses the
+first, and this repository's own authoring root is the same path. `.claude/standards/`
+is not among them. It is this repository's generated mirror, and a copy an older
+toolkit installed into a target resolves nothing.
 
-A citation inside a standard's `Does not govern:` list is a handoff rather than
-a dependency, and the closure stops at it. That entry names a concern a sibling
-owns and this standard does not, so a caller who did not ask for that concern
-does not need the file. Each one is reported under a `Scope handoffs not
-installed` step, naming what to add to `--only` if the project wants it after
-all.
-
-That split is what keeps a selection to a slice. Nearly all the citation density
-in the corpus sits inside those scope lists, so following them pulls the whole
-corpus in behind any single name. Following dependencies alone, a single name
-lands between one and three of the fifteen.
+There is no citation closure to compute, since nothing is copied. A standard
+that hands a concern to a sibling names it in `Does not govern:` and a reader
+runs the verb again for that name.
 
 ## Governance regen
 
@@ -191,10 +179,9 @@ suffixed variant such as `TASKS-ARCHIVE.md` unreported.
 
 Route it to `migration-superseded`. That skill resolves the standard governing
 `replacedBy` from the `appliesTo` the standards catalog declares, reads the
-destination shape from the target's own copy under `.claude/standards/` or at the
-root, and proposes the split without writing. Where a folder has no governing
-standard, or neither root holds the one it has, the entry earns a named refusal
-rather than a shape the project never adopted.
+destination shape with `aitk standards <name>`, and proposes the split without
+writing. Where a folder has no governing standard, the entry earns a named
+refusal rather than a shape nobody stated.
 
 `unmigrated` names a domain sitting at the root layout an older toolkit installed
 to, with nothing at the path the current one reads. It carries `rootPath`,
@@ -275,10 +262,9 @@ which is what makes it scriptable.
 
 `--stack` defaults to `base`, and the default
 does not read as a passed flag, so a bare `aitk init` installs governance and
-still prompts. `--skip` takes `wiki`, `standards`, and `governance`, and warns
-without aborting on any other value. `--standards` defaults to `all` and reaches
-`aitk standards install` only when it names something narrower, so the default
-run spawns the command it always did.
+still prompts. `--skip` takes `wiki` and `governance`, and warns without aborting
+on any other value. There is no `--standards`, since no run writes a standard
+into the target.
 
 ## Unguarded tooling primitives
 

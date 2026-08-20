@@ -24,11 +24,11 @@ function buildReport(
   overrides: Partial<CheckReport> = {},
 ): CheckReport {
   return {
-    covers: ['standards'],
+    covers: ['snippets'],
     managed: true,
     domains: [
       {
-        domain: 'standards',
+        domain: 'snippets',
         stamped: true,
         counts: countStates(entries),
         entries,
@@ -124,8 +124,8 @@ describe('buildToolingReport', () => {
     writeFileSync(
       stampPath(TARGET),
       JSON.stringify({
-        covers: ['standards'],
-        domains: { standards: { syncedAt: 'then', files: {} } },
+        covers: ['snippets'],
+        domains: { snippets: { syncedAt: 'then', files: {} } },
       }),
     )
 
@@ -209,19 +209,19 @@ describe('installedStampDomains', () => {
   })
 
   it('should report only the domains present on disk', () => {
-    mkdirSync(join(TARGET, '.claude/standards'), { recursive: true })
+    mkdirSync(join(TARGET, '.claude/snippets'), { recursive: true })
     mkdirSync(join(TARGET, '.claude/rules'), { recursive: true })
 
-    expect(installedStampDomains(TARGET)).toEqual(['standards', 'governance'])
+    expect(installedStampDomains(TARGET)).toEqual(['snippets', 'governance'])
   })
 })
 
 describe('isManagedTarget', () => {
   const rootLayout = [
     {
-      domain: 'standards' as const,
-      rootPath: 'standards',
-      installPath: join('.claude', 'standards'),
+      domain: 'snippets' as const,
+      rootPath: 'snippets',
+      installPath: join('.claude', 'snippets'),
       files: 9,
     },
   ]
@@ -346,9 +346,9 @@ describe('hasDrift', () => {
     const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
       unmigrated: [
         {
-          domain: 'standards',
-          rootPath: 'standards',
-          installPath: join('.claude', 'standards'),
+          domain: 'snippets',
+          rootPath: 'snippets',
+          installPath: join('.claude', 'snippets'),
           files: 9,
         },
       ],

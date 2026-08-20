@@ -2,7 +2,6 @@ import { existsSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { SUBDIRS } from '@/claude/seeds'
 import { snippetsSourceDir } from '@/snippets/categories'
-import { standardsSourceDir } from '@/standards/adapter'
 import type { StampDomain } from '@/sync/stamp'
 
 const CLAUDE_DIR = '.claude'
@@ -11,7 +10,9 @@ const CLAUDE_DIR = '.claude'
  * Domains an older toolkit installed at the project root, each with the source
  * folder naming what it owns. Governance is absent because its rules have always
  * landed under `.claude/rules/`, so there is no earlier location to be stranded
- * at.
+ * at. Standards is absent because no copy installs into a target at all now, so
+ * a root `standards/` folder there is the project's own authoring surface and
+ * reporting it as unmigrated would propose moving files nothing installed.
  *
  * A tuple array rather than a partial record, so the domain key stays typed
  * without asserting an `Object.entries` result back into the union.
@@ -20,10 +21,7 @@ const ROOT_LAYOUTS: readonly (readonly [
   StampDomain,
   string,
   (root: string) => string,
-])[] = [
-  ['standards', 'standards', standardsSourceDir],
-  ['snippets', 'snippets', snippetsSourceDir],
-]
+])[] = [['snippets', 'snippets', snippetsSourceDir]]
 
 /**
  * A target file that a shipped seed folder replaced. Carries no source and
@@ -79,7 +77,7 @@ export function collectSuperseded(target: string): SupersededEntry[] {
  *
  * A root folder is claimed only when it holds a file the toolkit ships under
  * that domain. Presence of the folder alone is not evidence: a project can
- * carry its own `standards/` of project docs and never have installed the
+ * carry its own `snippets/` of prompts it wrote and never have installed the
  * domain, and calling that unmigrated would fail `--exit-code` with no action
  * that clears it.
  */
@@ -107,9 +105,9 @@ export function detectUnmigrated(
 
 /**
  * Root files whose basename matches something the toolkit ships for this domain.
- * Basenames rather than relative paths, because standards install flat while
- * snippets nest by category, and the question here is only whether any file is
- * toolkit-owned rather than which source each one came from.
+ * Basenames rather than relative paths, because the root layout an older toolkit
+ * wrote is flat while the source nests by category, and the question here is only
+ * whether any file is toolkit-owned rather than which source each one came from.
  */
 function countToolkitOwned(dir: string, sourceDir: string): number {
   const owned = new Set(listMarkdown(sourceDir).map((rel) => basename(rel)))

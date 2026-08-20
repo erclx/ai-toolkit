@@ -5,7 +5,6 @@ set -o pipefail
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
   export SANDBOX_INJECT_SEEDS="true"
-  export SANDBOX_INJECT_STANDARDS="true"
 }
 
 stage_setup() {
@@ -25,19 +24,18 @@ EOF
     sed -i 's/before changes, when present\./before edits\./' CLAUDE.md
   fi
 
-  if [ -f ".claude/standards/markdown.md" ]; then
-    sed -i 's/^- Use sentence case for all headings/- Use sentence case for every heading/' .claude/standards/markdown.md
-  fi
-
+  # No standards drift is staged. The corpus installs into no target, so the
+  # skill's seed stage is the whole of what it audits here.
+  #
   # An explicit branch rather than whatever `git init` inherited. The proposal
   # filename carries the slug, so leaving it on the machine's `init.defaultBranch`
   # would make the expectation pass or fail by local git config.
   git checkout -b chore/seed-drift -q
 
-  git add . && git commit -m "chore(claude): trim CLAUDE.md and drift standards" --no-verify -q
+  git add . && git commit -m "chore(claude): trim CLAUDE.md and drift the seeds" --no-verify -q
 
-  log_step "Scenario ready: seed sync with drift across seeds and standards"
-  log_info "Context: project with installed seeds and standards, CLAUDE.md truncated, one Context bullet mutated, .claude/standards/markdown.md drifted"
+  log_step "Scenario ready: seed sync with seed drift"
+  log_info "Context: project with installed seeds, CLAUDE.md truncated, one Context bullet mutated"
   log_info "Action:  /claude-seed-sync"
-  log_info "Expect:  drift report covering both seeds and standards, scope table grouped by source"
+  log_info "Expect:  drift report covering the seeds, scope table grouped by source"
 }

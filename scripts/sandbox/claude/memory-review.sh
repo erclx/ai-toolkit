@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-# No SANDBOX_INJECT_STANDARDS, deliberately, matching `claude/review.sh` and
+# No project copy of the corpus, matching `claude/review.sh` and
 # `claude/ui-test.sh`. The absent project copy forces `claude-memory-review` onto
 # the `${CLAUDE_SKILL_DIR}/../../standards/skill.md` fallback, and the branch
 # staged below turns that citation into a proposal filename a reader can check by
@@ -181,7 +181,7 @@ EOF
   log_info "This arm also checks the standards citation, not the skill alone."
   log_info "  .claude/standards/ is absent, so the skill must reach the plugin copy"
   log_info "  the slug transform lives only in standards/skill.md, never in the skill body"
-  log_info "  so memory-review-chore-memory-sweep.md is evidence the fallback resolved"
+  log_info "  so memory-review-memory-sweep.md is evidence the fallback resolved"
   log_info "  read that filename yourself, the checker cannot assert it yet"
   log_info ""
   log_info "Action:  /aitk:claude-memory-review"

@@ -5,16 +5,16 @@ import { dirname, join, sep } from 'node:path'
 import { execa } from 'execa'
 
 /**
- * Domains the stamp can record. The first three attribute file by file through
+ * Domains the stamp can record. The first two attribute file by file through
  * the sync engine. Tooling runs its own inject and manifest machinery, so it
  * records the stack chain it resolved instead and carries no file hashes.
+ *
+ * A stamp written before the standards install channel closed still carries a
+ * `standards` record. `isStamp` ignores the key and `sortDomains` drops it on
+ * the next write, so the target loses a domain nothing can refresh rather than
+ * losing the whole file.
  */
-export const STAMP_DOMAINS = [
-  'standards',
-  'snippets',
-  'governance',
-  'tooling',
-] as const
+export const STAMP_DOMAINS = ['snippets', 'governance', 'tooling'] as const
 
 export type StampDomain = (typeof STAMP_DOMAINS)[number]
 
@@ -223,18 +223,21 @@ function sortDomains(
 }
 
 /**
- * Validates every domain record rather than only the container. A stamp whose
- * domain value is the wrong shape would otherwise reach `attribute`, where a
- * bad hash lookup silently reads as a customization.
+ * Validates every recognized domain record rather than only the container. A
+ * stamp whose domain value is the wrong shape would otherwise reach
+ * `attribute`, where a bad hash lookup silently reads as a customization.
+ *
+ * A key naming no current domain is ignored rather than failing the parse. A
+ * target stamped before the standards install channel closed carries one, and
+ * rejecting the file would read as unstamped and then drop the three records it
+ * does carry on the next write. `sortDomains` retires the key at that write.
  */
 function isStamp(value: unknown): value is Stamp {
   if (!isRecord(value) || !isRecord(value.domains)) return false
 
-  return Object.entries(value.domains).every(
-    ([domain, record]) =>
-      (STAMP_DOMAINS as readonly string[]).includes(domain) &&
-      isDomainStamp(record),
-  )
+  return Object.entries(value.domains)
+    .filter(([domain]) => (STAMP_DOMAINS as readonly string[]).includes(domain))
+    .every(([, record]) => isDomainStamp(record))
 }
 
 /**

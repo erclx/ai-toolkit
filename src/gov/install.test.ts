@@ -10,7 +10,6 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
-  hasStandards,
   installRules,
   lookupRules,
   ruleSubdir,
@@ -127,19 +126,5 @@ describe('installRules', () => {
     await installRules(found, target)
 
     expect((await stat(dest)).mode & 0o777).toBe(0o600)
-  })
-})
-
-describe('hasStandards', () => {
-  it('should detect standards at the path the rules reference', () => {
-    mkdirSync(join(target, '.claude', 'standards'), { recursive: true })
-
-    expect(hasStandards(target)).toBe(true)
-  })
-
-  it('should not count a root standards folder the installer never writes', () => {
-    mkdirSync(join(target, 'standards'), { recursive: true })
-
-    expect(hasStandards(target)).toBe(false)
   })
 })

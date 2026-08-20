@@ -134,6 +134,8 @@ Two defects in the seed surface, neither of which a reading pass had found.
 
 `aitk claude init` installs a `CLAUDE.md` whose Markdown section cites `.claude/standards/prose.md` and a `standards-audit.sh` hook that reads that same file to build its banned-word list, but `init` installs no standards. A project scaffolded with `claude init` alone gets a hook silently degraded to em-dash and semicolon checks and a rule pointing at a file that is not there. This arm only avoided it by calling `aitk standards install` as a second step.
 
+That second step no longer exists. The install channel closed, `prose.md` retired into `markdown.md`, and the seed cites the standard by name rather than by path, so the defect above is a record of what the run found rather than a state a reader can reproduce. The audit hook reading a file the target does not hold is the half worth re-measuring.
+
 `scratch-guard.sh` decides what counts as system temp by matching `*/tmp/*` against the absolute file path, with no notion of where the project root sits. Any project whose own path contains a `tmp` segment trips the guard on every source write. The run diagnosed this correctly and worked around it, which cost it a turn and a paragraph of its final message.
 
 The `bun run check` failure is a fixture artifact rather than a seed defect. The seed hardcodes that command in its Commands section and the synthetic `feedwatch` defines no such script. Worth noting only because the seed states the command as fact rather than as a placeholder, unlike the `[description]` markers it uses elsewhere.

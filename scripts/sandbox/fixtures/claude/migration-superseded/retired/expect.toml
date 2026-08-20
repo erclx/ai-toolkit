@@ -22,15 +22,18 @@ max_turns = 30
 # The proposal, pinned on the standard each entry resolved to rather than on the
 # destination folder. Naming `.claude/tasks/` proves only that the run echoed
 # `replacedBy` off the report, which it gets for free. Naming the standard is
-# what separates a shape read from the project's installed copy from one the run
-# invented, and the two entries are pinned separately because a run reaching only
-# the first passes one and fails the other.
+# what separates a shape the run read from one it invented, and the two entries
+# are pinned separately because a run reaching only the first passes one and
+# fails the other.
+#
+# The verb rather than a path, since no corpus installs into a target and
+# `aitk standards <name>` is the only route the skill has to either shape.
 #
 # `git rm --cached` is the third. One of the three retired files is tracked while
 # ignored, and the untrack is the half of that pair a user gets wrong.
 reply = [
-  ".claude/standards/tasks.md",
-  ".claude/standards/diagrams.md",
+  "aitk standards tasks",
+  "aitk standards diagrams",
   "git rm --cached",
 ]
 
@@ -51,7 +54,7 @@ manual = [
   "The third entry was declined rather than proposed for. Semantic: a decline and a proposal both name `.claude/hooks`, so the tokens do not separate them, and only the absence assertion above sees the folder a wrong run would create",
   "No phase label was invented for the task filenames. Semantic: the destination convention requires one and the retired file records none, so a run supplying `v01.0` produces a filename indistinguishable in shape from a correct proposal that left the label to the user",
   "The DIAGRAMS.md split lands on the two fixed filenames the standard names rather than on names taken from the headings. Semantic: both spellings are plausible substrings and neither is stable enough to pin without going red on a rewording",
-  "The not-installed refusal was never exercised. Unwired: this fixture installs standards, so the branch needs an arm provisioning without them",
+  "The unresolved refusal was never exercised. Unwired: every standard resolves through the package corpus, so the branch needs an arm where that read fails",
 ]
 
 # The retired task file is byte-identical, pinned from its first line to its

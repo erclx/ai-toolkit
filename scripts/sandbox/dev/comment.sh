@@ -2,10 +2,6 @@
 set -e
 set -o pipefail
 
-use_config() {
-  export SANDBOX_INJECT_STANDARDS="true"
-}
-
 stage_setup() {
   mkdir -p src/api
 

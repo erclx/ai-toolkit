@@ -213,12 +213,6 @@ run_sandbox_install() {
   rm -f "$install_log"
 }
 
-inject_documentation() {
-  [ ! -d "$PROJECT_ROOT/standards" ] && return
-
-  run_sandbox_install "standards" standards install "$SANDBOX"
-}
-
 # The stack decides which rules land. `base` carries the language-agnostic core,
 # which is what a scenario asserting on rule behavior reads. A scenario needing a
 # framework's rules overrides the variable in `use_config`.
@@ -245,9 +239,12 @@ commit_environment_setup() {
   )
 }
 
+# No standards injection. The corpus installs into no target, so a sandbox
+# without one is the shape a scaffolded project has, and a scenario driving a
+# skill that reads a standard exercises the `aitk standards <name>` path a real
+# project takes.
 setup_sandbox_assets() {
   [ -n "$SANDBOX_INJECT_SEEDS" ] && inject_seeds
-  [ -n "$SANDBOX_INJECT_STANDARDS" ] && inject_documentation
   [ -n "$SANDBOX_INJECT_GOV" ] && inject_gov_rules
   commit_environment_setup
 }

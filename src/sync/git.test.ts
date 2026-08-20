@@ -118,8 +118,8 @@ describe('syncBranchName', () => {
 
 describe('commitMessage', () => {
   it('should list every changed domain', () => {
-    expect(commitMessage(['standards', 'claude'])).toBe(
-      'chore(sync): update standards, claude from toolkit',
+    expect(commitMessage(['snippets', 'claude'])).toBe(
+      'chore(sync): update snippets, claude from toolkit',
     )
   })
 })
@@ -128,10 +128,10 @@ describe('pullRequestBody', () => {
   it('should render one bullet per domain under the headings', () => {
     const changes: DomainChange[] = [
       {
-        domain: 'standards',
+        domain: 'snippets',
         verb: 'Update',
-        names: ['prose.md'],
-        paths: ['.claude/standards/prose.md'],
+        names: ['decision-help.md'],
+        paths: ['.claude/snippets/decision-help.md'],
       },
       {
         domain: 'governance',
@@ -145,11 +145,11 @@ describe('pullRequestBody', () => {
       [
         '## Summary',
         '',
-        'Sync standards, governance from toolkit.',
+        'Sync snippets, governance from toolkit.',
         '',
         '## Key Changes',
         '',
-        '- Update `standards/` prose.md.',
+        '- Update `snippets/` decision-help.md.',
         '- Add `governance/` 010-testing.md.',
       ].join('\n'),
     )

@@ -1,13 +1,11 @@
-import { ALL_SELECTION } from '@/standards/closure'
-
-export const SKIPPABLE_DOMAINS = ['wiki', 'standards', 'governance'] as const
+export const SKIPPABLE_DOMAINS = ['wiki', 'governance'] as const
 
 export type SkippableDomain = (typeof SKIPPABLE_DOMAINS)[number]
 
 /**
  * The stack a caller gets without asking. Governance installs on every init so
- * the standards that install alongside it arrive with the rules that route to
- * them, and `--skip governance` is the one spelling for declining.
+ * a scaffolded project arrives with the rules that route it, and
+ * `--skip governance` is the one spelling for declining.
  */
 export const DEFAULT_STACK = 'base'
 
@@ -33,7 +31,6 @@ export interface InitFlags {
   readonly stack?: string
   readonly add?: string
   readonly snippets: string
-  readonly standards: string
   readonly skip: SkipPlan
 }
 
@@ -73,11 +70,7 @@ export function parseSkip(csv: string | undefined): SkipPlan {
  * prints nothing at all and declined governance prints a warning, so neither
  * reaches the total.
  *
- * Governance is the one skip that costs another domain something, so its
- * warning names the consequence rather than only the action. Declining
- * standards too removes that consequence, and the warning drops it.
- *
- * The skip also drops `--add`, which names rules the caller asked for. Input
+ * The skip drops `--add`, which names rules the caller asked for. Input
  * that goes nowhere is reported for the same reason `parseSkip` reports an
  * unrecognized value, so the warning names the flag rather than dropping it
  * without a word.
@@ -91,13 +84,10 @@ export function planInit(flags: InitFlags): InitPlan {
   const stack = resolveStack(flags.stack)
 
   if (flags.skip.skipped.has('governance')) {
-    const notes: string[] = []
-    if (flags.add !== undefined && flags.add !== '')
-      notes.push(`--add ${flags.add} not installed`)
-    if (!flags.skip.skipped.has('standards'))
-      notes.push('standards land without the rules that route to them')
-
-    const detail = notes.length === 0 ? '' : `, ${notes.join(', ')}`
+    const detail =
+      flags.add === undefined || flags.add === ''
+        ? ''
+        : `, --add ${flags.add} not installed`
     preview.push({ level: 'warn', text: `governance (skipped${detail})` })
   } else if (flags.add === undefined || flags.add === '') {
     preview.push({ level: 'info', text: `governance (stack: ${stack})` })
@@ -106,14 +96,6 @@ export function planInit(flags: InitFlags): InitPlan {
       level: 'info',
       text: `governance (stack: ${stack}, extras: ${flags.add})`,
     })
-  }
-
-  if (!flags.skip.skipped.has('standards')) {
-    const detail =
-      flags.standards === ALL_SELECTION
-        ? 'authoring conventions'
-        : `${flags.standards}, plus what they cite`
-    preview.push({ level: 'info', text: `standards (${detail})` })
   }
 
   preview.push({ level: 'info', text: `snippets (${flags.snippets})` })

@@ -60,7 +60,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | ----------- | ------------------------------------------------------------------------------------------- |
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                      |
 | `snippets`  | `list`, `install`, `sync`, `create`                                                         |
-| `standards` | `list`, `install`, `sync`, `<name>`                                                         |
+| `standards` | `list`, `<name>`                                                                            |
 | `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`                                   |
 | `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `setup [dest]` |
 | `wiki`      | `init`                                                                                      |

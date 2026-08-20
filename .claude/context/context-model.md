@@ -67,3 +67,13 @@ New entries are not created automatically. Auto-creation risks padding the catal
 The rule governs `claude-docs` and the Claude seeds. It does not reach the tooling stacks, which ship `development.md` and `ci.md` as user-owned seeds under `tooling/base/seeds/.claude/context/`. Those arrive filled rather than generated, so they do not pad the catalog, and `tooling/base/reference.md` owns that decision. Check both seed sources before concluding an entry is absent from a scaffolded project.
 
 This is ship-time and not plan-time because the plan describes intent, while context entries should reflect what was actually built. Plans drift during implementation. The diff is the source of truth.
+
+## Two stale claims a diff-scoped refresh cannot reach
+
+Mapping changed files to the entries that reference them is what makes the refresh affordable, and it misses two shapes. Both are produced by a change that removes a capability, and the `claude-docs` body holds the sweep that catches them, since a session running the refresh holds that skill and reaches no context entry. What sits here is the pair itself and the case that produced them.
+
+The first is the half-rewritten entry. An entry refreshed at the top and left alone below argues both sides of itself, and it reads worse than one nobody touched, because the current opening lends authority to the stale remainder. The entry is in the diff and the refresh passed over it, so nothing reports it. `.claude/context/standards/resolution.md` recorded the closed standards install channel in its opening and described the open one two paragraphs down.
+
+The second is the sentence a change inverted from a distance. A claim comparing two surfaces stays true only while both hold, so moving one flips it with nobody editing the file it sits in. That file is often outside the diff entirely, which puts it past every scope the refresh reads. `.claude/context/cli/audits.md` recorded that the records check reads its roots in the reverse order of `src/standards/read.ts`, and collapsing the resolver left both reading the authoring root first, so a correct sentence became backwards on a branch that never opened the file.
+
+The two rules pull against each other and the narrow one is the default. Rewriting only what the diff touched is what keeps a refresh from churning prose nothing put in doubt, and it is overridden only inside an entry the run already edited, which is the first shape above.

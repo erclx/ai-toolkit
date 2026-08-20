@@ -33,12 +33,19 @@ describe('detectDomains', () => {
 
   it('should report a domain installed once its marker directory exists', async () => {
     const target = await makeTarget()
-    await mkdir(join(target, '.claude', 'standards'), { recursive: true })
+    await mkdir(join(target, '.claude', 'snippets'), { recursive: true })
 
     expect(installedDomains(detectDomains(target))).toEqual([
-      'standards',
+      'snippets',
       'claude',
     ])
+  })
+
+  it('should not read a leftover standards folder as an installed domain', async () => {
+    const target = await makeTarget()
+    await mkdir(join(target, '.claude', 'standards'), { recursive: true })
+
+    expect(installedDomains(detectDomains(target))).toEqual(['claude'])
   })
 
   it('should map governance onto .claude/rules/ rather than a rules root', async () => {
@@ -56,7 +63,6 @@ describe('detectDomains', () => {
     await mkdir(join(target, '.claude', 'snippets'), { recursive: true })
 
     expect(detectDomains(target).map((state) => state.domain)).toEqual([
-      'standards',
       'snippets',
       'governance',
       'claude',

@@ -11,26 +11,17 @@ use_anchor() {
 
 use_config() {
   export SANDBOX_SKIP_AUTO_COMMIT="true"
-  export SANDBOX_INJECT_STANDARDS="true"
   export SANDBOX_INJECT_GOV="true"
 }
 
 stage_setup() {
-  local src_standards="$PROJECT_ROOT/standards"
   local src_rules="$PROJECT_ROOT/governance/rules"
 
   configure_sandbox_anchor_remote
 
-  local -a stale_standards=()
-  while IFS= read -r file; do
-    local filename
-    filename=$(basename "$file")
-    [ -f ".claude/standards/$filename" ] || continue
-    echo "<!-- stale -->" >>".claude/standards/$filename"
-    stale_standards+=("$filename")
-    [ "${#stale_standards[@]}" -eq 2 ] && break
-  done < <(find "$src_standards" -maxdepth 1 -type f -name "*.md" ! -name "index.md" | sort)
-
+  # Governance is the one domain staged stale here. Standards left the sync
+  # domains with the install channel, so a target holds no copy for a sync to
+  # reconcile.
   local -a stale_rules=()
   while IFS= read -r file; do
     local rule
@@ -46,7 +37,7 @@ stage_setup() {
   done < <(find "$src_rules" -type f -name "*.md" | sort)
 
   git add .
-  git commit -m "chore(sandbox): make standards and governance stale" --no-verify -q
+  git commit -m "chore(sandbox): make governance stale" --no-verify -q
 
   git push --force origin HEAD:main -q
   git ls-remote --heads origin 'chore/aitk-sync*' 2>/dev/null |
@@ -55,7 +46,6 @@ stage_setup() {
 
   log_step "Sync sandbox"
   log_info "Anchor: $ANCHOR_REPO"
-  log_info "Stale standards: ${stale_standards[*]}"
   log_info "Stale rules: ${stale_rules[*]}"
   log_info "Remote: $(sandbox_anchor_url)"
 

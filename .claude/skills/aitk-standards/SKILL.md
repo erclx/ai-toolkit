@@ -5,7 +5,7 @@ description: Standards system and docs. Use when editing files in `standards/` o
 
 # Standards
 
-Read `.claude/context/standards/overview.md` for the system overview and `.claude/context/standards/install.md` for install vs sync before editing.
+Read `.claude/context/standards/overview.md` for the system overview and `.claude/context/standards/resolution.md` for how a standard reaches a reader before editing.
 
 ## Prose rules
 
@@ -26,7 +26,7 @@ When adding a standard:
 
 ## Reference
 
-- `.claude/context/standards/index.md`: the domain catalog, with the overview, the scope model, authoring, and install vs sync as sub-areas
+- `.claude/context/standards/index.md`: the domain catalog, with the overview, the scope model, authoring, and resolution as sub-areas
 - `.claude/standards/markdown.md`: heading, list, code, punctuation, file-reference, banned-word, and frontmatter wording rules
 - The `write-human` skill: voice, rhythm, sentence construction, and information density
 - `.claude/standards/standard.md`: the meta-standard for a standard's shape, scope, and frontmatter

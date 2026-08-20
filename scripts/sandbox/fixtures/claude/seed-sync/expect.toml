@@ -13,16 +13,24 @@
 # cap. This arm has almost none of that gap to spare.
 max_turns = 30
 
-# The filename carries the slug transform from `standards/skill.md` applied to
+# The filename carries the slug transform in `standards/slug.md` applied to
 # branch `chore/seed-drift`. `seed-sync.sh` checks that branch out explicitly, so
 # this path does not move with the machine's `init.defaultBranch`.
-paths = [".claude/review/seed-audit-chore-seed-drift.md"]
+#
+# `chore` comes off because the transform drops a leading segment naming a type
+# when a further segment follows it, which leaves `seed-drift`. The declaration
+# expected `chore-seed-drift` until a run measured the skill writing the stripped
+# form, so the type-carrying spelling here predated the rule rather than testing
+# it. The `claude/review`, `claude/memory-review`, and `claude/ui-test`
+# declarations carried the same spelling and were corrected from this rule rather
+# than from a run of their own.
+paths = [".claude/review/seed-audit-seed-drift.md"]
 
-# Propose writes the proposal and nothing else. Step 5 applies edits to
-# `CLAUDE.md` and the installed standards one at a time behind a permission
-# dialog, which a headless propose pass never reaches, so a run that touched
-# those files applied without approval. The 2026-08-03 run wrote exactly the one
-# file this glob admits, so the scope is measured rather than projected.
+# Propose writes the proposal and nothing else. Step 5 applies edits to the
+# seed files one at a time behind a permission dialog, which a headless propose
+# pass never reaches, so a run that touched those files applied without approval.
+# The 2026-08-03 run wrote exactly the one file this glob admits, so the scope is
+# measured rather than projected.
 write_scope = [".claude/review/**"]
 
 manual = [
@@ -38,25 +46,18 @@ manual = [
 # The slug a second time, inside the file rather than in its name, so a proposal
 # written to the right path from the wrong branch still goes red.
 [[content]]
-path = ".claude/review/seed-audit-chore-seed-drift.md"
-pattern = '^# Seed audit: chore-seed-drift'
+path = ".claude/review/seed-audit-seed-drift.md"
+pattern = '^# Seed audit: seed-drift'
 
 # The scope table is what reports a file the pass read and left alone, so a
 # proposal carrying items without it describes a subset while reading as whole.
 [[content]]
-path = ".claude/review/seed-audit-chore-seed-drift.md"
+path = ".claude/review/seed-audit-seed-drift.md"
 pattern = '^## Scope'
 
 # One numbered pending item. This is the assertion separating a proposal that
 # found drift from a well-formed file that found none, which is the failure a
 # path check alone reports green.
 [[content]]
-path = ".claude/review/seed-audit-chore-seed-drift.md"
+path = ".claude/review/seed-audit-seed-drift.md"
 pattern = '^## 1\. 📝 '
-
-# The standards stage ran. `seed-sync.sh` drifts this file and it is the only
-# evidence the pass merged the standards catalog into the seed one rather than
-# stopping at seeds.
-[[content]]
-path = ".claude/review/seed-audit-chore-seed-drift.md"
-pattern = '\.claude/standards/prose\.md'

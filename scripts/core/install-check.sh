@@ -76,10 +76,14 @@ log_step "Assert scaffold"
 # catches a failed domain, and the gate stays green while the target is
 # missing everything that domain provides.
 #
+# Standards name no path because the corpus installs into no target. A scaffold
+# reads a standard through `aitk standards <name>`, which resolves against the
+# copy inside the package.
+#
 # The snippets path has to name a slug the default preset still carries, since
 # init resolves snippets through `essentials`. Editing that preset without
 # editing this line fails the gate on a correct install.
-for path in "CLAUDE.md" ".claude/snippets/decision-help.md" ".claude/standards/skill.md" ".claude/standards/markdown.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".claude/diagrams/index.md" \
+for path in "CLAUDE.md" ".claude/snippets/decision-help.md" ".claude/wiki/index.md" ".claude" ".claude/context/index.md" ".claude/wireframes/index.md" ".claude/diagrams/index.md" \
   ".prettierrc" ".editorconfig" ".lintstagedrc" ".husky/pre-commit" ".github/workflows/verify.yml" "scripts/verify.sh" \
   ".claude/rules/core/000-constitution.md"; do
   if [ ! -e "$TARGET_DIR/$path" ]; then

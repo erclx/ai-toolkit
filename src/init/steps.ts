@@ -1,6 +1,5 @@
 import { type InitFlags, resolveStack } from '@/init/plan'
 import type { DomainStep } from '@/init/run'
-import { ALL_SELECTION } from '@/standards/closure'
 
 /** Builds the child-process invocation for one domain. */
 export type RunFactory = (args: readonly string[]) => () => Promise<boolean>
@@ -49,14 +48,6 @@ export function buildSteps(
     })
   }
 
-  if (!flags.skip.skipped.has('standards')) {
-    steps.push({
-      kind: 'run',
-      label: 'Standards',
-      run: child(standardsArgs(flags.standards, resolved)),
-    })
-  }
-
   steps.push({
     kind: 'run',
     label: 'Snippets',
@@ -72,21 +63,6 @@ export function buildSteps(
   }
 
   return steps
-}
-
-/**
- * Builds the `standards install` argv. `all` is left off rather than spelled
- * out, so the default init runs the same command it ran before the flag
- * existed.
- */
-function standardsArgs(selection: string, path: string): string[] {
-  const args = ['standards', 'install']
-  if (selection !== '' && selection !== ALL_SELECTION) {
-    args.push('--only', selection)
-  }
-  args.push(path)
-
-  return args
 }
 
 /**
