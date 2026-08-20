@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.110.0](https://github.com/erclx/aitk/compare/v0.109.0...v0.110.0) (2026-08-20)
+
+
+### Features
+
+* **audits:** run every audit as one set with a kept baseline ([#1046](https://github.com/erclx/aitk/issues/1046)) ([0b2ab89](https://github.com/erclx/aitk/commit/0b2ab89d5ae540c33460fb981d0e6b57e0338bc5))
+
 ## [0.109.0](https://github.com/erclx/aitk/compare/v0.108.0...v0.109.0) (2026-08-20)
 
 
