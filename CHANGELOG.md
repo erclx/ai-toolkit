@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.112.0](https://github.com/erclx/aitk/compare/v0.111.1...v0.112.0) (2026-08-20)
+
+
+### Features
+
+* **governance:** add rules for the learning workspace and session map ([#1051](https://github.com/erclx/aitk/issues/1051)) ([49685c3](https://github.com/erclx/aitk/commit/49685c38c1d486e0a50222160920ac289ce80dfa))
+
 ## [0.111.1](https://github.com/erclx/aitk/compare/v0.111.0...v0.111.1) (2026-08-20)
 
 
