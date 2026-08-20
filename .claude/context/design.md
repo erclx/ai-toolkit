@@ -23,11 +23,14 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 - Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
 - The toolkit's own record anchors its dark palette to `assets/hero.html` and its light palette to the `LIGHT` theme in `src/slides/styles.ts`. Deriving a light set from the hero's neutrals was the alternative, and it makes every light value a proposal where the slide theme supplies five of the six roles as readings. The two surfaces reconcile on no value, so the light half is anchored by a surface shipping it rather than by following from the dark half.
 - No surface consumes `.claude/DESIGN.md`. The hero, the slide theme, the token preview, the terminal framing, and the capture pipeline each carry their own values, so the record names all five as independent rather than listing a consumer it would be predicting.
+- The parser carries the uncertainty tag instead of discarding it. A parsed cell is a `{ value, tagged }` pair rather than a string, so `Row` is a map of cells and every swatch, sample, bar, and custom property is built from the value while the marker renders beside it as its own element. Leaving the marker inside the string was the alternative, and it puts the strip back in every emitter where one that forgets writes the tag into a `style` attribute.
+- A tagged cell wrapping itself in a code span keeps the span. The tag is matched against the cell with any surrounding span removed, then the span is restored around the clean value, because dropping it outright would change how an untagged code-span cell renders. Holding an untagged record byte-identical is what decides that, and it is checked against the module as it stood before the tag survived.
+- The preview reports a confidence count over the four token tables, reading every cell that carries a value or a tag and leaving a blank cell out of both halves. A record with no tagged cell gets neither the count nor the marker style, so nothing about it moves.
 
 ## Gotchas
 
-- `splitRow` in `src/design/parse.ts` strips a trailing `? verify` with an end-anchored regex, so no tag reaches `index.html` or `design.css`. A proposal and a reading render identically, which makes the preview the wrong surface for deciding which cells are still open.
-- The same function leaves backticks in place, and a trailing backtick defeats the strip. A cell wrapping its hex in backticks keeps its tag and emits a custom property and a `style` attribute carrying both verbatim, so that swatch stops painting. Write a token cell as a bare value, which is what the seed shows.
+- A code-span cell still emits its backticks. `` `#E4DCD0` `` reaches `design.css` and the `style` attribute with the backticks intact, so that swatch paints nothing whether or not the cell carries a tag. Write a token cell as a bare value, which is what the seed shows.
+- The greenfield extract path tags nearly every cell, so the confidence count there reads near-total uncertainty. That is the path reporting itself accurately rather than a defect in the record.
 - The slide theme and the hero reconcile on none of their five dark roles. The nearest miss is the primary text step, where `F4EFE6` and `#f4efe9` differ in the last digit and read as a match on a quick scan. The slide theme also sets Arial and Calibri where every other surface is monospace, so a single-family claim describes the hero and the terminal rather than the whole tree.
 - The three terminal color rows emit a token no consumer resolves. `--color-success: ANSI 32` is not a color and the matching `style` attribute is dropped, so those swatches paint nothing in the preview. Recording the ANSI code is still right, since no rendered surface implements an equivalent, and the gap is that the render has no answer for a non-hex token.
 
@@ -49,7 +52,7 @@ Table headers are load-bearing. The `aitk design render` parser matches columns 
 
 `aitk:claude-design-extract` drafts `.claude/DESIGN.md` and picks one of two paths from what the project has. Both read `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `.claude/standards/markdown.md`, load the `write-human` skill for tone, fill the same seed, and end at the same render.
 
-The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`.
+The source path runs when the project has UI code. It reads CLI UI modules like `src/ui.ts` or `scripts/lib/ui.sh` plus any stylesheet or theme config, sources values from them, and tags an inferred cell with a trailing `? verify`. `.claude/standards/design.md` now specifies that tag, its two spellings, and what the renderer does with it. The skill body was the only specification until then, which left the parser stripping a token no standard described.
 
 The skill is judgment-driven, not deterministic. It does not parse CSS or compiled styles. It codifies what the project already says about itself. For extraction from raw compiled code, reach for Claude Design instead.
 
@@ -69,6 +72,8 @@ The scenario picks between `source`, which stages the tokenized notes app, and `
 
 `aitk design render` reads `.claude/DESIGN.md` and writes an HTML plus CSS preview to `.claude/review/design/`. The HTML shows color swatches, typography samples, spacing bars, and border exemplars. The CSS holds tokens as custom properties for copy-paste into a project stylesheet.
 
+A cell no source anchors shows a `? verify` marker beside its value, and a confidence line above the sections names how many values are anchored against how many are tagged. `src/design/parse.test.ts` and `src/design/render.test.ts` cover both tag spellings, the count, and the untagged render.
+
 Flags:
 
 | Option            | Default                 | Behavior                 |
@@ -83,7 +88,7 @@ The output directory sits under `.claude/review/` which is gitignored by the see
 Typical sequence in a new project:
 
 1. Run the extract skill to draft `.claude/DESIGN.md`. It sources tokens from an existing codebase, or proposes them against a greenfield project with a personality paragraph.
-2. Review `? verify` cells and edit the file directly
+2. Review `? verify` cells and edit the file directly. The preview marks each one and counts them, so step 4 below is where they are found rather than the source file.
 3. Run `aitk design render` to regenerate the preview
 4. Open `.claude/review/design/index.html` in a browser
 5. Iterate on DESIGN.md until the preview matches intent
