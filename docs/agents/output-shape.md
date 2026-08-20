@@ -46,6 +46,19 @@ Help skips the banner. The `Usage:` line sits directly on `├`. Help writes to 
 
 `--json` and `--names` keep stdout clean and machine-readable. The frame still renders on stderr (open, banner, close) so the stream discipline is consistent across modes. Consumers that only read stdout see pure data.
 
+## Color
+
+Escape sequences reach a destination that renders them and nowhere else. The question is asked per stream rather than once for the process, so a run piping its data while keeping a terminal on stderr still gets color on the frame.
+
+Either condition alone turns color off:
+
+- `NO_COLOR` is set to any non-empty value, whatever that value says
+- The destination is not a terminal, which covers a pipe, a file, and a captured session
+
+The frame survives both. `┌`, `│`, `├`, `└`, and the `✓ ! + - ✗` marks are structure rather than color, and they are what lets a captured run still read as one block. A caller wanting neither the frame nor the color reads `--json` instead.
+
+Terminal control is a separate question this section does not cover. The cursor and key sequences an interactive prompt writes run only where a terminal already exists.
+
 ## Process exit
 
 A command action sets `process.exitCode` and returns. Calling `process.exit()` there ends the process before a stdout write drains, which truncates piped output at the 64K pipe buffer while still reporting the right exit code. Redirecting to a file hides the truncation, so it surfaces only through a pipe, which is what a check has to use to catch it.
