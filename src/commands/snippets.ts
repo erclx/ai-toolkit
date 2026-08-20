@@ -21,11 +21,9 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   select,
 } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
 
 const SNIPPETS_REL = '.claude/snippets'
 
@@ -180,6 +178,7 @@ async function runInstall(
   }
   await recordStamp(createSnippetsAdapter(PROJECT_ROOT), resolved, new Date())
 
+  const { GREEN, NC } = palette(process.stderr)
   outro()
   process.stderr.write(`${GREEN}✓ Snippets installed${NC}\n`)
   return 0

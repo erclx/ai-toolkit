@@ -4,10 +4,7 @@ import type { Command } from 'commander'
 import { deriveSlug, deriveTitle } from '@/commands/feedback-format'
 import { PROJECT_ROOT } from '@/project-root'
 import { createGithubIssue } from '@/github'
-import { frameError, frameSuccess } from '@/ui'
-
-const YELLOW = '\x1b[0;33m'
-const NC = '\x1b[0m'
+import { frameError, frameSuccess, palette } from '@/ui'
 
 function readStdin(): Promise<string> {
   return new Promise((resolveStream, rejectStream) => {
@@ -88,6 +85,7 @@ export function register(program: Command): void {
           process.exitCode = 1
           return
         }
+        const { NC, YELLOW } = palette(process.stderr)
         process.stderr.write(
           `${YELLOW}! gh unavailable, wrote local scratch instead${NC}\n`,
         )

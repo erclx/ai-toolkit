@@ -21,12 +21,9 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   select,
 } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const GREY = '\x1b[0;90m'
-const NC = '\x1b[0m'
 
 interface InstallOptions {
   /** Always present: the option falls back to `ALL_SELECTION`. */
@@ -196,6 +193,7 @@ async function runInstall(target: string, selection: string): Promise<number> {
   await recordStamp(createStandardsAdapter(PROJECT_ROOT), resolved, new Date())
 
   outro()
+  const { GREEN, GREY, NC } = palette(process.stderr)
   process.stderr.write(
     `\n${GREEN}✓ Standards installed${NC} ${GREY}(${files.length} files)${NC}\n`,
   )

@@ -44,15 +44,12 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   pipeOutput,
   plural,
   select,
 } from '@/ui'
 import { describeSkew, readSkew, type SkewReport } from '@/version/skew'
-
-const GREEN = '\x1b[0;32m'
-const GREY = '\x1b[0;90m'
-const NC = '\x1b[0m'
 
 interface SeedsListOptions {
   readonly json?: boolean
@@ -266,6 +263,7 @@ export function register(program: Command): void {
 }
 
 function succeed(message: string): number {
+  const { GREEN, NC } = palette(process.stderr)
   outro()
   process.stderr.write(`${GREEN}✓ ${message}${NC}\n`)
   return 0
@@ -472,6 +470,7 @@ async function runSeedsList(opts: SeedsListOptions): Promise<number> {
     return 0
   }
 
+  const { GREY, NC } = palette(process.stderr)
   intro('aitk claude')
   logStep('Seed docs')
   for (const listing of listings) {
@@ -531,6 +530,7 @@ async function runSkillsDrift(
     // is the moment a skew warning is worth most, since an old binary is one
     // reason the cache and the CLI disagree in the first place.
     if (skew.state === 'behind') {
+      const { GREY, NC } = palette(process.stderr)
       process.stderr.write(`${GREY}${describeSkew(skew)}${NC}\n`)
     }
   }

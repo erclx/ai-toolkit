@@ -9,6 +9,7 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   select,
 } from '@/ui'
 import {
@@ -19,9 +20,6 @@ import {
   WIKI_DIR_REL,
   WIKI_INDEX_REL,
 } from '@/wiki/init'
-
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
 
 export function register(program: Command): void {
   const wiki = program
@@ -59,6 +57,7 @@ async function runInit(target: string): Promise<number> {
   }
 
   const plan = planWikiInit(resolved)
+  const { GREEN, NC } = palette(process.stderr)
 
   logStep(`Scanning ${WIKI_DIR_REL}`)
   if (plan.changes.includes('dir')) logAdd(WIKI_DIR_REL)

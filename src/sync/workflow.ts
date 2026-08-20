@@ -19,12 +19,10 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   pipeOutput,
   select,
 } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
 
 const PROTECTED_BRANCHES: readonly string[] = ['main', 'master']
 
@@ -195,6 +193,7 @@ function promptChoice(canOpenPullRequest: boolean): Promise<WorkflowChoice> {
 }
 
 function succeed(message: string): number {
+  const { GREEN, NC } = palette(process.stderr)
   outro()
   process.stderr.write(`\n${GREEN}✓ ${message}${NC}\n`)
   return 0

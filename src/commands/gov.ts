@@ -30,11 +30,9 @@ import {
   logStep,
   logWarn,
   outro,
+  palette,
   select,
 } from '@/ui'
-
-const GREEN = '\x1b[0;32m'
-const NC = '\x1b[0m'
 
 const PAYLOAD_REL = join('.claude', '.tmp', 'gov', 'rules.md')
 const RULES_REL = join('.claude', 'rules')
@@ -461,6 +459,7 @@ async function runInstall(
     )
   }
 
+  const { GREEN, NC } = palette(process.stderr)
   outro()
   process.stderr.write(`${GREEN}✓ Rules installed${NC}\n`)
   return 0
@@ -510,6 +509,7 @@ async function runBuild(target: string): Promise<number> {
   await writeFile(output, buildRulesPayload(files))
   logAdd(PAYLOAD_REL)
 
+  const { GREEN, NC } = palette(process.stderr)
   outro()
   process.stderr.write(
     `${GREEN}✓ Rules built (${files.length} rules → ${PAYLOAD_REL})${NC}\n`,
