@@ -61,6 +61,10 @@ A fatal precondition placed inside a helper that callers invoke as `$(helper)` c
 
 When a dispatcher branches on whether a hook is defined, export a named helper for the hook to call rather than declaring the hook in shared code. `manage-sandbox.sh` chooses between cloning an anchor and starting empty on `type -t use_anchor`, and nine scenarios collapsed their identical `use_anchor` stubs into `lib/sandbox-git.sh`. Declaring the hook there would have handed an anchor to `git/commit.sh`, `git/stage.sh`, and `infra/indexes.sh`, which source the file only for the identity helpers. Grep for the dispatcher's presence test and list every file that sources the library before moving a hook body.
 
+### Exercise a `gh` failure path without reaching the branch that creates
+
+A lib function whose refusal path shells out to `gh` is testable without provisioning anything. `ensure_sandbox_anchor_repo` separates an absent repository from an unreachable host on the 404 alone, so pointing `GH_HOST` at an invalid host forces the unreachable branch and proves it refuses rather than creates. A repository that already exists exercises the success path read-only. The branch that provisions stays unexercised by choice whenever running it would consume a name a pending rename needs.
+
 ### Read a helper's body before porting its call
 
 Porting a call to a bash helper means reading the helper's body rather than what its name advertises, because shell idioms validate as a side effect of resolving. `wiki init` called `guard_root "$target"`, which reads as a toolkit-root check while its body is `cd "$target" && pwd`, so it also rejected a target that did not exist. The port kept only the root comparison, and `mkdir -p` downstream then scaffolded a typo'd path into a whole new tree, or exited on an unhandled `ENOTDIR` when the target was a file. `cd`, `realpath`, and `readlink -f` all fail on a missing path and are the usual carriers.
