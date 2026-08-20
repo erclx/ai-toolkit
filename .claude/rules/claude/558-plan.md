@@ -20,4 +20,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/plan.md` for the filename and slug, the required sections, the suggested-and-answer contract, and the lifecycle. It is the single source.
+- Follow `standards/plan.md` inside the aitk plugin for the filename and slug, the required sections, the suggested-and-answer contract, and the lifecycle. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.

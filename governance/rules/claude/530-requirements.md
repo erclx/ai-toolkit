@@ -16,4 +16,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/requirements.md` for what belongs in the problem, goals, non-goals, MVP features, tech stack, and constraints. It is the single source.
+- Follow `standards/requirements.md` inside the aitk plugin for what belongs in the problem, goals, non-goals, MVP features, tech stack, and constraints. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.

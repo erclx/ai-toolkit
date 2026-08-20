@@ -16,5 +16,6 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/wireframes.md` for layout and interaction intent: ASCII layout, region labels, variants, copy, and what moves to `.claude/context/`. It is the single source.
+- Follow `standards/wireframes.md` inside the aitk plugin for layout and interaction intent: ASCII layout, region labels, variants, copy, and what moves to `.claude/context/`. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
 - Read it before adding or revising a surface.

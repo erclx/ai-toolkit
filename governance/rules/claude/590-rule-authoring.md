@@ -19,5 +19,6 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/rule.md` for rule frontmatter, body shape, and voice. It is the single source.
+- Follow `standards/rule.md` inside the aitk plugin for rule frontmatter, body shape, and voice. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
 - Read it before writing or editing a rule. Do not work the shape from memory.

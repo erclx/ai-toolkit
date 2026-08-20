@@ -13,4 +13,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/intake.md` for the folder layout, frontmatter and dating, the item format, and retrieval. It is the single source.
+- Follow `standards/intake.md` inside the aitk plugin for the folder layout, frontmatter and dating, the item format, and retrieval. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.

@@ -17,4 +17,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/memory.md` for the filename and type prefix, the frontmatter, the body shape per type, links between entries, and the lifecycle. It is the single source.
+- Follow `standards/memory.md` inside the aitk plugin for the filename and type prefix, the frontmatter, the body shape per type, links between entries, and the lifecycle. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.

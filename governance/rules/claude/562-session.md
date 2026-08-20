@@ -16,4 +16,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/session.md` for the filename and location, frontmatter, the core sections, and the write and read procedures. It is the single source.
+- Follow `standards/session.md` inside the aitk plugin for the filename and location, frontmatter, the core sections, and the write and read procedures. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.

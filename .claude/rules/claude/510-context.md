@@ -26,4 +26,5 @@ Do not put a sibling bullet's design in the past with one of these.
 
 ## Authority
 
-- Follow `.claude/standards/context.md` for entry shape: frontmatter, sections, length, and what goes in. It is the single source.
+- Follow `standards/context.md` inside the aitk plugin for entry shape: frontmatter, sections, length, and what goes in. It is the single source.
+- Report it rather than proceeding silently when that file does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
