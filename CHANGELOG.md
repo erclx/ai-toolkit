@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/erclx/aitk/compare/v1.7.0...v1.7.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **tooling:** cover the two record folders a target creates ([#1079](https://github.com/erclx/aitk/issues/1079)) ([aa13e51](https://github.com/erclx/aitk/commit/aa13e5111a91dd3b21c1d09ebd8a802dfac7b163))
+
 ## [1.7.0](https://github.com/erclx/aitk/compare/v1.6.0...v1.7.0) (2026-08-20)
 
 
