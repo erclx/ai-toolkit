@@ -1,6 +1,6 @@
 ---
 title: Records
-description: Validating the session records under .claude/ and the standards corpus, the per-kind checks, the refusal reasons, backing the folders to a private remote, and which root each kind defaults to
+description: Validating the session records under .claude/ and the standards corpus, the per-kind checks, the refusal reasons, reading each folder's size and growth, backing the folders to a private remote, and which root each kind defaults to
 ---
 
 # Records
@@ -72,6 +72,34 @@ aitk records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)
 
 For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/standards/groundwork.md`, `.claude/standards/intake.md`, `.claude/standards/memory.md`, and `.claude/standards/standard.md`.
 
+## Size
+
+`aitk records size` reports what each record folder holds and how much of it is recent. It reads the nine backed folders named under Push and pull, plus `.claude/.tmp`, and it gates nothing.
+
+```bash
+aitk records size
+aitk records size --json
+```
+
+| Option          | Behavior                                      |
+| --------------- | --------------------------------------------- |
+| `--json`        | Add a machine-readable record on stdout       |
+| `--root <path>` | Project root, defaulting to the main worktree |
+
+The table carries one row per folder that exists, heaviest first, with the file count, the bytes, a count for each growth window, and the dates of the least and most recently written file. Those dates render in the machine's local time, which is the calendar day whoever wrote the file was living in, and the reading is per-machine already. Folders that do not exist are named on one line below it rather than printed as rows of zeros. The record a `--json` call emits carries every folder either way, each with a `present` flag, so a caller reading the record gets a stable set of keys and can tell an absent folder from one the reading skipped.
+
+Ordering by weight is what makes the reading worth taking. A folder listed alphabetically hides behind its neighbors, and the row a reader came for is the one that grew.
+
+The reading carries two windows rather than one, at 7 and 30 days. A single window cannot separate a folder growing steadily from one that took a single batch: a folder whose 7-day count is most of its 30-day count moved in one pass, and one where the two are proportional is growing at a rate.
+
+Nothing fails on a number here. A record folder has no correct size, so the reading is a number to notice rather than a threshold to gate, and the point of the verb is that the next reading is taken by a command instead of by someone remembering to count the folder. The memory pen went from 44 entries to 236 between two readings taken by hand two weeks apart, which is the measurement this replaces.
+
+`.claude/.tmp` is read here and skipped by a backup, because deletable without loss is not the same as empty. The routing handoffs and the memory archive both sit there and both accumulate. `.claude/.records.git` stays out because it is the backup history rather than a record, and `.claude/worktrees/` stays out because each entry is a checkout of the project with its own removal verb, and one of them outweighs every record folder combined.
+
+The window counts read `mtime`, so what they report is a file written inside the window rather than one created there. An entry edited long after it landed reads as recent, which overstates growth and never understates it, and these folders are append-mostly so the two readings agree on nearly every file. The one reading that is wrong rather than early is a machine restored by `aitk records pull`, which resets the work tree hard and re-dates every file it writes, so a window taken there counts the restore. Nothing on the filesystem separates the two, since a restored file is new by every stamp it carries.
+
+Exit codes: `0` the reading completed, `1` refused. The one refusal is `no-folder`, raised when the root holds no `.claude` directory at all.
+
 ## Push and pull
 
 `aitk records push` commits the backed record folders to a private remote and pushes them. `aitk records pull` fetches the other direction and writes them back. Both take `--json` and `--root` the way `validate` does, and both exit `0` on agreement and `1` on a refusal.
@@ -82,9 +110,9 @@ aitk records push --json
 aitk records pull
 ```
 
-The backed folders are `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `task-archive`, and `tasks`, all under `.claude/`. They are the gitignored Claude group minus `.claude/.tmp`, which is deletable without loss, and `.claude/worktrees/`, whose contents belong to the project repository already. The list is a constant rather than configuration, matching the four folder names `validate` hardcodes.
+The backed folders are `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `task-archive`, `tasks`, and `teach`, all under `.claude/`. They are the gitignored Claude group minus `.claude/.tmp`, which is deletable without loss, and `.claude/worktrees/`, whose contents belong to the project repository already. The list is a constant rather than configuration, matching the four folder names `validate` hardcodes.
 
-Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the eight folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched.
+Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the nine folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched.
 
 ### Setup
 
@@ -113,7 +141,7 @@ Point it at a private repository, and at one that is not a remote of the project
 | `local-ahead`       | `pull` found local commits that never reached the origin                             |
 | `git-failed`        | A git call failed, with its stderr in the message                                    |
 
-The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the eight has nothing to lose, so a restore onto a fresh checkout runs straight through.
+The two `pull` refusals exist because the directions are not symmetric. A push only adds, while a pull onto a machine holding work that never left it would discard that work. Resolve either by running `push` first, or by moving the local folders aside. A machine holding none of the nine has nothing to lose, so a restore onto a fresh checkout runs straight through.
 
 ### When it runs
 
