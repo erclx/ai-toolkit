@@ -22,3 +22,5 @@ tooling = ["tooling/"]
 cli = ["src/"]
 sandbox = ["scripts/sandbox/"]
 docs = ["docs/", "wiki/"]
+# `scripts/core/` reaches the whole folder, maintenance scripts included.
+ci = [".github/", "scripts/core/"]
