@@ -11,7 +11,7 @@ What each `aitk` sync or install command does to existing files in a target proj
 
 | Surface                                                  | Command                  | Effect on existing files                                         |
 | -------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
-| Golden configs (eslint, prettier, vite, tsconfig, ruff)  | `aitk tooling sync`      | Always overwritten. Local edits are lost. Drift is intentional.  |
+| Golden configs, listed in full below                     | `aitk tooling sync`      | Overwritten once `--write` is passed. Local edits are lost.      |
 | Dictionary seeds (`.cspell/*.txt`)                       | `aitk tooling sync`      | Merged and sorted. Existing terms preserved.                     |
 | Other seeds (`cspell.json`, `.lintstagedrc`, state docs) | `aitk tooling sync`      | Copy-once. Dropped on first install, untouched after.            |
 | Standards                                                | `aitk standards install` | All overwritten.                                                 |
@@ -22,9 +22,77 @@ What each `aitk` sync or install command does to existing files in a target proj
 | `.gitignore`, deps, scripts                              | any sync                 | Additive. Existing entries preserved. Deps re-pin on major skew. |
 | Generated `index.md`                                     | any sync or regen        | Rewritten from target state. Hand edits are lost.                |
 
+## What a tooling sync can overwrite
+
+A golden config is any file a stack ships under `configs/`, and the category is wider than its name suggests. It carries the CI workflow, the git hooks, the end-to-end harness, the shell scripts under `scripts/`, and the editor settings, alongside the linters and compilers a reader expects. A stack inherits its parent's configs, so syncing `astro` also writes everything `web` and `base` hold.
+
+Run `aitk tooling sync <stack> <target> --check` for the list resolved against a real target. It reports every path and writes nothing. The list below is what the stacks hold as shipped, before any chain resolution.
+
+<!-- generated:tooling-paths -->
+
+### astro
+
+- `astro.config.mjs`
+- `eslint.config.js`
+- `playwright.config.ts`
+- `tsconfig.json`
+- `vitest.config.ts`
+
+### base
+
+- `.editorconfig`
+- `.github/pull_request_template.md`
+- `.github/workflows/verify.yml`
+- `.husky/commit-msg`
+- `.husky/post-merge`
+- `.husky/post-rewrite`
+- `.husky/pre-commit`
+- `.husky/pre-push`
+- `.prettierrc`
+- `.shellcheckrc`
+- `.vscode/extensions.json`
+- `.vscode/settings.json`
+- `commitlint.config.js`
+- `scripts/clean.sh`
+- `scripts/update.sh`
+- `scripts/verify.sh`
+
+### python
+
+- `.coveragerc`
+- `.python-version`
+- `mypy.ini`
+- `pytest.ini`
+- `ruff.toml`
+- `scripts/verify.sh`
+
+### vite-react
+
+- `playwright.config.ts`
+- `tsconfig.json`
+- `vite.config.ts`
+- `vitest.config.ts`
+
+### web
+
+- `.github/workflows/verify.yml`
+- `.vscode/extensions.json`
+- `.vscode/settings.json`
+- `e2e/home.spec.ts`
+- `e2e/screenshot.ts`
+- `eslint.config.js`
+- `scripts/screenshot.sh`
+- `scripts/verify.sh`
+- `scripts/worktree-port.sh`
+- `src/test/setup.ts`
+
+<!-- /generated:tooling-paths -->
+
 ## Rules
 
-- Before `aitk tooling sync`, know golden configs always overwrite. When the project carries local edits to a golden config, warn the user before running it.
+- `aitk tooling sync` writes nothing until `--write` is passed. A headless run without it reports and exits 1, so a script that forgets the flag fails rather than silently skipping the sync.
+- Run `--check` first when the project carries local edits to any path above. The report names each file it would replace, which is the warning the user needs before the write.
+- An interactive run still prompts. `--write` skips the prompt, and `--check` refuses to write even with a TTY.
 - Seeds are user-owned. Dictionary `.txt` files merge and sort. Other seeds are copy-once, so re-seeding a structured file means deleting it and syncing again.
 - Prefer `aitk standards sync` over `install` on an existing project. `install` overwrites every standard.
 - For section-level customizations of a standard or seed doc, use the `claude-seed-sync` skill, not `aitk ... sync`. It diffs per section and preserves edits.
