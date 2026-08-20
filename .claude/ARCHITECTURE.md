@@ -82,7 +82,7 @@ The same finding fails a push against `tooling/*/seeds/` and only reports agains
 
 `review-archive/` is the fourth because a receipt is not uniformly decided. It arrived in `.tmp/` holding 154 receipts and 261 undecided items, which the memory standard calls decision state the next round reads back, so it failed the deletable test on content rather than on citation and reached no records remote while it sat there. What the test reads is whether the judgment behind a file has been taken, and an entry retired by a decision passes it where a proposal nobody answered does not. Measured at `961aa69c` on 2026-08-20.
 
-Prefixing the other five surfaces with a dot to collapse the ignore file into one pattern was measured and declined at 486 occurrences across roughly 150 committed files, 43 of which ship to targets, against 80 across 26 for the move that shipped. It is a breaking rename for every installed target and it hides the board a person opens daily, so the ignore file grows by three entries rather than shrinking. `.tmp` is the only one of the six where hidden is the correct default.
+Prefixing the other five surfaces with a dot to collapse the ignore file into one pattern was measured and declined at 486 occurrences across roughly 150 committed files, 43 of which ship to targets, against 80 across 26 for the move that shipped. It is a breaking rename for every installed target and it hides the board a person opens daily, so the ignore file grows by four entries rather than shrinking. `.tmp` is the only one of the six where hidden is the correct default.
 
 ### The durable records back up through a second git directory, not a branch here
 
