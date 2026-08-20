@@ -1,11 +1,13 @@
 import type { Command } from 'commander'
+import { BACKED_FOLDERS, pullRecords, pushRecords } from '@/records/backup'
 import {
-  BACKED_FOLDERS,
-  type PullOutcome,
-  pullRecords,
-  type PushOutcome,
-  pushRecords,
-} from '@/records/backup'
+  type FolderSize,
+  formatBytes,
+  GROWTH_WINDOWS,
+  SIZED_FOLDERS,
+  type SizeOutcome,
+  sizeRecords,
+} from '@/records/size'
 import {
   type Finding,
   isRecordKind,
@@ -23,6 +25,7 @@ import {
   logWarn,
   outro,
   pipeOutput,
+  plural,
 } from '@/ui'
 import { currentWorktreeRoot, mainWorktreeRoot } from '@/worktree'
 
@@ -88,6 +91,41 @@ export function register(program: Command): void {
     })
 
   records
+    .command('size')
+    .description('Report what each record folder holds and how much is recent')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .option('--root <path>', 'Project root, defaulting to the main worktree')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Folders read under .claude/:',
+        `  ${SIZED_FOLDERS.join(', ')}`,
+        '',
+        'Exit codes:',
+        '  0  the reading completed',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '',
+        'It gates nothing. A record folder has no correct size, so the reading is',
+        'a number to notice rather than a threshold to fail, and a session takes it',
+        `by running this rather than by counting the folder. The ${GROWTH_WINDOWS.join(
+          ' and ',
+        )} day`,
+        'counts read mtime, so a file rewritten long after it landed reads as recent,',
+        'and a machine restored by records pull reads its whole tree as one week old.',
+        '',
+        'Examples:',
+        '  aitk records size',
+        '  aitk records size --json',
+        '',
+      ].join('\n'),
+    )
+    .action(async (opts: BackupCommandOptions) => {
+      process.exitCode = await runSize(opts)
+    })
+
+  records
     .command('push')
     .description(
       'Commit the backed record folders and push them to the records remote',
@@ -149,6 +187,99 @@ function backupHelp(verb: 'push' | 'pull'): string {
   ].join('\n')
 }
 
+async function runSize(opts: BackupCommandOptions): Promise<number> {
+  const root = opts.root ?? (await mainWorktreeRoot())
+  const outcome = await sizeRecords(root)
+
+  if (!outcome.ok)
+    return reportRefusal('aitk records size', outcome, opts.json ?? false)
+
+  if (opts.json ?? false) {
+    process.stdout.write(`${JSON.stringify(outcome)}\n`)
+    return 0
+  }
+
+  reportSize(outcome)
+  return 0
+}
+
+/** Widest cell in the column, so a row lines up against the header as well. */
+function columnWidth(header: string, cells: readonly string[]): number {
+  return Math.max(header.length, ...cells.map((cell) => cell.length))
+}
+
+function sizeRow(entry: FolderSize): string[] {
+  return [
+    entry.folder,
+    String(entry.files),
+    formatBytes(entry.bytes),
+    ...entry.touched.map((window) => String(window.files)),
+    entry.oldest ?? '',
+    entry.newest ?? '',
+  ]
+}
+
+/**
+ * Renders the present folders as a table, heaviest first.
+ *
+ * The order is what makes the reading worth taking. A folder listed
+ * alphabetically hides behind its neighbors, and the one that grew is the row
+ * a reader came for, so it leads.
+ */
+function reportSize(outcome: Extract<SizeOutcome, { ok: true }>): void {
+  const present = outcome.folders
+    .filter((entry) => entry.present)
+    .toSorted((left, right) => right.files - left.files)
+  const absent = outcome.folders
+    .filter((entry) => !entry.present)
+    .map((entry) => entry.folder)
+
+  intro('aitk records size')
+  logStep('Folders')
+
+  if (present.length === 0) {
+    logInfo('none of the record folders exist yet')
+  } else {
+    const headers = [
+      'folder',
+      'files',
+      'size',
+      ...GROWTH_WINDOWS.map((days) => `${days}d`),
+      'oldest',
+      'newest',
+    ]
+    const rows = present.map(sizeRow)
+    const widths = headers.map((header, column) =>
+      columnWidth(
+        header,
+        rows.map((row) => row[column]),
+      ),
+    )
+
+    // The name column reads as a list and the rest as numbers, so one is
+    // left-aligned and the others are not.
+    const render = (cells: readonly string[]): string =>
+      cells
+        .map((cell, column) =>
+          column === 0
+            ? cell.padEnd(widths[column])
+            : cell.padStart(widths[column]),
+        )
+        .join('  ')
+        .trimEnd()
+
+    pipeOutput([render(headers), ...rows.map(render)].join('\n'))
+  }
+
+  if (absent.length > 0) logInfo(`absent: ${absent.join(', ')}`)
+
+  logStep('Total')
+  logInfo(
+    `${plural(outcome.files, 'file')}, ${formatBytes(outcome.bytes)} across ${plural(present.length, 'folder')}`,
+  )
+  outro()
+}
+
 async function runPush(opts: BackupCommandOptions): Promise<number> {
   const root = opts.root ?? (await mainWorktreeRoot())
   const outcome = await pushRecords(root)
@@ -197,9 +328,16 @@ async function runPull(opts: BackupCommandOptions): Promise<number> {
   return 0
 }
 
+/**
+ * Reports a refusal from any of the three verbs that carry one.
+ *
+ * The parameter is structural rather than the union of their outcome types,
+ * because the three refusal vocabularies are separate lists and naming them all
+ * here would grow with every verb added.
+ */
 function reportRefusal(
   banner: string,
-  outcome: Extract<PushOutcome | PullOutcome, { ok: false }>,
+  outcome: { readonly reason: string; readonly message: string },
   emitJson: boolean,
 ): number {
   if (emitJson) {
