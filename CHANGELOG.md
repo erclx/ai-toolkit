@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/erclx/aitk/compare/v1.4.0...v1.5.0) (2026-08-20)
+
+
+### Features
+
+* **context:** measure the architecture record against its own ceiling ([#1072](https://github.com/erclx/aitk/issues/1072)) ([e18fed4](https://github.com/erclx/aitk/commit/e18fed4daddd777590a387e48b396cffbe91f70c))
+
 ## [1.4.0](https://github.com/erclx/aitk/compare/v1.3.0...v1.4.0) (2026-08-20)
 
 
