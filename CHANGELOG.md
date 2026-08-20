@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/erclx/aitk/compare/v1.2.0...v1.3.0) (2026-08-20)
+
+
+### Features
+
+* **records:** report each record folder's size and growth ([#1066](https://github.com/erclx/aitk/issues/1066)) ([6c030fd](https://github.com/erclx/aitk/commit/6c030fde58c1949734ad01a5f83a659f669b1454))
+
 ## [1.2.0](https://github.com/erclx/aitk/compare/v1.1.0...v1.2.0) (2026-08-20)
 
 
