@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-08-20",
+  "commit": "bd2be81a7d79ff9e7d5e1a26cf61b8da62b4ac75",
+  "checks": {
+    "context": {
+      "unresolvedCitations": 0,
+      "longEntries": 29,
+      "missingSections": 0,
+      "indexDrift": 10,
+      "bareReferences": 0
+    },
+    "markdown": {
+      "bans": 0,
+      "heavyBullets": 50,
+      "heavyParagraphs": 60,
+      "filesPastDepth": 68,
+      "flatParagraphs": 163
+    },
+    "skills": {
+      "missingRequirement": 0,
+      "nameMismatch": 0,
+      "missingDescription": 0,
+      "longDescription": 0,
+      "readme": 0,
+      "folderName": 0,
+      "requirementSections": 0
+    },
+    "records-standards": {
+      "findings": 0
+    },
+    "comments": {
+      "degradationHits": 7
+    },
+    "test-order": {
+      "findings": 0,
+      "unclassified": 0
+    }
+  }
+}

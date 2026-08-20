@@ -1,15 +1,57 @@
 ---
 title: Audits
-description: The context audit, the markdown audit, the skill audit, the comment census, the board and record validators, and the test-order report, the commands that measure rather than install
+description: The aggregate that runs them all with its retained baseline, then the context audit, the markdown audit, the skill audit, the comment census, the board and record validators, and the test-order report
 ---
 
 # Audits
 
-`aitk context audit`, `aitk markdown audit`, `aitk claude skills audit`, `aitk comments scan`, `aitk tasks validate`, `aitk records validate`, and `aitk gov test-order` are the commands that read a tree and report on it instead of writing into one. None installs anything, and three checks across the seven gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here.
+`aitk context audit`, `aitk markdown audit`, `aitk claude skills audit`, `aitk comments scan`, `aitk tasks validate`, `aitk records validate`, and `aitk gov test-order` are the commands that read a tree and report on it instead of writing into one. None installs anything, and three checks across the seven gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here. `aitk audits run` runs the whole set and is described first, since it is the only one of them anything schedules.
 
 Each splits its engine by reason to change rather than by size. `src/comments/` separates the counting pass (`scan.ts`), the history sampler (`trend.ts`), and the vocabulary loader (`vocabulary.ts`), because counting, sampling, and rule reading are three reasons to change.
 
 `src/context/` separates the folder contract (`folders.ts`), the structural measures (`audit.ts`), cited-path resolution (`citations.ts`), and index-to-sibling comparison (`index-drift.ts`), because the contract, the checkpoints, the exclusion set, and the catalog format each move on their own and only `citations.ts` gates anything. `src/markdown/` separates rule reading (`bans.ts`), the line walker and its exclusions (`scan.ts`), the weight measures (`structure.ts`), and corpus resolution (`files.ts`), for the same reason the other two split.
+
+## The audit set
+
+`aitk audits run` runs twelve verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
+
+Reading each shape was chosen over forcing a common envelope. Every record already has consumers naming its keys, and one of them refuses to rename a key for a gain of one word, so an envelope is a breaking change bought for tidiness. The cost is one extractor per verb in `src/audits/catalog.ts`, and an extractor meeting a record it cannot read returns nothing rather than zero, on the ground the context audit already states about `--citations-only`.
+
+The twelve run together rather than in sequence. They walk separate trees and share no state, so the whole set finishes in 0.8 seconds of wall clock against 4.4 seconds of processor, measured on the authoring machine at `bd2be81a`. That figure is what settles whether `bun run check` can afford the stage, and it sits under every other stage in that script.
+
+### What the aggregate gates on
+
+Exactly the three findings that already fail a push, and nothing else. An unresolved context citation, a banned character, word, or spelling, and a skill folder carrying no `REQUIREMENT.md` are facts. Every other measure it prints is a judgment, and an aggregate exiting non-zero on any finding would erase the recorded split in one line.
+
+The catalog holds that decision rather than the exit code, because a reporting verb sets `2` on findings it deliberately does not gate on. Reading the code alone would promote every one of them to a gate the first time the aggregate ran.
+
+A fourth kind of failure needed a code of its own. An audit that did not report is a defect in the run rather than in the tree, and folding it into either the clean exit or the findings exit says the wrong thing about which is broken. It takes `3`, the code `aitk markdown audit` already uses for a corpus walked with nothing looked for.
+
+That code then had to stop firing on the ordinary case. Six of the twelve read gitignored folders, which no fresh clone and no CI run carries, so the first shape reported `incomplete` on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore takes `absent`, which reports and moves nothing.
+
+The allowance covers that one pairing and no other. A tracked tree that cannot be found is a broken checkout, and a per-machine verb refusing for any other reason is a broken verb, so both stay `unmeasured`. Every run states the measured count against the absent one, since a report naming only what passed is a claim about a set it never read.
+
+`aitk gov test-order` marks the edge of what the baseline can compare. It scopes against the trunk, falls back to the root commit, and a depth-1 checkout has neither, so the range is empty and it reports zero rather than refusing. A shallow run therefore under-reports against a floor taken from a full clone and reads as shrinkage, which is the safe direction and the reason that one delta means something only from a clone carrying history.
+
+### The retained baseline
+
+`.claude/audits/baseline.json` holds the counts from the last run recorded with `--record`, with the day and the commit behind them. It is committed, because the question the record answers is whether a number grew since anyone last looked and a fresh checkout has to inherit that answer. A per-machine record makes every contributor's first run a first run, which answers nobody.
+
+It sits under the project root rather than beside the aggregator. `src/markdown/structure.ts` holds corpus figures as a `const` and is the nearest precedent, and that shape cannot take a value a run writes back. More to the point, `src/` ships to every project installing the CLI, so a baseline in the package hands a target this repository's counts to measure its own tree against.
+
+Only a tracked corpus is recorded. Five of the six record kinds and the board read gitignored session scratch, so their counts describe one machine's disk and committing them writes a floor no other clone reproduces. They report on every run and are recorded in none, which is a split the plan did not anticipate and the corpus forces.
+
+A first run reports that it had nothing to compare against rather than a delta of zero. Those two readings are indistinguishable and mean opposite things, which is the defect this repository has already fixed twice. The same rule covers a key newly measured and a key the record holds that the run did not produce, each named for what it is.
+
+### Why the pipeline runs it without gating on it
+
+`bun run check` runs the set after the three gating stages and never fails on it. Those stages keep their own remedies, which are specific in a way one aggregate line cannot be, so a fact still fails the push where a reader is told what to do about it.
+
+Growth reports and does not gate, on the same ground every measure here rests on. The standards behind the largest counts set no hard cap, and a push failing on a judgment teaches a contributor to route around the stage.
+
+The stage reads a flat `summary` object published beside the nested arrays, so a shell stage greps one scalar rather than parsing the record. Every key in it is unique across the whole document, which is what keeps the match on the top level. Publishing it was chosen over deriving it in bash for the reason the context audit gives about its own join: deriving means restating which question a number answers, and one wrong restatement reports growth against a measure that never moved.
+
+The three verbs the gating stages already ran walk their trees a second time here. That is the 0.8 seconds above, and it buys one verdict over the whole set, where a stage measuring only the part those stages skip would report a health nobody took.
 
 ## The context audit
 
@@ -258,9 +300,11 @@ The three checkpoints are not independent under their own remedies either. Split
 
 ### The triaged baseline
 
-Three slices took the corpus between them, the trees nothing else touched, the three that ship to targets, and `.claude/` last because every task edits its own entry as it lands. Measured 2026-08-06 over 467 files with the third slice applied, the corpus reports zero bans, 1 heavy bullet, and 22 heavy paragraphs across 6 files. Read that as the floor rather than as work outstanding, since every one of the 23 sits on a ground `### What a triage exempts and why` already records.
+Three slices took the corpus between them, the trees nothing else touched, the three that ship to targets, and `.claude/` last because every task edits its own entry as it lands. Measured 2026-08-06 over 467 files with the third slice applied, the corpus reported zero bans, 1 heavy bullet, and 22 heavy paragraphs across 6 files. Read that as the floor the slices reached rather than as work outstanding, since every one of the 23 sits on a ground `### What a triage exempts and why` already records.
 
-The 6 split two ways. `wiki/tools/community-mcp-servers.md` and `community-skills.md` carry 17 between them as catalog entries, which is the ground the first slice settled and the same two pages it settled the ground on. `scripts/eval/result-context.md` and `result-seed.md` carry 4 as frozen records whose own banners refuse the edit, and `wiki/claude/claude-memory.md` and `claude-worktrees.md` carry one each. A later run reading a number above 23 is reading a regression rather than a leftover.
+The 6 split two ways. `wiki/tools/community-mcp-servers.md` and `community-skills.md` carry 17 between them as catalog entries, which is the ground the first slice settled and the same two pages it settled the ground on. `scripts/eval/result-context.md` and `result-seed.md` carry 4 as frozen records whose own banners refuse the edit, and `wiki/claude/claude-memory.md` and `claude-worktrees.md` carry one each.
+
+The 23 above is history rather than the number a later run compares against. `.claude/audits/baseline.json` holds the current floor and `aitk audits run` does the comparison, which is the whole reason the record exists: this paragraph told every reader to check a number against a sentence, no surface ran that check, and the corpus reached 110 against it. Do not restate a count here that the record already holds. A figure written into this prose is one nothing compares, which is how the regression stood for two weeks with the measure reporting it on every run.
 
 The generated mirrors reach zero the same way the tree does. A finding under `.claude/standards/`, `.claude/snippets/`, `.claude/rules/`, or `.claude/internal/` is fixed at its authoring root and cleared by `bun run check`, so the two never need counting apart once a slice has run, and one number over the whole corpus is what a later run reproduces.
 

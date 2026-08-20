@@ -8,6 +8,7 @@ category: Agent surface
 
 CLI catalog and invocation rules for agents, split by command domain. Start with overview.
 
+- [Audits](audits.md): Running every health check as one set, what the single verdict means, the exit code each outcome takes, the retained baseline and the delta it reports, and which corpora are kept out of the record
 - [Capture](capture.md): Rendering committed HTML sources to PNG, what the command asserts about fonts, and why it is toolkit-only
 - [Command catalog](commands.md): Every project-level command and every domain subcommand, plus the shape each domain exposes
 - [Comments](comments.md): Comment density by language and kind, the two structural exclusions, and how the degradation sweep finds its vocabulary

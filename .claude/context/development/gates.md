@@ -1,11 +1,13 @@
 ---
 title: Gating stages
-description: The stages that gate a push on a measure, covering the sandbox coverage ceiling, plugin manifest validation, and the seed independence token walk
+description: The stages that gate a push on a measure, covering the sandbox coverage ceiling, plugin manifest validation, and the seed independence token walk, plus the one measure-reading stage that reports instead
 ---
 
 # Gating stages
 
 Five stages read a measure and fail a push on it rather than regenerating anything. Each states what it does when its input is missing, since a stage that skips quietly reports the pass it exists to withhold.
+
+A sixth reads a measure and reports it. `## Audit set` at the end of this entry covers it, and it sits here rather than in `.claude/context/development/verification.md` because what it reads is a measure like the five above rather than a gotcha about a stage.
 
 ## Sandbox coverage
 
@@ -76,3 +78,23 @@ Discovery runs through `collect_seed_roots` in `scripts/lib/tooling.sh`, shared 
 Three outcomes separate a clean walk from one that measured nothing, matching `check-plugin-boundary.sh` on the last two. A missing `tooling/` exits 1, since the walk covers nothing. Roots that resolve and carry no markdown between them exits 1 for the same reason, because a pass there says the seeds cite no CLI on the strength of having read no prose. No seed root carrying `.claude/` exits 0 and says so, because the Seed standards stage already reads that one condition as a skip.
 
 `internal/rules/claude/596-claude-md.md` carries the matching authoring rule, so a session editing the seed meets it at the edit rather than at the push. Its glob stays on the two `CLAUDE.md` paths rather than widening to every seed markdown, since the three bullets beside it govern the root-and-seed pair and mean nothing over `.claude/REQUIREMENTS.md`. The stage is what covers the rest of the seed tree.
+
+## Audit set
+
+The Audit set stage runs `aitk audits run --json` and reports. It is the one stage here that reads a measure and fails nothing, which is deliberate: the three findings the audits treat as facts already fail the push at their own stages above, and those name a specific remedy an aggregate line cannot. What this stage adds is the judgment half of every audit and the growth against `.claude/audits/baseline.json`.
+
+Growth reports for the reason the ceiling above gates. The standards behind the largest counts set no hard cap, so a rising number is a fact about the corpus and a judgment about whether it matters, and a push failing on a judgment teaches a reader to route around the stage.
+
+It reads a flat `summary` object of scalars rather than parsing the nested record, through `json_summary_field`. That helper was `sandbox_summary_field` until this stage arrived and needed the same read, so both callers now share one grep-based reader in `scripts/core/verify.sh`.
+
+### An absent corpus is not a stage failure
+
+Six of the twelve audits read gitignored folders. No fresh clone and no CI run carries one, so a shape counting those as unmeasured printed the same warning on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore reports as absent, which the stage states and never warns on.
+
+The stage still warns when an audit genuinely did not report, and the aggregate exits 3 there. A tracked tree that cannot be found is a broken checkout rather than an ordinary absence, so the allowance does not reach it.
+
+### What the duplicate walk costs
+
+Three of the twelve verbs run at their own gating stages earlier in the same script, so this stage walks those trees a second time. Measured at 0.8 seconds of wall clock against 4.4 seconds of processor for all twelve together, which is under every other stage here, because the verbs share no state and run concurrently.
+
+Running only the verbs the earlier stages skip was the cheaper shape and it gives up what the aggregate is for. One verdict over the whole set is the product, and a stage measuring a subset reports a health nobody took.
