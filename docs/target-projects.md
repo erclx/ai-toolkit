@@ -148,7 +148,9 @@ The same field names a proposal-only skill with a live case here under `migratio
 
 Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code, and neither do superseded artifacts, seed drift, tooling, or anything the reverse walk reports, since each names content the project is expected to edit or place itself. An unmigrated domain does count, because running the relocation closes it.
 
-Tooling reports under a section of its own, and `measured` there says whether the target ever recorded a chain. One that never ran a tooling sync reports unmeasured rather than clean, which is what separates tooling nobody has looked at from tooling that is current. A workspace root records nothing either way, since each package resolves its own chain. Reconcile the configs with `aitk tooling sync <stack> <path>`.
+Tooling reports under a section of its own, and `measured` there says whether the target ever recorded a chain. One that never ran a tooling sync reports unmeasured rather than clean, which is what separates tooling nobody has looked at from tooling that is current. A workspace root records nothing either way, since each package resolves its own chain.
+
+Reconcile the configs with `aitk tooling sync <stack> <path> --check` to read which files differ, then re-run it with `--write` to apply them. The drift report counts categories and the sync names paths, which is the difference worth knowing before a golden config the project edited is replaced.
 
 ### Catch-all
 

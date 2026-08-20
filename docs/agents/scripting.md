@@ -77,8 +77,11 @@ surface is in `skills-audit.md`.
 # Create a new tooling stack
 AITK_NON_INTERACTIVE=1 aitk tooling create astro
 
-# Sync a stack into a target project
-AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project
+# Report what a stack would change, writing nothing
+AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project --check
+
+# Sync a stack into a target project, overwriting its golden configs
+AITK_NON_INTERACTIVE=1 aitk tooling sync astro /path/to/project --write
 
 # Install a governance stack (the stack argument is required headlessly)
 AITK_NON_INTERACTIVE=1 aitk gov install astro --add 260-shadcn /path/to/project
@@ -90,7 +93,7 @@ AITK_NON_INTERACTIVE=1 aitk gov sync /path/to/project
 AITK_NON_INTERACTIVE=1 aitk gov build /path/to/project
 
 # Sync a monorepo subtree, skipping the base layer the repo root already owns
-AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react /path/to/repo/frontend --skip base
+AITK_NON_INTERACTIVE=1 aitk tooling sync vite-react /path/to/repo/frontend --skip base --write
 
 # Verify a stack end-to-end in a throwaway scaffold
 aitk tooling verify vite-react
@@ -134,3 +137,11 @@ SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
 # Read every audit as one record. Exit 2 is a fact, 3 an audit that did not report
 aitk audits run --json
 ```
+
+`aitk tooling sync` is the one verb above whose flag is mandatory headlessly. It
+overwrites every golden config a stack ships, which reaches the CI workflow, the
+git hooks, the end-to-end harness, and the shell scripts under `scripts/`, so a
+headless run carrying neither `--check` nor `--write` reports what it would
+replace and exits 1 rather than applying it. Run `--check` first to read the
+list, then `--write` to apply it. `aitk tooling sync --help` names both, and the
+full per-stack path list sits in the `toolkit-cli` skill.
