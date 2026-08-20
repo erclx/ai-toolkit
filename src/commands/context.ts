@@ -503,7 +503,7 @@ function readCause(cause: LengthCause): string {
   if (cause.state === 'unanswered') return `${label}: open`
   if (cause.state === 'no') return `${label}: no`
 
-  return `${label}: yes, ${plural(cause.markers ?? 0, 'marker')}`
+  return `${label}: yes, ${plural(cause.markers ?? 0, 'change marker')}`
 }
 
 /**
@@ -534,7 +534,7 @@ function reportLength(over: readonly LengthFinding[]): void {
     'The checkpoint is not a cap. Each entry carries the three questions the standard asks past it, and the fix goes to whichever is true.',
   )
   logInfo(
-    'Own history is answered from the provenance markers below. The other two are judgments no measure settles, so they stay open for a reader.',
+    'Own history is answered from the change markers below. A date stamping a measurement is not one of them, so an entry recording what its runs cost answers no. The other two are judgments no measure settles, so they stay open for a reader.',
   )
   pipeOutput(
     over
@@ -595,7 +595,9 @@ function reportProvenance(
   logInfo(
     `Covers .claude/${PROVENANCE_FOLDER}/ alone, whose standard carries the rule. The sibling standards do not restate it.`,
   )
-  logInfo('Fenced blocks are excluded. A marker is a judgment, never a defect.')
+  logInfo(
+    'Fenced blocks are excluded, and so is a date whose clause stamps a measurement. A marker is a judgment, never a defect.',
+  )
 
   const carrying = entries
     .filter((entry) => entry.provenance.length > 0)

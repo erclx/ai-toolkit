@@ -73,7 +73,29 @@ An open state is carried rather than omitted, and an entry outside the governed 
 
 The first pass through the joined report ran the three questions over the four entries furthest past the checkpoint, which were also the four heaviest for provenance. History came back true on all four, and the corpus went from 44 markers to 31. Reproduced content came back false: the longest entry carries no fence and no table row at all, so its length is prose rather than command output. One domain came back false once, for the flat entry covering internal skills, orchestration, and plugin discovery, which took the folder split the standard calls the natural ceiling. The two longest entries had no split left to reach for, since both already sit inside one.
 
-What that pass separated is a distinction the marker cannot make. The standard cuts a change number, a release label, and a date attached to a change, and it says nothing against a date stamping a measurement, so 13 markers went and 15 stayed. A date on a run is the anchor its own figures are tested for staleness against, and `.claude/context/sandbox/coverage.md` calls those figures the durable record while reading its turn ceilings off them, so cutting the date there would leave a number nothing could date. The marker matches an ISO date either way, which puts the reported cause one grade coarser than the rule it cites and leaves the read to a person. Anchoring to a commit was the alternative and it is exact only where the recording commit is the tree the figure was read against, which blame shows it is not for several of these, so a sha there would date a number to a tree it never met.
+What that pass separated is a distinction the marker made a person carry. The standard cuts a change number, a release label, and a date attached to a change, and it says nothing against a date stamping a measurement, so 13 markers went and 15 stayed. A date on a run is the anchor its own figures are tested for staleness against, and `.claude/context/sandbox/coverage.md` calls those figures the durable record while reading its turn ceilings off them, so cutting the date there would leave a number nothing could date. Anchoring to a commit was the alternative and it is exact only where the recording commit is the tree the figure was read against, which blame shows it is not for several of these, so a sha there would date a number to a tree it never met.
+
+The marker now reads the clause in front of the date rather than the token alone. Five verbs stamp a measurement wherever they sit in the clause, being measured, verified, driven, passed, and fired. The noun form counts only where it sits against the date, since the two shapes below differ in nothing else, and a clause naming the noun at any distance would clear the second along with the first:
+
+```markdown
+A run on 2026-08-14 passed at 5 asserted and 0 failed.
+Runs on #632 and #634 landed 2026-08-02.
+```
+
+The clause ends at the nearest sentence boundary, so a measurement recorded beside a change no longer clears it. A date the set cannot place stays the change marker it was, which reports one date too many rather than clearing one the standard cuts, and the length finding spends no third state on it. The example above sits in a fence for the reason the check excludes one: an entry teaching the marker would otherwise report every literal it quotes.
+
+The release pattern widened at the same time, from a leading `v` to three segments with the `v` optional, because the standard cuts a release label rather than a spelling of one. Two segments still require it, since an unprefixed pair in this corpus is a dollar cost or a duration far more often than a release. What the widening reaches by accident is another tool's version, which no rule asks anyone to cut, and those report rather than being excluded: an exclusion keyed on a nearby tool name goes stale with nothing saying so.
+
+The split runs on the date kind alone, so a version stamping a measurement reports where a date stamping the same one does not. Both lines below come back as release markers, under clauses the date pattern reads as anchors:
+
+```markdown
+The wrapper masks a refusal exactly as it masks an absent verb, measured against 0.98.0.
+Bun exits 1 on the same throw with no pipe attached, measured on Bun 1.3.14.
+```
+
+That asymmetry is what accepting a dependency version costs, taken over an exclusion keyed on a nearby tool name, and closing it means running the stamping clause over the release kind rather than widening either pattern.
+
+Re-measured from the run that shipped the change, the corpus reads 27 markers across 13 entries against 31 across 15. Dates fell from 28 to 9 and releases rose from none to 15, which is the same gap closing in both directions. Five of the nine standing dates are changes and four are the coarse fallback, carrying `reviewed`, `returned`, `lost`, and `came in at`, so widening the set is where a phrasing nobody enumerated gets fixed. Seventeen entries past the checkpoint now answer `no` on own history against twelve answering `yes`. `.claude/context/sandbox/coverage.md` still answers `yes`, on the three release labels the widening reached rather than on the seven date anchors it used to count, which is the check naming a cause the standard actually states.
 
 The reference-form match is a second pass rather than a widened `citationPattern`. One expression admitting both forms puts a single match in the position of answering two questions, since a spelled path is a reference by construction and a bare name is a candidate the caller still has to test against the folder it sits in. The ignore marker is shared instead of duplicated, because both checks ask whether a line points at a file and the marker is already how a line says it displays a name.
 
