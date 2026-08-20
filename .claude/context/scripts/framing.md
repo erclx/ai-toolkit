@@ -27,7 +27,7 @@ A migrated list verb has to open that frame itself, and the gap is easy to miss 
 
 Deleting a dispatcher moves the responsibility for opening the frame, because a bash verb script closes a frame it never opened. `src/commands/gov.ts` calls `intro('aitk gov')` before it execs a pass-through, taking over the job the dispatcher used to do. It skips the call when the args carry `-h` or `--help`, since a help screen prints its own frame.
 
-A TypeScript command that both bash and users invoke owns its frame and takes `--nested` to suppress it. `aitk tooling inject` frames itself so direct invocation does not emit dangling `│` lines, while the tooling sandbox scenarios pass `--nested` because they have already opened one. This is the same split `VERIFY_NESTED` makes in `scripts/core/verify.sh`. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`, and the mirror now stops at the frame rather than covering the color inside it.
+A TypeScript command that both bash and users invoke owns its frame and takes `--nested` to suppress it. `aitk tooling inject` frames itself so direct invocation does not emit dangling `│` lines, while the tooling sandbox scenarios pass `--nested` because they have already opened one. This is the same split `VERIFY_NESTED` makes in `scripts/core/verify.sh`. A migrated domain keeps the same frame because `src/ui.ts` mirrors `lib/ui.sh`, and the mirror covers the color inside it as well as the frame around it.
 
 Once both sides of a call are TypeScript the flag stops being needed at all. `aitk claude` used to shell into `aitk tooling inject --gitignore --nested`, and now calls `injectGitignore` directly inside the already-open frame, which drops a process per invocation.
 
@@ -37,7 +37,9 @@ Once both sides of a call are TypeScript the flag stops being needed at all. `ai
 - `log_*` writes to stderr and data goes to stdout, so JSON and lists pipe clean through any wrapper. This is why `--help` is the one exception that prints to stdout.
 - `exec` replaces the process and drops the parent trap, so every subcommand re-arms `trap close_timeline EXIT` itself before any early exit, including `--json` paths.
 - Subcommand scripts never emit their own `┌`. The dispatcher already did, and a second one produces two frames per invocation.
-- The color opt-out stops at this boundary. `scripts/lib/ui.sh:15` spells its constants with no `NO_COLOR` read and no terminal test, and `src/exec.ts` runs a delegated script under `stdio: 'inherit'`, so a piped `bun run check` or any pass-through verb still carries escapes the TypeScript writers no longer emit. Measured 2026-08-20.
+- The color opt-out crosses this boundary by having each side answer for itself. `src/exec.ts` runs a delegated script under `stdio: 'inherit'`, so no parent can filter a child's stream and the child reads `NO_COLOR` and its own `[ -t <fd> ]` instead.
+- `set_palette <fd>` in `scripts/lib/ui.sh` is the only place a bash escape is spelled, and it asks per stream rather than once per process. Every writer in that file declares all six palette names `local` and calls it for fd 2 at write time, so a redirect applied after the file was sourced still gets the right answer. A single source-time call answers for stdout, which is the stream the 112 palette reads across 13 consumer scripts reach with a bare `echo` in their own frames, and it is why those scripts needed no edit. The blank palette keeps every frame character and drops only the escapes.
+- The cursor and erase sequences in `ask` and `select_option` stay unconditional. They run only where a terminal already exists, which is the carve-out `src/ui.ts` takes as well.
 
 ## The first option is what a headless run takes
 
