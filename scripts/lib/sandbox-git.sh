@@ -89,11 +89,18 @@ ensure_sandbox_anchor_repo() {
   *) log_error "Cannot reach ${GITHUB_ORG}/${repo_name}: ${gh_error}" ;;
   esac
 
-  # Creating costs a stray empty repository when GITHUB_ORG points somewhere
-  # unexpected, because the contents are synthetic and disposable. `aitk records
-  # push` refuses the same move for the reason `.claude/context/development/scratch.md`
-  # records, so the asymmetry is deliberate and the two are not to be unified.
-  log_warn "${GITHUB_ORG}/${repo_name} does not exist. Creating it as private."
+  # An absent anchor is nearly always a wrong GITHUB_ORG or a rename nobody
+  # performed, and provisioning stages a fixture rather than cloning while every
+  # scenario force-pushes to main, so a repository created here would carry all
+  # nine to a pass against something that is not the anchor. Refusing is the safe
+  # default and creating is the opt-in, the shape `aitk tooling sync --write`
+  # already sets. `aitk records push` refuses outright for the reason
+  # `.claude/context/development/scratch.md` records, so the two still differ.
+  if [ "${SANDBOX_ANCHOR_CREATE:-}" != "1" ]; then
+    log_error "${GITHUB_ORG}/${repo_name} does not exist. Check GITHUB_ORG and whether a rename is pending, then create it with 'gh repo create ${GITHUB_ORG}/${repo_name} --private' or re-run with SANDBOX_ANCHOR_CREATE=1."
+  fi
+
+  log_warn "${GITHUB_ORG}/${repo_name} does not exist and SANDBOX_ANCHOR_CREATE=1 is set. Creating it as private."
   if ! gh_error="$(gh repo create "${GITHUB_ORG}/${repo_name}" --private 2>&1)"; then
     log_error "Could not create ${GITHUB_ORG}/${repo_name}: ${gh_error}"
   fi

@@ -63,7 +63,7 @@ When a dispatcher branches on whether a hook is defined, export a named helper f
 
 ### Exercise a `gh` failure path without reaching the branch that creates
 
-A lib function whose refusal path shells out to `gh` is testable without provisioning anything. `ensure_sandbox_anchor_repo` separates an absent repository from an unreachable host on the 404 alone, so pointing `GH_HOST` at an invalid host forces the unreachable branch and proves it refuses rather than creates. A repository that already exists exercises the success path read-only. The branch that provisions stays unexercised by choice whenever running it would consume a name a pending rename needs.
+A lib function whose refusal path shells out to `gh` is testable without provisioning anything. `ensure_sandbox_anchor_repo` separates an absent repository from an unreachable host on the 404 alone, so pointing `GH_HOST` at an invalid host forces the unreachable branch and proves it refuses rather than creates. A repository that already exists exercises the success path read-only. Putting the provisioning branch behind an opt-in is what makes the absent-repository branch testable too, since the default path can then run against a name that is genuinely missing without claiming it.
 
 ### Read a helper's body before porting its call
 
