@@ -7,6 +7,11 @@ use_config() {
 }
 
 stage_setup() {
+  # All six are declared to scope what `set_palette` assigns, so the names this
+  # file never spells stay out of the globals a sourcing script reads.
+  # shellcheck disable=SC2034
+  local GREEN RED YELLOW WHITE GREY NC
+  set_palette 2
   echo "Base project" >README.md
   git add .
   git commit -m "chore(project): init base" -q

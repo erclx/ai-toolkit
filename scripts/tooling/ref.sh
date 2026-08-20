@@ -91,6 +91,12 @@ main() {
   local stack="$1"
   local target="${2:-.}"
 
+  # Every frame below goes to stderr, so it asks about that stream rather than
+  # reading the source-time answer, which is for stdout and is what `show_help`
+  # above wants. Declared after the help branch so that call keeps it.
+  local GREEN RED YELLOW WHITE GREY NC
+  set_palette 2
+
   echo -e "${GREY}┌${NC}" >&2
   echo -e "${GREY}│${NC} ${WHITE}aitk tooling ref${NC}" >&2
 

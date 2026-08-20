@@ -23,6 +23,8 @@ collect_upstream_stacks() {
 }
 
 stage_setup() {
+  local GREEN RED YELLOW WHITE GREY NC
+  set_palette 2
   export SANDBOX_SKIP_AUTO_COMMIT="true"
 
   local stacks=()
