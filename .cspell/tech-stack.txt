@@ -65,6 +65,7 @@ nullglob
 numpy
 nvmrc
 ollama
+packument
 parametrize
 pathlib
 pathspec
