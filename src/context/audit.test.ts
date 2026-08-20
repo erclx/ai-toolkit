@@ -162,11 +162,64 @@ describe('measureEntry', () => {
   })
 
   it('should order findings by the line carrying them', () => {
-    const source = `${FRONTMATTER}# CI\n\nShipped in #626.\n\nMeasured 2026-08-03.\n`
+    const source = `${FRONTMATTER}# CI\n\nShipped in #626.\n\nThe cap moved on 2026-08-03.\n`
 
     expect(
       measureEntry('ci.md', source).provenance.map((found) => found.line),
     ).toEqual([8, 10])
+  })
+
+  it('should leave a date stamping a measurement unreported', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe cap is 30, above the highest observed run. Measured 2026-08-03.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([])
+  })
+
+  it('should read the clause rather than the line, so a measurement does not clear a change beside it', () => {
+    const source = `${FRONTMATTER}# CI\n\nMeasured 2026-08-03. The cap moved on 2026-08-04.\n`
+
+    expect(
+      measureEntry('ci.md', source).provenance.map((found) => found.text),
+    ).toEqual(['2026-08-04'])
+  })
+
+  it('should leave a date behind the noun form unreported when it sits against the date', () => {
+    const source = `${FRONTMATTER}# CI\n\nA run on 2026-08-14 passed at 5 asserted and 0 failed.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([])
+  })
+
+  it('should report a date whose clause carries no stamping verb', () => {
+    // The set is closed, so a phrasing nobody enumerated falls back to the
+    // change marker it was. That reports one date too many rather than
+    // clearing one the standard cuts.
+    const source = `${FRONTMATTER}# CI\n\nThe sweep returned five matches on 2026-08-04.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([
+      { line: 8, kind: 'date', text: '2026-08-04' },
+    ])
+  })
+
+  it('should report a release label written without a leading v', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe guard refused a CLI at 0.83.0 and named the causes.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([
+      { line: 8, kind: 'release', text: '0.83.0' },
+    ])
+  })
+
+  it('should report another tool version, which the widened pattern cannot tell from a release', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe job installs nothing under npm 11.7.0 and exits 127.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([
+      { line: 8, kind: 'release', text: '11.7.0' },
+    ])
+  })
+
+  it('should leave a two-segment decimal unreported, since a corpus writes costs that way', () => {
+    const source = `${FRONTMATTER}# CI\n\nThe arm cost 0.28 dollars across 7 turns.\n`
+
+    expect(measureEntry('ci.md', source).provenance).toEqual([])
   })
 
   it('should leave a marker unreported when no standard claims the content', () => {

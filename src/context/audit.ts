@@ -60,12 +60,58 @@ const INSIDE_LIST = /^\s+\S/
  * when it records the second: when a change landed, which change carried it,
  * and which release labelled it. A marker is a judgment rather than a defect,
  * so this is measured and reported and never gates.
+ *
+ * The release pattern accepts three segments without a leading `v`, since the
+ * standard cuts a release label rather than a spelling of one and `a CLI at
+ * 0.83.0` names a release exactly as `v0.83.0` does. Two segments still require
+ * the `v`, because an unprefixed pair is a dollar cost or a duration far more
+ * often than a release in a corpus that records what its own runs cost. What
+ * the widening reaches by accident is another tool's version, which the
+ * standard asks nobody to cut, and those report rather than being excluded:
+ * an exclusion keyed on a nearby tool name goes stale with nothing saying so.
  */
 const PROVENANCE: readonly { kind: ProvenanceKind; pattern: RegExp }[] = [
   { kind: 'date', pattern: /\b\d{4}-\d{2}-\d{2}\b/g },
   { kind: 'change', pattern: /#\d{3,}\b/g },
-  { kind: 'release', pattern: /\bv\d+\.\d+(?:\.\d+)?\b/g },
+  { kind: 'release', pattern: /\b(?:v\d+\.\d+(?:\.\d+)?|\d+\.\d+\.\d+)\b/g },
 ]
+
+/**
+ * Verbs that read the date behind them as stamping a measurement.
+ *
+ * `standards/context.md` cuts a date attached to a change and permits one
+ * stamping a measurement, so a pattern matching every ISO date reports against
+ * a rule that admits half of what it finds. Separating the two needs the clause
+ * rather than the token, since `measured on 2026-08-19` and `overturned on
+ * 2026-08-19` differ only in the verb.
+ *
+ * These five are unambiguous wherever they appear in the clause, which is what
+ * lets them match at any distance from the date. `Measured across the corpus on
+ * 2026-08-14` puts four words between the two, and no line in the corpus uses
+ * any of them as a noun a change date could attach to.
+ *
+ * The set is closed and drawn from what the corpus already writes, so a
+ * phrasing nobody enumerated goes unmatched. That direction is the safe one: an
+ * unmatched date falls back to the change marker it is today, which reports one
+ * date too many rather than clearing one the standard cuts. Widening the set is
+ * how a missed phrasing is fixed, and a date the clause cannot place is never a
+ * third state, because the length finding already spends `unanswered` on the
+ * two questions nothing measures at all.
+ */
+const STAMPING = /\b(?:measured|verified|driven|passed|fired)\b/i
+
+/**
+ * The noun form, which has to sit against the date to count.
+ *
+ * `A run on 2026-08-14` stamps a measurement and `Runs on #632 and #634 landed
+ * 2026-08-02` dates a change, and the two differ only in what follows the noun.
+ * Requiring the connector and then the date immediately is what separates them,
+ * so this is anchored to the end of the clause where `STAMPING` is not.
+ */
+const STAMPING_RUN = /\b(?:an?\s+)?runs?\s+(?:on|at|in)\s+$/i
+
+/** Sentence boundary, so a clause is read rather than the whole line. */
+const SENTENCE_END = /[.!?:;]\s(?=[^.!?:;]*$)/
 
 /**
  * The folder whose standard carries the exclusion above.
@@ -200,9 +246,11 @@ export interface LengthCause {
   readonly question: LengthQuestion
   readonly state: QuestionState
   /**
-   * Markers behind a `yes`, and absent wherever nothing was counted. It cites
-   * the provenance finding rather than restating it, so the two sections of the
-   * report describe the same measurement once.
+   * Change markers behind a `yes`, and absent wherever nothing was counted. It
+   * cites the provenance finding rather than restating it, so the two sections
+   * of the report describe the same measurement once. A date stamping a
+   * measurement never reaches that list, so an entry whose only dates are
+   * measurement anchors answers `no` here.
    */
   readonly markers?: number
 }
@@ -284,6 +332,12 @@ function catalogTables(entry: readonly BodyLine[]): TableFinding[] {
  * sample command or a fixture inside an example is content the entry displays
  * rather than a claim it makes, and a version pinned in an install line is the
  * ordinary shape of one.
+ *
+ * A date stamping a measurement is dropped rather than reported under a kind of
+ * its own. One list with one meaning is what lets every consumer read it
+ * without filtering: the report names what the standard cuts, and the length
+ * finding counts the same thing. A separate kind would put the split in three
+ * places and leave each free to read it differently.
  */
 function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
   // Scanning one pattern at a time emits a line's markers grouped by kind, so
@@ -297,6 +351,10 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
 
     for (const { kind, pattern } of PROVENANCE) {
       for (const match of line.text.matchAll(pattern)) {
+        if (kind === 'date' && stampsMeasurement(line.text, match.index)) {
+          continue
+        }
+
         found.push({
           finding: { line: line.number, kind, text: match[0] },
           column: match.index,
@@ -308,6 +366,23 @@ function provenance(lines: readonly BodyLine[]): ProvenanceFinding[] {
   return found
     .sort((a, b) => a.finding.line - b.finding.line || a.column - b.column)
     .map((each) => each.finding)
+}
+
+/**
+ * Reads the clause in front of a date for a verb that stamps a measurement.
+ *
+ * The clause rather than the line, because a sentence recording a measurement
+ * and a later one dating a change sit side by side often enough that a
+ * line-wide read would clear the second from the first. A date opening its own
+ * line has no clause in front of it and stays a change marker, which is the
+ * fallback rather than a separate answer.
+ */
+function stampsMeasurement(text: string, index: number): boolean {
+  const before = text.slice(0, index)
+  const boundary = before.search(SENTENCE_END)
+  const clause = boundary === -1 ? before : before.slice(boundary + 1)
+
+  return STAMPING.test(clause) || STAMPING_RUN.test(clause)
 }
 
 function escape(term: string): string {
@@ -536,10 +611,13 @@ export function measureEntry(
  * answered as far as anything measures them.
  *
  * Only accumulated history is mechanical, and it is already measured by the
- * provenance check, so this joins that count rather than counting again. The
- * other two are read by a person: whether an entry still covers one domain is a
- * judgment about its subject, and recognizing content `ls` or `--help`
- * reproduces needs a reader who knows what those emit.
+ * provenance check, so this joins that count rather than counting again. What
+ * it joins is a count of change markers, since a date stamping a measurement is
+ * not one and an entry recording what its runs cost would otherwise report
+ * accumulated history on the anchors dating those runs. The other two are read
+ * by a person: whether an entry still covers one domain is a judgment about its
+ * subject, and recognizing content `ls` or `--help` reproduces needs a reader
+ * who knows what those emit.
  *
  * An entry outside the governed folder has no measured question at all, since
  * provenance is scoped to the standard stating it, and reporting `no` there
