@@ -49,14 +49,53 @@ describe('the audit catalog', () => {
 })
 
 describe('reading counts out of each record shape', () => {
+  const contextRecord = {
+    citations: { scanned: 776, total: 179, unresolved: [{ path: 'a.md' }] },
+    length: [{ rel: 'a.md' }, { rel: 'b.md' }],
+    missingSections: [],
+    indexDrift: [{ rel: 'c.md' }],
+    entries: [{ bareReferences: [{ line: 4 }] }, { bareReferences: [] }],
+    architecture: {
+      rel: '.claude/ARCHITECTURE.md',
+      lines: 162,
+      ceiling: 178,
+      decisions: [
+        { claim: 'countable', checks: [] },
+        { claim: 'invariant', checks: ['scripts/core/check.sh'] },
+        { claim: 'neither', checks: [] },
+      ],
+    },
+  }
+
   it('should count the context audit findings by their own arrays', () => {
+    expect(countsFor(specFor('context'), contextRecord)).toEqual({
+      unresolvedCitations: 1,
+      longEntries: 2,
+      missingSections: 0,
+      indexDrift: 1,
+      bareReferences: 1,
+      recordOverLength: 0,
+      recordUnverifiable: 1,
+      recordUnchecked: 1,
+    })
+  })
+
+  it('should count a record past its own ceiling as over length', () => {
     const record = {
-      citations: { scanned: 776, total: 179, unresolved: [{ path: 'a.md' }] },
-      length: [{ rel: 'a.md' }, { rel: 'b.md' }],
-      missingSections: [],
-      indexDrift: [{ rel: 'c.md' }],
-      entries: [{ bareReferences: [{ line: 4 }] }, { bareReferences: [] }],
+      ...contextRecord,
+      architecture: { ...contextRecord.architecture, lines: 179 },
     }
+
+    expect(countsFor(specFor('context'), record)?.recordOverLength).toBe(1)
+  })
+
+  /**
+   * A project entitled to carry no architecture record still has context
+   * folders worth counting, and a zero under the record keys there would read
+   * as a conforming record rather than as an absent one.
+   */
+  it('should count the folders alone when the project carries no record', () => {
+    const record = { ...contextRecord, architecture: null }
 
     expect(countsFor(specFor('context'), record)).toEqual({
       unresolvedCitations: 1,
@@ -65,6 +104,12 @@ describe('reading counts out of each record shape', () => {
       indexDrift: 1,
       bareReferences: 1,
     })
+  })
+
+  it('should return no counts for a context record carrying no architecture key', () => {
+    const { architecture, ...record } = contextRecord
+
+    expect(countsFor(specFor('context'), record)).toBeUndefined()
   })
 
   it('should sum the markdown weights across every measured entry', () => {

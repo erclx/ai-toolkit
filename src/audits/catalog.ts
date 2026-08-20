@@ -103,6 +103,54 @@ function allOf(
   return counts
 }
 
+/**
+ * Reads the architecture record's three measures, or nothing when the project
+ * carries no record.
+ *
+ * Three states rather than two, matching what the verb publishes. The key
+ * absent is a run that never opened the record, which the aggregate never asks
+ * for and so reads as a shape that moved. Null is a project entitled to carry
+ * no record, whose other context counts still stand, so it contributes no key
+ * rather than a zero that would read as a conforming record.
+ */
+function architectureCounts(
+  root: Record<string, unknown>,
+): Record<string, number> | undefined | 'absent' {
+  if (!('architecture' in root)) return undefined
+  if (root.architecture === null) return 'absent'
+
+  const record = asObject(root.architecture)
+  const decisions = record?.decisions
+  if (
+    record === undefined ||
+    !Array.isArray(decisions) ||
+    typeof record.lines !== 'number' ||
+    typeof record.ceiling !== 'number'
+  ) {
+    return undefined
+  }
+
+  let unverifiable = 0
+  let unchecked = 0
+  for (const raw of decisions) {
+    const entry = asObject(raw)
+    const claim = entry?.claim
+    const checks = lengthOf(entry?.checks)
+    if (typeof claim !== 'string' || checks === undefined) return undefined
+
+    if (claim === 'neither') unverifiable += 1
+    else if (checks === 0) unchecked += 1
+  }
+
+  return {
+    // A boolean, counted so the aggregate reads it the way it reads every
+    // other measure. The verb gates on it separately.
+    recordOverLength: record.lines > record.ceiling ? 1 : 0,
+    recordUnverifiable: unverifiable,
+    recordUnchecked: unchecked,
+  }
+}
+
 function contextCounts(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -117,13 +165,19 @@ function contextCounts(record: unknown): Record<string, number> | undefined {
     bareReferences += bare
   }
 
-  return allOf({
+  const architecture = architectureCounts(root)
+  if (architecture === undefined) return undefined
+
+  const counts = allOf({
     unresolvedCitations: lengthOf(asObject(root.citations)?.unresolved),
     longEntries: lengthOf(root.length),
     missingSections: lengthOf(root.missingSections),
     indexDrift: lengthOf(root.indexDrift),
     bareReferences,
   })
+
+  if (counts === undefined) return undefined
+  return architecture === 'absent' ? counts : { ...counts, ...architecture }
 }
 
 function markdownCounts(record: unknown): Record<string, number> | undefined {
