@@ -1,6 +1,6 @@
 # Design
 
-Authoring guidance: the design standard, which your toolkit resolves by name.
+Authoring guidance: the design standard.
 
 ## Personality
 

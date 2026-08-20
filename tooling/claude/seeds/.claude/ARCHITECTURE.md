@@ -1,6 +1,6 @@
 # Architecture
 
-Authoring guidance: the architecture standard, which your toolkit resolves by name.
+Authoring guidance: the architecture standard.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Requirements
 
-Authoring guidance: the requirements standard, which your toolkit resolves by name.
+Authoring guidance: the requirements standard.
 
 ## Problem
 
