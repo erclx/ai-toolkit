@@ -67,7 +67,11 @@ aitk claude skills drift 02d7b265 --json
 | -------- | ---------------------------------------------------------- |
 | `--json` | Add a machine-readable record on stdout, keeping the frame |
 
-A skill body enters a session once and stays. Re-invoking the skill replays the copy the session already holds rather than re-reading the file, so a session that outlives a merge touching a body it loaded keeps applying what it loaded and nothing compares the two. A compaction carries the held copy forward with the summary it writes, which makes the exposure the age of the oldest load rather than the age of the session.
+A skill body enters a session once and stays. Re-invoking the skill does not re-read the file, so an edit made this session is not picked up and nothing compares the two. A session that outlives a merge touching a body it loaded keeps applying what it loaded, and a compaction carries the held copy forward with the summary it writes, which makes that exposure the age of the oldest load rather than the age of the session.
+
+Age is one route and not the only one. A session that edits a body and then invokes that same skill later in the same run replays the pre-edit text, which is what a ship chain does whenever a branch touches a body the chain runs at the end. This verb does not reach that route, because it reads history and the edit is still uncommitted when the replay happens. Re-read a body after editing it, and do not wait for a report to name it.
+
+Which shape the staleness takes decides whether anyone notices. A held body naming a file the branch deleted fails loudly by having nothing to read. One naming a file that still exists while saying something different resolves and reads current, so the session applies the stale rule and reports success.
 
 The ref is required and carries no default. `HEAD` is the only value the command could supply for itself, and it answers every run with nothing moved, which is the silence this verb exists to break. A session passes the commit it started from.
 
@@ -82,6 +86,8 @@ The report names the newest commit that rewrote each body rather than the first,
 ### What drift cannot answer
 
 The report says a file moved, not that a session holds a stale copy. A session cannot read its own loaded body as bytes, so the comparison runs against history and a ref older than the oldest load over-reports. That is the safe direction, since confirming a name costs one read of the body while the failure being answered is silence. Every run states the bound, including the run that names nothing.
+
+The verb answers only when someone runs it, and a report read is not a report acted on. A session that sees a moved body in the result and does not re-read that body stands where it started. One session reached that outcome after running the verb at session start, then followed the held copy for the rest of the day.
 
 Two cases fall outside the range. An uncommitted edit in the working tree is not history yet, so a body changed and left unstaged reports as unmoved. A target project loads the plugin from a marketplace cache with no repository behind it, where the verb refuses and names the absent history rather than reporting a clean tree.
 
