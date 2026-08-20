@@ -21,14 +21,15 @@ description: DESIGN.md token shape, extract skill and its two paths, render comm
 - The skill picks its path from whether UI code exists, never from a flag. The general ban on dispatch flags in `.claude/standards/skill.md` targets a toggle the model reads and misapplies. A test against the tree has no such failure.
 - Switching paths later is a rewrite of `DESIGN.md`, not a migration.
 - Output is one-way. DESIGN.md is source, the preview is a derived artifact. The renderer does not mutate target-project stylesheets. It regenerates on demand, not on save.
-- The toolkit's own record anchors its dark palette to `assets/hero.html` and its light palette to the `LIGHT` theme in `src/slides/styles.ts`. Deriving a light set from the hero's neutrals was the alternative, and it makes every light value a proposal where the slide theme supplies five of the six roles as readings.
+- The toolkit's own record anchors its dark palette to `assets/hero.html` and its light palette to the `LIGHT` theme in `src/slides/styles.ts`. Deriving a light set from the hero's neutrals was the alternative, and it makes every light value a proposal where the slide theme supplies five of the six roles as readings. The two surfaces reconcile on no value, so the light half is anchored by a surface shipping it rather than by following from the dark half.
 - No surface consumes `.claude/DESIGN.md`. The hero, the slide theme, the token preview, the terminal framing, and the capture pipeline each carry their own values, so the record names all five as independent rather than listing a consumer it would be predicting.
 
 ## Gotchas
 
 - `splitRow` in `src/design/parse.ts` strips a trailing `? verify` with an end-anchored regex, so no tag reaches `index.html` or `design.css`. A proposal and a reading render identically, which makes the preview the wrong surface for deciding which cells are still open.
 - The same function leaves backticks in place, and a trailing backtick defeats the strip. A cell wrapping its hex in backticks keeps its tag and emits a custom property and a `style` attribute carrying both verbatim, so that swatch stops painting. Write a token cell as a bare value, which is what the seed shows.
-- The slide theme disagrees with the hero on four of five dark roles and matches only the primary text step. It also sets Arial and Calibri where every other surface is monospace, so a single-family claim describes the hero and the terminal rather than the whole tree.
+- The slide theme and the hero reconcile on none of their five dark roles. The nearest miss is the primary text step, where `F4EFE6` and `#f4efe9` differ in the last digit and read as a match on a quick scan. The slide theme also sets Arial and Calibri where every other surface is monospace, so a single-family claim describes the hero and the terminal rather than the whole tree.
+- The three terminal color rows emit a token no consumer resolves. `--color-success: ANSI 32` is not a color and the matching `style` attribute is dropped, so those swatches paint nothing in the preview. Recording the ANSI code is still right, since no rendered surface implements an equivalent, and the gap is that the render has no answer for a non-hex token.
 
 ## Seed shape
 
