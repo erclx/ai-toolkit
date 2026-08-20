@@ -11,7 +11,6 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Context entry reference](context.md): Shape and content rules for .claude/context/<domain>.md entries
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
 - [Diagram reference](diagrams.md): Shape and content rules for .claude/diagrams/<kind>.md files
-- [Glossary reference](glossary.md): Frontmatter, entry shape, ordering, and the rules deciding which terms a glossary carries
 - [Groundwork reference](groundwork.md): Folder layout, reserved numbering, frontmatter and dating, required file contents, and conventions for a measurement track
 - [Intake reference](intake.md): Folder layout, reserved index number, frontmatter and dating, the item template, the answer contract, and retrieval
 - [Markdown reference](markdown.md): Headings, paragraph and list structure, code spans, the date form, punctuation, emphasis, file references, banned words, and frontmatter wording

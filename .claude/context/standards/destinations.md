@@ -22,28 +22,30 @@ Readership decides nothing here on its own. It is the four channels the task car
 
 ### The fan-out is a destination with a ceiling rather than a mechanism to reject
 
-Copying a standard into each consumer's `references/` is the established route and five bundled sources produce eleven copies. It stays affordable while the consumer set is small and stops at roughly a handful, since `markdown.md` at 21 citing bodies and `slug.md` at 13 would each produce a copy per body, which is the duplication the fan-out exists to prevent. Where the set is too wide, the home is a verb, and the readers call it rather than holding it.
+Copying a standard into each consumer's `references/` is the established route and six bundled sources produce eleven copies. It stays affordable while the consumer set is small and stops at roughly a handful, since `markdown.md` at 21 citing bodies and `slug.md` at 13 would each produce a copy per body, which is the duplication the fan-out exists to prevent.
+
+Counting the bodies that cite a standard reads short of the set the move has to satisfy, which is what the `versioning.md` withdrawal below turns on. A bundled standard has no flat sibling and never installs, so leaving the flat root breaks anything still pointing at the installed path, and two of `versioning.md`'s readers are standards rather than skill bodies. Read the whole reader set, being the skills, the flat standards depending on it in-body, and any installed rule naming it, before calling a consumer count small.
 
 ### A verb is the home for a rule stated across every reader
 
-Three attribute standards land on the CLI for the same reason, which is that a transform, a scan, and a closed list are each a value a caller reads rather than a shape a caller writes. `markdown.md` has already arrived: its ban sets and structural checkpoints ship as data in `src/markdown/`. The other two are recorded as destinations and no verb exists for either yet.
+One attribute standard lands on the CLI, which is `markdown.md`, whose ban sets and structural checkpoints ship as data in `src/markdown/`. Two more were recorded here on the same reasoning, that a transform and a scan are each a value a caller reads rather than a shape a caller writes, and both were withdrawn once the reasoning was measured rather than asserted. A closed list a check already walks earns a verb. A value every caller reads and no caller restates does not, because there is no duplication for the verb to collapse and the standard still has to state the rule for the reader.
 
 ## Gotchas
 
 - The meta-standard's subject is the corpus this census is dissolving. `standard.md` routes to `591-standard-authoring.md` while standards remain a document type someone authors, and it is the one entry whose destination expires if the corpus does. Nothing detects that, because a rule globbing an empty folder reports the same as one globbing a full folder.
-- A destination recorded against a carrier nobody has built reads identically to one recorded against a live carrier, and only the marker below separates them. Four still name a carrier to write, being two verbs and two skill destinations.
+- A destination recorded against a carrier nobody has built reads identically to one recorded against a live carrier, and only the marker below separates them. Nothing now reads `to write`: two rules and one skill destination were built, and three were withdrawn into a section of their own so a reversal does not read as an arrival.
 - `internal/standards/tooling-reference.md` is outside this census. It never installs into a target, so it has no corpus to leave, and `595-tooling-reference.md` already carries it.
 - A destination is not an install channel. Recording a home for every standard leaves the folder in place and leaves it installing, so the outcome about nothing living only in an installed folder stays open until the sweep and the install removal behind it run.
 
 ## Destinations
 
-Twenty-seven standards, being 22 at the flat root and five under `bundled/`. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and `to write` marks a carrier the census named without building. The two rules it named have since landed, and four carriers remain.
+Twenty-seven standards, being 21 at the flat root and six under `bundled/`. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and the `Withdrawn` section holds the destinations re-decided rather than built. Every carrier the census named has now either landed or been reversed, so no row is waiting on one.
 
 ### To the CLI
 
 - `markdown.md` fixes what a check can decide about any markdown file. `aitk markdown audit`, arrived, with `501-markdown.md` left pointing at it.
-- `slug.md` turns a branch name into the one string every derived name spells. A verb emitting the slug, to write. Thirteen skill bodies restate the transform today and no rule or verb reaches it.
-- `publish.md` fixes the scan finished text passes on its way out and the cross-reference form each destination takes. A verb returning the form and the unreadable-source branch, to write. Seven skill bodies cite it and no rule globs finished text.
+
+`slug.md` and `publish.md` were recorded here and are withdrawn below.
 
 ### To an existing governance rule
 
@@ -72,5 +74,12 @@ Twenty-seven standards, being 22 at the flat root and five under `bundled/`. Eac
 - `issue.md` fixes an issue body. `git-issue`, arrived.
 - `pr.md` fixes a pull request title and body. `git-split` and `git-pr`, arrived.
 - `snippets.md` fixes a snippet file. `create-snippet`, arrived.
-- `versioning.md` keeps phase labels and semver tags off each other's surfaces. `claude-tasks`, `git-commit`, and `git-pr`, to write. Three consumers sits inside the ceiling above, and the discipline is a lookup per surface rather than a check.
-- `glossary.md` fixes the file holding one entry per term a body of material defines. `claude-teach`, to write. Its path is fixed by whichever surface holds a glossary rather than by the standard, so no glob covers it while one skill reads it.
+- `glossary.md` fixes the file holding one entry per term a body of material defines. `claude-teach`, arrived. Its path is fixed by whichever surface holds a glossary rather than by the standard, so no glob covers it while one skill reads it.
+
+### Withdrawn
+
+Three destinations the census recorded were re-decided rather than built, each on a premise that did not survive re-measurement. A row here is a decision reversed, not a carrier waiting, which is the distinction the marker above cannot carry on its own.
+
+- `slug.md` was routed to a verb emitting the slug, on thirteen skill bodies restating the transform. None of them does. Each cites the standard and then states its own empty-result response, which is what that standard's `## An empty result` section instructs, so the duplication a verb would collapse does not exist. Withdrawn by the operator on 2026-08-20 against a re-measurement at `b26506ee`. It stays in the flat corpus reached by citation.
+- `publish.md` was routed to a verb returning the cross-reference form and the unreadable-source branch, on the same reasoning about a value a caller reads. Withdrawn with `slug.md` and on the same day, since neither verb had a caller that would stop restating anything. It stays in the flat corpus, cited by seven skill bodies.
+- `versioning.md` was routed to `claude-tasks`, `git-commit`, and `git-pr` through the fan-out, on three consumers sitting inside the ceiling. Two of its readers are standards rather than skills. `publish.md` and `tasks.md` each depend on it in-body, and neither is leaving, since `tasks.md` routes to `555-tasks.md` and `publish.md` is withdrawn above. A bundled standard never installs, so the move would point both at a file no target holds. Withdrawn by the operator on 2026-08-20, re-measured at `653bbb15`.
