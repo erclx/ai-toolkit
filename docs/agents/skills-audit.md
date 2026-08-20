@@ -67,7 +67,7 @@ aitk claude skills drift 02d7b265 --json
 | -------- | ---------------------------------------------------------- |
 | `--json` | Add a machine-readable record on stdout, keeping the frame |
 
-A skill body enters a session once and stays. Re-invoking the skill reports the instructions unchanged rather than re-reading the file, and nothing compares the two. A session that outlives a merge touching a body it loaded keeps applying what it loaded, and a compaction carries the held copy forward with the summary it writes, which makes that exposure the age of the oldest load rather than the age of the session.
+A skill body enters a session once and stays. Re-invoking the skill does not re-read the file, so an edit made this session is not picked up and nothing compares the two. A session that outlives a merge touching a body it loaded keeps applying what it loaded, and a compaction carries the held copy forward with the summary it writes, which makes that exposure the age of the oldest load rather than the age of the session.
 
 Age is one route and not the only one. A session that edits a body and then invokes that same skill later in the same run replays the pre-edit text, which is what a ship chain does whenever a branch touches a body the chain runs at the end. This verb does not reach that route, because it reads history and the edit is still uncommitted when the replay happens. Re-read a body after editing it, and do not wait for a report to name it.
 
