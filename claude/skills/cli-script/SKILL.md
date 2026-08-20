@@ -27,6 +27,7 @@ Load `${CLAUDE_SKILL_DIR}/references/template.md` for the base skeleton. Copy it
 - Include actionable context in error messages.
 - Guard commands that return non-zero on a valid empty result with `|| true`.
 - Set explicit exit codes. Reserve 0 for success.
+- Read a called command's machine-readable record where it emits one. An exit status separates success from failure and never names which failure, so a script routing on the reason reads the record and keeps the exit for the pass-fail decision alone.
 
 ## Code style
 

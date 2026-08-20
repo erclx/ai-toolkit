@@ -80,10 +80,12 @@ The board is gitignored, so an archived task has no history behind it and nothin
 Pass the task's filename stem, or the pull request number when the request names one:
 
 ```bash
-aitk tasks archive <stem>
+aitk tasks archive <stem> --json
 ```
 
-The command refuses rather than reports, so read its exit code. On success it prints what moved, what row it cleared, and whether the index changed.
+The command refuses rather than reports, and the refusal reaches this skill through the record rather than through the exit. Branch on `ok`, then on `reason`. An operator's shell profile may wrap `aitk` in a function that runs the binary and then a second command and takes the second status, which masks every non-zero exit rather than only an absent verb. The binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike, so the record is the only signal that survives the wrapper.
+
+On success the record carries `from`, `to`, `priorityRowRemoved`, and `indexRegenerated`, which is what moved, what row it cleared, and whether the index changed.
 
 ### Step 3: route on a refusal
 

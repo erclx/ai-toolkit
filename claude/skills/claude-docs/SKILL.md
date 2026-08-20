@@ -102,6 +102,8 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 
 The verb resolves the board at the main worktree root in-process, which is the route because this is an edit inside an existing file and the file-editing tools refuse that path from a linked worktree.
 
+Read `ok` and `reason` out of that record rather than the exit, for the reason the plans sweep below states at length. A refusal arriving as success leaves the outcome unmarked while the chain moves on, so the board reports shipped work as open and the next session re-plans it.
+
 **REQUIREMENTS.md, ARCHITECTURE.md, DESIGN.md, `.claude/wireframes/<surface>.md`**
 
 - Update only the sections affected by session decisions.
