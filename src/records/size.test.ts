@@ -182,14 +182,28 @@ describe('sizeRecords', () => {
     expect(entry.newest).toBe('2026-08-19')
   })
 
-  it('should date a file by the local calendar day its writer saw', async () => {
-    // Late evening is where a UTC rendering and a local one part company. A
-    // machine west of Greenwich rolls this stamp into the next UTC day, so the
-    // column would name a day after the one the writer was living in.
+  // The two cases below cover the two signs of a UTC offset, and each one is
+  // blind to the other's half. A machine west of Greenwich rolls a late-evening
+  // stamp forward into the next UTC day, and one east of it rolls an
+  // early-morning stamp back into the previous one. A single case therefore
+  // passes on half the world while the bug is present, and a machine sitting on
+  // UTC catches neither, which is where CI runs.
+
+  it('should date a late-evening file by the local day its writer saw', async () => {
     writeRecordAt(
       'memory/project-late.md',
       'body',
       new Date(2026, 7, 18, 23, 30),
+    )
+
+    expect(folder(await read(), 'memory').newest).toBe('2026-08-18')
+  })
+
+  it('should date an early-morning file by the local day its writer saw', async () => {
+    writeRecordAt(
+      'memory/project-early.md',
+      'body',
+      new Date(2026, 7, 18, 0, 30),
     )
 
     expect(folder(await read(), 'memory').newest).toBe('2026-08-18')
