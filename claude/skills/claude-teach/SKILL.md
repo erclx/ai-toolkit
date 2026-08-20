@@ -9,7 +9,7 @@ argument-hint: <subject to learn, or the topic of a workspace to resume or promo
 
 Run a learning workspace on one subject across sessions. The workspace holds what the learner has been through, so a session weeks later resumes from the folder rather than from the conversation.
 
-The shape of the workspace is fixed by `.claude/standards/teach.md`, or `${CLAUDE_SKILL_DIR}/../../standards/teach.md` when the project does not have that file. Read it before writing anything into the folder. The glossary answers to `.claude/standards/glossary.md`, or `${CLAUDE_SKILL_DIR}/../../standards/glossary.md` when the project does not have it. The pedagogy sits in `${CLAUDE_SKILL_DIR}/references/pedagogy.md`, the lesson craft in `${CLAUDE_SKILL_DIR}/references/lesson-craft.md`, and the promotion routing in `${CLAUDE_SKILL_DIR}/references/promotion.md`.
+The shape of the workspace is fixed by `.claude/standards/teach.md`, or `${CLAUDE_SKILL_DIR}/../../standards/teach.md` when the project does not have that file. Read it before writing anything into the folder. The glossary answers to `${CLAUDE_SKILL_DIR}/references/glossary.md`, which travels with this skill rather than installing, because a promoted glossary keeps its shape at whatever path it lands on and no project folder covers all of them. The pedagogy sits in `${CLAUDE_SKILL_DIR}/references/pedagogy.md`, the lesson craft in `${CLAUDE_SKILL_DIR}/references/lesson-craft.md`, and the promotion routing in `${CLAUDE_SKILL_DIR}/references/promotion.md`.
 
 ## Guards
 
