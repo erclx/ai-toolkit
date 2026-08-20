@@ -129,6 +129,12 @@ The read sites were left alone. `Read` resolves against the main root normally, 
 
 ## Ship-chain hazards
 
+### The drift gate stages a file that mis-scopes the review
+
+Two documented behaviors meet on any branch editing an authoring surface, and the result is a review of the wrong file set. The Consumed copies stage clears only on a staged regeneration, so a branch that edits `standards/X.md` has to stage `.claude/standards/X.md` before `bun run check` passes. `claude-review` Step 2 then takes a non-empty `git diff --staged` as its diff scope, which is the generated mirror alone and none of the files carrying the change.
+
+Nothing reports it, since the review runs, writes a receipt, and reads clean. On a branch before its first commit the branch pair is empty too, so `git diff HEAD` is the only read at correct scope and the staged-set rule has to be overridden by hand. Measured 2026-08-20, where the staged set held one file against four the branch had changed.
+
 ### The chain sweeps the receipt its own output cites
 
 The ship chain deletes the receipt its own closing line cites. `claude-autoship` Step 6 leaves minor findings in `.claude/review/review-<slug>.md` and its output block names that path, while Step 7 invokes `claude-docs`, whose Step 8 sweeps the same file as consumed scratch. Seven runs recorded the collision across two days. Whether the receipt survives is not a decision anyone takes: on one branch it survived only because `claude-review` derived its slug before `git-branch` renamed the branch, so the sweep looked for a name the review had not written. The durable record is the pull request's `## Technical Context`, folded before `claude-docs` runs. What stays open is which of the two bodies owns the sweep, and whether the slug is pinned once at chain entry rather than derived per step.
