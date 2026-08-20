@@ -1,0 +1,198 @@
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { renderDesignDoc } from '@/design/render'
+
+let root: string
+
+interface Rendered {
+  css: string
+  html: string
+}
+
+const render = (body: string): Rendered => {
+  const source = join(root, 'DESIGN.md')
+  writeFileSync(source, body)
+  const result = renderDesignDoc(source, join(root, 'out'))
+  return {
+    css: readFileSync(result.cssPath, 'utf8'),
+    html: readFileSync(result.htmlPath, 'utf8'),
+  }
+}
+
+const doc = (sections: string[]): string =>
+  ['# Design', '', ...sections, ''].join('\n')
+
+const colorTable = (rows: string[]): string[] => [
+  '## Color',
+  '',
+  '| Role | Intent | Value |',
+  '| ---- | ------ | ----- |',
+  ...rows,
+  '',
+]
+
+const bordersTable = (rows: string[]): string[] => [
+  '## Borders',
+  '',
+  '| Role | Radius | Width | When used |',
+  '| ---- | ------ | ----- | --------- |',
+  ...rows,
+  '',
+]
+
+const spacingTable = (rows: string[]): string[] => [
+  '## Spacing',
+  '',
+  '| Step | Multiplier | Value |',
+  '| ---- | ---------- | ----- |',
+  ...rows,
+  '',
+]
+
+beforeEach(() => {
+  root = mkdtempSync(join(tmpdir(), 'design-render-'))
+})
+
+afterEach(() => {
+  rmSync(root, { force: true, recursive: true })
+})
+
+describe('renderDesignDoc', () => {
+  it('should emit a custom property carrying the value without its tag', () => {
+    const { css } = render(
+      doc(colorTable(['| border | panel edges | #E4DCD0 ? verify |'])),
+    )
+
+    expect(css).toContain('--color-border: #E4DCD0;')
+    expect(css).not.toContain('verify')
+  })
+
+  it('should keep the tag out of a custom property written in a code span', () => {
+    const { css } = render(
+      doc(colorTable(['| border | panel edges | `#E4DCD0 ? verify` |'])),
+    )
+
+    expect(css).not.toContain('verify')
+  })
+
+  it('should build the swatch from the value alone', () => {
+    const { html } = render(
+      doc(colorTable(['| border | panel edges | #E4DCD0 ? verify |'])),
+    )
+
+    expect(html).toContain(
+      '<span class="swatch" style="background:#E4DCD0"></span>',
+    )
+  })
+
+  it('should show the marker beside the value rather than inside it', () => {
+    const { html } = render(
+      doc(colorTable(['| border | panel edges | #E4DCD0 ? verify |'])),
+    )
+
+    expect(html).toContain(
+      '<code>#E4DCD0</code> <span class="verify" title="No source anchors this value">? verify</span>',
+    )
+  })
+
+  it('should mark a tagged cell in a column that is not the value column', () => {
+    const { html } = render(
+      doc(
+        bordersTable([
+          '| pill | 999px ? verify | none ? verify | status chips |',
+        ]),
+      ),
+    )
+
+    expect(html).toContain(
+      '<code>999px</code> <span class="verify" title="No source anchors this value">? verify</span>',
+    )
+    expect(html).toContain(
+      '<code>none</code> <span class="verify" title="No source anchors this value">? verify</span>',
+    )
+  })
+
+  it('should report the anchored count against the tagged count', () => {
+    const { html } = render(
+      doc(
+        colorTable([
+          '| accent | primary action | #e0724b |',
+          '| border | panel edges | #E4DCD0 ? verify |',
+        ]),
+      ),
+    )
+
+    expect(html).toContain(
+      '3 of 4 cells are anchored to a source. The other 1 carries <code>? verify</code>',
+    )
+  })
+
+  it('should leave a row name out of the ratio', () => {
+    const { html } = render(
+      doc(colorTable(['| accent | primary action | #e0724b ? verify |'])),
+    )
+
+    expect(html).toContain('1 of 2 cells are anchored to a source.')
+  })
+
+  it('should leave a multiplier and a when-used cell out of the ratio', () => {
+    const { html } = render(
+      doc([
+        ...spacingTable(['| xs | 1 | 6px ? verify |']),
+        ...bordersTable(['| panel | 10px | 1px | cards |']),
+      ]),
+    )
+
+    expect(html).toContain('2 of 3 cells are anchored to a source.')
+  })
+
+  it('should count a cell tagged outside the anchorable columns', () => {
+    const { html } = render(doc(spacingTable(['| xs ? verify | 1 | 6px |'])))
+
+    expect(html).toContain('1 of 2 cells are anchored to a source.')
+  })
+
+  it('should count a blank cell as neither anchored nor tagged', () => {
+    const { html } = render(
+      doc(
+        colorTable([
+          '| accent | primary action |  |',
+          '| border | panel edges | #E4DCD0 ? verify |',
+        ]),
+      ),
+    )
+
+    expect(html).toContain('2 of 3 cells are anchored to a source.')
+  })
+
+  it('should pluralize the tagged count when more than one cell carries a tag', () => {
+    const { html } = render(
+      doc(
+        colorTable([
+          '| accent | primary action | #e0724b ? verify |',
+          '| border | panel edges | #E4DCD0 ? verify |',
+        ]),
+      ),
+    )
+
+    expect(html).toContain('The other 2 carry <code>? verify</code>')
+  })
+
+  it('should add nothing to a record where no cell carries a tag', () => {
+    const { css, html } = render(
+      doc([
+        ...colorTable(['| accent | primary action | #e0724b |']),
+        ...bordersTable(['| panel | 10px | 1px | cards |']),
+      ]),
+    )
+
+    expect(html).not.toContain('verify')
+    expect(html).not.toContain('anchored to a source')
+    expect(html).toContain(
+      '  .empty { color: #999; font-style: italic; }\n</style>',
+    )
+    expect(css).toContain('--color-accent: #e0724b;')
+  })
+})

@@ -218,6 +218,8 @@ EOF
     log_info "Expect:   greenfield path announced, .claude/DESIGN.md proposed, most cells marked ? verify"
     log_info "Action 2: aitk design render"
     log_info "Expect:   .claude/review/design/index.html renders cleanly with swatches and samples"
+    log_info "Expect:   every tagged cell shows a ? verify marker beside its value, never inside it"
+    log_info "Expect:   the confidence line reports nearly every counted cell tagged on this path"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

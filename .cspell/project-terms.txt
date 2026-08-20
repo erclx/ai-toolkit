@@ -3,6 +3,7 @@ ababab
 affordances
 agentic
 aitk
+anchorable
 anthropics
 arch
 autoincrement

@@ -1,6 +1,19 @@
 import { readFileSync } from 'node:fs'
 
-export type Row = Record<string, string>
+/**
+ * One table cell, split into the value a renderer emits and whether the record
+ * marked it as unsourced.
+ *
+ * The marker sits inside the cell rather than in a trailing column, because a
+ * trailing marker breaks the table parse. Splitting it out here is what keeps a
+ * swatch or a font sample built from the value alone.
+ */
+export interface Cell {
+  value: string
+  tagged: boolean
+}
+
+export type Row = Record<string, Cell>
 
 export interface DesignDoc {
   personality: string
@@ -11,6 +24,11 @@ export interface DesignDoc {
   motion: string
   iconography: string
 }
+
+const VERIFY_TAG = /\s*\?\s*verify\s*$/
+
+/** A cell whose whole content is one balanced code span and nothing else. */
+const CODE_SPAN = /^`([^`]*)`$/
 
 export function parseDesignDoc(path: string): DesignDoc {
   const raw = readFileSync(path, 'utf8')
@@ -58,22 +76,41 @@ function table(body: string | undefined): Row[] {
   if (!body) return []
   const rows = body.split('\n').filter((l) => l.trim().startsWith('|'))
   if (rows.length < 2) return []
-  const headers = splitRow(rows[0])
+  const headers = splitRow(rows[0]).map((c) => c.value)
   const data = rows.slice(2)
   return data.map((line) => {
     const cells = splitRow(line)
     const row: Row = {}
     headers.forEach((h, i) => {
-      row[h] = (cells[i] ?? '').trim()
+      row[h] = cells[i] ?? emptyCell()
     })
     return row
   })
 }
 
-function splitRow(line: string): string[] {
+function emptyCell(): Cell {
+  return { value: '', tagged: false }
+}
+
+function splitRow(line: string): Cell[] {
   return line
     .replace(/^\s*\|/, '')
     .replace(/\|\s*$/, '')
     .split('|')
-    .map((c) => c.trim().replace(/\s*\?\s*verify\s*$/, ''))
+    .map(parseCell)
+}
+
+/**
+ * The tag is tested against the cell with any surrounding code span removed,
+ * since a value wrapping itself in backticks puts one after the tag and an
+ * end-anchored test misses it there. The span is restored around the clean
+ * value so an untagged cell and a tagged one carry the same formatting.
+ */
+function parseCell(raw: string): Cell {
+  const trimmed = raw.trim()
+  const span = trimmed.match(CODE_SPAN)
+  const inner = span ? span[1] : trimmed
+  if (!VERIFY_TAG.test(inner)) return { value: trimmed, tagged: false }
+  const value = inner.replace(VERIFY_TAG, '')
+  return { value: span ? `\`${value}\`` : value, tagged: true }
 }
