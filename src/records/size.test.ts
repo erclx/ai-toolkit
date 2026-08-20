@@ -19,8 +19,17 @@ import {
 
 let ROOT: string
 
-/** Pinned so a window count is read against fixture timestamps rather than the clock. */
-const NOW = Date.parse('2026-08-20T12:00:00Z')
+/**
+ * Pinned so a window count is read against fixture timestamps rather than the
+ * clock, and parsed without an offset so it lands at local noon.
+ *
+ * The dated assertions below name a calendar date, which the report renders in
+ * local time. A UTC instant would shift that date on any machine far enough east
+ * or west, so the fixture is what keeps those expectations machine-independent
+ * rather than the renderer. Noon leaves an hour of DST movement in either
+ * direction without reaching a day boundary.
+ */
+const NOW = Date.parse('2026-08-20T12:00:00')
 const DAY_MS = 24 * 60 * 60 * 1000
 
 /**
@@ -54,13 +63,15 @@ afterEach(() => {
   VANISHED.clear()
 })
 
-function writeRecord(relative: string, body: string, daysAgo: number): void {
+function writeRecordAt(relative: string, body: string, stamp: Date): void {
   const path = join(ROOT, '.claude', relative)
   mkdirSync(join(path, '..'), { recursive: true })
   writeFileSync(path, body)
-
-  const stamp = new Date(NOW - daysAgo * DAY_MS)
   utimesSync(path, stamp, stamp)
+}
+
+function writeRecord(relative: string, body: string, daysAgo: number): void {
+  writeRecordAt(relative, body, new Date(NOW - daysAgo * DAY_MS))
 }
 
 async function read(): Promise<SizeReport> {
@@ -169,6 +180,19 @@ describe('sizeRecords', () => {
 
     expect(entry.oldest).toBe('2026-07-11')
     expect(entry.newest).toBe('2026-08-19')
+  })
+
+  it('should date a file by the local calendar day its writer saw', async () => {
+    // Late evening is where a UTC rendering and a local one part company. A
+    // machine west of Greenwich rolls this stamp into the next UTC day, so the
+    // column would name a day after the one the writer was living in.
+    writeRecordAt(
+      'memory/project-late.md',
+      'body',
+      new Date(2026, 7, 18, 23, 30),
+    )
+
+    expect(folder(await read(), 'memory').newest).toBe('2026-08-18')
   })
 
   it('should leave an absent folder undated', async () => {

@@ -73,8 +73,20 @@ interface Walked {
   touched: number[]
 }
 
+/**
+ * Renders the calendar date the writer saw, which is the local one.
+ *
+ * `toISOString` renders in UTC, so a file written after 17:00 at `-0700` dates
+ * to the following day and a reader comparing the column against their own
+ * memory of writing it finds the two disagree. The reading is per-machine
+ * already, since these folders are gitignored and hold whatever that disk holds,
+ * so a local date is the answer consistent with the rest of the report.
+ */
 function day(ms: number): string {
-  return new Date(ms).toISOString().slice(0, 10)
+  const at = new Date(ms)
+  const month = String(at.getMonth() + 1).padStart(2, '0')
+  const date = String(at.getDate()).padStart(2, '0')
+  return `${at.getFullYear()}-${month}-${date}`
 }
 
 /**
@@ -208,10 +220,12 @@ export async function sizeRecords(
     }
   }
 
-  const folders: FolderSize[] = []
-  for (const folder of SIZED_FOLDERS) {
-    folders.push(await measure(root, folder, now))
-  }
+  // Each folder is walked independently, and the report is ordered by the
+  // caller rather than by arrival, so `Promise.all` keeps the input order while
+  // the ten walks overlap.
+  const folders = await Promise.all(
+    SIZED_FOLDERS.map((folder) => measure(root, folder, now)),
+  )
 
   return {
     ok: true,

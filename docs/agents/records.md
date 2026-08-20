@@ -86,7 +86,7 @@ aitk records size --json
 | `--json`        | Add a machine-readable record on stdout       |
 | `--root <path>` | Project root, defaulting to the main worktree |
 
-The table carries one row per folder that exists, heaviest first, with the file count, the bytes, a count for each growth window, and the dates of the least and most recently written file. Folders that do not exist are named on one line below it rather than printed as rows of zeros. The record a `--json` call emits carries every folder either way, each with a `present` flag, so a caller reading the record gets a stable set of keys and can tell an absent folder from one the reading skipped.
+The table carries one row per folder that exists, heaviest first, with the file count, the bytes, a count for each growth window, and the dates of the least and most recently written file. Those dates render in the machine's local time, which is the calendar day whoever wrote the file was living in, and the reading is per-machine already. Folders that do not exist are named on one line below it rather than printed as rows of zeros. The record a `--json` call emits carries every folder either way, each with a `present` flag, so a caller reading the record gets a stable set of keys and can tell an absent folder from one the reading skipped.
 
 Ordering by weight is what makes the reading worth taking. A folder listed alphabetically hides behind its neighbors, and the row a reader came for is the one that grew.
 
