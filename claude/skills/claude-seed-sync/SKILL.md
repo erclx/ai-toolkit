@@ -68,7 +68,7 @@ Before proposing an Update, grep the target section for the seed text's keywords
 
 ## Step 4: write the proposal to the review file
 
-Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
 Write the full proposal to `.claude/review/seed-audit-<slug>.md` at the main worktree root. Do not print the proposal inline.
 

@@ -7,7 +7,7 @@ description: Reviews `.claude/memory/` and proposes per-entry actions (promote t
 
 This skill drives the full memory review lifecycle in five phases. Pick the phase from what the user said and whether a review receipt already exists at `<main-root>/.claude/review/memory-review-*.md`.
 
-What an entry looks like and why a retired one is moved rather than deleted are fixed by `.claude/standards/memory.md`, or `${CLAUDE_SKILL_DIR}/../../standards/memory.md` when the project does not have it. Read it before rewriting an entry, since a promotion rewrites the rule and a rewrite has to leave the entry conforming.
+What an entry looks like and why a retired one is moved rather than deleted are fixed by `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Read it before rewriting an entry, since a promotion rewrites the rule and a rewrite has to leave the entry conforming.
 
 | User intent                                                            | Phase     | Mutates                      |
 | ---------------------------------------------------------------------- | --------- | ---------------------------- |
@@ -51,10 +51,8 @@ Read in parallel from the project root. Skip any file or folder that does not ex
 - `CLAUDE.md`: project behavior rules and Content ownership section
 - every `SKILL.md` under `.claude/skills/`: domain-scoped internal skill bodies
 - every `SKILL.md` under `claude/skills/`: plugin skill bodies
-- every `*.md` under `.claude/standards/`: authoring references
+- every `*.md` under `${CLAUDE_SKILL_DIR}/../../standards/`: authoring references
 - every `*.md` under `governance/rules/` in the toolkit repo, or `.claude/rules/` in a target project: coding-standards rules
-
-Read any authoring reference the project does not have from `${CLAUDE_SKILL_DIR}/../../standards/` instead.
 
 ### Step 3: classify each entry
 
@@ -66,14 +64,14 @@ For each in-scope entry (see Scope), pick one action:
 
 - **Promote to `CLAUDE.md`**: the rule is cross-domain behavior or a design principle applied across the whole project.
 - **Promote to a skill body**: the rule fires only when editing a specific path-scoped domain. Name the target skill.
-- **Promote to a standards file**: the rule is an authoring reference that belongs in `.claude/standards/<domain>.md`.
+- **Promote to a standards file**: the rule is an authoring reference that belongs in the project's own standards folder as `<domain>.md`.
 - **Promote to a context entry**: the entry states a fact about a domain carrying an entry in `.claude/context/index.md`. Append it to `.claude/.tmp/memory-routing/<slug>.md` in the format `claude-memory-capture` writes, and tell the user to run `/claude-docs` from a branch. Do not edit the context entry here.
 - **Hand off to governance**: the rule is coding-standards class (typescript, testing, naming, error-handling, performance, logging, concurrency, planning). Do not author the rule file inline. Never edit the synced `.claude/rules/` copies of toolkit rules, because `aitk gov sync` overwrites them. Stop at handoff.
-  - In the toolkit repo, point the user at `aitk-governance` and `.claude/standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
+  - In the toolkit repo, point the user at `aitk-governance` and `${CLAUDE_SKILL_DIR}/../../standards/rule.md`, which own the source-of-truth rules under `governance/rules/`.
   - In a target project, point the user at the `create-rule` skill, which scaffolds a project-local rule under `.claude/rules/`.
 - **Retire**: the rule is stale, already absorbed into a durable surface, too vague to phrase as a rule, or a one-time incident narrative. Apply moves the file to `.claude/.tmp/memory-archive/` rather than deleting it.
 
-Retire is an archive, not a deletion, which `.claude/standards/memory.md` states as the rule and this skill executes. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why the move is cheap rather than free.
+Retire is an archive, not a deletion, which `${CLAUDE_SKILL_DIR}/../../standards/memory.md` states as the rule and this skill executes. The archive is worth less than a plan's, since a promoted entry survives in its destination and a stale one is discarded on purpose, which is why the move is cheap rather than free.
 
 When two or more memories collapse into one rule on the same target, propose them as a single merged edit under the matching promote category. The consolidate case is a variant of promote, not a separate action.
 
@@ -89,7 +87,7 @@ Rules that resist crisp one-line phrasing default to **Retire** over promote. Ne
 
 ### Step 4: write the proposal to the review file
 
-Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
 Write the full proposal to `.claude/review/memory-review-<slug>.md` at the main worktree root. Do not print it inline. Read `${CLAUDE_SKILL_DIR}/references/receipt-format.md` for the file structure, the item template, and how each action type varies the body. The four phases below rewrite items inside an existing receipt rather than authoring one, so none of them opens it.
 

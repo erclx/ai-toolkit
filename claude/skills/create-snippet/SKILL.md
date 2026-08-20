@@ -7,11 +7,9 @@ description: Creates a new snippet file in `snippets/` or `.claude/snippets/`. U
 
 Creates one snippet file. Read these files in parallel:
 
-- `.claude/standards/markdown.md` from the project root: banned words, punctuation, and formatting for all generated text
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
 - `${CLAUDE_SKILL_DIR}/references/snippets.md`: authoring conventions, invocation channels, use patterns
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Guards
 

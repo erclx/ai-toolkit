@@ -96,7 +96,7 @@ For each doc with relevant changes, apply updates following these rules. Read a 
 **`.claude/tasks/`**
 
 - Mark completed outcomes `[x]` in the task's own file through `aitk tasks outcome <stem> --close <n> --json`, repeating `--close` for each. Positions count every outcome checkbox in file order from 1, which the read above already gives. Do not move or archive the file.
-- Write a newly identified task as its own file, following `.claude/standards/tasks.md` for the filename and frontmatter.
+- Write a newly identified task as its own file, following `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` for the filename and frontmatter.
 - Do not touch task files this session did not change.
 - Never hand-edit `.claude/tasks/index.md`. A hook regenerates it.
 
@@ -108,8 +108,8 @@ Read `ok` and `reason` out of that record rather than the exit, for the reason t
 
 - Update only the sections affected by session decisions.
 - Do not rewrite sections unrelated to what changed.
-- Follow `.claude/standards/markdown.md` and the `write-human` skill for all edits.
-- Close a decision entry in `.claude/ARCHITECTURE.md` with its verification anchor whenever this run writes that entry or amends its reasoning and that reasoning cites a measured number. Re-read the number against the tree first, since the marker records the read rather than the edit. `.claude/standards/architecture.md` fixes the sentence.
+- Follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` and the `write-human` skill for all edits.
+- Close a decision entry in `.claude/ARCHITECTURE.md` with its verification anchor whenever this run writes that entry or amends its reasoning and that reasoning cites a measured number. Re-read the number against the tree first, since the marker records the read rather than the edit. `${CLAUDE_SKILL_DIR}/../../standards/architecture.md` fixes the sentence.
 - Leave every decision entry this run did not write alone, anchored or not. The rule is scoped forward, so an entry written before it is dated by blame rather than by a read. Step 6 reports a stale anchor and no step writes one on an entry it did not amend.
 
 Write each updated file immediately. Claude Code's tool permission dialog is the confirmation gate. Do not wait for user input.
@@ -128,7 +128,7 @@ Skip this step silently when `.claude/diagrams/` does not exist at `pwd` or hold
 
 This step writes frontmatter and never content. Mermaid bodies and explanation paragraphs are off limits to it. A change that removes a module does not carry the new correct shape of the picture, so rewriting a diagram from it produces a confident wrong diagram, which is worse than the stale one it replaced. The author redraws by running `claude-diagram`.
 
-Follow `.claude/standards/diagrams.md` for the marker fields this step writes, or `${CLAUDE_SKILL_DIR}/../../standards/diagrams.md` when the project does not have it.
+Follow `${CLAUDE_SKILL_DIR}/../../standards/diagrams.md` for the marker fields this step writes.
 
 Both findings key on something literally entering or leaving the tree. Anything looser fires on ordinary feature work and rebuilds the ignored warning this sweep replaced.
 
@@ -142,7 +142,7 @@ This step reports and never writes. The record carries no frontmatter, so an anc
 
 Step 3 holds the writer, and the two never meet. Anchoring fires when this run amends a decision, and this sweep fires when the diff moves a path under one, so a single step covering both would gate the anchor obligation on a signal that has nothing to do with it.
 
-Follow `.claude/standards/architecture.md` for the anchor sentence this step matches on.
+Follow `${CLAUDE_SKILL_DIR}/../../standards/architecture.md` for the anchor sentence this step matches on.
 
 Past the skip above, read `${CLAUDE_SKILL_DIR}/references/anchor-sweep.md` for how an entry's cited paths are collected, the finding the diff fires, and the report line.
 
@@ -160,7 +160,7 @@ Read `.claude/context/index.md` at `pwd` to see which domain entries exist. Skip
 
 Two sources feed this step, the same split Step 2 runs on. The diff carries what the repository changed. The routed facts carry what the session learned, which a diff cannot show.
 
-**Routed facts.** Derive `<slug>` per `.claude/standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root. `claude-memory-capture` writes it, one H2 per target entry naming the path, with the fact underneath. Fold each fact into the entry its heading names, then delete the handoff file so a later run does not fold it twice.
+**Routed facts.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/memory-routing/<slug>.md` at the main worktree root. `claude-memory-capture` writes it, one H2 per target entry naming the path, with the fact underneath. Fold each fact into the entry its heading names, then delete the handoff file so a later run does not fold it twice.
 
 This half is not diff-scoped and must not be. A gotcha a session hit while working is exactly the fact the diff never shows, and scoping it to changed files would drop the entries worth keeping. The handoff is a named input rather than a scan, so the reach stays bounded to what capture decided.
 
@@ -172,9 +172,9 @@ Reuse the diff from the baseline above, names and content both. For each existin
 
 - Map the entry's section headings to the changed files. An entry is relevant when its prose references files, modules, or decisions touched by the diff.
 - For each relevant entry, rewrite only the sections affected by the diff. Same pattern as `docs-sync`. Do not touch unrelated sections.
-- Write a reference to another entry as the path that entry sits at, rather than as its bare filename. `.claude/standards/context.md` states the form, and a bare name strands the reference once a domain splits into subfolders.
+- Write a reference to another entry as the path that entry sits at, rather than as its bare filename. `${CLAUDE_SKILL_DIR}/../../standards/context.md` states the form, and a bare name strands the reference once a domain splits into subfolders.
 
-Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `.claude/standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
+Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `${CLAUDE_SKILL_DIR}/../../standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
 
 Write each updated entry immediately. Output one line per file:
 
@@ -188,7 +188,7 @@ The base lint-staged config runs `aitk indexes regen` on every committed `*.md`,
 
 ## Step 9: fold promoted pages
 
-Derive `<slug>` per `.claude/standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root. `claude-teach` writes it, one H2 per destination naming the path, with a source line under the heading and the page body in a fenced block below that. Read the body out of the fence rather than off the heading level, since a reference page carries headings of its own and only the fence separates them from the next destination. Skip this step silently when the file is absent, which is every run where nothing was promoted.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`, falling back to `latest` on an empty result, and read `.claude/.tmp/teach-promotion/<slug>.md` at the main worktree root. `claude-teach` writes it, one H2 per destination naming the path, with a source line under the heading and the page body in a fenced block below that. Read the body out of the fence rather than off the heading level, since a reference page carries headings of its own and only the fence separates them from the next destination. Skip this step silently when the file is absent, which is every run where nothing was promoted.
 
 Each block is a page an operator already confirmed a destination for, so this step lands it rather than judging it again. Write to the destination the heading names, at `pwd` rather than at the main root, since every destination here is a tracked file that commits with the branch:
 
@@ -219,7 +219,7 @@ Every move and delete below is a shell operation, so send each as a plain single
 
 The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file.
 
-The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `.claude/standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
+The bullets below name resolved locations, so an unresolved target falls to the last one and no plan is ever archived. Never delete a plan. `${CLAUDE_SKILL_DIR}/../../standards/plan.md` owns the archive destination and why a shipped plan is moved rather than removed.
 
 Board-wide scope is the one place this sweep reaches past Step 3's rule against touching task files the session did not change. A board carrying a task that closed while an earlier run missed its archive is the defect this exists to clear, and skipping those tasks would preserve it. Reaching them is safe because the archive moves the plan and points the task at the new path, so a task from unrelated work ends up with a working pointer rather than a broken one.
 
@@ -242,7 +242,7 @@ A plan can serve more than one task, and archiving on the first task to close st
 
 Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans-archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
 
-**Reviews.** Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+**Reviews.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
 If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
 

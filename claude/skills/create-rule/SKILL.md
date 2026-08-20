@@ -40,7 +40,7 @@ Pick the lowest unused number in the band that collides with neither the project
 
 ## Step 4: write the rule
 
-Read `.claude/standards/rule.md` for frontmatter, body shape, and voice before writing the body, or `${CLAUDE_SKILL_DIR}/../../standards/rule.md` when the project does not have it. Do not work the shape from memory.
+Read `${CLAUDE_SKILL_DIR}/../../standards/rule.md` for frontmatter, body shape, and voice before writing the body. Do not work the shape from memory.
 
 Write `.claude/rules/<subdir>/<n>-<slug>.md` where `<slug>` is a 1-to-3-word kebab topic. Preview the resolved path, band, number, and frontmatter, then write immediately. The tool permission dialog is the confirmation gate.
 
@@ -61,7 +61,7 @@ paths:
 - <imperative rule>
 ```
 
-Title casing is sentence case, with proper nouns keeping their own casing (`# TypeScript standards`). `.claude/standards/rule.md` owns the rest of the body shape.
+Title casing is sentence case, with proper nouns keeping their own casing (`# TypeScript standards`). `${CLAUDE_SKILL_DIR}/../../standards/rule.md` owns the rest of the body shape.
 
 ## After writing
 

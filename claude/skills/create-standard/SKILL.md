@@ -7,11 +7,9 @@ description: Creates a new standard file in `standards/` or `.claude/standards/`
 
 Creates one standard file. Read these files in parallel:
 
-- `.claude/standards/markdown.md` from the project root: banned words, punctuation, and formatting for all generated text
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
-- `.claude/standards/standard.md` from the project root: the meta-standard for shape, frontmatter, and structure
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+- `${CLAUDE_SKILL_DIR}/../../standards/standard.md`: the meta-standard for shape, frontmatter, and structure
 
 ## Guards
 

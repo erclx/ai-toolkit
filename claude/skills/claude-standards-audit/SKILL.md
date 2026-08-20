@@ -8,7 +8,7 @@ description: Audits changed markdown files against every authoring standard that
 ## Guards
 
 - Resolve the base ref first, per Diff baseline below, then scope the file list exactly as Step 1 does, fallback included. If no markdown files changed, stop: `✅ No markdown changes to audit.` A guard that reads bare local `main`, or that skips the unusable-baseline fallback, passes the skill clean on a branch it never read.
-- If neither `.claude/standards/markdown.md` nor `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` is present, stop: `❌ markdown.md standard not found. Install toolkit standards first.` Test the file rather than the directory, since a project that installed standards before a given file existed keeps the directory without ever receiving that file.
+- If `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` is not present, stop: `❌ markdown.md standard not found. Reinstall the aitk plugin.` Test the file rather than the directory, since a plugin cache built before a given file existed keeps the directory without ever receiving that file.
 - `markdown.md` is the one standard testable before the mapping runs, since its scope statement declares an attribute and every changed markdown file therefore maps to it. Every other standard is tested in Step 3, where the mapping has named which ones the run needs.
 
 ## Diff baseline
@@ -60,7 +60,7 @@ Each entry carries `appliesTo`, the paths its `## Scope` statement declares. Mat
 - An entry ending in `/` matches when the file path contains it at a path-segment boundary
 - Any other entry matches when the file path ends with it at a path-segment boundary
 
-Add any standard in `.claude/standards/` the catalog did not list, and derive every declaration the same way when `aitk` is unavailable: the backticked paths in the first sentence under `## Scope`, or `*` when that sentence says the standard governs an attribute. Skip `index.md`, which is generated from the others and declares nothing. Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` when the project does not have it.
+Add any standard the catalog did not list, reading `${CLAUDE_SKILL_DIR}/../../standards/` and whatever folder the project authors its own standards in, and derive every declaration the same way when `aitk` is unavailable: the backticked paths in the first sentence under `## Scope`, or `*` when that sentence says the standard governs an attribute. Skip `index.md`, which is generated from the others and declares nothing.
 
 An entry whose `appliesTo` is empty declared nothing this can read. Report it as a finding against that standard's own file in Step 4 and audit the rest. A standard dropped in silence is the same miss this mapping exists to remove, one level up.
 
@@ -68,14 +68,14 @@ Every mapping names a changed markdown file, which is the only thing Step 1 prod
 
 ## Step 3: read standards and audit
 
-Read each applicable standard once, testing `.claude/standards/<name>` and `${CLAUDE_SKILL_DIR}/../../standards/<name>` before reading it. A standard the mapping named and neither path carries is reported as a finding against the file that mapped to it rather than skipped, since a standard read from nowhere reports every file under it clean.
+Read each applicable standard once from `${CLAUDE_SKILL_DIR}/../../standards/<name>`, testing the file before reading it. A standard the mapping named and that path does not carry is reported as a finding against the file that mapped to it rather than skipped, since a standard read from nowhere reports every file under it clean.
 
 For each changed file, audit against every rule:
 
 - **Pattern rules**: grep the file for every token the standard bans. Grep is authoritative. Reading alone misses occurrences.
 - **Judgment rules**: check each rule in context against the standard that states it.
 
-Every changed markdown file gets the pattern pass, since `.claude/standards/markdown.md` applies to all of them. Take the banned tokens from that standard at read time rather than from a list held here. It carries the banned words, the banned spellings, and the banned characters together, so one read covers every token this pass greps for.
+Every changed markdown file gets the pattern pass, since `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` applies to all of them. Take the banned tokens from that standard at read time rather than from a list held here. It carries the banned words, the banned spellings, and the banned characters together, so one read covers every token this pass greps for.
 
 ## Step 4: report
 

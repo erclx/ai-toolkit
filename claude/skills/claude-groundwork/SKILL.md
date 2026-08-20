@@ -7,7 +7,7 @@ description: Opens and runs a numbered groundwork folder under `.claude/groundwo
 
 Groundwork gathers and weighs. A plan commits. A groundwork folder costs nothing to throw away, which is what makes it the right container for a question nobody has answered yet.
 
-Read `.claude/standards/groundwork.md` from the project root before writing any file in the folder, or `${CLAUDE_SKILL_DIR}/../../standards/groundwork.md` when the project does not have it. It holds the reserved numbers, the frontmatter and dating rules, what each required file carries, the conventions, and the anti-patterns. Do not work them from memory.
+Read `${CLAUDE_SKILL_DIR}/../../standards/groundwork.md` before writing any file in the folder. It holds the reserved numbers, the frontmatter and dating rules, what each required file carries, the conventions, and the anti-patterns. Do not work them from memory.
 
 ## Guards
 
@@ -91,7 +91,7 @@ The standard sets the open question format and requires it inside a topic file a
 1. Write `06-decision.md`. It states the problem once, names the goal, lists what to do, and lists what was considered and dropped.
 2. Write `07-next-session.md` self-contained, so it survives a compaction that loses the conversation.
 3. Update the file map in `README.md`.
-4. Write one task file in `.claude/tasks/` recording what the track concluded, even when the conclusion is to do nothing. Follow `.claude/standards/tasks.md` for the filename and frontmatter, or `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` when the project does not have it. Aside from an experiment fixture, this is the only write permitted outside the folder.
+4. Write one task file in `.claude/tasks/` recording what the track concluded, even when the conclusion is to do nothing. Follow `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` for the filename and frontmatter. Aside from an experiment fixture, this is the only write permitted outside the folder.
 5. Report uncited external claims. Closing already reads every file in the folder, so list any statement about a source outside the project that carries neither a link nor a lead entry. Report and do not block, because judging whether a sentence makes an external claim is the call a checker gets wrong.
 
 Do not close while an open question quietly fails an outcome. Resolve it, or record it in `06-decision.md` as knowingly accepted.

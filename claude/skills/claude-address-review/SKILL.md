@@ -104,9 +104,8 @@ the write and the post. Note any `.claude/` docs refreshed as a result of the
 fixes.
 
 The reply is a rendered-for-human GitHub surface, so load the `write-human`
-skill for voice, follow `.claude/standards/markdown.md` for the banned words, or
-`${CLAUDE_SKILL_DIR}/../../standards/markdown.md` when the project does not have
-it, and keep each mapping to a line or two.
+skill for voice, follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for
+the banned words, and keep each mapping to a line or two.
 
 Open the body with the `## Review response` heading so it anchors as a section
 distinct from human threads and stays subordinate to the `## Review` heading the
@@ -145,9 +144,9 @@ the regen rebuilt, and close the same way. The heading stays outside the
 `## Review` family so the close-out's equality test on the first line never
 matches it.
 
-Before posting, run the scan in `.claude/standards/publish.md`
-against the reply, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when
-the project does not have it. The hook skips `.claude/.tmp/`, so this scan is the
+Before posting, run the scan in
+`${CLAUDE_SKILL_DIR}/../../standards/publish.md`
+against the reply. The hook skips `.claude/.tmp/`, so this scan is the
 only gate on the published reply. Post it to the PR:
 
 ```bash

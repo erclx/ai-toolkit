@@ -7,7 +7,7 @@ description: Files a raw brain dump into a numbered intake folder under `.claude
 
 Intake dispositions many findings in breadth. A dump goes in, an inventory comes out, and every item carries a problem measured against the tree, one proposed fix, and a verdict. The item that turns out to be already settled is the highest-value output, and it is the one thing neither a plan nor a groundwork track has anywhere to put.
 
-Read `.claude/standards/intake.md` from the project root before writing any file in the folder, or `${CLAUDE_SKILL_DIR}/../../standards/intake.md` when the project does not have it. It holds the numbering, the file map, the frontmatter and dating rules, the item format, and the answer contract. Do not work them from memory.
+Read `${CLAUDE_SKILL_DIR}/../../standards/intake.md` before writing any file in the folder. It holds the numbering, the file map, the frontmatter and dating rules, the item format, and the answer contract. Do not work them from memory.
 
 ## Routing
 

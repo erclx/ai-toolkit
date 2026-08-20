@@ -111,7 +111,7 @@ An empty result means no response arrived since the prior pass, so this pass wou
 
 The response is also the whole read on a repeated head. Step 2 resolves an empty range, because a commit is its own ancestor and `<prior-oid>..<headRefOid>` spans nothing, so the delta cannot answer whether a prior finding landed. Read that comment for what the worker changed or accepted, and treat an accepted finding as closed rather than restating it.
 
-The comment is a rendered-for-human GitHub surface, so load the `write-human` skill for voice and follow `.claude/standards/markdown.md` for the banned words, or `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` when the project does not have it: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
+The comment is a rendered-for-human GitHub surface, so load the `write-human` skill for voice and follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for the banned words: cut editorializing, and keep every sentence load-bearing. Match this shape on a first pass:
 
 ```markdown
 ## Review
@@ -166,7 +166,7 @@ The `What is right` section is optional, capped at three bullets, and included o
 
 Close the body with `🤖 Reviewed by Claude Code` on its own line so the review reads as an independent machine pass, not a human sign-off.
 
-Before posting, run the scan in `.claude/standards/publish.md` against the body, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it. The hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
+Before posting, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the body. The hook skips `.claude/.tmp/`, so this scan is the only gate on the published comment. A finding phrased against an internal phase label is what the label half of the scan catches here.
 
 ```bash
 gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>-<short-sha>.md

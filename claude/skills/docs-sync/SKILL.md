@@ -5,13 +5,11 @@ description: Rewrites stale `README.md` and `docs/*.md` sections based on change
 
 # Docs sync
 
-Read these files from the project root in parallel:
+Read these files in parallel:
 
-- `.claude/standards/markdown.md`: banned words, punctuation, and formatting for all generated text
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
-- `.claude/standards/readme.md`: README structure, required sections, and content rules
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+- `${CLAUDE_SKILL_DIR}/../../standards/readme.md`: README structure, required sections, and content rules
 
 ## Diff baseline
 

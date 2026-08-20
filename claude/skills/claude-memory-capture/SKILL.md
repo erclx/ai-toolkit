@@ -9,7 +9,7 @@ Scan the current session for patterns worth persisting, send each to the surface
 
 A fact about a domain belongs in that domain's context entry, which the three-tier model already loads on demand. Writing it to memory instead puts it in a folder nothing opens. Routing is therefore the point of this skill and the memory file is the fallback.
 
-The filename and its type prefix, the frontmatter, the body shape each type carries, and the lifecycle are fixed by `.claude/standards/memory.md`, or `${CLAUDE_SKILL_DIR}/../../standards/memory.md` when the project does not have it. Read it before writing an entry and follow it rather than working the shape from memory.
+The filename and its type prefix, the frontmatter, the body shape each type carries, and the lifecycle are fixed by `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Read it before writing an entry and follow it rather than working the shape from memory.
 
 ## Guards
 
@@ -21,20 +21,18 @@ The filename and its type prefix, the frontmatter, the body shape each type carr
 
 ## Step 1: read context
 
-Read in parallel from the project root, skipping any that do not exist:
+Read in parallel, skipping any that do not exist:
 
-- `.claude/standards/memory.md`: the filename, frontmatter, body shape, and lifecycle every entry follows
+- `${CLAUDE_SKILL_DIR}/../../standards/memory.md`: the filename, frontmatter, body shape, and lifecycle every entry follows
 - `CLAUDE.md`: the project's write location and any rule it states over the folder
 - `.claude/memory/index.md`: existing index, to avoid duplicates
 - `.claude/context/index.md`: the domain catalog Step 3 routes against
-- `.claude/standards/markdown.md`: banned words, punctuation, and formatting applied to memory file bodies
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting applied to memory file bodies
 - The `write-human` skill: voice, rhythm, and sentence construction applied to memory file bodies
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Step 2: classify candidates
 
-Scan the session and group candidate patterns as `feedback`, `project`, `user`, or `reference`. What each type holds and what makes one fire are the Types table in `.claude/standards/memory.md`. Read the table and classify against it rather than against a recollection of the four names.
+Scan the session and group candidate patterns as `feedback`, `project`, `user`, or `reference`. What each type holds and what makes one fire are the Types table in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Read the table and classify against it rather than against a recollection of the four names.
 
 Scan the whole session rather than its last exchange. A rule the user stated early and you followed since reads as settled and is exactly the one no file records.
 
@@ -54,7 +52,7 @@ Do not edit a context entry here. `claude-docs` owns those edits and folds the r
 <the fact in one or two sentences, stated as a fact about the domain rather than as a session narrative>
 ```
 
-Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
 The handoff is a file rather than a spoken result so the routed fact survives a compaction between this step and the `claude-docs` pass, and so the standalone caller leaves something behind for a later `/claude-docs` to consume.
 
@@ -64,7 +62,7 @@ For each remaining candidate, grep `.claude/memory/` for an existing file on the
 
 ## Step 5: write the residue
 
-Write each remaining candidate to `.claude/memory/<type>-<slug>.md`, following the template and the shape rules in `.claude/standards/memory.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every entry.
+Write each remaining candidate to `.claude/memory/<type>-<slug>.md`, following the template and the shape rules in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every entry.
 
 Two of its rules are the ones a capture pass gets wrong under time pressure. State the rule rather than the incident that produced it, since the session ending is the only reader who has the narrative. Write the `title` as the rule itself, never as the filename stem.
 

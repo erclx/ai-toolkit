@@ -12,11 +12,9 @@ Read these files in parallel:
 - `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
 - `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
 - `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/pr-labels.toml`.
-- `.claude/standards/markdown.md` from the project root: banned words, punctuation, and formatting for all generated text
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
-- `.claude/standards/versioning.md` from the project root: phase label vs semver discipline
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
+- `${CLAUDE_SKILL_DIR}/../../standards/versioning.md`: phase label vs semver discipline
 
 Resolve the base ref first, because the log range and the diff below both consume it:
 
@@ -72,7 +70,7 @@ Leave a box unchecked only for the human-only cases the reference defines, and n
 
 ### Pre-publish scan
 
-Before running the final command, run the scan in `.claude/standards/publish.md` against the PR title and body, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
+Before running the final command, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
 
 ### Resolving the pull request
 
@@ -123,7 +121,7 @@ printf 'number=%s\nurl=%s\n' "$pr_number" "$pr_url"
 
 Write the `number` the final command printed onto the task the branch is closing. Do not resolve it again. A head branch that carried an earlier pull request now has two, and a second `gh pr view` would pick between them by a precedence rule nothing here states. Reading what created or edited the pull request needs no such rule.
 
-The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.claude/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
+The task is the one whose `Plan:` line names the plan this branch implemented. Name that plan by its file, which is `.claude/plans/feature-<slug>.md` at the main worktree root with `<slug>` derived per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. `claude-feature` writes the plan under the branch slug, so the two correspond on any branch that came through the plan-to-execute path. When the session already knows which plan it implemented, because a caller read it earlier in the chain, use that filename instead of re-deriving.
 
 ```bash
 aitk tasks pull-request <number> --plan feature-<slug> --json
