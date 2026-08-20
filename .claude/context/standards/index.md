@@ -8,6 +8,7 @@ subtitle: Authoring conventions synced to projects, the scope model every standa
 Authoring conventions synced to projects, the scope model every standard declares, the template and lifecycle rules, the per-standard decisions, and install and sync. Start with overview.
 
 - [Authoring](authoring.md): The canonical template rule and where it stops, the meta-standard's placement, the lifecycle of a change, the sibling section a new rule falsifies, the parser that reads two standards as input, and how to add a standard
+- [Destinations](destinations.md): The test routing a standard to one home outside the corpus, the destination and purpose recorded per standard, and why the drop bucket came back empty
 - [Install and sync](install.md): What install overwrites and sync leaves alone, the selection flag and its closure, the bundled fan-out and its consumers field, and the sync gotchas
 - [Overview](overview.md): What the standards domain owns, the trees a standard can live in, the command surface, and why the entry is a folder
 - [Per-standard decisions](per-standard.md): What the plan standard fixes and why its sections are mixed, the inverted answer contracts, where an execution-time deviation is recorded, how a constraint declares its expiry, the memory standard, what the memory pen measured, the widened readiness test, the architecture record's verification anchor, and the cross-reference form split by destination
