@@ -70,6 +70,7 @@ Owns the golden configs a project inherits, layered across a `base` to `web` to 
 - `runtime` is reserved and read by nothing today. `scaffold` is read only by `scripts/sandbox/tooling/upstream.sh`, not yet by `aitk tooling sync`.
 - Bun's script shell expands command substitution and a leading environment assignment, so a script value may carry `VAR=$(bash scripts/x.sh) command`. Verified 2026-08-13 against `bun run`.
 - This repository's own `.gitignore` splits its Claude entries across two headers, with `.claude/teach/` under `# Teaching workspace` rather than under `# Claude`. Diffing the manifest group against the first header alone therefore reads one entry short, so compare against every `.claude/` line in the file. `.claude/README.md` is the one difference that stays, since no seed writes one into a target.
+- That comparison runs one way. It finds an entry this repository already ignores and the manifest does not, and it is blind to a folder a shipped command creates that neither file names, since the baseline it reads is the closed set rather than the created one. Catching that second class means walking the commands for what they write under `.claude/`. A folder whose contents are committed on purpose belongs in neither file, which is why `.claude/audits/` is absent from both and correct.
 
 ### Sync and layering
 
