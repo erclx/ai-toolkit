@@ -34,7 +34,6 @@ import {
 import { describeSkew } from '@/version/skew'
 
 const SYNC_ARGS: Record<SyncDomain, readonly string[]> = {
-  standards: ['standards', 'sync'],
   snippets: ['snippets', 'sync'],
   governance: ['gov', 'sync'],
   claude: ['claude', 'sync'],
@@ -379,7 +378,7 @@ async function runSync(target: string): Promise<number> {
 
   if (existsSync(join(resolved, '.claude'))) {
     process.stderr.write(
-      `${GREY}Tip: run \`/claude-seed-sync\` to audit seed and standards drift per section, preserving local customizations.${NC}\n`,
+      `${GREY}Tip: run \`/claude-seed-sync\` to audit seed drift per section, preserving local customizations.${NC}\n`,
     )
   }
 

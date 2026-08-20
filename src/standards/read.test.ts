@@ -32,9 +32,8 @@ afterEach(() => {
 })
 
 describe('standardRoots', () => {
-  it('should put the package corpus last, behind both project roots', () => {
+  it('should put the package corpus behind the authoring root and name no other', () => {
     expect(standardRoots(ROOT).map((each) => each.dir)).toEqual([
-      join(ROOT, '.claude', 'standards'),
       join(ROOT, 'standards'),
       join(PROJECT_ROOT, 'standards'),
     ])
@@ -42,13 +41,13 @@ describe('standardRoots', () => {
 })
 
 describe('resolveStandard', () => {
-  it('should prefer the installed copy over the authoring root', () => {
+  it('should ignore an installed copy, since no corpus installs any more', () => {
     writeStandard('.claude/standards/prose.md', '# Installed\n')
     writeStandard('standards/prose.md', '# Authored\n')
 
     expect(resolveStandard(ROOT, 'prose.md')).toEqual({
-      path: join(ROOT, '.claude', 'standards', 'prose.md'),
-      source: join('.claude', 'standards', 'prose.md'),
+      path: join(ROOT, 'standards', 'prose.md'),
+      source: join('standards', 'prose.md'),
     })
   })
 
@@ -91,16 +90,22 @@ describe('resolveStandard', () => {
 
 describe('listStandards', () => {
   it('should name a project standard once when the package carries it too', () => {
-    writeStandard('.claude/standards/prose.md', '# Installed\n')
+    writeStandard('standards/markdown.md', '# Authored\n')
     const names = listStandards(ROOT)
 
-    expect(names.filter((name) => name === 'prose')).toEqual(['prose'])
+    expect(names.filter((name) => name === 'markdown')).toEqual(['markdown'])
   })
 
   it('should name a project standard the package does not carry', () => {
-    writeStandard('.claude/standards/house-style.md', '# House style\n')
+    writeStandard('standards/house-style.md', '# House style\n')
 
     expect(listStandards(ROOT)).toContain('house-style')
+  })
+
+  it('should omit an installed copy left behind by an older toolkit', () => {
+    writeStandard('.claude/standards/house-style.md', '# House style\n')
+
+    expect(listStandards(ROOT)).not.toContain('house-style')
   })
 
   it('should omit the catalog index', () => {

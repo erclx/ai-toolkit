@@ -4,7 +4,6 @@ import { type InitFlags, parseSkip, planInit, resolveStack } from '@/init/plan'
 function flags(overrides: Partial<InitFlags> = {}): InitFlags {
   return {
     snippets: 'essentials',
-    standards: 'all',
     skip: parseSkip(undefined),
     ...overrides,
   }
@@ -15,16 +14,8 @@ function texts(plan: ReturnType<typeof planInit>): string[] {
 }
 
 describe('planInit standards preview', () => {
-  it('should describe the default selection as the whole corpus', () => {
-    expect(texts(planInit(flags()))).toContain(
-      'standards (authoring conventions)',
-    )
-  })
-
-  it('should name a narrowed selection and its closure', () => {
-    expect(texts(planInit(flags({ standards: 'design' })))).toContain(
-      'standards (design, plus what they cite)',
-    )
+  it('should offer no standards line, since no corpus installs', () => {
+    expect(texts(planInit(flags())).join('\n')).not.toContain('standards')
   })
 })
 
@@ -37,17 +28,24 @@ describe('parseSkip', () => {
   })
 
   it('should read a comma-separated list', () => {
-    expect([...parseSkip('wiki,standards').skipped]).toEqual([
+    expect([...parseSkip('wiki,governance').skipped]).toEqual([
       'wiki',
-      'standards',
+      'governance',
     ])
   })
 
   it('should trim whitespace around each value', () => {
-    expect([...parseSkip(' wiki , standards ').skipped]).toEqual([
+    expect([...parseSkip(' wiki , governance ').skipped]).toEqual([
       'wiki',
-      'standards',
+      'governance',
     ])
+  })
+
+  it('should report standards as unrecognized, since it no longer installs', () => {
+    const plan = parseSkip('standards')
+
+    expect([...plan.skipped]).toEqual([])
+    expect(plan.unknown).toEqual(['standards'])
   })
 
   it('should report an unrecognized value without dropping the valid ones', () => {
@@ -73,8 +71,8 @@ describe('parseSkip', () => {
 })
 
 describe('planInit', () => {
-  it('should count six domains when no flags are given', () => {
-    expect(planInit(flags()).total).toBe(6)
+  it('should count five domains when no flags are given', () => {
+    expect(planInit(flags()).total).toBe(5)
   })
 
   it('should install the default stack when none is named', () => {
@@ -90,16 +88,7 @@ describe('planInit', () => {
   it('should warn about governance rather than counting it when skipped', () => {
     const plan = planInit(flags({ skip: parseSkip('governance') }))
 
-    expect(plan.total).toBe(5)
-    expect(plan.preview).toContainEqual({
-      level: 'warn',
-      text: 'governance (skipped, standards land without the rules that route to them)',
-    })
-  })
-
-  it('should drop the standards consequence when standards is skipped too', () => {
-    const plan = planInit(flags({ skip: parseSkip('governance,standards') }))
-
+    expect(plan.total).toBe(4)
     expect(plan.preview).toContainEqual({
       level: 'warn',
       text: 'governance (skipped)',
@@ -109,17 +98,6 @@ describe('planInit', () => {
   it('should report extra rules the governance skip drops', () => {
     const plan = planInit(
       flags({ add: '260-shadcn', skip: parseSkip('governance') }),
-    )
-
-    expect(plan.preview).toContainEqual({
-      level: 'warn',
-      text: 'governance (skipped, --add 260-shadcn not installed, standards land without the rules that route to them)',
-    })
-  })
-
-  it('should report dropped extra rules with no other consequence to name', () => {
-    const plan = planInit(
-      flags({ add: '260-shadcn', skip: parseSkip('governance,standards') }),
     )
 
     expect(plan.preview).toContainEqual({
@@ -139,22 +117,18 @@ describe('planInit', () => {
   it('should drop a skipped domain from the preview and the count', () => {
     const plan = planInit(flags({ stack: 'base', skip: parseSkip('wiki') }))
 
-    expect(plan.total).toBe(5)
+    expect(plan.total).toBe(4)
     expect(texts(plan)).not.toContain('wiki (.claude/wiki/ with a stub index)')
   })
 
   it('should subtract every skip from the count', () => {
-    const plan = planInit(
-      flags({ skip: parseSkip('wiki,standards,governance') }),
-    )
+    const plan = planInit(flags({ skip: parseSkip('wiki,governance') }))
 
     expect(plan.total).toBe(3)
   })
 
   it('should keep the count equal to the domains that will run', () => {
-    const plan = planInit(
-      flags({ stack: 'base', skip: parseSkip('standards') }),
-    )
+    const plan = planInit(flags({ stack: 'base', skip: parseSkip('wiki') }))
 
     expect(plan.preview.filter((line) => line.level === 'info')).toHaveLength(
       plan.total,

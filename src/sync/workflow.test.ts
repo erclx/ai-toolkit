@@ -67,12 +67,12 @@ async function makeRepo(): Promise<string> {
 }
 
 const DRIFTED_STANDARDS = {
-  '.claude/standards/': ' M .claude/standards/prose.md\n',
+  '.claude/snippets/': ' M .claude/snippets/diff.md\n',
 }
 
 const DRIFTED_TWO_DOMAINS = {
-  '.claude/standards/':
-    ' M .claude/standards/prose.md\n M .claude/standards/skill.md\n',
+  '.claude/snippets/':
+    ' M .claude/snippets/diff.md\n M .claude/snippets/review.md\n',
   '.gitignore': ' M .gitignore\n',
 }
 
@@ -90,7 +90,7 @@ describe('collectChanges', () => {
   it('should report one entry per domain with pending changes', async () => {
     const git = makeGit({
       status: {
-        '.claude/standards/': ' M .claude/standards/prose.md\n',
+        '.claude/snippets/': ' M .claude/snippets/diff.md\n',
         '.gitignore': '?? .gitignore\n',
       },
     })
@@ -99,10 +99,10 @@ describe('collectChanges', () => {
 
     expect(changes).toEqual([
       {
-        domain: 'standards',
+        domain: 'snippets',
         verb: 'Update',
-        names: ['prose.md'],
-        paths: ['.claude/standards/prose.md'],
+        names: ['diff.md'],
+        paths: ['.claude/snippets/diff.md'],
       },
       {
         domain: 'claude',
@@ -243,7 +243,7 @@ describe('runGitWorkflow staging', () => {
     })
 
     expect(git.calls).toContain(
-      'stage .claude/standards/prose.md .claude/standards/skill.md .gitignore',
+      'stage .claude/snippets/diff.md .claude/snippets/review.md .gitignore',
     )
   })
 
@@ -259,7 +259,7 @@ describe('runGitWorkflow staging', () => {
       choose: choosing('commit'),
     })
 
-    expect(git.calls).toContain('stage .claude/standards/prose.md')
+    expect(git.calls).toContain('stage .claude/snippets/diff.md')
     expect(git.calls).not.toContain('stage -A')
   })
 
@@ -297,8 +297,8 @@ describe('runGitWorkflow staging', () => {
 
     expect(git.calls).toEqual([
       'createBranch chore/aitk-sync-20260729-1242',
-      'stage .claude/standards/prose.md',
-      'commit chore(sync): update standards from toolkit',
+      'stage .claude/snippets/diff.md',
+      'commit chore(sync): update snippets from toolkit',
     ])
   })
 
@@ -315,8 +315,8 @@ describe('runGitWorkflow staging', () => {
     })
 
     expect(git.calls).toEqual([
-      'stage .claude/standards/prose.md',
-      'commit chore(sync): update standards from toolkit',
+      'stage .claude/snippets/diff.md',
+      'commit chore(sync): update snippets from toolkit',
     ])
   })
 
@@ -353,11 +353,11 @@ describe('runGitWorkflow staging', () => {
     expect(code).toBe(0)
     expect(git.calls).toEqual([
       'createBranch chore/aitk-sync-20260729-1242',
-      'stage .claude/standards/prose.md',
-      'commit chore(sync): update standards from toolkit',
+      'stage .claude/snippets/diff.md',
+      'commit chore(sync): update snippets from toolkit',
       'push chore/aitk-sync-20260729-1242',
     ])
-    expect(prCalls).toEqual(['pr chore(sync): update standards from toolkit'])
+    expect(prCalls).toEqual(['pr chore(sync): update snippets from toolkit'])
   })
 
   it('should report a failed git mutation rather than a completed sync', async () => {

@@ -2,8 +2,13 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { stripFrontmatter } from '@/frontmatter'
 import { PROJECT_ROOT } from '@/project-root'
-import { standardsSourceDir } from '@/standards/adapter'
-import { INDEX_FILE } from '@/standards/index-refresh'
+
+export const INDEX_FILE = 'index.md'
+
+/** The folder a repository authors standards in, toolkit or project alike. */
+export function standardsSourceDir(root: string): string {
+  return join(root, 'standards')
+}
 
 /**
  * Spells the package root in a report where every other root spells a
@@ -27,22 +32,19 @@ export interface ResolvedStandard {
 }
 
 /**
- * The three roots a standard resolves against, in precedence order.
+ * The roots a standard resolves against. No toolkit standard installs into a
+ * project any more, so `.claude/standards/` is gone from the list and a target
+ * carries neither entry below: the package corpus is the only root that
+ * answers there, which is what leaves no precedence to reason about.
  *
- * A project copy wins wherever one exists. An installed standard is a seed a
- * project edits, so a package copy overriding it would discard that edit with
- * nothing said, and the fallback answers absence rather than staleness. The
- * package root is what lets a project that installed no standards still be
- * measured against one, since `package.json` ships the corpus beside the code
- * doing the reading.
+ * The authoring root stays ahead of the package corpus for the repository that
+ * writes standards, where an edit in progress has to win over the copy
+ * `package.json` shipped. A project that authors standards of its own is the
+ * same case under the same folder.
  */
 export function standardRoots(root: string): StandardRoot[] {
   return [
-    {
-      dir: join(root, '.claude', 'standards'),
-      label: join('.claude', 'standards'),
-    },
-    { dir: join(root, 'standards'), label: 'standards' },
+    { dir: standardsSourceDir(root), label: 'standards' },
     {
       dir: standardsSourceDir(PROJECT_ROOT),
       label: join(PACKAGE_LABEL, 'standards'),

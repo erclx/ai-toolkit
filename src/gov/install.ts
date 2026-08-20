@@ -109,12 +109,3 @@ export async function installRules(
 
   return installed
 }
-
-/**
- * The bash checked `<target>/standards`, but `aitk standards install` writes
- * `.claude/standards/`, which is also the path the rules reference and the
- * path the warning names. The guard therefore fired on every modern install.
- */
-export function hasStandards(target: string): boolean {
-  return existsSync(join(target, '.claude', 'standards'))
-}

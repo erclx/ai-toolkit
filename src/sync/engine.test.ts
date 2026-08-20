@@ -299,7 +299,7 @@ describe('planSync attribution', () => {
   it('should ignore a stamp written for another domain', () => {
     writeFixture(join(SOURCE, 'core/000-const.md'), 'upstream\n')
     writeFixture(join(TARGET, STAMPED_RULE), 'installed\n')
-    writeStampFixture('standards', {
+    writeStampFixture('snippets', {
       [STAMPED_RULE]: hashContent('installed\n'),
     })
 

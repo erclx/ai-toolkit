@@ -6,7 +6,6 @@ import { buildSteps } from '@/init/steps'
 function flags(overrides: Partial<InitFlags> = {}): InitFlags {
   return {
     snippets: 'essentials',
-    standards: 'all',
     skip: parseSkip(undefined),
     ...overrides,
   }
@@ -152,14 +151,13 @@ describe('buildSteps', () => {
       'Base tooling',
       'Claude workflow',
       'Governance',
-      'Standards',
       'Snippets',
       'Wiki',
     ])
   })
 
   it('should drop a skipped domain from the list entirely', () => {
-    expect(labels(steps({ skip: parseSkip('wiki,standards') }))).toEqual([
+    expect(labels(steps({ skip: parseSkip('wiki') }))).toEqual([
       'Base tooling',
       'Claude workflow',
       'Governance',
@@ -167,28 +165,10 @@ describe('buildSteps', () => {
     ])
   })
 
-  it('should install standards with no selection argument by default', () => {
+  it('should spawn no standards install, since the corpus reaches no target', () => {
     const recorded = recorder()
     buildSteps('../app', '/abs/app', flags(), recorded.child)
 
-    expect(recorded.calls).toContainEqual(['standards', 'install', '/abs/app'])
-  })
-
-  it('should pass a named standards selection through to install', () => {
-    const recorded = recorder()
-    buildSteps(
-      '../app',
-      '/abs/app',
-      flags({ standards: 'design,wireframes' }),
-      recorded.child,
-    )
-
-    expect(recorded.calls).toContainEqual([
-      'standards',
-      'install',
-      '--only',
-      'design,wireframes',
-      '/abs/app',
-    ])
+    expect(recorded.calls.map(([verb]) => verb)).not.toContain('standards')
   })
 })

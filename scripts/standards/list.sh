@@ -67,7 +67,10 @@ list_json() {
     name=$(basename "$file" .md)
     [ "$name" = "index" ] && continue
     title=$(read_frontmatter_field "$file" "description")
-    target=".claude/standards/$(basename "$file")"
+    # The authoring root, which is what `standardRoots` reads first and the only
+    # project spelling left. It named `.claude/standards/` while the corpus
+    # installed into a target, and no target holds one now.
+    target="standards/$(basename "$file")"
     applies_to=$(read_applies_to "$file")
     if [ "$first" -eq 0 ]; then
       printf ','

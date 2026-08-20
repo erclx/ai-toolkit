@@ -22,11 +22,8 @@ describe('applyInitOptions', () => {
     expect(command.opts().stack).toBe('base')
   })
 
-  it('should default the standards selection to all', () => {
-    const command = applyInitOptions(new Command('init'))
-    command.parse([], { from: 'user' })
-
-    expect(command.opts().standards).toBe('all')
+  it('should declare no standards selection, since the corpus never installs', () => {
+    expect(INIT_OPTIONS.map((option) => option.key)).not.toContain('standards')
   })
 
   it('should offer governance as a skippable domain in the help text', () => {
@@ -53,7 +50,7 @@ describe('flagsProvided', () => {
     expect(readFlagsProvided(['--skip', 'wiki'])).toBe(true)
   })
 
-  it('should read an explicitly passed standards selection as operator-provided', () => {
-    expect(readFlagsProvided(['--standards', 'slug'])).toBe(true)
+  it('should read an explicitly passed snippets category as operator-provided', () => {
+    expect(readFlagsProvided(['--snippets', 'all'])).toBe(true)
   })
 })

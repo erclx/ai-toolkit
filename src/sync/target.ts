@@ -2,12 +2,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { isDirectory } from '@/target'
 
-export const SYNC_DOMAINS = [
-  'standards',
-  'snippets',
-  'governance',
-  'claude',
-] as const
+export const SYNC_DOMAINS = ['snippets', 'governance', 'claude'] as const
 
 export type SyncDomain = (typeof SYNC_DOMAINS)[number]
 
@@ -17,7 +12,6 @@ export interface DomainState {
 }
 
 const DOMAIN_MARKERS: Record<SyncDomain, string> = {
-  standards: join('.claude', 'standards'),
   snippets: join('.claude', 'snippets'),
   governance: join('.claude', 'rules'),
   claude: '.claude',
@@ -30,7 +24,6 @@ const DOMAIN_MARKERS: Record<SyncDomain, string> = {
  * because that is the only file `aitk claude sync` writes.
  */
 const DOMAIN_PATHS: Record<SyncDomain, readonly string[]> = {
-  standards: ['.claude/standards/'],
   snippets: ['.claude/snippets/'],
   governance: ['.claude/rules/', '.claude/GOV.md'],
   claude: ['.gitignore'],
