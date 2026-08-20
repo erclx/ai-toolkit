@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.111.1](https://github.com/erclx/aitk/compare/v0.111.0...v0.111.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **orchestrate:** qualify a poll response by the last review pass ([#1050](https://github.com/erclx/aitk/issues/1050)) ([7354cb9](https://github.com/erclx/aitk/commit/7354cb9ec710d12dbf23c4b30c60070440efbf39))
+
 ## [0.111.0](https://github.com/erclx/aitk/compare/v0.110.0...v0.111.0) (2026-08-20)
 
 
