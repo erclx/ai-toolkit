@@ -129,7 +129,7 @@ main() {
     run_phase "Prepare" bash -c "cd '$tmp_dir' && $prepare"
   fi
 
-  run_phase "Sync" bash -c "cd '$tmp_dir' && AITK_NON_INTERACTIVE=1 aitk tooling sync $stack ."
+  run_phase "Sync" bash -c "cd '$tmp_dir' && AITK_NON_INTERACTIVE=1 aitk tooling sync $stack . --write"
 
   if [ -f "$tmp_dir/package.json" ]; then
     run_phase "lint:fix" bash -c "cd '$tmp_dir' && bun run lint:fix"

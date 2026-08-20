@@ -272,6 +272,11 @@ main() {
   assert_no_drift "claude/skills/*/references" "Skill references drifted. Run bun run check and commit the updated reference files."
   log_info "Skill references clean"
 
+  log_step "Tooling paths"
+  run_check "bash $PROJECT_ROOT/scripts/core/regen-tooling-paths.sh" "Tooling-path regen failed"
+  assert_no_drift "claude/skills/toolkit-cli/SKILL.md" "The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/toolkit-cli/SKILL.md."
+  log_info "Tooling paths clean"
+
   log_step "Skill paths"
   run_check "bash $PROJECT_ROOT/scripts/core/check-skill-paths.sh" "Shipped skills reference a repo-local path."
   log_info "Skill paths clean"

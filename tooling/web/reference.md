@@ -8,7 +8,7 @@ The web layer covers web-universal tooling shared across Vite + React, Astro, an
 
 ## What ships as golden configs
 
-Golden config files live in `tooling/web/configs/` and are copied into the target on `aitk tooling sync web .`. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
+Golden config files live in `tooling/web/configs/` and are copied into the target on `aitk tooling sync web . --write`, replacing whatever sits at those paths. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
 
 - `eslint.config.js`: flat config with `@eslint/js`, `typescript-eslint`, React hooks, import sort, check-file, vitest rules scoped to test files, `eslint-config-prettier` last.
 - `src/test/setup.ts`: `@testing-library/jest-dom` import, `cleanup` after each test.

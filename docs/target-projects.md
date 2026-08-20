@@ -45,7 +45,7 @@ Two steps, in order:
 The chain is:
 
 - `aitk init` installs base tooling, Claude seeds, and governance rules into `.claude/rules/` in the same pass
-- `aitk tooling sync <stack>` adds stack-specific deps, scripts, gitignore entries, and drops `.claude/tooling/<stack>.md` (plus parents) as the agent's audit context
+- `aitk tooling sync <stack> --write` adds stack-specific deps, scripts, gitignore entries, and drops `.claude/tooling/<stack>.md` (plus parents) as the agent's audit context
 - The agent follows the reference to generate eslint, vitest, playwright configs and the stack's setup script, and extends `.claude/context/ci.md` and `.claude/context/development.md` per the reference's extend sections <!-- audit-ignore-citations -->
 - `setup-verify` runs the installed `package.json` scripts (lint, typecheck, check, test, build) and reports pass or fail
 
@@ -148,7 +148,9 @@ The same field names a proposal-only skill with a live case here under `migratio
 
 Add `--json` for the machine-readable report, and `--exit-code` to fail a CI job when a target falls behind. Files the project authored itself never count toward that exit code, and neither do superseded artifacts, seed drift, tooling, or anything the reverse walk reports, since each names content the project is expected to edit or place itself. An unmigrated domain does count, because running the relocation closes it.
 
-Tooling reports under a section of its own, and `measured` there says whether the target ever recorded a chain. One that never ran a tooling sync reports unmeasured rather than clean, which is what separates tooling nobody has looked at from tooling that is current. A workspace root records nothing either way, since each package resolves its own chain. Reconcile the configs with `aitk tooling sync <stack> <path>`.
+Tooling reports under a section of its own, and `measured` there says whether the target ever recorded a chain. One that never ran a tooling sync reports unmeasured rather than clean, which is what separates tooling nobody has looked at from tooling that is current. A workspace root records nothing either way, since each package resolves its own chain.
+
+Reconcile the configs with `aitk tooling sync <stack> <path> --check` to read which files differ, then re-run it with `--write` to apply them. The drift report counts categories and the sync names paths, which is the difference worth knowing before a golden config the project edited is replaced.
 
 ### Catch-all
 
@@ -211,8 +213,8 @@ The repo root owns the shared `base` layer, and each language lives in its own s
 
 ```bash
 aitk init --stack react .
-aitk tooling sync vite-react ./frontend --skip base
-aitk tooling sync python ./backend --skip base
+aitk tooling sync vite-react ./frontend --skip base --write
+aitk tooling sync python ./backend --skip base --write
 ```
 
 `--skip base` drops the `base` layer from each subtree sync, so husky, prettier, cspell, commitlint, and CI stay single at the repo root. Without it, every subtree re-drops husky, and since git honors only one `core.hooksPath` the extra hook dirs silently break. Each subtree still gets its own framework configs (eslint, vitest, tsconfig, vite) and its own `.claude/tooling/<stack>.md` audit docs.

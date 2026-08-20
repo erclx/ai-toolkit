@@ -43,6 +43,8 @@ Only a tracked corpus is recorded. Five of the six record kinds and the board re
 
 A first run reports that it had nothing to compare against rather than a delta of zero. Those two readings are indistinguishable and mean opposite things, which is the defect this repository has already fixed twice. The same rule covers a key newly measured and a key the record holds that the run did not produce, each named for what it is.
 
+The record is anchored at a commit rather than at a branch point, so growth is measured against whatever the trunk held when someone last ran `--record`. A branch reading the report therefore sees its own movement mixed with every commit merged since, and the aggregate names neither. Attribute each grown measure to a file in the working diff before treating it as the branch's own: on 2026-08-20 a run reported 4 grown against baseline `bd2be81a` while `HEAD` stood at `1725dd91`, and 2 of the 4 traced to the 6 commits merged in between, which added 163 lines across 8 context files including a new 79-line `destinations.md`. A measure whose corpus the branch never opened belongs to the gap between the two commits.
+
 ### Why the pipeline runs it without gating on it
 
 `bun run check` runs the set after the three gating stages and never fails on it. Those stages keep their own remedies, which are specific in a way one aggregate line cannot be, so a fact still fails the push where a reader is told what to do about it.

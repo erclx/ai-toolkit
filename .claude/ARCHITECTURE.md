@@ -158,6 +158,18 @@ Keeping a thinner `prose.md` was the alternative and it leaves an advisory file 
 
 Routing a rule at a skill was previously declined as trading a certain load for a probable one. That objection measures a different chain: the rule still loads on the glob and carries an explicit instruction to load the skill, so what follows is an instruction being executed rather than a description being matched. Overturned by the operator on 2026-08-19. What stays open is that nothing measures whether output followed the rhythm rules, so the reported failure is addressed rather than closed. Measured at `57ee7467` on 2026-08-20.
 
+### A safe behavior sits on the default path rather than behind a flag
+
+`aitk tooling sync` writes nothing until `--write` is passed, and a headless run without it reports and exits 1. The verb already scanned, reported, and prompted, so an operator at a terminal was always shown the list first. What made that reporting worthless was `nonInteractiveDefault: true` on the confirm prompt, which resolves to the first option, so `AITK_NON_INTERACTIVE=1` meant "apply all" and every scripted or agent-driven sync overwrote the target unasked.
+
+The category the contract called golden configs turned out to hold 41 files across 6 stacks, among them the CI workflow, the git hooks, the end-to-end harness, and the shell scripts under `scripts/`. Against a real target one run deleted a deploy job and a push trigger, replaced a 120-line screenshot harness with the two-case starter, and reverted a shipped fix in a script. Naming a stack is not consent to lose an edit inside it, which is the distinction the old prompt collapsed.
+
+An opt-in `--dry-run` was the alternative and it is what the filed issue proposed. It is declined because a flag you have to remember is one nobody passes the first time, and the first time is when the target still holds the work. The safe path has to be the one a caller reaches by typing nothing, so the dangerous path is what carries the flag.
+
+That inverts the contract for every caller, which is the accepted cost. Four internal call sites pass `--write` explicitly, being the scaffold step, the stack verifier, and two in the sandbox, while the three interactive sandbox invocations keep prompting because the prompt is what they demonstrate. Anything outside this repository relying on `AITK_NON_INTERACTIVE=1` to mean yes is broken by the change. Exiting 1 rather than 0 is what keeps that loud: a caller that forgets the flag fails rather than reporting a clean run it never performed, which is the same reasoning the wrapper defect in the risks below leaves standing everywhere an exit code is read.
+
+The interactive prompt is untouched. Inverting a default that already behaves correctly would churn the one path that never caused the damage, so the fix sits on the headless branch alone. Measured at `0c953078` on 2026-08-20.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects that call.
