@@ -15,7 +15,7 @@ What an entry looks like and why a retired one is moved rather than deleted are 
 | "challenge the promotes" (receipt exists)                              | Challenge | review file only             |
 | "discuss", "respond to questions"                                      | Discuss   | review file only             |
 | "apply decisions", "commit", "ship the review"                         | Apply     | tracked files + memory files |
-| "cleanup", "delete the receipt"                                        | Cleanup   | one review file              |
+| "cleanup", "delete the receipt"                                        | Cleanup   | one receipt + its skips      |
 
 If the user re-pings the skill with no new phrase and a receipt exists, default to Discuss when any `Decision:` contains `?`, otherwise Apply.
 
@@ -168,9 +168,17 @@ Apply promotion edits one at a time via `Edit`. Claude Code's tool permission di
 
 This governs the tracked surfaces a promote lands in, which sit at `pwd` and take `Edit` from anywhere. The receipt and the memory entries are main-root scratch and follow the guard instead.
 
-As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 📦 for retired, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the review file. It stays as a receipt until Cleanup runs or the next Propose pass overwrites it.
+As each item resolves, update its status in the review file: flip the H2 emoji from 📝 to ✅ for applied, ⏭ for skipped, 📦 for retired, or 🤝 for handed off. Refresh the summary block counts at the top. Do not delete the file here. The sweep below decides whether it goes.
 
 **Chat shortcut:** the user replies with `all`, `none`, a comma-separated list of numbers, or `skip <nums>`. Write the matching verb into the `Decision:` slot of every item the reply names, `apply` for `all` or a bare list and `skip` for a `skip` reply, then run the parse above against the file. A reply of `none` writes nothing. A slot the reply does not name keeps its own value, so the receipt stays the source of truth and an empty slot still means take no action.
+
+### Sweep the receipt
+
+Count the items still 📝 pending once the parse above has run. Apply leaves one pending on `defer`, on empty, and on any unrecognized verb, so a receipt reaching this point may still be holding decisions.
+
+Leave the receipt in place when any remain. When none do, collect it per the collection rule in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`, which owns what a fold writes and which entry types take one.
+
+`claude-docs` Step 10 sweeps the same folder on the same rule once per shipped branch, and either may reach a receipt first. Whichever does, the other finds no file and moves on.
 
 End with: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Omit empty buckets. If anything is pending, remind the user they can refine `Decision:` lines and re-ping, run "discuss" for question items, or commit a skip with `skip <nums>` in chat.
 
@@ -178,15 +186,16 @@ End with: `✅ Applied: <nums> | ⏭ Skipped: <nums> | 📝 Pending: <nums>`. Om
 
 Trigger: user says "cleanup" or "delete the receipt" after Apply has run.
 
-Cleanup removes one receipt and nothing else. Apply is the only phase that moves a memory entry out of the pen, and it does so per approved item into `.claude/.tmp/memory-archive/`. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
+Cleanup folds one receipt's skips and removes that receipt, and does nothing else. It is the fallback route now that Apply and `claude-docs` Step 10 each collect a resolved receipt on their own, so it reaches a file those two left behind rather than being the only collector. Apply is still the only phase that moves a memory entry out of the pen, and it does so per approved item into `.claude/.tmp/memory-archive/`. A user asking to sweep stale memories wants Propose, which classifies entries and writes a decision slot per entry.
 
 If no `.claude/review/memory-review-*.md` exists at the main root, stop: `✅ No review receipt to clean up.` Every other refusal in this skill carries a message, and the phase reads a receipt before it does anything else.
 
 1. Read the latest `.claude/review/memory-review-*.md` at the main root and confirm Apply has run against it. If any item is still 📝 pending, stop and name the pending numbers.
-2. Delete that one file. Leave every other receipt beside it in place, because the pending test above covers the file it read and nothing has tested the rest.
-3. Leave every memory entry in place. A `Skip` decision is terminal, and applied promotions, governance handoffs, and user-type memories each stay as the review left them.
+2. Collect it per the collection rule in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`, folding each ⏭ skipped item before the file goes. The fold happens wherever a receipt is collected, so this phase runs the same rule the Apply sweep does.
+3. Delete that one file. Leave every other receipt beside it in place, because the pending test above covers the file it read and nothing has tested the rest.
+4. Leave every memory entry in the pen. A skip records the decline on the entry and keeps the file, and applied promotions, governance handoffs, and user-type memories each stay as the review left them.
 
-Do not promote, rewrite, or archive a memory entry. Receipts only.
+Do not promote or archive a memory entry. The skip fold is the one rewrite this phase makes, and it records a decline on an entry that stays in the pen.
 
 ## After completion
 
@@ -195,6 +204,7 @@ Output one line per action taken in the most recent phase:
 - `✅ Promoted: .claude/memory/<memory-file> → <target>`
 - `✅ Handed off: .claude/memory/<memory-file> → governance`
 - `📦 Retired: .claude/memory/<memory-file> → .claude/.tmp/memory-archive/`
-- `🗑  Swept: .claude/review/<review-file>`
+- `🗑  Swept: .claude/review/<review-file>, folded <n> skips`
+- `⏭ Kept: .claude/review/<review-file>, <n> items pending`
 
 If the user accepted nothing, output: `✅ No changes applied.`

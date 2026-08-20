@@ -93,7 +93,7 @@ An execution that picks other than the suggestion rewrites the `- Suggested:` li
 
 `aitk records validate plans` reports where a plan and that standard disagree: a filename that is not `feature-<slug>.md`, a missing required section, a files-to-touch entry naming no file, and a question carrying a suggestion with no answer slot. The same verb takes `groundwork`, `intake`, `memory`, and `teach`, which are governed the same way and were unreachable for the same reason. Nothing fires it automatically, because all five folders are gitignored and every check the repository runs reads changed files from git. It reports and never writes, since the folders are per-machine scratch with no history to recover a wrong repair from.
 
-`aitk records push` carries these folders off the disk they live on, and `aitk records pull` brings them back. Nine of them are backed: `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `task-archive`, `tasks`, and `teach`. The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every path a task file cites stays where it is.
+`aitk records push` carries these folders off the disk they live on, and `aitk records pull` brings them back. Ten of them are backed: `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `review-archive`, `task-archive`, `tasks`, and `teach`. The history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree, so every path a task file cites stays where it is.
 
 A person points it at a private repository once and both verbs refuse until they have, and `push` refuses when that origin is also a remote of the project, since the payload is the memory pen and the groundwork trails. `.husky/post-merge` runs the push after its archive loop, on every merge rather than only on one that closed a task. See [records](agents/records.md) for the refusal table.
 
@@ -149,6 +149,8 @@ Capture leads rather than trails because a routed fact edits a tracked file, whi
 If capture wrote at least one memory file, `claude-memory-review` then proposes a decision-ready fix scoped to those entries while context is fresh, otherwise it is skipped. It stops at Propose. Review the receipt and run Apply yourself, on its own commit separate from the feature.
 
 Run `claude-memory-review` standalone to curate the whole pen. An entry it retires moves to `.claude/.tmp/memory-archive/` rather than being deleted, since the folder is gitignored and a bulk pass has no undo.
+
+The receipt is collected once every item on it has been decided, and it survives untouched while any item is still pending. Whichever runs first takes it: Apply collects the receipt it has resolved, and `claude-docs` scans the folder on every shipped branch for one an earlier session left behind. Before the file goes, each declined item is folded into the entry it was about, since a promotion survives in its target and in git while a decline is recorded nowhere else. `aitk standards memory` states what a fold writes and which entry types take one.
 
 ### UI polish
 

@@ -215,7 +215,9 @@ Sweep reviews this session consumed, and sweep plans across the whole board. Res
 
 Every move and delete below is a shell operation, so send each as a plain single `Bash` command rather than joining a `mkdir -p` to the `mv` with `&&`, which is refused as compound from a linked worktree. The one edit inside an existing file is the `Plan:` retarget, and no verb covers it: read the task file and write it back whole with a heredoc, which the file-editing tools refuse from a linked worktree and no shell stream editor may do.
 
-**Plans.** Scan every file in `.claude/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target.
+### Plans
+
+Scan every file in `.claude/tasks/`, not only the ones this session touched. For each task file whose outcomes are now all `[x]`, check for a `Plan:` line directly under the title and parse the target.
 
 The line carries a markdown link, so read the target out of the parentheses rather than taking the rest of the line. A task still carrying the older bare-path form parses the same way once the link is absent, so accept both. Resolve the target against `.claude/tasks/` before routing on it, which lands `../plans/x.md` and `.claude/plans/x.md` on the same file.
 
@@ -242,17 +244,30 @@ A plan can serve more than one task, and archiving on the first task to close st
 
 Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans-archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
 
-**Reviews.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
+### Reviews
 
-If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention. Do not sweep any other `review-*.md` file.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables).
+If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention.
+
+Memory receipts sweep board-wide, like plans above and unlike the review receipt. Scan every `.claude/review/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
+
+For each receipt, count the H2 items still marked 📝 pending:
+
+- No pending item: fold it per the collection rule in `${CLAUDE_SKILL_DIR}/../../standards/memory.md`, then delete the receipt.
+- Any pending item: leave it and report the count. Pending items are decision state, and a branch shipping is not an operator deciding them.
+
+That standard owns what a fold writes and which entry types take one. `claude-memory-review` collects a receipt on the same rule, so neither body restates it.
+
+Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables), or any other `review-*.md` file.
 
 Output one line per file swept:
 
 - `📦 Archived: <path>` for a plan moved into `.claude/plans-archive/`
 - `⏭ Kept: <path>, still cited by <task-file>` for a plan another live task shares
 - `🧹 Deleted: <path>` for a swept review
+- `🧹 Deleted: <path>, folded <n> skips` for a swept memory receipt
+- `⏭ Kept: <path>, <n> items pending` for a memory receipt still holding decisions
 
 If nothing qualifies, skip this step silently.
 
