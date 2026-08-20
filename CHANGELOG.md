@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/erclx/aitk/compare/v1.3.0...v1.4.0) (2026-08-20)
+
+
+### Features
+
+* **ui:** drop color for a piped destination or NO_COLOR ([#1071](https://github.com/erclx/aitk/issues/1071)) ([f05e7d4](https://github.com/erclx/aitk/commit/f05e7d47df29cd7cf38e1d68810ea893538d9c50))
+
+
+### Bug Fixes
+
+* **design:** carry the uncertainty tag through the preview ([#1070](https://github.com/erclx/aitk/issues/1070)) ([bf6960e](https://github.com/erclx/aitk/commit/bf6960ea849f6d4a46a0a37805d5be0c80d3e2cb))
+
 ## [1.3.0](https://github.com/erclx/aitk/compare/v1.2.0...v1.3.0) (2026-08-20)
 
 
