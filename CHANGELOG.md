@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/erclx/aitk/compare/v1.1.0...v1.2.0) (2026-08-20)
+
+
+### Features
+
+* **tasks:** check intake folders for decided work nobody promoted ([#1065](https://github.com/erclx/aitk/issues/1065)) ([a31eba4](https://github.com/erclx/aitk/commit/a31eba486012a7c6b1ef4c966b003e68ef170442))
+
 ## [1.1.0](https://github.com/erclx/aitk/compare/v1.0.1...v1.1.0) (2026-08-20)
 
 
