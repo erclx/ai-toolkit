@@ -34,6 +34,14 @@ Does not govern:
 - Plain English over technical notation. If a section could be removed and the developer would still build correctly from wireframes and code alone, remove it.
 - Keep table headers and role names intact so the render tooling can parse the token tables.
 
+## The uncertainty tag
+
+A cell no source anchors ends in ` ? verify`, written inside the cell rather than as a trailing column, since a trailing marker breaks the table parse. A cell wrapping itself in a code span carries the tag inside the span, as in `` `#ffffff ? verify` ``. Both spellings parse.
+
+The renderer splits the tag off the value, so a swatch and a font sample are built from the value alone and the marker shows beside it. The preview also reports how many cells are anchored against how many are tagged, which is the reading a reviewer takes the record's overall confidence from.
+
+A prose section takes its uncertainty inline instead, in a sentence saying what is proposed and what has yet to confirm it. A tag appended to a paragraph renders verbatim.
+
 ## Sections
 
 Use `## Personality`, `## Color`, `## Typography`, `## Spacing`, `## Borders`, `## Motion`, and `## Iconography`. The token tables carry fixed headers the renderer reads.
