@@ -27,6 +27,7 @@ import { register as context } from '@/commands/context'
 import { register as markdown } from '@/commands/markdown'
 import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
+import { register as audits } from '@/commands/audits'
 import { PROJECT_ROOT } from '@/project-root'
 
 const GREY = '\x1b[0;90m'
@@ -63,6 +64,7 @@ function showHelp(): void {
     `${GREY}│${NC}    markdown [cmd]     ${GREY}# Report markdown against the attribute standards (audit)${NC}`,
     `${GREY}│${NC}    records [cmd]      ${GREY}# Session records under .claude/ (validate, push, pull)${NC}`,
     `${GREY}│${NC}    sessions [cmd]     ${GREY}# Resolve live sessions to worktree and branch (list)${NC}`,
+    `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
     `${GREY}│${NC}`,
     `${GREY}│${NC}  ${WHITE}Sandbox:${NC}`,
     `${GREY}│${NC}    aitk sandbox             ${GREY}# Interactive scenario picker${NC}`,
@@ -101,6 +103,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk records validate plans`,
     `${GREY}│${NC}    aitk records push --json`,
     `${GREY}│${NC}    aitk sessions list --json`,
+    `${GREY}│${NC}    aitk audits run --json`,
     `${GREY}└${NC}`,
   ]
   console.log(lines.join('\n'))
@@ -159,5 +162,6 @@ context(program)
 markdown(program)
 records(program)
 sessions(program)
+audits(program)
 
 program.parse()
