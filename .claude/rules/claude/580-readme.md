@@ -16,4 +16,4 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/readme.md` for voice, structure, required and optional sections, heading hierarchy, badge classes, per-project-type content, and what to link out rather than inline. It is the single source.
+- Follow the readme standard for voice, structure, required and optional sections, heading hierarchy, badge classes, per-project-type content, and what to link out rather than inline. It is the single source. Read it with `aitk standards readme`.

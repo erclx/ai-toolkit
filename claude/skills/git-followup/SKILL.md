@@ -32,7 +32,7 @@ A missing tracking ref is no longer a guard. An open pull request proves the bra
 5. Check for existing review comments: `gh api 'repos/{owner}/{repo}/pulls/<number>/comments' --jq 'length'`, resolving `<number>` from `gh pr view --json number`.
 6. Route on the invocation and the comment count.
    - When invoked with `reply-owned`, skip this step's comment: the caller posts the reply.
-   - Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first running the scan in `.claude/standards/publish.md` against it, or `${CLAUDE_SKILL_DIR}/../../standards/publish.md` when the project does not have it, since the hook does not see an inline comment body.
+   - Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first running the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against it, since the hook does not see an inline comment body.
    - If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
 
 ## After completion

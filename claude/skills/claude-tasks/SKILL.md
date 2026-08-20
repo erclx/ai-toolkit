@@ -7,7 +7,7 @@ description: Creates a task file in `.claude/tasks/` with the filename, phase la
 
 Owns the two operations that bring a task file into existence and take it out of the folder. `claude-docs` edits the contents of a task that already exists, marking outcomes `[x]` and sweeping the plans those tasks cite. Do not mark outcomes here and do not archive a plan on its own.
 
-Read `.claude/standards/tasks.md` from the project root before writing any file, or `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` when the project does not have it. It holds the filename convention, the frontmatter contract, and the file format. Do not work them from memory.
+Read `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` before writing any file. It holds the filename convention, the frontmatter contract, and the file format. Do not work them from memory.
 
 ## Guards
 
@@ -31,11 +31,11 @@ Accept work whose origin is the conversation itself only when the user says so e
 
 List the existing filenames in `.claude/tasks/` and read `index.md` for what each holds. Propose the next label from what is already on the board, and say which neighbors it sits between.
 
-Do not derive the label from a version file. `.claude/standards/versioning.md` permits free renumbering, so the board is the only surface that knows what a label currently means. Pad the phase to two digits in the filename, since index entries sort by filename alone and a bare `v9.0` sorts after `v15.0`.
+Do not derive the label from a version file. `${CLAUDE_SKILL_DIR}/../../standards/versioning.md` permits free renumbering, so the board is the only surface that knows what a label currently means. Pad the phase to two digits in the filename, since index entries sort by filename alone and a bare `v9.0` sorts after `v15.0`.
 
 ### Step 3: write the file
 
-Write `.claude/tasks/vXX.Y-<slug>.md` following the format in `.claude/standards/tasks.md`. Include a link line only when the file or folder it names exists. A link to a plan nobody has written yet is the broken pointer the archive rules exist to prevent.
+Write `.claude/tasks/vXX.Y-<slug>.md` following the format in `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`. Include a link line only when the file or folder it names exists. A link to a plan nobody has written yet is the broken pointer the archive rules exist to prevent.
 
 Write `Plan:`, `Groundwork:`, and `Intake:` as markdown links relative to `.claude/tasks/`, as in `Plan: [feature-<slug>](../plans/feature-<slug>.md)`. Leave `Issue:` a bare `#NNN`. A task written in the older bare-path form still parses, so it costs the board a clickable line rather than an archive, but it leaves the board in two shapes for every reader after.
 
@@ -47,7 +47,7 @@ Write it immediately. Claude Code's tool permission dialog is the confirmation g
 
 A task file with no row is a dropped task, so name the surface it lands on in the same pass that creates it. A task that would plausibly be planned within the next few waves takes a row under `## Needs a plan` in `.claude/tasks/priority.md`, positioned by where it sits against the rows already there, with the reason for that position in its `Waiting on` cell. Anything else takes a line in `.claude/tasks/backlog.md`, which is unordered and where in the file it goes means nothing.
 
-The test and both file shapes are in `.claude/standards/tasks.md`. From a linked worktree the file-editing tools refuse the main root, so a row lands through the same `Bash` route the file itself took.
+The test and both file shapes are in `${CLAUDE_SKILL_DIR}/../../standards/tasks.md`. From a linked worktree the file-editing tools refuse the main root, so a row lands through the same `Bash` route the file itself took.
 
 Say which surface it went to and why in the report. The call is a judgment restated on every sweep rather than a property of the task, and a placement with no stated reason is one the next sweep re-derives from nothing.
 
@@ -93,7 +93,7 @@ Each reason has one resolution and none of them is to archive around it:
 
 - `open-outcomes`: the named outcomes are unmarked or genuinely open. Run `claude-docs` when the work shipped and nothing marked it. Leave the task on the board when the outcome is real. Cut the outcomes first when the work is being abandoned, so the board records what was dropped.
 - `plan-unswept`: stop and route to `claude-docs`, which owns the plans sweep and the last-live-citation rule. `❌ Plan not yet swept. Run /claude-docs first, then archive.`
-- `ambiguous`: two tasks name one pull request, which is the misfile `.claude/standards/tasks.md` rules out. Resolve the citation by hand, since no sweep repairs it.
+- `ambiguous`: two tasks name one pull request, which is the misfile `${CLAUDE_SKILL_DIR}/../../standards/tasks.md` rules out. Resolve the citation by hand, since no sweep repairs it.
 - `no-match`: the stem or number names nothing on the board. Check the name against the listed stems.
 - `bad-input`: the command line was wrong rather than the board. Read the message, fix the arguments, and run it again. Nothing on the board needs repair, which is what separates this from the two above.
 

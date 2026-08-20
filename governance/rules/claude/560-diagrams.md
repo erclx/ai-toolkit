@@ -9,7 +9,7 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/diagrams.md` for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source.
+- Follow the diagrams standard for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source. Read it with `aitk standards diagrams`.
 - A diagram entry carries structure and flow, not implementation. Read the standard before adding or revising a kind.
 
 ## Scope

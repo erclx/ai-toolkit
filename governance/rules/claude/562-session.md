@@ -16,4 +16,4 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/session.md` for the filename and location, frontmatter, the core sections, and the write and read procedures. It is the single source.
+- Follow the session standard for the filename and location, frontmatter, the core sections, and the write and read procedures. It is the single source. Read it with `aitk standards session`.

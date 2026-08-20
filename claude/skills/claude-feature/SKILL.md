@@ -25,7 +25,7 @@ Also read these when the feature touches code or UI. Skip them for prose, docs, 
 - `.claude/DESIGN.md`: tokens, typography, spacing, and component rules
 - `.claude/wireframes/index.md` + the surface files relevant to the feature: intended UI layout and behavior. Read `index.md` first, then load only the per-surface files (`.claude/wireframes/<surface>.md`) the feature actually touches. Do not read the whole folder speculatively.
 
-When the plan adds or revises a surface, the wireframe file follows `.claude/standards/wireframes.md`, or `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md` when the project does not have it.
+When the plan adds or revises a surface, the wireframe file follows `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md`.
 
 Coding standards live in `.claude/rules/`. Claude Code loads them automatically. Path-scoped rules apply to the files they match.
 
@@ -39,7 +39,7 @@ Open each file before describing what is in it. A count or a claim carried from 
 
 ## Step 3: build the plan
 
-The section list, what each section holds, the suggested-and-answer contract, and the lifecycle are fixed by `.claude/standards/plan.md`, or `${CLAUDE_SKILL_DIR}/../../standards/plan.md` when the project does not have it. Read it before writing the file and follow it rather than working the shape from memory.
+The section list, what each section holds, the suggested-and-answer contract, and the lifecycle are fixed by `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. Read it before writing the file and follow it rather than working the shape from memory.
 
 What this skill adds on top of the standard:
 
@@ -85,7 +85,7 @@ Derive a 2-to-4-word kebab-case slug from the feature description. Write the ful
 
 From a linked worktree the file-editing tools refuse that path, so the plan goes out through `Bash`. Send the `mkdir -p` and the heredoc as two plain commands rather than joining them with `&&`, which is refused as compound.
 
-The file follows the template in `.claude/standards/plan.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every plan.
+The file follows the template in `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. Copy the shape from there rather than from this body, so one edit to the standard moves every plan.
 
 Run `aitk records validate plans` after writing the file when the CLI is on PATH. It reports a section, a filename, or an answer slot that does not hold, and it writes nothing.
 

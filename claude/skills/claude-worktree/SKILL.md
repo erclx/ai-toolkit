@@ -34,7 +34,7 @@ The directory test separates the defect from a genuinely bare repository, which 
 
 Try each source in order. Stop at the first match.
 
-1. **Plan matched to current branch.** Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. An empty result falls through to the next source here rather than becoming `latest`, since the slug is one candidate among several. If `<main-root>/.claude/plans/feature-<slug>.md` exists, use `<slug>`.
+1. **Plan matched to current branch.** Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. An empty result falls through to the next source here rather than becoming `latest`, since the slug is one candidate among several. If `<main-root>/.claude/plans/feature-<slug>.md` exists, use `<slug>`.
 2. **Single plan file.** List `<main-root>/.claude/plans/feature-*.md`. If exactly one match, derive `<slug>` from the filename.
 3. **Multiple plan files, no branch match.** Ask the user which plan. Show the candidate slugs as a numbered list. Do not pick.
 4. **Current branch.** When no plan exists, use the `<slug>` from step 1 if it is not `main` or `master`.
@@ -54,7 +54,7 @@ Then test both names the entry is about to claim. Neither read needs a worktree,
 
 Leave both in place. Resolving either automatically risks the wrong one.
 
-The two tests catch different collisions. The branch test misses the one `.claude/standards/slug.md` records, where two branches differing only in type collapse onto one name: `feat/foo` and `fix/foo` are distinct refs and reach one directory. The directory test is the only read that sees it.
+The two tests catch different collisions. The branch test misses the one `${CLAUDE_SKILL_DIR}/../../standards/slug.md` records, where two branches differing only in type collapse onto one name: `feat/foo` and `fix/foo` are distinct refs and reach one directory. The directory test is the only read that sees it.
 
 The branch test fires on the tier 1 and tier 4 sources whenever the branch the session started on is already conventional, since a name derived from that branch resolves back onto it. Stopping is the answer there. The concern already has a branch, git refuses a second under the same name, and the bare-name rename this replaces only carried the collision forward to the `git-branch` step.
 
@@ -82,7 +82,7 @@ Call `EnterWorktree` with `name: "<name>"`. Claude Code's tool permission dialog
 git branch -m worktree-<name> <type>/<name>
 ```
 
-The slug transform drops a leading type segment, so `<name>` is what every downstream derivation reads back out of the typed branch. See `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it.
+The slug transform drops a leading type segment, so `<name>` is what every downstream derivation reads back out of the typed branch. See `${CLAUDE_SKILL_DIR}/../../standards/slug.md`.
 
 Step 2 already cleared the target name, so the rename runs unguarded here. Do not repeat the test. A ref created between the two points is a second session racing this one, which a re-read narrows rather than closes.
 

@@ -28,14 +28,12 @@ The greenfield path needs a personality paragraph to propose against, and stops 
 
 ## Step 2: read source signals in parallel
 
-Read these from the project root on both paths, skipping any that do not exist:
+Read these on both paths, skipping any that do not exist:
 
 - `CLAUDE.md`: voice, personality, spelling rules
 - `.claude/REQUIREMENTS.md`: the `## Personality` paragraph, worldview, non-goals
-- `.claude/standards/markdown.md`: word, punctuation, and formatting constraints
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: word, punctuation, and formatting constraints
 - The `write-human` skill: tone and sentence construction constraints
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 On the source path, also read the UI surfaces matched in Step 1 plus `docs/agents/output-shape.md` and `docs/index.md` for output shape or framing rules already documented.
 
@@ -55,7 +53,7 @@ Use the returned content as the target shape. Keep every section heading and eve
 
 ## Step 4: fill the template
 
-Walk each section once. Follow `.claude/standards/markdown.md` for punctuation and word choice throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
+Walk each section once. Follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for punctuation and word choice throughout: no em dashes, no semicolons, no marketing buzzwords. Use commas or separate sentences instead.
 
 Mark any cell not traced to a source value by appending ` ? verify` inside the cell value, never as a trailing column. The cell stays inside the table shape: `| #ffffff ? verify |`. A trailing `| ? verify` after the row breaks the parser. A prose section takes its uncertainty inline instead, for example `Proposed 150ms ease-out, not yet confirmed.`, because a trailing tag on a sentence renders raw in the preview.
 

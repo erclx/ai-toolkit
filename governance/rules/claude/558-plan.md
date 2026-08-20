@@ -20,4 +20,4 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/plan.md` for the filename and slug, the required sections, the suggested-and-answer contract, and the lifecycle. It is the single source.
+- Follow the plan standard for the filename and slug, the required sections, the suggested-and-answer contract, and the lifecycle. It is the single source. Read it with `aitk standards plan`.

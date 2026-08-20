@@ -6,17 +6,15 @@ disable-model-invocation: true
 
 # Create skill
 
-Read these files from the project root in parallel:
+Read these files in parallel:
 
-- `.claude/standards/skill.md`: skill structure, skill types, frontmatter fields, invocation rules
-- `.claude/standards/markdown.md`: banned words, punctuation, and formatting for skill body text
+- `${CLAUDE_SKILL_DIR}/../../standards/skill.md`: skill structure, skill types, frontmatter fields, invocation rules
+- `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for skill body text
 - The `write-human` skill: voice, rhythm, and sentence construction for skill body text
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Guards
 
-- If neither `.claude/standards/skill.md` nor `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is present, stop: `❌ skill.md standard not found. Run aitk standards install first.`
+- If `${CLAUDE_SKILL_DIR}/../../standards/skill.md` is not present, stop: `❌ skill.md standard not found. Reinstall the aitk plugin.`
 
 ## Steps
 

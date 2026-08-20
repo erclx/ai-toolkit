@@ -66,8 +66,8 @@ Print one grouped proposal block. Omit empty groups.
 
 ## Reminder
 
-Scaffold each rule with create-rule and follow .claude/standards/rule.md.
-Follow .claude/standards/context.md for each new context entry.
+Scaffold each rule with create-rule, which carries the rule standard.
+Follow the context standard for each new context entry.
 Run aitk indexes regen after adding context entries.
 ```
 

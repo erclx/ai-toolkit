@@ -20,4 +20,4 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/skill.md` for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source.
+- Follow the skill standard for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source. Read it with `aitk standards skill`.

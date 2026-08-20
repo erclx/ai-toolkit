@@ -17,4 +17,4 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/memory.md` for the filename and type prefix, the frontmatter, the body shape per type, links between entries, and the lifecycle. It is the single source.
+- Follow the memory standard for the filename and type prefix, the frontmatter, the body shape per type, links between entries, and the lifecycle. It is the single source. Read it with `aitk standards memory`.

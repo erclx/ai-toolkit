@@ -88,11 +88,11 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 `governance`, `standards`, and `wiki` are skippable:
 
-- `--skip governance`: leave `.claude/rules/` empty. Standards still install, so `.claude/standards/markdown.md` lands with nothing pointing at it and no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
-- `--skip standards`: leave standards out. The governance rules still reference `.claude/standards/`, so their authority lines resolve to nothing for a reader following the path. Toolkit skills are unaffected, since each falls back to the copy in its own plugin root. `aitk standards <name>` searches the corpus inside the CLI's own package behind both project roots, so it prints a standard in a project that skipped the install, and `aitk markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data. What the skip costs is the editable copy rather than the enforcement.
+- `--skip governance`: leave `.claude/rules/` empty, so no coding standard loads on a file match. Standards still install, and the installed copy is the first root `aitk standards <name>` resolves, so it stays the editable seed a project owns. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
+- `--skip standards`: leave standards out. The governance rules are unaffected, since each authority line names `aitk standards <name>` and that command answers from the corpus inside the CLI's own package. Toolkit skills are unaffected too, each naming the copy in its own plugin root. `aitk standards <name>` searches the corpus inside the CLI's own package behind both project roots, so it prints a standard in a project that skipped the install, and `aitk markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data. What the skip costs is the editable copy rather than the enforcement.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
-That standards fallback carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.
+The plugin corpus carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.
 
 ## Add a domain later
 

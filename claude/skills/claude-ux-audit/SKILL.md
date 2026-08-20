@@ -16,10 +16,8 @@ Read these in parallel from the project root, skipping any that do not exist:
 
 - `CLAUDE.md`: project type and conventions
 - `.claude/DESIGN.md`: visual intent, tokens, typography, spacing rules
-- `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `.claude/standards/wireframes.md`, these carry layout and intent, not implementation detail.
+- `.claude/wireframes/index.md` + every `.claude/wireframes/<surface>.md`: intended UI layout, UI copy, interaction rules. Surfaces are loaded one file at a time during Step 3. Per `${CLAUDE_SKILL_DIR}/../../standards/wireframes.md`, these carry layout and intent, not implementation detail.
 - `.claude/REQUIREMENTS.md`: feature scope and non-goals
-
-Read a standard from `${CLAUDE_SKILL_DIR}/../../standards/` instead when the project does not have it.
 
 ## Step 2: identify surfaces
 
@@ -59,7 +57,7 @@ If nothing is wrong, use: `✅ No observations.`
 
 ### Persist
 
-Derive `<slug>` per `.claude/standards/slug.md`, or `${CLAUDE_SKILL_DIR}/../../standards/slug.md` when the project does not have it. Fall back to `latest` on an empty result.
+Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
 Write the full report directly to `.claude/review/ux-audit-<slug>.md` at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`. Create the directory if it does not exist. Always overwrite.
 

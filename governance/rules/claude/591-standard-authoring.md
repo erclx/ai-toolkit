@@ -17,5 +17,5 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/standard.md` for a standard's frontmatter, shape, scope, and success criterion. It is the single source.
+- Follow the standard-authoring standard for a standard's frontmatter, shape, scope, and success criterion. It is the single source. Read it with `aitk standards standard`.
 - Read it before writing or editing a standard. Do not work the shape from memory.
