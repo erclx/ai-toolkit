@@ -25,6 +25,11 @@ SANDBOX_UNDECLARED_CEILING=47
 # a new arrival against, and a config file would absorb the arrival silently.
 GOV_EXPECTED_UNREFERENCED="260-shadcn 320-tanstack-query"
 
+# The retained counts the audit stage compares each run against. Spelled here
+# rather than derived, because this script only ever names the file in a remedy
+# a reader has to be able to open, and `aitk audits run` owns writing it.
+AUDITS_BASELINE=".claude/audits/baseline.json"
+
 check_dependencies() {
   command -v bun >/dev/null 2>&1 || log_error "bun is not installed"
 }
@@ -209,10 +214,11 @@ seed_entry_count() {
     awk '{ total += $1 } END { print total + 0 }'
 }
 
-# One numeric summary key out of a coverage report. The per-scenario objects carry
-# neither key this is called with, so the match reaches the top level alone and
-# the caller does not depend on the order the keys are emitted in.
-sandbox_summary_field() {
+# One numeric summary key out of a command's JSON record. Every caller passes a
+# name the nested objects in that record do not carry, so the match reaches the
+# top level alone and the caller does not depend on the order the keys are
+# emitted in.
+json_summary_field() {
   printf '%s' "$2" | grep -o "\"$1\":[0-9]\+" | grep -o '[0-9]\+'
 }
 
@@ -466,8 +472,8 @@ main() {
     # `|| x=""` on both, because a grep that matches nothing exits non-zero and
     # errexit would take the script down at the assignment, before the guard
     # below could name what went missing.
-    total=$(sandbox_summary_field totalScenarios "$coverage_output") || total=""
-    armed=$(sandbox_summary_field armedScenarios "$coverage_output") || armed=""
+    total=$(json_summary_field totalScenarios "$coverage_output") || total=""
+    armed=$(json_summary_field armedScenarios "$coverage_output") || armed=""
     if [ -z "$total" ] || [ -z "$armed" ]; then
       log_error "The coverage report carried no scenario totals, so the stage measured nothing. Run bun src/cli.ts sandbox coverage --json."
     fi
@@ -476,6 +482,68 @@ main() {
       log_error "$undeclared of $total scenarios declare no expectation, over the ceiling of $SANDBOX_UNDECLARED_CEILING. Declare expectations on the new scenario, or raise SANDBOX_UNDECLARED_CEILING in this script and say which scenario shipped unarmed."
     fi
     log_info "$armed of $total scenarios declare expectations, $undeclared undeclared against a ceiling of $SANDBOX_UNDECLARED_CEILING"
+  fi
+
+  # The three stages above gate on the three findings here that are facts, and
+  # this stage reports the rest. It runs the whole set anyway rather than only
+  # what those stages skip, because the aggregate's own value is one verdict
+  # over every audit, and a stage measuring a subset would report a health this
+  # repository never took.
+  #
+  # The duplicate walk costs 0.8s wall against roughly 4.4s of processor,
+  # measured on the authoring machine at 12 verbs run together. That is under
+  # every other stage in this script, which is what settles the open question
+  # about whether the pipeline can afford it.
+  #
+  # This reports and never fails. Growth in a judgment count is the thing the
+  # baseline exists to make visible, and failing a push on one would teach a
+  # contributor to route around the stage, which is the split every audit stage
+  # here already keeps. A fact still fails the push, at the specific stage above
+  # that names its own remedy.
+  log_step "Audit set"
+  local audits_output audits_status=0 audits_grown audits_shrunk audits_facts audits_unmeasured audits_absent audits_unrecorded
+  audits_output=$(cd "$PROJECT_ROOT" && bun src/cli.ts audits run --json 2>/dev/null) || audits_status=$?
+  if [ -z "$audits_output" ]; then
+    log_warn "Skipped, the audit set did not report (exit $audits_status)"
+  else
+    audits_grown=$(json_summary_field grown "$audits_output") || audits_grown=""
+    audits_shrunk=$(json_summary_field shrunk "$audits_output") || audits_shrunk=""
+    audits_facts=$(json_summary_field facts "$audits_output") || audits_facts=""
+    audits_unmeasured=$(json_summary_field unmeasured "$audits_output") || audits_unmeasured=""
+    audits_absent=$(json_summary_field absent "$audits_output") || audits_absent=""
+    audits_unrecorded=$(json_summary_field unrecorded "$audits_output") || audits_unrecorded=""
+
+    # An absent field is a record this stage cannot read, which is not the same
+    # as a run with nothing to report. Reading it as zero would print a clean
+    # line over a summary nobody parsed.
+    if [ -z "$audits_grown" ] || [ -z "$audits_facts" ] || [ -z "$audits_unmeasured" ]; then
+      log_warn "The audit record carried no summary, so this stage measured nothing. Run bun src/cli.ts audits run."
+    else
+      # An absent per-machine folder is the ordinary state here rather than a
+      # finding, since every one of them is gitignored and CI carries none. It
+      # is still stated, because a stage naming only what it measured claims a
+      # coverage it does not have.
+      if [ -n "$audits_absent" ] && [ "$audits_absent" -gt 0 ]; then
+        log_info "$audits_absent per-machine corpus/corpora absent, so unmeasured here by design"
+      fi
+      if [ "$audits_unmeasured" -gt 0 ]; then
+        log_warn "$audits_unmeasured audit(s) did not report, so the set is incomplete. Run bun src/cli.ts audits run."
+      fi
+      if [ "$audits_facts" -gt 0 ]; then
+        log_warn "$audits_facts audit(s) carry a finding that is a fact. The stage above names the remedy."
+      fi
+      if [ -n "$audits_unrecorded" ] && [ "$audits_unrecorded" -gt 0 ]; then
+        log_warn "$audits_unrecorded tracked audit(s) have no recorded floor. Take one with bun src/cli.ts audits run --record."
+      fi
+      if [ "$audits_grown" -gt 0 ]; then
+        log_warn "$audits_grown measure(s) grew against $AUDITS_BASELINE. Run bun src/cli.ts audits run to see which, then fix them or re-record and say why."
+      else
+        log_info "No measure grew against $AUDITS_BASELINE"
+      fi
+      if [ -n "$audits_shrunk" ] && [ "$audits_shrunk" -gt 0 ]; then
+        log_info "$audits_shrunk measure(s) fell against $AUDITS_BASELINE"
+      fi
+    fi
   fi
 
   # The plugin is the second delivery path and this is the only stage gating it,
