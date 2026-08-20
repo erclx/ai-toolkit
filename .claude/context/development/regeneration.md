@@ -1,11 +1,11 @@
 ---
 title: Regeneration stages
-description: The regenerate-then-assert stages, covering the consumed copies of standards, snippets, internal content, and rules, and the hero image with its single-writer rule
+description: The regenerate-then-assert stages, covering the consumed copies of standards, snippets, internal content, and rules, the tooling path contract, and the hero image with its single-writer rule
 ---
 
 # Regeneration stages
 
-Two stages regenerate a tracked artifact and then assert it did not move. Regenerating and then asserting is what turns an edit to a source surface into a failure that names the stale copy, rather than a copy nothing reads as wrong. The Indexes and Skill references stages share the shape, and their gotchas sit in `.claude/context/development/verification.md`.
+Three stages regenerate a tracked artifact and then assert it did not move. Regenerating and then asserting is what turns an edit to a source surface into a failure that names the stale copy, rather than a copy nothing reads as wrong. The Indexes and Skill references stages share the shape, and their gotchas sit in `.claude/context/development/verification.md`.
 
 ## Consumed copies
 
@@ -16,6 +16,14 @@ The assert reads the unstaged diff, so the first `bun run check` after an edit t
 Three of the four are whole-directory mirrors. `.claude/rules/` is not, because the toolkit authors 48 rules and consumes 30 of them, and installing the framework and ui rules here would fire a React rule on a fixture this repository writes. It resolves through `aitk gov regen` instead, which reads the stack named in `internal/governance.toml` and installs it with the same machinery `aitk gov install` uses for a target.
 
 The producer clears `.claude/rules/` before installing, so a rule dropped from the record disappears rather than lingering as an unsourced file. That is also why `internal/rules/` exists: a rule governing toolkit authoring alone needs a source somewhere outside `governance/rules/`, which ships to every target. The internal mirror excludes `internal/rules/` so those rules land at one path rather than two.
+
+## Tooling paths
+
+The Tooling paths stage runs `scripts/core/regen-tooling-paths.sh` and then asserts no drift on `claude/skills/toolkit-cli/SKILL.md`. The script rewrites the block between the `generated:tooling-paths` markers with every file each installable stack ships under `configs/`, which is the list a session reads before deciding whether `aitk tooling sync` is safe to run against a project.
+
+Stack names come from `aitk tooling list --json` rather than from a walk of `tooling/`, so a stack `isStackExcluded` rejects stays out of a contract describing what the verb does. The block is the only part of the body the script owns, and a missing start marker fails the stage rather than appending a second block.
+
+The whole file is asserted rather than the block alone, since a drift check over a fragment needs a parser and the file has one writer for that region and one author for the rest. What that costs is a stage that goes red when the surrounding prose is edited and left unstaged, which is the Consumed copies shape above and clears the same way.
 
 ## Hero
 
