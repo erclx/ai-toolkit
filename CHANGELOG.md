@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/erclx/aitk/compare/v1.0.1...v1.1.0) (2026-08-20)
+
+
+### Features
+
+* **standards:** fan the glossary reference out to claude-teach ([#1057](https://github.com/erclx/aitk/issues/1057)) ([c7e9261](https://github.com/erclx/aitk/commit/c7e9261205500d8a66e565738f790ef0aebbd266))
+
 ## [1.0.1](https://github.com/erclx/aitk/compare/v1.0.0...v1.0.1) (2026-08-20)
 
 
