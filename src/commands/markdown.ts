@@ -11,6 +11,7 @@ import {
   scanBans,
 } from '@/markdown/scan'
 import {
+  BASELINE,
   CHECKPOINTS,
   type Checkpoints,
   measureStructure,
@@ -418,6 +419,9 @@ function reportCadence(
   logInfo(
     'A healthy range differs by surface, so neither number gates and neither names a file wrong. Terse reference prose sits below the range a page written for a reader sits in.',
   )
+  logInfo(
+    `The corpus these numbers were read against measured ${BASELINE.flatShare} percent flat overall, and its files carrying ${BASELINE.floor} or more measured paragraphs ran from ${BASELINE.low} to ${BASELINE.high} percent with a median near ${BASELINE.median}. Compare a rate against that rather than against zero.`,
+  )
 
   const measured = reports.reduce(
     (sum, report) => sum + report.structure.cadence.measured,
@@ -441,7 +445,7 @@ function reportCadence(
   )
 
   logInfo(
-    `${plural(measured, 'paragraph')} measured, ${flat} at or under the spread checkpoint and ${repeating} past the opener checkpoint.`,
+    `${plural(measured, 'paragraph')} measured, ${flat} at or under the spread checkpoint (${Math.round((flat / measured) * 100)} percent) and ${repeating} past the opener checkpoint.`,
   )
 
   const carrying = reports

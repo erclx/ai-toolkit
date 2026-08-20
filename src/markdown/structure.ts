@@ -55,6 +55,34 @@ export const CHECKPOINTS = {
 } as const
 
 /**
+ * The reading a cadence rate is compared against, rather than a checkpoint.
+ *
+ * A count with nothing beside it reads as a finding, and the two counts the
+ * cadence step reports have no range a reader can place them in: twelve flat
+ * paragraphs out of forty says the same as two without one. Naming that a
+ * healthy range differs by surface states that a range exists rather than what
+ * it looks like, so the reading travels with the command.
+ *
+ * This is an observation rather than a rule, which is why it sits apart from
+ * `CHECKPOINTS`. Nothing compares a run against it and no exit code reads it. A
+ * project whose corpus is entirely terse reference prose is expected to sit
+ * above the high end, and that is the measure working.
+ *
+ * Read across 483 markdown files at `6c273324` on 2026-08-20. A number here
+ * goes stale against the corpus it describes with nothing comparing the two, so
+ * re-measure before moving one.
+ */
+export const BASELINE = {
+  /** Share of every measured paragraph sitting at or under the spread checkpoint. */
+  flatShare: 8,
+  /** Measured paragraphs a file needs before its own rate means anything. */
+  floor: 10,
+  low: 0,
+  median: 6,
+  high: 21,
+} as const
+
+/**
  * Columns a source line wraps at when rendered.
  *
  * Nothing in this repository sets a line width and entries are authored one

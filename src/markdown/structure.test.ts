@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { bodyLines } from '@/markdown/scan'
 import {
+  BASELINE,
   CHECKPOINTS,
   type Checkpoints,
   measureStructure,
@@ -110,6 +111,26 @@ describe('CHECKPOINTS', () => {
       spread: 5,
       opener: 2,
     })
+  })
+})
+
+describe('BASELINE', () => {
+  it('should ship the reading a cadence rate is compared against', () => {
+    // Asserted the way `CHECKPOINTS` is, and for a different reason. No measure
+    // reads these, so nothing else in the suite would notice one moving, and
+    // the report prints all five straight into the legend a reader acts on.
+    expect(BASELINE).toEqual({
+      flatShare: 8,
+      floor: 10,
+      low: 0,
+      median: 6,
+      high: 21,
+    })
+  })
+
+  it('should sit the median inside the range it is drawn from', () => {
+    expect(BASELINE.median).toBeGreaterThanOrEqual(BASELINE.low)
+    expect(BASELINE.median).toBeLessThanOrEqual(BASELINE.high)
   })
 })
 
