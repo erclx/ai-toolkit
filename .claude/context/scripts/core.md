@@ -13,7 +13,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `verify.sh`, run as `bun run check`: repairs `core.bare`, then format, four drift stages, the skill-path, plugin-boundary, seed-independence, context-citation, seed-standards, and skill-requirement guards, and spell always run. Shell, types, and tests gate on changed files unless `--all`
 - `update.sh`, run as `bun run update`: interactive dep update via `bun update --interactive`, then verify
 - `clean.sh`, run as `bun run clean`: wipes `node_modules/`, clears bun cache, reinstalls from lockfile
-- `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context
+- `snapshot.sh`, run as `bun run snapshot`: writes the project file tree to `.claude/.tmp/project/PROJECT-SNAPSHOT.md` for Claude chat context, framing entirely to stderr
 - `regen-indexes.sh`: thin wrapper calling `aitk indexes regen` by path so a linked worktree uses its own CLI
 - `regen-hero.sh`: fills `assets/hero.html.tmpl` from five catalogs so no count on the README frame is hand-maintained. Clone-only, and it writes the HTML while `aitk capture` renders the image and stamps both sides with a digest.
   - The catalogs reach `bun --eval` as files under a `mktemp -d` rather than as environment variables, because Linux caps a single env entry at 131,072 bytes and `standards list --json` crossed it at 136,227 once two standards landed, up from 114,813
@@ -21,6 +21,7 @@ description: Repo maintenance scripts, the guard stages check fires, and the bar
 - `check-skill-paths.sh`: fails when a file under `claude/skills/` references a `wiki/` path, which resolves to nothing in a target
 - `check-plugin-boundary.sh`: walks `claude/` with symlinks followed and fails when a shipped file resolves under `internal/`
 - `check-seed-independence.sh`: walks the `.md` under every root `collect_seed_roots` discovers and fails on the literal token `aitk`, so seed prose a target reads as instruction about itself never names a binary that target may not have
+- `check-color-source.sh`: walks `scripts/` and fails when any `.sh` other than `scripts/lib/ui.sh` spells an SGR escape, so one answer sits behind every bash writer
 
 ## What the hero frame chooses and what it samples
 
@@ -64,6 +65,8 @@ The test strips every inherited `GIT_*` variable before building its fixtures. G
 ### The plugin boundary stage
 
 - `check-plugin-boundary.sh` collects violations and passes on an empty collection, so a missing `claude/` or a missing `realpath` would report the boundary clean or blame a leak for an absent tool. Both are guarded up front and exit 1 naming the cause. Anything added to that walk needs the same treatment, since a producer that fails and a tree that is clean both arrive as zero rows.
+
+`check-color-source.sh` takes that treatment too, exiting 1 when `scripts/lib/ui.sh` is absent rather than reporting a tree it never measured. Its walk stops at `scripts/` on purpose, since the seed scripts under `tooling/*/configs/scripts/` have to keep escapes of their own: a target that installs them has no shared library to source. It matches SGR alone, which leaves the cursor and erase sequences an interactive prompt writes legal.
 
 The walk sat inside `find -L claude/ -type f` in a process substitution whose status nothing read, so a missing `claude/` made `find` fail, the loop ran zero times, and the guard exited 0 without walking anything. Seeding a violation turned it red, which is why it looked verified: proving a gate goes red on a planted violation does not prove it goes red when its input never arrives, and the right probe is removing the input root. The same shape reaches a consumer reading structured output, since both standards-audit hooks read findings out of an `aitk markdown audit --json` record and the verb writes no record at all outside a git repository, so the hook reported a file clean that it had never checked. Assert the whole payload arrived before reading any field out of it.
 

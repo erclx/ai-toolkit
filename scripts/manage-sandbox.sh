@@ -320,6 +320,8 @@ execute_sandbox_and_commit() {
 }
 
 finalize_sandbox_run() {
+  local GREEN RED YELLOW WHITE GREY NC
+  set_palette 2
   trap - EXIT
   close_timeline
   echo "" >&2
@@ -327,6 +329,8 @@ finalize_sandbox_run() {
 }
 
 cmd_clean() {
+  local GREEN RED YELLOW WHITE GREY NC
+  set_palette 2
   log_step "Removing sandbox"
   rm -rf "$SANDBOX"
   log_rem "$SANDBOX"
@@ -337,6 +341,8 @@ cmd_clean() {
 }
 
 reset_sandbox() {
+  local GREEN RED YELLOW WHITE GREY NC
+  set_palette 2
   if [ ! -d "$SANDBOX/.git" ]; then
     log_error "No sandbox found. Run \`aitk sandbox\` first."
   fi
