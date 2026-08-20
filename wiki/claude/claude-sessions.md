@@ -15,13 +15,17 @@ Source: Anthropic, which owns both tools and the discovery behavior behind them.
 
 Discovery is filesystem visibility rather than a heartbeat. Each session registers itself in files on disk and binds an inbox socket, and the listing reads those files, so a row appearing means a session left a record rather than that it answered a probe.
 
-## No working directory in the listing
+## Resolving a name to a branch
 
-The listing names no working directory, so it cannot say which repository, worktree, or branch a session is working in. Every consumer that needs to reach the session holding a particular branch has to recover that mapping some other way.
+The listing carries a name and no working directory, so it cannot say which repository, worktree, or branch a session is working in. A consumer that has to reach the session holding a particular branch recovers that mapping from somewhere other than the listing.
 
 Ordering the rows by start time and matching them against the order the worktrees were created is the inference this invites, and it fails whenever two sessions start close enough together for the reader to be unsure which came first. An earlier measurement against five worktrees found the ordering held and read that as settled. It did not cover two sessions started inside the same minute, which is the case that breaks it.
 
-The record each session writes for itself carries more than the listing renders, including the working directory. Reading those records resolves a name to a branch by an exact match, which is what a consumer should prefer over the ordering. The file layout is an implementation detail rather than a published interface, so a consumer depending on it states what it is relying on and reports when the read is unavailable rather than falling back silently.
+The record each session writes for itself carries more than the listing renders, including the working directory. Reading those records resolves a name to a branch by an exact match on one file rather than by a guess across two orderings, which is what a consumer should prefer over the ordering. The file layout is an implementation detail rather than a published interface, so a consumer depending on it states what it is relying on and reports when the read is unavailable rather than falling back silently.
+
+A consumer that has built the read marks a row it could not settle rather than dropping it. A session holding no branch and a session the read never reached are different answers, and rendering both as an absence hides the second behind the first. Liveness carries the same obligation, since the registry is not pruned and a process identifier can be reused, so a record outliving its session reads as live to anything that only probes the identifier.
+
+A branch name identifies a branch inside one repository rather than across a machine, so a consumer matching on one scopes the match or reaches a session working elsewhere. `aitk sessions list --branch` is one consumer's answer of this shape, and any consumer can build its own.
 
 ## Addressing a session
 
