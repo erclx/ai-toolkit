@@ -13,14 +13,14 @@ What earns a rule in the first place, and which standard each one routes to, is 
 
 Rules follow a numbering scheme by band, so a new rule's number states its domain without opening it.
 
-| Range     | Domain                                                                                                                                           |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                     |
-| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                  |
-| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                       |
-| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture)                                                                             |
-| `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, skill, readme, rule, and standard authoring) |
+| Range     | Domain                                                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `000–099` | core (constitution, testing, error handling, planning, etc.)                                                                                                                      |
+| `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                   |
+| `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                        |
+| `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                 |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture)                                                                                                              |
+| `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring) |
 
 ### Two sources numbering into one folder
 
