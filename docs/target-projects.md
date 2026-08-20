@@ -27,7 +27,7 @@ The `aitk` CLI is separate. Twenty skills invoke it in a command position, and a
 bun install --global @erclx/aitk
 ```
 
-The package ships the catalogs the CLI reads, not only `src/`, so `aitk init` resolves standards, snippets, governance, tooling, and the seeds from wherever the package landed.
+The package ships the catalogs the CLI reads, not only `src/`, so `aitk init` resolves snippets, governance, tooling, and the seeds from wherever the package landed, and `aitk standards <name>` reads the corpus from there too.
 
 Pointing Claude Code at a checkout stays the development path, where a local skill edit overrides the installed copy for that session.
 
@@ -84,12 +84,13 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 ### Core domains and skips
 
-`aitk init` installs base tooling, Claude workflow, governance, standards, and snippets, and scaffolds `.claude/wiki/`. Governance defaults to the `base` stack, so a bare init carries the rules that route to the standards it installs alongside them. Pass `--stack <name>` to install a framework stack instead.
+`aitk init` installs base tooling, Claude workflow, governance, and snippets, and scaffolds `.claude/wiki/`. Governance defaults to the `base` stack, so a bare init carries the rules that route a project. Pass `--stack <name>` to install a framework stack instead.
 
-`governance`, `standards`, and `wiki` are skippable:
+No standard is written into the project. Each governance rule's authority line names `aitk standards <name>`, which answers from the corpus inside the CLI's own package, and every toolkit skill names the copy in its own plugin root. `aitk markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data.
 
-- `--skip governance`: leave `.claude/rules/` empty, so no coding standard loads on a file match. Standards still install, and the installed copy is the first root `aitk standards <name>` resolves, so it stays the editable seed a project owns. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
-- `--skip standards`: leave standards out. The governance rules are unaffected, since each authority line names `aitk standards <name>` and that command answers from the corpus inside the CLI's own package. Toolkit skills are unaffected too, each naming the copy in its own plugin root. `aitk standards <name>` searches the corpus inside the CLI's own package behind both project roots, so it prints a standard in a project that skipped the install, and `aitk markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data. What the skip costs is the editable copy rather than the enforcement.
+`governance` and `wiki` are skippable:
+
+- `--skip governance`: leave `.claude/rules/` empty, so no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
 The plugin corpus carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.
@@ -102,7 +103,8 @@ When a new need appears after scaffold, install the one domain without re-runnin
 - Project-specific rule the toolkit does not ship: invoke `aitk:create-rule`. It scaffolds a rule into `.claude/rules/` with a non-colliding number, and `aitk gov sync` leaves it untouched.
 - Index.md system for a markdown-heavy folder that emerged: invoke `aitk:setup-indexes`
 - A snippet preset or category: `aitk snippets install <preset|category|all> <path>`. The argument is required, since the picker refuses headlessly rather than choosing for the caller
-- A single standard: `aitk standards install --only <names> <path>`. The selection expands to the standards it depends on, and stops at a `Does not govern:` handoff, which it reports instead. Omitting the flag installs all of them
+
+Standards are not on that list, and there is nothing to add. No standard installs into a project, by default or by flag, so a session that needs one runs `aitk standards <name>` and reads it from the copy inside the package. A project holding a `.claude/standards/` folder from an older toolkit is carrying a stale artifact nothing reads, and deleting it is safe.
 
 Per-domain mechanics live in the corresponding `docs/<domain>.md`. The skill body in `claude/skills/<skill>/SKILL.md` covers detection and preview.
 
@@ -122,15 +124,15 @@ The report opens by naming the binary running it. The installed version reads ag
 
 A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `aitk:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `aitk:migration-standards` handles.
 
-That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes. Standards, snippets, and governance record a hash per installed file. Tooling records the stack chain it resolved instead, since its install runs no per-file walk to attribute.
+That attribution comes from `.claude/aitk.json`, a stamp every install and sync writes. Snippets and governance record a hash per installed file. Tooling records the stack chain it resolved instead, since its install runs no per-file walk to attribute.
 
-Each domain holds its own toolkit commit, so syncing governance today does not move the revision standards measures against, and each domain reports the upstream commits touching its own source path. Running any sync stamps that domain, and the report names the ones still unstamped.
+Each domain holds its own toolkit commit, so syncing governance today does not move the revision snippets measures against, and each domain reports the upstream commits touching its own source path. Running any sync stamps that domain, and the report names the ones still unstamped.
 
 A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
 Four further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `aitk:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated` and handed to `aitk:migration-standards`.
 
-That third one matters most on an older project. Before it existed, a target holding `standards/` at its root reported zero entries for that domain, so a project that had never migrated was indistinguishable from one that was fully current.
+That third one matters most on an older project. Before it existed, a target holding `snippets/` at its root reported zero entries for that domain, so a project that had never migrated was indistinguishable from one that was fully current. It covers snippets alone, since a root `standards/` folder in a target is the project's own authoring surface and nothing proposes moving it.
 
 #### What the toolkit stopped shipping
 
@@ -158,15 +160,12 @@ Reconcile the configs with `aitk tooling sync <stack> <path> --check` to read wh
 
 It never touches user-owned seed files. Governance rules in `.claude/rules/`, tooling configs, and reference docs refresh in place. Stale `.claude/GOV.md` from earlier installs is removed.
 
-Standards are the exception inside that run, and the stamp narrows it. A standard the project customized is reported and left alone rather than overwritten. A standard still matching what was installed carries no local edits to lose, so a headless run updates it.
-
-An unstamped project reaches the same split through the history fallback, so a headless run updates every standard it can prove untouched and refuses while any file resists attribution. To take the upstream version of a customized file, run `aitk standards sync <path>` interactively, or use `aitk:claude-seed-sync` below to merge section by section.
+Standards take no part in that run. Nothing installed them, so there is no copy to reconcile and no `aitk standards sync` to reach for.
 
 ### Targeted
 
-- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`, plus installed standards under `.claude/standards/`: invoke `aitk:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part across both surfaces and proposes per-part edits. User customizations are preserved.
+- Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `aitk:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
 - Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules
-- Standards already installed: `aitk standards sync <path>` diffs and applies whole files, and refuses to apply without a prompt
 - Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
 - Reference docs for a stack: `aitk tooling ref <stack> <path>`
 - Index regeneration after markdown edits: `aitk indexes regen`
@@ -186,7 +185,7 @@ cd <your-project>
 claude
 ```
 
-In the session, invoke `aitk:setup-init`. The skill detects no framework, resolves tooling to `base`, governance to `base`, snippets to `all`, and auto-enables `standards` if `docs/` exists. The preview marks both stacks as fallbacks, since neither came from a match, then the chain runs `aitk init`.
+In the session, invoke `aitk:setup-init`. The skill detects no framework and resolves tooling to `base`, governance to `base`, and snippets to `all`. The preview marks both stacks as fallbacks, since neither came from a match, then the chain runs `aitk init`.
 
 Ongoing: run `aitk sync --check .` to see what has drifted, then invoke `aitk:claude-seed-sync` for seed drift or `aitk sync .` for a catch-all refresh.
 

@@ -112,18 +112,11 @@ AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project
 # Update snippets already installed, leaving project-authored ones alone
 AITK_NON_INTERACTIVE=1 aitk snippets sync /path/to/project
 
-# Report standards drift without applying it, which is what headless does here
-AITK_NON_INTERACTIVE=1 aitk standards sync /path/to/project
-
-# Copy every standard into a target, overwriting what is there
-AITK_NON_INTERACTIVE=1 aitk standards install /path/to/project
-
-# Install a named subset, expanded to the standards it cites
-AITK_NON_INTERACTIVE=1 aitk standards install --only slug /path/to/project
+# Print one standard. Nothing installs the corpus, so this is how a target reads one
+AITK_NON_INTERACTIVE=1 aitk standards slug >slug.md
 
 # Bootstrap a project. Any flag suppresses the confirmation prompt
 AITK_NON_INTERACTIVE=1 aitk init --stack astro --skip wiki /path/to/project
-AITK_NON_INTERACTIVE=1 aitk init --standards design,wireframes /path/to/project
 
 # Run every domain sync. The git workflow is refused headlessly, so nothing is pushed
 AITK_NON_INTERACTIVE=1 aitk sync /path/to/project

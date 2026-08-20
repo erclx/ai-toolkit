@@ -322,12 +322,11 @@ if [ "$arm" = seed ]; then
   # install the main checkout's seed and silently ignore the edits under test.
   cli=("bun" "run" "$REPO_ROOT/src/cli.ts")
 
-  # `aitk claude init` seeds .claude/ and CLAUDE.md but installs no standards,
-  # while the base stack's rules cite .claude/standards/ for the banned words
-  # and the formatting rules the seeded hooks report against.
-  # Without this second call the arm measures a half-installed project.
+  # `aitk claude init` seeds .claude/ and CLAUDE.md and installs no standards,
+  # which is the whole shape now. The base stack's rules cite `aitk standards
+  # <name>` rather than a path, and that verb answers from the corpus inside the
+  # package, so there is no second call and no half-installed state to avoid.
   AITK_NON_INTERACTIVE=1 "${cli[@]}" claude init "$fixture" >&2
-  AITK_NON_INTERACTIVE=1 "${cli[@]}" standards install "$fixture" >&2
 
   # Governance is not optional for this arm. The seed routes markdown, context,
   # and task edits through rules in the base stack rather than carrying its own
