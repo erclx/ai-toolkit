@@ -60,6 +60,8 @@ An item already carrying an answer refuses rather than being overwritten, and on
 
 Exit codes: `0` every named item now carries its answer, `1` refused. The `reason` field carries `no-intake`, `no-folder`, `no-cluster`, `no-item`, `answered`, or `bad-input`.
 
+An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `reason` rather than the exit when a skill consumes this, which matters most here because the verb writes.
+
 `bad-input` covers a malformed command line: no cluster, no selection, a selection that parses to no label and answer, an empty answer, an answer carrying a line break, or two answers for one item. It is separate from the reasons describing the folder, so a caller that mistyped a flag is not sent to repair a file that is fine.
 
 An empty answer refuses rather than writing an empty slot. The slot means unread while it is empty, so writing one back would report an item as answered that nobody decided.

@@ -191,7 +191,9 @@ The ship-time pairing audit reads it. `aitk-sandbox-check` used to prompt whenev
 
 The prompt survives where evidence of a scenario outlives both spellings. Eleven skills are carried with no scenario, and two of them have a file at `infra/<rest>.sh`: `setup-gov` and `setup-indexes`. The audit offers that path and records neither answer on its own, because the file proves a scenario exists rather than proving it exercises the skill.
 
-`setup-gov` against `infra/gov.sh` is a real pairing, where `migration-standards` against `infra/standards.sh` was the case that showed the prompt can offer a vacuous one, since that scenario stages the install and sync trees the `aitk standards` CLI walks and exercises nothing the skill decides. That skill now pairs to `claude/migration-standards.sh` and leaves the prompt behind, which is the ordinary way a wrong pairing retires. An internal skill draws no prompt at all, being absent from the denominator above by construction rather than unknown.
+`setup-gov` against `infra/gov.sh` is a real pairing. `setup-indexes` against `infra/indexes.sh` is the other, and it settles what the file alone cannot, since the scenario declares a `bootstrap` arm whose own log line names the skill it seeds for. Neither spelling reaches either one, because no `setup` category exists and both sit under `infra/`.
+
+`migration-standards` against `infra/standards.sh` was the case that showed the prompt can offer a vacuous one, since that scenario stages the install and sync trees the `aitk standards` CLI walks and exercises nothing the skill decides. That skill now pairs to `claude/migration-standards.sh` and leaves the prompt behind, which is the ordinary way a wrong pairing retires. An internal skill draws no prompt at all, being absent from the denominator above by construction rather than unknown.
 
 ### Exemptions
 

@@ -22,6 +22,8 @@ Each is driven by a `PostToolUse` hook matching `Write|Edit|MultiEdit`, so a fil
 
 Exit codes: `0` clean, `1` frontmatter error or missing index, `2` drift found in `--dry-run`.
 
+An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `results` array rather than the exit when a skill consumes this, on the write pass as well as the dry run.
+
 When positional paths are passed inside a git repo, modified `index.md` files are staged so lint-staged and Claude `PostToolUse` hooks commit the regenerated catalog. Whole-repo walks never auto-stage, and neither does a path git ignores, since staging one always fails and the warning would fire on every edit.
 
 Skills can parse drift without branching on exit code:

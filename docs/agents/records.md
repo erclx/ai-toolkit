@@ -58,6 +58,8 @@ A section runs to the next marker-shaped line whatever it names, so a plan carry
 
 Exit codes: `0` every check passed, `1` refused, `2` at least one record carries a finding. A `reason` field carries which gate fired: `no-folder` when none of the kind's directories exist, and `unknown-kind` when the argument names no published kind. A `no-folder` message names every candidate, so the `standards` refusal names both roots.
 
+An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `findings` array and its `reason` rather than the exit when a skill consumes this.
+
 The four record folders are shared scratch at the main worktree root, so `--root` defaults to the first entry of `git worktree list` rather than the working directory. A linked worktree validates the same records every other session reads.
 
 `standards` takes the other default, the root of the checkout the caller stands in. The corpus is tracked, so a linked worktree holds its own edited copy, and resolving the main root there would report on a tree the session never touched while saying nothing about which one it read. A session that adds or renames a standard inside a worktree is the case, and it is the one the check exists for.

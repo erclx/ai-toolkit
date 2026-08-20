@@ -88,10 +88,10 @@ aitk indexes regen --dry-run --json
 Parse the JSON. On any `error` action, surface the file and reason and stop. On `would-write` for the bootstrapped folders, the dry-run is healthy. Run for real:
 
 ```bash
-aitk indexes regen
+aitk indexes regen --json
 ```
 
-Report the `written` count.
+Count the `written` actions in that record and report the number. Read the real run the same way the dry run is read, since the exit carries nothing reliable back to a session. An operator's shell profile may wrap `aitk` in a function that runs the binary and then a second command and takes the second status, so a regen that errored on a sibling missing `title` arrives here as a clean pass.
 
 ## Offer the convention seed
 
