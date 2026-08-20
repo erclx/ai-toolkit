@@ -85,6 +85,8 @@ The Audit set stage runs `aitk audits run --json` and reports. It is the one sta
 
 Growth reports for the reason the ceiling above gates. The standards behind the largest counts set no hard cap, so a rising number is a fact about the corpus and a judgment about whether it matters, and a push failing on a judgment teaches a reader to route around the stage.
 
+The baseline goes stale on `main` itself, so the branch report is not the reading a session wants. A branch inherits whatever growth `main` already carries and the stage attributes all of it to the run in front of the reader. Separating the two means running `aitk audits run` in the main worktree and diffing the two reports. Measured 2026-08-20 against baseline `bd2be81a`, where a branch reported five grown measures and four were identical on `main`, leaving one the branch had actually introduced.
+
 It reads a flat `summary` object of scalars rather than parsing the nested record, through `json_summary_field`. That helper was `sandbox_summary_field` until this stage arrived and needed the same read, so both callers now share one grep-based reader in `scripts/core/verify.sh`.
 
 ### An absent corpus is not a stage failure
