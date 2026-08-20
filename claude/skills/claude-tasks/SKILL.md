@@ -70,7 +70,7 @@ Those two reads give four states, and the first three earn a line each:
 
 `malformed` is why the first state tests two counts rather than one. A malformed item is neither unread nor answered, so reading `unread` alone folds it onto the answered side and reports a broken file as decided work nobody promoted.
 
-Say which read fired. "No task points at this" is true of both reported states and useful about neither.
+Say which read fired. "No task points at this" is true of every reported state and useful about none of them.
 
 Report rather than prompt. A track can be opened long after its task would have been written, so an offer to create one for each is noise on most runs, and that reasoning covers a dump unchanged.
 
