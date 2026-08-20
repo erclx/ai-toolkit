@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.108.0](https://github.com/erclx/aitk/compare/v0.107.2...v0.108.0) (2026-08-20)
+
+
+### Features
+
+* **gov:** re-read a skill body before re-invoking it in one session ([#1040](https://github.com/erclx/aitk/issues/1040)) ([849e439](https://github.com/erclx/aitk/commit/849e4391179fdb7c49701dc3fb8e292a7d89be07))
+* **markdown:** measure paragraph cadence the ban sets cannot reach ([#1041](https://github.com/erclx/aitk/issues/1041)) ([bf53030](https://github.com/erclx/aitk/commit/bf530302b2257ad21bfd770e80c5e7229ce1fb65))
+
 ## [0.107.2](https://github.com/erclx/aitk/compare/v0.107.1...v0.107.2) (2026-08-20)
 
 
