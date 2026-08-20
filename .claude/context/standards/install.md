@@ -65,11 +65,15 @@ A fifth kind reads this corpus rather than a gitignored folder, and it keeps the
 
 ## Which route a reader actually takes
 
-The two-route citation above is what nearly every body uses, and the command route is what nearly none does. Of the 60 shipped skill bodies, 41 cite `.claude/standards/` and 38 of those name the plugin root as the fallback behind it. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`.
+A shipped body names one path for a standard, and the command route is what nearly none takes. Of the 60 shipped bodies, 38 name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` and 7 call `aitk standards` where a resolved root rather than a named file is what they want. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`.
+
+The two-branch citation those 38 replaced named an installed path first and the plugin root behind it. Both branches resolve while the corpus still installs, which is what hides a partial sweep, so the collapse ran as one pass rather than riding along with each skill's next edit.
+
+A grep for the installed prefix does not come back empty, and three classes account for every survivor. A body whose subject is a target's installed tree is the first, covering the three migration skills and `claude-seed-sync`. A write destination naming where a new standard or a promoted entry lands is the second, covering `create-standard` and `claude-memory-review`. A `paths` glob is the third, covering `591-standard-authoring` alone. Read a survivor against those three before calling it a missed citation.
 
 That resolve has exactly one caller, `src/commands/standards.ts`, and no shipped body invokes the verb. Its third root is the package corpus, which is the route a machine reader takes and the reason a command reading a standard answers in a project that installed nothing. `<aitk>` is how a resolve from that root spells itself, since the other two labels are project-relative and a report could join either to a root.
 
-`infra:standards read` is the arm that covers it, and `.claude/context/sandbox/coverage.md` records what the arm reaches and what it leaves to the plugin-root route. Measured on 2026-08-19.
+`infra:standards read` is the arm that covers it, and `.claude/context/sandbox/coverage.md` records what the arm reaches and what it leaves to the plugin-root route. Measured on 2026-08-20.
 
 ## Gotchas
 

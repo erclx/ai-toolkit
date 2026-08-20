@@ -26,6 +26,12 @@ Copying a standard into each consumer's `references/` is the established route a
 
 Counting the bodies that cite a standard reads short of the set the move has to satisfy, which is what the `versioning.md` withdrawal below turns on. A bundled standard has no flat sibling and never installs, so leaving the flat root breaks anything still pointing at the installed path, and two of `versioning.md`'s readers are standards rather than skill bodies. Read the whole reader set, being the skills, the flat standards depending on it in-body, and any installed rule naming it, before calling a consumer count small.
 
+### A rule delivers the standard it routes to rather than absorbing it
+
+The seventeen document-type standards route to the governance rule that globs them, and the rule points at the plugin corpus rather than carrying the guidance itself. Folding it in was the reading the routing sentence admits, and it costs roughly 2,400 lines against eighteen rules totalling 377, which turns a 16 to 29 line rule into a 100 to 300 line one and reproduces the standard's whole structure inside the pointer to it.
+
+What the rule delivers is arrival rather than text. It fires on the glob while the file is open, which is the property the census routed on, and a pointer resolving to one path serves that as well as an inlined copy would. Settled by the operator on 2026-08-20.
+
 ### A verb is the home for a rule stated across every reader
 
 One attribute standard lands on the CLI, which is `markdown.md`, whose ban sets and structural checkpoints ship as data in `src/markdown/`. Two more were recorded here on the same reasoning, that a transform and a scan are each a value a caller reads rather than a shape a caller writes, and both were withdrawn once the reasoning was measured rather than asserted. A closed list a check already walks earns a verb. A value every caller reads and no caller restates does not, because there is no duplication for the verb to collapse and the standard still has to state the rule for the reader.
