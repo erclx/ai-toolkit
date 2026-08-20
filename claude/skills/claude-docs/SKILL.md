@@ -183,7 +183,7 @@ Grep the tree for the name that went, rather than for the paths the diff carries
 - An entry this run already rewrote is read whole before it is left. A refresh that updates the top and leaves a contradicting claim below reads worse than an untouched entry, because the current opening lends authority to the stale remainder. This is the one case that overrides "do not touch unrelated sections", and it overrides it only inside an entry the run edited anyway.
 - A claim comparing two surfaces is checked even where its file is outside the diff. Such a claim holds only while both surfaces do, so moving one inverts it with nobody editing the file it sits in.
 
-Report each hit as an ordinary rewrite. `.claude/context/context-model.md` carries the two shapes and the case that produced them.
+Report each hit as an ordinary rewrite.
 
 Do not create new entries automatically. New entries are a deliberate decision: the user invokes `claude-docs --new-context <domain>` (future flag) or hand-creates the file following `${CLAUDE_SKILL_DIR}/../../standards/context.md`. Auto-creation risks padding `.claude/context/` with low-signal entries.
 
