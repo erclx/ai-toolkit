@@ -23,7 +23,7 @@ The Plugin manifests stage runs `claude plugin validate --strict` over every plu
 
 It discovers its inputs instead of naming them. Two `git ls-files` listings, tracked and untracked, match `*.claude-plugin/plugin.json` and `*.claude-plugin/marketplace.json`, so a marketplace manifest added later is covered the day it lands with no edit to the script. Both listings honor `.gitignore`, which is what keeps linked worktrees and dependency copies from being validated as if they were ours.
 
-The stage is guarded on `claude` resolving on `PATH` and reports a skip when it does not. CI installs the JavaScript runtime and two shell tools and nothing else, so an unguarded stage would fail the build on a machine that never had the plugin CLI. The guard makes the stage an author-side gate that CI does not currently reach.
+The guard tests twice, first that `claude` resolves on `PATH` and then that `claude --version` succeeds, because a global install can land the wrapper and none of the platform-native package behind it, which leaves a name that resolves and a binary that dies on the first real call. A contributor's machine takes a skip on either failure, since an absent or half-installed CLI there is someone mid-setup rather than a broken gate. CI installs the plugin CLI as a workflow step, so both failures refuse there, and the refusal for a binary that cannot run names the pinned version rather than the install step that already succeeded.
 
 `--strict` promotes warnings to failures, which is what makes the stage catch a manifest missing metadata rather than only one that fails to parse. The cost is that a Claude Code release introducing a new warning fails `bun run check` for everyone until the manifest answers it.
 

@@ -482,13 +482,26 @@ main() {
   # so the skip below is for a contributor's machine rather than for the merge
   # gate. A runner installs the CLI as a workflow step, which makes an absent
   # binary there a broken workflow, and skipping would report a pass for every
-  # manifest on the way to a marketplace install.
+  # manifest on the way to a marketplace install. A global install can also land
+  # the wrapper and no platform-native binary, which resolves on PATH and cannot
+  # run, so the guard tests both and CI refuses on either.
   log_step "Plugin manifests"
+  local plugin_cli_state=ready
   if ! command -v claude >/dev/null 2>&1; then
+    plugin_cli_state=absent
+  elif ! claude --version >/dev/null 2>&1; then
+    plugin_cli_state=broken
+  fi
+  if [ "$plugin_cli_state" = absent ]; then
     if [ "${CI:-false}" = true ]; then
       log_error "claude is not installed. CI installs it before this stage, so read the Install Plugin CLI step in .github/workflows/verify.yml."
     fi
     log_info "Skipped, claude is not installed"
+  elif [ "$plugin_cli_state" = broken ]; then
+    if [ "${CI:-false}" = true ]; then
+      log_error "claude is on PATH and claude --version fails, so the install brought down no platform-native binary and no manifest was read. Raise or lower the pinned version at the Install Plugin CLI step in .github/workflows/verify.yml, and record the move in .claude/context/ci.md."
+    fi
+    log_info "Skipped, claude is installed but cannot run"
   else
     local manifests manifest
     manifests=$(collect_plugin_manifests)
