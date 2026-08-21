@@ -29,3 +29,11 @@ The empty result is a detached HEAD, and the surface picks one of three response
 - Fall back to `latest`, so a read-only pass still writes somewhere predictable
 - Stop, when the surface commits or opens a pull request. There is no branch to put the work on, so `latest` would bury the problem instead of reporting it. State the stop in the surface's guards.
 - Fall through to the next source, when the slug is one candidate among several rather than the name of an output file
+
+## Changing the transform
+
+A change here moves what the transform produces, and every declaration asserting the old output keeps asserting it. Nothing reports those, because a fixture carrying an old filename names neither this file nor the surface that reads it, so a diff over the change reaches none of them. Dropping the type segment is the change that proved it: four fixtures and three scenario scripts kept the type-carrying spelling, one surfaced as a red arm months later, and the other six were found by deriving from the rule.
+
+Run `aitk gov superseded <old> <new>` in the same change, with the old output and the new one as the two arguments. The value is the only key both sides carry, and the sweep reads the whole tracked tree rather than a path someone predicted. Its output is a reading rather than a verdict, since a string appears for reasons unrelated to any convention, and a declaration disagreeing on purpose carries an `aitk-allow-superseded: <reason>` marker on its own line or the one above.
+
+The sweep sees a value and nothing else. A prose reference that went stale without carrying it, such as a passage citing the wrong standard for the transform, is reached by reading rather than by any key.

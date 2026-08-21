@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { SECRET_MARKER } from '@/secrets/marker'
 import { PATTERNS } from '@/secrets/patterns'
-import { isBinary, scanText } from '@/secrets/scan'
+import { scanText } from '@/secrets/scan'
 
 const PLANTED = `AKIA${'Q'.repeat(16)}`
 
@@ -52,16 +52,6 @@ describe('scanText', () => {
     const text = `id = "${PLANTED}"\nkey = "AIza${'b'.repeat(35)}"\n`
 
     expect(scanText('a', text).map((finding) => finding.line)).toEqual([1, 2])
-  })
-})
-
-describe('isBinary', () => {
-  it('should read a NUL byte as binary', () => {
-    expect(isBinary(`a${String.fromCharCode(0)}b`)).toBe(true)
-  })
-
-  it('should read ordinary source as text', () => {
-    expect(isBinary('const a = 1\n')).toBe(false)
   })
 })
 

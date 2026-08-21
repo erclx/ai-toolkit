@@ -453,6 +453,20 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - Coverage is stated on every run through `scope` and the read-past count. The rule speaks to every behavior and the verb speaks to `.ts` and `.tsx` pairs, so a summary omitting that is a stronger claim than the measure supports.
 - Measured against the 40 commits behind `57ee7467`, the report found 7 satisfied pairs, 0 findings, 18 unclassified changes, and 125 paths read past. Zero findings is the expected first reading rather than a broken check, and the unclassified figure being the largest is the honest shape.
 
+## The superseded-value sweep
+
+- `aitk gov superseded <old> <new>` is the one report here the aggregate cannot run. It takes the two values as required arguments, so there is no unattended invocation for `aitk audits run` to schedule and no baseline count to retain.
+- The key is the whole decision. A file-scoped map from a changed rule to what cites it reaches nothing, because a fixture asserting an old output names neither the rule nor the standard behind it, so the value both sides carry is the only shared key there is.
+- It sits under `gov` beside `test-order` for the same reason that one does: both measure a stated convention against the tree, and a session already reaching for one finds the other. `standards` was the alternative and its argument slot prints a document, so a sibling subcommand there reads as a standard name.
+- The corpus is the whole tracked tree plus untracked files git does not ignore, rather than the sandbox where every instance happened to sit. A fixture is the cheapest place for an assertion to go stale and not the only one, and a sweep scoped to `scripts/sandbox/` would be read as covering the class.
+- Over-reporting is the design rather than a defect. A string appears for reasons unrelated to any convention, which is why the verb reports and why a same-line replacement annotates a finding instead of suppressing it. A fixture halfway through a repair carries both values and so does the line stating the change, and nothing here can tell them apart.
+- That annotation strips the superseded occurrences before it tests the line. A convention dropping a segment leaves the new value a substring of the old one, so a plain containment test answers true for every finding and separates nothing. Measured on the slug transform, where `feature-` sits inside `feature-feat-` and the flag fired on all 20 findings before the strip and on 6 after.
+- An empty replacement answers false rather than running that test, and it is allowed rather than refused. Retiring a value outright is an ordinary reason to run this, and a containment test against the empty string is true everywhere, so the two together reported every finding as carrying a replacement that does not exist.
+- `isBinary` sits at `src/binary.ts` rather than in the secret scan that shaped it. Both sweeps read the same corpus and neither owns a predicate about bytes, so leaving it put a `src/gov/` dependency on the secret scanner, which was the tree's only cross-domain import of it.
+- The blind spot is stated on every run. One declaration went stale by citing the wrong standard for the transform and carries no value to key on, so the sweep closes most of this class and no part of that one.
+- `aitk-allow-superseded: <reason>` mutes a line, reading the same two-line placement rule as `aitk-allow-secret` through `src/exempt-marker.ts`. The duplication that extraction removed was exact, and only the token differs.
+- Measured against `d7ea41a4`, sweeping `feature-feat-` to `feature-` named `scripts/sandbox/claude/autoship.sh:66` and nothing else, matching the hand derivation exactly. Six of the seven instances filed had already been repaired, so the verb ships against a nearly clean corpus and its value is the regression it stops rather than the backlog it surfaces.
+
 ## The label coverage report
 
 - `aitk labels audit` resolves a changed set against `.claude/aitk/pr-labels.toml` and names the paths no row reaches, closing the gap the map's own comment had predicted since it shipped.

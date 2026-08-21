@@ -63,7 +63,7 @@ EOF
 
     mkdir -p .claude/plans .claude/review
 
-    cat <<'EOF' >.claude/plans/feature-feat-add-farewell.md
+    cat <<'EOF' >.claude/plans/feature-add-farewell.md
 # Feature: add farewell utility
 
 Add a `farewell` function to `src/index.ts` that returns a goodbye message, and export it alongside `greet`.

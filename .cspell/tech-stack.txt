@@ -50,6 +50,7 @@ listitem
 longtask
 lucide
 mermaid
+metacharacter
 metacharacters
 mktemp
 modelcontextprotocol
