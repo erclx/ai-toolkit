@@ -39,9 +39,9 @@ Cap the batch at four. A structured question tool takes four, and a batch past t
 
 Put every question in one turn. Never split the batch across turns and never ask the first while the rest stay unstated.
 
-Which surface carries the questions is settled in `CLAUDE.md` rather than here. What a batch adds is that one call carries the whole set, with one entry per decision, so the operator answers them together instead of one per turn.
+Send the batch through a structured question tool wherever the session runs on one, and write the shape below where it does not. What a batch adds is that one call carries the whole set, with one entry per decision, so the operator answers them together instead of one per turn.
 
-Say so and use the shape below when the project's `CLAUDE.md` states no such rule, which happens in a project scaffolded before the rule shipped. The batch still goes out in one turn, since that is this skill's own contract rather than the general statement's.
+The test is the surface rather than the project's instruction file. A target scaffolded before the rule shipped still reaches the tool, and what it loses is the option shape `CLAUDE.md` states, which the example below carries instead.
 
 Batch shape on the fallback surface:
 

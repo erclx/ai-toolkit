@@ -93,7 +93,7 @@ The judgment-call rule in `CLAUDE.md` states two branches and each branch owns a
 
 The two overlap in subject and never in reach, which is what keeps both on the shelf. A snippet is copied into a project by a CLI command and runs in a chat with no repository behind it, while a skill loads live from the plugin root, so a project that added the plugin and installed nothing reaches the skill alone. Reaching it without an install is the property the escalation branch needed, since a session hits that branch mid-run inside a repository.
 
-`decision-escalate` carries `disable-model-invocation: true`, joining the five skills that already do, so nothing routes to it on a description match and the operator is what fires it. The body names no question tool at all, deferring the surface to the general statement, which keeps one body running where the structured tool exists and where it does not.
+`decision-escalate` carries `disable-model-invocation: true`, joining the five skills that already do, so nothing routes to it on a description match and the operator is what fires it. The body tests the surface rather than naming a vendor's tool or reading the project's instruction file, which keeps one body running where the structured tool exists and where it does not. Gating on the instruction file was tried and reaches no installed target, since the rule ships in the seed and a seed reaches a project scaffolded after it.
 
 ## The interface pair splits on the act rather than the subject
 

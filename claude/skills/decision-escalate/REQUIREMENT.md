@@ -22,7 +22,7 @@ The opposite failure is the one that ships silently. A session that takes a pref
 - Collect every open decision before asking any of them, so the operator sees the set rather than the first one
 - Put the whole batch in one turn, since a batch split across turns is the per-decision ask this skill exists to replace
 - Give each question a short axis header and two to four options, taking the shape of an option from `CLAUDE.md` rather than restating it
-- Take the surface from `CLAUDE.md` rather than naming a tool, and say so and fall back when the project states no such rule, so the body runs where no structured question tool exists
+- Test the surface rather than the project's instruction file when choosing where the batch goes, so a target whose `CLAUDE.md` predates the rule still reaches the tool and loses only the shape
 - Cap a batch at four questions and say how many are held, since a structured question tool takes four and an uncapped batch hides the overflow
 - Hold every escalated decision until it is answered, and continue only the work depending on none of them
 - Route a pick that changes a written artifact into that artifact under the standard owning it, rather than leaving it in the session
