@@ -374,6 +374,18 @@ The first run found eight, all of them real, and the repairs took the count to z
 
 The spec names `no-skills` as an absence, which is the second tracked corpus to override the default. This repository is the only tree that holds `claude/skills/`, so in every project installing the CLI the verb refuses on every run, and reading that as unmeasured would pin the aggregate at `incomplete` there permanently. `aitk claude skills audit` carries the same exposure and writes no record at all on its refusal, so the aggregate cannot tell an absent corpus from a broken verb for that one. Closing it is separate work.
 
+## The routing report
+
+`aitk claude routing` reports per `CLAUDE.md` section how many top-level bullets name a path and how many of those a path-scoped rule already covers. It answers what the always-loaded file is paying for, which the tier test in `592-claude-md` decides case by case and no command had ever counted.
+
+Two readings decide what it says, and both are narrower than they sound. A bullet counts as path-scoped when it names a path, which is evidence for the tier judgment rather than the judgment itself, so a bullet naming a folder can still apply every session and one firing on a path it never spells is invisible here. `src/claude/routing.ts` states that where a reader meets the function, since a count phrased as a verdict is the shape this measure is easiest to misread as.
+
+A rule counts as covering a path only when its glob anchors to a location. A glob opening `**` reaches every folder in the tree, so it answers that a file type is governed and never that a named path is, and admitting one collapsed the column to every markdown path on the first real run against this repository. `501-markdown` is the rule that does it, and excluding it is what lets the column separate a folder somebody scoped a rule to from one nobody has.
+
+A shape such as `.claude/context/<domain>.md` reads as the folder above its placeholder rather than as nothing, which is what keeps the scratch and memory sections from reporting as naming no path at all. A placeholder opening the first segment has no openable prefix and is dropped.
+
+The glob list is read out of the frontmatter block alone. Scanning the whole file was the first cut and it registers a body bullet quoting a path as a scope the rule never declared, which no rule in the tree does today and nothing would have reported.
+
 ## The comment census
 
 - `aitk comments scan` is the first command that parses the target's own source, a new capability class rather than another domain. Reading user code inherits problems no other command has: language detection, comment syntax per language, and literals that look like comments. The surface is held to two languages, line-oriented, no AST, so it stays a counting tool rather than becoming a parser.
