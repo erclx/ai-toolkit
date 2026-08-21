@@ -142,6 +142,8 @@ Take a clean section as reporting rather than as delivering. Nothing here instal
 
 The list is filtered to what your stack can receive, read off the rule folders you already carry plus the folders the base stack takes whole. A rule under `lang/` or `ui/` belongs to some stacks and not others, so an unfiltered list would name rules you can never install. A target that has never stamped governance reports nothing at all, since there is no date to measure against.
 
+An empty section is not proof either way when the toolkit running the check is not a full git clone. The read needs history to reach your anchor, and an install from the registry ships none, so the section goes quiet rather than saying it could not measure. Run the check from a clone before reading a clean result as a complete one.
+
 This also closes the case where a rule arrives citing a sibling you do not have. A sync refreshing a rule can land a version pointing at a file it never installs, and the section names the missing sibling rather than the broken citation, which is enough to act on.
 
 #### What the toolkit stopped shipping

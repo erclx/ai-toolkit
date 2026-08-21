@@ -537,6 +537,13 @@ export function baseBands(root: string): Set<string> {
  * A target carrying no governance anchor reports nothing. It has no date to
  * measure against, and diffing from the beginning of history would read every
  * rule the toolkit ships as new.
+ *
+ * An anchor this clone cannot resolve reports nothing by a different route and
+ * says so nowhere. `read` yields an empty string on a non-zero exit, so a stamp
+ * naming a revision a registry install or a shallow clone has never seen reads
+ * as a target holding everything. `readNewSkills` carries the same gap, and
+ * neither has the `historyUnavailable` flag the per-domain scan uses to tell an
+ * unmeasured result from a clean one.
  */
 export async function readNewRules(
   root: string,

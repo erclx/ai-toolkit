@@ -168,8 +168,10 @@ function renderCheck(report: CheckReport): void {
   if (report.newRules.length > 0) {
     logStep('New rules, never installed')
     for (const name of report.newRules) logWarn(name)
+    // Names the stack as the reader's to supply, since no target records one
+    // and `--add` layers onto a resolved stack rather than standing in for it.
     logInfo(
-      'Run `aitk gov install <stack>` to pick them up, or `--add <rule>` for one.',
+      'Run `aitk gov install <stack>`, naming the stack yourself since no target records it. Add `--add <rule>` to take one.',
     )
   }
 

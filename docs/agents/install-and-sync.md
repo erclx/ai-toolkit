@@ -139,8 +139,11 @@ edit and a job counting those stays red with no remedy.
 ### Surfaces reported beside the domains
 
 Six sections sit outside the per-domain scan, because each names something
-that walk cannot see. None of them produces a change, and no sync command
-applies any of them.
+that walk cannot see: `seeds`, `superseded`, `unmigrated`, `newSkills`,
+`newRules`, and `reverse`. None of them produces a change, and no sync command
+applies any of them. The headings below group the first three together and give
+`newSkills` its description under `newRules`, which answers the same question
+about a different corpus.
 
 All four report only against a toolkit-managed target, which is one carrying a
 `.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
@@ -223,6 +226,15 @@ anchor across domains, since rules are domain-scoped and a shared anchor would
 let a snippets sync move the revision rules are measured from. A target carrying
 no governance anchor reports nothing at all: it has no date to measure against,
 and diffing from the start of history would read the whole catalog as new.
+
+An anchor this toolkit cannot resolve reports nothing by the same route, and that
+one is not visible. A stamp naming a revision the running clone has never seen,
+which is what a registry install without history or a shallow clone produces,
+fails the read and yields an empty list rather than a stated absence. It looks
+identical to a target holding every rule the toolkit publishes. `newSkills`
+behaves the same way, and neither carries the `historyUnavailable` flag the
+per-domain scan uses to separate the two. Treat an empty section on a toolkit
+that is not a full clone as unmeasured rather than clean.
 
 Entitlement is filtered, because a stack does not receive every rule. The base
 stack takes the `core` and `claude` folders whole and every other stack extends
