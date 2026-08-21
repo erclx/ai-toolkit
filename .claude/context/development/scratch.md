@@ -11,6 +11,8 @@ A linked worktree reads them through one tool and writes them through another. `
 
 The same isolation refuses a `Bash` command whose target it cannot statically verify stays inside the worktree, reporting complexity rather than a path. Joining `mkdir -p` and a heredoc write to the main root with `&&` is refused whole even though each half runs alone, so a main-root write goes out as a plain single command.
 
+Where the target sits is not what fires it. The same pair joined the same way was refused with both halves naming a path under the worktree root itself, so the rule is one command per call from a linked worktree whatever it writes to. Reading the main-root example as the trigger is what earns a session the refusal a second time.
+
 The verification reads the heredoc body as well as the command around it. A review report quoting a command substitution was refused on its content, and so was the same report with the substitution stripped and a quoted `||` left in place, while a bare `mkdir -p` against that folder ran. Content decides it rather than length, so a body of plain prose goes out and a body quoting shell does not.
 
 ### The two write routes
