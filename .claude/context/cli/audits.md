@@ -13,7 +13,7 @@ Each splits its engine by reason to change rather than by size. `src/comments/` 
 
 ## The audit set
 
-`aitk audits run` runs fifteen verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
+`aitk audits run` runs sixteen verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
 
 Reading each shape was chosen over forcing a common envelope. Every record already has consumers naming its keys, and one of them refuses to rename a key for a gain of one word, so an envelope is a breaking change bought for tidiness. The cost is one extractor per verb in `src/audits/catalog.ts`, and an extractor meeting a record it cannot read returns nothing rather than zero, on the ground the context audit already states about `--citations-only`.
 
