@@ -50,6 +50,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                        |
 | `aitk secrets scan`        | Report credential-shaped values in the tree the package ships, keyed on issued values rather than on words (`--json`)                          |
 | `aitk deps audit`          | Report published advisories against the resolved dependency set, refusing rather than reporting clean when the index is unreachable (`--json`) |
+| `aitk labels audit`        | Report the labels a changed set earns from the pull request label map and the paths no row reaches (`--json`)                                  |
 | `aitk audits run`          | Run every audit as one set, report per check under one verdict, and compare each count to the recorded baseline (`--json`, `--record`)         |
 | `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                      |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                          |
@@ -77,6 +78,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `markdown`  | `audit`                                                                                                     |
 | `secrets`   | `scan`                                                                                                      |
 | `deps`      | `audit`                                                                                                     |
+| `labels`    | `audit`                                                                                                     |
 | `audits`    | `run`, `list`                                                                                               |
 
 Common patterns:
