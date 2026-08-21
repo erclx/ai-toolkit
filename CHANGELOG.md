@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.0](https://github.com/erclx/aitk/compare/v3.4.0...v3.5.0) (2026-08-21)
+
+
+### Features
+
+* **skills:** add session-map for the pre-compaction handoff ([#1097](https://github.com/erclx/aitk/issues/1097)) ([f72bb73](https://github.com/erclx/aitk/commit/f72bb73cd350194fce31681accaa7002fd8c0a72))
+
 ## [3.4.0](https://github.com/erclx/aitk/compare/v3.3.0...v3.4.0) (2026-08-21)
 
 
