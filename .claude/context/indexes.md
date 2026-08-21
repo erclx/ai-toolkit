@@ -37,6 +37,7 @@ Owns the `index.md` catalog system. Folders that an agent browses to pick a docu
 - A gitignored folder is reachable by positional regen but invisible to a whole-repo walk. The walk filters candidates through `git check-ignore`, while `findIndexedAncestor` walks the filesystem and never consults git. `.claude/tasks/` and `.claude/memory/` both depend on that asymmetry: `bun run check` cannot regenerate either, so a `PostToolUse` hook passes the changed path instead.
 - Staging is skipped on an ignored path, since `git add` there always fails and the warning would fire on every edit
 - A hook keeping such a folder current matches tool names, `Write|Edit|MultiEdit`, so a file relocated by a shell `mv` fires nothing and the index keeps a row for a file that has moved. A skill that archives or relocates an entry calls `aitk indexes regen` itself after the last move rather than relying on the hook.
+- A positional path resolves against the working root, so a path outside it is dropped and the run frames a success having written nothing. Passing `--root <main-root>` is what carries a regen from a linked worktree to an index in the main checkout, and `--json` is what separates a written index from a skipped one, since the framed output names neither.
 - A frontmatter failure takes the whole folder rather than the one file. `collectEntries` returns an error for the directory, so one unparseable entry leaves every sibling's index unwritten.
 
 ## When to adopt
