@@ -4,7 +4,7 @@ Regression test for an always-loaded authoring artifact. The standards arms answ
 
 This is a spec-quality test, not an efficacy test. It says nothing about whether the resulting artifact is useful, which is the separate ablation designed in the `context-research` groundwork track. No baseline arm and N of 1 are correct here, because failure is self-evident: a session that reads the standard and still writes a per-file tree has proved the standard failed to communicate its own central rule.
 
-The folder sat at `scripts/standards/authoring-test/` while standards were all it tested. The seed arm made that placement wrong, since the seed is a tooling artifact rather than a standard, so it moved here at three referencing files rather than after the next arm made the move expensive. It stays unreachable from `aitk`: a run that spends real money is started by a person deciding to spend it, not by a command surface.
+The folder sat at `scripts/standards/authoring-test/` while standards were all it tested. The seed arm made that placement wrong, since the seed is a tooling artifact rather than a standard, so it moved here at three referencing files rather than after the next arm made the move expensive. It stays unreachable from `aitk`: a run spends real money, and authorizing that spend is the operator's. Performing the run is not, so a session holding a shell drives `run.sh` itself once the spend is authorized.
 
 ## Running
 
@@ -39,7 +39,7 @@ The runner passes `--dangerously-skip-permissions`. The flag grants tool use acr
 
 What makes it acceptable is the task: the cwd is the fixture, the prompt names one file to write, and no credential or repo path is in reach of the instruction. Copy the flag only where the same three hold. The reason it is needed rather than `acceptEdits` is in Known harness behavior below.
 
-A permission classifier in the calling session can refuse to spawn that nested session. The run is started by a person for that reason, and an agent that hits the refusal should hand the command back rather than route around it.
+A permission classifier in the calling session can refuse to spawn that nested session. That is a reason a given run lands back with a person rather than a reason no session may start one, so drive the arm and hand the command back if the refusal fires, never route around it.
 
 The runner copies the live `standards/<name>.md` in at run time rather than using a pinned copy, so the test always exercises the current standard.
 

@@ -5,7 +5,9 @@ description: Arms and what each measures, the ablation strip, the two records a 
 
 # Eval harness
 
-`scripts/eval/` asks whether a session that has never seen an artifact can author a conforming one from that artifact alone. It is not a verb and nothing dispatches to it, so it is invoked by path. That stays true by decision: a run spends real money, so it is started by a person deciding to spend it rather than by a command surface.
+`scripts/eval/` asks whether a session that has never seen an artifact can author a conforming one from that artifact alone. It is not a verb and nothing dispatches to it, so it is invoked by path.
+
+That stays true by decision, and the decision covers the spend rather than the driving. A run spends real money and authorizing that is the operator's, while performing the run is not: `run.sh` spawns its own headless `claude -p` session against a fixture extracted outside this repository, so any session holding a shell drives an arm once the spend is authorized. The one thing that still sends a run back to a person is a permission classifier in the calling session refusing the nested spawn, which an agent hands back rather than routes around.
 
 A research harness lives beside the domain it measures only while it measures one. This one sat at `scripts/standards/authoring-test/` because standards were all it tested, and the seed arm made that placement wrong, since a seed is a tooling artifact rather than a standard. It moved to `scripts/eval/` while three files referenced it rather than waiting for the next arm to make the move expensive.
 
