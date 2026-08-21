@@ -111,7 +111,7 @@ grep -l '^## Indexes' CLAUDE.md 2>/dev/null
 
 If the section is present, skip the seed silently.
 
-If `CLAUDE.md` exists but has no `## Indexes` section, offer to install the canonical convention block. The text below is the source of truth and is mirrored in `tooling/claude/seeds/CLAUDE.md`. Paste it verbatim. Do not rewrite, paraphrase, condense, or add punctuation.
+If `CLAUDE.md` exists but has no `## Indexes` section, offer to install the canonical convention block. The text below is the source of truth and is mirrored in the toolkit's `tooling/claude/seeds/CLAUDE.md`. Paste it verbatim. Do not rewrite, paraphrase, condense, or add punctuation.
 
 ```markdown
 - When a folder has an `index.md`, check it before reading individual files in that folder.
@@ -147,5 +147,7 @@ Replace bracketed values with the values from this run. Drop the "Folders bootst
 
 ## Reference
 
-- `.claude/context/indexes.md`: system rationale, frontmatter contract, when to adopt
-- `docs/agents/indexes.md`: `aitk indexes regen` flags, exit codes, JSON shape
+Both pages sit in the toolkit and install nowhere, so a target reads them there rather than in its own tree.
+
+- The toolkit's `.claude/context/indexes.md`: system rationale, frontmatter contract, when to adopt
+- The toolkit's `docs/agents/indexes.md`: `aitk indexes regen` flags, exit codes, JSON shape

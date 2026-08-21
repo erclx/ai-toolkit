@@ -1,3 +1,4 @@
+import type { ReachRefusal } from '@/claude/skills-reach'
 import type { AuditRefusal } from '@/deps/audit'
 import type { ValidateRefusal as RecordRefusal } from '@/records/validate'
 import type { ScanRefusal } from '@/secrets/scan'
@@ -286,6 +287,21 @@ function skillCounts(record: unknown): Record<string, number> | undefined {
   )
 }
 
+/**
+ * Reads the unqualified citations alone, leaving the qualified ones out.
+ *
+ * A qualified citation is a repair that already landed, so folding the two
+ * together would report a corpus getting worse every time one is fixed. The
+ * key is still read rather than assumed present, since a record carrying
+ * neither array is a shape that moved rather than a catalog with nothing in it.
+ */
+function reachCounts(record: unknown): Record<string, number> | undefined {
+  const root = asObject(record)
+  if (root === undefined || !Array.isArray(root.qualified)) return undefined
+
+  return allOf({ unqualifiedCitations: lengthOf(root.unqualified) })
+}
+
 function boardCounts(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -402,6 +418,26 @@ export const AUDITS: readonly AuditSpec[] = [
     gatingExits: [EXIT_FINDINGS],
     corpus: 'tracked',
     counts: skillCounts,
+  },
+  {
+    id: 'skills-reach',
+    label: 'Shipped citation reach',
+    argv: ['claude', 'skills', 'reach', '--json'],
+    // Reports rather than gates, on the split this file already draws. A body
+    // naming a toolkit path is sometimes correct, since the instruction may be
+    // meant for a session in this repository, so the verdict is a judgment and
+    // a push failing on one teaches a contributor to route around the stage.
+    gatingExits: [],
+    corpus: 'tracked',
+    // The one reason this verb refuses for, and it is an absence rather than a
+    // break. A tracked corpus normally allows nothing, since a tree that ships
+    // to targets and cannot be found is a broken checkout, and this is the
+    // second exception on the same test the secret scan takes: no target holds
+    // `claude/skills/`, so without the allowance every project installing this
+    // CLI reports the verb unmeasured on every run and never changes, which is
+    // the permanent signal the per-machine allowance exists against.
+    absentReasons: ['no-skills'] satisfies ReachRefusal[],
+    counts: reachCounts,
   },
   {
     id: 'tasks',

@@ -22,11 +22,11 @@ aitk audits list --json
 
 ## What it runs
 
-Fourteen verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
+Fifteen verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
 
 The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `aitk deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
 
-Twelve of the fourteen read a tree on this disk. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction.
+Thirteen of the fifteen read a tree on this disk. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction.
 
 Each is invoked as the CLI the caller is running rather than as a global `aitk`. A globally installed binary resolves to the main checkout no matter which worktree is executing, so the aggregate would measure a tree the branch never touched and report a pass over it.
 

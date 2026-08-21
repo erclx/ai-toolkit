@@ -219,6 +219,22 @@ describe('reading counts out of each record shape', () => {
     })
   })
 
+  it('should count the unqualified citations and leave the repaired ones out', () => {
+    const record = {
+      bodies: 152,
+      qualified: [{ path: 'standards/intake.md' }, { path: 'wiki/index.md' }],
+      unqualified: [{ path: '.claude/context/transcripts.md' }],
+    }
+
+    expect(countsFor(specFor('skills-reach'), record)).toEqual({
+      unqualifiedCitations: 1,
+    })
+  })
+
+  it('should read a reach record carrying neither citation array as a shape that moved', () => {
+    expect(countsFor(specFor('skills-reach'), { bodies: 152 })).toBeUndefined()
+  })
+
   it('should count a record kind by its findings alone', () => {
     const record = { ok: true, kind: 'plans', records: 3, findings: [{}, {}] }
 
@@ -456,6 +472,22 @@ describe('classifying an audit run by its exit code', () => {
     )
 
     expect(result.status).toBe('unmeasured')
+  })
+
+  /**
+   * No target holds `claude/skills/`, so every project installing this CLI
+   * refuses this verb on every run. Reading that as unmeasured pins the whole
+   * aggregate at `incomplete` there and never changes, which is the signal
+   * nobody reads after the second time they see it.
+   */
+  it('should read a tree shipping no plugin body as absent', () => {
+    const result = classify(
+      specFor('skills-reach'),
+      1,
+      '{"reason":"no-skills","message":"No claude/skills/ here"}',
+    )
+
+    expect(result.status).toBe('absent')
   })
 
   it('should read a found secret as a finding that is a fact', () => {
