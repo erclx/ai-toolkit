@@ -61,7 +61,7 @@ Which refusals count as an absence is declared per audit rather than inferred fr
 
 Everything else stays `unmeasured`. That covers a tree git cannot list, which is a broken checkout, and a package declaring no `files` field, where a publish would pack the whole tree and the scan read none of it. Both are a corpus that exists and went unread, so softening either would report a pass over a shipped tree nobody measured.
 
-The override exists because the corpus answers the wrong question for one audit. Most projects installing this CLI publish nothing and carry no `files` field, so reading that as a broken corpus would pin the aggregate at `incomplete` in every one of them on every run.
+The override exists because the corpus answers the wrong question for one audit. What earns it is `private: true`, the one declaration that a package is never published, so a project carrying it reports an absent corpus rather than a broken one. Without that the aggregate would report `incomplete` in every such project on every run, which is the permanent signal this section opens by rejecting.
 
 `upstream` is the third corpus value, carried by the advisory check alone. Its count moves when someone publishes rather than when someone edits here, so it is kept out of the retained baseline for the mirror image of the reason gitignored scratch is, and an offline run reports it absent rather than pinning the verdict at `incomplete` on every machine without a network.
 
