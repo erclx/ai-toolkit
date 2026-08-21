@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/erclx/aitk/compare/v3.0.0...v3.1.0) (2026-08-21)
+
+
+### Features
+
+* **audits:** check a shipped body cites only what a target can open ([#1090](https://github.com/erclx/aitk/issues/1090)) ([8781dde](https://github.com/erclx/aitk/commit/8781ddefa6890aa32d568e7b4a017314f1295c76))
+
 ## [3.0.0](https://github.com/erclx/aitk/compare/v2.2.0...v3.0.0) (2026-08-21)
 
 
