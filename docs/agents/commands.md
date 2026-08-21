@@ -57,6 +57,8 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                          |
 | `aitk upgrade`             | Reinstall the CLI globally with the package manager the install path names (`--json`)                                                          |
 
+`aitk demo` is the second browser command and the one that ships, since its purpose is running in a target rather than regenerating what this repository commits. It needs a browser binary the package does not carry, installed once with `bunx playwright install chromium`.
+
 ## Domain commands
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
@@ -68,6 +70,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `standards` | `list`, `<name>`                                                                                            |
 | `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                     |
 | `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `setup [dest]` |
+| `demo`      | `compile`, `run`                                                                                            |
 | `wiki`      | `init`                                                                                                      |
 | `design`    | `render`                                                                                                    |
 | `slides`    | `render`, `list`                                                                                            |

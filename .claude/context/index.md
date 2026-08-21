@@ -12,6 +12,7 @@ Per-domain narrative loaded on demand
 - [Claude plugin](claude-plugin/index.md): Plugin skills shipped to target projects, the aitk claude CLI, and overlap with built-in Claude Code features. Start with overview.
 - [CLI](cli/index.md): TypeScript entry point and the layer boundary to bash, command registration and migration, the sync engine and its install stamp, the audit commands, and packaging. Start with overview.
 - [Context model](context-model.md): Three-tier context loading, which tier holds what, and how context entries get populated at ship time
+- [Demo](demo.md): Beats compiler and browser driver behind aitk demo, why the plan is a second committed artifact, and the gotchas in painting a pointer inside the page
 - [Design](design.md): DESIGN.md token shape, extract skill and its two paths, render command
 - [Development](development/index.md): Local dev loop and the run command table, how bun run check scopes its work, what each stage regenerates and gates on, the hook families, and session scratch. Start with overview.
 - [Governance](governance/index.md): Path-scoped Claude rules with their numbering and frontmatter contract, the stacks that group them, and the install and sync path with its CLI. Start with overview.

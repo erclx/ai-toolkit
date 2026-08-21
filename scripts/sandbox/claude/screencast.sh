@@ -67,6 +67,7 @@ EOF
     log_info "Context: notes app v2 launch with REQUIREMENTS, .claude/tasks/, and CLAUDE.md present"
     log_info "Action:  /claude-screencast 'v2 inline edit launch'"
     log_info "Expect:  4 discovery questions with seeded defaults, then draft to .claude/.tmp/screencast/<slug>.md with 8 sections and 5 pre-seeded beats"
+    log_info "Expect:  the closing block names aitk demo compile as the next step and the session stops there rather than compiling or recording"
     ;;
   "bare")
     cat <<'EOF' >README.md
@@ -80,7 +81,8 @@ EOF
     log_step "Scenario ready: screencast draft (no project context)"
     log_info "Context: bare repo, no CLAUDE.md or .claude/tasks/"
     log_info "Action:  /claude-screencast 'cli onboarding walkthrough'"
-    log_info "Expect:  discovery falls back to generic defaults, draft still written, no software or font names appear"
+    log_info "Expect:  discovery falls back to generic defaults and the draft is still written"
+    log_info "Expect:  no recording tool, editing tool, font, or window manager inside the draft, and no selector, URL, or timing on a beat"
     ;;
   *)
     log_error "Unknown scenario: $SELECTED_OPTION"

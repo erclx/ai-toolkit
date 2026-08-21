@@ -15,6 +15,7 @@ import { register as docs } from '@/commands/docs'
 import { register as design } from '@/commands/design'
 import { register as slides } from '@/commands/slides'
 import { register as capture } from '@/commands/capture'
+import { register as demo } from '@/commands/demo'
 import { register as feedback } from '@/commands/feedback'
 import { register as transcripts } from '@/commands/transcripts'
 import { register as tasks } from '@/commands/tasks'
@@ -56,6 +57,7 @@ function showHelp(): void {
     `${GREY}│${NC}    design [cmd]       ${GREY}# Design system commands (render)${NC}`,
     `${GREY}│${NC}    slides [cmd]       ${GREY}# Slide deck commands (render, list)${NC}`,
     `${GREY}│${NC}    capture [source]   ${GREY}# Render HTML capture sources to PNG${NC}`,
+    `${GREY}│${NC}    demo [cmd]         ${GREY}# Record a running app (compile, run)${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/feedback/${NC}`,
     `${GREY}│${NC}    transcripts <url>  ${GREY}# Fetch a YouTube transcript with metadata frontmatter${NC}`,
     `${GREY}│${NC}    tasks [cmd]        ${GREY}# Task board commands (archive)${NC}`,
@@ -147,6 +149,7 @@ docs(program)
 design(program)
 slides(program)
 capture(program)
+demo(program)
 feedback(program)
 transcripts(program)
 tasks(program)

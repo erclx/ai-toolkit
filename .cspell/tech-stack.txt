@@ -42,6 +42,7 @@ glama
 gsub
 heredoc
 httpx
+ibeam
 inplace
 kwargs
 labelledby

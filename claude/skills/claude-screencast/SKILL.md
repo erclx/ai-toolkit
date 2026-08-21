@@ -8,8 +8,8 @@ description: Drafts a screencast script with pre-seeded beats, defaults, and dec
 ## Guards
 
 - If no topic is provided, stop: `❌ No screencast topic. Describe what you are recording.`
-- Do not record, edit video, or generate captions. Output the script and stop.
-- Stack-agnostic. Never name recording software, editing software, fonts, or window managers in the draft.
+- Draft, then hand off. Do not edit video or generate captions, and do not drive the application. A recording is another command's job rather than something forbidden: write the draft, name `aitk demo compile` as the next step, and stop.
+- Stack-agnostic in the draft. Never name a recording tool, an editing tool, a font, or a window manager. Keep selectors, URLs, wait conditions, and timings out of the beats too, since those four are exactly what the compiler adds in a plan of its own. A beat carrying them stops being a document a person can read and edit down.
 
 ## Step 1: read the project context
 
@@ -156,7 +156,12 @@ Print the file path on its own line and a one-line summary. Do not paraphrase th
 ```markdown
 📝 Wrote .claude/.tmp/screencast/<slug>.md
 
-Draft has 5 beats and pre-seeded defaults. Edit beats and resolved decisions, then record.
+Draft has 5 beats and pre-seeded defaults. Edit the beats and the resolved decisions.
+
+To record it rather than shoot it by hand:
+aitk demo compile .claude/.tmp/screencast/<slug>.md
 ```
 
-Do not proceed to recording. Do not generate captions. Stop.
+Name the command and stop there. Do not compile the draft, do not run it, and do not generate captions. The operator edits the beats first, and the compiler reports which selectors and URLs they still owe it.
+
+Say so plainly if `aitk demo compile` is not available, rather than driving the application some other way. The command ships with the CLI and the skills ship with the plugin, so a project carrying one and not the other is a real state.
