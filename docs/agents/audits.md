@@ -22,15 +22,19 @@ aitk audits list --json
 
 ## What it runs
 
-Twelve verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
+Fourteen verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
 
-The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine, twelve runs finish in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`.
+The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `aitk deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
+
+Twelve of the fourteen read a tree on this disk. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction.
 
 Each is invoked as the CLI the caller is running rather than as a global `aitk`. A globally installed binary resolves to the main checkout no matter which worktree is executing, so the aggregate would measure a tree the branch never touched and report a pass over it.
 
 ## What gates and what reports
 
-Three findings fail the run: an unresolved context citation, a banned character, word, or spelling, and a skill folder carrying no `REQUIREMENT.md`. Those are the same three `scripts/core/verify.sh` already fails a push on, and the aggregate adds nothing to the set. Each is a fact with no false-positive class behind it.
+Four findings fail the run: an unresolved context citation, a banned character, word, or spelling, a skill folder carrying no `REQUIREMENT.md`, and a credential-shaped value in the tree the package ships. Each is a fact with no false-positive class behind it.
+
+Three of the four are the ones `scripts/core/verify.sh` already fails a push on. The secret scan is the one entry gating without a stage behind it, added on that same fact-or-judgment test rather than as a side effect of registering a measure, and the architecture record already ranks content leaving the repository above content that stays.
 
 Everything else reports. A heavy bullet, a long entry, a board row nothing resolves, a degradation term in a comment, and an implementation reaching history ahead of its test are judgments a reader settles. A push failing on one of those teaches contributors to route around the stage, which is the split recorded across every audit here and the one this command inherits rather than moves.
 
@@ -53,7 +57,13 @@ The verdict is published as a field as well as an exit code. A reader branching 
 
 A per-machine folder that is not on this disk reports as `absent` and moves neither the verdict nor the exit code. Every one of those folders is gitignored, so a fresh clone and every CI run carry none of them, and counting six expected absences as failures pins the verdict at `incomplete` forever. A signal that never changes is one nobody reads after the second time they see it.
 
-The allowance is narrow. It covers a per-machine corpus refusing because its folder is missing, and nothing else. A tracked tree that cannot be found is a broken checkout, and a per-machine verb refusing for any other reason is a broken verb. Both stay `unmeasured`.
+Which refusals count as an absence is declared per audit rather than inferred from the corpus alone. A per-machine corpus counts a missing folder. An upstream corpus counts every reason the advisory verb publishes, since each of the three means there is nothing resolved to measure. The secret scan overrides its tracked default for the two reasons that mean the project publishes nothing at all.
+
+Everything else stays `unmeasured`, a tree git cannot list included, which is a broken checkout rather than an empty one.
+
+The override exists because the corpus answers the wrong question for one audit. Most projects installing this CLI publish nothing and carry no `files` field, so reading that as a broken corpus would pin the aggregate at `incomplete` in every one of them on every run.
+
+`upstream` is the third corpus value, carried by the advisory check alone. Its count moves when someone publishes rather than when someone edits here, so it is kept out of the retained baseline for the mirror image of the reason gitignored scratch is, and an offline run reports it absent rather than pinning the verdict at `incomplete` on every machine without a network.
 
 Every run states how many corpora it measured against how many it skipped, including a run with no findings at all. A count of what passed reads as a verdict on the whole set unless the run also says what it never reached.
 

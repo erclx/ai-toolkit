@@ -129,7 +129,22 @@ SANDBOX_SCENARIO=sync aitk sandbox infra:tooling
 
 # Read every audit as one record. Exit 2 is a fact, 3 an audit that did not report
 aitk audits run --json
+
+# Read committed state rather than an arriving change. Exit 2 carries findings
+aitk secrets scan --json
+aitk deps audit --json
 ```
+
+The two state-scoped verbs both exit 2 on findings and mean different things by
+it. A credential in the shipped tree is a fact and fails `aitk audits run`, while
+a published advisory is a judgment that reports and moves no verdict. Neither
+reads a diff, so a consumer already running a review surface gets no overlap.
+
+Both refuse rather than report clean when they have no corpus, and the refusal
+reason is the field to branch on. A project publishing nothing refuses the secret
+scan with `no-manifest`, and one whose dependencies are not installed refuses the
+advisory check with `no-lockfile`. The aggregate reads those as an absent corpus
+rather than a broken run, so neither pins its verdict at `incomplete`.
 
 `aitk tooling sync` is the one verb above whose flag is mandatory headlessly. It
 overwrites every golden config a stack ships, which reaches the CI workflow, the
