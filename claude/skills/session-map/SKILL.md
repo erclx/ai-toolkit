@@ -17,7 +17,11 @@ Any session writes one. Do not assert a role on invocation, and do not add a rol
 
 ## Step 1: run the capture the procedure opens with
 
-Item 1 of `## Writing one` is a capture. Invoke `aitk:claude-memory-capture` and let it return before writing, so the map cites what was written instead of restating the same lesson in prose. Report nothing about what it wrote. The map is this skill's output.
+Item 1 of `## Writing one` is a capture. Invoke `aitk:claude-memory-capture` and let it return before writing, so the map cites what was written instead of restating the same lesson in prose.
+
+Pass on the caveat a caller states about committing. A caller that does not commit says so, and capture then skips routing and writes memory files alone, since a routed fact lands in a context entry and that is a tracked file. A caller stating nothing leaves capture to decide for itself, which is the ordinary run.
+
+Carry through the line capture returns when a fact routed, so the session knows a fold is still owed. Report nothing else about what it wrote. The map is this skill's output.
 
 ## Step 2: recover the commit the drift step reads
 

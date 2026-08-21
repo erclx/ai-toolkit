@@ -15,6 +15,8 @@ The nearest description by wording writes a different artifact. Capture routes f
 
 The drift step is the one most specific to session length and the easiest to skip. It reads the commit the session started from, nothing on the machine records that commit, and a route that names the step without naming how to recover the ref ships an instruction nobody can follow.
 
+A capture fired the same way for every caller breaks the one caller the split leaves. An orchestrating session may write no tracked file, so its capture has to skip routing, and a route offering no way to say so leaves that reader running capture twice or routing facts the role forbids it to fold.
+
 A body that restates the sections, the frontmatter, or the numbered steps becomes a second source that drifts from the standard, which is the failure the split between the role writer and the core was made to remove rather than move.
 
 ## Must
@@ -26,7 +28,8 @@ A body that restates the sections, the frontmatter, or the numbered steps become
 - Resolve the folder at the main worktree root, and write the file whole from the shell where the editing tools refuse that root
 - Fall back to the branchless filename on an empty slug rather than stopping
 - Leave model invocation enabled, so a session that has dropped its routing still reaches this by description
-- Report the map alone, since the capture the procedure opens with is a different artifact with its own reporting
+- Take a caller's statement that the session does not commit and pass it to capture, so no fact this route fires is routed into a tracked file
+- Report the map alone, plus the line capture returns when a fact routed, since a fold left unreported is a fold nobody runs
 
 ## Must not
 
