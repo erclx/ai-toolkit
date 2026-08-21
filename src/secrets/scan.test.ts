@@ -1,0 +1,80 @@
+import { describe, expect, it } from 'vitest'
+import { SECRET_MARKER } from '@/secrets/marker'
+import { PATTERNS } from '@/secrets/patterns'
+import { isBinary, scanText } from '@/secrets/scan'
+
+const PLANTED = `AKIA${'Q'.repeat(16)}`
+
+describe('scanText', () => {
+  it('should report a planted value with its file, line, and column', () => {
+    const findings = scanText(
+      'tooling/base/seeds/env',
+      `x\nid = "${PLANTED}"\n`,
+    )
+
+    expect(findings).toEqual([
+      {
+        file: 'tooling/base/seeds/env',
+        line: 2,
+        column: 7,
+        pattern: 'aws-access-key-id',
+        label: 'AWS access key id',
+        preview: 'AKIA…QQQQ',
+      },
+    ])
+  })
+
+  it('should report nothing on a clean file', () => {
+    expect(scanText('src/cli.ts', 'const key = process.env.API_KEY\n')).toEqual(
+      [],
+    )
+  })
+
+  it('should report nothing on a value the marker exempts inline', () => {
+    const text = `id = "${PLANTED}" # ${SECRET_MARKER}: fixture\n`
+
+    expect(scanText('scripts/fixture.sh', text)).toEqual([])
+  })
+
+  it('should report nothing on a value the line above exempts', () => {
+    const text = `# ${SECRET_MARKER}: fixture\nid = "${PLANTED}"\n`
+
+    expect(scanText('scripts/fixture.sh', text)).toEqual([])
+  })
+
+  it('should still report a value two lines below the marker', () => {
+    const text = `# ${SECRET_MARKER}: fixture\nfiller\nid = "${PLANTED}"\n`
+
+    expect(scanText('scripts/fixture.sh', text)).toHaveLength(1)
+  })
+
+  it('should report every value in a file carrying more than one', () => {
+    const text = `id = "${PLANTED}"\nkey = "AIza${'b'.repeat(35)}"\n`
+
+    expect(scanText('a', text).map((finding) => finding.line)).toEqual([1, 2])
+  })
+})
+
+describe('isBinary', () => {
+  it('should read a NUL byte as binary', () => {
+    expect(isBinary(`a${String.fromCharCode(0)}b`)).toBe(true)
+  })
+
+  it('should read ordinary source as text', () => {
+    expect(isBinary('const a = 1\n')).toBe(false)
+  })
+})
+
+describe('the rule set against its own source', () => {
+  /**
+   * `src/` is inside the shipped corpus, so a pattern matching the text of its
+   * own definition would report this file on every run and train a reader to
+   * mute the check. Asserting it here keeps a later pattern from reintroducing
+   * the loop.
+   */
+  it('should not match the source text of any pattern', () => {
+    const sources = PATTERNS.map((pattern) => pattern.match.source).join('\n')
+
+    expect(scanText('src/secrets/patterns.ts', sources)).toEqual([])
+  })
+})

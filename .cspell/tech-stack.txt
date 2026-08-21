@@ -1,4 +1,5 @@
 accdescr
+akia
 applestyleguide
 argjson
 asciinema
@@ -44,6 +45,7 @@ httpx
 inplace
 kwargs
 labelledby
+licence
 listitem
 longtask
 lucide
@@ -125,6 +127,10 @@ vitest
 webvtt
 withgoogle
 wslpath
+xoxa
 xoxb
 xoxc
 xoxd
+xoxp
+xoxr
+xoxs
