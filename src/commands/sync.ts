@@ -162,6 +162,17 @@ function renderCheck(report: CheckReport): void {
     for (const name of report.newSkills) logInfo(name)
   }
 
+  // Warned where `newSkills` is noted, because a new skill loads live and needs
+  // nothing run while a rule reaches the target only when someone installs it.
+  // No sync closes any of this, so the remedy names the install command.
+  if (report.newRules.length > 0) {
+    logStep('New rules, never installed')
+    for (const name of report.newRules) logWarn(name)
+    logInfo(
+      'Run `aitk gov install <stack>` to pick them up, or `--add <rule>` for one.',
+    )
+  }
+
   renderUnclaimed(report)
   renderMigrations(report)
 
