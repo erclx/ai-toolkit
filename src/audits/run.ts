@@ -85,6 +85,7 @@ export async function runAudits(
           label: spec.label,
           status: 'unmeasured' as const,
           tracked: spec.corpus === 'tracked',
+          corpus: spec.corpus,
           exitCode: 1,
           reason: `could not be started: ${error instanceof Error ? error.message : String(error)}`,
         }

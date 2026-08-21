@@ -18,7 +18,14 @@ function specFor(id: string): AuditSpec {
 }
 
 function result(id: string, status: AuditResult['status']): AuditResult {
-  return { id, label: id, status, tracked: true, exitCode: 0 }
+  return {
+    id,
+    label: id,
+    status,
+    tracked: true,
+    corpus: 'tracked',
+    exitCode: 0,
+  }
 }
 
 describe('running the audit set', () => {
