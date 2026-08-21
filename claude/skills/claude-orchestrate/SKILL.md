@@ -186,7 +186,7 @@ Promoting, demoting, and archiving a row all write `.claude/tasks/priority.md`, 
 - Re-resolve every Plan pointer after anything archives a plan
 - Read the file back after writing it, since the row that lands is the row a worker acts on
 
-A Plan pointer goes stale from a branch this board never sees. `claude-docs` moves a plan to `.claude/plans-archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.claude/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
+A Plan pointer goes stale from a branch this board never sees. `claude-docs` moves a plan to `.claude/plans/archive/` and rewrites the citation in the task file alone, so a row for a task still on the board keeps pointing into `.claude/plans/` at a file that has moved. Workers running the ship chain on their own branches archive plans this board still cites, and the board reads as correct until a pointer is followed.
 
 ## Parallelism
 

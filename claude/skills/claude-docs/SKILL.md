@@ -238,30 +238,34 @@ Board-wide scope is the one place this sweep reaches past Step 3's rule against 
 
 Before moving anything, count the other citations. Scan every `.claude/tasks/*.md` file except the one being processed for a `Plan:` line naming the same plan. Compare the resolved target from the parse above, never the raw target string and never the filename alone.
 
-A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/plans-archive/`, and the count then reads a citation that does not exist and archives nothing.
+A board carrying one task written `../plans/x.md` and another written `.claude/plans/x.md` cites one plan, and a raw string comparison reads two, counts zero, and archives the file out from under a live task. Comparing filenames swaps that for the opposite error, since a live plan and an archived one share a basename whenever a closed task still points into `.claude/plans/archive/`, and the count then reads a citation that does not exist and archives nothing.
 
 Exclude the closing task explicitly. It sits on the board and cites the plan itself, so a scan that counts it never reaches zero and no plan is ever archived.
 
-`aitk tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `aitk` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.claude/plans-archive/`.
+`aitk tasks plan-citations <stem> --json` answers this same question, and the archive gate already reads it. This body states the rule anyway rather than calling the verb, because a plugin skill reaches a target the moment it merges while the CLI reaches one only when a release publishes, so a target whose installed `aitk` predates the verb gets no record back and routes on nothing. Measured against the `claude:docs` `board-sweep` arm, where calling the verb archived neither plan and created no `.claude/plans/archive/`.
 
 Nothing in the exit code reports that. Branch on the record's `ok` and `reason` fields and never on the exit, which is the rule every task verb already carries: an operator's shell profile may wrap `aitk` in a function that runs the binary and then another command, taking its status from the second, and one measured here masks every non-zero exit rather than only an absent verb. The binary itself exits 1 for an unknown subcommand and 1 for an ordinary refusal alike. Switching this body to the verb needs a release that carries it and a read of the record rather than the exit, which together retire the duplication.
 
 A plan can serve more than one task, and archiving on the first task to close strands every other task's pointer at a path that has moved. `.claude/plans/` is gitignored, so that retarget would be the only record and there is nothing to recover it from.
 
-- Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/plans-archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
+- Target resolves inside `.claude/plans/`, the file exists, and no other task file cites it: create `.claude/plans/archive/`, move the file there under its original name, overwriting any file already sitting at that name. Then rewrite the task file's `Plan:` line to the archive path, so a completed task still leads to the reasoning behind it.
 - Target resolves inside `.claude/plans/` and at least one other task file cites it: leave the plan where it is and retarget nothing. Report the shared citation.
-- Target resolves inside `.claude/plans-archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
+- Target resolves inside `.claude/plans/archive/`: skip silently. The plan was archived by an earlier pass and the task file is already correct.
 - Any other resolved target outside `.claude/plans/`: warn and skip.
 
-Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans-archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
+Write the retarget as a markdown link, `Plan: [feature-<slug>](../plans/archive/feature-<slug>.md)`, updating both halves so the text and the target stay in step. This branch is the only writer that produces a `Plan:` line nobody authored by hand, so a retarget that emits a bare path converts every task to the old form as it closes and drifts the board back to two shapes on its own.
 
 ### Reviews
 
 Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. Fall back to `latest` on an empty result.
 
-If `.claude/review/review-<slug>.md` exists, delete it. `claude-review` writes with this convention.
+If `.claude/review/branch/review-<slug>.md` exists, delete it. `claude-review` writes with this convention.
 
-Memory receipts sweep board-wide, like plans above and unlike the review receipt. Scan every `.claude/review/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
+Then sweep the branch reports this session never opened. List `.claude/review/branch/review-*.md`, run the same slug transform over every name `git branch --format='%(refname:short)'` prints, and delete a report whose slug matches none of them. Take the names from that format rather than from `git branch --list`, which marks the current branch with `* ` and a branch checked out in another worktree with `+ `, so a transform reading the marked lines as written turns a live branch into a slug nothing matches and sweeps a report a sibling worktree is still working from. A branch report is read once, by the session addressing it, and the durable record of what a review found is the comment `claude-pr-review` posts on the pull request, so a report outliving its branch is holding nothing. Skipping this leaves them accumulating for the life of the checkout, since a slug is unique per feature and no later branch ever looks for one.
+
+What that removes is a local-only review on a branch deleted before it opened a pull request. `claude-review` says so where a reader meets the report, and the sweep runs anyway rather than keeping every report against the one case, since nothing else ever clears them.
+
+Memory receipts sweep board-wide, like plans above and unlike the current slug's review report. Scan every `.claude/review/memory/memory-review-*.md`, not only the one matching this slug. `claude-memory-review` writes its receipt after this skill has run in every ship chain, so a sweep keyed on the current slug looks for a file that does not exist yet, and no later branch looks for it either because a slug is unique per feature. Scanning the folder is what makes the sweep fire at all.
 
 For each receipt, count the H2 items still marked 📝 pending:
 
@@ -270,13 +274,14 @@ For each receipt, count the H2 items still marked 📝 pending:
 
 That standard owns what a fold writes and which entry types take one. `claude-memory-review` collects a receipt on the same rule, so neither body restates it.
 
-Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables), or any other `review-*.md` file.
+Do not sweep `ui-checklist-*.md` (pending human verification), `ux-audit-*.md`, or `ux-measure-*.md` (standalone deliverables). Those sit at `.claude/review/` itself rather than under a producer folder, so the two globs above never reach them.
 
 Output one line per file swept:
 
-- `📦 Archived: <path>` for a plan moved into `.claude/plans-archive/`
+- `📦 Archived: <path>` for a plan moved into `.claude/plans/archive/`
 - `⏭ Kept: <path>, still cited by <task-file>` for a plan another live task shares
-- `🧹 Deleted: <path>` for a swept review
+- `🧹 Deleted: <path>` for a swept branch report
+- `🧹 Deleted: <path>, branch gone` for a branch report whose branch no longer exists
 - `🧹 Deleted: <path>, folded <n> skips` for a swept memory receipt
 - `⏭ Kept: <path>, <n> items pending` for a memory receipt still holding decisions
 

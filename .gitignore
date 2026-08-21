@@ -20,10 +20,7 @@ node_modules/
 .claude/intake/
 .claude/memory/
 .claude/plans/
-.claude/plans-archive/
 .claude/review/
-.claude/review-archive/
-.claude/task-archive/
 .claude/worktrees/
 .claude/tasks/
 

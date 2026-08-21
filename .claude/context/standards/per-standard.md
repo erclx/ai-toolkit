@@ -18,7 +18,7 @@ What each one settled belongs here rather than in the file itself, which states 
 
 ## The plan standard
 
-`standards/plan.md` fixes the section list, the suggested-and-answer contract, and the lifecycle from `.claude/plans/` to `.claude/plans-archive/`. `claude-feature` defined that shape inside its own body and two more skills consumed it, which is past the second-case bar, so the body now cites the standard and `claude-autoship` and `claude-docs` each point at the half they read.
+`standards/plan.md` fixes the section list, the suggested-and-answer contract, and the lifecycle from `.claude/plans/` to `.claude/plans/archive/`. `claude-feature` defined that shape inside its own body and two more skills consumed it, which is past the second-case bar, so the body now cites the standard and `claude-autoship` and `claude-docs` each point at the half they read.
 
 The section markers are mixed on purpose, `## Summary` as a heading and the other four as bold labels, because that is what the corpus writes. Across 178 archived plans, `Summary` is a heading in 176 and a label in none, while `Files to touch` is a label in 146 against 21 headings and the other three split the same way.
 
@@ -38,7 +38,7 @@ The plan and intake answer contracts invert each other and both files state the 
 
 A blank `- Answer:` accepts the suggestion because a plan is written and read in one sitting with every question already surfaced, while an empty `You:` means unread because an intake folder is read over weeks and silence there is far more likely to be absence than assent.
 
-`558-plan` routes `.claude/plans/**` and `.claude/plans-archive/**` and joins `base`, following `556-groundwork` and `557-intake`. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
+`558-plan` routes `.claude/plans/**` and joins `base`, following `556-groundwork` and `557-intake`. That one glob covers the archive as well, since a shipped plan moves into `.claude/plans/archive/` rather than to a folder of its own, so the second `paths` entry the rule used to carry came off with the move. It carries the three directives that ship silently when violated, a filled answer slot, a deleted plan, and a deviation from a suggestion recorded off the plan, and points at the standard for the rest.
 
 ## Where an execution-time deviation goes
 

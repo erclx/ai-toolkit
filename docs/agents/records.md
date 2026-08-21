@@ -110,7 +110,7 @@ aitk records push --json
 aitk records pull
 ```
 
-The backed folders are `groundwork`, `intake`, `memory`, `plans`, `plans-archive`, `review`, `review-archive`, `task-archive`, `tasks`, and `teach`, all under `.claude/`. They are the Claude ignore group the claude manifest ships, minus three entries: `.claude/.tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.claude/.records.git/`, which is the history the other ten are pushed into. The list is a constant rather than configuration, matching the four folder names `validate` hardcodes.
+The backed folders are `groundwork`, `intake`, `memory`, `plans`, `review`, `tasks`, and `teach`, all under `.claude/`. They are the Claude ignore group the claude manifest ships, minus three entries: `.claude/.tmp`, which is deletable without loss, `.claude/worktrees/`, whose contents belong to the project repository already, and `.claude/.records.git/`, which is the history the other seven are pushed into. Each name is a top-level record folder and every archive sits inside the one it archives, so the list stays at one entry per surface however many archives appear. It is a constant rather than configuration, matching the six record kinds `validate` hardcodes.
 
 Records are gitignored by design, so the history lives in a second git directory at `.claude/.records.git` with `.claude/` as its work tree. Every path stays where it is, which is what a separate checkout could not do. The verbs stage the ten folders by explicit pathspec with `--force`, so nothing outside them can enter the index however the ignore rules read, and the project working tree and its index are never touched.
 
@@ -145,4 +145,4 @@ The two `pull` refusals exist because the directions are not symmetric. A push o
 
 ### When it runs
 
-`.husky/post-merge` runs `push` after the task-archive loop, on every merge rather than only on one that archived a task. A review report and a memory entry both land on runs that close nothing. The call sits inside an `if` and last in the file, so an unreachable remote neither aborts the hook nor delays the archiving above it, and a checkout that never ran the setup reports nothing. Anything the hook misses is covered by running the verb by hand.
+`.husky/post-merge` runs `push` after the task archiving loop, on every merge rather than only on one that archived a task. A review report and a memory entry both land on runs that close nothing. The call sits inside an `if` and last in the file, so an unreachable remote neither aborts the hook nor delays the archiving above it, and a checkout that never ran the setup reports nothing. Anything the hook misses is covered by running the verb by hand.

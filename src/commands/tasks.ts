@@ -151,7 +151,7 @@ export function register(program: Command): void {
         'Locations:',
         '  unstated  the task carries no Plan: line',
         '  live      the target resolves inside .claude/plans/',
-        '  archived  the target resolves inside .claude/plans-archive/',
+        '  archived  the target resolves inside .claude/plans/archive/',
         '  outside   the target resolves somewhere else',
         '',
         'Exit codes:',

@@ -24,7 +24,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk design render`       | Render `.claude/DESIGN.md` tokens to HTML and CSS                                                                                              |
 | `aitk slides render`       | Render a `.claude/SLIDES.md` source into a PowerPoint deck                                                                                     |
 | `aitk slides list`         | List the available slide layouts (`--json` for the catalog)                                                                                    |
-| `aitk feedback`            | Write toolkit feedback from stdin to `.claude/review/`, or open a GitHub issue with `--github`                                                 |
+| `aitk feedback`            | Write toolkit feedback from stdin to `.claude/review/feedback/`, or open a GitHub issue with `--github`                                        |
 | `aitk transcripts <url>`   | Fetch a YouTube transcript with metadata frontmatter (needs `yt-dlp`)                                                                          |
 | `aitk tasks archive`       | Move a shipped task off the board, clear its ordering row, and regenerate the index                                                            |
 | `aitk tasks pull-request`  | Record a pull request number on the task a branch closes, by stem or `--plan` (`--json`)                                                       |

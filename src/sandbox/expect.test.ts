@@ -22,7 +22,7 @@ import {
   type Verdict,
 } from '@/sandbox/expect'
 
-const ARCHIVE = '.claude/plans-archive/feature-postgres-migration.md'
+const ARCHIVE = '.claude/plans/archive/feature-postgres-migration.md'
 const PLANS_LIVE = '.claude/plans/feature-postgres-migration.md'
 const PLANS_DECOY = '.claude/plans/feature-some-old-plan.md'
 const TASKS = '.claude/tasks/v01.0-postgres.md'
@@ -50,7 +50,7 @@ function seedCorrectTree(): void {
     [
       '### Migrate storage to Postgres',
       '',
-      'Plan: [feature-postgres-migration](../plans-archive/feature-postgres-migration.md)',
+      'Plan: [feature-postgres-migration](../plans/archive/feature-postgres-migration.md)',
       '',
       '- [x] Outcome: tasks persist in Postgres instead of SQLite',
       '- [x] Outcome: connection config reads from environment',
@@ -68,7 +68,7 @@ function driftExpectation(): Expectation {
       {
         path: TASKS,
         pattern:
-          '^Plan: \\[feature-postgres-migration\\]\\(\\.\\./plans-archive/feature-postgres-migration\\.md\\)',
+          '^Plan: \\[feature-postgres-migration\\]\\(\\.\\./plans/archive/feature-postgres-migration\\.md\\)',
       },
     ],
     writeScope: ['.claude/**'],
@@ -190,7 +190,7 @@ describe('checkExpectation', () => {
       seedCorrectTree()
       write(
         TASKS,
-        'Plan: [feature-postgres-migration](../plans-archive/feature-postgres-migration.md)\n\n- [ ] Outcome: tasks persist in Postgres instead of SQLite\n',
+        'Plan: [feature-postgres-migration](../plans/archive/feature-postgres-migration.md)\n\n- [ ] Outcome: tasks persist in Postgres instead of SQLite\n',
       )
 
       expect(runDrift().state).toBe('fail')
