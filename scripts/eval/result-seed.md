@@ -2,6 +2,8 @@
 > output and the first-person text is the run's own final message. Do not edit or rewrite either. This file is
 > the evidence the change-control rule cites, so a prose pass over it destroys what it is for. Prose standards
 > do not apply to the quoted blocks. The judgment sections after them are written by the operator and do.
+> Those standards govern how a sentence there is worded rather than which paths it names, so a rename sweep
+> leaves every path in this file at the spelling the run date carried.
 
 `cost_usd: 1.179765 | turns: 32`. One run, N of 1, no baseline, per `pre-registration.md`.
 

@@ -97,9 +97,10 @@ files are excluded from that exit code, since a project-authored rule never
 converges. Attribution reads `.claude/aitk/config.json`, which every install and
 sync writes.
 
-A target installed before stamping shipped has no such file, and so does one
+A target installed before stamping shipped has no such file, and neither does one
 stamped before the file moved into `.claude/aitk/`, which is read as absent
-rather than migrated. Both fall back to the toolkit's own git history. Installed content matching any
+rather than migrated. Both fall back to the toolkit's own git history.
+Installed content matching any
 version that history ever published proves the file is untouched, so it reports
 `stale` naming the commit it came from, and content matching no published
 version stays `drifted`. A toolkit reached outside a git clone, which is what a
