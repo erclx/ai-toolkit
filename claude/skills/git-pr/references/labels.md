@@ -17,7 +17,7 @@ Does not govern:
 
 ## Map format
 
-The map lives at `.claude/pr-labels.toml` in the project root. Each key under `[domains]` is a label name and its value is the list of path prefixes that earn it.
+The map lives at `.claude/aitk/pr-labels.toml` in the project root. Each key under `[domains]` is a label name and its value is the list of path prefixes that earn it.
 
 ```toml
 [domains]

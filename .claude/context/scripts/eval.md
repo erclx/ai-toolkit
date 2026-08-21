@@ -37,6 +37,8 @@ Both therefore quote paths, seed bullets, and rules as they stood on the run dat
 
 The three frozen records do not carry banners of equal strength, so a sweep cannot exclude them as one class. `result-context.md` and `result-wireframes.md` refuse every edit outright. `result-seed.md` refuses edits to its quoted and machine-derived blocks alone and states that the operator-written judgment sections after them do follow prose standards, which puts those sections inside a prose sweep rather than outside it. Read the banner per file before excluding one.
 
+A prose sweep and a path sweep reach those judgment sections differently, and the banner separates the two by what it governs rather than by which section it covers. Prose standards decide how a sentence is worded, while the paths it names are evidence of what the run opened. `result-seed.md` cites the install stamp twice outside its fenced blocks, once naming which seed files were read and once scoring the row that read them, so a rename sweep rewriting either leaves the judgment disagreeing with the block above it. Rewrite the wording in those sections and leave every path they name at the spelling the run date carried.
+
 ### The `Subject` column
 
 A `Subject` commit an ablation pair regenerates from gets a pushed tag under `eval/`, and an ordinary run does not. Rows pointing at a commit that lives on one local branch and nothing else are one branch cleanup or one lost disk away from losing the entry point while the content stays committed. A tag survives that deletion, and the `eval/` prefix keeps it clear of the `v*` release tags. `run.sh` does not create the ref, so the next ablation can recreate the same state, which is accepted on the same grounds the citation check was cut.

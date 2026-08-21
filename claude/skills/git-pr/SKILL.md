@@ -11,7 +11,7 @@ Read these files in parallel:
 
 - `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
 - `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
-- `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/pr-labels.toml`.
+- `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/aitk/pr-labels.toml`.
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
 - `${CLAUDE_SKILL_DIR}/../../standards/versioning.md`: phase label vs semver discipline
@@ -84,7 +84,7 @@ A detached HEAD gives `git branch --show-current` an empty result, which would r
 
 ### Labels
 
-Read `.claude/pr-labels.toml` from the project root. A project that has not declared a map gets no labels and no warning, since a label set this skill supplied would be a guess about that project's surfaces.
+Read `.claude/aitk/pr-labels.toml` from the project root. A project that has not declared a map gets no labels and no warning, since a label set this skill supplied would be a guess about that project's surfaces.
 
 When the file resolves, match it against the name-only diff per `${CLAUDE_SKILL_DIR}/references/labels.md` and write the comma-separated result into `pr_labels` below. Leave `pr_labels` empty when no map resolves or no prefix matches, which skips the labelling command rather than running it against nothing.
 

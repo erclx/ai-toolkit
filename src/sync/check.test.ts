@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   buildToolingReport,
@@ -91,7 +91,7 @@ describe('buildToolingReport', () => {
   }
 
   function stampChain(chain: readonly string[]): Stamp | undefined {
-    mkdirSync(join(TARGET, '.claude'), { recursive: true })
+    mkdirSync(dirname(stampPath(TARGET)), { recursive: true })
     writeFileSync(
       stampPath(TARGET),
       JSON.stringify({
@@ -120,7 +120,7 @@ describe('buildToolingReport', () => {
   })
 
   it('should report unmeasured when the stamp covers other domains only', () => {
-    mkdirSync(join(TARGET, '.claude'), { recursive: true })
+    mkdirSync(dirname(stampPath(TARGET)), { recursive: true })
     writeFileSync(
       stampPath(TARGET),
       JSON.stringify({

@@ -65,7 +65,7 @@ The Seed independence stage runs `scripts/core/check-seed-independence.sh`, whic
 
 Banning a token is blunt, and the alternative is a judgment no stage can make. The only false-positive class is a fenced example naming the toolkit on purpose, which no seed carries, and a rule admitting fenced mentions would parse markdown to answer a question the corpus has never asked.
 
-The match is a bare substring rather than a word boundary, and `grep -w` does not narrow it. A slash and a dot are both non-word characters, so `grep -w aitk` still matches `.claude/aitk.json` with a boundary sitting either side. The bare substring is deliberate rather than unrefined, and the stage prefers a false positive to a missed citation because it gates.
+The match is a bare substring rather than a word boundary, and `grep -w` does not narrow it. A slash is a non-word character, so `grep -w aitk` still matches `.claude/aitk/config.json` with a boundary sitting either side. The bare substring is deliberate rather than unrefined, and the stage prefers a false positive to a missed citation because it gates.
 
 ### What the walk covers
 

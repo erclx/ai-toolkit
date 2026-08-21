@@ -56,9 +56,9 @@ manual = [
 ]
 
 # Both domains stamped their manifest. A run that installed governance and
-# stopped leaves a well-formed `aitk.json` carrying one entry, which every path
+# stopped leaves a well-formed `config.json` carrying one entry, which every path
 # above still passes. Standards is not among them and `.claude/standards` is
 # asserted absent above, since the corpus installs into no target.
 [[content]]
-path = ".claude/aitk.json"
+path = ".claude/aitk/config.json"
 pattern = '"covers": \["snippets", "governance"\]'

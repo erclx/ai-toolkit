@@ -48,7 +48,7 @@ function writeStampFixture(
   hashes: Record<string, string>,
 ): void {
   writeFixture(
-    join(TARGET, '.claude/aitk.json'),
+    join(TARGET, '.claude/aitk/config.json'),
     JSON.stringify({
       covers: [domain],
       domains: {
