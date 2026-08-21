@@ -32,13 +32,20 @@ function isToolkitSource(): boolean {
   return existsSync(join(PROJECT_ROOT, '.claude'))
 }
 
+/**
+ * One producer, one subfolder. The review folder carries the output of four
+ * unrelated producers, and the filename prefix was doing the folder's job by
+ * hand, so each writes under its own name and the enclosing folder keeps the
+ * single ignore entry and the single backed-folder entry it already had.
+ */
 function writeLocal(body: string): string {
-  const reviewDir = join(PROJECT_ROOT, '.claude', 'review')
+  const relativeDir = join('.claude', 'review', 'feedback')
+  const reviewDir = join(PROJECT_ROOT, relativeDir)
   mkdirSync(reviewDir, { recursive: true })
   const filename = `feedback-${deriveSlug(body)}-${timestamp()}.md`
   const filePath = join(reviewDir, filename)
   writeFileSync(filePath, `${body}\n`, 'utf8')
-  frameSuccess('aitk feedback', `.claude/review/${filename}`)
+  frameSuccess('aitk feedback', join(relativeDir, filename))
   return filePath
 }
 
@@ -46,7 +53,7 @@ export function register(program: Command): void {
   program
     .command('feedback')
     .description(
-      'Write toolkit feedback from stdin to .claude/review/, or open a GitHub issue with --github',
+      'Write toolkit feedback from stdin to .claude/review/feedback/, or open a GitHub issue with --github',
     )
     .option(
       '--github',

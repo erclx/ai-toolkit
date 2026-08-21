@@ -1,6 +1,6 @@
 ---
 name: toolkit-feedback
-description: Format a paste-back report about something broken, missing, or off in aitk and write it directly to the toolkit's `.claude/review/` folder via `aitk feedback`. Use when asked to "send this to the toolkit", "report this to aitk", "file toolkit feedback", or "give the toolkit feedback about X". Do NOT use for general complaints about other tooling, IDE issues, or in-project bugs that do not implicate aitk surfaces.
+description: Format a paste-back report about something broken, missing, or off in aitk and write it directly to the toolkit's `.claude/review/feedback/` folder via `aitk feedback`. Use when asked to "send this to the toolkit", "report this to aitk", "file toolkit feedback", or "give the toolkit feedback about X". Do NOT use for general complaints about other tooling, IDE issues, or in-project bugs that do not implicate aitk surfaces.
 ---
 
 # Toolkit feedback
@@ -48,7 +48,7 @@ Detect whether `aitk` is on PATH:
 command -v aitk >/dev/null 2>&1
 ```
 
-If present, pipe the block to `aitk feedback`. The CLI writes to its own repo's `.claude/review/feedback-<slug>-<ts>.md` and prints the absolute path on stdout:
+If present, pipe the block to `aitk feedback`. The CLI writes to its own repo's `.claude/review/feedback/feedback-<slug>-<ts>.md` and prints the absolute path on stdout:
 
 ```bash
 cat <<'EOF' | aitk feedback

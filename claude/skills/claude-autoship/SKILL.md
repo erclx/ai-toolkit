@@ -92,15 +92,15 @@ The list covers this toolkit's authoring layout and the layout it installs, whic
 
 ## Step 6: evaluate findings
 
-Skip this step when Step 5 skipped review. Otherwise read `.claude/review/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
+Skip this step when Step 5 skipped review. Otherwise read `.claude/review/branch/review-<slug>.md` at the main worktree root. Split every finding by origin before parsing the summary line (`X critical, Y should-fix, Z minor`), since the stop exists for a defect the branch inherited rather than for one this run introduced.
 
 - **This run caused it, at any severity.** Fix it, re-run the Step 3 verify commands, re-read the fixed file against what the finding claimed, and continue. Do not report it as a stop and do not offer the fix as a choice, which is the same stop wearing a proposal.
-- **It predates this run, critical or should-fix.** Stop: `❌ Review found non-minor issues that predate this run. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
+- **It predates this run, critical or should-fix.** Stop: `❌ Review found non-minor issues that predate this run. See .claude/review/branch/review-<slug>.md. Fix and run /git-ship.`
 - **It predates this run, minor only.** Continue. The minor findings stay in the on-disk review receipt. Fold any a reviewer needs into the PR's `## Technical Context`. Do not add a separate review-notes section to the PR body.
 
 Read origin as causation rather than authorship. Staleness this run induced in a file it never opened is a finding it caused, and the plan's "Files to touch" list scopes what the run builds rather than what it may repair.
 
-Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .claude/review/review-<slug>.md. Fix and run /git-ship.`
+Bound the repair at one pass, the way Step 3 bounds verify. When that re-read shows the finding still standing, stop: `❌ A self-introduced finding survived one fix pass. See .claude/review/branch/review-<slug>.md. Fix and run /git-ship.`
 
 ## Step 7: ship
 
@@ -138,10 +138,10 @@ Respond with up to five lines:
 
 ```plaintext
 ✅ Autoshipped (draft): <PR url>
-<N minor findings kept in .claude/review/review-<slug>.md>
+<N minor findings kept in .claude/review/branch/review-<slug>.md>
 <N facts routed to context entries>
 <N memories captured in .claude/memory/>
-<Memory proposal at .claude/review/memory-review-<slug>.md>
+<Memory proposal at .claude/review/memory/memory-review-<slug>.md>
 ```
 
 Omit the second line if there were no minor findings, and the third if nothing routed. Omit the fourth and fifth if `claude-memory-capture` wrote no memory file this session, since an empty pen means no scoped review and no proposal. A run that routes every fact and writes none is the shape to expect, and it reports three lines.

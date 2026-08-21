@@ -56,7 +56,7 @@ function showHelp(): void {
     `${GREY}│${NC}    design [cmd]       ${GREY}# Design system commands (render)${NC}`,
     `${GREY}│${NC}    slides [cmd]       ${GREY}# Slide deck commands (render, list)${NC}`,
     `${GREY}│${NC}    capture [source]   ${GREY}# Render HTML capture sources to PNG${NC}`,
-    `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/${NC}`,
+    `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/feedback/${NC}`,
     `${GREY}│${NC}    transcripts <url>  ${GREY}# Fetch a YouTube transcript with metadata frontmatter${NC}`,
     `${GREY}│${NC}    tasks [cmd]        ${GREY}# Task board commands (archive)${NC}`,
     `${GREY}│${NC}    intake [cmd]       ${GREY}# Intake folders under .claude/intake/ (list, answer)${NC}`,
