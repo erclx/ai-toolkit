@@ -29,11 +29,35 @@ A label takes more than one prefix when two folders read as one surface. Two lab
 
 Matching is prefix-anchored, so a row written for an authoring root reaches nothing under the copy a project consumes. A surface living only under a dotted folder carries its own prefix on the row that owns its subject, and a folder holding several subjects rather than one splits across the rows that own them.
 
-The map is authored by hand and nothing detects a directory it fails to cover, so a surface added after the map was written labels nothing until someone adds a row. A map that has been censused against its own history says in its comment where that check is owned, so a reader meeting the gap is sent somewhere rather than left with the prediction.
+The map is authored by hand, so a surface added after it was written labels nothing until someone adds a row. `aitk labels audit` is what names that surface before the branch merges.
 
 ## Paths a map declines to label
 
-A path that moves only when a release or a generator rewrites it earns no row. Release automation applies its own label, and a domain label on a generated file gives a mechanical edit a subject it does not have. Neither is covered, so both are recorded in the map's comment with the reason, which is what separates a path nobody has gotten to from one somebody decided against.
+A path that moves only when a release or a generator rewrites it earns no row. Release automation applies its own label, and a domain label on a generated file gives a mechanical edit a subject it does not have.
+
+Both go under a `[declined]` table keyed by the reason, in the same file and matched by the same prefix rule:
+
+```toml
+[declined]
+release-managed = ["CHANGELOG.md", "package.json"]
+generated = ["build/manifest.json"]
+```
+
+A table rather than a comment because the check reads it. A path here is a decision already taken and a path under neither table is a gap nobody has gotten to, and a report that could not tell those apart would be useful about neither.
+
+A path claimed by a `[domains]` row and a `[declined]` row takes the label. It already has a subject, so reporting it as deliberately unlabelled would contradict the label the same run applies.
+
+## Reporting a surface no row reaches
+
+```bash
+aitk labels audit --base <base> --json
+```
+
+The record carries `labels`, `declined`, and `uncovered`. It exits 2 when `uncovered` has anything in it and 1 when it refuses, with `reason` naming the cause: `no-map` for a project that declared none, and a parse or range failure otherwise.
+
+It reports and never gates. Whether an uncovered surface deserves a label is a judgment only the person who owns that surface can make, and a push failing on one teaches a contributor to route around the check while nothing about the surface has changed.
+
+What it leaves unmeasured is a prefix reaching no path, so a row left behind by a deleted folder stays in the map. That is the map going stale from the other side and a second measure rather than this one.
 
 ## Matching
 
