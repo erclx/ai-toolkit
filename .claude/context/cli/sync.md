@@ -51,9 +51,9 @@ History is absent exactly where the stamp is, since a registry install ships `sr
 
 ## Surfaces reported without a change
 
-Four report sections sit outside the domain scan in `src/sync/check.ts`, each covering something `planSync` structurally cannot. All four are report-only, and the reason is the same in each case: the engine turns a difference into a `copy` and a retired surface into a `delete`, and every file here holds content the project wrote.
+Six report sections sit outside the domain scan in `src/sync/check.ts`, being `seeds`, `superseded`, `unmigrated`, `newSkills`, `newRules`, and `reverse`, each covering something `planSync` structurally cannot. The headings below carry five of them, since `newSkills` is described under the section built from it. All six are report-only, and the reason holds for the four built on installed files: the engine turns a difference into a `copy` and a retired surface into a `delete`, and those files hold content the project wrote. `newRules` and `newSkills` are report-only on the opposite ground, since both name files the target does not hold at all. Installing a rule changes what the project is governed by, and a skill loads live from the plugin directory with nothing to install.
 
-All four are gated on `isManagedTarget`, which reads a `.claude/` directory, a `CLAUDE.md`, or a detected unmigrated domain. Seeds are the reason the gate exists. They enumerate from the source rather than from what a target installed, so an unmanaged directory reported every seed as `missing` and routed to a section-merge skill, while the three scanned domains correctly stayed quiet because `installedStampDomains` already gates them on an install marker.
+All six are gated on `isManagedTarget`, which reads a `.claude/` directory, a `CLAUDE.md`, or a detected unmigrated domain. Seeds are the reason the gate exists. They enumerate from the source rather than from what a target installed, so an unmanaged directory reported every seed as `missing` and routed to a section-merge skill, while the three scanned domains correctly stayed quiet because `installedStampDomains` already gates them on an install marker.
 
 An unmigrated domain counts as a marker because `detectUnmigrated` fires only on root files whose basename the toolkit ships, so it firing proves the toolkit installed there before the layout moved. Reading the two path markers alone split the report against itself: a root-layout target with neither marker rendered as unmanaged while the JSON still carried its unmigrated domain, and `toolkit-operator` reads the JSON, so the rendered half routed to install while the router routed to the relocation. An unmanaged target now returns every section empty rather than only suppressing the render, so no consumer can act on a finding the render withheld.
 
@@ -70,6 +70,22 @@ The reader reuses `readHistoryIndex` and `findInstalledOrigin` directly, because
 ### Unmigrated domains
 
 `detectUnmigrated` covers the state that read as clean. `installedStampDomains` lists only domains whose install marker exists, so a project holding `standards/` at its root reported zero entries rather than a problem. It counts toward `--exit-code` because the relocation closes it, while superseded artifacts and seed drift are excluded for the reason `orphaned` already is.
+
+### Rules the target never received
+
+`readNewRules` answers the question the drift walk cannot ask. That walk enumerates what the target holds, so a rule that never arrived sits in no section and the report reads clean. Thirteen rules were authored in the three weeks before this shipped and no sync delivers one, which is how seven projects ended up needing a hand repair after a sync refreshed `500-prose` into a version citing `501-markdown`, a file those targets never received.
+
+Reporting was chosen over installing. A sync that adds rules silently changes what a project is governed by, and nobody chose that, so the install stays a separate command an operator runs. The cost is that a target can read the section and act on none of it, which is the same contract `newSkills` already sets.
+
+`readNewSkills` was the model rather than a second shape, since both diff the toolkit's own tree from an anchor and list what appeared. Two things diverge. Skills are not domain-scoped, so that read takes the oldest anchor across domains, where rules are scoped and this one takes governance's own `stampedCommit`, since a shared anchor would let a snippets sync advance the revision rules are measured from. And skills need no filter, where an unfiltered rule list reports what a base consumer can never receive.
+
+The entitlement filter reads two sources. The base stack's whole-folder entries are entitled to every target, since every stack extends base, and that is the only thing covering a band added to base later, which exists in no installed tree and would otherwise reach nobody. Everything else is read off the target's band folders rather than its stack. `aitk gov install` records file hashes and never the stack it resolved, so there is no chain to resolve against, and `stampedChain` carries tooling's chain in a different namespace. `installRules` copies each rule into the subdirectory it was authored in, which leaves the installed tree as the only surviving evidence of what a chain reached. One band is reachable from more than one stack, so the test over-reports inside a folder the target already holds, taken over under-reporting because a missed rule costs the section its whole point.
+
+An unresolvable anchor is the gap this shipped with. `read` returns an empty string on a non-zero exit, so a stamp naming a revision the running clone has never seen produces an empty list that reads exactly like a target holding everything. The per-domain scan met the same failure and answered it with `historyUnavailable`, which separates a toolkit that could not measure from one that measured and found nothing. Neither `newRules` nor `newSkills` carries that flag, so both are quiet in the one case the section's argument says a reader must not over-read. Adding a third state was declined here as a change to a shipped sibling's shape rather than to this row, and the docs page names the limit instead.
+
+`held` drops a rule by name before the band test runs. A rule the toolkit moved between bands reaches this diff as an addition, since `--diff-filter=A` sees a rename as one, and the name is what tells that apart from a rule the target never had.
+
+Nothing here reaches `hasDrift`. `unmigrated` counts because running the relocation closes it, and a command closes this too, so the exclusion rests on consent rather than on the absence of a remedy: gating CI on the count would pressure a target into adopting rules nobody picked.
 
 ### The reverse walk
 

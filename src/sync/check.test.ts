@@ -1,8 +1,11 @@
+import { execaSync } from 'execa'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import {
+  baseBands,
   buildToolingReport,
   type CheckReport,
   countStates,
@@ -11,6 +14,9 @@ import {
   isManagedTarget,
   parseNewSkills,
   parseUpstream,
+  readInstalledRules,
+  readNewRules,
+  selectNewRules,
   type ToolingReport,
 } from '@/sync/check'
 import type { ScanEntry } from '@/sync/engine'
@@ -41,6 +47,7 @@ function buildReport(
     superseded: [],
     unmigrated: [],
     newSkills: [],
+    newRules: [],
     reverse: emptyReverseReport(),
     skew: {
       state: 'current',
@@ -426,5 +433,260 @@ describe('parseNewSkills', () => {
 
   it('should return nothing when no skills were added', () => {
     expect(parseNewSkills('')).toEqual([])
+  })
+})
+
+describe('readInstalledRules', () => {
+  function install(rel: string): void {
+    const full = join(TARGET, '.claude', 'rules', rel)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, '# rule\n')
+  }
+
+  it('should name every rule the target holds', () => {
+    install(join('core', '000-constitution.md'))
+    install(join('ui', '400-ui.md'))
+
+    expect([...readInstalledRules(TARGET).held].sort()).toEqual([
+      '000-constitution',
+      '400-ui',
+    ])
+  })
+
+  it('should name the band folder each rule sits in', () => {
+    install(join('core', '000-constitution.md'))
+    install(join('lang', '100-typescript.md'))
+
+    expect([...readInstalledRules(TARGET).bands].sort()).toEqual([
+      'core',
+      'lang',
+    ])
+  })
+
+  it('should record no band for a rule installed flat', () => {
+    install('900-local.md')
+
+    const { held, bands } = readInstalledRules(TARGET)
+
+    expect(held.has('900-local')).toBe(true)
+    expect([...bands]).toEqual([])
+  })
+
+  it('should read nothing from a target with no rules directory', () => {
+    const { held, bands } = readInstalledRules(TARGET)
+
+    expect([...held]).toEqual([])
+    expect([...bands]).toEqual([])
+  })
+})
+
+describe('selectNewRules', () => {
+  const held = new Set(['000-constitution'])
+  const bands = new Set(['core', 'claude'])
+
+  it('should name a rule added under a band the target carries', () => {
+    const paths = 'governance/rules/core/080-observability.md'
+
+    expect(selectNewRules(paths, held, bands)).toEqual(['080-observability'])
+  })
+
+  it('should drop a rule added under a band the target never installed', () => {
+    const paths = 'governance/rules/ui/450-motion.md'
+
+    expect(selectNewRules(paths, held, bands)).toEqual([])
+  })
+
+  it('should name a rule added flat at the source root', () => {
+    expect(
+      selectNewRules('governance/rules/900-loose.md', held, bands),
+    ).toEqual(['900-loose'])
+  })
+
+  it('should drop a rule the target already holds under another band', () => {
+    const paths = 'governance/rules/claude/000-constitution.md'
+
+    expect(selectNewRules(paths, held, bands)).toEqual([])
+  })
+
+  it('should ignore an added path outside the rules source', () => {
+    const paths = 'governance/stacks/react.toml'
+
+    expect(selectNewRules(paths, held, bands)).toEqual([])
+  })
+
+  it('should sort and deduplicate rule names', () => {
+    const paths = [
+      'governance/rules/core/090-zebra.md',
+      'governance/rules/claude/010-alpha.md',
+      'governance/rules/core/090-zebra.md',
+    ].join('\n')
+
+    expect(selectNewRules(paths, held, bands)).toEqual([
+      '010-alpha',
+      '090-zebra',
+    ])
+  })
+
+  it('should return nothing when no rules were added', () => {
+    expect(selectNewRules('', held, bands)).toEqual([])
+  })
+})
+
+describe('readNewRules', () => {
+  let TOOLKIT: string
+
+  function git(...args: string[]): string {
+    return execaSync('git', ['-C', TOOLKIT, ...args], {
+      env: gitEnv(),
+      extendEnv: false,
+    }).stdout
+  }
+
+  /** Commits one rule into the toolkit and returns the revision it landed at. */
+  function authorRule(rel: string, message: string): string {
+    const path = join('governance', 'rules', rel)
+    const full = join(TOOLKIT, path)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, '# rule\n')
+    git('add', '--', path)
+    git('commit', '-m', message)
+
+    return git('rev-parse', '--short', 'HEAD').trim()
+  }
+
+  function install(rel: string): void {
+    const full = join(TARGET, '.claude', 'rules', rel)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, '# rule\n')
+  }
+
+  /** The stack every other stack extends, naming the folders it takes whole. */
+  function writeBaseStack(...bands: string[]): void {
+    const path = join('governance', 'stacks', 'base.toml')
+    const full = join(TOOLKIT, path)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, `extends = ""\nrules = ${JSON.stringify(bands)}\n`)
+    git('add', '--', path)
+    git('commit', '-m', 'record base stack')
+  }
+
+  beforeEach(() => {
+    TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-check-rules-'))
+    git('init', '--initial-branch=main')
+    git('config', 'user.email', 'test@example.com')
+    git('config', 'user.name', 'Test')
+  })
+
+  afterEach(() => {
+    rmSync(TOOLKIT, { recursive: true, force: true })
+  })
+
+  it('should name a rule authored after the anchor', async () => {
+    const anchor = authorRule(join('core', '000-constitution.md'), 'base')
+    authorRule(join('core', '080-observability.md'), 'add observability')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([
+      '080-observability',
+    ])
+  })
+
+  it('should ignore a rule authored before the anchor', async () => {
+    authorRule(join('core', '000-constitution.md'), 'base')
+    const anchor = authorRule(join('core', '010-testing.md'), 'add testing')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([])
+  })
+
+  it('should ignore a rule outside the bands the target carries', async () => {
+    const anchor = authorRule(join('core', '000-constitution.md'), 'base')
+    authorRule(join('ui', '400-ui.md'), 'add ui')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([])
+  })
+
+  it('should report nothing when the target carries no anchor', async () => {
+    authorRule(join('core', '000-constitution.md'), 'base')
+    authorRule(join('core', '080-observability.md'), 'add observability')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, undefined)).resolves.toEqual([])
+  })
+
+  it('should report nothing when the anchor names an unknown revision', async () => {
+    authorRule(join('core', '000-constitution.md'), 'base')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, '1234567')).resolves.toEqual([])
+  })
+
+  /**
+   * The band exists in no installed tree, so the target's own folders are no
+   * evidence at all and the base stack file is the only thing that entitles it.
+   */
+  it('should name a rule under a new band the base stack takes whole', async () => {
+    const anchor = authorRule(join('core', '000-constitution.md'), 'base rule')
+    authorRule(join('security', '600-secrets.md'), 'add secrets')
+    writeBaseStack('core', 'claude', 'security')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([
+      '600-secrets',
+    ])
+  })
+
+  it('should ignore a new band no stack file takes whole', async () => {
+    const anchor = authorRule(join('core', '000-constitution.md'), 'base rule')
+    authorRule(join('security', '600-secrets.md'), 'add secrets')
+    writeBaseStack('core', 'claude')
+    install(join('core', '000-constitution.md'))
+
+    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([])
+  })
+})
+
+describe('baseBands', () => {
+  let TOOLKIT: string
+
+  function writeStack(body: string): void {
+    const full = join(TOOLKIT, 'governance', 'stacks', 'base.toml')
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, body)
+  }
+
+  function writeRule(rel: string): void {
+    const full = join(TOOLKIT, 'governance', 'rules', rel)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, '# rule\n')
+  }
+
+  beforeEach(() => {
+    TOOLKIT = mkdtempSync(join(tmpdir(), 'aitk-check-bands-'))
+  })
+
+  afterEach(() => {
+    rmSync(TOOLKIT, { recursive: true, force: true })
+  })
+
+  it('should name every folder the base stack takes whole', () => {
+    writeRule(join('core', '000-constitution.md'))
+    writeRule(join('claude', '500-prose.md'))
+    writeStack('extends = ""\nrules = ["core", "claude"]\n')
+
+    expect([...baseBands(TOOLKIT)].sort()).toEqual(['claude', 'core'])
+  })
+
+  it('should drop an entry naming a rule rather than a folder', () => {
+    writeRule(join('core', '000-constitution.md'))
+    writeRule(join('lang', '100-typescript.md'))
+    writeStack('extends = ""\nrules = ["core", "100-typescript"]\n')
+
+    expect([...baseBands(TOOLKIT)]).toEqual(['core'])
+  })
+
+  it('should read nothing from a toolkit with no base stack', () => {
+    expect([...baseBands(TOOLKIT)]).toEqual([])
   })
 })

@@ -138,11 +138,14 @@ edit and a job counting those stays red with no remedy.
 
 ### Surfaces reported beside the domains
 
-Four sections sit outside the per-domain scan, because each names something
-that walk cannot see. None of them produces a change, and no sync command
-applies any of them.
+Six sections sit outside the per-domain scan, because each names something
+that walk cannot see: `seeds`, `superseded`, `unmigrated`, `newSkills`,
+`newRules`, and `reverse`. None of them produces a change, and no sync command
+applies any of them. The headings below group the first three together and give
+`newSkills` its description under `newRules`, which answers the same question
+about a different corpus.
 
-All four report only against a toolkit-managed target, which is one carrying a
+All six report only against a toolkit-managed target, which is one carrying a
 `.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
 report says so through `managed` in the JSON and routes an unmanaged directory to
 `aitk init`. Seeds are why the gate exists, since they enumerate from the toolkit
@@ -198,6 +201,66 @@ the toolkit ships, so a root folder holding the project's own documents beside
 the installed ones reports the installed subset, where a listing reports every
 file and proposes relocating the lot.
 
+#### Rules the target never received
+
+`newRules` names a rule the toolkit authored after this target last synced
+governance. A sync refreshes the files a target already holds and adds none, so
+without this section a project's rule set freezes at its install date while every
+file it does hold reports as current. That is the report's most confident wrong
+answer, since a clean result reads as a target holding everything the toolkit
+publishes.
+
+The list rides beside `newSkills`, which asks the same question about the plugin
+catalog. Both are names rather than paths, and neither queues a change, because
+the two remedies differ: a skill loads live from the plugin directory and needs
+nothing run, while a rule reaches a target only when someone runs
+`aitk gov install`.
+
+Read a clean section as reporting rather than as delivering. Nothing here
+installs, nothing counts toward `--exit-code`, and a target can read the list and
+act on none of it. The value stops at an operator reading it, which is the same
+contract the skills list already sets.
+
+The measurement anchors on governance's own stamp rather than on the oldest
+anchor across domains, since rules are domain-scoped and a shared anchor would
+let a snippets sync move the revision rules are measured from. A target carrying
+no governance anchor reports nothing at all: it has no date to measure against,
+and diffing from the start of history would read the whole catalog as new.
+
+An anchor this toolkit cannot resolve reports nothing by the same route, and that
+one is not visible. A stamp naming a revision the running clone has never seen,
+which is what a registry install without history or a shallow clone produces,
+fails the read and yields an empty list rather than a stated absence. It looks
+identical to a target holding every rule the toolkit publishes. `newSkills`
+behaves the same way, and neither carries the `historyUnavailable` flag the
+per-domain scan uses to separate the two. Treat an empty section on a toolkit
+that is not a full clone as unmeasured rather than clean.
+
+Entitlement is filtered, because a stack does not receive every rule. The base
+stack takes the `core` and `claude` folders whole and every other stack extends
+it with individually named rules, so an unfiltered list would tell a base
+consumer about rules it can never receive and train the reader to skip the
+section.
+
+The filter accepts a band on either of two grounds. A folder the base stack takes
+whole is entitled to every target, read from the stack file so a folder added to
+base later needs no code change. Every other band is read off the folders the
+target already carries, since `aitk gov install` records file hashes and never
+the stack it resolved, which leaves the installed tree as the only evidence of
+what a chain reached. One band can be reached by more than one stack, so the test
+over-reports inside a folder the target holds, which costs a line where
+under-reporting would cost the section its point.
+
+A rule the target already holds is dropped by name. That is what keeps a rule the
+toolkit moved between band folders out of the list, since a rename reaches this
+read as an addition and only the name tells the two apart.
+
+This closes the dangling-citation case as a side effect rather than checking for
+one. The live instance is a rule citing a sibling authored after the target's
+install, and the section names the sibling as new rather than naming the citation
+as broken. That is enough for an operator to act on, and it is not a citation
+check.
+
 #### The reverse walk
 
 `reverse` is the one section built by walking the target rather than the
@@ -248,6 +311,11 @@ documented and unreachable from any report.
 `superseded` and every seed state are excluded, for the reason `orphaned` already
 is: only the user can move content they wrote, so failing a job on it leaves the
 job red with no mechanical remedy.
+
+`newRules` is excluded on a different ground, since a command does close it. What
+excludes it is that installing a rule changes what a project is governed by, so
+gating on the count would pressure a target into adopting rules nobody chose.
+`newSkills` is excluded because it needs no command at all.
 
 The whole `reverse` section is excluded on the same grounds, and more strongly.
 Every entry in it is a judgment about a file the project may own, and one of its

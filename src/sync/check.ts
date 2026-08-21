@@ -1,7 +1,9 @@
 import { existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { basename, join, sep } from 'node:path'
 import { execa } from 'execa'
-import { createGovAdapter } from '@/gov/adapter'
+import { gitEnv } from '@/git-env'
+import { createGovAdapter, rulesSourceDir } from '@/gov/adapter'
+import { loadGovStack } from '@/gov/stacks'
 import { createSnippetsAdapter } from '@/snippets/adapter'
 import { planSync, type ScanEntry, type SyncAdapter } from '@/sync/engine'
 import {
@@ -154,6 +156,13 @@ export interface CheckReport {
   readonly superseded: readonly SupersededEntry[]
   readonly unmigrated: readonly UnmigratedDomain[]
   readonly newSkills: readonly string[]
+  /**
+   * Rules the toolkit authored after this target's governance anchor, filtered
+   * to what the target could receive. It rides beside `newSkills` rather than
+   * folding into it because the two answer the same question about different
+   * corpora and a reader acting on one runs a different command from the other.
+   */
+  readonly newRules: readonly string[]
   /**
    * The one section built by walking the target rather than the catalog. It
    * reports beside `superseded`, `unmigrated`, and `newSkills` rather than
@@ -336,6 +345,7 @@ export async function buildCheckReport(
       superseded: [],
       unmigrated: [],
       newSkills: [],
+      newRules: [],
       reverse: emptyReverseReport(),
       skew: await skewRead,
     }
@@ -350,6 +360,11 @@ export async function buildCheckReport(
     superseded: collectSuperseded(target),
     unmigrated,
     newSkills: await readNewSkills(toolkitRoot, anchors),
+    newRules: await readNewRules(
+      toolkitRoot,
+      target,
+      stampedCommit(stamp, 'governance'),
+    ),
     reverse: buildReverseReport(toolkitRoot, target),
     skew: await skewRead,
   }
@@ -409,6 +424,145 @@ export function parseNewSkills(paths: string): string[] {
     .filter((name): name is string => name !== undefined)
 
   return [...new Set(names)].sort()
+}
+
+/**
+ * What the target's `.claude/rules/` proves about its entitlement. `held` is
+ * every rule name it carries and `bands` every band folder those names sit in.
+ *
+ * Read off the installed tree rather than off a stack name, because
+ * `gov install` records file hashes and never the stack it resolved, so the
+ * chain a target consumed survives nowhere else. `installRules` copies each
+ * rule into the subdirectory it was authored in, which is what makes the band
+ * folders legible as evidence.
+ */
+export function readInstalledRules(target: string): {
+  held: Set<string>
+  bands: Set<string>
+} {
+  const dir = join(target, ...INSTALL_MARKERS.governance)
+  const held = new Set<string>()
+  const bands = new Set<string>()
+  if (!isDirectory(dir)) return { held, bands }
+
+  for (const rel of new Bun.Glob('**/*.md').scanSync({
+    cwd: dir,
+    onlyFiles: true,
+    dot: true,
+  })) {
+    const posix = rel.split(sep).join('/')
+    const boundary = posix.indexOf('/')
+
+    held.add(basename(posix, '.md'))
+    if (boundary > 0) bands.add(posix.slice(0, boundary))
+  }
+
+  return { held, bands }
+}
+
+/**
+ * Narrows rules added upstream to the ones this target could receive and does
+ * not already hold.
+ *
+ * The band test is the entitlement filter, and `bands` carries two sources: the
+ * folders the target already holds, and the folders the base stack takes whole.
+ * A rule authored under `lang/` or `ui/` is named by an individual stack, so it
+ * belongs to some targets and not others, and listing every added file would
+ * tell a base consumer about rules it was never entitled to. The test
+ * over-reports inside a band a target already carries, since one folder can be
+ * reached by more than one stack, and that costs a line where under-reporting
+ * would cost the whole point of the section.
+ *
+ * The `held` test is what keeps a rule that moved bands upstream out. A rename
+ * reaches this diff as an addition, and the target already has the file under
+ * its old folder, so matching by name is what tells the two apart.
+ */
+export function selectNewRules(
+  paths: string,
+  held: ReadonlySet<string>,
+  bands: ReadonlySet<string>,
+): string[] {
+  const prefix = 'governance/rules/'
+  const names = new Set<string>()
+
+  for (const line of paths.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed.startsWith(prefix) || !trimmed.endsWith('.md')) continue
+
+    const rel = trimmed.slice(prefix.length)
+    const boundary = rel.indexOf('/')
+    const band = boundary === -1 ? '' : rel.slice(0, boundary)
+    const name = basename(rel, '.md')
+
+    if (held.has(name)) continue
+    if (band !== '' && !bands.has(band)) continue
+
+    names.add(name)
+  }
+
+  return [...names].sort()
+}
+
+/**
+ * Band folders the base stack takes whole. Every governance stack extends base,
+ * so a rule authored under one of these is entitled to every target.
+ *
+ * This is what covers a band no target can carry yet. Entitlement is otherwise
+ * read off folders the target already holds, and a folder added to base later
+ * exists in no installed tree, so without this the rules inside it would reach
+ * nobody. Read from the stack file rather than fixed, so that addition needs no
+ * code change here.
+ *
+ * A folder only a leaf stack names is deliberately absent. It is entitled to
+ * some targets and not others, which is the distinction the band test makes and
+ * the installed tree is the only evidence of.
+ */
+export function baseBands(root: string): Set<string> {
+  const stack = loadGovStack(root, 'base')
+  if (stack === undefined) return new Set()
+
+  return new Set(
+    stack.rules.filter((entry) =>
+      isDirectory(join(rulesSourceDir(root), entry)),
+    ),
+  )
+}
+
+/**
+ * Rules are domain-scoped, so this measures from governance's own anchor rather
+ * than from the oldest anchor across domains the way `readNewSkills` does. A
+ * shared anchor would let a snippets sync move the revision rules are measured
+ * from and drop a rule out of the read.
+ *
+ * A target carrying no governance anchor reports nothing. It has no date to
+ * measure against, and diffing from the beginning of history would read every
+ * rule the toolkit ships as new.
+ *
+ * An anchor this clone cannot resolve reports nothing by a different route and
+ * says so nowhere. `read` yields an empty string on a non-zero exit, so a stamp
+ * naming a revision a registry install or a shallow clone has never seen reads
+ * as a target holding everything. `readNewSkills` carries the same gap, and
+ * neither has the `historyUnavailable` flag the per-domain scan uses to tell an
+ * unmeasured result from a clean one.
+ */
+export async function readNewRules(
+  root: string,
+  target: string,
+  since: string | undefined,
+): Promise<string[]> {
+  if (since === undefined) return []
+
+  const paths = await read(root, [
+    'diff',
+    '--name-only',
+    '--diff-filter=A',
+    `${since}..HEAD`,
+    '--',
+    'governance/rules/',
+  ])
+
+  const { held, bands } = readInstalledRules(target)
+  return selectNewRules(paths, held, bands.union(baseBands(root)))
 }
 
 async function readUpstream(
@@ -474,7 +628,7 @@ async function isAncestor(
   const result = await execa(
     'git',
     ['-C', root, 'merge-base', '--is-ancestor', candidate, reference],
-    { reject: false },
+    { reject: false, env: gitEnv(), extendEnv: false },
   )
 
   return result.exitCode === 0
@@ -483,9 +637,18 @@ async function isAncestor(
 /**
  * A toolkit outside a git clone, or a stamped revision this clone has never
  * seen, yields no range. The per-file report still stands on its own.
+ *
+ * Scrubbed through `gitEnv` because a git hook exports `GIT_DIR` and its
+ * siblings into every process it runs and they outrank `-C`. A check invoked
+ * from a hook would otherwise diff the hook's repository and report a range for
+ * a tree nobody asked about, which reads as an ordinary answer.
  */
 async function read(root: string, args: readonly string[]): Promise<string> {
-  const result = await execa('git', ['-C', root, ...args], { reject: false })
+  const result = await execa('git', ['-C', root, ...args], {
+    reject: false,
+    env: gitEnv(),
+    extendEnv: false,
+  })
   return result.exitCode === 0 ? result.stdout : ''
 }
 
