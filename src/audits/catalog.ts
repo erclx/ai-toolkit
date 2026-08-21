@@ -1,3 +1,4 @@
+import type { ReachRefusal } from '@/claude/skills-reach'
 import type { AuditRefusal } from '@/deps/audit'
 import type { ValidateRefusal as RecordRefusal } from '@/records/validate'
 import type { ScanRefusal } from '@/secrets/scan'
@@ -428,6 +429,14 @@ export const AUDITS: readonly AuditSpec[] = [
     // a push failing on one teaches a contributor to route around the stage.
     gatingExits: [],
     corpus: 'tracked',
+    // The one reason this verb refuses for, and it is an absence rather than a
+    // break. A tracked corpus normally allows nothing, since a tree that ships
+    // to targets and cannot be found is a broken checkout, and this is the
+    // second exception on the same test the secret scan takes: no target holds
+    // `claude/skills/`, so without the allowance every project installing this
+    // CLI reports the verb unmeasured on every run and never changes, which is
+    // the permanent signal the per-machine allowance exists against.
+    absentReasons: ['no-skills'] satisfies ReachRefusal[],
     counts: reachCounts,
   },
   {

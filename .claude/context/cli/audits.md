@@ -31,7 +31,7 @@ A fourth kind of failure needed a code of its own. An audit that did not report 
 
 That code then had to stop firing on the ordinary case. Six of the set read gitignored folders, which no fresh clone and no CI run carries, so the first shape reported `incomplete` on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore takes `absent`, which reports and moves nothing. The advisory check joined that allowance later on its own reasoning, since an index it could not reach is the same ordinary absence wearing a network instead of a disk.
 
-The allowance covers that one pairing and no other. A tracked tree that cannot be found is a broken checkout, and a per-machine verb refusing for any other reason is a broken verb, so both stay `unmeasured`. Every run states the measured count against the absent one, since a report naming only what passed is a claim about a set it never read.
+The corpus decides the allowance by default, and a spec naming its own reasons overrides it. A per-machine verb refusing for any reason other than a missing folder is a broken verb and stays `unmeasured`, and so does a tracked tree that cannot be found, since that is a broken checkout. Two tracked specs name reasons anyway, being the secret scan on a project that publishes nothing and the reach check on a project holding no `claude/skills/`. Both are the ordinary state of a target installing this CLI rather than a defect in it, so without the override every such project reports `incomplete` forever, which is the permanent signal the whole split exists against. Every run states the measured count against the absent one, since a report naming only what passed is a claim about a set it never read.
 
 `aitk gov test-order` marks the edge of what the baseline can compare. It scopes against the trunk, falls back to the root commit, and a depth-1 checkout has neither, so the range is empty and it reports zero rather than refusing. A shallow run therefore under-reports against a floor taken from a full clone and reads as shrinkage, which is the safe direction and the reason that one delta means something only from a clone carrying history.
 
@@ -371,6 +371,8 @@ The cost is that a line mentioning the toolkit for an unrelated reason exempts a
 A body naming a toolkit path is sometimes correct. A toolkit-scoped instruction is meant for a session in this repository, so a gate would fail a push over a judgment the catalog already draws a line for, and the recorded split gates a fact and reports a judgment. The verb still exits 2 on an unqualified citation, which is what lets a caller branch without the aggregate treating it as a fact.
 
 The first run found eight, all of them real, and the repairs took the count to zero. A check that lands clean is the preventive shape the skill audit already records: what it buys is the regression it stops rather than the backlog it surfaces.
+
+The spec names `no-skills` as an absence, which is the second tracked corpus to override the default. This repository is the only tree that holds `claude/skills/`, so in every project installing the CLI the verb refuses on every run, and reading that as unmeasured would pin the aggregate at `incomplete` there permanently. `aitk claude skills audit` carries the same exposure and writes no record at all on its refusal, so the aggregate cannot tell an absent corpus from a broken verb for that one. Closing it is separate work.
 
 ## The comment census
 

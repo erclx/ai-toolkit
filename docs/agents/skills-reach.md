@@ -26,7 +26,9 @@ A backticked token carrying a separator and an extension, which is how every bod
 
 - A placeholder such as `.claude/context/<domain>.md`, which names a shape rather than a file
 - A path resolved through `${CLAUDE_SKILL_DIR}`, which is self-contained wherever the plugin loads
-- A path inside the citing skill's own folder, which travels with the body
+- A sibling named relatively, such as `references/labels.md`, which matches no authoring root and travels with the body
+
+The same sibling named from the repository root as `claude/skills/<name>/references/<file>.md` is reported rather than skipped. The plugin loads from a cache rather than from the project tree, so that spelling resolves for nobody and the report is correct.
 
 A path the toolkit does not hold is dropped rather than reported. The measure asks whether a claim true here is false in a target, and a path true in neither is a different defect that `aitk context audit` already reports against its own corpus.
 
