@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.0](https://github.com/erclx/aitk/compare/v3.5.0...v3.6.0) (2026-08-21)
+
+
+### Features
+
+* **claude:** make the structured question surface the session default ([#1101](https://github.com/erclx/aitk/issues/1101)) ([3e53f15](https://github.com/erclx/aitk/commit/3e53f15b83d3feb7934d23c92d69024f3a0493bc))
+
 ## [3.5.0](https://github.com/erclx/aitk/compare/v3.4.0...v3.5.0) (2026-08-21)
 
 
