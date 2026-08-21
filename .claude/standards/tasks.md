@@ -215,9 +215,9 @@ An intake folder answers that direction at folder scope rather than item scope, 
 
 Phase-label format and where labels may appear are governed by `standards/versioning.md`.
 
-`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans-archive/feature-<slug>.md`. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it.
+`Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans/archive/feature-<slug>.md`, and at `../../plans/archive/feature-<slug>.md` once the task itself is archived a folder deeper. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it.
 
-A project that archived plans before the folder moved out of `.claude/.tmp/` holds closed tasks pointing at `../.tmp/plans-archive/`, and both forms resolve against the files each names, so leave those pointers where they are. Nothing migrates them, and a task retargeted without its plan moving leads nowhere.
+A project that archived plans before the folder nested under `.claude/plans/` holds closed tasks pointing at `../plans-archive/`, or at `../.tmp/plans-archive/` from before the durable records left the scratch tree. Each form resolves against the files it names, so leave those pointers where they are. Nothing migrates them, and a task retargeted without its plan moving leads nowhere.
 
 One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
@@ -247,11 +247,11 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 
 ## Archiving
 
-Never delete a task file. A shipped task moves to `.claude/task-archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
+Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
 
 Two callers reach that command. The `claude-tasks` skill runs it inside a session, and the `post-merge` hook runs it unattended after a pull that merged the work. Both go through the command rather than moving the file themselves, so the two paths cannot drift into archiving differently. Every gate the command applies refuses with a non-zero exit rather than reporting, because a caller with nobody watching cannot act on a warning.
 
-One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/plans-archive/` and stays gitignored, so an archived task does not start appearing in diffs. The cost is that the folder is unbacked, which is the same cost the plans archive already carries.
+One destination rather than a per-project choice is what lets the move happen without asking. It mirrors the plans archive at `.claude/plans/archive/`, sitting inside the folder it archives the same way, and it inherits the board's own ignore entry rather than needing one of its own. The cost is that an archived task does not appear in diffs, which is the cost the live board already carries.
 
 The archive clears a row from `priority.md` and reads no other surface, which holds because a task reaches a merge by being planned and handed out, and both steps move it onto the board first. A task archived straight off the backlog therefore leaves its line standing, and the validator reports that line as naming a file that is gone rather than the board losing it silently.
 

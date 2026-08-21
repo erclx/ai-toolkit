@@ -2,7 +2,6 @@
 description: Route .claude/plans/ edits to the plan standard for sections, the answer contract, and the archive move
 paths:
   - '.claude/plans/**'
-  - '.claude/plans-archive/**'
 ---
 
 # Plan standards
@@ -15,7 +14,7 @@ paths:
 
 ## Archiving
 
-- Move a shipped plan to `.claude/plans-archive/`. Never delete one.
+- Move a shipped plan to `.claude/plans/archive/`. Never delete one.
 - Amend a plan in place when a decision changes. Do not append a second passage narrating the change.
 
 ## Authority

@@ -57,7 +57,7 @@ Scan for work that has been decided and would otherwise be forgotten. Three orig
 
 List `.claude/groundwork/` and run `gh issue list --state open` when a remote is configured, then grep the board for each track name and issue number. Report any with no task, one line each.
 
-Read the dumps through `aitk intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/task-archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
+Read the dumps through `aitk intake list --json`, which reports items, open, unread, and malformed per folder and owns the parse of the answer contract `${CLAUDE_SKILL_DIR}/../../standards/intake.md` fixes. Then grep both `.claude/tasks/` and `.claude/tasks/archive/` for each folder slug. A dump with no live task is the ordinary shape of one already promoted and shipped, so a check reading the board by itself reports every finished folder as abandoned.
 
 A dump is the stronger case for this scan rather than the weaker one. A track holds one question and stays visible, while a dump holds dozens of items whose verdicts were reached and then left with nothing carrying them forward.
 
@@ -153,7 +153,7 @@ Drop either block when it carries no rows. When both are empty, which is the ord
 Archive, reporting the paths the command returned:
 
 ```plaintext
-📦 Archived: .claude/task-archive/vXX.Y-<slug>.md
+📦 Archived: .claude/tasks/archive/vXX.Y-<slug>.md
 
 <ordering and index disposition in one line>
 ```

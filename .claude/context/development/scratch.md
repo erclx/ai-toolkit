@@ -29,15 +29,29 @@ The task board is a folder of one file per task, which is what keeps two concurr
 
 `.claude/memory/` carries the same shape and now the same mechanism. `standards/memory.md` fixes the frontmatter an entry carries, so the shared renderer groups the catalog by kind, and `.claude/hooks/memory-index.sh` regenerates `index.md` on every write. The folder was a hand-appended `MEMORY.md` before, and it had drifted to more rows than files.
 
+`.claude/review/` carries a subfolder per producer: `branch/` for `claude-review`, `feedback/` for `aitk feedback`, `memory/` for `claude-memory-review`, and `design/` for the `aitk design render` preview. The filename prefix was already doing the folder's job by hand, and separating them costs no ignore entry and no backed-folder entry, since both already cover everything under `review/`. A producer with no files present keeps writing to the folder root, which is where `ui-checklist-*`, `ux-audit-*`, `ux-measure-*`, and `seed-audit-*` still land.
+
+A branch report is the one thing here that gets swept rather than archived. It is read once by the session addressing it, and the durable record of what a review found is the comment `claude-pr-review` posts, so `claude-docs` deletes the current slug's report and any report whose branch is gone. What that loses is a local-only review on a branch that never opened a pull request, which `claude-review` says where a reader meets the report.
+
 ### Where each folder archives to
+
+An archive sits inside the folder it archives, so a record folder holds its own lifecycle subfolders and a listing of the root shows records rather than records paired with their history. The exception is stated below and it is deliberate.
 
 A memory entry that leaves the folder moves to `.claude/.tmp/memory-archive/`, the one archive that stayed under the scratch tree the other four left. Nothing cites a retired memory the way a task file cites a plan or a groundwork track, and a phase label derives from the task archive while no surface reads this one, so it is an undo buffer for a bulk pass rather than a record a later session opens. Deletion was never safe here: the folder is gitignored, so a wrong call over a folder this size has nothing to recover from.
 
-A plan that ships moves to `.claude/plans-archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.
+A plan that ships moves to `.claude/plans/archive/` under its original name, swept there by `claude-docs`. Deletion was the earlier policy and cost a shipped plan outright, because `.claude/plans/` is gitignored and nothing backs it up. A re-shipped slug overwrites the earlier file, which keeps the folder holding intact plans under the names they were written with.
 
-A memory-review receipt a triage takes out of `.claude/review/` moves to `.claude/review-archive/`. It sat in the scratch tree first and failed the deletable test on content: the pass that filled it carried 154 receipts holding 261 undecided items, which `aitk standards memory` calls decision state the next round reads back, and nothing there reaches the records remote. A receipt whose items have all resolved needs no archive at all, since the collection rule folds its declines into the entries and deletes the file.
+Two surfaces both named for memory therefore archive to two places. The entry goes to the deletable tree and the receipt to a record folder, and the test separating them is whether the judgment behind the file has been taken.
 
-A task that ships moves to `.claude/task-archive/` the same way, through `aitk tasks archive`. The `Pull request:` line `git-pr` writes onto the task is what lets the merge close it, since every merge on `main` is a squash carrying that number in its subject while the branch name never lands. The command owns the move, the `priority.md` row removal, and the index regen as one unit, so the hook and `claude-tasks` cannot archive differently.
+A memory-review receipt a triage takes out of `.claude/review/memory/` moves to `archive/` beside it. It sat in the scratch tree first and failed the deletable test on content: the pass that filled it carried 154 receipts holding 261 undecided items, which `aitk standards memory` calls decision state the next round reads back, and nothing there reaches the records remote. A receipt whose items have all resolved needs no archive at all, since the collection rule folds its declines into the entries and deletes the file.
+
+A task that ships moves to `.claude/tasks/archive/` the same way, through `aitk tasks archive`. The `Pull request:` line `git-pr` writes onto the task is what lets the merge close it, since every merge on `main` is a squash carrying that number in its subject while the branch name never lands. The command owns the move, the `priority.md` row removal, and the index regen as one unit, so the hook and `claude-tasks` cannot archive differently.
+
+### Changing where a folder sits
+
+A path convention over these folders takes effect on disk the moment a branch applies it and takes effect in the tooling only when a release ships, so both layouts are live in between. Every ship chain running in that window uses the installed CLI and writes the old path back. The citation sweep behind such a rename therefore runs a second pass before the branch merges rather than once at the start, and the nesting branch is where that was measured, when a peer session's archive recreated `.claude/plans-archive/` holding one plan after the sweep had already cleared it.
+
+A binary predating the convention does more than write the old path. `resolveLivePlan` without an archive subtraction reads a `Plan:` line pointing into `.claude/plans/archive/` as live and refuses with `plan-unswept`, so the installed `aitk tasks archive` declines every task whose plan has already shipped until a release lands. It fails closed rather than corrupting the board, which is the safe direction and still stops the archiving.
 
 ### What a spike leaves behind
 
