@@ -58,6 +58,12 @@ A split also strands two classes of reference no gate reads. An entry's own dire
 
 A document is always-loaded only when an `@` line in `CLAUDE.md` names it. `.claude/ARCHITECTURE.md` was written against a plan whose files-to-touch named only a content-ownership row, and this repository's `CLAUDE.md` anchored `.claude/context/index.md` alone while `tooling/claude/seeds/CLAUDE.md` anchors four paths. Nothing gates the toolkit's own `CLAUDE.md` against the seed it distributes, so the gap was invisible until someone read both. Before closing an outcome that calls a document always-loaded, grep `^@` in `CLAUDE.md` and diff the anchor block against the seed.
 
+### The root map stays in the always-loaded file
+
+The context standard caps re-derivable folder structure inside an entry, and the same sentence reads as a reason to move the root file's own map out to an entry, which it is not. The map orients a reader who has opened no entry yet, so replacing it with a pointer into the catalog costs a discovery hop the tier split exists to remove. Measured on the v59.2 pass, where the relocation was proposed, approved, and reversed before it landed.
+
+What the cap governs is a second copy of the structure inside a per-domain entry, where the reader has already arrived and the folder is one `ls` away.
+
 ## How entries get populated
 
 `claude-docs` runs at ship time (via `git-ship` or `claude-autoship`). It reads the diff, maps changed files to existing `.claude/context/<domain>.md` entries that reference those files, and rewrites the affected sections from the diff content. Same pattern `docs-sync` uses for README and `docs/*.md`.
