@@ -250,6 +250,7 @@ This section is the corpus the coverage claim is measured against: every name `a
 | ------------------------- | ------------------------------------------------------------------------------ |
 | `aitk:claude-orchestrate` | To assert the control session that owns the queue and reviews each worker's PR |
 | `aitk:session-resume`     | At the start of a session, to pick up what a previous one left                 |
+| `aitk:session-map`        | At the close of a session, to write the handoff a compaction would destroy     |
 
 ### Keep the project current with the toolkit
 
