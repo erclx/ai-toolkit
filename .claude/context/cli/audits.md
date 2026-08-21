@@ -5,7 +5,7 @@ description: The aggregate that runs them all with its retained baseline, then t
 
 # Audits
 
-`aitk context audit`, `aitk markdown audit`, `aitk claude skills audit`, `aitk comments scan`, `aitk tasks validate`, `aitk records validate`, and `aitk gov test-order` are the commands that read a tree and report on it instead of writing into one. None installs anything, and three checks across the seven gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here. `aitk audits run` runs the whole set and is described first, since it is the only one of them anything schedules.
+`aitk context audit`, `aitk markdown audit`, `aitk claude skills audit`, `aitk comments scan`, `aitk tasks validate`, `aitk records validate`, `aitk gov test-order`, and `aitk labels audit` are the commands that read a tree and report on it instead of writing into one. None installs anything, and three checks across the eight gate a push, so what each measures and what it refuses to fail on is the decision worth carrying here. `aitk audits run` runs the whole set and is described first, since it is the only one of them anything schedules.
 
 Each splits its engine by reason to change rather than by size. `src/comments/` separates the counting pass (`scan.ts`), the history sampler (`trend.ts`), and the vocabulary loader (`vocabulary.ts`), because counting, sampling, and rule reading are three reasons to change.
 
@@ -452,6 +452,18 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - Three verdicts rather than two. A module the range modified rather than added goes to `unclassified` with its reason stated, because a refactor and a new behavior cannot be told apart from history, and counting it as a pass reports a healthy repository nobody measured.
 - Coverage is stated on every run through `scope` and the read-past count. The rule speaks to every behavior and the verb speaks to `.ts` and `.tsx` pairs, so a summary omitting that is a stronger claim than the measure supports.
 - Measured against the 40 commits behind `57ee7467`, the report found 7 satisfied pairs, 0 findings, 18 unclassified changes, and 125 paths read past. Zero findings is the expected first reading rather than a broken check, and the unclassified figure being the largest is the honest shape.
+
+## The label coverage report
+
+- `aitk labels audit` resolves a changed set against `.claude/aitk/pr-labels.toml` and names the paths no row reaches, closing the gap the map's own comment had predicted since it shipped.
+- Matching moved from a skill body into `src/labels/`, which is what makes it testable. The rule was stated in `claude/skills/git-pr/references/labels.md` and nothing could exercise it, so the census behind the map's 41 prefixes was the only evidence it was right.
+- Prefix-anchored matching is fixed rather than chosen. Rewriting it to a glob reaches every existing prefix and invalidates the measurement behind all of them.
+- The verb answers two readers from one pass. `git-pr` wants the labels it is about to apply and the aggregate wants the uncovered count, and a shape serving only the first returns nothing the second can retain.
+- A gap and a decision are separate outputs. `[declined]` moved out of the map's trailing comment into a table keyed by reason, because a report that could not tell an uncovered surface from a path somebody decided against is useful about neither.
+- It reports rather than gates, registering with empty `gatingExits`. Whether an uncovered surface deserves a label is a judgment only whoever owns that surface can make.
+- `no-map` is the one refusal the catalog reads as an absence, which makes this the second tracked corpus taking that allowance beside the secret scan. A project declaring no map is labelled silently by design, and treating that as a break would make the map mandatory for every target.
+- What it leaves unmeasured is a prefix reaching no path, so a row left behind by a deleted folder stays forever. That is the map going stale from the other side and a second measure.
+- Replaying `3a0fd695..190af80b` reports 53 wholly declined commits, every one a release, matching what the map's comment records. The 54th carrying no label is the commit that edited the map at its former path, which the `repo` row stopped reaching when the file moved into `.claude/aitk/`.
 
 ## The state-scoped checks
 
