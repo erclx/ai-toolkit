@@ -31,9 +31,7 @@ Drop anything the session can settle. What survives is the batch.
 
 ## Step 2: shape each question
 
-Each entry carries a short header naming the axis, the question itself, and two to four options. Give every option what it means and what it costs. Rank the recommendation first and say it is the recommendation.
-
-An option with no stated cost is not an option, since the operator picks it without knowing what the other one buys.
+Each entry carries a short header naming the axis, the question itself, and two to four options. `CLAUDE.md` states what an option carries and how the set is ranked, so follow it rather than a second copy here. The header is what a batch adds. An operator scanning four questions needs an axis on each to tell one from the next.
 
 Cap the batch at four. A structured question tool takes four, and a batch past that is a session asking to be redesigned rather than answered. When more than four are open, send the four blocking the most work and say in one line how many are held.
 
@@ -41,11 +39,11 @@ Cap the batch at four. A structured question tool takes four, and a batch past t
 
 Put every question in one turn. Never split the batch across turns and never ask the first while the rest stay unstated.
 
-When the session runs on a surface carrying a structured question tool, such as `AskUserQuestion` in Claude Code, send the whole batch through one call with one entry per decision. The tool renders the options and collects the picks together.
+Send the batch through a structured question tool wherever the session runs on one, and write the shape below where it does not. What a batch adds is that one call carries the whole set, with one entry per decision, so the operator answers them together instead of one per turn.
 
-Otherwise write the batch as a numbered list in one message, each question followed by its lettered options with the recommendation marked. The behavior is the same on either surface, and only the rendering changes.
+The test is the surface rather than the project's instruction file. A target scaffolded before the rule shipped still reaches the tool, and what it loses is the option shape `CLAUDE.md` states, which the example below carries instead.
 
-Batch shape:
+Batch shape on the fallback surface:
 
 ```plaintext
 <N> open decisions. <M> held.
