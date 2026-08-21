@@ -89,11 +89,11 @@ Routing through the body moves the failure rather than removing it, and a skill 
 
 ## Two surfaces on one rule, split by reach
 
-The judgment-call rule in `CLAUDE.md` states two branches and each branch owns a surface. A call the session can weigh takes a pick carrying its tradeoff in one sentence, which `snippets/decision-help.md` shapes. A call whose answer turns on the operator's preference goes to `decision-escalate`, which collects every open decision and puts them as one batch rather than one question per turn.
+The judgment-call rule in `CLAUDE.md` states two branches and each branch owns a surface. A call the session can weigh takes a pick carrying its tradeoff in one sentence, which `snippets/decision-help.md` shapes. A call whose answer turns on the operator's preference goes through the structured question surface, which the same file states generally and which reaches every session rather than only an invoked one, and `decision-escalate` layers batching over that statement so several open decisions arrive in one turn rather than one question each.
 
-The two overlap in subject and never in reach, which is what keeps both on the shelf. A snippet is copied into a project by a CLI command and runs in a chat with no repository behind it, while a skill loads live from the plugin root, so a project that added the plugin and installed nothing reaches the skill alone. Reaching it without an install is the property the escalation branch needed, since the branch that had no surface is the one a session hits mid-run inside a repository.
+The two overlap in subject and never in reach, which is what keeps both on the shelf. A snippet is copied into a project by a CLI command and runs in a chat with no repository behind it, while a skill loads live from the plugin root, so a project that added the plugin and installed nothing reaches the skill alone. Reaching it without an install is the property the escalation branch needed, since a session hits that branch mid-run inside a repository.
 
-`decision-escalate` carries `disable-model-invocation: true`, joining the five skills that already do, so nothing routes to it on a description match and the operator is what fires it. The body states the batching behavior before it names any question tool, which keeps one body running on a surface that carries none.
+`decision-escalate` carries `disable-model-invocation: true`, joining the five skills that already do, so nothing routes to it on a description match and the operator is what fires it. The body names no question tool at all, deferring the surface to the general statement, which keeps one body running where the structured tool exists and where it does not.
 
 ## The interface pair splits on the act rather than the subject
 

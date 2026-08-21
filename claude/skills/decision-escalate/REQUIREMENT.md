@@ -15,14 +15,14 @@ A body written around a named tool fails a third way. A session on a surface car
 
 The opposite failure is the one that ships silently. A session that takes a preference decision itself produces work the operator did not ask for and never learns a choice was made, because nothing in the output says a fork was passed.
 
-`CLAUDE.md` states both branches of the rule, sending an ordinary judgment call to a pick with the tradeoff in one sentence and a preference-deciding call to the operator. The first branch has the toolkit's `snippets/decision-help.md` behind it, which installs into a project as `.claude/snippets/decision-help.md`, and the second had no surface at all.
+`CLAUDE.md` states both branches of the rule, sending an ordinary judgment call to a pick with the tradeoff in one sentence and a preference-deciding call to the operator. The first branch has the toolkit's `snippets/decision-help.md` behind it, which installs into a project as `.claude/snippets/decision-help.md`. The second branch now states how a question is shaped and where it is put, so this skill inherits both and adds only what a batch needs on top of one question.
 
 ## Must
 
 - Collect every open decision before asking any of them, so the operator sees the set rather than the first one
 - Put the whole batch in one turn, since a batch split across turns is the per-decision ask this skill exists to replace
-- Give each question two to four options, each carrying what it means and what it costs, with the recommendation ranked first and named as such
-- State the behavior first and the tool second, so the body runs on a chat surface carrying no structured question tool
+- Give each question a short axis header and two to four options, taking the shape of an option from `CLAUDE.md` rather than restating it
+- Take the surface from `CLAUDE.md` rather than naming a tool, and say so and fall back when the project states no such rule, so the body runs where no structured question tool exists
 - Cap a batch at four questions and say how many are held, since a structured question tool takes four and an uncapped batch hides the overflow
 - Hold every escalated decision until it is answered, and continue only the work depending on none of them
 - Route a pick that changes a written artifact into that artifact under the standard owning it, rather than leaving it in the session
