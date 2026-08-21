@@ -160,6 +160,22 @@ describe('readSuperseded', () => {
     expect(report.findings[0].preview.endsWith('…')).toBe(true)
   })
 
+  it('should mark no finding as carrying an empty replacement', async () => {
+    write('fixtures/one.sh', 'echo feature-feat-add-farewell.md')
+    write('fixtures/two.sh', 'echo plain text with no value')
+    git('add', '--all')
+
+    const report = measured(
+      await readSuperseded(ROOT, {
+        superseded: 'feature-feat-',
+        replacement: '',
+      }),
+    )
+
+    expect(report.findings).toHaveLength(1)
+    expect(report.findings[0].carriesReplacement).toBe(false)
+  })
+
   it('should mark a finding whose line already carries the replacement', async () => {
     write(
       'standards/slug.md',

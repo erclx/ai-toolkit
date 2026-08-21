@@ -34,6 +34,8 @@ Matching is a literal substring, so a value carrying regular-expression characte
 
 Binary files are skipped on a NUL byte rather than on an extension list, and so is any listed path that will not open. Both are counted. A run states the files it opened against the files git listed, because a count of what passed reads as a verdict on the repository unless it also says how much it left out.
 
+Pass an empty replacement to retire a value outright, as in `aitk gov superseded feature-feat- ""`. Findings report the same way and none is annotated, since a line cannot carry a replacement that does not exist.
+
 ## The exemption marker
 
 A declaration disagreeing with a convention for a stated reason carries `aitk-allow-superseded: <reason>` on its own line or the one directly above. The marker moves the line into the report's `Exempt` section, which is named rather than counted, so a reader weighing the report can reach the reason.
@@ -48,7 +50,7 @@ A value sweep closes most of this class and no part of that one. The help text a
 
 ## Exit codes
 
-Exit codes are `0` when nothing asserts the superseded value, `1` for a refusal, and `2` for at least one finding. It refuses an empty superseded value, which would match every line rather than a convention, a superseded value equal to its replacement, which means no convention changed, and a tree git cannot list, since an empty list passes each of its zero files.
+Exit codes are `0` when nothing asserts the superseded value, `1` for a refusal, and `2` for at least one finding. It refuses an empty superseded value, which would match every line rather than a convention, a superseded value equal to its replacement, which means no convention changed, and a tree git cannot list, since an empty list passes each of its zero files. An empty replacement is not among them, because retiring a value is an ordinary reason to run this.
 
 Nothing wires this into `bun run check` or into a hook. A value sweep over-reports by construction, and gating a measure carrying a known false-positive class is what teaches contributors to route around the stage. `aitk gov test-order` is the sibling precedent.
 

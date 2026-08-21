@@ -14,12 +14,25 @@
  * finding, where the reason is the whole value of an exemption a later reader
  * has to weigh.
  */
+/**
+ * Escapes every character a regular expression would read as syntax.
+ *
+ * The token became a parameter when this was extracted, and the two callers
+ * pass letters and hyphens alone. That is what makes escaping cheap here rather
+ * than a fix for a live defect: an unescaped token holding a dot matches the
+ * wrong lines and one holding a parenthesis throws, and neither failure is the
+ * caller's to anticipate.
+ */
+function escapeForPattern(token: string): string {
+  return token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 export function isMarked(
   lines: readonly string[],
   index: number,
   token: string,
 ): boolean {
-  const pattern = new RegExp(`${token}:[ \\t]*\\S`)
+  const pattern = new RegExp(`${escapeForPattern(token)}:[ \\t]*\\S`)
   const own = lines[index]
   const above = index > 0 ? lines[index - 1] : undefined
 

@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { isBinary } from '@/binary'
 import { isMarked } from '@/exempt-marker'
 import { listRepositoryFiles } from '@/git-files'
-import { isBinary } from '@/secrets/scan'
 
 /**
  * The inline token exempting one line from this sweep, shaped on the
@@ -72,8 +72,14 @@ const PREVIEW_LIMIT = 200
  * Whether `replacement` appears on the line somewhere other than inside the
  * superseded occurrences, which is what makes the flag mean anything when one
  * value contains the other.
+ *
+ * An empty replacement carries nothing, so it answers false rather than the
+ * true every line returns from a containment test against the empty string.
+ * Retiring a value outright is what passes one, and reporting every finding as
+ * carrying its replacement there says the opposite of what happened.
  */
 function carriesReplacement(line: string, options: SupersededOptions): boolean {
+  if (options.replacement === '') return false
   return line.split(options.superseded).join('').includes(options.replacement)
 }
 

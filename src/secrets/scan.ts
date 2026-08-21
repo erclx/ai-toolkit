@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { isBinary } from '@/binary'
 import { listRepositoryFiles } from '@/git-files'
 import { isExempt } from '@/secrets/marker'
 import { matchLine } from '@/secrets/patterns'
@@ -47,18 +48,6 @@ export type SecretScan =
       readonly findings: readonly SecretFinding[]
     }
   | { readonly kind: 'refused'; readonly reason: ScanRefusal }
-
-/**
- * Whether the bytes are something a line scanner should not read.
- *
- * A NUL byte rather than an extension list, since the shipped tree carries
- * fonts and images under names this check has no reason to enumerate, and a
- * list would go stale the first time a format was added. Decoded text holds no
- * NUL, so the test costs one scan and never rejects source.
- */
-export function isBinary(text: string): boolean {
-  return text.includes('\0')
-}
 
 /** Every finding in one file's text, with the marker already applied. */
 export function scanText(file: string, text: string): SecretFinding[] {
