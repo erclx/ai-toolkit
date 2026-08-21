@@ -47,6 +47,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                                 |
 | `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD`, and the installed version against the newest published (`--json`)      |
 | `aitk claude skills reach` | Report the shipped bodies citing a toolkit path no target project receives, exiting 2 on an unqualified one                                    |
+| `aitk claude routing`      | Report per `CLAUDE.md` section how many bullets name a path and how many of those a path-scoped rule already covers (`--json`)                 |
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                        |
 | `aitk gov superseded`      | Report where the tree still asserts a value a changed convention no longer produces, keyed on the value (`--json`)                             |
 | `aitk secrets scan`        | Report credential-shaped values in the tree the package ships, keyed on issued values rather than on words (`--json`)                          |
@@ -63,27 +64,27 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 
 Each domain exposes a consistent shape where applicable: `list`, `install`, `sync`, `create`.
 
-| Domain      | Subcommands                                                                                                 |
-| ----------- | ----------------------------------------------------------------------------------------------------------- |
-| `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                                      |
-| `snippets`  | `list`, `install`, `sync`, `create`                                                                         |
-| `standards` | `list`, `<name>`                                                                                            |
-| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                     |
-| `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `setup [dest]` |
-| `demo`      | `compile`, `run`                                                                                            |
-| `wiki`      | `init`                                                                                                      |
-| `design`    | `render`                                                                                                    |
-| `slides`    | `render`, `list`                                                                                            |
-| `tasks`     | `archive`, `validate`                                                                                       |
-| `intake`    | `list`, `answer`                                                                                            |
-| `teach`     | `list`, `open`, `resource`, `glossary`                                                                      |
-| `comments`  | `scan`                                                                                                      |
-| `context`   | `audit`                                                                                                     |
-| `markdown`  | `audit`                                                                                                     |
-| `secrets`   | `scan`                                                                                                      |
-| `deps`      | `audit`                                                                                                     |
-| `labels`    | `audit`                                                                                                     |
-| `audits`    | `run`, `list`                                                                                               |
+| Domain      | Subcommands                                                                                                            |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                                                 |
+| `snippets`  | `list`, `install`, `sync`, `create`                                                                                    |
+| `standards` | `list`, `<name>`                                                                                                       |
+| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                                |
+| `claude`    | `init`, `sync`, `routing`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `setup [dest]` |
+| `demo`      | `compile`, `run`                                                                                                       |
+| `wiki`      | `init`                                                                                                                 |
+| `design`    | `render`                                                                                                               |
+| `slides`    | `render`, `list`                                                                                                       |
+| `tasks`     | `archive`, `validate`                                                                                                  |
+| `intake`    | `list`, `answer`                                                                                                       |
+| `teach`     | `list`, `open`, `resource`, `glossary`                                                                                 |
+| `comments`  | `scan`                                                                                                                 |
+| `context`   | `audit`                                                                                                                |
+| `markdown`  | `audit`                                                                                                                |
+| `secrets`   | `scan`                                                                                                                 |
+| `deps`      | `audit`                                                                                                                |
+| `labels`    | `audit`                                                                                                                |
+| `audits`    | `run`, `list`                                                                                                          |
 
 Common patterns:
 

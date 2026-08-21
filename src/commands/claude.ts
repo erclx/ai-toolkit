@@ -21,6 +21,11 @@ import {
   type SkillFinding,
   type SkillsAudit,
 } from '@/claude/skills-audit'
+import {
+  type RoutingRefusal,
+  type RoutingReport,
+  scanRouting,
+} from '@/claude/routing'
 import { type DriftReport, readDrift } from '@/claude/skills-drift'
 import { listSkills } from '@/claude/skills-list'
 import {
@@ -79,6 +84,10 @@ interface SkillsReachOptions {
   readonly json?: boolean
 }
 
+interface RoutingOptions {
+  readonly json?: boolean
+}
+
 const SEEDED_FILES: readonly string[] = [
   'ARCHITECTURE.md',
   'REQUIREMENTS.md',
@@ -91,7 +100,7 @@ const STATUSLINE = 'statusline-command.sh'
 export function register(program: Command): void {
   const claude = program
     .command('claude')
-    .description('Claude workflow (init, seeds, sync, setup)')
+    .description('Claude workflow (init, seeds, sync, setup, routing)')
     .helpOption('-h, --help', 'Show this help message')
     .addHelpText(
       'after',
@@ -165,6 +174,42 @@ export function register(program: Command): void {
     )
     .action(async (opts: SeedsListOptions) => {
       process.exitCode = await runSeedsList(opts)
+    })
+
+  claude
+    .command('routing')
+    .description('Report per CLAUDE.md section how many bullets name a path')
+    .argument('[path]', 'Repository root, defaulting to the current directory')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Scope:',
+        '  Every H2 and H3 in CLAUDE.md that owns at least one top-level',
+        '  bullet, counted against the path-scoped rules under .claude/rules/.',
+        '  A bullet is path-scoped here when it names a path, which is not the',
+        "  same as firing only on one. A rule's glob covers a named folder",
+        '  only when the glob is anchored to a location rather than to a file',
+        '  type, so **/*.md covers README.md and no folder at all.',
+        '',
+        'Exit codes:',
+        '  0  the file was read',
+        '  1  refused, with the reason on stderr',
+        '',
+        'Reports rather than gates. Whether a bullet belongs in a rule is the',
+        'judgment 592-claude-md states, and naming a path is evidence for it',
+        'rather than the answer.',
+        '',
+        'Examples:',
+        '  aitk claude routing',
+        '  aitk claude routing --json',
+        '',
+      ].join('\n'),
+    )
+    .action((path: string | undefined, opts: RoutingOptions) => {
+      process.exitCode = runRouting(path, opts)
     })
 
   const skills = claude
@@ -610,6 +655,90 @@ function reportSkew(skew: SkewReport): void {
   logStep('Toolkit version')
   if (skew.state === 'behind') logWarn(describeSkew(skew))
   else logInfo(describeSkew(skew))
+}
+
+/** What a reader does about each way the reading cannot be taken. */
+const ROUTING_REFUSALS: Record<RoutingRefusal, string> = {
+  'no-claude-md': 'No CLAUDE.md here, so this tree has no always-loaded file.',
+  'no-rules':
+    'No path-scoped rules under .claude/rules/, so nothing covers a path yet.',
+}
+
+/**
+ * Measures the cwd rather than the toolkit root, matching the reach and drift
+ * verbs, so a linked worktree reads its own branch instead of `main`.
+ */
+function runRouting(path: string | undefined, opts: RoutingOptions): number {
+  const root = resolve(path ?? process.cwd())
+  const report = scanRouting(root)
+
+  if (report.kind === 'refused') {
+    frameError(ROUTING_REFUSALS[report.reason])
+    if (opts.json) {
+      process.stdout.write(
+        `${JSON.stringify({
+          root,
+          reason: report.reason,
+          message: ROUTING_REFUSALS[report.reason],
+        })}\n`,
+      )
+    }
+    return 1
+  }
+
+  intro('aitk claude routing')
+  reportRouting(report)
+  outro()
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        rules: report.rules,
+        sections: report.sections,
+      })}\n`,
+    )
+  }
+
+  return 0
+}
+
+/**
+ * States the corpus on every run, so a section naming no path reads as
+ * measured rather than as skipped. A reader deciding what to cut needs the
+ * sections that stay as much as the ones that move.
+ */
+function reportRouting(
+  report: Extract<RoutingReport, { kind: 'measured' }>,
+): void {
+  const bullets = report.sections.reduce(
+    (total, section) => total + section.bullets,
+    0,
+  )
+  const pathScoped = report.sections.reduce(
+    (total, section) => total + section.pathScoped,
+    0,
+  )
+
+  logStep('Corpus')
+  logInfo(
+    `${plural(report.sections.length, 'section')} carrying ${plural(bullets, 'bullet')}, read against ${plural(report.rules, 'path-scoped rule')}`,
+  )
+
+  logStep('Sections')
+  logInfo(`${pathScoped} of ${bullets} bullets name a path`)
+  pipeOutput(
+    report.sections
+      .map(
+        (section) =>
+          `${section.pathScoped}/${section.bullets} path-scoped, ${section.covered} covered  ${section.heading}${
+            section.uncovered.length === 0
+              ? ''
+              : `  [uncovered: ${section.uncovered.join(', ')}]`
+          }`,
+      )
+      .join('\n'),
+  )
 }
 
 /** What a reader does about the one way the corpus fails to build. */
