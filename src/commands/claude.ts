@@ -24,6 +24,11 @@ import {
 import { type DriftReport, readDrift } from '@/claude/skills-drift'
 import { listSkills } from '@/claude/skills-list'
 import {
+  type ReachRefusal,
+  type ReachReport,
+  scanReach,
+} from '@/claude/skills-reach'
+import {
   planSettings,
   readSettings,
   serializeSettings,
@@ -67,6 +72,10 @@ interface SkillsAuditOptions {
 }
 
 interface SkillsDriftOptions {
+  readonly json?: boolean
+}
+
+interface SkillsReachOptions {
   readonly json?: boolean
 }
 
@@ -160,15 +169,15 @@ export function register(program: Command): void {
 
   const skills = claude
     .command('skills')
-    .description('Plugin skill catalog (list, audit, drift)')
-    .argument('[subcommand]', "One of 'list', 'audit', or 'drift'")
+    .description('Plugin skill catalog (list, audit, drift, reach)')
+    .argument('[subcommand]', "One of 'list', 'audit', 'drift', or 'reach'")
     .helpOption('-h, --help', 'Show this help message')
     .action((subcommand: string | undefined) => {
       intro('aitk claude')
       logError(
         subcommand === undefined
-          ? "Missing subcommand. Use 'list', 'audit', or 'drift'."
-          : `Unknown subcommand: ${subcommand}. Use 'list', 'audit', or 'drift'.`,
+          ? "Missing subcommand. Use 'list', 'audit', 'drift', or 'reach'."
+          : `Unknown subcommand: ${subcommand}. Use 'list', 'audit', 'drift', or 'reach'.`,
       )
       outro()
       process.exitCode = 1
@@ -259,6 +268,42 @@ export function register(program: Command): void {
     )
     .action(async (ref: string, opts: SkillsDriftOptions) => {
       process.exitCode = await runSkillsDrift(ref, opts)
+    })
+
+  skills
+    .command('reach')
+    .description('Report shipped bodies citing a path no target receives')
+    .argument('[path]', 'Repository root, defaulting to the current directory')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Scope:',
+        '  Every markdown file under claude/skills/, which is the tree that',
+        '  installs into a target. A cited path counts when it sits under an',
+        '  authoring root no install channel delivers and this repository',
+        '  holds it. A path under src/, scripts/, or bare docs/ names the',
+        "  reader's own tree and is not measured.",
+        '',
+        'Exit codes:',
+        '  0  every citation names the toolkit as the owner',
+        '  1  refused, with the reason on stderr',
+        '  2  at least one citation is unqualified',
+        '',
+        'Reports rather than gates. A toolkit-scoped instruction is sometimes',
+        'meant for a session in this repository, so the verdict is a reading',
+        'and the repair is to name the owner in the sentence.',
+        '',
+        'Examples:',
+        '  aitk claude skills reach',
+        '  aitk claude skills reach --json',
+        '',
+      ].join('\n'),
+    )
+    .action((path: string | undefined, opts: SkillsReachOptions) => {
+      process.exitCode = runSkillsReach(path, opts)
     })
 }
 
@@ -565,6 +610,80 @@ function reportSkew(skew: SkewReport): void {
   logStep('Toolkit version')
   if (skew.state === 'behind') logWarn(describeSkew(skew))
   else logInfo(describeSkew(skew))
+}
+
+/** What a reader does about the one way the corpus fails to build. */
+const REACH_REFUSALS: Record<ReachRefusal, string> = {
+  'no-skills':
+    'No claude/skills/ here, so this tree ships no plugin body to measure.',
+}
+
+/**
+ * Measures the cwd rather than the toolkit root, matching the audit and drift
+ * verbs, so a linked worktree reads its own branch instead of `main`.
+ */
+function runSkillsReach(
+  path: string | undefined,
+  opts: SkillsReachOptions,
+): number {
+  const root = resolve(path ?? process.cwd())
+  const report = scanReach(root)
+
+  if (report.kind === 'refused') {
+    frameError(REACH_REFUSALS[report.reason])
+    if (opts.json) {
+      process.stdout.write(
+        `${JSON.stringify({
+          root,
+          reason: report.reason,
+          message: REACH_REFUSALS[report.reason],
+        })}\n`,
+      )
+    }
+    return 1
+  }
+
+  intro('aitk claude skills reach')
+  reportReach(report)
+  outro()
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        bodies: report.bodies,
+        qualified: report.qualified,
+        unqualified: report.unqualified,
+      })}\n`,
+    )
+  }
+
+  return report.unqualified.length === 0 ? 0 : 2
+}
+
+/**
+ * States the corpus on every run, including the clean one. A count of what
+ * failed reads as a verdict on the catalog unless the run also says how many
+ * bodies it opened and how many citations it already accepted.
+ */
+function reportReach(report: Extract<ReachReport, { kind: 'measured' }>): void {
+  logStep('Corpus')
+  logInfo(
+    `${plural(report.bodies, 'shipped file')} read, ${plural(report.qualified.length, 'citation')} already naming the toolkit as owner`,
+  )
+
+  logStep('Unqualified citations')
+  if (report.unqualified.length === 0) {
+    logInfo('Every toolkit-owned path a shipped body cites names its owner.')
+    return
+  }
+
+  logWarn(plural(report.unqualified.length, 'citation'))
+  pipeOutput(
+    report.unqualified
+      .map((citation) => `${citation.file}:${citation.line}  ${citation.path}`)
+      .join('\n'),
+  )
 }
 
 /**

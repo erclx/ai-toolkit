@@ -219,6 +219,22 @@ describe('reading counts out of each record shape', () => {
     })
   })
 
+  it('should count the unqualified citations and leave the repaired ones out', () => {
+    const record = {
+      bodies: 152,
+      qualified: [{ path: 'standards/intake.md' }, { path: 'wiki/index.md' }],
+      unqualified: [{ path: '.claude/context/transcripts.md' }],
+    }
+
+    expect(countsFor(specFor('skills-reach'), record)).toEqual({
+      unqualifiedCitations: 1,
+    })
+  })
+
+  it('should read a reach record carrying neither citation array as a shape that moved', () => {
+    expect(countsFor(specFor('skills-reach'), { bodies: 152 })).toBeUndefined()
+  })
+
   it('should count a record kind by its findings alone', () => {
     const record = { ok: true, kind: 'plans', records: 3, findings: [{}, {}] }
 
