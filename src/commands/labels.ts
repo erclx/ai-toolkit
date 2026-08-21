@@ -19,7 +19,9 @@ const REFUSALS: Record<LabelAuditRefusal, string> = {
   'unreadable-map': `${MAP_REL} is not valid TOML, so no row could be read.`,
   'no-domains': `${MAP_REL} carries no usable row under [domains], so every path would read as uncovered.`,
   'no-base': 'No base resolves against the trunk. Fetch origin or pass --base.',
-  'no-changes':
+  'bad-base':
+    'The ref passed to --base resolves to no commit here. Pass one this tree carries.',
+  'unreadable-changes':
     'git could not list what this branch changed, so the set is unknown.',
 }
 
