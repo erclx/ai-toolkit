@@ -40,7 +40,7 @@ No surface carries cross-version sequencing, so report none. A row's `Waiting on
 
 A compaction is a moment this skill cannot detect, so the human asks for each side of it and this skill reads the matching runbook when they do.
 
-On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It captures what the session learned, then writes a session map per `${CLAUDE_SKILL_DIR}/../../standards/session.md`, carrying the state of play, the mistakes worth not repeating, and the standing cautions, with the decisions taken under delegated authority added as this role's extension. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
+On a request to write the handoff or save the session, read `${CLAUDE_SKILL_DIR}/references/orchestrator-handoff.md` and follow it. It sends the generic half to `aitk:session-map`, which captures what the session learned and writes a session map per `${CLAUDE_SKILL_DIR}/../../standards/session.md`, then adds the decisions taken under delegated authority as this role's extension. That capture is the only one this session runs, since the refill sweep reports it as owed rather than paying it. Write nothing to the handoff that the board, a task file, or a groundwork folder already carries.
 
 On a request to resume after a compaction, read `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md`, which reads that file back with the board and the groundwork behind the live work.
 

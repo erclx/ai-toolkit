@@ -56,9 +56,11 @@ Add a section only for content that fits none of the three and would otherwise b
 
 ## Writing one
 
+The `session-map` skill is the invocable route onto this procedure and holds no role, so a session reaching for a handoff without knowing this document exists still lands here. A session that arrives at this document directly follows the steps below unchanged.
+
 1. Capture what the session learned first, so the map cites what was written instead of restating the same lesson in prose.
 2. Run `aitk claude skills drift <the commit this session started from>` and record what it names under `## Standing cautions`. A skill body enters a session once and re-invoking the skill does not re-read the file, so the drift is worst at exactly this moment and a name here is a body the session has been following out of date. Recording a name is not acting on it, and the verb misses a body this session edited and has not committed. This step belongs to session length rather than to any role, so every writer runs it, and a refusal names the boundary of what the verb can read rather than a fault.
-3. Recover that commit from how long the session has been running with `git log -1 --format=%H --before='<duration> ago'`, rounding the duration up rather than down. Nothing on the machine records it. A ref older than the oldest load over-reports, and confirming a name costs one read of the body, so the generous end is the safe one and a guess at the exact commit is not worth making.
+3. Recover that commit from how long the session has been running with `git log -1 --format=%H --before='<duration> ago'`, rounding the duration up rather than down. Nothing on the machine records it. A ref older than the oldest load over-reports, and confirming a name costs one read of the body, so the generous end is the safe one and a guess at the exact commit is not worth making. An empty result means no commit predates the window, so take the oldest commit the history holds and say which of the two the ref came from.
 4. Write only what a compaction destroys and no other artifact already carries. The board holds the ordering and what each task waits on, a task file holds its own findings, and a measurement folder holds its track.
 5. Cite a commit, a task, or a file and line for every claim, so the next session can tell a read from a recall.
 6. Fill a section from reasoning the session actually holds. A session with no cross-feature picture that fills `## State` from what is already in git has written a summary of the tree, which the reader can produce faster than they can read it.
@@ -76,6 +78,7 @@ Do not restate the board, and do not summarize the work that shipped, since vers
 - Carry every core section whatever else a role adds, and state in the surface that adds a section why the core cannot carry it
 - Let the adding surface fix where its own section sits, so a role can place one between core sections where that reads better. The core order holds among the core sections alone.
 - Keep a section out of the core when a session holding no such role would leave it unfilled. An unfilled section teaches a reader to skip the file.
+- Cite the route onto `## Writing one` rather than restating the procedure, so the extension is the only thing the adding surface carries and the two cannot fall out of step
 - Carry a resume instruction inside the map itself when the routing to that instruction is what a compaction takes. The map survives what the instruction was loaded from, so each reaches a reader the other cannot.
 
 ## Template

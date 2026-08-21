@@ -3,9 +3,11 @@ title: Orchestrator handoff runbook
 description: The two sections an orchestrating session adds over the shared session map, how capture runs from a session that never commits, and the resume invocation the file carries out
 ---
 
-Write the pre-compaction handoff as orchestrator. Follow `${CLAUDE_SKILL_DIR}/../../standards/session.md` for the filename, the three core sections, the write procedure, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
+Write the pre-compaction handoff as orchestrator. Invoke `aitk:session-map` for the generic half, which is the filename, the three core sections, the write procedure, the drift step and the ref it reads, and the citation rule. Everything below is the extension this role adds over that core, and none of it belongs to a session holding no delegated authority.
 
-1. Run the capture step the core opens with, and tell `aitk:claude-memory-capture` that this session does not commit.
+Settle all three steps below before the door writes, so one write carries the core and the extension together. The door reports the map as written and knows nothing of this role, so its success line ends the generic half rather than this runbook, and a session that stops there ships a map missing both of the things this file exists to add.
+
+1. Tell the door this session does not commit, which is the caveat its capture step takes and passes to `aitk:claude-memory-capture`.
 2. Add `## Decisions taken under delegated authority` directly after `## State`, holding each decision and why it went that way, so nobody re-proposes it. It sits there rather than after the core because a decision is read against the state it was taken in.
 3. Close the file with the block below, resolving `${CLAUDE_SKILL_DIR}/references/orchestrator-resume.md` and `${CLAUDE_SKILL_DIR}/references/orchestrator-poll.md` to absolute paths as you write it and pasting each in place of `<RESUME_RUNBOOK>` and `<POLL_RUNBOOK>`:
 
@@ -25,6 +27,6 @@ The requirement is a resume request to the orchestrator skill with that skill lo
 
 Step 1 exists because both other callers of capture are ship-chain skills and this session never ships. Without a call here, the session that receives every operator correction is the one session that records none. A compaction arriving with no warning takes the capture with it, and firing it once per batch of merges leaves the same window open across a long planning stretch, since a sweep runs only on a merge. The refill sweep reports the debt between handoffs so the operator knows one is owed.
 
-Capture is told this session does not commit, so it skips routing and writes memory files alone. A routed fact lands in a context entry, which is a tracked file, and the orchestrator's boundaries forbid writing one from this session. That split is correct rather than a limitation, since a domain fact belongs to the task that owns the surface and goes in that task's Findings, while what this session produces is feedback about how to work.
+Step 1 varies the door rather than replacing it, which is why the door is invoked first and this runbook states only what differs. The generic half moved out whole, the drift step and its ref recovery with it, so nothing here restates a step the door already carries and the two cannot disagree.
 
-The core's drift step answers where the working directory carries `claude/skills/` with history behind it, which is the toolkit repository itself, and refuses by naming the absent tree anywhere else. A project consuming the plugin from a marketplace cache is that second case, so read the refusal as the boundary rather than as a fault.
+Capture is told this session does not commit, so it skips routing and writes memory files alone. A routed fact lands in a context entry, which is a tracked file, and the orchestrator's boundaries forbid writing one from this session. That split is correct rather than a limitation, since a domain fact belongs to the task that owns the surface and goes in that task's Findings, while what this session produces is feedback about how to work.
