@@ -29,7 +29,9 @@ The layer boundary: TypeScript owns argument parsing plus every migrated domain,
 - `src/markdown/` owns the attribute-standard audit, reasoned about alongside both, and the fence walker every other markdown reader now shares
 - `src/secrets/` owns the shipped-tree secret scan, splitting the rule set, the exemption marker, the corpus resolver, and the walker across four modules so the keying and the exclusion mechanism move independently. Reasoned about in `.claude/context/cli/audits.md`
 - `src/deps/` owns the dependency advisory read, which shells the runtime's own command rather than carrying an index and is the only audit engine here that reaches a network
+- `src/labels/` owns the pull request label map, splitting the TOML read from the matcher so a caller holding a changed set can resolve coverage without touching git. Reasoned about in `.claude/context/cli/audits.md`
 - `src/git-files.ts` owns `listRepositoryFiles()`, the tracked-plus-untracked listing the citation check, the markdown corpus, and the secret scan all take their file set from
+- `src/git-files.ts` also owns `resolveBaseRef()` and `listChangedFiles()`, the branch-range pair the label audit reads. The changed set diffs the base against the working tree rather than against `HEAD`, so a surface added before the branch commits is still in scope
 - `src/capture/` owns the documentation capture render, the one folder under `src/` the package excludes
 
 ## Gotchas

@@ -84,9 +84,23 @@ A detached HEAD gives `git branch --show-current` an empty result, which would r
 
 ### Labels
 
-Read `.claude/aitk/pr-labels.toml` from the project root. A project that has not declared a map gets no labels and no warning, since a label set this skill supplied would be a guess about that project's surfaces.
+Ask the CLI first:
 
-When the file resolves, match it against the name-only diff per `${CLAUDE_SKILL_DIR}/references/labels.md` and write the comma-separated result into `pr_labels` below. Leave `pr_labels` empty when no map resolves or no prefix matches, which skips the labelling command rather than running it against nothing.
+```bash
+aitk labels audit --base <base> --json
+```
+
+The record carries `labels`, the set this branch earns, and `uncovered`, the changed paths no row of the map reaches. Join `labels` with commas into `pr_labels` below. Report each `uncovered` path beside the result line, naming the map so the reader knows where a row would go, since a surface nobody covered merges bare and nothing else says so.
+
+Branch on the record rather than on the exit. An operator's shell profile may wrap `aitk` in a function whose status comes from a trailing command, and the binary exits 1 for an unknown subcommand and 1 for an ordinary refusal alike.
+
+A `reason` of `no-map` is the answer that the project declared no map, which earns no labels and no warning: a label set this skill supplied would be a guess about that project's surfaces. Stop there and label nothing.
+
+Every other `reason` is a map or a range the verb could not read, which is `unreadable-map`, `no-domains`, `no-base`, and `unreadable-changes`, plus `bad-base` for a ref this skill resolved wrongly. Take the fallback below and warn beside the result line, naming the reason. A map with a typo in it still has rows a prefix match can reach, and reading the refusal as an absence would open the pull request with no labels and nothing said, which is the surface merging bare that the verb exists to name.
+
+The fallback is reading `.claude/aitk/pr-labels.toml` and matching it against the name-only diff per `${CLAUDE_SKILL_DIR}/references/labels.md`. It also covers no record coming back at all, which is an installed `aitk` predating the verb, since a skill reaches a target the moment it merges while the CLI reaches one only when a release publishes. The fallback labels correctly and reports no uncovered path, which is the half only the verb carries.
+
+Leave `pr_labels` empty when no map resolves or no prefix matches, which skips the labelling command rather than running it against nothing.
 
 ### Final command
 

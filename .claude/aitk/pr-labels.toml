@@ -11,18 +11,24 @@
 # three domain labels is one `git-split` should have split. Two is normal for a
 # change that touches a surface and its docs.
 #
-# Nothing here detects a top-level directory the map fails to cover, so a surface
-# added after this census labels nothing until someone adds a row. The remedy is
-# manual: give the surface a prefix on the row that owns its subject, or add it to
-# the declined list at the foot of this file with the reason it earns no label.
+# `aitk labels audit` detects a surface neither table below reaches, so a
+# directory added after this census is named rather than merging bare. It runs
+# inside `aitk audits` as well, and it reports without gating, since whether an
+# uncovered surface deserves a label is a judgment. The remedy it asks for is
+# manual either way: give the surface a prefix on the row that owns its subject,
+# or add it to `[declined]` with the reason it earns no label.
 # `claude/skills/git-pr/references/labels.md` carries the matching rule and the
 # declined-path rule, and it ships wherever this map does.
 #
 # Building the report into `git-pr` was declined. That skill already reads the map
 # and the changed set, so the check would cost it nothing to run, which is exactly
 # what makes it the wrong home: it hands the ship chain a new failure mode from a
-# check nobody has designed. The check is tracked as its own work so it gets
-# designed once rather than grown a case at a time.
+# check nobody has designed. A verb is also where the match becomes testable,
+# which a skill body only states.
+#
+# What the check does not measure is a prefix reaching no path, so a row left
+# behind by a deleted folder stays in the map. That is the map going stale from
+# the other side and a second measure rather than this one.
 #
 # Matching is prefix-anchored, so a `.claude/` path earns no row written for an
 # authoring root: `standards/` never matches `.claude/standards/`. Every surface
@@ -65,28 +71,37 @@ repo = [".gitignore", ".vscode/", "cspell.json", ".cspell/", ".claude/aitk/"]
 # Deliberately unlabelled, measured across the 138 commits between `3a0fd695`,
 # which shipped the map, and `190af80b`. Against the rows as they stood before
 # this census, 54 of those commits carried no label: 53 releases and one commit
-# that edited this file, which the `repo` row above now reaches. Against the
-# rows above, 53 carry no label and every one of them is a release.
+# that edited this file, which the `repo` row above reached at the time.
 #
-# Release-managed. Release automation opens its own pull request and applies its
-# own label, so a domain label here would give every release a subject it does
-# not have. `claude/.claude-plugin/plugin.json` moved on 53 commits over that
-# span and every one was a release, which is what settles it as release-managed
-# rather than as a plugin surface.
+# Replaying the range through `aitk labels audit` reports 54 rather than 53, and
+# the extra is that same commit. The map has since moved to `.claude/aitk/`, so
+# the `repo` row moved with it and no longer reaches the path the file used to
+# sit at. Reaching a path nothing carries any more is not worth a row, so the
+# number is recorded here instead: 53 are releases and every one is declined
+# below, and the 54th is an artifact of the relocation.
 #
-#   CHANGELOG.md
-#   package.json
-#   .release-please-manifest.json
-#   claude/.claude-plugin/
-#
-# Generated. Each is rewritten by a command rather than authored, and it travels
-# in the commit that changed its source, which already carries that source's
-# label. A row over any of them adds a second label to a mechanical edit.
-#
-#   assets/hero.png
-#   assets/hero.stamp
-#   .claude/audits/baseline.json
-#
-# `assets/hero.html` is authored and rides with the pair, so it is left here
-# rather than given `docs`, which would spuriously label the 18 commits that
-# regenerated the image alongside an unrelated surface.
+# These are data rather than prose because the check reads them. A path here is
+# a decision already taken and a path under neither table is a gap nobody has
+# gotten to, and a report that could not tell the two apart would be useful
+# about neither. Each key is the reason, and matching is prefix-anchored exactly
+# as it is above.
+[declined]
+# Release automation opens its own pull request and applies its own label, so a
+# domain label here would give every release a subject it does not have.
+# `claude/.claude-plugin/plugin.json` moved on 53 commits over that span and
+# every one was a release, which is what settles it as release-managed rather
+# than as a plugin surface.
+release-managed = [
+  "CHANGELOG.md",
+  "package.json",
+  ".release-please-manifest.json",
+  "claude/.claude-plugin/",
+]
+# Each is rewritten by a command rather than authored, and it travels in the
+# commit that changed its source, which already carries that source's label. A
+# row over any of them adds a second label to a mechanical edit.
+generated = ["assets/hero.png", "assets/hero.stamp", ".claude/audits/baseline.json"]
+# `assets/hero.html` is authored, so it is a reason of its own rather than a
+# fourth generated file. Giving it `docs` would spuriously label the 18 commits
+# that regenerated the image alongside an unrelated surface.
+rides-with-generated = ["assets/hero.html"]
