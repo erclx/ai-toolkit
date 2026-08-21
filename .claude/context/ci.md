@@ -63,6 +63,8 @@ A shields.io badge URL returns HTTP 200 whether or not the query resolves, so ve
 
 An exit-code flag may count only states some documented action can drive to zero, since a permanent condition makes the gate unpassable rather than informative. `aitk sync --check --exit-code` counted `orphaned`, so a single local rule in `.claude/rules/` returned 1 on every run with no remedy, verified against a fresh install. For each state a gate counts, name the action that clears it, and where there is none, exclude it and report it separately.
 
+The runner installs no browser binary, so a test needing one skips rather than fails and a green pipeline is not evidence that test ran. `src/demo/drive.e2e.test.ts` is the first test in this shape and guards itself with a launch probe, reporting the skip in its own header. Adding the install would slow every run for one suite, so the gap is recorded rather than closed, and a change to the demo driver is verified locally. The plugin CLI install above is the precedent for closing it if the count of such tests grows.
+
 ## Releases
 
 ### The release pull request
