@@ -50,6 +50,11 @@ async function makeProject(): Promise<string> {
   return root
 }
 
+/** Every path the records origin holds on its branch, newline-joined. */
+function trackedOnOrigin(): Promise<string> {
+  return git(['-C', ORIGIN, 'ls-tree', '-r', '--name-only', 'main'])
+}
+
 async function makeRecordsRepo(root: string, origin: string): Promise<void> {
   await recordsGit(root, ['init'])
   await recordsGit(root, ['remote', 'add', 'origin', origin])
@@ -64,6 +69,23 @@ beforeEach(async () => {
 afterEach(() => {
   rmSync(ROOT, { recursive: true, force: true })
   rmSync(ORIGIN, { recursive: true, force: true })
+})
+
+describe('BACKED_FOLDERS', () => {
+  // One line per record surface is what the list is for, and an archive named
+  // beside the folder it archives is what used to cost a second. Both halves
+  // are asserted because either alone passes on the other's failure: a nested
+  // path satisfies the suffix test, and a sibling named `archive` satisfies
+  // the segment test.
+  it('should name only top-level record folders', () => {
+    expect(BACKED_FOLDERS.filter((folder) => folder.includes('/'))).toEqual([])
+  })
+
+  it('should carry no archive as a sibling of what it archives', () => {
+    expect(
+      BACKED_FOLDERS.filter((folder) => folder.endsWith('-archive')),
+    ).toEqual([])
+  })
 })
 
 describe('pushRecords', () => {
@@ -158,6 +180,31 @@ describe('pushRecords', () => {
       'main',
     ])
     expect(tracked).not.toContain('intake/')
+  })
+
+  // The archives moved inside the records they archive, which takes a name off
+  // the backed list rather than off the disk. A pathspec built from that list
+  // alone never mentions the old name again, so its deletion never stages, the
+  // remote keeps it, and a pull restores it beside the folder that replaced it.
+  it('should carry a folder that left the backed list since the last push', async () => {
+    const retired = join(ROOT, '.claude', 'plans-archive')
+    mkdirSync(retired, { recursive: true })
+    writeFileSync(join(retired, 'entry.md'), '# retired\n')
+    await makeRecordsRepo(ROOT, ORIGIN)
+    await pushRecords(ROOT)
+
+    // Asserted before the removal, because a name the pathspec never carries
+    // reaches the remote on no push and passes the absence test below having
+    // proved nothing.
+    expect(await trackedOnOrigin()).toContain('plans-archive/entry.md')
+
+    rmSync(retired, { recursive: true, force: true })
+    const outcome = await pushRecords(ROOT)
+
+    expect(outcome.ok).toBe(true)
+    if (!outcome.ok) return
+    expect(outcome.changed).toBe(1)
+    expect(await trackedOnOrigin()).not.toContain('plans-archive/')
   })
 
   it('should commit every backed folder and push it to the records origin', async () => {

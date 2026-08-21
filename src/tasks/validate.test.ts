@@ -79,7 +79,7 @@ function trunkHolding(...landed: readonly number[]): ValidateOptions {
 const UNREACHABLE_TRUNK: ValidateOptions = { trunk: async () => undefined }
 
 async function seedArchivedTask(stem: string): Promise<void> {
-  const archive = join(ROOT, '.claude', 'task-archive')
+  const archive = join(ROOT, '.claude', 'tasks', 'archive')
   mkdirSync(archive, { recursive: true })
   await writeFile(join(archive, `${stem}.md`), `# ${stem}\n`)
 }

@@ -291,7 +291,7 @@ describe('archiveTask', () => {
 
   it('should accept a task pointing at an archived plan', async () => {
     const stem = await seedTask({
-      plan: '../plans-archive/feature-trigger.md',
+      plan: '../plans/archive/feature-trigger.md',
     })
 
     expect(await archiveTask(ROOT, { kind: 'stem', stem })).toMatchObject({
@@ -392,7 +392,7 @@ describe('planCitations', () => {
 
   it('should report a plan an earlier sweep archived', async () => {
     const stem = await seedTask({
-      plan: '../plans-archive/feature-trigger.md',
+      plan: '../plans/archive/feature-trigger.md',
     })
 
     expect(await planCitations(ROOT, stem)).toMatchObject({

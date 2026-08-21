@@ -8,14 +8,19 @@ import { gitEnv } from '@/git-env'
  * group the claude manifest ships, minus three: `.claude/.tmp`, which is
  * defined as deletable without loss, `.claude/worktrees/`, whose contents
  * belong to the enclosing repository already, and `.claude/.records.git/`,
- * which is the history the other ten are pushed into. The list is spelled out
+ * which is the history the other seven are pushed into. The list is spelled out
  * rather than read off that group so adding an ignore entry cannot silently
  * enlarge the payload.
  *
  * The manifest group is the one this reads rather than the enclosing
  * repository's own `.gitignore`, which spreads the same entries across two
  * headers and carries `.claude/README.md` that no target receives. Subtracting
- * three from that file instead yields eleven names against this list of ten.
+ * three from that file instead yields eight names against this list of seven.
+ *
+ * Each entry is a top-level record folder and every archive sits inside the one
+ * it archives, so the three former archive entries are covered by their parents
+ * rather than named here. That is what keeps this list at one line per surface
+ * as archives spread, which a sibling-per-archive layout could not.
  *
  * `RECORD_KINDS` in `validate.ts` overlaps this on five names and carries one
  * more that no backup reaches. The two lists differ on purpose: one is what a
@@ -27,12 +32,29 @@ export const BACKED_FOLDERS = [
   'intake',
   'memory',
   'plans',
-  'plans-archive',
   'review',
-  'review-archive',
-  'task-archive',
   'tasks',
   'teach',
+] as const
+
+/**
+ * Names that have left `BACKED_FOLDERS` and whose removal still has to reach a
+ * records history once.
+ *
+ * Dropping a name from the list above stops it entering the pathspec, so `add`
+ * never stages its deletion, the remote keeps the folder forever, and a `pull`
+ * onto another machine restores it beside whatever replaced it. These three are
+ * the archives that moved inside the records they archive, so the same files
+ * are already on the remote under their new paths.
+ *
+ * Retire a name here once no records history still carries it. Nothing measures
+ * that, so the cost of leaving one is three pathspec entries that match nothing
+ * and are filtered out before `add` ever sees them.
+ */
+const RETIRED_FOLDERS = [
+  'plans-archive',
+  'review-archive',
+  'task-archive',
 ] as const
 
 /** Holds the records history beside the folders it tracks, ignored by the enclosing repository. */
@@ -233,14 +255,18 @@ async function resolveRemote(root: string): Promise<string | BackupRefused> {
 }
 
 /**
- * The subset of the eight a pathspec can name: on disk, or already in the
- * records index.
+ * The subset of the backed and retired names a pathspec can name: on disk, or
+ * already in the records index.
  *
  * A pathspec matching neither fails the whole `add`, which is why the subset
  * exists. The index half is what covers a folder deleted in full. Reading disk
  * alone drops it from the pathspec, so its deletion never stages, the remote
  * keeps it forever, and a later `pull` restores it past the gate that refuses
  * every other unpushed deletion.
+ *
+ * The retired names are the same case one level up, where the folder left the
+ * backed list rather than the disk, and the index is the only side that still
+ * knows it existed.
  */
 async function scopedFolders(root: string): Promise<string[]> {
   const tracked = await records(root, ['ls-files'])
@@ -248,7 +274,7 @@ async function scopedFolders(root: string): Promise<string[]> {
     tracked.ok ? tracked.text.split('\n').filter(Boolean).map(topSegment) : [],
   )
 
-  return BACKED_FOLDERS.filter(
+  return [...BACKED_FOLDERS, ...RETIRED_FOLDERS].filter(
     (folder) =>
       existsSync(join(root, WORK_TREE, folder)) || indexed.has(folder),
   )

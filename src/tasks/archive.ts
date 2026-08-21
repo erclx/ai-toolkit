@@ -4,9 +4,9 @@ import { join, relative, resolve, sep } from 'node:path'
 import { regenOne } from '@/indexes/regen'
 
 const TASKS_DIR = join('.claude', 'tasks')
-const ARCHIVE_DIR = join('.claude', 'task-archive')
+const ARCHIVE_DIR = join(TASKS_DIR, 'archive')
 const PLANS_DIR = join('.claude', 'plans')
-const PLANS_ARCHIVE_DIR = join('.claude', 'plans-archive')
+const PLANS_ARCHIVE_DIR = join(PLANS_DIR, 'archive')
 
 /**
  * Siblings that sit on the board without being tasks: the generated index, the
@@ -198,6 +198,10 @@ function isUnder(path: string, dir: string): boolean {
  * count below compares two tasks by where their targets land and not by the
  * strings they wrote. A target outside the live plans folder yields nothing,
  * which is an archived plan or a pointer into somewhere else entirely.
+ *
+ * The archive sits inside the folder it archives, so containment alone reads an
+ * archived plan as live. Subtracting it is what keeps a closed task from being
+ * counted as a citation the sweep has yet to make.
  */
 export function resolveLivePlan(
   target: string,
@@ -205,11 +209,14 @@ export function resolveLivePlan(
   root: string,
 ): string | undefined {
   const plans = join(root, PLANS_DIR)
+  const archive = join(root, PLANS_ARCHIVE_DIR)
   const fromBoard = resolve(dir, target)
   const fromRoot = resolve(root, target)
 
-  if (isUnder(fromBoard, plans)) return fromBoard
-  if (isUnder(fromRoot, plans)) return fromRoot
+  if (isUnder(fromBoard, plans) && !isUnder(fromBoard, archive)) {
+    return fromBoard
+  }
+  if (isUnder(fromRoot, plans) && !isUnder(fromRoot, archive)) return fromRoot
   return undefined
 }
 
