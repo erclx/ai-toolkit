@@ -336,12 +336,16 @@ function advisoryCounts(record: unknown): Record<string, number> | undefined {
 }
 
 /**
- * Reads the uncovered paths and the declined ones as separate measures.
+ * Reads the uncovered paths alone, which is the half that is a finding.
  *
- * A single count would fold a surface nobody covered into one somebody decided
- * against, and only the first wants a row written. The declined count travels
- * beside it so the baseline records the size of the decision as well as the
- * size of the gap.
+ * The declined paths are deliberately not counted. They are whichever declined
+ * rows this branch happened to touch rather than a measure of the map, so a
+ * clean trunk reads zero while the map declares eight, and the number would
+ * describe the branch rather than the decision.
+ *
+ * Retaining it also broke the verdict. `classify` reads a clean run as quiet
+ * only when every count is zero, so a branch touching one declined path exited
+ * 0 and still reported as carrying findings.
  */
 function labelCoverageCounts(
   record: unknown,
@@ -349,10 +353,7 @@ function labelCoverageCounts(
   const root = asObject(record)
   if (root === undefined) return undefined
 
-  return allOf({
-    uncovered: lengthOf(root.uncovered),
-    declined: lengthOf(root.declined),
-  })
+  return allOf({ uncovered: lengthOf(root.uncovered) })
 }
 
 function findingsOnly(record: unknown): Record<string, number> | undefined {
@@ -533,6 +534,8 @@ export const AUDITS: readonly AuditSpec[] = [
     // shared. The changed set the rows are read against is the branch's, which
     // is what makes a clean trunk report zero rather than nothing.
     corpus: 'tracked',
+    // Only `uncovered` is retained, for the reason its extractor states.
+    //
     // The one reason that means this project declares no surfaces to cover,
     // which is the recorded decision that a project without a map is labelled
     // silently. A tracked corpus normally allows nothing absent, and this is

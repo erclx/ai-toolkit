@@ -278,6 +278,21 @@ describe('reading counts out of each record shape', () => {
     expect(countsFor(specFor('context'), null)).toBeUndefined()
     expect(countsFor(specFor('tasks'), 'not an object')).toBeUndefined()
   })
+
+  /**
+   * The declined paths are whichever declined rows a branch touched rather
+   * than a measure of the map, so retaining the count would put a number
+   * describing the branch into a baseline that compares trees.
+   */
+  it('should count the uncovered paths and leave the declined ones out', () => {
+    const record = {
+      labels: ['cli'],
+      declined: [{ path: 'CHANGELOG.md', reason: 'release-managed' }],
+      uncovered: ['infra/main.tf'],
+    }
+
+    expect(countsFor(specFor('labels'), record)).toEqual({ uncovered: 1 })
+  })
 })
 
 describe('classifying an audit run by its exit code', () => {
@@ -295,6 +310,21 @@ describe('classifying an audit run by its exit code', () => {
       filesPastDepth: 0,
       flatParagraphs: 0,
     })
+  })
+
+  /**
+   * A declined path moves no count, so a branch touching one and covering
+   * everything else is quiet. Counting it read the run as carrying findings
+   * while the verb had exited 0 and named none.
+   */
+  it('should read a branch touching only declined paths as clean', () => {
+    const record = JSON.stringify({
+      labels: ['cli'],
+      declined: [{ path: 'CHANGELOG.md', reason: 'release-managed' }],
+      uncovered: [],
+    })
+
+    expect(classify(specFor('labels'), 0, record).status).toBe('clean')
   })
 
   it('should read a gating exit as a finding that fails the aggregate', () => {
