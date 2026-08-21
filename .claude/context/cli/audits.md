@@ -1,6 +1,6 @@
 ---
 title: Audits
-description: The aggregate that runs them all with its retained baseline, then the context audit, the markdown audit, the skill audit, the comment census, the board and record validators, and the test-order report
+description: The aggregate that runs them all with its retained baseline, then the context audit, the markdown audit, the skill audit, the comment census, the board and record validators, the test-order report, and the two state-scoped checks over the shipped tree and the dependency set
 ---
 
 # Audits
@@ -13,21 +13,23 @@ Each splits its engine by reason to change rather than by size. `src/comments/` 
 
 ## The audit set
 
-`aitk audits run` runs twelve verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
+`aitk audits run` runs fourteen verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
 
 Reading each shape was chosen over forcing a common envelope. Every record already has consumers naming its keys, and one of them refuses to rename a key for a gain of one word, so an envelope is a breaking change bought for tidiness. The cost is one extractor per verb in `src/audits/catalog.ts`, and an extractor meeting a record it cannot read returns nothing rather than zero, on the ground the context audit already states about `--citations-only`.
 
-The twelve run together rather than in sequence. They walk separate trees and share no state, so the whole set finishes in 0.8 seconds of wall clock against 4.4 seconds of processor, measured on the authoring machine at `bd2be81a`. That figure is what settles whether `bun run check` can afford the stage, and it sits under every other stage in that script.
+They run together rather than in sequence. They walk separate trees and share no state, so the set finished in 0.8 seconds of wall clock against 4.4 seconds of processor, measured at twelve verbs on the authoring machine at `bd2be81a`. That figure is what settles whether `bun run check` can afford the stage, and it sits under every other stage in that script. `aitk deps audit` is the first member whose latency is not this machine's, since it reaches an advisory index rather than a tree, so the figure above no longer bounds the set.
 
 ### What the aggregate gates on
 
-Exactly the three findings that already fail a push, and nothing else. An unresolved context citation, a banned character, word, or spelling, and a skill folder carrying no `REQUIREMENT.md` are facts. Every other measure it prints is a judgment, and an aggregate exiting non-zero on any finding would erase the recorded split in one line.
+Four findings. An unresolved context citation, a banned character, word, or spelling, a skill folder carrying no `REQUIREMENT.md`, and a credential-shaped value in the tree this repository publishes are facts. Every other measure it prints is a judgment, and an aggregate exiting non-zero on any finding would erase the recorded split in one line.
+
+Three of the four are the set `scripts/core/verify.sh` already fails a push on, and the secret scan is the one gate with no stage behind it. The rule the original wording encoded was that a gate is not widened as a side effect of registering a measure, and that rule is intact: the addition was decided on the fact-or-judgment test, argued from the architecture record's own ranking of content that leaves the repository, and asserted whole in `src/audits/catalog.test.ts` so a fifth cannot arrive quietly. Read the count in that test as the guard rather than as the policy.
 
 The catalog holds that decision rather than the exit code, because a reporting verb sets `2` on findings it deliberately does not gate on. Reading the code alone would promote every one of them to a gate the first time the aggregate ran.
 
 A fourth kind of failure needed a code of its own. An audit that did not report is a defect in the run rather than in the tree, and folding it into either the clean exit or the findings exit says the wrong thing about which is broken. It takes `3`, the code `aitk markdown audit` already uses for a corpus walked with nothing looked for.
 
-That code then had to stop firing on the ordinary case. Six of the twelve read gitignored folders, which no fresh clone and no CI run carries, so the first shape reported `incomplete` on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore takes `absent`, which reports and moves nothing.
+That code then had to stop firing on the ordinary case. Six of the set read gitignored folders, which no fresh clone and no CI run carries, so the first shape reported `incomplete` on every run a contributor did not make on their own machine. A per-machine corpus refusing because its folder is missing therefore takes `absent`, which reports and moves nothing. The advisory check joined that allowance later on its own reasoning, since an index it could not reach is the same ordinary absence wearing a network instead of a disk.
 
 The allowance covers that one pairing and no other. A tracked tree that cannot be found is a broken checkout, and a per-machine verb refusing for any other reason is a broken verb, so both stay `unmeasured`. Every run states the measured count against the absent one, since a report naming only what passed is a claim about a set it never read.
 
@@ -428,3 +430,35 @@ The replay is also what found the hand-recorded bash figures unreproducible, whi
 - Three verdicts rather than two. A module the range modified rather than added goes to `unclassified` with its reason stated, because a refactor and a new behavior cannot be told apart from history, and counting it as a pass reports a healthy repository nobody measured.
 - Coverage is stated on every run through `scope` and the read-past count. The rule speaks to every behavior and the verb speaks to `.ts` and `.tsx` pairs, so a summary omitting that is a stronger claim than the measure supports.
 - Measured against the 40 commits behind `57ee7467`, the report found 7 satisfied pairs, 0 findings, 18 unclassified changes, and 125 paths read past. Zero findings is the expected first reading rather than a broken check, and the unclassified figure being the largest is the honest shape.
+
+## The state-scoped checks
+
+`aitk secrets scan` and `aitk deps audit` are the first two members whose subject is what is already committed rather than what is arriving. Every review surface a session can reach is scoped to a range, so a risk that predates that range is invisible to all of them by construction, and these two close that by scope rather than by subject. Neither re-reads a diff anywhere, which is what keeps them complementary to the review surfaces instead of competing with them.
+
+### The corpus is the package's own files field
+
+The secret scan reads what `package.json` publishes rather than a list of trees kept beside the check. That field is already the single statement of which trees leave this repository, so a second list would answer the same question and drift out of step with the publish. It also carries the negations the publish makes, which is what puts `scripts/sandbox`, `scripts/eval`, `src/capture`, and every test file out of scope by the rule that keeps them out of the tarball rather than by an exclusion the check invented. Hardcoding the shipped trees was the alternative, and it is the one that would have needed an exclusion list for the fixture trees on day one.
+
+The plugin route lands in the same corpus without a second mechanism. `claude/` is a `files` entry, and its `standards` and `snippets` symlinks resolve into trees the field lists in their own right. The two symlinks themselves fail to open as text and are counted under skipped, which costs no coverage, since the check reads the real trees directly.
+
+### Keying on values is what empties the exclusion set
+
+Every pattern matches an issued value and none matches a word. A scan keyed on `password`, `secret`, or `token` fires on the environment reads, the workflow inputs, and the prose naming those things, and this repository ships all three, so the keying rather than the exemption mechanism is what decides how much noise there is to exclude. Measured on 2026-08-21 across 544 files, the shipped tree produced zero findings with nothing exempted.
+
+That measurement is what settled the exemption design. A path allow-list was declined because the noise it would target is word-keyed and not confined to the fixture trees, so it would have hidden part of the noise and none of the risk. The inline marker in `src/secrets/marker.ts` ships with an empty user set instead, shaped on the `stub: true` precedent: only a marker naming a reason counts, so a typo cannot mute a finding, and the exemption travels with the line rather than sitting in a list away from it. Add the first marker when the first false positive appears rather than in anticipation of one.
+
+The rule set is in scope like any other file, so `src/secrets/scan.test.ts` asserts that no pattern matches the text of its own definition. A pattern that did would report this repository on every run and train a reader to mute the check.
+
+### Upstream is a third corpus, not a variant of the other two
+
+The advisory check shells the runtime's own command rather than carrying an index. A vendored database would be a second corpus to keep current, and what this check is worth is the report rather than the data. That buys one failure mode nothing else in the set carries, since the command reaches a network and an unreachable index has to be told apart from a tree with nothing against it. Exit codes cannot draw that line, because `bun audit` exits non-zero on advisories found and on a lookup that failed alike, so the record on stdout is what decides.
+
+Which refusals read as an absence moved onto the spec while that was being settled. `absentReasons` overrides what the corpus would answer, and the secret scan is the reason it exists: its corpus is tracked, a tracked corpus admits no absence at all, and a project with no `files` field refuses on every run. That project is not a broken checkout but an application that publishes nothing, which is where most targets installing this CLI sit, so the first shape pinned the aggregate at `incomplete` in all of them permanently. Deriving the set from the corpus alone was the design that produced it, and the corpus answers a different question than this one. `no-git` stays out of the override, since a tree git cannot list is broken in the way the tracked default assumes.
+
+`Corpus` gained `upstream` for it rather than borrowing either existing value. The count moves when someone publishes rather than when someone edits here, so a retained baseline would report growth against a tree nobody touched, which is the risk the plan named and the reason it stays out of the record beside gitignored scratch. The same value answers the offline run: an index this machine could not reach reports `absent` and moves no verdict, where reading it as unmeasured would pin the aggregate at `incomplete` on every machine without a network.
+
+Adding the member cost two consumers a branch each. `compareBaseline` reports an `upstream` delta kind rather than mislabelling it per-machine, and the report line says growth is not this tree rather than saying no baseline is kept for a machine. `AuditResult` carries `corpus` alongside `tracked` for that reason: the boolean says whether a count is retained and cannot say why, and the two callers needed the why.
+
+### What was deliberately not built
+
+A general state-scoped bug scanner. Change-scoped correctness review already exists and a state-scoped bug scan is a different product from the one asked for, so the boundary here is scope rather than subject and widening it to every source file buys tooling this repository does not own. The shipped seeds and golden configs are the part nothing else is positioned to check, which is why that corpus went first.
