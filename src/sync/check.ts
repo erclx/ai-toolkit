@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { basename, join, sep } from 'node:path'
 import { execa } from 'execa'
+import { gitEnv } from '@/git-env'
 import { createGovAdapter, rulesSourceDir } from '@/gov/adapter'
 import { loadGovStack } from '@/gov/stacks'
 import { createSnippetsAdapter } from '@/snippets/adapter'
@@ -620,7 +621,7 @@ async function isAncestor(
   const result = await execa(
     'git',
     ['-C', root, 'merge-base', '--is-ancestor', candidate, reference],
-    { reject: false },
+    { reject: false, env: gitEnv(), extendEnv: false },
   )
 
   return result.exitCode === 0
@@ -629,9 +630,18 @@ async function isAncestor(
 /**
  * A toolkit outside a git clone, or a stamped revision this clone has never
  * seen, yields no range. The per-file report still stands on its own.
+ *
+ * Scrubbed through `gitEnv` because a git hook exports `GIT_DIR` and its
+ * siblings into every process it runs and they outrank `-C`. A check invoked
+ * from a hook would otherwise diff the hook's repository and report a range for
+ * a tree nobody asked about, which reads as an ordinary answer.
  */
 async function read(root: string, args: readonly string[]): Promise<string> {
-  const result = await execa('git', ['-C', root, ...args], { reject: false })
+  const result = await execa('git', ['-C', root, ...args], {
+    reject: false,
+    env: gitEnv(),
+    extendEnv: false,
+  })
   return result.exitCode === 0 ? result.stdout : ''
 }
 
