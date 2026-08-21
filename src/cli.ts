@@ -26,6 +26,8 @@ import { register as markdown } from '@/commands/markdown'
 import { register as records } from '@/commands/records'
 import { register as sessions } from '@/commands/sessions'
 import { register as audits } from '@/commands/audits'
+import { register as secrets } from '@/commands/secrets'
+import { register as deps } from '@/commands/deps'
 import { register as upgrade } from '@/commands/upgrade'
 import { readInstalled, UNKNOWN_LABEL } from '@/version/installed'
 import { palette } from '@/ui'
@@ -63,6 +65,8 @@ function showHelp(): void {
     `${GREY}│${NC}    markdown [cmd]     ${GREY}# Report markdown against the attribute standards (audit)${NC}`,
     `${GREY}│${NC}    records [cmd]      ${GREY}# Session records under .claude/ (validate, size, push, pull)${NC}`,
     `${GREY}│${NC}    sessions [cmd]     ${GREY}# Resolve live sessions to worktree and branch (list)${NC}`,
+    `${GREY}│${NC}    secrets [cmd]      ${GREY}# Read the shipped tree for credential-shaped values (scan)${NC}`,
+    `${GREY}│${NC}    deps [cmd]         ${GREY}# Read the resolved dependency set for advisories (audit)${NC}`,
     `${GREY}│${NC}    audits [cmd]       ${GREY}# Run every health check as one set (run, list)${NC}`,
     `${GREY}│${NC}    upgrade            ${GREY}# Reinstall the CLI globally with the manager that installed it${NC}`,
     `${GREY}│${NC}`,
@@ -104,6 +108,8 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk records size --json`,
     `${GREY}│${NC}    aitk records push --json`,
     `${GREY}│${NC}    aitk sessions list --json`,
+    `${GREY}│${NC}    aitk secrets scan --json`,
+    `${GREY}│${NC}    aitk deps audit --json`,
     `${GREY}│${NC}    aitk audits run --json`,
     `${GREY}│${NC}    aitk upgrade --json`,
     `${GREY}└${NC}`,
@@ -148,6 +154,8 @@ context(program)
 markdown(program)
 records(program)
 sessions(program)
+secrets(program)
+deps(program)
 audits(program)
 upgrade(program)
 

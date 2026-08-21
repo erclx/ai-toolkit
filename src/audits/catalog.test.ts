@@ -28,16 +28,29 @@ describe('the audit catalog', () => {
   })
 
   /**
-   * The three that gate are the three `verify.sh` already runs. A fourth
-   * arriving here silently widens what fails a push, which is the split the
-   * audits entry records and the one this aggregate exists not to move.
+   * Three of these are the ones `verify.sh` already runs, and `secrets` is the
+   * one entry gating without a stage behind it, added on the recorded test
+   * that a fact gates and a judgment reports. The list is asserted whole so a
+   * fifth cannot arrive as a side effect of registering a measure, which is
+   * the widening this aggregate exists not to do quietly.
    */
-  it('should gate on exactly the three checks that already gate a push', () => {
+  it('should gate on exactly the checks whose findings are facts', () => {
     const gating = AUDITS.filter((audit) => audit.gatingExits.length > 0).map(
       (audit) => audit.id,
     )
 
-    expect(gating.sort()).toEqual(['context', 'markdown', 'skills'])
+    expect(gating.sort()).toEqual(['context', 'markdown', 'secrets', 'skills'])
+  })
+
+  /**
+   * An advisory is published rather than committed, so recording it would
+   * write a floor that moves with no edit here, and an index this run could
+   * not reach is an absence rather than a broken checkout.
+   */
+  it('should treat the advisory index as an upstream corpus', () => {
+    expect(specFor('deps').corpus).toBe('upstream')
+    expect(isTracked(specFor('deps'))).toBe(false)
+    expect(specFor('deps').gatingExits).toEqual([])
   })
 
   it('should treat a gitignored record folder as a per-machine corpus', () => {
@@ -334,6 +347,100 @@ describe('classifying an audit run by its exit code', () => {
     )
 
     expect(result.status).toBe('absent')
+  })
+
+  /**
+   * An offline run reaches no advisory index through no fault of this tree, so
+   * it is the same ordinary absence a gitignored folder is. Reading it as
+   * unmeasured would pin the verdict at incomplete on every machine without a
+   * network, which is the permanent signal the case above already rejects.
+   */
+  it('should read an unreachable advisory index as absent', () => {
+    const result = classify(
+      specFor('deps'),
+      1,
+      '{"reason":"no-record","message":"lookup failed"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
+  /**
+   * Every reason that verb refuses for is an absence: no index reached, no
+   * JavaScript project, no resolved dependency set. A project that is none of
+   * those is the ordinary case in a target, so reading any of the three as
+   * unmeasured would pin the aggregate at `incomplete` there on every run.
+   */
+  it.each(['no-record', 'no-lockfile', 'no-manifest'])(
+    'should read the advisory refusal %s as absent',
+    (reason) => {
+      const result = classify(
+        specFor('deps'),
+        1,
+        JSON.stringify({ reason, message: 'nothing to measure' }),
+      )
+
+      expect(result.status).toBe('absent')
+    },
+  )
+
+  it('should read an undocumented advisory refusal as unmeasured', () => {
+    const result = classify(
+      specFor('deps'),
+      1,
+      '{"reason":"exploded","message":"something else"}',
+    )
+
+    expect(result.status).toBe('unmeasured')
+  })
+
+  /**
+   * A tree git cannot list is a broken checkout, so the scan reporting nothing
+   * over it is a defect in the run rather than a project with no shipped tree.
+   */
+  it('should read a secret scan over a tree git cannot list as unmeasured', () => {
+    const result = classify(
+      specFor('secrets'),
+      1,
+      '{"reason":"no-git","message":"git could not list this tree"}',
+    )
+
+    expect(result.status).toBe('unmeasured')
+  })
+
+  /**
+   * Most projects installing this CLI publish nothing and carry no `files`
+   * field, so reading that as a broken corpus would pin every one of them at
+   * `incomplete` on every run. The spec names both reasons for that case.
+   */
+  it('should read a project that publishes nothing as absent', () => {
+    const result = classify(
+      specFor('secrets'),
+      1,
+      '{"reason":"no-manifest","message":"No package.json carrying a files field"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
+  it('should read a files field matching nothing as absent', () => {
+    const result = classify(
+      specFor('secrets'),
+      1,
+      '{"reason":"no-shipped-files","message":"matched nothing git lists"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
+  it('should read a found secret as a finding that is a fact', () => {
+    const result = classify(
+      specFor('secrets'),
+      2,
+      '{"findings":[{"file":"a"}]}',
+    )
+
+    expect(result.status).toBe('finding')
   })
 
   /**

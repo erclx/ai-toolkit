@@ -35,12 +35,14 @@ function result(
   id: string,
   counts: Record<string, number> | undefined,
   tracked = true,
+  corpus: AuditResult['corpus'] = tracked ? 'tracked' : 'per-machine',
 ): AuditResult {
   return {
     id,
     label: id,
     status: counts === undefined ? 'unmeasured' : 'reported',
     tracked,
+    corpus,
     exitCode: 0,
     counts,
   }
@@ -158,6 +160,28 @@ describe('comparing a run against the recorded baseline', () => {
     ])
 
     expect(deltas).toEqual([{ id: 'records-plans', kind: 'per-machine' }])
+  })
+
+  /**
+   * Named for its own corpus rather than folded into per-machine. Both stay
+   * out of the record, and the reasons are opposites: one count describes a
+   * disk nobody else has, and this one moves when somebody publishes.
+   */
+  it('should leave an upstream check out under its own kind', () => {
+    const deltas = compareBaseline(recorded, [
+      result('deps', { 'advisories-high': 21 }, false, 'upstream'),
+    ])
+
+    expect(deltas).toEqual([{ id: 'deps', kind: 'upstream' }])
+  })
+
+  it('should keep an upstream check out of a recorded baseline', () => {
+    const baseline = baselineFrom(
+      [result('deps', { 'advisories-high': 21 }, false, 'upstream')],
+      { recordedAt: '2026-08-21', commit: 'abc1234' },
+    )
+
+    expect(baseline.checks).toEqual({})
   })
 
   it('should report a check that did not report as unmeasured', () => {

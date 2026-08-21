@@ -1,4 +1,6 @@
+import type { AuditRefusal } from '@/deps/audit'
 import type { ValidateRefusal as RecordRefusal } from '@/records/validate'
+import type { ScanRefusal } from '@/secrets/scan'
 import type { ValidateRefusal as BoardRefusal } from '@/tasks/validate'
 
 /**
@@ -16,6 +18,17 @@ export type Corpus =
   | 'tracked'
   /** Gitignored session scratch, so the numbers are one machine's alone. */
   | 'per-machine'
+  /**
+   * Read from an index off this machine, so the count moves when someone
+   * publishes rather than when someone edits here.
+   *
+   * Its own member rather than either of the two above. A baseline would
+   * record growth nobody caused, which is what keeps it out of the retained
+   * set alongside per-machine scratch, and an index this run could not reach
+   * is an ordinary absence rather than the broken checkout a missing tracked
+   * tree would be.
+   */
+  | 'upstream'
 
 export type AuditStatus =
   /** The audit reported and every count it produced is zero. */
@@ -48,6 +61,17 @@ export interface AuditSpec {
   readonly gatingExits: readonly number[]
   readonly corpus: Corpus
   /**
+   * Refusal reasons that mean this audit has no corpus here rather than that
+   * it broke, overriding what the corpus alone would allow.
+   *
+   * Present only where the corpus answers wrongly. A tracked corpus normally
+   * allows nothing, since a tree that ships to targets and cannot be found is
+   * a broken checkout, and the secret scan is the exception: a project that
+   * publishes nothing has no shipped tree to read, which is an ordinary state
+   * rather than a defect.
+   */
+  readonly absentReasons?: readonly string[]
+  /**
    * Pulls the counts worth retaining out of this verb's record.
    *
    * Returns `undefined` when the record does not carry the keys it reads,
@@ -62,7 +86,10 @@ export interface AuditResult {
   readonly id: string
   readonly label: string
   readonly status: AuditStatus
+  /** Retained by the baseline, which is `tracked` alone. */
   readonly tracked: boolean
+  /** Why it is or is not retained, which `tracked` alone cannot say. */
+  readonly corpus: Corpus
   readonly exitCode: number
   readonly counts?: Record<string, number>
   /** Why the audit did not report, present only on `unmeasured`. */
@@ -271,6 +298,26 @@ function boardCounts(record: unknown): Record<string, number> | undefined {
   })
 }
 
+/**
+ * Reads the advisory verb's per-severity object rather than a total.
+ *
+ * A single count folds a critical advisory into a low one, and the response to
+ * the two differs. The keys are read off the record rather than listed here,
+ * so a severity the index adds is carried instead of silently dropped.
+ */
+function advisoryCounts(record: unknown): Record<string, number> | undefined {
+  const severities = asObject(asObject(record)?.severities)
+  if (severities === undefined) return undefined
+
+  const counts: Record<string, number> = {}
+  for (const [severity, value] of Object.entries(severities)) {
+    if (typeof value !== 'number') return undefined
+    counts[`advisories-${severity}`] = value
+  }
+
+  return counts
+}
+
 function findingsOnly(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -318,10 +365,12 @@ const RECORD_KINDS: readonly (readonly [string, Corpus])[] = [
 /**
  * Every audit the aggregate runs.
  *
- * `context`, `markdown`, and `skills` are the three that gate, which is exactly
- * the set `scripts/core/verify.sh` already fails a push on. Adding a fourth
- * here widens what fails a push without anyone deciding to, and the split this
- * repository records gates a fact and reports a judgment.
+ * `context`, `markdown`, and `skills` gate because `scripts/core/verify.sh`
+ * already fails a push on each. `secrets` is the one entry that gates without
+ * a stage behind it, added deliberately rather than as a side effect, since a
+ * credential in the published tree is a fact and the split this repository
+ * records gates a fact and reports a judgment. Weigh any further addition
+ * against that test rather than against the count.
  *
  * Each verb runs once in its fullest form. Running the gating half separately
  * would walk the same tree twice for a number the full record already carries.
@@ -386,6 +435,38 @@ export const AUDITS: readonly AuditSpec[] = [
     corpus: 'tracked',
     counts: testOrderCounts,
   },
+  {
+    id: 'secrets',
+    label: 'Shipped tree secrets',
+    argv: ['secrets', 'scan', '--json'],
+    // The fourth gate, and the first added since the note above was written.
+    // A credential-shaped value sitting in the tree this repository publishes
+    // is a fact rather than a judgment, which is the test that note asks any
+    // addition to pass. It is decided here and stated in the context entry
+    // rather than arriving as a side effect of registering a measure.
+    gatingExits: [EXIT_FINDINGS],
+    corpus: 'tracked',
+    // A project that publishes nothing has no shipped tree, which is where
+    // most targets installing this CLI sit, so both reasons are an absent
+    // corpus rather than a broken one. Without this the aggregate reports
+    // `incomplete` on every run in every such project and never changes,
+    // which is the permanent signal the per-machine allowance exists against.
+    // `no-git` is deliberately absent: a tree git cannot list is broken.
+    absentReasons: ['no-manifest', 'no-shipped-files'] satisfies ScanRefusal[],
+    counts: findingsOnly,
+  },
+  {
+    id: 'deps',
+    label: 'Dependency advisories',
+    argv: ['deps', 'audit', '--json'],
+    // Reports rather than gates, on the same split. A published advisory is a
+    // fact about the index and a judgment about this tree, since the upgrade
+    // may not exist yet, and a push failing on one teaches a contributor to
+    // route around the stage while nothing about the dependency has changed.
+    gatingExits: [],
+    corpus: 'upstream',
+    counts: advisoryCounts,
+  },
 ]
 
 export function auditFor(id: string): AuditSpec | undefined {
@@ -433,6 +514,25 @@ const ABSENT_REASONS: readonly (RecordRefusal | BoardRefusal)[] = [
 ]
 
 /**
+ * Every reason the advisory verb refuses for, all of which are an absence.
+ *
+ * An index it could not reach, a project that is not JavaScript, and one whose
+ * dependencies were never resolved are three states in which there is nothing
+ * to measure rather than something broken. The verb has no fourth reason, so
+ * this is its whole union rather than a chosen subset, and typing it that way
+ * fails the build if a later reason arrives without this decision being made.
+ *
+ * Typed against that module's own union for the reason the record reasons are:
+ * a literal here would go on matching nothing after a rename and turn every
+ * offline run back into an unmeasured audit.
+ */
+const ADVISORY_ABSENT_REASONS: readonly AuditRefusal[] = [
+  'no-record',
+  'no-lockfile',
+  'no-manifest',
+]
+
+/**
  * Whether a refusal is a folder this machine never created rather than a break.
  *
  * Every gitignored record folder is absent on a fresh clone and in CI, so six
@@ -443,15 +543,25 @@ const ABSENT_REASONS: readonly (RecordRefusal | BoardRefusal)[] = [
  * A tracked corpus gets no such allowance. That tree ships to targets, so a
  * checkout that cannot find it is broken, and reading the absence as ordinary
  * would report a pass over a corpus nobody measured.
+ *
+ * An upstream corpus takes the allowance for a different reason. Its index is
+ * off this machine, so an offline run reaches nothing through no fault of the
+ * tree, and pinning the verdict at incomplete every time the network is down
+ * is the same signal-nobody-reads failure the per-machine case already names.
  */
+function absentReasonsFor(spec: AuditSpec): readonly string[] {
+  if (spec.absentReasons !== undefined) return spec.absentReasons
+  if (spec.corpus === 'per-machine') return ABSENT_REASONS
+  if (spec.corpus === 'upstream') return ADVISORY_ABSENT_REASONS
+  return []
+}
+
 function isExpectedAbsence(spec: AuditSpec, record: unknown): boolean {
-  if (spec.corpus !== 'per-machine') return false
+  const allowed = absentReasonsFor(spec)
+  if (allowed.length === 0) return false
 
   const reason = asObject(record)?.reason
-  return (
-    typeof reason === 'string' &&
-    (ABSENT_REASONS as readonly string[]).includes(reason)
-  )
+  return typeof reason === 'string' && allowed.includes(reason)
 }
 
 /**
@@ -471,6 +581,7 @@ export function classify(
     id: spec.id,
     label: spec.label,
     tracked: isTracked(spec),
+    corpus: spec.corpus,
     exitCode,
   }
 

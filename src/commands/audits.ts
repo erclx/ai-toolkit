@@ -244,7 +244,11 @@ function countLine(counts: Record<string, number>): string {
  * against an absent baseline says the same as a corpus that did not move.
  */
 function deltaLine(delta: Delta): string | undefined {
-  if (delta.kind === 'per-machine' || delta.kind === 'unmeasured') {
+  if (
+    delta.kind === 'per-machine' ||
+    delta.kind === 'upstream' ||
+    delta.kind === 'unmeasured'
+  ) {
     return undefined
   }
   if (delta.kind === 'unrecorded') return 'No recorded baseline to compare'
@@ -301,7 +305,11 @@ function report(
     }
 
     if (!result.tracked) {
-      logInfo('Per-machine corpus, so no baseline is kept')
+      logInfo(
+        result.corpus === 'upstream'
+          ? 'Upstream index, so no baseline is kept and growth is not this tree'
+          : 'Per-machine corpus, so no baseline is kept',
+      )
       continue
     }
 
@@ -335,7 +343,7 @@ function report(
   // Stated on every run, including a clean one. A count of what passed reads as
   // a verdict on the whole set unless the run also says what it never reached.
   logInfo(
-    `${summary.audited} of ${results.length} corpora measured, ${summary.absent} absent on this machine`,
+    `${summary.audited} of ${results.length} corpora measured, ${summary.absent} absent or unreachable from this machine`,
   )
 
   outro()

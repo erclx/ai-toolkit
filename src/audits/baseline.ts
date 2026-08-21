@@ -53,6 +53,8 @@ export type Delta =
   | { readonly id: string; readonly kind: 'unrecorded' }
   /** Gitignored scratch, whose counts are one machine's and answer nobody else. */
   | { readonly id: string; readonly kind: 'per-machine' }
+  /** A network index, whose count moves when someone publishes rather than edits. */
+  | { readonly id: string; readonly kind: 'upstream' }
   /** The audit did not report, so there is nothing to compare. */
   | { readonly id: string; readonly kind: 'unmeasured' }
 
@@ -62,7 +64,9 @@ export type Delta =
  * Only a tracked corpus is retained. A gitignored record folder holds one
  * machine's session scratch, so committing its counts writes a floor no other
  * clone can reproduce, and every contributor would read a regression against a
- * number that describes somebody else's disk.
+ * number that describes somebody else's disk. An upstream count is left out
+ * for the mirror-image reason: it moves when an advisory is published, so a
+ * recorded floor would report growth against a tree nobody touched.
  *
  * An audit that did not report is left out rather than written as zero. Zeros
  * there record a clean corpus nobody measured, and the next run reads its real
@@ -95,6 +99,9 @@ export function compareBaseline(
   results: readonly AuditResult[],
 ): Delta[] {
   return results.map((result) => {
+    if (result.corpus === 'upstream') {
+      return { id: result.id, kind: 'upstream' as const }
+    }
     if (!result.tracked) return { id: result.id, kind: 'per-machine' as const }
     if (result.counts === undefined) {
       return { id: result.id, kind: 'unmeasured' as const }
