@@ -130,13 +130,23 @@ Each domain holds its own toolkit commit, so syncing governance today does not m
 
 A project that has never synced under a toolkit new enough to write a stamp falls back to the toolkit's own git history. Installed content matching any version that history published proves the file untouched, so it reports `stale` naming the commit it came from, and content matching no published version stays `drifted`. That fallback needs the toolkit as a git checkout. Installed from the registry it ships source without history, and the report says attribution was unavailable rather than reading every file as a local edit.
 
-Four further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `aitk:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated` and handed to `aitk:migration-standards`.
+Further causes sit outside the per-domain scan, each naming something that walk cannot see. A seed the project edited is reported under `seeds` and reconciled with `aitk:claude-seed-sync`, since no sync command touches a seed. A file a newer seed folder replaced is reported under `superseded`, such as `.claude/TASKS.md` against the `.claude/tasks/` that now ships, and nothing moves it because the content is the project's own. A domain sitting at the root layout with nothing under `.claude/` is reported under `unmigrated` and handed to `aitk:migration-standards`.
 
 That third one matters most on an older project. Before it existed, a target holding `snippets/` at its root reported zero entries for that domain, so a project that had never migrated was indistinguishable from one that was fully current. It covers snippets alone, since a root `standards/` folder in a target is the project's own authoring surface and nothing proposes moving it.
 
+#### Rules you never received
+
+A sync refreshes the files you already hold and adds none, so your rule set is frozen at the date you installed governance while every file in it reports as current. `newRules` names the rules the toolkit has authored since then, which is the one section that reads your absence rather than your contents.
+
+Take a clean section as reporting rather than as delivering. Nothing here installs, and it counts toward nothing, so pick the rules up with `aitk gov install <stack>` or take one with `--add <rule>`. That separation is deliberate: adopting a rule changes what your project is governed by, which is a choice a sync has no business making for you.
+
+The list is filtered to what your stack can receive, read off the rule folders you already carry plus the folders the base stack takes whole. A rule under `lang/` or `ui/` belongs to some stacks and not others, so an unfiltered list would name rules you can never install. A target that has never stamped governance reports nothing at all, since there is no date to measure against.
+
+This also closes the case where a rule arrives citing a sibling you do not have. A sync refreshing a rule can land a version pointing at a file it never installs, and the section names the missing sibling rather than the broken citation, which is enough to act on.
+
 #### What the toolkit stopped shipping
 
-The fourth cause runs backwards. Every one above starts from what the toolkit ships and asks whether the target matches, so a folder the toolkit dropped appears in none of them. `reverse` walks the target instead and reports a folder sitting at a top-level path the toolkit once shipped and has since deleted.
+The last cause runs backwards. Every one above starts from what the toolkit ships and asks whether the target matches, so a folder the toolkit dropped appears in none of them. `reverse` walks the target instead and reports a folder sitting at a top-level path the toolkit once shipped and has since deleted.
 
 Each entry carries a verdict, since a dropped folder and one the project wrote are the same bytes at the same path.
 
