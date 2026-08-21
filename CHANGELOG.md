@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/erclx/aitk/compare/v2.1.0...v2.2.0) (2026-08-21)
+
+
+### Features
+
+* **audits:** read committed state for risk, not only the diff ([#1086](https://github.com/erclx/aitk/issues/1086)) ([4f85350](https://github.com/erclx/aitk/commit/4f85350eb4bf4d905d675cc06c2c11ef34c59be1))
+
 ## [2.1.0](https://github.com/erclx/aitk/compare/v2.0.0...v2.1.0) (2026-08-20)
 
 
