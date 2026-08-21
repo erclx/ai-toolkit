@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.7.0](https://github.com/erclx/aitk/compare/v3.6.0...v3.7.0) (2026-08-21)
+
+
+### Features
+
+* **demo:** drive a running app to a recording and a still ([#1104](https://github.com/erclx/aitk/issues/1104)) ([6b2c4ca](https://github.com/erclx/aitk/commit/6b2c4ca4eb644a88b838a0ea11c5e4784f9d5774))
+* **review:** separate authorizing a spend from performing a run ([#1105](https://github.com/erclx/aitk/issues/1105)) ([01749a9](https://github.com/erclx/aitk/commit/01749a9cbccaf8ed82a311b44511b3068f7ed020))
+
 ## [3.6.0](https://github.com/erclx/aitk/compare/v3.5.0...v3.6.0) (2026-08-21)
 
 
