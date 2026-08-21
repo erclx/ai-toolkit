@@ -48,6 +48,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD`, and the installed version against the newest published (`--json`)      |
 | `aitk claude skills reach` | Report the shipped bodies citing a toolkit path no target project receives, exiting 2 on an unqualified one                                    |
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                        |
+| `aitk gov superseded`      | Report where the tree still asserts a value a changed convention no longer produces, keyed on the value (`--json`)                             |
 | `aitk secrets scan`        | Report credential-shaped values in the tree the package ships, keyed on issued values rather than on words (`--json`)                          |
 | `aitk deps audit`          | Report published advisories against the resolved dependency set, refusing rather than reporting clean when the index is unreachable (`--json`) |
 | `aitk labels audit`        | Report the labels a changed set earns from the pull request label map and the paths no row reaches (`--json`)                                  |
@@ -65,7 +66,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                                      |
 | `snippets`  | `list`, `install`, `sync`, `create`                                                                         |
 | `standards` | `list`, `<name>`                                                                                            |
-| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`                                                   |
+| `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                     |
 | `claude`    | `init`, `sync`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `setup [dest]` |
 | `wiki`      | `init`                                                                                                      |
 | `design`    | `render`                                                                                                    |
