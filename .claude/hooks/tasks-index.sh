@@ -30,8 +30,11 @@ case "$file_path" in
 *) exit 0 ;;
 esac
 
+# The board index covers the live folder alone. A shell pattern's wildcard
+# crosses a separator, so the guard above matches an archived task as well and
+# a regen fired on one would rebuild the index the archive was taken out of.
 case "$file_path" in
-*/.claude/tasks/index.md) exit 0 ;;
+*/.claude/tasks/index.md | */.claude/tasks/archive/*) exit 0 ;;
 esac
 
 # Report a missing CLI rather than exiting quietly. The path guard above already

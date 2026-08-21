@@ -330,6 +330,42 @@ for (const tree of TREES) {
   })
 }
 
+// The archive sits inside the folder it archives, and the path guard is a shell
+// pattern whose wildcard crosses a separator, so `*/.claude/tasks/*.md` reaches
+// an archived task as readily as a live one. A regen fired on the archive
+// rebuilds the live index off a folder the archive was taken out of.
+//
+// Silence alone would also be the reading if the hook stopped working, and the
+// acting case above is what separates the two: it proves a live task still
+// carries through to a verdict on the same tree.
+describe('tasks-index.sh archive exclusion', () => {
+  for (const tree of TREES) {
+    const hook = join(tree.dir, 'tasks-index.sh')
+
+    it.concurrent(
+      `should leave ${tree.label} silent on an archived task`,
+      async ({ expect }) => {
+        const result = await run(
+          hook,
+          payloadFor({
+            tool_input: {
+              file_path: join(
+                fixture,
+                'project/.claude/tasks/archive/v01.0-shipped.md',
+              ),
+            },
+            tool_name: 'Write',
+          }),
+        )
+
+        expect(result.stdout).toBe('')
+        expect(result.stderr).toBe('')
+        expect(result.code).toBe(0)
+      },
+    )
+  }
+})
+
 // Both copies shell out to the audit verb, and this one resolves two runners
 // where the seed resolves one. The describe below covers the seed.
 //
