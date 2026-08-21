@@ -9,6 +9,8 @@ Write the pre-compaction handoff for the current session. `${CLAUDE_SKILL_DIR}/.
 
 Any session writes one. Do not assert a role on invocation, and do not add a role's sections to a map written by a session holding no such role.
 
+Run every step rather than judging in advance that one has nothing to act on. The capture skill and the drift verb each answer for themselves, refusal included, and a refusal recorded is a result where a prediction of one is not. A project carrying none of the scaffolding either step reads is the case this fires on, and it is the case where skipping looks most defensible.
+
 ## Guards
 
 - If `git rev-parse --git-dir` does not resolve, stop: `❌ Not a git repository. A session map takes its filename from the branch.`
@@ -33,7 +35,7 @@ git log -1 --format=%H --before='<duration> ago'
 
 Round up rather than down. A ref older than the oldest load over-reports, and confirming a name it raises costs one read of that body, so the generous end is the safe one.
 
-Record what the verb names under `## Standing cautions`. A refusal is the boundary of what the verb can read rather than a fault, since it answers where the working directory carries `claude/skills/` with history behind it and refuses in a project consuming the plugin from a cache. Record the boundary and keep writing.
+Record what the verb names under `## Standing cautions`. A refusal is the boundary of what the verb can read rather than a fault, since it answers where the working directory carries `claude/skills/` with history behind it and refuses in a project consuming the plugin from a cache. Record the boundary the verb reported and keep writing, rather than the one it looked likely to report.
 
 ## Step 3: write the map
 

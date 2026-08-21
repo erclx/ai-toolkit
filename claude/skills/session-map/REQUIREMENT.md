@@ -15,6 +15,8 @@ The nearest description by wording writes a different artifact. Capture routes f
 
 The drift step is the one most specific to session length and the easiest to skip. It reads the commit the session started from, nothing on the machine records that commit, and a route that names the step without naming how to recover the ref ships an instruction nobody can follow.
 
+A step that reads a surface a project may not carry gets skipped on the reasoning that it has nothing to act on. A cold session run against a project with no `.claude/` tree skipped both the capture and the drift step and wrote its own rationale into the map, so the step the route exists to carry did not run on the first test from outside. The skip is worst where it looks most defensible, and a session that takes it quietly leaves a map indistinguishable from a conforming one.
+
 A capture fired the same way for every caller breaks the one caller the split leaves. An orchestrating session may write no tracked file, so its capture has to skip routing, and a route offering no way to say so leaves that reader running capture twice or routing facts the role forbids it to fold.
 
 A body that restates the sections, the frontmatter, or the numbered steps becomes a second source that drifts from the standard, which is the failure the split between the role writer and the core was made to remove rather than move.
@@ -34,6 +36,7 @@ A body that restates the sections, the frontmatter, or the numbered steps become
 ## Must not
 
 - Restate the standard's sections, frontmatter, or numbered steps
+- Skip a step by predicting what its skill or verb would have answered, rather than running it and recording what came back
 - Assert a role, or add a role's section to a map written by a session holding no such role
 - Fold the capture step's output into this skill's report
 - Take the worktree-local copy the editing tools offer in place of the main-root path
