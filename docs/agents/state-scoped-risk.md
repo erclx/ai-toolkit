@@ -28,6 +28,12 @@ The plugin reaches a target by a different route, loading live from `claude/` ra
 
 Three root files are read whether or not the field names them, being `package.json`, the readme, and the license, since npm packs those on every publish. A negation still removes one, because a field that excludes a file outranks the default that included it.
 
+### What the corpus leaves out
+
+The corpus answers what the package publishes, which is narrower than what the repository holds. Measured against this repository on 2026-08-21, the scan read 544 files and left 593 of the 1139 git lists unread. Those include everything under `.claude/`, `wiki/`, and `internal/`, the workflow definitions under `.github/`, and the trees the publish negations remove, being `scripts/sandbox/`, `scripts/eval/`, `src/capture/`, and every test file.
+
+A public repository makes that gap readable by anyone, so a clean run means no credential in the published tree rather than none in the repository. The run states the number on every pass, including a clean one, so the bound travels with the verdict. Widening the corpus to every tracked file is a separate decision, since the row this implements puts the shipped tree first on the record's rule that content leaving the repository gates harder than content that stays.
+
 ### What it keys on
 
 Every pattern matches an issued value and none of them matches a word. A scan keyed on `password`, `secret`, or `token` fires on the environment reads, the workflow inputs, and the prose that name those things, and this repository ships all three. Keying on values instead is what makes the exclusion set empty: measured across the shipped tree on 2026-08-21, 544 files produced zero findings with nothing exempted.
@@ -55,9 +61,19 @@ Exit codes are `0` when the shipped tree carries no credential-shaped value, `1`
 
 This is the one entry in `aitk audits run` that gates without a `verify.sh` stage behind it. A credential in the published tree is a fact rather than a judgment, which is the test the catalog asks any gating addition to pass, and the architecture record already ranks content leaving the repository above content that stays.
 
-A refusal is never a clean tree. Three reasons produce one: no `package.json` carrying a `files` field, a tree git could not list, and a `files` field matching nothing git lists. Each says so and exits `1`, because zero findings over zero files reads in the report exactly like zero findings over the whole shipped tree.
+A refusal is never a clean tree. Five reasons produce one, and each exits `1`, because zero findings over zero files reads in the report exactly like zero findings over the whole shipped tree.
 
-Two of those three read as an absent corpus inside `aitk audits run` rather than as a break. A project that publishes nothing has no shipped tree, which is where most targets installing this CLI sit, so reporting them as unmeasured would pin the aggregate at `incomplete` there forever. A tree git cannot list keeps the harder reading, since that is a broken checkout.
+| Reason             | What it means                                                | In the aggregate |
+| ------------------ | ------------------------------------------------------------ | ---------------- |
+| `no-manifest`      | No `package.json`, so nothing is published from this tree    | absent           |
+| `no-publish`       | The manifest declares `private`, so it publishes nothing     | absent           |
+| `no-shipped-files` | The `files` field matched nothing git lists                  | absent           |
+| `no-files-field`   | A publish would pack the whole tree, and none of it was read | unmeasured       |
+| `no-git`           | git could not list the tree, so the corpus is unknown        | unmeasured       |
+
+The split turns on whether a corpus exists. The first three mean this project publishes nothing, which is where most targets installing this CLI sit, so reporting them as unmeasured would pin the aggregate at `incomplete` there forever.
+
+The last two mean a corpus exists and went unread, so neither is softened. `private` is what separates them, since a manifest with no `files` field publishes everything rather than nothing and the field alone cannot tell those apart. Declaring `private: true` is the way a project that never publishes says so.
 
 ## Advisories against the resolved dependencies
 
@@ -84,4 +100,6 @@ The same value decides what an offline run reports. An index this machine could 
 
 ## Reading either from a skill
 
-An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the `--json` record instead. The secret scan publishes `findings`, `files`, and `skipped`, and the advisory check publishes `advisories` and a `severities` object. A refusal from either publishes `reason` and `message` and no measurement keys at all, which is what separates it from a clean run.
+An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the `--json` record instead.
+
+The secret scan publishes `findings`, `files`, `skipped`, and `listed`, where `listed` is everything git reports so a consumer can state the bound alongside the verdict. The advisory check publishes `advisories` and a `severities` object. A refusal from either publishes `reason` and `message` and no measurement keys at all, which is what separates it from a clean run.

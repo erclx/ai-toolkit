@@ -446,13 +446,21 @@ export const AUDITS: readonly AuditSpec[] = [
     // rather than arriving as a side effect of registering a measure.
     gatingExits: [EXIT_FINDINGS],
     corpus: 'tracked',
-    // A project that publishes nothing has no shipped tree, which is where
-    // most targets installing this CLI sit, so both reasons are an absent
-    // corpus rather than a broken one. Without this the aggregate reports
-    // `incomplete` on every run in every such project and never changes,
-    // which is the permanent signal the per-machine allowance exists against.
-    // `no-git` is deliberately absent: a tree git cannot list is broken.
-    absentReasons: ['no-manifest', 'no-shipped-files'] satisfies ScanRefusal[],
+    // The three reasons that mean this tree publishes nothing, which is where
+    // most targets installing this CLI sit. Without the allowance the
+    // aggregate reports `incomplete` on every run in every such project and
+    // never changes, which is the permanent signal the per-machine allowance
+    // exists against.
+    //
+    // Two reasons are deliberately left out, and both are a corpus that exists
+    // and went unread. `no-git` is a broken checkout, and `no-files-field` is a
+    // publish that would pack the whole tree, so calling either an absence
+    // would report a pass over a shipped tree nobody measured.
+    absentReasons: [
+      'no-manifest',
+      'no-publish',
+      'no-shipped-files',
+    ] satisfies ScanRefusal[],
     counts: findingsOnly,
   },
   {

@@ -433,6 +433,31 @@ describe('classifying an audit run by its exit code', () => {
     expect(result.status).toBe('absent')
   })
 
+  it('should read a manifest declaring private as absent', () => {
+    const result = classify(
+      specFor('secrets'),
+      1,
+      '{"reason":"no-publish","message":"declares private"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
+  /**
+   * A publish with no files field packs the whole tree, so the corpus exists
+   * and went unread. Calling that an absence reports a pass over a shipped
+   * tree nobody measured, which is the denial this split exists to remove.
+   */
+  it('should read an undeclared corpus as unmeasured rather than absent', () => {
+    const result = classify(
+      specFor('secrets'),
+      1,
+      '{"reason":"no-files-field","message":"a publish would pack the whole tree"}',
+    )
+
+    expect(result.status).toBe('unmeasured')
+  })
+
   it('should read a found secret as a finding that is a fact', () => {
     const result = classify(
       specFor('secrets'),

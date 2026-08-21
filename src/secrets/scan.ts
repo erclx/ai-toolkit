@@ -15,8 +15,21 @@ export interface SecretFinding {
   readonly preview: string
 }
 
-/** Why a scan produced no corpus, which is never the same as a clean one. */
-export type ScanRefusal = 'no-manifest' | 'no-git' | 'no-shipped-files'
+/**
+ * Why a scan produced no corpus, which is never the same as a clean one.
+ *
+ * Three of these mean this tree publishes nothing, and `no-files-field` means
+ * the opposite: a publish would pack everything and this check read none of it.
+ * They are separate reasons because the aggregate answers them differently,
+ * and folding them together is what let one message deny the case another
+ * comment named.
+ */
+export type ScanRefusal =
+  | 'no-manifest'
+  | 'no-publish'
+  | 'no-files-field'
+  | 'no-git'
+  | 'no-shipped-files'
 
 export type SecretScan =
   | {
@@ -24,6 +37,13 @@ export type SecretScan =
       /** Files opened, so a report can state what the verdict covers. */
       readonly files: number
       readonly skipped: number
+      /**
+       * Everything git lists, so the report states its own bound.
+       *
+       * A count of what passed reads as a verdict on the repository unless the
+       * run also says how much of it the corpus left out.
+       */
+      readonly listed: number
       readonly findings: readonly SecretFinding[]
     }
   | { readonly kind: 'refused'; readonly reason: ScanRefusal }
@@ -66,13 +86,15 @@ export function scanText(file: string, text: string): SecretFinding[] {
  * split every other audit here already draws.
  */
 export async function scanShippedTree(root: string): Promise<SecretScan> {
-  const entries = await readShipEntries(root)
-  if (entries === undefined) return { kind: 'refused', reason: 'no-manifest' }
+  const declared = await readShipEntries(root)
+  if (declared.kind !== 'entries') {
+    return { kind: 'refused', reason: declared.kind }
+  }
 
   const listed = await listRepositoryFiles(root)
   if (listed === undefined) return { kind: 'refused', reason: 'no-git' }
 
-  const paths = selectShipped(listed, entries)
+  const paths = selectShipped(listed, declared.entries)
   if (paths.length === 0) {
     return { kind: 'refused', reason: 'no-shipped-files' }
   }
@@ -102,5 +124,11 @@ export async function scanShippedTree(root: string): Promise<SecretScan> {
     findings.push(...scanText(path, text))
   }
 
-  return { kind: 'scanned', files: scanned, skipped, findings }
+  return {
+    kind: 'scanned',
+    files: scanned,
+    skipped,
+    listed: listed.length,
+    findings,
+  }
 }

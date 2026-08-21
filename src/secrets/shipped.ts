@@ -16,27 +16,47 @@ import { join } from 'node:path'
  * too, and its `standards` and `snippets` symlinks resolve into trees the field
  * lists in their own right, so both routes land inside the same corpus.
  */
-export async function readShipEntries(
-  root: string,
-): Promise<string[] | undefined> {
+export type ShipEntries =
+  /** The field declares a corpus, which is what this check reads. */
+  | { readonly kind: 'entries'; readonly entries: readonly string[] }
+  /** No manifest at all, so nothing is published from this tree. */
+  | { readonly kind: 'no-manifest' }
+  /** The manifest declares it is never published, so there is no shipped tree. */
+  | { readonly kind: 'no-publish' }
+  /**
+   * A manifest that publishes and declares no corpus.
+   *
+   * npm packs the whole tree in that case, so this is the package that ships
+   * the most rather than one that ships nothing. This check reads a declared
+   * corpus and does not stand in an undeclared one, so the caller reports the
+   * shipped tree as unread rather than as empty.
+   */
+  | { readonly kind: 'no-files-field' }
+
+export async function readShipEntries(root: string): Promise<ShipEntries> {
   let manifest: unknown
   try {
     manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
   } catch {
-    return undefined
+    return { kind: 'no-manifest' }
   }
 
-  const files = (manifest as { files?: unknown } | null)?.files
-  if (!Array.isArray(files)) return undefined
+  const record = manifest as { files?: unknown; private?: unknown } | null
+
+  // The one field that separates a project publishing nothing from one
+  // publishing everything, which the `files` field alone cannot tell apart.
+  if (record?.private === true) return { kind: 'no-publish' }
+
+  const files = record?.files
+  if (!Array.isArray(files)) return { kind: 'no-files-field' }
 
   const entries = files.filter(
     (entry): entry is string => typeof entry === 'string',
   )
 
-  // An empty field is not an empty corpus. npm packs the whole tree when the
-  // field is absent or empty, so reading it as nothing to scan would report a
-  // clean shipped tree for the package that ships the most.
-  return entries.length === 0 ? undefined : entries
+  return entries.length === 0
+    ? { kind: 'no-files-field' }
+    : { kind: 'entries', entries }
 }
 
 /**

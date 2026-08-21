@@ -22,33 +22,62 @@ describe('readShipEntries', () => {
   it('should read the files field the package publishes', async () => {
     seedManifest({ name: 'x', files: ['src', 'docs', '!**/*.test.ts'] })
 
-    expect(await readShipEntries(ROOT)).toEqual([
-      'src',
-      'docs',
-      '!**/*.test.ts',
-    ])
+    expect(await readShipEntries(ROOT)).toEqual({
+      kind: 'entries',
+      entries: ['src', 'docs', '!**/*.test.ts'],
+    })
   })
 
-  it('should refuse a manifest carrying no files field', async () => {
+  /**
+   * npm packs the whole tree when the field is absent, so this is the package
+   * that ships the most rather than one that ships nothing. It reports its own
+   * reason so no caller can turn it into an empty corpus.
+   */
+  it('should separate a manifest carrying no files field', async () => {
     seedManifest({ name: 'x' })
 
-    expect(await readShipEntries(ROOT)).toBeUndefined()
+    expect(await readShipEntries(ROOT)).toEqual({ kind: 'no-files-field' })
   })
 
-  it('should refuse a files field holding an empty list', async () => {
+  it('should read an empty files list the same way as an absent one', async () => {
     seedManifest({ name: 'x', files: [] })
 
-    expect(await readShipEntries(ROOT)).toBeUndefined()
+    expect(await readShipEntries(ROOT)).toEqual({ kind: 'no-files-field' })
   })
 
-  it('should refuse a manifest that is not there', async () => {
-    expect(await readShipEntries(ROOT)).toBeUndefined()
+  /**
+   * The one declaration that means a project publishes nothing, which the
+   * files field alone cannot separate from one publishing everything.
+   */
+  it('should read a private manifest as publishing nothing', async () => {
+    seedManifest({ name: 'x', private: true })
+
+    expect(await readShipEntries(ROOT)).toEqual({ kind: 'no-publish' })
   })
 
-  it('should refuse a manifest that does not parse', async () => {
+  it('should read private ahead of a declared files field', async () => {
+    seedManifest({ name: 'x', private: true, files: ['src'] })
+
+    expect(await readShipEntries(ROOT)).toEqual({ kind: 'no-publish' })
+  })
+
+  it('should not read a non-boolean private as a declaration', async () => {
+    seedManifest({ name: 'x', private: 'yes', files: ['src'] })
+
+    expect(await readShipEntries(ROOT)).toEqual({
+      kind: 'entries',
+      entries: ['src'],
+    })
+  })
+
+  it('should report a manifest that is not there', async () => {
+    expect(await readShipEntries(ROOT)).toEqual({ kind: 'no-manifest' })
+  })
+
+  it('should report a manifest that does not parse', async () => {
     writeFileSync(join(ROOT, 'package.json'), '{ not json')
 
-    expect(await readShipEntries(ROOT)).toBeUndefined()
+    expect(await readShipEntries(ROOT)).toEqual({ kind: 'no-manifest' })
   })
 })
 

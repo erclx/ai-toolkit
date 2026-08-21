@@ -57,9 +57,9 @@ The verdict is published as a field as well as an exit code. A reader branching 
 
 A per-machine folder that is not on this disk reports as `absent` and moves neither the verdict nor the exit code. Every one of those folders is gitignored, so a fresh clone and every CI run carry none of them, and counting six expected absences as failures pins the verdict at `incomplete` forever. A signal that never changes is one nobody reads after the second time they see it.
 
-Which refusals count as an absence is declared per audit rather than inferred from the corpus alone. A per-machine corpus counts a missing folder. An upstream corpus counts every reason the advisory verb publishes, since each of the three means there is nothing resolved to measure. The secret scan overrides its tracked default for the two reasons that mean the project publishes nothing at all.
+Which refusals count as an absence is declared per audit rather than inferred from the corpus alone. A per-machine corpus counts a missing folder. An upstream corpus counts every reason the advisory verb publishes, since each of the three means there is nothing resolved to measure. The secret scan overrides its tracked default for the three reasons that mean the project publishes nothing at all.
 
-Everything else stays `unmeasured`, a tree git cannot list included, which is a broken checkout rather than an empty one.
+Everything else stays `unmeasured`. That covers a tree git cannot list, which is a broken checkout, and a package declaring no `files` field, where a publish would pack the whole tree and the scan read none of it. Both are a corpus that exists and went unread, so softening either would report a pass over a shipped tree nobody measured.
 
 The override exists because the corpus answers the wrong question for one audit. Most projects installing this CLI publish nothing and carry no `files` field, so reading that as a broken corpus would pin the aggregate at `incomplete` in every one of them on every run.
 
