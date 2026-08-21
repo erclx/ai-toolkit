@@ -86,6 +86,7 @@ Each rule or knowledge item lives in exactly one surface. Other surfaces point, 
 
 - Cross-domain behavior or design principle: `CLAUDE.md`
 - Cross-domain decision with its rejected alternative: `.claude/ARCHITECTURE.md`
+- Behavior that fires on a path being edited rather than every session: `governance/rules/`
 - Behavior triggered only when editing domain X: `.claude/skills/aitk-<X>/SKILL.md`
 - Per-domain internal narrative about domain X (structure, decisions, gotchas): `.claude/context/<X>.md`
 - Consumer-facing reference (AI workflow, target-project integration): `docs/`
