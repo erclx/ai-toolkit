@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/erclx/aitk/compare/v2.2.0...v3.0.0) (2026-08-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sync:** move toolkit config into a .claude/aitk/ folder ([#1088](https://github.com/erclx/aitk/issues/1088))
+
+### Code Refactoring
+
+* **sync:** move toolkit config into a .claude/aitk/ folder ([#1088](https://github.com/erclx/aitk/issues/1088)) ([106115b](https://github.com/erclx/aitk/commit/106115baf0e060d776217ab934eb52b854f1a2eb))
+
 ## [2.2.0](https://github.com/erclx/aitk/compare/v2.1.0...v2.2.0) (2026-08-21)
 
 
