@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/erclx/aitk/compare/v3.3.0...v3.4.0) (2026-08-21)
+
+
+### Features
+
+* **gov:** sweep for values a changed convention no longer produces ([#1096](https://github.com/erclx/aitk/issues/1096)) ([942a32f](https://github.com/erclx/aitk/commit/942a32fd692f5ec73ec695b3a96effd26766bc8e))
+
 ## [3.3.0](https://github.com/erclx/aitk/compare/v3.2.0...v3.3.0) (2026-08-21)
 
 
