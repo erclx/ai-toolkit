@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/erclx/aitk/compare/v3.2.0...v3.3.0) (2026-08-21)
+
+
+### Features
+
+* **governance:** ship a rule over the root file and split the pair ([#1095](https://github.com/erclx/aitk/issues/1095)) ([95ea3f8](https://github.com/erclx/aitk/commit/95ea3f85be59a4320451da1be03740349caa34d5))
+
 ## [3.2.0](https://github.com/erclx/aitk/compare/v3.1.0...v3.2.0) (2026-08-21)
 
 
