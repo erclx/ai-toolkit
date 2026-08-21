@@ -53,7 +53,7 @@ export interface Stamp {
 }
 
 export function stampPath(target: string): string {
-  return join(target, '.claude', 'aitk.json')
+  return join(target, '.claude', 'aitk', 'config.json')
 }
 
 export function hashContent(content: Buffer | string): string {

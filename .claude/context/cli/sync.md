@@ -5,7 +5,7 @@ description: The sync engine and its adapters, the install stamp and what it cov
 
 # Sync
 
-`src/sync/` holds one engine that gov, snippets, and standards all install and sync through, plus the git workflow `aitk sync` runs afterward. The install stamp at `.claude/aitk.json` is what lets the engine tell a file the toolkit moved from a file the project edited, and the freshness report reads the same plan a sync would apply.
+`src/sync/` holds one engine that gov, snippets, and standards all install and sync through, plus the git workflow `aitk sync` runs afterward. The install stamp at `.claude/aitk/config.json` is what lets the engine tell a file the toolkit moved from a file the project edited, and the freshness report reads the same plan a sync would apply.
 
 The folder splits by job: the git workflow across `target.ts`, `git.ts`, and `workflow.ts`, the stamp in `stamp.ts`, the drift report in `check.ts`, and the history fallback in `history.ts`.
 
@@ -19,7 +19,7 @@ The folder splits by job: the git workflow across `target.ts`, `git.ts`, and `wo
 
 ## The install stamp
 
-- A content hash answers whether a file changed. Only a record written at install time answers who changed it, and those two need opposite actions. That is the whole reason `.claude/aitk.json` exists rather than recomputing against the source, which is what `planSync` already did.
+- A content hash answers whether a file changed. Only a record written at install time answers who changed it, and those two need opposite actions. That is the whole reason `.claude/aitk/config.json` exists rather than recomputing against the source, which is what `planSync` already did.
 - The stamp's path list is a second input to the walk, not a lookup keyed by the current path. A relocated file is never walked, so a lookup would never consult its entry and the stamp would buy nothing a recomputed hash does not. Folding stamped paths into the walk is what makes a move visible.
 - `orphaned` and `stranded` are separate states because they need opposite treatment. A project-authored rule is orphaned and never converges, so counting it as drift left `--exit-code` failing forever with no remedy. A stamped file at a root the toolkit abandoned is stranded, which is a relocation waiting on a decision.
 - The stamp writes after the copies land, so a partial apply that throws leaves the previous stamp rather than a claim the target does not meet. A stamp that lies is worse than no stamp, because the next report calls updated files stale.

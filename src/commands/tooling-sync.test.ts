@@ -94,15 +94,19 @@ describe('tooling sync write authorization', () => {
   it('should write no install stamp under --check', () => {
     sync(['--check'])
 
-    expect(() => readFileSync(join(target, '.claude', 'aitk.json'))).toThrow()
+    expect(() =>
+      readFileSync(join(target, '.claude', 'aitk', 'config.json')),
+    ).toThrow()
   })
 
   it('should write no install stamp when an up-to-date target is synced without --write', () => {
     sync(['--write'])
-    rmSync(join(target, '.claude', 'aitk.json'))
+    rmSync(join(target, '.claude', 'aitk', 'config.json'))
 
     sync([])
 
-    expect(() => readFileSync(join(target, '.claude', 'aitk.json'))).toThrow()
+    expect(() =>
+      readFileSync(join(target, '.claude', 'aitk', 'config.json')),
+    ).toThrow()
   })
 })

@@ -25,7 +25,7 @@ EOF
     log_step "Scenario ready: setup-init skill on an empty repo"
     log_info "Context: package.json only, no framework evidence"
     log_info "Action:  /aitk:setup-init"
-    log_info "Expect:  stack resolves to 'base' and the preview marks it a fallback, aitk init lands .claude/rules/ and stamps .claude/aitk.json, tooling sync is skipped (tooling stack also 'base' = already synced), setup-verify finds no stack scripts and reports base scripts only"
+    log_info "Expect:  stack resolves to 'base' and the preview marks it a fallback, aitk init lands .claude/rules/ and stamps .claude/aitk/config.json, tooling sync is skipped (tooling stack also 'base' = already synced), setup-verify finds no stack scripts and reports base scripts only"
     ;;
   "no-stack")
     cat <<'EOF' >go.mod
