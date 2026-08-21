@@ -101,19 +101,21 @@ closed clean and then went stale still rebases when the skill is invoked. The
 re-read costs a full pass rather than a delta, since the prior reviewed commit no
 longer reaches the head, and `claude-pr-review` detects that itself.
 
-The heading carries the state rather than the pass number. A pass carrying a
-finding at any severity takes `## Review` and a pass carrying nothing takes
+The heading carries the state rather than the pass number. A pass carrying
+anything owed takes `## Review` and a pass carrying nothing takes
 `## Review closed`, so a thread can be scanned for what still owes work without
 opening a comment. One threshold governs the heading and the dispatch alike, and
 `claude-pr-review` is where it is stated, so every other surface cites that skill
-rather than restating the grades. The merge decision comes off the counts on the
-summary line, since an open heading now covers a minor as well as a critical.
-One thing the pass posts is not a finding and follows neither rule. It reads the
-description's Testing section against what the repository can drive, and asks
-about a box left unchecked for a person where a harness already covers the run.
-That question rides in its own block, changes no count, and never opens the
-heading, because whether a human is required is a judgment the branch author may
-hold a reason for.
+rather than restating the grades.
+
+The merge decision comes off the counts on the summary line, since an open
+heading now covers a minor as well as a critical. One thing the pass posts sits
+outside those counts and inside the threshold anyway. It reads the description's
+Testing section against what the repository can drive, and asks about a box left
+unchecked for a person where a harness already covers the run. The question
+takes no severity, because whether a human is required is a judgment the author
+may hold a reason for, and it still opens the heading and sends the dispatch,
+because the author is the only party who can answer it.
 
 A minor the worker declines goes to the findings of the task the
 branch closes, since a thread does not survive the merge. The feedback

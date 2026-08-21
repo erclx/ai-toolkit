@@ -87,7 +87,7 @@ Then read the description's `## Testing` section, which is the one part of a pul
 
 Test every unchecked box against the testing discipline in `${CLAUDE_SKILL_DIR}/../../standards/bundled/pr.md`, which reserves an unchecked box for a capability the agent lacks. Raise the box when it names no human at all, when the human it names is a live agent session, or when it names a person for a step the repository ships a harness for, `scripts/sandbox/run.sh` and `scripts/eval/run.sh` being the two. Cost alone is not an answer, since authorizing a spend is the operator's and performing the run is not. A refusal the author actually met is an answer, and it names which one.
 
-Ask rather than grade. Whether a human is genuinely required is a reading the branch author may hold a reason this session cannot see, and a finding at any grade would open the heading and owe a dispatch over a judgment call. Step 4 places the question and keeps it out of the counts.
+Ask rather than grade. Whether a human is genuinely required is a reading the branch author may hold a reason this session cannot see, so the question carries no severity and enters no count. What it does carry is the heading and the dispatch, on the rule Step 4 states, because a question the author never receives corrects nothing and the author is the only party who can answer it. Answering it closes it, and the answer may be that the requirement holds.
 
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
@@ -150,7 +150,7 @@ Re-reviewed `<short-sha>`, N commits since the prior pass. X critical, Y should-
 🤖 Reviewed by Claude Code
 ```
 
-A Testing box the Step 3 check raised goes in a `**Testing**` block placed after the file blocks, one bullet per box, each quoting the box and naming what would drive it. It is a question rather than a finding, so it changes no count on the summary line, never opens `## Review`, and rides on whichever body the pass already owes, a close-out included, appended under the ✅ line. A pass carrying nothing but this block is still a close-out.
+A Testing box the Step 3 check raised goes in a `**Testing**` block placed after the file blocks, one bullet per box, each quoting the box and naming what would drive it. It carries no severity and enters no count, and it is still something owed, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. Say so on the summary line as `plus N testing question(s)`, since the three counts read as zero and would otherwise report the pass as silent.
 
 ```markdown
 **Testing**
@@ -160,9 +160,9 @@ A Testing box the Step 3 check raised goes in a `**Testing**` block placed after
 
 Keep it to the boxes the check raised. Restating a box whose stated requirement holds teaches the branch author to skip the block.
 
-The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying a finding at any severity takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while any finding is open, and `## Review closed` when none is.
+The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying anything owed takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Owed covers a finding at any severity and a Testing question alike, which is what keeps the two halves from separating. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while any finding is open, and `## Review closed` when none is.
 
-Keying either half on the grade was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low. Splitting the two halves so the dispatch fired lower than the heading was the other candidate, and it left a thread reading closed while work was owed on it.
+Keying either half on the grade was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low. Splitting the two halves so the dispatch fired lower than the heading was the other candidate, and it left a thread reading closed while work was owed on it. The Testing question was first written to sit outside both, which is that same split reached from the other side, and it left the one party who could answer the question with no route to it.
 
 The cost is that the merge decision no longer reads off the heading alone, since an open heading covers a minor as well as a critical. Take it from the counts on the summary line, which is where they already sit. No summary line reports the merge as unblocked under either heading, since a thread reading open cannot also report that nothing blocks it.
 
@@ -190,7 +190,7 @@ gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>
 
 A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No findings. Reviewed against project docs and the board.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
 
-A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. Keep whichever scope sentence the pass owes on the summary line:
+A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. A pass carrying only Testing questions takes the same route for the same reason. Keep whichever scope sentence the pass owes on the summary line:
 
 ```markdown
 ## Review
@@ -214,6 +214,6 @@ Post a close-out even when there is nothing to report. A review left with no clo
 X critical, Y should-fix, Z minor. Posted to PR #<number>.
 ```
 
-Add `N Testing question(s) raised.` to that line when the Step 3 check raised any. The counts cover findings alone, so a pass whose only output was a question otherwise reports as silent to the session that drove it.
+Add `N Testing question(s) raised.` to that line when the Step 3 check raised any. The counts cover findings alone, so a pass whose only output was a question otherwise reports as silent to the session that drove it. That session is not who the question is addressed to, which is what the dispatch covers.
 
 Report the merge decision as a plain recommendation in chat (merge, or address findings first). Do not merge.
