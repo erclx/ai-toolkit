@@ -83,6 +83,12 @@ Review the diff and files for the same axes as `claude-review` (bugs, edge cases
 - Contract: does a contract downstream features depend on land correctly, and should the plan itself be questioned?
 - Consumers: when the change touches a resource with more than one consumer, enumerate them and check the rule against each. A rule written for the consumer the change targets can be wrong for a sibling that writes.
 
+Then read the description's `## Testing` section, which is the one part of a pull request body this session is positioned to falsify. The branch author cannot see what a sibling branch drove the same day, and the arm list is what settles the claim rather than the diff.
+
+Test every unchecked box against the testing discipline in `${CLAUDE_SKILL_DIR}/../../standards/bundled/pr.md`, which reserves an unchecked box for a capability the agent lacks. Raise the box when it names no human at all, when the human it names is a live agent session, or when it names a person for a step the repository ships a harness for, `scripts/sandbox/run.sh` and `scripts/eval/run.sh` being the two. Cost alone is not an answer, since authorizing a spend is the operator's and performing the run is not. A refusal the author actually met is an answer, and it names which one.
+
+Ask rather than grade. Whether a human is genuinely required is a reading the branch author may hold a reason this session cannot see, and a finding at any grade would open the heading and owe a dispatch over a judgment call. Step 4 places the question and keeps it out of the counts.
+
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
 A later pass applies the same axes to the delta, and adds one check the first pass cannot make: did each prior finding land, and did the fix regress anything it touched. Findings of its own are normal findings, stated at the same severity and counted the same way. That count is what Step 4 reads to pick the heading, so a pass raising a finding of its own is not a close-out at any severity.
@@ -144,6 +150,16 @@ Re-reviewed `<short-sha>`, N commits since the prior pass. X critical, Y should-
 🤖 Reviewed by Claude Code
 ```
 
+A Testing box the Step 3 check raised goes in a `**Testing**` block placed after the file blocks, one bullet per box, each quoting the box and naming what would drive it. It is a question rather than a finding, so it changes no count on the summary line, never opens `## Review`, and rides on whichever body the pass already owes, a close-out included, appended under the ✅ line. A pass carrying nothing but this block is still a close-out.
+
+```markdown
+**Testing**
+
+- `- [ ] <the box as written>` names no capability the agent lacks. `scripts/sandbox/run.sh <arm>` drives it. Was there a reason to leave it?
+```
+
+Keep it to the boxes the check raised. Restating a box whose stated requirement holds teaches the branch author to skip the block.
+
 The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying a finding at any severity takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while any finding is open, and `## Review closed` when none is.
 
 Keying either half on the grade was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low. Splitting the two halves so the dispatch fired lower than the heading was the other candidate, and it left a thread reading closed while work was owed on it.
@@ -197,5 +213,7 @@ Post a close-out even when there is nothing to report. A review left with no clo
 ```plaintext
 X critical, Y should-fix, Z minor. Posted to PR #<number>.
 ```
+
+Add `N Testing question(s) raised.` to that line when the Step 3 check raised any. The counts cover findings alone, so a pass whose only output was a question otherwise reports as silent to the session that drove it.
 
 Report the merge decision as a plain recommendation in chat (merge, or address findings first). Do not merge.

@@ -123,6 +123,14 @@ Origin is causation rather than authorship, which is the half that decides the h
 
 An offer to fix is a stop however it is worded. Naming a finding self-inflicted in the report and closing on a menu of resolutions leaves the operator holding the work, so the step forbids presenting the repair as a choice and the receipt records the fix as landed.
 
+## A question that reads the description rather than the diff
+
+Step 3 gained a fourth lens that reads the pull request body's `## Testing` section against what the repository can drive. The three before it read the change, and this one reads the claim the author made about verifying it, which is the one part of a description a reviewing session can falsify: the branch author cannot see what a sibling branch drove the same day, and one wave had two branches tick every box while a third left two unchecked as needing a live session against an arm it had itself added.
+
+It asks rather than grades, and that is the whole reason it stays out of the finding counts. Whether a human is genuinely required is a reading the author may hold a reason for, and a finding at any grade would open `## Review` and owe a dispatch over a judgment call, so the question rides in a `**Testing**` block that changes no count and rides on a close-out body too. The chat line at Step 5 names the question count separately, since the three counts alone would report a question-only pass as silent.
+
+What it tests against is `standards/bundled/pr.md`, which narrowed in the same change to say what makes a human required: a capability the agent lacks, never the cost of the run. A refusal the author actually met counts and names itself, and a refusal predicted and never met does not. `claude-pr-review` reads that file off the plugin root rather than through the fan-out, since it is not in the standard's `consumers` field and adding it would buy a twelfth copy for one citation.
+
 ## A submitted review cannot be deleted
 
 A submitted pull request review is editable and never deletable. `DELETE /repos/{owner}/{repo}/pulls/{n}/reviews/{id}` returns 422 with `Can not delete a non-pending pull request review`, and dismissal covers approvals and change requests rather than comments, so a mistimed or malformed comment is repaired with `PUT` to the same path, which replaces the body and keeps its timestamp and position in the thread. When the repair leaves a comment that should no longer anchor the review state, strip its heading, since `claude-pr-review` scopes a later narrow pass by matching a comment's first line against `## Review` and `## Review closed` and would otherwise point the next pass at the wrong commit.

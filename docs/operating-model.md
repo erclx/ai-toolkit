@@ -108,6 +108,13 @@ opening a comment. One threshold governs the heading and the dispatch alike, and
 `claude-pr-review` is where it is stated, so every other surface cites that skill
 rather than restating the grades. The merge decision comes off the counts on the
 summary line, since an open heading now covers a minor as well as a critical.
+One thing the pass posts is not a finding and follows neither rule. It reads the
+description's Testing section against what the repository can drive, and asks
+about a box left unchecked for a person where a harness already covers the run.
+That question rides in its own block, changes no count, and never opens the
+heading, because whether a human is required is a judgment the branch author may
+hold a reason for.
+
 A minor the worker declines goes to the findings of the task the
 branch closes, since a thread does not survive the merge. The feedback
 becomes a durable artifact both sessions read, survives a session ending, and

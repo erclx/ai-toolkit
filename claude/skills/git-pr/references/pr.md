@@ -54,6 +54,9 @@ Does not govern:
 - Quote the count or output the run reported, never a figure carried from elsewhere.
 - Leave a box unchecked only when a human is required, and name which human and why on the same line.
 - Human-only covers visual or aesthetic judgment, anything needing credentials or a live third-party service, anything needing a second machine or a fresh OS, and judgment about whether a boundary or an abstraction reads correctly. The agent runs everything else.
+- What makes a human required is a capability the agent lacks, never the cost of the run. Authorizing a spend is the operator's and performing the run is not, so an arm the repository ships a harness for gets driven once the operator has cleared the spend, and the box records what it returned.
+- A tool refusal that actually fired is a capability gap, and the line says which refusal rather than naming the cost behind it. A refusal predicted and never met is not one.
+- A live agent session is not a human. A box reading `needs a live session driving the skill` names the thing writing the description, so that run is owed rather than blocked.
 - Put a request for the reviewer under `## For the reviewer`. It is a request rather than unfinished testing, so it never appears as an unchecked Testing box.
 
 ## Formatting
