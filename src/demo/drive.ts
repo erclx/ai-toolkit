@@ -19,7 +19,11 @@ import { pointerSource } from '@/demo/pointer'
  */
 
 const POINTER_SIZE = 32
-/** Off-canvas, so the pointer installs and paints before the first target. */
+/**
+ * Where the pointer starts. Any position inside the viewport works, since the
+ * point is giving it one move to install and paint before it travels to the
+ * first target. A corner keeps that first move out of the way of the content.
+ */
 const START = { x: 8, y: 8 }
 const SETTLE_MS = 250
 
@@ -63,15 +67,17 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
   const browser = await launch()
   if (browser.status === 'failed') return browser
 
-  // Created after the launch, so a target with no browser binary does not leave
-  // an empty directory behind for a run that never started.
-  const videoDir = options.videoPath
-    ? mkdtempSync(join(tmpdir(), 'aitk-demo-'))
-    : undefined
-
+  let videoDir: string | undefined
   let context: BrowserContext
   const started = Date.now()
   try {
+    // Created after the launch, so a target with no browser binary does not
+    // leave an empty directory behind for a run that never started, and inside
+    // the try so a failure here closes the browser rather than leaking it.
+    videoDir = options.videoPath
+      ? mkdtempSync(join(tmpdir(), 'aitk-demo-'))
+      : undefined
+
     context = await browser.value.newContext({
       viewport: plan.viewport,
       // Pointed the opposite way from a test. A recording wants the motion the
@@ -107,12 +113,20 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     const page = await context.newPage()
     const video = page.video()
 
-    await page.goto(plan.url)
-    await page.mouse.move(START.x, START.y, { steps: 2 })
+    // The opening navigate is skipped when the plan already starts with one,
+    // because a draft written around an opening verb compiles to a `navigate`
+    // step for the same URL and the second load is a visible reload.
+    if (plan.steps[0]?.kind !== 'navigate') {
+      await page.goto(plan.url)
+      await page.mouse.move(START.x, START.y, { steps: 2 })
+    }
 
     for (const step of plan.steps) {
       await runStep(page, plan, step)
-      if (step.still && options.stillPath) {
+      // The first marked step wins. One file holds one frame, so a plan a
+      // person edited to mark several would otherwise write each over the last
+      // and keep whichever ran last, with nothing saying so.
+      if (step.still && options.stillPath && !stillPath) {
         stillPath = options.stillPath
         mkdirSync(dirname(stillPath), { recursive: true })
         await page.screenshot({ path: stillPath })

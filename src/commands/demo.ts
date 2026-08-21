@@ -199,6 +199,14 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
     return 1
   }
 
+  if (!opts.video && !opts.still) {
+    logStep('Output')
+    logError('--no-video and --no-still together leave nothing to write')
+    outro()
+    emit(opts.json, { plan: source, reason: 'no-output-requested' })
+    return 1
+  }
+
   const outstanding = unresolved(parsed.plan)
   if (outstanding.length) {
     logStep('Plan')

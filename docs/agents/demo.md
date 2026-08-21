@@ -58,15 +58,16 @@ Three of the nineteen states a theme carries are read. A drag, a resize, or a wa
 
 Every refusal exits 1 and names its reason in the `--json` record, so a skill branches on `reason` rather than on the exit code.
 
-| Reason             | What happened                                                            |
-| ------------------ | ------------------------------------------------------------------------ |
-| `draft-missing`    | No file at the path given to `compile`                                   |
-| `draft-unreadable` | The draft carries no beat sheet, or a sheet with no beats                |
-| `plan-exists`      | A plan is already there and `--force` was not passed                     |
-| `plan-unresolved`  | A URL or a target is still empty, named field by field                   |
-| `plan-unreadable`  | The plan is not JSON, or a step names a kind nothing drives              |
-| `browser-missing`  | The browser binary is not installed, with `install` carrying the command |
-| `engine-missing`   | The browser package itself did not resolve                               |
+| Reason                | What happened                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `draft-missing`       | No file at the path given to `compile`                                              |
+| `draft-unreadable`    | The draft carries no beat sheet, or a sheet with no beats                           |
+| `plan-exists`         | A plan is already there and `--force` was not passed                                |
+| `plan-unresolved`     | A URL or a target is still empty, named field by field                              |
+| `no-output-requested` | `--no-video` and `--no-still` together, which would drive the app and write nothing |
+| `plan-unreadable`     | The plan is not JSON, or a step names a kind nothing drives                         |
+| `browser-missing`     | The browser binary is not installed, with `install` carrying the command            |
+| `engine-missing`      | The browser package itself did not resolve                                          |
 
 ## The browser reaches every target
 
