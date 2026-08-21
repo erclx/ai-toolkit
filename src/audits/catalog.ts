@@ -1,5 +1,6 @@
 import type { ReachRefusal } from '@/claude/skills-reach'
 import type { AuditRefusal } from '@/deps/audit'
+import type { LabelAuditRefusal } from '@/labels/audit'
 import type { ValidateRefusal as RecordRefusal } from '@/records/validate'
 import type { ScanRefusal } from '@/secrets/scan'
 import type { ValidateRefusal as BoardRefusal } from '@/tasks/validate'
@@ -334,6 +335,26 @@ function advisoryCounts(record: unknown): Record<string, number> | undefined {
   return counts
 }
 
+/**
+ * Reads the uncovered paths and the declined ones as separate measures.
+ *
+ * A single count would fold a surface nobody covered into one somebody decided
+ * against, and only the first wants a row written. The declined count travels
+ * beside it so the baseline records the size of the decision as well as the
+ * size of the gap.
+ */
+function labelCoverageCounts(
+  record: unknown,
+): Record<string, number> | undefined {
+  const root = asObject(record)
+  if (root === undefined) return undefined
+
+  return allOf({
+    uncovered: lengthOf(root.uncovered),
+    declined: lengthOf(root.declined),
+  })
+}
+
 function findingsOnly(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -498,6 +519,31 @@ export const AUDITS: readonly AuditSpec[] = [
       'no-shipped-files',
     ] satisfies ScanRefusal[],
     counts: findingsOnly,
+  },
+  {
+    id: 'labels',
+    label: 'Pull request label coverage',
+    argv: ['labels', 'audit', '--json'],
+    // Reports rather than gates, on the split this file already draws. Whether
+    // an uncovered surface deserves a label is a judgment, and a push failing
+    // on one would ask a contributor to answer a question only the person who
+    // owns the surface can.
+    gatingExits: [],
+    // The map is committed, so every clone reads the same rows and a delta is
+    // shared. The changed set the rows are read against is the branch's, which
+    // is what makes a clean trunk report zero rather than nothing.
+    corpus: 'tracked',
+    // The one reason that means this project declares no surfaces to cover,
+    // which is the recorded decision that a project without a map is labelled
+    // silently. A tracked corpus normally allows nothing absent, and this is
+    // the second exception beside the secret scan rather than a default.
+    //
+    // The other three are deliberately left out. A map that will not parse, a
+    // map with no usable row, and a range git could not answer are each a
+    // corpus that exists and went unread, so calling any of them an absence
+    // would report a pass over a branch nobody measured.
+    absentReasons: ['no-map'] satisfies LabelAuditRefusal[],
+    counts: labelCoverageCounts,
   },
   {
     id: 'deps',
