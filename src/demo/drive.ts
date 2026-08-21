@@ -1,8 +1,8 @@
 import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { chromium } from '@playwright/test'
-import type { Browser, BrowserContext, Page } from '@playwright/test'
+import { chromium } from 'playwright-core'
+import type { Browser, BrowserContext, Page } from 'playwright-core'
 import type { DemoPlan, DemoStep } from '@/demo/compile'
 import type { CursorSet } from '@/demo/pointer'
 import { pointerSource } from '@/demo/pointer'
@@ -16,6 +16,14 @@ import { pointerSource } from '@/demo/pointer'
  * from the published package because it regenerates images committed to this
  * repository, and that reason does not transfer to a command whose whole
  * purpose is running in someone else's project.
+ *
+ * It imports `playwright-core` rather than `@playwright/test`, which stays a
+ * development dependency for the capture module. Shipping puts the import in
+ * every target's dependency tree, and a target needs the driver rather than a
+ * test runner and an assertion library. Both are pinned to one version rather
+ * than a range, because `bunx playwright install chromium` fetches the browser
+ * revision the installed engine expects and a float would leave a target
+ * resolving a binary its engine cannot launch.
  */
 
 const POINTER_SIZE = 32

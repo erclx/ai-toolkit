@@ -101,7 +101,7 @@ function quicken(plan: DemoPlan, url: string, targets: string[]): DemoPlan {
 }
 
 async function browserAvailable(): Promise<boolean> {
-  const { chromium } = await import('@playwright/test')
+  const { chromium } = await import('playwright-core')
   try {
     const browser = await chromium.launch()
     await browser.close()
