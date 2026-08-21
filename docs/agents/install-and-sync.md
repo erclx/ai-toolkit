@@ -145,7 +145,7 @@ applies any of them. The headings below group the first three together and give
 `newSkills` its description under `newRules`, which answers the same question
 about a different corpus.
 
-All four report only against a toolkit-managed target, which is one carrying a
+All six report only against a toolkit-managed target, which is one carrying a
 `.claude/` directory, a `CLAUDE.md`, or a domain still at the root layout. The
 report says so through `managed` in the JSON and routes an unmanaged directory to
 `aitk init`. Seeds are why the gate exists, since they enumerate from the toolkit
