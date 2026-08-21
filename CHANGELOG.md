@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0](https://github.com/erclx/aitk/compare/v3.1.0...v3.2.0) (2026-08-21)
+
+
+### Features
+
+* **labels:** report a pull request no label reaches ([#1091](https://github.com/erclx/aitk/issues/1091)) ([62f8049](https://github.com/erclx/aitk/commit/62f8049510560cccebb569628477ba7b618c7767))
+* **sync:** report rules a target never received ([#1092](https://github.com/erclx/aitk/issues/1092)) ([537121d](https://github.com/erclx/aitk/commit/537121ddc7908270d0ac24965c30d88fbadde46b))
+
 ## [3.1.0](https://github.com/erclx/aitk/compare/v3.0.0...v3.1.0) (2026-08-21)
 
 
