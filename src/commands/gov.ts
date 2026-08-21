@@ -15,6 +15,12 @@ import {
   resolveRules,
 } from '@/gov/stacks'
 import {
+  readSuperseded,
+  SUPERSEDED_MARKER,
+  type SupersededHit,
+  type SupersededReport,
+} from '@/gov/superseded'
+import {
   type PairRecord,
   readTestOrder,
   type TestOrderReport,
@@ -53,6 +59,11 @@ interface ListOptions {
 
 interface TestOrderOptions {
   readonly base?: string
+  readonly root?: string
+  readonly json?: boolean
+}
+
+interface SupersededOptions {
   readonly root?: string
   readonly json?: boolean
 }
@@ -180,6 +191,137 @@ export function register(program: Command): void {
     .action((opts: TestOrderOptions) => {
       process.exitCode = runTestOrder(opts)
     })
+
+  gov
+    .command('superseded')
+    .description(
+      'Report where the tree still asserts a value a changed convention no longer produces',
+    )
+    .argument('<superseded>', 'The value the convention used to produce')
+    .argument('<replacement>', 'What it produces now')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Tree to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Keyed on the value rather than on the file stating the rule. A fixture',
+        'asserting an old output names neither the rule nor the standard behind',
+        'it, so a file-scoped map from the changed rule reaches none of them and',
+        'the value both sides carry is the only key there is.',
+        '',
+        'It reports and never gates. A string appears for reasons unrelated to',
+        'the convention, so the output is a reading rather than a verdict, and a',
+        'declaration disagreeing for a stated reason carries a',
+        `\`${SUPERSEDED_MARKER}: <reason>\` marker on its own line or the one above.`,
+        '',
+        'Blind spot:',
+        '  a prose reference that went stale without carrying the value, such as',
+        '  a declaration citing the wrong standard for the transform, matches',
+        '  nothing here and is reached by reading rather than by this sweep',
+        '',
+        'Exit codes:',
+        '  0  nothing in the corpus asserts the superseded value',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  at least one declaration still asserts it',
+        '',
+        'Examples:',
+        '  aitk gov superseded feature-feat- feature-',
+        '  aitk gov superseded feature-feat- feature- --json',
+        '',
+      ].join('\n'),
+    )
+    .action(
+      async (
+        superseded: string,
+        replacement: string,
+        opts: SupersededOptions,
+      ) => {
+        process.exitCode = await runSuperseded(superseded, replacement, opts)
+      },
+    )
+}
+
+/**
+ * Reports and never gates, matching `test-order` above. The finding count moves
+ * the exit code with nothing wiring it into a push, since a value sweep
+ * over-reports by construction and gating a measure carrying a known
+ * false-positive class is what teaches contributors to route around a stage.
+ */
+async function runSuperseded(
+  superseded: string,
+  replacement: string,
+  opts: SupersededOptions,
+): Promise<number> {
+  const root = resolve(opts.root ?? process.cwd())
+  const report = await readSuperseded(root, { superseded, replacement })
+  const emitJson = opts.json ?? false
+
+  if (report.kind === 'unreadable') {
+    intro('aitk gov superseded')
+    logStep('Refused')
+    logError(report.reason)
+    outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ ok: false, reason: report.reason })}\n`,
+      )
+    }
+
+    return 1
+  }
+
+  reportSuperseded(report, root)
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ ok: true, root, ...report })}\n`)
+  }
+
+  return report.findings.length > 0 ? 2 : 0
+}
+
+function describeHit(hit: SupersededHit): string {
+  const note = hit.carriesReplacement
+    ? ' (the replacement is on this line)'
+    : ''
+  return `${hit.file}:${hit.line}:${hit.column}${note}: ${hit.preview}`
+}
+
+function reportSuperseded(
+  report: Extract<SupersededReport, { kind: 'measured' }>,
+  root: string,
+): void {
+  intro('aitk gov superseded')
+
+  logStep('Sweep')
+  logInfo(`${report.superseded} → ${report.replacement} in ${root}`)
+
+  logStep(report.findings.length === 0 ? 'Clean' : 'Findings')
+  if (report.findings.length === 0) {
+    logInfo('nothing in the corpus asserts the superseded value')
+  } else {
+    for (const finding of report.findings) logWarn(describeHit(finding))
+  }
+
+  // Named rather than counted. A muted line is a judgment someone recorded,
+  // and a reader weighing this report has to be able to reach the reason.
+  logStep('Exempt')
+  if (report.exempt.length === 0) {
+    logInfo('no line carries a marker')
+  } else {
+    for (const hit of report.exempt) logInfo(describeHit(hit))
+  }
+
+  // A count of what passed reads as a verdict on the repository unless the run
+  // also says how much of it the corpus left out.
+  logStep('Corpus')
+  logInfo(
+    `${report.files} file(s) opened of ${report.listed} listed, ${report.skipped} skipped as binary or unreadable`,
+  )
+
+  outro()
 }
 
 /**
