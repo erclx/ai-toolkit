@@ -8,9 +8,14 @@ import { primaryFontFamily, resolveCaptureSources } from '@/capture/sources'
 import { formatStamp, hashSource, stampPath } from '@/capture/stamp'
 
 /**
- * Every browser reference in the toolkit lives in this module, and `files` in
- * `package.json` excludes it. `src/commands/capture.ts` reaches it through a
- * dynamic import so `src/cli.ts` never resolves the engine at startup.
+ * Every browser reference the capture command makes lives in this module, and
+ * `files` in `package.json` excludes it, because capture regenerates images
+ * committed to this repository and a target has nothing to regenerate.
+ * `src/commands/capture.ts` reaches it through a dynamic import so `src/cli.ts`
+ * never resolves the engine at startup.
+ *
+ * `@/demo/drive` is the other browser module and ships, since its whole purpose
+ * is running in someone else's project.
  */
 
 const DEVICE_SCALE_FACTOR = 2

@@ -1,0 +1,41 @@
+---
+title: Demo
+description: Beats compiler and browser driver behind aitk demo, why the plan is a second committed artifact, and the gotchas in painting a pointer inside the page
+---
+
+# Demo
+
+## Overview
+
+`aitk demo` drives a project's running application and writes a recording and a still. The command surface, its flags, and its refusal reasons live in `docs/agents/demo.md`. This entry holds why it is shaped the way it is.
+
+The whole feature came out of `.claude/groundwork/demo-recorder/`, which measured three spikes on 2026-08-19 and settled that the browser engine already in this repository can produce a video from a driven page with no editor and no desktop recorder. Read `06-decision.md` there before changing anything structural.
+
+## Layout
+
+- `src/demo/beats.ts`: reads the human-facing draft `claude-screencast` writes
+- `src/demo/compile.ts`: the plan type, the beats-to-plan transform, and validation of a plan read back off disk
+- `src/demo/pointer.ts`: cursor resource decoding, hotspot scaling, and the script injected into the page
+- `src/demo/cursors.ts`: the bundled vector artwork for the three pointer states
+- `src/demo/theme.ts`: reads a cursor theme folder for `--cursor`
+- `src/demo/drive.ts`: every browser reference the feature adds
+- `src/commands/demo.ts`: wiring only, with the driver behind a dynamic import
+
+## Decisions
+
+- **The plan is a second artifact rather than four more fields on a beat.** A beat is drafted through four discovery questions and pre-seeded so a person edits down, and a selector, a URL, a wait condition, and a timing on every beat destroys that property. The compiler also has to translate, since the engine's overlay carries the action it performed rather than the beat's caption, and a translation step is a compiler rather than a field.
+- **The plan is committed, not scratch.** It was going to sit beside the draft under `.claude/.tmp/`, and it fails the deletable test on its timing: the numbers are tuned by watching a recording and the draft cannot reproduce a tuned value. That is also why `compile` refuses to overwrite an existing plan without `--force`, since a recompile is the same loss by another route.
+- **The command ships to targets and `aitk capture` does not.** Capture is excluded from the published package because it regenerates images committed here. That reason does not transfer to a command whose purpose is running in someone else's project, so `src/demo/` ships and a target inherits a browser binary install. The engine moved from a development dependency to a runtime one for this.
+- **The pointer moves through the engine's pointer, never the element-clicking helper.** The helper resolves a target and jumps to it. Interpolated movement is the entire trick, and one step is what makes a cursor teleport.
+- **`--out` names a directory in both verbs and never a root.** It first meant the directory on `compile` and a root on `run`, which resolved the plan's own directory a second time and nested the output path inside itself. `drive` now takes resolved paths rather than a root plus a relative path.
+- **The bundled artwork is drawn rather than lifted from a theme.** A theme lives on one machine, and a target has none to point at on first run. `--cursor` reads one for an operator who has it.
+
+## Gotchas
+
+- **The pointer is a page element and inherits the page's world.** A site with its own element at that id, a stacking context that outranks it, or a style rule reaching it will interfere. It also installs before navigation, so driving an already-open page needs a reload.
+- **A repeated attribute in the bundled artwork renders as a broken image rather than raising.** A second `fill` on a path that already carried one produced a broken-image glyph in a recording and in a still, and nothing failed. `src/demo/pointer.test.ts` walks each state's markup for a repeated attribute because of it.
+- **Resolving a target through its bounding box assumes it is in the viewport.** A target below the fold needs a `scroll` step ahead of it, and a scrolled page moves the pointer under a fixed-position element in ways nothing has exercised.
+- **Three of nineteen cursor states are handled.** A drag, a resize, or a wait shows an arrow, and the two animated states have no still frame at all.
+- **Timing is unsolved.** The step count, the pauses, and the typing delay were tuned to look right on one fixture, and they are the difference between a demo that reads as deliberate and one that reads as slow.
+- **CI does not run the browser test.** `src/demo/drive.e2e.test.ts` skips when no browser binary is present and CI installs none, so a green pipeline is not evidence it passed. Run it locally.
+- **Three browser launches in one file wedged.** Two sequential `drive` calls finish in about eleven seconds and a third timed out at two minutes while passing in isolation, so the suite covers the same ground in two runs. Nothing established the cause.

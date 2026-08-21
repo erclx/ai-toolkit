@@ -1,0 +1,365 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { basename, dirname, extname, join, relative, resolve } from 'node:path'
+import type { Command } from 'commander'
+import { parseDraft } from '@/demo/beats'
+import { compilePlan, parsePlan, unresolved } from '@/demo/compile'
+import { DEFAULT_CURSORS } from '@/demo/cursors'
+import { loadCursorTheme } from '@/demo/theme'
+import { intro, logError, logInfo, logStep, logWarn, outro, plural } from '@/ui'
+
+const DEFAULT_OUT = 'demos'
+const INSTALL_BROWSER = 'bunx playwright install chromium'
+
+/**
+ * Holds wiring only. Every browser reference sits behind `loadDriver`, because
+ * `src/cli.ts` imports this module at startup and resolving the engine there
+ * would put a browser launch in front of every other command.
+ */
+type Driver = typeof import('@/demo/drive')
+
+interface CompileOptions {
+  readonly out: string
+  readonly slug?: string
+  readonly force?: boolean
+  readonly json?: boolean
+}
+
+interface RunOptions {
+  readonly out?: string
+  readonly cursor?: string
+  readonly video: boolean
+  readonly still: boolean
+  readonly json?: boolean
+}
+
+export function register(program: Command): void {
+  const demo = program
+    .command('demo')
+    .description('Drive a running application and record what it did')
+    .helpOption('-h, --help', 'Show this help message')
+
+  demo
+    .command('compile')
+    .description('Turn a screencast draft into a plan a run can drive')
+    .argument('<draft>', 'Screencast draft written by claude-screencast')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('-o, --out <dir>', 'Directory the plan is written to', DEFAULT_OUT)
+    .option('-s, --slug <slug>', 'Plan name, defaulting to the draft filename')
+    .option('--force', 'Overwrite a plan that already exists')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'The plan is committed rather than scratch. It carries the target, the',
+        'wait condition, and the timing a beat lacks, and the timing is a',
+        'starting point you tune, which is why a recompile refuses to overwrite.',
+        '',
+        'Exit codes:',
+        '  0  a plan was written',
+        '  1  refused, with the reason on stderr',
+        '',
+        'Examples:',
+        '  aitk demo compile .claude/.tmp/screencast/inline-edit.md',
+        '  aitk demo compile draft.md --out demos --force',
+        '',
+      ].join('\n'),
+    )
+    .action(async (draft: string, opts: CompileOptions) => {
+      process.exitCode = runCompile(draft, opts)
+    })
+
+  demo
+    .command('run')
+    .description('Drive the application a plan names and write the recording')
+    .argument('<plan>', 'Plan written by aitk demo compile')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('-o, --out <dir>', 'Directory to write into, overriding the plan')
+    .option(
+      '-c, --cursor <dir>',
+      'Cursor theme folder to draw the pointer from',
+    )
+    .option('--no-video', 'Skip the recording and write only the still')
+    .option('--no-still', 'Skip the still and write only the recording')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Needs a browser binary. Install it with:',
+        `  ${INSTALL_BROWSER}`,
+        '',
+        'Exit codes:',
+        '  0  the recording and the still were written',
+        '  1  refused, with the reason on stderr',
+        '',
+        'Examples:',
+        '  aitk demo run demos/inline-edit.json',
+        '  aitk demo run demos/inline-edit.json --cursor ~/cursors/theme',
+        '',
+      ].join('\n'),
+    )
+    .action(async (plan: string, opts: RunOptions) => {
+      process.exitCode = await runDrive(plan, opts)
+    })
+}
+
+function runCompile(draftPath: string, opts: CompileOptions): number {
+  intro('aitk demo compile')
+
+  const source = resolve(process.cwd(), draftPath)
+  if (!existsSync(source)) {
+    logStep('Draft')
+    logError(`${draftPath} not found`)
+    outro()
+    emit(opts.json, { draft: source, reason: 'draft-missing' })
+    return 1
+  }
+
+  const parsed = parseDraft(readFileSync(source, 'utf8'))
+  if (parsed.status === 'failed') {
+    logStep('Draft')
+    logError(`${display(source)}: ${parsed.reason}`)
+    outro()
+    emit(opts.json, {
+      draft: source,
+      reason: 'draft-unreadable',
+      message: parsed.reason,
+    })
+    return 1
+  }
+
+  const slug = opts.slug ?? basename(source, extname(source))
+  const target = resolve(process.cwd(), opts.out, `${slug}.json`)
+
+  if (existsSync(target) && !opts.force) {
+    logStep('Plan')
+    logError(`${display(target)} already exists`)
+    // Stated rather than implied, because the value at risk is timing the
+    // operator tuned by watching a recording and the draft cannot reproduce it.
+    logWarn('Pass --force to overwrite it, losing any timing tuned by hand.')
+    outro()
+    emit(opts.json, { plan: target, reason: 'plan-exists' })
+    return 1
+  }
+
+  const plan = compilePlan(parsed.draft, { slug, outDir: opts.out })
+  mkdirSync(dirname(target), { recursive: true })
+  writeFileSync(target, `${JSON.stringify(plan, null, 2)}\n`)
+
+  logStep('Draft')
+  logInfo(`${display(source)}  ${plural(parsed.draft.beats.length, 'beat')}`)
+
+  logStep('Plan')
+  logInfo(display(target))
+
+  const outstanding = unresolved(plan)
+  logStep('Outstanding')
+  if (outstanding.length === 0) {
+    logInfo('Nothing to fill, so the plan runs as written.')
+  } else {
+    logWarn(
+      `${plural(outstanding.length, 'field')} the draft could not supply:`,
+    )
+    for (const field of outstanding) logWarn(`  ${field}`)
+  }
+  outro()
+
+  emit(opts.json, {
+    draft: source,
+    plan: target,
+    beats: parsed.draft.beats.length,
+    unresolved: outstanding,
+  })
+  return 0
+}
+
+async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
+  intro('aitk demo run')
+
+  const source = resolve(process.cwd(), planPath)
+  if (!existsSync(source)) {
+    logStep('Plan')
+    logError(`${planPath} not found`)
+    outro()
+    emit(opts.json, { plan: source, reason: 'plan-missing' })
+    return 1
+  }
+
+  const parsed = parsePlan(readFileSync(source, 'utf8'))
+  if (parsed.status === 'failed') {
+    logStep('Plan')
+    logError(`${display(source)}: ${parsed.reason}`)
+    outro()
+    emit(opts.json, {
+      plan: source,
+      reason: 'plan-unreadable',
+      message: parsed.reason,
+    })
+    return 1
+  }
+
+  const outstanding = unresolved(parsed.plan)
+  if (outstanding.length) {
+    logStep('Plan')
+    logError(
+      `${display(source)} has ${plural(outstanding.length, 'field')} to fill`,
+    )
+    for (const field of outstanding) logWarn(`  ${field}`)
+    outro()
+    emit(opts.json, {
+      plan: source,
+      reason: 'plan-unresolved',
+      unresolved: outstanding,
+    })
+    return 1
+  }
+
+  logStep('Plan')
+  logInfo(`${display(source)}  ${plural(parsed.plan.steps.length, 'step')}`)
+
+  const cursors = resolveCursors(opts.cursor)
+  if (cursors.status === 'failed') {
+    logError(cursors.reason)
+    outro()
+    emit(opts.json, { plan: source, reason: 'cursor-unreadable' })
+    return 1
+  }
+  logInfo(cursors.label)
+
+  const driver = await loadDriver()
+  if (!driver) {
+    logStep('Browser')
+    logError('the browser engine is not installed in this project')
+    logWarn(`Install it with: ${INSTALL_BROWSER}`)
+    outro()
+    emit(opts.json, {
+      plan: source,
+      reason: 'engine-missing',
+      install: INSTALL_BROWSER,
+    })
+    return 1
+  }
+
+  logStep('Recording')
+  const result = await driver.drive({
+    plan: parsed.plan,
+    cursors: cursors.value,
+    ...(opts.video
+      ? { videoPath: outputPath(parsed.plan.output.video, opts.out) }
+      : {}),
+    ...(opts.still
+      ? { stillPath: outputPath(parsed.plan.output.still, opts.out) }
+      : {}),
+  })
+
+  if (result.status === 'failed') {
+    logError(result.message.split('\n')[0] ?? 'the run failed')
+    if (result.reason === 'browser-missing') {
+      logWarn(`Install the browser binary with: ${INSTALL_BROWSER}`)
+    }
+    outro()
+    emit(opts.json, {
+      plan: source,
+      reason: result.reason,
+      message: result.message,
+      ...(result.reason === 'browser-missing'
+        ? { install: INSTALL_BROWSER }
+        : {}),
+    })
+    return 1
+  }
+
+  if (result.videoPath) logInfo(display(result.videoPath))
+  if (result.stillPath) logInfo(`${display(result.stillPath)}  still`)
+  logInfo(
+    `${result.steps} steps in ${Math.round(result.durationMs / 100) / 10}s`,
+  )
+  outro()
+
+  emit(opts.json, {
+    plan: source,
+    video: result.videoPath ?? null,
+    still: result.stillPath ?? null,
+    steps: result.steps,
+    durationMs: result.durationMs,
+  })
+  return 0
+}
+
+type CursorChoice =
+  | { status: 'ready'; value: typeof DEFAULT_CURSORS; label: string }
+  | { status: 'failed'; reason: string }
+
+/**
+ * A theme contributes per state rather than per folder, so a folder carrying an
+ * arrow and no hand still supplies its arrow and the bundled artwork covers the
+ * rest.
+ */
+function resolveCursors(dir: string | undefined): CursorChoice {
+  if (!dir) {
+    return {
+      status: 'ready',
+      value: DEFAULT_CURSORS,
+      label: 'pointer drawn from the bundled artwork',
+    }
+  }
+
+  const loaded = loadCursorTheme(resolve(process.cwd(), dir), DEFAULT_CURSORS)
+  if (loaded.status === 'failed')
+    return { status: 'failed', reason: loaded.reason }
+
+  return {
+    status: 'ready',
+    value: loaded.cursors,
+    label: `pointer drawn from ${display(resolve(process.cwd(), dir))} for ${loaded.states.join(', ')}`,
+  }
+}
+
+/**
+ * Reports absence only when the module or its engine cannot be resolved, which
+ * is the case a target hits before installing the browser package. Any other
+ * import failure is a defect inside the driver and propagates, rather than
+ * being reported as a missing dependency.
+ */
+async function loadDriver(): Promise<Driver | undefined> {
+  try {
+    return await import('@/demo/drive')
+  } catch (error) {
+    if (isModuleNotFound(error)) return undefined
+    throw error
+  }
+}
+
+function isModuleNotFound(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'ERR_MODULE_NOT_FOUND'
+  )
+}
+
+/**
+ * Resolves where one artifact lands. `--out` replaces the directory the plan
+ * names rather than acting as a root the plan's own directory hangs off, which
+ * would nest the output path inside itself on every run that passes both.
+ */
+function outputPath(planned: string, out: string | undefined): string {
+  const relativePath = out ? join(out, basename(planned)) : planned
+  return resolve(process.cwd(), relativePath)
+}
+
+function emit(json: boolean | undefined, record: unknown): void {
+  if (json) process.stdout.write(`${JSON.stringify(record)}\n`)
+}
+
+/**
+ * Keeps a path clickable in the operator's terminal. A path outside the project
+ * reports absolute, since a relative path to it is a run of `..` segments no
+ * editor resolves.
+ */
+function display(path: string): string {
+  const fromCwd = relative(process.cwd(), path)
+  return fromCwd.startsWith('..') ? path : fromCwd
+}

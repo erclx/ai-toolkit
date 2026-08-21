@@ -44,6 +44,7 @@
     "aitk:sandbox:reset": "aitk sandbox reset"
   },
   "dependencies": {
+    "@playwright/test": "^1.59.1",
     "commander": "^13.1.0",
     "execa": "^9.5.2",
     "pptxgenjs": "^4.0.1"
@@ -53,7 +54,6 @@
     "@astrojs/react": "^5.0.4",
     "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^20.4.1",
-    "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.2.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/bun": "^1.2.10",

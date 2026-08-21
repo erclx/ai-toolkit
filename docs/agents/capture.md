@@ -32,4 +32,6 @@ What is asserted is the font. The command reads the first family the captured el
 
 The browser binary installs separately from the package. A fresh clone runs `bunx playwright install chromium` once, and a run that cannot launch one reports the engine's own remediation inside the frame and exits 1 rather than escaping as a stack trace.
 
-The command is toolkit-only. Its render module holds every browser reference in the toolkit and `files` in `package.json` excludes it, so an installed `aitk` carries the command, reports it as absent on one line, and exits 1. Every other command is unaffected, which is the reason the browser import sits behind a dynamic import rather than at a command's top level.
+The command is toolkit-only. Its render module holds every browser reference capture makes and `files` in `package.json` excludes it, so an installed `aitk` carries the command, reports it as absent on one line, and exits 1. Every other command is unaffected, which is the reason the browser import sits behind a dynamic import rather than at a command's top level.
+
+`aitk demo` is the other browser command and it ships, because the reason capture stays here is that it regenerates images committed to this repository and a target has nothing to regenerate. See `demo.md`.

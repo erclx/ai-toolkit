@@ -1,0 +1,81 @@
+---
+title: Demo
+description: Compiling a screencast draft into a runnable plan, driving a served application to a recording and a still, the pointer the recording paints, and what each refusal reports
+---
+
+# Demo
+
+`aitk demo` drives a project's running application and writes a recording of what it did, plus a still frame of the same run. It exists so a project card and a short demo stop depending on someone sitting down to record one by hand.
+
+Two verbs, and they are separate because the artifact between them is edited.
+
+```bash
+aitk demo compile .claude/.tmp/screencast/inline-edit.md
+aitk demo run demos/inline-edit.json
+aitk demo run demos/inline-edit.json --cursor ~/cursors/theme --out assets
+```
+
+## The draft and the plan are different files
+
+`claude-screencast` drafts beats for a person. A beat carries what is on screen, one verb, what to watch for, an emphasis, and a caption, and none of that names a selector, a URL, a wait condition, or a timing. Those four are what an executor needs and what would ruin the draft, since the format is pre-seeded so the operator edits down rather than fills blanks.
+
+So `aitk demo compile` writes a second artifact rather than adding fields to a beat. It maps each beat's verb to a step, seeds the timing, marks which beat the still comes from, and leaves the target and the URL empty for a person to fill. The report names every field it could not supply.
+
+The plan is committed, not scratch. Its timing is a starting point tuned by watching a recording, and the draft cannot reproduce a tuned value, so a recompile over an existing plan refuses and names `--force`.
+
+| Option          | Behavior                                                          |
+| --------------- | ----------------------------------------------------------------- |
+| `--out <dir>`   | Directory the plan and its output paths point at, default `demos` |
+| `--slug <slug>` | Plan name, defaulting to the draft filename                       |
+| `--force`       | Overwrite an existing plan, losing any timing tuned by hand       |
+| `--json`        | Add a record on stdout carrying the beats and what is unfilled    |
+
+## What a run does
+
+`aitk demo run` reads the plan, refuses if a field is still empty, and drives the application the plan's URL names. It records the whole run to `webm` and writes the still from the beat the draft calls the hero, falling back to the last beat, since a demo's final state is the payoff and a cold open is usually an empty screen.
+
+| Option           | Behavior                                                    |
+| ---------------- | ----------------------------------------------------------- |
+| `--out <dir>`    | Directory to write into, overriding what the plan names     |
+| `--cursor <dir>` | Cursor theme folder to draw the pointer from                |
+| `--no-video`     | Write only the still                                        |
+| `--no-still`     | Write only the recording                                    |
+| `--json`         | Add a record on stdout carrying both paths and the duration |
+
+A step waits on its `waitFor` selector becoming visible and then holds for its own `holdMs`, which is what puts a finished state on screen long enough to read. `navigate` uses the plan's URL unless the step names its own.
+
+## The pointer is painted inside the page
+
+The browser engine's own annotation draws a red dot at the moment of a click and an action label in a corner. It paints no cursor, so a run without more looks like the pointer teleports between targets.
+
+The recorder injects a pointer element before navigation and moves it through the engine's pointer with interpolated steps rather than through the element-clicking helper, which resolves a target and jumps to it. The step count is the whole difference between a cursor that travels and one that appears. The pointer reads the element under it on every move and switches between an arrow, a hand, and a text beam, so it reflects the page the way a real cursor does.
+
+`--cursor` points at a folder of Windows cursor resources and the browser decodes them directly, with no conversion step and no image tooling. Each resource carries a hotspot per size, and the largest entry's hotspot scaled to the drawn size is what puts the artwork's tip where the click lands. A theme contributes per state, so a folder holding an arrow and no hand still supplies its arrow and the bundled artwork covers the rest.
+
+Three of the nineteen states a theme carries are read. A drag, a resize, or a wait shows the arrow where a real session would show something else, and the two animated states have no still frame to draw.
+
+## What the refusals report
+
+Every refusal exits 1 and names its reason in the `--json` record, so a skill branches on `reason` rather than on the exit code.
+
+| Reason             | What happened                                                            |
+| ------------------ | ------------------------------------------------------------------------ |
+| `draft-missing`    | No file at the path given to `compile`                                   |
+| `draft-unreadable` | The draft carries no beat sheet, or a sheet with no beats                |
+| `plan-exists`      | A plan is already there and `--force` was not passed                     |
+| `plan-unresolved`  | A URL or a target is still empty, named field by field                   |
+| `plan-unreadable`  | The plan is not JSON, or a step names a kind nothing drives              |
+| `browser-missing`  | The browser binary is not installed, with `install` carrying the command |
+| `engine-missing`   | The browser package itself did not resolve                               |
+
+## The browser reaches every target
+
+Unlike `aitk capture`, this command ships. Capture is toolkit-only because it regenerates images committed to this repository, and that reason does not transfer to a command whose whole purpose is running in someone else's project.
+
+The cost is stated rather than hidden: the browser binary installs separately, so a target runs `bunx playwright install chromium` once before a recording works at all. A run that cannot launch reports that command inside the frame and exits 1.
+
+## What it does not do
+
+A generated recording is a raw take. Nothing trims it, scores it, or narrates it, and the beat's caption does not reach the video, since the engine's overlay carries the action it performed rather than text from the draft.
+
+It also does not replace a narrated screencast. That has a hero moment, a cut list, and a voice, none of which survives being generated. This answers the case where the alternative is recording nothing.
