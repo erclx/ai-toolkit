@@ -20,8 +20,19 @@ function write(root: string, path: string, text: string): void {
   writeFileSync(full, text)
 }
 
-function git(root: string, args: string[]): void {
-  execaSync('git', ['-C', root, ...args], { extendEnv: false, env: {} })
+/**
+ * Runs git against the fixture with the ambient environment dropped.
+ *
+ * Every read here goes through this rather than a bare `execaSync`. A git hook
+ * exports `GIT_DIR` into the processes it runs and that variable takes
+ * precedence over `-C`, so a bare call reads whichever repository invoked the
+ * suite and the fixture's own history never comes back.
+ */
+function git(root: string, args: string[]): string {
+  return execaSync('git', ['-C', root, ...args], {
+    extendEnv: false,
+    env: {},
+  }).stdout.trimEnd()
 }
 
 describe('auditLabels', () => {
@@ -72,7 +83,7 @@ describe('auditLabels', () => {
     })
 
     it('should read the branch range when the caller names no set', async () => {
-      const base = execaSync('git', ['-C', root, 'rev-parse', 'HEAD']).stdout
+      const base = git(root, ['rev-parse', 'HEAD'])
       git(root, ['checkout', '-b', 'feat/x'])
       write(root, 'infra/main.tf', 'resource {}\n')
       write(root, 'src/ui.ts', 'export const b = 2\n')
