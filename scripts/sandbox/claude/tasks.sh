@@ -44,7 +44,7 @@ stage_setup() {
 
     log_step "Scenario ready: one shipped task archived off a two-task board"
     log_info "Context: v01.0-rate-limit is all [x], names pull request #41, and its"
-    log_info "  Plan: line already points into .claude/plans-archive/, so the"
+    log_info "  Plan: line already points into .claude/plans/archive/, so the"
     log_info "  command's open-outcome and plan-unswept gates are both satisfied"
     log_info "  HEAD carries the shipped work under a subject naming #41"
     log_info "  v02.0-pagination is the control. Its outcomes stay open and it must"
@@ -56,7 +56,7 @@ stage_setup() {
     log_info "Action:  /aitk:claude-tasks archive v01.0-rate-limit"
     log_info "Expect:  declared in fixtures/claude/tasks/archive/expect.toml"
     log_info "         Check it with: aitk sandbox check claude:tasks archive"
-    log_info "         The task moved under .claude/task-archive/, its ordering"
+    log_info "         The task moved under .claude/tasks/archive/, its ordering"
     log_info "         row cleared, and the control left where it was."
     log_info "         Two expectations need a reader and report as unchecked."
     ;;

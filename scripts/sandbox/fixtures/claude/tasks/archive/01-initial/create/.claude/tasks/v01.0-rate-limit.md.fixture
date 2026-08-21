@@ -5,7 +5,7 @@ description: Reject a client that exceeds the request budget for a window
 
 # v01.0: Rate limit the task API
 
-Plan: [feature-rate-limit](../plans-archive/feature-rate-limit.md)
+Plan: [feature-rate-limit](../plans/archive/feature-rate-limit.md)
 Pull request: #41
 
 The task endpoints answered every request they received, so one client could
