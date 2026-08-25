@@ -21,12 +21,10 @@ Owns how the project runs on a developer machine: installing the toolchain, the 
 
 ## Scripts
 
-| Command          | Purpose                                              |
-| ---------------- | ---------------------------------------------------- |
-| `bun run check`  | Full verification. Auto-formats, then asserts clean. |
-| `bun run format` | Auto-fix prettier and shfmt formatting.              |
-| `bun run clean`  | Wipe `node_modules/`, clear bun cache, reinstall.    |
-| `bun run update` | Interactive `bun update` followed by verification.   |
+| Command          | Purpose                                                                        |
+| ---------------- | ------------------------------------------------------------------------------ |
+| `bun run check`  | Repairs locally. Auto-formats, then asserts what the formatters could not fix. |
+| `bun run format` | Auto-fix prettier and shfmt formatting.                                        |
 
 ## Shell scripts
 
