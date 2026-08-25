@@ -21,6 +21,7 @@ Does not govern:
 - Punctuation, formatting, and word choice in a skill body: `markdown.md`
 - The transform from a branch name to a slug a skill carries in a filename: `slug.md`
 - The domain conventions a skill cites, each of which belongs to the standard that owns it
+- Whether a new skill earns its place: the three-question test in the `create-skill` skill and the clause in `570-skill.md`
 
 ## Changing a skill
 

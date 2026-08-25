@@ -12,6 +12,7 @@ paths:
 ## Before editing
 
 - Read the skill's sibling `REQUIREMENT.md` when one exists. If the change closes no gap it states, change the requirement first or drop the change.
+- Confirm `create-skill`'s two creation-time questions are answered before a new `SKILL.md` lands, whether drafted by hand, by another skill, or by `create-skill` itself. Carry the third question into the sibling `REQUIREMENT.md` as a review criterion rather than a gate.
 
 ## After editing
 

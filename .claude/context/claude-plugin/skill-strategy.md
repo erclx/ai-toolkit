@@ -147,6 +147,40 @@ The name is the decision the row owns. `simplify` is the obvious pick and is a b
 
 The body writes no file. A restatement is read once to reach a decision, and rewriting a document into a file is a proposal against the source rather than a restatement of it. That keeps the arm's mechanical half small, since what it can assert is that the tree was left alone and the reply named the source path and the `Cut:` label. Whether the plain version kept the deciding half is the judgment the skill exists to make and nothing checks it, so every claim about the content sits under `manual` rather than being padded into the count.
 
+## Whether a skill earns its place
+
+The redundancy audit below runs outward, against community counterparts. Nothing ran inward, against the catalog's own two zero-cost tells, until this section: a folder wrapping something already reachable, and a folder nobody calls. `create-skill` now asks the first two before a folder exists, and `570-skill.md` carries the same check for whatever creates a `SKILL.md` some other way.
+
+The third question, whether anything invokes the skill beyond the author typing its name, has no answer at creation time. It ships in the skill's own `REQUIREMENT.md` as a review criterion, read against the census below rather than gated on up front.
+
+The test has a shipped precedent. `fae01783` (pull request 516, merged 2026-05-21) dropped `git-stash` for wrapping a single git command that needed no skill body, and `release-changelog` for being low-frequency and invoked by no other skill. Those two sentences were the test, applied once, and stated only in the commit body until this entry.
+
+### The census
+
+Two records answer usage, and both are per-machine readings rather than repository facts: a typed-prompt history of 20,105 entries spanning 2026-02-28 to 2026-08-21, and 496 of 747 tool-level transcripts carrying a skill call, spanning the narrower window 2026-07-27 to 2026-08-21. Both cover the whole machine, 95 project folders across eight repositories, splitting 410 toolkit, 163 target-project, and 173 harness on the transcript side and 2,664 against 1,968 on the typed side, so a skill's zero is not an artifact of measuring the wrong tree. Folded together, ten of sixty-one shipped skills score zero and eight more sit at one or two.
+
+### The rename map
+
+The first pass over the typed history undercounted, because seven skill folders carry a name their own transcripts never mention. Folding the old spellings in moved one skill from zero to eleven and lifted three more off the floor.
+
+- `git-stash` and `release-changelog`: dropped rather than renamed, `fae01783` (PR 516), 2026-05-21
+- `init-project` → `setup-init`, `gov-install` → `setup-gov`, `indexes-install` → `setup-indexes`, `verify-scaffold` → `setup-verify`: same commit as the drop above
+- `operator` → `toolkit-operator`: `e94c6951` (PR 528), 2026-06-11
+- `claude-context-migrate` → `migration-context`, `claude-standards-relocate` → `migration-standards`: `261b3da2` (PR 546), 2026-07-03
+
+Every rename lands before the transcript window opens on 2026-07-27, so the tool-level record never carries an old spelling and the correction runs entirely off the typed history. `git log --diff-filter=R` over `claude/skills/` reports nine rename records against these seven. The other two are not a skill rename: `create-standard` and `create-snippet` swapped a shared `references/snippets.md` between them, which the rename detector reads the same way it reads a folder move. Take the count from the seven names, not from either number a raw `git log` or an untraced dump reports.
+
+### The five bounds
+
+- Sandbox and eval runs inflate anything with a test driving it. 173 of the 747 tool-level transcripts are harness rather than organic use.
+- The tool-level record spans four weeks against the typed history's six months, so recent adoption reads lower there than it will once the window catches up.
+- A skill body read by path, rather than invoked through the tool, writes no record in either corpus.
+- A one-shot skill (`setup-*`, `migration-*`) can only ever score in the typed record, never the tool-level one, since every target it acts on was scaffolded before the transcript window opened.
+- The census spans 95 project folders across eight repositories on one machine. It is a reading, not a repository fact, and does not reproduce on a second machine or a second pass.
+
+### What the census cannot count
+
+A zero or a near-zero above is not the same as nobody reaching the skill. Six score at or near zero here and are reached by something other than the operator typing its name: `create-rule` is cited by three sibling skill bodies, `setup-gov` and `claude-ux-measure` by two each, `migration-context` and `setup-verify` each carry a sandbox arm that exercises them with no typed invocation behind it, and `claude-teach` is named by a governance rule and by two docs. Read the numbers above as one input to a conversation about a skill's place. Read alone, they name a removal list nothing here endorses.
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.

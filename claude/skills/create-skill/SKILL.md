@@ -18,9 +18,15 @@ Read these files in parallel:
 
 ## Steps
 
-1. Draft the full `SKILL.md` from the user's description
-2. Draft the sibling `REQUIREMENT.md` from what the skill is for, in the shape the standard states. Write the gaps from the user's description rather than from the drafted body, since a requirement derived from the body records whatever the draft overfitted to.
-3. Confirm the skill name and both files with the user before writing
-4. Write to `.claude/skills/<name>/SKILL.md` and `.claude/skills/<name>/REQUIREMENT.md`
+1. Answer three questions in writing before drafting anything. Tell the user and stop if a rule, a verb, or an existing skill already reaches this moment, or if the body carries no procedure a session would get wrong from first principles:
+   - Does a rule, a verb, or an existing skill already reach this moment? A folder that only wraps something already reachable duplicates it rather than adding to the catalog.
+   - Does the body carry a procedure a session would get wrong from first principles? A one-line wrapper around a single command needs no skill.
+   - Will anything invoke it other than the author typing its name? Carry this one into the drafted `REQUIREMENT.md`'s `Out of scope` section as a review criterion instead, since nothing can answer it before the skill has run.
+2. Draft the full `SKILL.md` from the user's description
+3. Draft the sibling `REQUIREMENT.md` from what the skill is for, in the shape the standard states. Write the gaps from the user's description rather than from the drafted body, since a requirement derived from the body records whatever the draft overfitted to.
+4. Confirm the skill name and both files with the user before writing
+5. Write to `.claude/skills/<name>/SKILL.md` and `.claude/skills/<name>/REQUIREMENT.md`
 
 Every skill carries a requirement. A skill created without one is a gap someone closes in a later sweep, and the sweep has to reconstruct what the skill was for from the body it already shipped.
+
+The two-question check has a shipped precedent. Pull request 516 dropped `git-stash` for wrapping a single git command that needed no skill body, and `release-changelog` for being low-frequency and invoked by no other skill. The first is question one, and the second is question three read back after the fact, which is why it stays a review criterion rather than something this skill can gate on.
