@@ -50,6 +50,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk claude routing`      | Report per `CLAUDE.md` section how many bullets name a path and how many of those a path-scoped rule already covers (`--json`)                 |
 | `aitk gov test-order`      | Report where an implementation reached history ahead of the test covering it (`--json`)                                                        |
 | `aitk gov superseded`      | Report where the tree still asserts a value a changed convention no longer produces, keyed on the value (`--json`)                             |
+| `aitk gov restated`        | Report every instruction the always-loaded file shares with the seed or a shipped skill body, classed and with its anchors named (`--json`)    |
 | `aitk secrets scan`        | Report credential-shaped values in the tree the package ships, keyed on issued values rather than on words (`--json`)                          |
 | `aitk deps audit`          | Report published advisories against the resolved dependency set, refusing rather than reporting clean when the index is unreachable (`--json`) |
 | `aitk labels audit`        | Report the labels a changed set earns from the pull request label map and the paths no row reaches (`--json`)                                  |
