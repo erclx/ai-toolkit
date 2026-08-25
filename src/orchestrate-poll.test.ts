@@ -189,4 +189,54 @@ describe('poll', () => {
     expect(carried.stderr).toContain('#7 could not be read')
     expect(carried.stderr).not.toContain('integer expression expected')
   })
+
+  it('should report a comment posted under a heading outside the known set', () => {
+    writeThread([], [])
+    expect(poll().stdout).toContain('OPENED')
+
+    writeThread(
+      [],
+      [{ createdAt: RESPONSE_AT, heading: '## Something Unexpected' }],
+    )
+    const unmatched = poll()
+    expect(unmatched.stdout).toContain('UNMATCHED #7')
+    expect(unmatched.stdout).toContain('## Something Unexpected')
+
+    // The count caught up with the baseline the line above wrote, so the same
+    // comment does not report a second time.
+    expect(poll().stdout).toBe('No movement.')
+  })
+
+  it('should route a post-review-findings comment the same as a review response', () => {
+    writeThread([{ heading: '## Review', submittedAt: FIRST_PASS }], [])
+    expect(poll().stdout).toContain('SEEN')
+
+    writeThread(
+      [{ heading: '## Review', submittedAt: FIRST_PASS }],
+      [{ createdAt: RESPONSE_AT, heading: '## Post-review findings' }],
+    )
+    expect(poll().stdout).toContain('RESPONSE  #7')
+  })
+
+  // A carried line's shorter shape misreads the same way for the unmatched
+  // count that it does for the two stamps above. Nothing may read that one as
+  // a number either.
+  it('should classify nothing when a carried line supplies no unmatched count', () => {
+    writeThread([], [])
+    expect(poll().stdout).toContain('OPENED')
+
+    writeThread(
+      [],
+      [{ createdAt: RESPONSE_AT, heading: '## Something Unexpected' }],
+    )
+    expect(poll().stdout).toContain('UNMATCHED #7')
+
+    breakView()
+    const carried = poll()
+
+    expect(carried.status).toBe(0)
+    expect(carried.stdout).toBe('No movement.')
+    expect(carried.stderr).toContain('#7 could not be read')
+    expect(carried.stderr).not.toContain('integer expression expected')
+  })
 })

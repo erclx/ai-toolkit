@@ -170,7 +170,9 @@ A minor the dispatched worker declines is what needs a surface that survives the
 
 Read the state off the most recent review comment rather than off the presence of a closed one. A close-out does not close the pull request, so a commit pushed after it gets its own pass, and that pass reopens the review under `## Review` when it raises a finding of any grade.
 
-Both of this skill's headings anchor as a section distinct from human threads. Do not invent one beyond those two and the `## Review response` a sibling owns, and do not append the PR number, which GitHub already renders above the comment.
+Both of this skill's headings anchor as a section distinct from human threads, and neither invents beyond what the whole set already states. That set is five headings across two families, stated here once so `claude-orchestrate`'s poll and every reply-posting skill cite it rather than carry a copy. The review family, `## Review` and `## Review closed`, belongs to this skill alone, and the reply family, `## Review response`, `## Rebase`, and `## Post-review findings`, belongs to `claude-address-review`.
+
+The first reply heading answers a finding this skill posted, the second reports a stale branch resolved without one, and the third carries a finding a worker produces after a close-out rather than in answer to one already on the thread, since a finding produced late is still a finding. A comment posted under a heading outside these five reaches the poll as unclassified rather than as silence, so an invented sixth heading is a gap the next run reports instead of one it repeats. Do not append the PR number, which GitHub already renders above the comment.
 
 Name the scope in every summary line after the first pass, since a reader cannot otherwise tell a narrow read from a full one. When the fallback in Step 2 fired, replace the commit count with `Re-reviewed the full change, the prior pass's commit is no longer on the branch`.
 

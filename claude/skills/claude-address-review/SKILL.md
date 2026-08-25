@@ -194,3 +194,13 @@ Rebased PR #<number> onto origin/main. <N> files resolved by hand, <N> rebuilt b
 ```
 
 Do not merge. Hand back to the orchestrator for re-review.
+
+## Post-review findings
+
+Not everything worth reaching the reviewing session surfaces inside the numbered flow above. A worker that settled a risk, filed a follow-up, or found something else worth reporting after Step 7 already closed the review posts it directly rather than waiting on a review pass that has nothing left to trigger it. Write the body the way Step 6 writes a reply: load `write-human` for voice, follow `${CLAUDE_SKILL_DIR}/../../standards/markdown.md` for the banned words, and run the `${CLAUDE_SKILL_DIR}/../../standards/publish.md` scan before posting.
+
+Open with `## Post-review findings` rather than `## Review response`, since nothing on the thread is being answered. `claude-pr-review` states the full heading set this belongs to and routes it the same as a response: `claude-orchestrate`'s poll picks it up and sends the reviewing session back for a pass. Close the body with `🤖 Addressed by Claude Code` on its own line, matching the reply's footer.
+
+```bash
+gh pr comment <number> --body-file .claude/.tmp/address-review/reply-<number>.md
+```
