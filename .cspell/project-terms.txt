@@ -134,6 +134,7 @@ ultraplan
 uncited
 unconfigured
 undercount
+undercounted
 undercounts
 ungated
 unmatch
