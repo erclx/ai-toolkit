@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import { BAN_SETS, emptyBanSets } from '@/markdown/bans'
-import { resolveMarkdown } from '@/markdown/files'
+import { type MarkdownAuditRefusal, resolveMarkdown } from '@/markdown/files'
 import { isGating } from '@/markdown/gate'
 import {
   type BanFinding,
@@ -119,15 +119,21 @@ async function runAudit(
 
   if (scope.kind === 'unavailable') {
     return refuse(
+      'no-git',
       'git could not list the tree, so no corpus was built. Run inside a git repository.',
+      root,
+      opts.json ?? false,
     )
   }
 
   if (scope.files.length === 0) {
     return refuse(
+      paths.length === 0 ? 'no-markdown' : 'no-match',
       paths.length === 0
         ? 'No markdown file in the tree.'
         : `No markdown file matched: ${scope.unmatched.join(', ')}`,
+      root,
+      opts.json ?? false,
     )
   }
 
@@ -203,11 +209,21 @@ async function runAudit(
   return gating ? EXIT_GATE : 0
 }
 
-function refuse(message: string): number {
+function refuse(
+  reason: MarkdownAuditRefusal,
+  message: string,
+  root: string,
+  emitJson: boolean,
+): number {
   intro('aitk markdown audit')
   logStep('Refused')
   logWarn(message)
   outro()
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ root, reason, message })}\n`)
+  }
+
   return EXIT_REFUSED
 }
 

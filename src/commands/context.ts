@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import type { Command } from 'commander'
 import {
+  type ContextAuditRefusal,
   type EntryReport,
   governsContent,
   type LengthCause,
@@ -157,12 +158,17 @@ async function runAudit(
   // short a required section, which is the pass a gate exists to prevent.
   if (gateOnly && widened) {
     return refuse(
+      'conflicting-options',
       '--citations-only runs the citation check alone, so --gate would widen the gate to findings the run never measures. Pass one.',
       gateOnly,
+      root,
+      opts.json ?? false,
     )
   }
 
-  if (typeof names === 'string') return refuse(names, gateOnly)
+  if (typeof names === 'string') {
+    return refuse('bad-folder-list', names, gateOnly, root, opts.json ?? false)
+  }
 
   // The root base is opt-in. A target carrying a root `wireframes/` would
   // otherwise be audited against a standard it never adopted, on a bare run
@@ -173,8 +179,11 @@ async function runAudit(
   })
   if (folders.length === 0) {
     return refuse(
+      'no-folders',
       `No audited folder found ${named ? 'under .claude/ or the project root' : 'under .claude/'}. Looked for: ${names.join(', ')}.`,
       gateOnly,
+      root,
+      opts.json ?? false,
     )
   }
 
@@ -190,16 +199,22 @@ async function runAudit(
   const cited = presentNames(folders)
   if (gateOnly && cited.length === 0) {
     return refuse(
+      'no-citation-scope',
       `The citation check spells the .claude/ prefix and no audited folder resolved there. Looked for: ${names.join(', ')}.`,
       gateOnly,
+      root,
+      opts.json ?? false,
     )
   }
 
   const citations = await auditCitations(root, cited)
   if (citations.kind === 'unavailable') {
     return refuse(
+      'no-git',
       'git could not list the tree, so no citation was checked. Run inside a git repository.',
       gateOnly,
+      root,
+      opts.json ?? false,
     )
   }
 
@@ -308,16 +323,26 @@ async function runAudit(
   return gating ? EXIT_GATE : 0
 }
 
-function refuse(message: string, gateOnly: boolean): number {
+function refuse(
+  reason: ContextAuditRefusal,
+  message: string,
+  gateOnly: boolean,
+  root: string,
+  emitJson: boolean,
+): number {
   if (gateOnly) {
     frameError(message)
-    return 1
+  } else {
+    intro('aitk context audit')
+    logStep('Refused')
+    logWarn(message)
+    outro()
   }
 
-  intro('aitk context audit')
-  logStep('Refused')
-  logWarn(message)
-  outro()
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ root, reason, message })}\n`)
+  }
+
   return 1
 }
 

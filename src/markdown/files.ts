@@ -19,6 +19,16 @@ export type FileScope =
     }
   | { readonly kind: 'unavailable' }
 
+/**
+ * Every reason `aitk markdown audit` refuses for.
+ *
+ * None is an ordinary absence. `no-git` is a broken checkout the way it is
+ * for the secret scan, and a tree tracked by git carrying no markdown file at
+ * all, or an argument matching none, is a corpus this run could not build
+ * rather than a target that adopted none of the convention this check reads.
+ */
+export type MarkdownAuditRefusal = 'no-git' | 'no-markdown' | 'no-match'
+
 function isDirectory(path: string): boolean {
   try {
     return statSync(path).isDirectory()

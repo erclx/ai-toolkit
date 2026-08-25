@@ -35,6 +35,12 @@ The corpus decides the allowance by default, and a spec naming its own reasons o
 
 `aitk gov test-order` marks the edge of what the baseline can compare. It scopes against the trunk, falls back to the root commit, and a depth-1 checkout has neither, so the range is empty and it reports zero rather than refusing. A shallow run therefore under-reports against a floor taken from a full clone and reads as shrinkage, which is the safe direction and the reason that one delta means something only from a clone carrying history.
 
+Every audited verb now writes a parseable record on its refusal path, since a refusal printing nothing reaches the aggregate as unparseable output rather than as a reading it can act on. `aitk context audit` and `aitk claude skills audit` each take the allowance the reach check already had: a project adopting none of `.claude/context/`, `.claude/diagrams/`, and `.claude/wireframes/`, or neither `claude/skills/` nor `.claude/skills/`, has adopted no convention either audit measures, so each names its one absence reason rather than reporting `incomplete` on every run a target makes.
+
+`aitk markdown audit`, `aitk comments scan`, and `aitk gov test-order` write a record on every refusal path too, and none claims the allowance. A corpus with no markdown file, a bad `--languages` argument, and a tree carrying no git history at all are each a broken invocation or a broken checkout, so they stay `unmeasured` on the corpus's own default.
+
+`records-standards` is the one tracked record kind that takes the allowance, against the rule that an unread tracked tree is a broken checkout. The exception rests on a fact this record already carries: the install channel that would have written `standards/` into a target's own tree closed, so a project other than this toolkit's own checkout carries neither `standards/` nor `.claude/standards/` by design. Leaving the corpus label without the exception would have pinned every such project's aggregate at `incomplete` forever, the same signal the split above exists to retire.
+
 ### The retained baseline
 
 `.claude/audits/baseline.json` holds the counts from the last run recorded with `--record`, with the day and the commit behind them. It is committed, because the question the record answers is whether a number grew since anyone last looked and a fresh checkout has to inherit that answer. A per-machine record makes every contributor's first run a first run, which answers nobody.

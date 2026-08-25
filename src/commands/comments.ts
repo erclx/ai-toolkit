@@ -88,6 +88,12 @@ async function runScan(
     logStep('Refused')
     logWarn(languages)
     outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({ root, reason: 'bad-languages', message: languages })}\n`,
+      )
+    }
     return 1
   }
 

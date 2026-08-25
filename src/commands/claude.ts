@@ -20,6 +20,7 @@ import {
   REQUIREMENT_SECTIONS,
   type SkillFinding,
   type SkillsAudit,
+  type SkillsAuditRefusal,
 } from '@/claude/skills-audit'
 import {
   type RoutingRefusal,
@@ -862,8 +863,11 @@ async function runSkillsAudit(
 
   if (report.corpora.length === 0) {
     return refuseAudit(
+      'no-corpus',
       `No skill corpus under ${root}. Looked for ${CORPORA.join(' and ')}.`,
       gateOnly,
+      root,
+      opts.json ?? false,
     )
   }
 
@@ -910,16 +914,26 @@ async function runSkillsAudit(
   return auditExitCode(report)
 }
 
-function refuseAudit(message: string, gateOnly: boolean): number {
+function refuseAudit(
+  reason: SkillsAuditRefusal,
+  message: string,
+  gateOnly: boolean,
+  root: string,
+  emitJson: boolean,
+): number {
   if (gateOnly) {
     frameError(message)
-    return 1
+  } else {
+    intro('aitk claude skills audit')
+    logStep('Refused')
+    logWarn(message)
+    outro()
   }
 
-  intro('aitk claude skills audit')
-  logStep('Refused')
-  logWarn(message)
-  outro()
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ root, reason, message })}\n`)
+  }
+
   return 1
 }
 

@@ -348,3 +348,78 @@ describe('command action exit codes', () => {
     expect(JSON.parse(result.stdout).reason).toBe('bad-input')
   })
 })
+
+/**
+ * Every audited verb refuses over a corpus this workDir does not carry.
+ * `aitk audits run` reads each `--json` record over its exit alone, so a
+ * refusal that prints nothing there reaches the aggregate as unparseable
+ * output rather than as a reading it can act on. These pin the parseable
+ * shape rather than the wording, which is what the catalog matches on.
+ */
+describe('refusal records over an unmeasured corpus', () => {
+  let workDir: string
+
+  beforeAll(async () => {
+    workDir = await mkdtemp(join(tmpdir(), 'aitk-refusal-record-'))
+  }, SETUP_TIMEOUT_MS)
+
+  afterAll(async () => {
+    await rm(workDir, { recursive: true, force: true })
+  })
+
+  it('should record the reason when context audit finds no folder', async () => {
+    const result = await runCli(['context', 'audit', '--json'], {
+      cwd: workDir,
+    })
+
+    expect(result.exitCode).toBe(1)
+    const record = JSON.parse(result.stdout)
+    expect(record.root).toBe(workDir)
+    expect(record.reason).toBe('no-folders')
+  })
+
+  it('should record the reason when markdown audit finds no git tree', async () => {
+    const result = await runCli(['markdown', 'audit', '--json'], {
+      cwd: workDir,
+    })
+
+    expect(result.exitCode).toBe(1)
+    const record = JSON.parse(result.stdout)
+    expect(record.root).toBe(workDir)
+    expect(record.reason).toBe('no-git')
+  })
+
+  it('should record the reason when the skill audit finds no corpus', async () => {
+    const result = await runCli(['claude', 'skills', 'audit', '--json'], {
+      cwd: workDir,
+    })
+
+    expect(result.exitCode).toBe(1)
+    const record = JSON.parse(result.stdout)
+    expect(record.root).toBe(workDir)
+    expect(record.reason).toBe('no-corpus')
+  })
+
+  it('should record the reason when comments scan is given a bad language', async () => {
+    const result = await runCli(
+      ['comments', 'scan', '--languages', 'cobol', '--json'],
+      { cwd: workDir },
+    )
+
+    expect(result.exitCode).toBe(1)
+    const record = JSON.parse(result.stdout)
+    expect(record.root).toBe(workDir)
+    expect(record.reason).toBe('bad-languages')
+  })
+
+  it('should record the reason when test order finds no git history', async () => {
+    const result = await runCli(['gov', 'test-order', '--json'], {
+      cwd: workDir,
+    })
+
+    expect(result.exitCode).toBe(1)
+    const record = JSON.parse(result.stdout)
+    expect(record.root).toBe(workDir)
+    expect(record.reason).toBe('no-history')
+  })
+})

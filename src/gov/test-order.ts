@@ -44,6 +44,21 @@ export interface Scope {
   readonly testSuffixes: readonly string[]
 }
 
+/**
+ * Every reason `aitk gov test-order` refuses for.
+ *
+ * None is an ordinary absence. A depth-1 checkout falls back to the root
+ * commit and reports zero rather than reaching any of these, so what remains
+ * is a repository with no commit at all or a git operation that failed
+ * outright, both a broken checkout rather than a target's ordinary state.
+ */
+export type TestOrderRefusal =
+  | 'no-history'
+  | 'no-log'
+  | 'no-tree'
+  | 'bad-base'
+  | 'no-base'
+
 export type TestOrderReport =
   | {
       readonly kind: 'measured'
@@ -56,7 +71,11 @@ export type TestOrderReport =
       /** Changed paths outside the pairing's reach, named rather than counted. */
       readonly ignored: readonly string[]
     }
-  | { readonly kind: 'unreadable'; readonly reason: string }
+  | {
+      readonly kind: 'unreadable'
+      readonly reason: TestOrderRefusal
+      readonly message: string
+    }
 
 export interface TestOrderOptions {
   /** The far side of the range, defaulting to the merge base against the trunk. */
@@ -258,7 +277,8 @@ export function readTestOrder(
   if (head === undefined) {
     return {
       kind: 'unreadable',
-      reason: `No git history under ${root}. History is the only surface carrying the ordering, so there is nothing to read.`,
+      reason: 'no-history',
+      message: `No git history under ${root}. History is the only surface carrying the ordering, so there is nothing to read.`,
     }
   }
 
@@ -277,7 +297,8 @@ export function readTestOrder(
   if (log === undefined) {
     return {
       kind: 'unreadable',
-      reason: `Reading history between ${base} and HEAD failed under ${root}.`,
+      reason: 'no-log',
+      message: `Reading history between ${base} and HEAD failed under ${root}.`,
     }
   }
 
@@ -285,7 +306,8 @@ export function readTestOrder(
   if (tree === undefined) {
     return {
       kind: 'unreadable',
-      reason: `Reading the tree at ${base} failed under ${root}. Without it a test written before the range reads as absent.`,
+      reason: 'no-tree',
+      message: `Reading the tree at ${base} failed under ${root}. Without it a test written before the range reads as absent.`,
     }
   }
 
@@ -323,13 +345,14 @@ function resolveBase(
   root: string,
   ref: string | undefined,
   head: string,
-): string | { kind: 'unreadable'; reason: string } {
+): string | { kind: 'unreadable'; reason: TestOrderRefusal; message: string } {
   if (ref !== undefined) {
     const resolved = revParse(root, ref)
     if (resolved === undefined) {
       return {
         kind: 'unreadable',
-        reason: `Ref ${ref} resolves to no commit in ${root}. Pass a commit this tree carries.`,
+        reason: 'bad-base',
+        message: `Ref ${ref} resolves to no commit in ${root}. Pass a commit this tree carries.`,
       }
     }
     return resolved
@@ -345,7 +368,8 @@ function resolveBase(
   if (rootCommits === undefined || rootCommits === '') {
     return {
       kind: 'unreadable',
-      reason: `No base resolves against ${root}. Fetch origin or pass --base.`,
+      reason: 'no-base',
+      message: `No base resolves against ${root}. Fetch origin or pass --base.`,
     }
   }
 

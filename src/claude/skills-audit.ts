@@ -25,6 +25,13 @@ export const CORPORA: readonly string[] = [
   join('.claude', 'skills'),
 ]
 
+/**
+ * The one reason this audit refuses. A project carrying neither corpus is the
+ * ordinary state of a target that has not adopted either skills convention,
+ * the same absence `no-skills` reads for the shipped citation reach check.
+ */
+export type SkillsAuditRefusal = 'no-corpus'
+
 /** Kebab-case, which the standard states as no spaces, capitals, or underscores. */
 const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 

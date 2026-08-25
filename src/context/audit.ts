@@ -15,6 +15,22 @@ import { isStubSeed } from '@/seed-marker'
  * any markdown file, so they are stated at the attribute tier and measured by
  * `aitk markdown audit` rather than here.
  */
+/**
+ * Every reason `aitk context audit` refuses for.
+ *
+ * `no-folders` is the one ordinary absence: a project that never adopted
+ * `.claude/context/`, `.claude/diagrams/`, or `.claude/wireframes/` names no
+ * corpus this audit can measure, the same state `no-skills` reads for the
+ * skill corpora. The other four are a malformed invocation or a checkout git
+ * cannot read, which stay a break rather than an absence.
+ */
+export type ContextAuditRefusal =
+  | 'conflicting-options'
+  | 'bad-folder-list'
+  | 'no-folders'
+  | 'no-citation-scope'
+  | 'no-git'
+
 export const LENGTH_CHECKPOINT = 150
 
 /**

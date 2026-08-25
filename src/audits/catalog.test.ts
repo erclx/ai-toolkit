@@ -28,6 +28,24 @@ describe('the audit catalog', () => {
   })
 
   /**
+   * Reads the catalog rather than naming an entry by hand, so a spec added
+   * later with an empty or blank `absentReasons` array fails here instead of
+   * silently reading every refusal on it as unmeasured.
+   */
+  it('should give every declared absence reason a non-empty string', () => {
+    const declaring = AUDITS.filter((audit) => audit.absentReasons)
+
+    expect(declaring.length).toBeGreaterThan(0)
+    expect(
+      declaring.every(
+        (audit) =>
+          (audit.absentReasons?.length ?? 0) > 0 &&
+          audit.absentReasons?.every((reason) => reason.length > 0),
+      ),
+    ).toBe(true)
+  })
+
+  /**
    * Three of these are the ones `verify.sh` already runs, and `secrets` is the
    * one entry gating without a stage behind it, added on the recorded test
    * that a fact gates and a judgment reports. The list is asserted whole so a
@@ -520,6 +538,31 @@ describe('classifying an audit run by its exit code', () => {
     expect(result.status).toBe('absent')
   })
 
+  /**
+   * A project adopting none of `.claude/context/`, `.claude/diagrams/`, or
+   * `.claude/wireframes/` is the ordinary state of a target, the same test the
+   * skill corpora take below.
+   */
+  it('should read a project with no audited context folder as absent', () => {
+    const result = classify(
+      specFor('context'),
+      1,
+      '{"root":"x","reason":"no-folders","message":"No audited folder found"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
+  it('should read a project with no skill corpus as absent', () => {
+    const result = classify(
+      specFor('skills'),
+      1,
+      '{"root":"x","reason":"no-corpus","message":"No skill corpus"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
   it('should read a found secret as a finding that is a fact', () => {
     const result = classify(
       specFor('secrets'),
@@ -531,15 +574,31 @@ describe('classifying an audit run by its exit code', () => {
   })
 
   /**
-   * Absence is expected only where the corpus is one machine's. A tracked tree
-   * that cannot be found is a defect in the checkout, and reading it as an
-   * ordinary absence would report a pass over a corpus that ships to targets.
+   * `standards` is the exception among the tracked specs, on the same test the
+   * secret scan and the reach check already take: the install channel that
+   * would have written `standards/` into a target closed, so a project other
+   * than this toolkit's own checkout carries neither root by design rather
+   * than by defect.
    */
-  it('should read an absent tracked corpus as unmeasured', () => {
+  it('should read an absent standards corpus as absent', () => {
     const result = classify(
       specFor('records-standards'),
       1,
       '{"ok":false,"reason":"no-folder","message":"No standards folder"}',
+    )
+
+    expect(result.status).toBe('absent')
+  })
+
+  /**
+   * A tracked corpus with no stated exception stays the default: a tree that
+   * cannot be found is a defect in the checkout rather than an absence.
+   */
+  it('should read an absent tracked corpus with no exception as unmeasured', () => {
+    const result = classify(
+      specFor('context'),
+      1,
+      '{"root":"x","reason":"no-git","message":"git could not list the tree"}',
     )
 
     expect(result.status).toBe('unmeasured')
