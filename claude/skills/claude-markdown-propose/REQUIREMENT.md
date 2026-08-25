@@ -32,6 +32,7 @@ A second failure compounds the first. A claim copied across several files is cor
 - Apply an unanswered change, or a subset of a file's answered changes while leaving the rest for later
 - Fill a `You:` slot, or infer a disposition from an empty one
 - Name a specific concern in this skill's own procedure. A concern belongs in the invocation, and hardcoding one narrows the skill to the day it was written.
+- Assume the skill earns its place because the gap is real. Whether anything invokes it beyond the operator typing its name has no answer at creation time, and is a review criterion to read against a later usage census rather than a gate this file can pass on its own.
 
 ## Guards
 
