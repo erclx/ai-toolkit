@@ -1,7 +1,6 @@
 ---
 title: Issue reference
 description: GitHub issue title, labels, and body conventions
-consumers: git-issue
 ---
 
 # Issue reference

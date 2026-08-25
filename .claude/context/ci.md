@@ -120,7 +120,6 @@ Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:c
 | Indexes            | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
 | Consumed copies    | `scripts/core/regen-claude-copies.sh`                    | `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules` match source      |
 | Hero               | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and both stamp digests match the pair beside them        |
-| Skill references   | `scripts/core/regen-skill-references.sh`                 | bundled standards match their consumers                                                            |
 | Skill paths        | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
 | Plugin boundary    | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
 | Context citations  | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                                  |
@@ -141,9 +140,7 @@ The table names the `else` side, since `check:ci` runs with `VERIFY_WRITE=false`
 
 ### The regeneration stages
 
-The four drift stages, Indexes, Consumed copies, Hero, and Skill references, regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
-
-Skill references asserts over `claude/skills/*/references`, and the pathspec is unquoted, so the shell expands it to every references folder before git sees it. The assertion therefore covers whatever sits in those folders rather than the generated files alone. `claude/skills/ci-workflow/references/workflows.md` is hand-authored and nothing regenerates it, so an edit to it fails the stage until it is committed, under a message naming a regeneration that never ran. Commit the file and the stage passes, since the assertion compares the working tree against HEAD.
+The three drift stages, Indexes, Consumed copies, and Hero, regenerate and then assert twice through `assert_no_drift`, once with `git diff --exit-code` for modified tracked files and once with `git ls-files --others --exclude-standard` for new untracked ones. They catch content that was regenerated locally but committed stale, which is the failure a local-only gate lets through.
 
 Regeneration runs in both modes, so `check:ci` writes to the working tree even though it never formats. Only the format stage changes behavior between modes.
 

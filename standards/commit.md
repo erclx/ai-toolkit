@@ -1,7 +1,6 @@
 ---
 title: Commit reference
 description: Commit message format and type conventions
-consumers: git-commit, git-stage
 ---
 
 # Commit message reference

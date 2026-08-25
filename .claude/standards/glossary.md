@@ -1,7 +1,6 @@
 ---
 title: Glossary reference
 description: Frontmatter, entry shape, ordering, and the rules deciding which terms a glossary carries
-consumers: claude-teach
 ---
 
 # Glossary reference

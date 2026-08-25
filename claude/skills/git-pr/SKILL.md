@@ -9,8 +9,8 @@ description: Generates pull request titles and descriptions from git diffs. Use 
 
 Read these files in parallel:
 
-- `${CLAUDE_SKILL_DIR}/references/branch.md`: branch format, valid types, and constraints
-- `${CLAUDE_SKILL_DIR}/references/pr.md`: structure, rules, and banned phrases
+- `${CLAUDE_SKILL_DIR}/../../standards/branch.md`: branch format, valid types, and constraints
+- `${CLAUDE_SKILL_DIR}/../../standards/pr.md`: structure, rules, and banned phrases
 - `${CLAUDE_SKILL_DIR}/references/labels.md`: label map format, matching, and the missing-label warning. Skip when the project has no `.claude/aitk/pr-labels.toml`.
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: banned words, punctuation, and formatting for all generated text
 - The `write-human` skill: voice, rhythm, and sentence construction for all generated text
@@ -47,7 +47,7 @@ Either case leaves both reads empty, which the no-commits guard below catches. S
 
 ## Guards
 
-- If branch name does not match `<type>/<description>` format (valid types are defined in `${CLAUDE_SKILL_DIR}/references/branch.md`), stop and output:
+- If branch name does not match `<type>/<description>` format (valid types are defined in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`), stop and output:
   `❌ Branch name does not follow conventions. Run /git-branch to rename first.`
 - If no commits ahead of main, stop and output:
   `❌ No commits ahead of main. Nothing to PR.`
@@ -64,13 +64,13 @@ After outputting the preview, execute the final command immediately. Claude Code
 
 ### Testing checkboxes
 
-Follow Testing discipline in `${CLAUDE_SKILL_DIR}/references/pr.md`. Run each check before writing its line, then tick the box and state the result the run reported. Never pre-check based on intent or past sessions.
+Follow Testing discipline in `${CLAUDE_SKILL_DIR}/../../standards/pr.md`. Run each check before writing its line, then tick the box and state the result the run reported. Never pre-check based on intent or past sessions.
 
 Leave a box unchecked only for the human-only cases the reference defines, and name which human and why on the same line. A request for the reviewer is not a test result, so it belongs under `## For the reviewer` rather than in the Testing list.
 
 ### Pre-publish scan
 
-Before running the final command, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/references/pr.md`.
+Before running the final command, run the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against the PR title and body. The title and body go straight to the remote with nothing checking them on the way, so this scan is the only gate. It covers the phase-label check as well as the characters, since both go to a reader who has no task board. It applies on top of the banned phrases in `${CLAUDE_SKILL_DIR}/../../standards/pr.md`.
 
 ### Resolving the pull request
 

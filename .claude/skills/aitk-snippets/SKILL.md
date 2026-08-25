@@ -13,7 +13,7 @@ Read `.claude/context/snippets.md` for system overview, categories, and structur
 - Plain markdown only. No YAML frontmatter.
 - No user fill-in placeholders. If a value depends on context, the user adds it after invocation.
 - Use `aitk snippets create` to add a snippet. To add manually: create a `.md` file in the correct folder.
-- Admission and placement follow the cadence and audience tests in `standards/bundled/snippets.md`. Read them before adding a snippet or judging one already in the catalog.
+- Admission and placement follow the cadence and audience tests in `standards/snippets.md`. Read them before adding a snippet or judging one already in the catalog.
 - Those tests land here as three folders. `snippets/` holds what a target invokes with no project files behind it, `snippets/claude/` what reads or writes a project's own files, and `internal/snippets/` what only this repository runs, which the plugin never ships.
 
 ## Presets
@@ -41,4 +41,4 @@ When renaming a snippet:
 ## Reference
 
 - `.claude/context/snippets.md`: system overview, categories, CLI
-- `standards/bundled/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions
+- `standards/snippets.md`: what a snippet is, invocation channels, use patterns, authoring conventions

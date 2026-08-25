@@ -49,7 +49,6 @@ The test strips every inherited `GIT_*` variable before building its fixtures. G
 
 ### Stage gotchas
 
-- `check-skill-paths.sh` scans `claude/skills/**` after `regen-skill-references.sh` has written into it, so a failure lands against a generated copy the author cannot edit in place. The message names `standards/bundled/` for that reason. `assert_no_drift` is scoped by folder glob and has the same shape, flagging a hand-authored file with a message about regenerated files.
 - Three stages in `verify.sh` call TypeScript, context citations, the seed-standards gate, and the skill-requirement gate, in that order. Each invokes `bun src/cli.ts` rather than `aitk`, because a globally installed `aitk` resolves to the main checkout no matter which worktree is running and the gate would then measure the wrong tree.
 - Every stage above the group is pure bash by construction, so the bun startup on every push is cost the citation stage introduced and the two below it reuse. A later TypeScript stage belongs beside them rather than higher up, which is what keeps that split readable.
 

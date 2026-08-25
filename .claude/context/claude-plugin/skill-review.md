@@ -131,7 +131,7 @@ It asks rather than grades, and that is why it stays out of the finding counts. 
 
 Sitting outside the heading and the dispatch as well was the first shape and it was wrong. That is the split this file already records as rejected, reached from the other side: a question riding on a close-out lands on a thread reporting nothing owed, the dispatch never fires, and the one party who can answer never sees it. The lens produces nothing end to end that way, since its output is a correction only the author can make. The threshold now reads anything owed rather than any finding, which covers both without separating them, and the summary line names the question count beside the three that stay zero.
 
-What it tests against is `standards/bundled/pr.md`, which narrowed in the same change to say what makes a human required: a capability the agent lacks, never the cost of the run. A refusal the author actually met counts and names itself, and a refusal predicted and never met does not. `claude-pr-review` reads that file off the plugin root rather than through the fan-out, since it is not in the standard's `consumers` field and adding it would buy a twelfth copy for one citation.
+What it tests against is `standards/pr.md`, which narrowed in the same change to say what makes a human required: a capability the agent lacks, never the cost of the run. A refusal the author actually met counts and names itself, and a refusal predicted and never met does not. `claude-pr-review` reads that file off the plugin root through the fallback citation form, the same route every skill citing it takes now that the fan-out and its `consumers` field are retired.
 
 ## A submitted review cannot be deleted
 

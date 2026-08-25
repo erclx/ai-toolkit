@@ -311,6 +311,21 @@ describe('reading counts out of each record shape', () => {
 
     expect(countsFor(specFor('labels'), record)).toEqual({ uncovered: 1 })
   })
+
+  it('should retain the census totals and leave the extension breakdown out', () => {
+    const record = {
+      files: 1139,
+      skipped: 4,
+      lines: 42017,
+      byExtension: [{ extension: 'md', files: 505, lines: 30000 }],
+    }
+
+    expect(countsFor(specFor('census'), record)).toEqual({
+      files: 1139,
+      skipped: 4,
+      lines: 42017,
+    })
+  })
 })
 
 describe('classifying an audit run by its exit code', () => {

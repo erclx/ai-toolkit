@@ -31,9 +31,9 @@ Only the headers are load-bearing, since `src/design/render.ts` reads those by e
 
 ## The meta-standard in the flat root
 
-The meta-standard sits in the flat root rather than `standards/bundled/`. As a fan-out source it reaches the `create-standard` skill alone, which leaves an author editing an existing standard nothing to work against and targets no installed copy for a rule to cite. The flat root installs it, indexes it, and gives `591-standard-authoring` a path that resolves in the toolkit and in every target.
+The meta-standard sits in the flat root. Sitting there instead of in the narrow-readership fan-out, back when that route still existed, is what leaves an author editing an existing standard something to work against and gives `591-standard-authoring` a path that resolves in the toolkit and in every target, rather than reaching only the `create-standard` skill and no installed copy for a rule to cite. The flat root installs it and indexes it too.
 
-The rule's glob is recursive, so the six files under `standards/bundled/` are governed by the same shape rules, which the alternative left with no shape governance at all.
+The rule's glob is recursive, which mattered while the six now-flat standards still sat under `standards/bundled/`: the fan-out's own consumer count decided nothing about shape governance, so those six were held to the same shape rules as every sibling despite living one level deeper. They sit at the flat root now, governed the same way and no longer needing the recursion to be reached.
 
 ## Changing a standard
 

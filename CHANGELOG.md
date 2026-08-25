@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.0](https://github.com/erclx/aitk/compare/v3.9.0...v3.10.0) (2026-08-25)
+
+
+### Features
+
+* **cli:** add the aitk census command ([#1116](https://github.com/erclx/aitk/issues/1116)) ([eade044](https://github.com/erclx/aitk/commit/eade04476b67f06f488de400ba3fabc6ebebe656))
+
 ## [3.9.0](https://github.com/erclx/aitk/compare/v3.8.0...v3.9.0) (2026-08-25)
 
 
