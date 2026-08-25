@@ -23,8 +23,6 @@ packages = [
 "format" = "prettier --write --log-level warn --ignore-path .gitignore --ignore-path .prettierignore . && shfmt --write --indent 2 scripts/"
 "prepare" = "husky"
 "check" = "./scripts/verify.sh"
-"clean" = "./scripts/clean.sh"
-"update" = "./scripts/update.sh"
 
 [gitignore]
 "# System" = [".DS_Store"]

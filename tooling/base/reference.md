@@ -2,7 +2,7 @@
 
 ## Overview
 
-The base layer covers every project the toolkit scaffolds, whatever language sits on top. It ships formatting, spelling, shell linting, conventional commits, git hooks, CI, and three maintenance scripts. Every other stack extends it, so a decision made here is one every stack inherits.
+The base layer covers every project the toolkit scaffolds, whatever language sits on top. It ships formatting, spelling, shell linting, conventional commits, git hooks, CI, and one maintenance script. Every other stack extends it, so a decision made here is one every stack inherits.
 
 A repository with several language roots layers this stack once at the root and skips it per subtree, since git honors only one `core.hooksPath` and a re-dropped husky silently breaks. `docs/target-projects.md` carries the recipe.
 
@@ -18,7 +18,7 @@ Golden config files live in `tooling/base/configs/` and are copied into the targ
 - `.github/workflows/verify.yml`: runs on pull requests targeting `main` and on `workflow_dispatch`.
 - `.github/pull_request_template.md`: `## Summary`, `## Key Changes`, `## Technical Context`, `## Testing`.
 - `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for Prettier, cspell, shfmt, and shellcheck.
-- `scripts/verify.sh`, `scripts/clean.sh`, `scripts/update.sh`: the maintenance entry points behind `check`, `clean`, and `update`.
+- `scripts/verify.sh`: the maintenance entry point behind `check`.
 
 ## What ships as user-owned seeds
 
@@ -86,13 +86,11 @@ Sticky negative knowledge. Do not relearn.
 
 ## CLI
 
-| Script                 | What it does                                                                                                                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `bun run check`        | Full verification suite via `scripts/verify.sh`. Runs `format` first to auto-fix drifted code, then asserts. Honors `VERIFY_NESTED=true` to suppress timeline boundaries when another script calls it. |
-| `bun run check:format` | Asserts prettier and shfmt formatting without writing                                                                                                                                                  |
-| `bun run check:spell`  | Runs cspell across every file, with context on failures                                                                                                                                                |
-| `bun run check:shell`  | Runs shellcheck at warning severity                                                                                                                                                                    |
-| `bun run format`       | Writes prettier and shfmt formatting in place                                                                                                                                                          |
-| `bun run prepare`      | Initializes husky hooks, run automatically on `bun install`                                                                                                                                            |
-| `bun run clean`        | Removes `node_modules/`, clears the bun cache, reinstalls fresh                                                                                                                                        |
-| `bun run update`       | Runs `bun update --interactive`, then `verify.sh` with `VERIFY_NESTED=true`                                                                                                                            |
+| Script                 | What it does                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `bun run check`        | Repairs a checkout via `scripts/verify.sh`: runs `format` to auto-fix drifted code, then asserts only what the formatters could not fix. The pull request workflow calls `check:format`, `check:spell`, and `check:shell` directly as the gate, and this script repairs rather than gates. Honors `VERIFY_NESTED=true` to suppress timeline boundaries when another script calls it. |
+| `bun run check:format` | Asserts prettier and shfmt formatting without writing                                                                                                                                                                                                                                                                                                                                |
+| `bun run check:spell`  | Runs cspell across every file, with context on failures                                                                                                                                                                                                                                                                                                                              |
+| `bun run check:shell`  | Runs shellcheck at warning severity                                                                                                                                                                                                                                                                                                                                                  |
+| `bun run format`       | Writes prettier and shfmt formatting in place                                                                                                                                                                                                                                                                                                                                        |
+| `bun run prepare`      | Initializes husky hooks, run automatically on `bun install`                                                                                                                                                                                                                                                                                                                          |

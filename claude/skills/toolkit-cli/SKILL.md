@@ -52,8 +52,6 @@ Run `aitk tooling sync <stack> <target> --check` for the list resolved against a
 - `.vscode/extensions.json`
 - `.vscode/settings.json`
 - `commitlint.config.js`
-- `scripts/clean.sh`
-- `scripts/update.sh`
 - `scripts/verify.sh`
 
 ### python

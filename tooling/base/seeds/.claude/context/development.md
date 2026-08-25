@@ -25,8 +25,6 @@ Owns how the project runs on a developer machine: installing the toolchain, the 
 | ---------------- | ---------------------------------------------------- |
 | `bun run check`  | Full verification. Auto-formats, then asserts clean. |
 | `bun run format` | Auto-fix prettier and shfmt formatting.              |
-| `bun run clean`  | Wipe `node_modules/`, clear bun cache, reinstall.    |
-| `bun run update` | Interactive `bun update` followed by verification.   |
 
 ## Shell scripts
 
