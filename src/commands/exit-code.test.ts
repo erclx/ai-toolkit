@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { cp, mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { AUDITS } from '@/audits/catalog'
 import { execa } from 'execa'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -422,4 +423,25 @@ describe('refusal records over an unmeasured corpus', () => {
     expect(record.root).toBe(workDir)
     expect(record.reason).toBe('no-history')
   })
+
+  /**
+   * Parameterized over the catalog rather than named by hand, so a verb
+   * `AUDITS` adds later inherits this case instead of the gap it exists to
+   * close. Pins the shape rather than the reason, which the five cases above
+   * already do for the verbs this row touches. `deps` reaches a network
+   * index rather than a tree, so this offline fixture cannot pin its
+   * behavior and it is left to its own suite.
+   */
+  it.each(
+    AUDITS.filter((audit) => audit.id !== 'deps').map(
+      (audit) => [audit.id, audit.argv] as const,
+    ),
+  )(
+    'should write parseable JSON when %s runs --json here',
+    async (_id, argv) => {
+      const result = await runCli([...argv], { cwd: workDir })
+
+      expect(() => JSON.parse(result.stdout)).not.toThrow()
+    },
+  )
 })
