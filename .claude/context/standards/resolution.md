@@ -1,11 +1,11 @@
 ---
 title: Resolution
-description: The two roots a standard resolves against, why the install channel closed and what closing it removed, the bundled fan-out and its consumers field, and the reading gotchas
+description: The two roots a standard resolves against, why the install channel closed and what closing it removed, the retired fan-out and its consumers field, and the reading gotchas
 ---
 
 # Resolution
 
-No standard installs into a project. A reader resolves one instead, and everything below follows from that: which roots answer, which route a shipped body actually takes, and which standards the fan-out reaches rather than the flat corpus.
+No standard installs into a project. A reader resolves one instead, and everything below follows from that: which roots answer, which route a shipped body actually takes, and what the retired fan-out used to reach that the flat corpus reaches on its own now.
 
 ## The two roots
 
@@ -25,17 +25,13 @@ The closure machinery went with the flag it served. A selection expanded to the 
 
 Two things the channel supported have no user left. `NonInteractivePolicy` in `src/sync/engine.ts` carries a `refuse` branch that standards was the only adapter to declare, so it is now unreachable, and `hasUnattributedDrift` is read only from inside it. The type stays because it is the extension point `.claude/ARCHITECTURE.md` records a reason for, and removing it would delete that reason along with the code. Decide it deliberately rather than by drift.
 
-## The consumers field
+## The retired fan-out and its consumers field
 
-A handwritten reference that lives only in one skill's `references/` omits `consumers:`. The field marks a file as fan-out output, so carrying it on a skill-local file claims a generated origin no script maintains.
+`standards/bundled/` and the `consumers:` frontmatter field it read are both gone. Six sources used to sit there and fan out into eleven copies under `claude/skills/*/references/`, one per skill the field named, and the field's cost tracked its length rather than the file it sat on: three of the six listed more than one consumer and `branch.md` alone listed four. That ratio is what decided against moving the flat corpus into the folder, since `markdown.md` is named by eighteen skill bodies across the two catalogs and would have arrived as eighteen copies. `.claude/ARCHITECTURE.md` carries the decision and the corrected premise that closed the folder entirely rather than only bounding it.
 
-`regen-skill-references.sh` walks `standards/bundled/` alone, which leaves the mistake inert there, but the field also gates the standards audit, so a mistaken one silences the audit on that file.
+`standards/bundled/` was unaffected by the install channel closing, which is the fact the fan-out's retirement corrects rather than repeats. Those six never installed into a target either way, reaching a consumer through its `references/` copy instead of the resolve below, so a channel that carried nothing for them could not be what kept the folder open. What kept it open was believing the folder was still buying reach, and the fallback citation form already reached every flat standard at zero copies, so once measured against that the folder had nothing left to buy. The six sources now sit at the flat root and resolve exactly as every other standard does.
 
-Every name in the list is a copy on disk, so the field's cost tracks its length rather than the file it sits on. Six sources currently produce eleven copies, three of the six listing more than one consumer and `branch.md` alone listing four. That ratio is what decided against moving the flat corpus here, since `markdown.md` is named by eighteen skill bodies across the two catalogs and would arrive as eighteen copies. `.claude/ARCHITECTURE.md` carries the decision and the route that made it unnecessary.
-
-The audit pairs the field with the location, because the fan-out copies frontmatter verbatim and the field alone matches the six sources under `standards/bundled/` as well as the eleven copies. Keying on the field alone left a bundled standard audited against nothing, and keying on the folder alone would drop the seven hand-authored references the skill standard governs.
-
-`standards/bundled/` is unaffected by the channel closing. Those six never installed into a target, reaching a consumer through its `references/` folder instead, so the route they take is the one they always took.
+A handwritten reference that lives only in one skill's `references/` never carried `consumers:`, which is the field's absence rather than its presence that survives the retirement: nothing generates a copy into `references/` any more, so every file there is skill-local and hand-authored, and a mistaken `consumers:` value on one of them can no longer silence anything, since the audit that read the field alongside the folder location has both gone.
 
 ## Standards that moved out of a skill
 
@@ -51,7 +47,7 @@ A fifth kind reads this corpus rather than a gitignored folder, and it keeps the
 
 ## Which route a reader actually takes
 
-A shipped body names one path for a standard, and the command route is what nearly none takes. Of the 60 shipped bodies, 38 name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` and 7 call `aitk standards` where a resolved root rather than a named file is what they want. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`.
+A shipped body names one path for a standard, and the command route is what nearly none takes. Of the 62 shipped bodies, 40 name `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` and 7 call `aitk standards` where a resolved root rather than a named file is what they want. `claude/standards` is a symlink carrying the whole corpus, so a body reading a standard in a target that installed none is answered there and never reaches the resolve in `src/standards/read.ts`. Measured on 2026-08-25.
 
 The two-branch citation those 38 replaced named an installed path first and the plugin root behind it. Both branches resolved while the corpus still installed, which is what hid a partial sweep, so the collapse ran as one pass rather than riding along with each skill's next edit.
 
@@ -66,7 +62,7 @@ The resolve has exactly one caller, `src/commands/standards.ts`, and no shipped 
 - A target holding `.claude/standards/` from an older toolkit resolves nothing through it. The folder is inert rather than authoritative, and deleting it is safe.
 - A project that wants a standard of its own writes `standards/<slug>.md` at its root, which the resolver reads ahead of the package. `create-standard` writes there in the toolkit and in a target alike.
 - Do not hand-edit `standards/index.md` here. `regen-indexes.sh` rewrites it from the frontmatter of whatever is present, and a standard missing `title` or `description` fails that regen.
-- `bun run check` regenerates both the consumed copy and the skill-reference fan-out, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches.
+- `bun run check` regenerates the consumed copy, then fails on drift. The failure means the regenerated files are uncommitted, not that the content mismatches. There is no skill-reference fan-out to regenerate any more, since a `references/` file is skill-local now and edited in place.
 - A grep for `standards install` or `standards sync` in a skill body or a doc is a stale citation, not a verb. Neither exists.
 
-A plan's measured claim that nothing covers an artifact can be false when the covering file sits in a source subfolder the mirror and the index both exclude, since every catalog read then reports it missing. One plan measured `standards/` at twelve files and concluded nothing governed a standard, while `standards/bundled/standard.md` already carried the overview, frontmatter, structure, rule, success-criterion, and example sections. `mirror_dir` excludes `*/bundled/*` and `standards/index.md` never lists it, so the listing the plan trusted was accurate and the conclusion drawn from it was not. Writing the planned new file would have duplicated it near-wholesale. Glob the domain root recursively rather than reading its `index.md`, and where a match turns up in an excluded subfolder the change is usually a promotion plus the one missing rule.
+A plan's measured claim that nothing covers an artifact can be false when the covering file sits in a source subfolder the mirror and the index both exclude, since every catalog read then reports it missing. One plan measured `standards/` at twelve files and concluded nothing governed a standard, while `standards/bundled/standard.md` already carried the overview, frontmatter, structure, rule, success-criterion, and example sections. `mirror_dir` excluded `*/bundled/*` and `standards/index.md` never listed it, so the listing the plan trusted was accurate and the conclusion drawn from it was not. Writing the planned new file would have duplicated it near-wholesale. The specific exclusion closed with the fan-out, since `standard.md` sits at the flat root now and every catalog read reaches it, but the general failure did not: glob a domain root recursively rather than reading its `index.md`, and where a match turns up in a subfolder a mirror or index excludes, the change is usually a promotion plus the one missing rule.
