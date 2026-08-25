@@ -147,6 +147,26 @@ The name is the decision the row owns. `simplify` is the obvious pick and is a b
 
 The body writes no file. A restatement is read once to reach a decision, and rewriting a document into a file is a proposal against the source rather than a restatement of it. That keeps the arm's mechanical half small, since what it can assert is that the tree was left alone and the reply named the source path and the `Cut:` label. Whether the plain version kept the deciding half is the judgment the skill exists to make and nothing checks it, so every claim about the content sits under `manual` rather than being padded into the count.
 
+## The proposal surface is a recombination, not a new design, and it is the sixty-third skill
+
+`claude-markdown-propose` closes a gap three shipped surfaces sit beside without covering: nothing here drafted a markdown replacement, carried an answer slot, and waited. `claude-standards-audit` maps changed files to standards and reports, ending on its own description, `Do NOT fix violations. Reporting only.` `aitk markdown audit` measures bans and structural checkpoints from package data.
+
+`claude-review` reports findings on a diff someone already wrote. All three report. None drafts, and none waits for an answer.
+
+The skill is a promotion from two target-project files rather than a written-from-scratch body, argued in `.claude/intake/folders-canon-and-target-sync/08-promotion-candidates.md`. Its phases are `content-audit`'s five passes, generalized off the concern table down to what describes a governing document rather than a person: inflation, staleness, contradiction, and duplication survive the strip, and register drift does not, since this repository's docs carry no spoken-versus-written split for a word to drift across. Duplication is the one with a live shipped instance to point at, `8e5ea481`, which counts an instruction stated on more than one surface.
+
+Its answer contract is `claude-intake`'s `You:` slot rather than a new one, chosen because it already ships toolkit-wide with the same empty-means-unread rule this surface needs. The plan file's blank-means-accept contract would read the wrong way on a folder read over days rather than one sitting.
+
+The folder is `.claude/proposals/<slug>/`, one letter from `.claude/audits/`, which already exists and holds `baseline.json`, generated data rather than decision state. Singular and plural read as the same word at a glance, so the promoted folder takes a name that says what it holds instead of leaning on the distinction nobody reads correctly. `src/records/backup.ts` carries it in `BACKED_FOLDERS` on the same argument: a proposal carries an unanswered decision, and the folders in that list are the ones a disk loss would take rather than regenerate.
+
+What the promotion strips is two thirds of the source body. Its `## Surfaces` fence named five `career/` paths and its `## Concerns` table graded three files as sources of truth by name, both of which the behavior rule on encoding a fix forbids carrying through. The promoted body takes the concern and the surface as invocation inputs instead of constants, which is what lets a second concern reuse the skill rather than fork it.
+
+The format spec that would ordinarily be a standard, on the pattern `standards/teach.md` set for a workspace shape, stays inside the skill's own `references/format.md` instead. The source project split the same shape into `.claude/standards/project/audit.md`, cited by one skill and read by nobody else, and this repository's own citation rule already says a file only one skill reads ships inside it rather than into a corpus a second reader would have to find. Adding a standard here would be that split rebuilt for a readership of one.
+
+A sandbox run against a two-file fixture, one claim correctable from a source in the tree and one requiring an invented replacement, measured three passes at 18, 41, and 12 turns before the arm's declared ceiling settled above the widest. The spread was real rather than sampling noise: one run spent its extra turns rewriting banned punctuation out of its own draft, which is a cost the fixture itself does not vary.
+
+The variant count, three labelled bets on the invented change against one replacement on the corrected one, held across every run once the format reference stated `### N.` for a change and `#### A/B/C` for a variant explicitly. An early run had written changes at `##` and skipped a heading level to reach them.
+
 ## Whether a skill earns its place
 
 The redundancy audit below runs outward, against community counterparts. Nothing ran inward, against the catalog's own two zero-cost tells, until this section: a folder wrapping something already reachable, and a folder nobody calls. `create-skill` now asks the first two before a folder exists, and `570-skill.md` carries the same check for whatever creates a `SKILL.md` some other way.
