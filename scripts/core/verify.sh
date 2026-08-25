@@ -267,11 +267,6 @@ main() {
   run_check "assert_hero_stamp" "The hero set disagrees with the stamp written when the image was captured. Run aitk capture assets/hero.html and commit all three files together."
   log_info "Hero clean"
 
-  log_step "Skill references"
-  run_check "bash $PROJECT_ROOT/scripts/core/regen-skill-references.sh" "Skill-reference regen failed"
-  assert_no_drift "claude/skills/*/references" "Skill references drifted. Run bun run check and commit the updated reference files."
-  log_info "Skill references clean"
-
   log_step "Tooling paths"
   run_check "bash $PROJECT_ROOT/scripts/core/regen-tooling-paths.sh" "Tooling-path regen failed"
   assert_no_drift "claude/skills/toolkit-cli/SKILL.md" "The overwrite contract drifted from what the stacks hold. Run bun run check and commit claude/skills/toolkit-cli/SKILL.md."

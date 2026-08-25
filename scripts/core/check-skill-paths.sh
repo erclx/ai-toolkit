@@ -20,6 +20,5 @@ matches=$(grep -rnE "$BANNED_PATH_PATTERN" "$SKILLS_DIR" || true)
 echo "Shipped skills reference a repo-local path that does not exist in a target project:"
 echo "$matches" | sed "s|^$PROJECT_ROOT/||"
 echo
-echo "Reach supporting prose through an aitk docs command, a bundled reference, or inlined text."
-echo "A match inside a references/ folder is a generated copy. Fix the source under standards/bundled/."
+echo "Reach supporting prose through an aitk docs command, a standard cited at the flat root, or inlined text."
 exit 1

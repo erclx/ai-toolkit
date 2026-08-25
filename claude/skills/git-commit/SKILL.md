@@ -7,7 +7,7 @@ description: Generates one conventional commit message from the staged changes a
 
 Before generating a commit message, read:
 
-- `${CLAUDE_SKILL_DIR}/references/commit.md`: format, types, scopes, and constraints
+- `${CLAUDE_SKILL_DIR}/../../standards/commit.md`: format, types, scopes, and constraints
 - `${CLAUDE_SKILL_DIR}/../../standards/versioning.md`: phase label vs semver discipline
 
 Follow them exactly.
