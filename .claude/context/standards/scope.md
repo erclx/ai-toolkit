@@ -13,15 +13,15 @@ The root is the authoring source and `.claude/standards/` is a generated consume
 
 A convention governing a surface only the toolkit has lives in `internal/standards/`, a tree no CLI entry point and no plugin symlink reads. A filter at each entry point was the alternative, and it cannot see a symlink an installer dereferences. Location is what enforces the boundary, so nothing has to remember to exclude it.
 
-A convention consumed by a specific skill rather than authored by a project lives in `standards/bundled/`. Each carries a `consumers:` field, and the fan-out copies it into every listed skill's `references/`, so the skill carries what it reads rather than resolving it.
+A convention consumed by a specific skill rather than authored by a project used to live in `standards/bundled/`, each carrying a `consumers:` field a fan-out read to copy it into every listed skill's `references/`. That route is retired. A narrow-readership convention lives in the flat root like every other standard, cited through `${CLAUDE_SKILL_DIR}/../../standards/<name>.md`.
 
-Narrow readership is the criterion, not portability, and `.claude/ARCHITECTURE.md` records why the two came apart. The fan-out writes one copy per consumer, so a standard several surfaces read costs a copy each time it moves here, while the plugin symlink already puts the flat root on disk for anyone who installed the plugin. A file the whole corpus cites therefore stays in the flat root however portable the bundled folder looks.
+Narrow readership was the fan-out's criterion, not portability, and `.claude/ARCHITECTURE.md` records why the two came apart and why the fan-out closed after. It wrote one copy per consumer, so a standard several surfaces read cost a copy each time it moved there, while the plugin symlink already put the flat root on disk for anyone who installed the plugin. A file the whole corpus cited therefore stayed in the flat root however portable the bundled folder looked, and once that same fallback citation was measured against the narrow-readership case too, it reached those at zero copies as well, which is what closed the folder rather than only bounding it.
 
 A procedure several skills execute mid-run gets a standard of its own in the flat root rather than a section inside whichever standard already held one of its rules. `standards/publish.md`, `standards/slug.md`, and `standards/session.md` are the three, each cited from every body that runs it. All three take a one-word name, which every installable standard carries.
 
 A subfolder was not available for them, since install and the sync adapter walk the flat root only. A combined `procedures.md` was the other candidate and recreates the aggregation at a new address.
 
-`session.md` is the one of the three that also governs a document, so it took the flat root on two counts rather than one. `standards/bundled/` was the closer fit for a file two skills read and reached it through a generated copy per consumer, which the paragraph above rules out for anything the flat root already delivers. What decided it against the bundled folder is that the standard has to reach a session holding no skill at all, since a compaction takes the routing to the skill before it takes the file.
+`session.md` is the one of the three that also governs a document, so it took the flat root on two counts rather than one. The bundled folder, while it still existed, would have been the closer fit for a file two skills read, and the paragraph above already rules that route out for anything the flat root delivers. What decided it against the bundled folder even before the folder closed is that the standard has to reach a session holding no skill at all, since a compaction takes the routing to the skill before it takes the file.
 
 The name follows the artifact's own path segment, which is what every standard here does: `plan.md` over `.claude/plans/feature-<slug>.md`, `memory.md` over `.claude/memory/<type>-<slug>.md`, and `session.md` over `.claude/tasks/session-<slug>.md`. It shipped as `session-map.md` and was renamed before merge, since a standard is cited by bare filename from every surface that reads one, so the cost of an outlier name only grows. `handoff.md` was the other candidate and it collides: this corpus already calls a `Does not govern:` pointer a scope handoff, and `groundwork.md` already calls its own last file the handoff, so the one word would name three artifacts across three standards.
 
@@ -71,7 +71,7 @@ The first repair narrowed that gap rather than closing it, which is the part wor
 
 The `description` is the surface to check last and the one that reaches furthest. It becomes the index link label on install, so it is rendered into the catalog of every tree the standard ships to and is the only one of the three a reader meets without opening the file.
 
-The retired `prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `bundled/pr.md` still holds its testing-discipline rules and takes the same route next.
+The retired `prose.md` held the pre-publish scan on these terms until it gained a file of its own, which is the route worked once. `pr.md` still holds its testing-discipline rules and takes the same route next.
 
 ## How the scope statement is parsed
 

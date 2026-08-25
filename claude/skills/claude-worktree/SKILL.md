@@ -43,7 +43,7 @@ Try each source in order. Stop at the first match.
 
 Validate the result: letters, digits, dots, underscores, dashes only, max 64 chars (`/` separators are also allowed). If the derived name violates the rule, sanitize by replacing invalid chars with `-` and truncating. Show the sanitized name in the preview before invoking.
 
-Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it. A name from a plan takes the type that plan's own work carries, read off its `## Summary` and `**Files to touch:**` lines. Every other case takes `feat`, which covers a name from a branch, a name from the user, and a plan whose lines settle nothing. Draw the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/references/branch.md`.
+Resolve `<type>` here as well, since Step 3 previews it and Step 5 renames onto it. A name from a plan takes the type that plan's own work carries, read off its `## Summary` and `**Files to touch:**` lines. Every other case takes `feat`, which covers a name from a branch, a name from the user, and a plan whose lines settle nothing. Draw the value from the type vocabulary in `${CLAUDE_SKILL_DIR}/../../standards/branch.md`.
 
 A wrong type is cheap. `git-branch` renames to conventional format later in the same chain and runs ahead of `git-pr`, so a `feat/` written over a fix is corrected before any pull request opens.
 

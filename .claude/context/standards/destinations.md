@@ -15,16 +15,18 @@ A standard already declares which branch it takes, in the first sentence of its 
 
 - **A document type a project authors** goes to the governance rule that globs that document. The rule reaches the author while the file is open, which is the moment the guidance has to arrive. Seventeen have one.
 - **An attribute with no document** cannot be globbed, so it goes to the CLI when a verb can compute or check it, and to the skills that run it otherwise.
-- **A procedure only one surface runs** goes to that surface's `references/`, through the bundled fan-out.
+- **A procedure only one surface runs** goes to that surface's `references/`, hand-authored there.
 - **Nothing reaches it** and it is dropped, with the readership recorded. The bucket is empty.
 
 Readership decides nothing here on its own. It is the four channels the task carries, being a skill body, a governance rule, a CLI verb, and a seed, and a zero on one channel can mean well-routed rather than unread. `design.md` is cited by no skill in either catalog and is reached by a rule, a seed, and a context entry.
 
-### The fan-out is a destination with a ceiling rather than a mechanism to reject
+### The fan-out was a destination with a ceiling, and the ceiling is why it is gone
 
-Copying a standard into each consumer's `references/` is the established route and six bundled sources produce eleven copies. It stays affordable while the consumer set is small and stops at roughly a handful, since `markdown.md` at 21 citing bodies and `slug.md` at 13 would each produce a copy per body, which is the duplication the fan-out exists to prevent.
+Copying a standard into each consumer's `references/` was the established route for a standard several skills read, six bundled sources producing eleven copies. It stayed affordable while the consumer set was small and stopped at roughly a handful, since `markdown.md` at 21 citing bodies and `slug.md` at 13 would each have produced a copy per body, which is the duplication the fan-out existed to prevent.
 
-Counting the bodies that cite a standard reads short of the set the move has to satisfy, which is what the `versioning.md` withdrawal below turns on. A bundled standard has no flat sibling and never installs, so leaving the flat root breaks anything still pointing at the installed path, and two of `versioning.md`'s readers are standards rather than skill bodies. Read the whole reader set, being the skills, the flat standards depending on it in-body, and any installed rule naming it, before calling a consumer count small.
+The same ceiling closed the route entirely rather than only bounding it. A root standard costs zero copies at any consumer count, which is what the fallback citation form, `${CLAUDE_SKILL_DIR}/../../standards/<name>.md`, already delivered for the 21 flat standards, so the six bundled ones reached the same form at the same cost once they moved. `standards/bundled/` is retired: the six sources sit at the flat root and the eleven copies are gone. `.claude/ARCHITECTURE.md` carries the decision and the premise it corrects, that no bundled standard ever installed regardless of the folder, so the install channel closing never severed their reach.
+
+Counting the bodies that cite a standard reads short of the set a move has to satisfy, which is what the `versioning.md` withdrawal below turns on. A flat standard's reader set is the skills, the flat standards depending on it in-body, and any installed rule naming it, since a fan-out move is no longer a destination to weigh against.
 
 ### A rule delivers the standard it routes to rather than absorbing it
 
@@ -43,13 +45,13 @@ One attribute standard lands on the CLI, which is `markdown.md`, whose ban sets 
 - `internal/standards/tooling-reference.md` is outside this census. It never installs into a target, so it has no corpus to leave, and `595-tooling-reference.md` already carries it.
 - A destination is not an install channel. Recording a home for every standard leaves the folder in place and leaves it installing, so the outcome about nothing living only in an installed folder stays open until the sweep and the install removal behind it run.
 
-Removing a skill from a bundled standard's `consumers` field leaves the copy already sitting in that skill's `references/`, so it has to be deleted by hand in the same change. Narrowing `claude-standards-audit` meant dropping it from `consumers` in `standards/bundled/branch.md` and `standards/bundled/pr.md`, and `scripts/core/regen-skill-references.sh` walks the bundled folder and copies with no pass that removes a file the field no longer names, while `assert_no_drift` compares the working tree against HEAD rather than against a fresh regen. An orphan that is already committed reads clean forever. `git rm` the matching file in the same commit, rerun the regen, and confirm the folder holds only what the field still lists.
+The `consumers` field and the fan-out it drove are retired. Removing a skill from a bundled standard's `consumers` field used to leave the copy already sitting in that skill's `references/`, orphaned rather than deleted, since `scripts/core/regen-skill-references.sh` walked the bundled folder and copied with no pass that removed a file the field no longer named, while `assert_no_drift` compared the working tree against HEAD rather than against a fresh regen. Narrowing `claude-standards-audit` is what surfaced it, dropping the skill from `consumers` in `standards/bundled/branch.md` and `standards/bundled/pr.md` and leaving an orphan that read clean because it was already committed. Nothing on this shape can recur: a flat standard has no copy to orphan, and the readership a `consumers` field once recorded now lives as prose under `## Destinations` below.
 
 Shipping a dependency beside its consumer connects them only when the consumer's cited path resolves against the root that now holds it. The marketplace symlinks put `standards/` and `snippets/` into the plugin cache, and a headless run in a project with no `.claude/` showed the skill resolving `.claude/standards/versioning.md` against the project root, finding nothing, and never looking in its own plugin root, while a `references/` file bundled inside the same skill folder resolved in the same run because that path is relative to the skill. Delivery succeeded and reach did not. Name the root each cited path resolves against before calling such an outcome met, and test in a target that lacks the file rather than one with its own copy. The reach half closed by citing `${CLAUDE_SKILL_DIR}/../../standards/<name>.md` as a fallback after the project path.
 
 ## Destinations
 
-Twenty-seven standards, being 21 at the flat root and six under `bundled/`. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and the `Withdrawn` section holds the destinations re-decided rather than built. Every carrier the census named has now either landed or been reversed, so no row is waiting on one.
+Twenty-seven standards, all at the flat root now that `bundled/` is retired. Each carries its purpose and the home it routes to. `arrived` marks a home the guidance already sits in, and the `Withdrawn` section holds the destinations re-decided rather than built. Every carrier the census named has now either landed or been reversed, so no row is waiting on one.
 
 ### To the CLI
 
@@ -77,7 +79,9 @@ Twenty-seven standards, being 21 at the flat root and six under `bundled/`. Each
 - `teach.md` fixes the learning workspace layout, its ordinal naming, and its mission and record formats. `561-teach.md`, whose frontmatter states that most targets open no workspace for it to fire on. The pedagogy stays in `claude-teach`, which is the split the architecture record already fixes.
 - `wireframes.md` fixes layout and interaction intent before any UI exists. `520-wireframes.md`.
 
-### To a skill, through the bundled fan-out
+### To a skill, cited from the flat root
+
+Six standards were routed to a narrow readership rather than to a governance rule, and each shipped from `standards/bundled/` through a generated copy in every consuming skill's `references/` until the fan-out retired. All six now sit at the flat root beside the other 21 and reach the same skills through `${CLAUDE_SKILL_DIR}/../../standards/<name>.md`, the fallback citation form. The consumer list below is what the retired `consumers` frontmatter field used to record.
 
 - `branch.md` fixes the branch name and its type vocabulary. `git-branch`, `git-split`, `git-pr`, and `claude-worktree`, arrived.
 - `commit.md` fixes the commit subject. `git-commit` and `git-stage`, arrived.
@@ -92,4 +96,4 @@ Three destinations the census recorded were re-decided rather than built, each o
 
 - `slug.md` was routed to a verb emitting the slug, on thirteen skill bodies restating the transform. None of them does. Each cites the standard and then states its own empty-result response, which is what that standard's `## An empty result` section instructs, so the duplication a verb would collapse does not exist. Withdrawn by the operator on 2026-08-20 against a re-measurement at `b26506ee`. It stays in the flat corpus reached by citation.
 - `publish.md` was routed to a verb returning the cross-reference form and the unreadable-source branch, on the same reasoning about a value a caller reads. Withdrawn with `slug.md` and on the same day, since neither verb had a caller that would stop restating anything. It stays in the flat corpus, cited by seven skill bodies.
-- `versioning.md` was routed to `claude-tasks`, `git-commit`, and `git-pr` through the fan-out, on three consumers sitting inside the ceiling. Two of its readers are standards rather than skills. `publish.md` and `tasks.md` each depend on it in-body, and neither is leaving, since `tasks.md` routes to `555-tasks.md` and `publish.md` is withdrawn above. A bundled standard never installs, so the move would point both at a file no target holds. Withdrawn by the operator on 2026-08-20, re-measured at `653bbb15`.
+- `versioning.md` was routed to `claude-tasks`, `git-commit`, and `git-pr` through the fan-out, on three consumers sitting inside the ceiling. Two of its readers are standards rather than skills, and that is what the withdrawal turns on rather than the ceiling: `publish.md` and `tasks.md` each depend on it in-body, and neither is leaving, since `tasks.md` routes to `555-tasks.md` and `publish.md` is withdrawn above. A standard cites a sibling at the flat root, not a copy sitting inside one consuming skill's folder, so moving `versioning.md` into the fan-out would have pointed both readers at a file neither could reach. Withdrawn by the operator on 2026-08-20, re-measured at `653bbb15`. The fan-out itself is gone now, so the withdrawal stands on the same reasoning with one fewer route to have chosen.

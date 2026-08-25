@@ -37,8 +37,6 @@ The walk reads inside fenced code blocks, which is what makes an illustrative ex
 
 The banned pattern is a bare `wiki/` with no exemption for a body that has a reason to name it. A shipped skill routing a page into a project's wiki has to describe both spellings, and only `.claude/wiki/` survives the match, so the root spelling is stated as a folder named `wiki` rather than as a path. That is the phrasing the promotion routing in `claude-teach` carries.
 
-The failure message assumes a match inside a `references/` folder is a generated copy and directs the fix to `standards/bundled/`. A hand-authored reference under a single skill breaks that assumption, so the recovery it prints names a source file that does not exist and the fix belongs in the reference itself.
-
 ## Hero provenance
 
 The Hero stage regenerates `assets/hero.html` and asserts no drift on it, then runs `assert_hero_stamp` over the image beside it. The drift assert cannot reach the PNG, because a chromium render moves its bytes with the browser version and a machine on a different chromium would fail on that rather than on a stale count. That leaves the artifact a README visitor actually looks at asserted by the second half of the stage alone.
@@ -105,9 +103,9 @@ Running only the verbs the earlier stages skip was the cheaper shape and it give
 
 ### A regen-then-assert stage clears one round at a time
 
-The indexes and consumed-copy gates in `scripts/core/verify.sh` regenerate and then assert with `git diff --exit-code` against the index, so a correct regen fails the run until the rewritten files are staged. The gates are sequential and each halts the run, so clearing the consumed-copy stage only reveals the skill-reference stage behind it, and a change touching `standards/bundled/` costs two stage-and-rerun rounds rather than one. Expecting a single staging to clear the run is what makes the second failure read as a real mismatch. `bun run check:install` reads one step further out, since `scripts/core/install-check.sh` runs `git clone` against the project root and therefore tests the last commit and never the index or working tree, so commit before citing it.
+The indexes, consumed-copy, and hero gates in `scripts/core/verify.sh` regenerate and then assert with `git diff --exit-code` against the index, so a correct regen fails the run until the rewritten files are staged. The gates are sequential and each halts the run, so clearing the indexes stage only reveals the consumed-copy stage behind it, and a change touching several regenerated surfaces at once costs a stage-and-rerun round per surface rather than one. Expecting a single staging to clear the run is what makes the second failure read as a real mismatch. `bun run check:install` reads one step further out, since `scripts/core/install-check.sh` runs `git clone` against the project root and therefore tests the last commit and never the index or working tree, so commit before citing it.
 
-`assert_no_drift` pairs the diff with `git ls-files --others --exclude-standard`, so a regen emitting a never-committed file fails rather than passing, and because it is scoped by folder glob a hand-authored file inside a generated folder trips it too. Editing `claude/skills/setup-plugins/references/plugin-catalog.md`, which no bundled standard generates, failed the skill-references stage with "commit the updated reference files" as if regen had written it. Read the failing path before believing the message names its cause.
+`assert_no_drift` pairs the diff with `git ls-files --others --exclude-standard`, so a regen emitting a never-committed file fails rather than passing.
 
 ### The forced staging narrows the next review
 

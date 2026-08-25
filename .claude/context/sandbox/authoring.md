@@ -9,7 +9,7 @@ Each sandbox is a `.sh` file with two optional hook functions and a required `st
 
 ## stage_setup
 
-`stage_setup` sets up scenario-specific state. It runs inside the sandbox tree after provisioning and asset injection are complete. Commit messages inside `stage_setup` must follow `standards/bundled/commit.md` conventions.
+`stage_setup` sets up scenario-specific state. It runs inside the sandbox tree after provisioning and asset injection are complete. Commit messages inside `stage_setup` must follow `standards/commit.md` conventions.
 
 ```bash
 stage_setup() {
@@ -57,7 +57,7 @@ stage_fixtures claude docs drift 02-postgres
 
 The first two segments mirror the scenario's own path at `scripts/sandbox/<category>/<scenario>.sh`. Both are needed, since four scenario basenames repeat across categories (`claude`, `docs`, `review`, and `sync`) and `docs` is a category as well.
 
-`stage_toolkit_markdown` sits in the same library for the other source of staged content, the toolkit's own `standards/` and `snippets/` trees. An arm modelling a real install wants the files a target actually received, and a copy of them under `fixtures/` would drift from the source with nothing reporting it. It flattens, which is the part to keep: both `detectUnmigrated` and the sync engine match a target file to its source by basename against the flat domain root, so a file staged out of a source subfolder such as `bundled/` reads as project-authored and the arm asserts against a state it did not stage.
+`stage_toolkit_markdown` sits in the same library for the other source of staged content, the toolkit's own `standards/` and `snippets/` trees. An arm modelling a real install wants the files a target actually received, and a copy of them under `fixtures/` would drift from the source with nothing reporting it. It flattens, which is the part to keep: both `detectUnmigrated` and the sync engine match a target file to its source by basename against the flat domain root, so a file staged out of a source subfolder such as `internal/standards/` reads as project-authored and the arm asserts against a state it did not stage.
 
 `pick_dropped_root` and `restore_dropped_file` sit beside it for the third source, the toolkit's own deleted history. An arm covering the reverse walk has to stage a folder at a root this repository actually dropped, holding bytes it actually published, since attribution matches content against the blobs history holds for that path and a hand-authored file scores `unattributed` instead. Both read the whole listing through a process substitution rather than a pipeline ending in an early exit, which is the `pipefail` trap the section below records.
 

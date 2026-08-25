@@ -7,8 +7,8 @@ description: Splits a mixed-commit branch into focused branches off main using c
 
 Before proposing a split, read in parallel:
 
-- `${CLAUDE_SKILL_DIR}/references/branch.md`: format, types, length limit, and constraints
-- `${CLAUDE_SKILL_DIR}/references/pr.md`: PR title format, body sections, and content rules
+- `${CLAUDE_SKILL_DIR}/../../standards/branch.md`: format, types, length limit, and constraints
+- `${CLAUDE_SKILL_DIR}/../../standards/pr.md`: PR title format, body sections, and content rules
 
 Follow both exactly.
 

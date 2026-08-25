@@ -1115,9 +1115,7 @@ export async function validateRecords(
     )
   }
 
-  // The walk stays flat, matching install and the catalog. `standards/bundled/`
-  // is a subfolder whose members are named for the skill that reads them rather
-  // than for a path they govern, so the derivation below reports every one.
+  // The walk stays flat, matching install and the catalog.
   if (kind === 'standards') {
     return validateFiles(
       dir,
