@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.11.1](https://github.com/erclx/aitk/compare/v3.11.0...v3.11.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* **review:** report a PR comment posted under an unmatched heading ([#1121](https://github.com/erclx/aitk/issues/1121)) ([1e9ee02](https://github.com/erclx/aitk/commit/1e9ee027480db2b8ed40b36faad0081aaa48e928))
+
 ## [3.11.0](https://github.com/erclx/aitk/compare/v3.10.0...v3.11.0) (2026-08-25)
 
 
