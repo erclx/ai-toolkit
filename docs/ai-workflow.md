@@ -214,12 +214,13 @@ This section is the corpus the coverage claim is measured against: every name `a
 
 ### Check the work before it leaves the branch
 
-| Skill                         | When to use                                                           |
-| ----------------------------- | --------------------------------------------------------------------- |
-| `aitk:claude-review`          | On the local branch diff, before anything is pushed                   |
-| `aitk:claude-standards-audit` | When changed markdown has to answer to the authoring standards        |
-| `aitk:claude-ux-audit`        | To read UI source for missing states, edge cases, and inconsistencies |
-| `aitk:claude-ux-measure`      | To start the interface and measure paint, processor, and layout cost  |
+| Skill                          | When to use                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------------------- |
+| `aitk:claude-review`           | On the local branch diff, before anything is pushed                                     |
+| `aitk:claude-standards-audit`  | When changed markdown has to answer to the authoring standards                          |
+| `aitk:claude-markdown-propose` | When a markdown claim needs rewriting and the change should wait for an answer per file |
+| `aitk:claude-ux-audit`         | To read UI source for missing states, edge cases, and inconsistencies                   |
+| `aitk:claude-ux-measure`       | To start the interface and measure paint, processor, and layout cost                    |
 
 ### Ship it
 
