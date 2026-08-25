@@ -13,7 +13,7 @@ Each splits its engine by reason to change rather than by size. `src/comments/` 
 
 ## The audit set
 
-`aitk audits run` runs seventeen verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
+`aitk audits run` runs eighteen verbs together, reads each one's own record, and reports them under a single verdict. It writes no measure of its own, which is what makes it cheap and what separates it from the two harder halves the same request raised.
 
 Reading each shape was chosen over forcing a common envelope. Every record already has consumers naming its keys, and one of them refuses to rename a key for a gain of one word, so an envelope is a breaking change bought for tidiness. The cost is one extractor per verb in `src/audits/catalog.ts`, and an extractor meeting a record it cannot read returns nothing rather than zero, on the ground the context audit already states about `--citations-only`.
 
@@ -34,6 +34,16 @@ That code then had to stop firing on the ordinary case. Six of the set read giti
 The corpus decides the allowance by default, and a spec naming its own reasons overrides it. A per-machine verb refusing for any reason other than a missing folder is a broken verb and stays `unmeasured`, and so does a tracked tree that cannot be found, since that is a broken checkout. Two tracked specs name reasons anyway, being the secret scan on a project that publishes nothing and the reach check on a project holding no `claude/skills/`. Both are the ordinary state of a target installing this CLI rather than a defect in it, so without the override every such project reports `incomplete` forever, which is the permanent signal the whole split exists against. Every run states the measured count against the absent one, since a report naming only what passed is a claim about a set it never read.
 
 `aitk gov test-order` marks the edge of what the baseline can compare. It scopes against the trunk, falls back to the root commit, and a depth-1 checkout has neither, so the range is empty and it reports zero rather than refusing. A shallow run therefore under-reports against a floor taken from a full clone and reads as shrinkage, which is the safe direction and the reason that one delta means something only from a clone carrying history.
+
+### The codebase census
+
+`aitk census` is the eighteenth verb, and the one that answers what the tree is made of rather than what is wrong with it. It reads `listRepositoryFiles`, the corpus the citation check, the markdown corpus, and the secret scan already share, and reports a file count, a breakdown by extension, and a line total. Registering it here with an empty `gatingExits` is what lets `.claude/audits/baseline.json` retain its three headline counts, since the growth series this measure exists to answer, at 481 files on one date and 965 five weeks later, previously existed only because someone counted twice by hand a month apart.
+
+Grouping is by extension rather than by a named language category. A config file and a source file land in separate buckets and two source files sharing an extension land in one, which answers what the tree holds rather than what language it is written in. A named-category mapping was declined for the same reason `contextCounts` above declines a per-key severity table it does not need: a second vocabulary to maintain buys nothing the extension already states.
+
+The line total is text-only. A file `isBinary` reads is counted toward the file total and its extension's file count, and excluded from every line count, so the file figure and the summed extension line figures differ by however many binary files the tree carries. The record's `skipped` field states that gap rather than leaving a reader to infer it from a subtraction.
+
+`censusCounts` retains the three headline totals and leaves the extension breakdown out of the baseline. The breakdown is what a caller reads for its own sake off the `--json` record, and folding every extension into the retained baseline would grow the recorded key set with every language the tree ever picks up, which is a different failure than the one the baseline exists to catch.
 
 ### The retained baseline
 
