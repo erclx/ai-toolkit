@@ -1,0 +1,105 @@
+# What a correct `/aitk:session-map` run leaves behind.
+# Read by `aitk sandbox check`. Patterns use TOML literal strings so a regex
+# needs no backslash escaping.
+
+# The arm exists for a failure a review pass cannot reach. Both defects ever
+# found in this skill came out of driving it against a cold project, and the
+# first was a session that skipped a step, predicted what the step would have
+# answered, and wrote the prediction into the map. That map read as conforming,
+# so an assertion over the artifact passes it. The content blocks below read
+# what the map says each step returned instead.
+#
+# Only the first defect is asserted. The second reproduces on every run, since
+# the fixture is always younger than any session window, and what a conforming
+# map says about it is a wording the run chooses rather than a token the fixture
+# fixes, so it sits in `manual` under `Judgment:` and a reader carries it.
+
+# Every top-level key sits above the first `[[content]]` block. A bare key below
+# one belongs to that table in TOML, so a `manual` array written at the bottom
+# parses clean and asserts nothing.
+
+# The runner cap, taken as the default. This arm resolves several reads against
+# a standard it fetches at run time and its turn count moves with how a run
+# orders them, so one sample does not license a lower number. Two passing runs on
+# 2026-08-25 cost 22 turns and 0.48 dollars, then 15 and 0.29, against a fixture
+# that changed only by gaining two plan files between them. Read the pair as a
+# floor on what a correct run costs rather than a bound on it.
+max_turns = 30
+
+# The filename is the first assertion. The branch is `feat/csv-export`, so the
+# slug transform drops the type segment and a run that kept it lands beside this
+# name rather than on it. The board is the control: a handoff writes one file and
+# has no reason to touch a task.
+paths = [
+  ".claude/tasks/session-csv-export.md",
+  ".claude/tasks/v01.0-rate-limit.md",
+  ".claude/tasks/v02.0-pagination.md",
+  ".claude/tasks/v03.0-csv-export.md",
+  ".claude/plans/feature-csv-export.md",
+]
+
+# The type-carrying spelling, which is what a broken transform writes. This is a
+# path negative rather than a reply one, so it fails on the file existing rather
+# than on how a sentence was worded.
+absent = [".claude/tasks/session-feat-csv-export.md"]
+
+# The map, plus the index a `Write` fires the board hook on. `.claude/memory/**`
+# is admitted rather than required: the skill opens by invoking capture, and a
+# cold session may legitimately have nothing to persist, so a written memory file
+# is a result the skill does not owe and its absence is not a failure. The first
+# run wrote neither, which is what leaves this entry admitting a path no observed
+# run has taken.
+write_scope = [".claude/tasks/**", ".claude/memory/**"]
+
+# The path comes off the skill's own Output block. The fixture fixes the branch,
+# so this reads back off provisioning rather than off how one run worded a line.
+reply = [".claude/tasks/session-csv-export.md"]
+
+manual = [
+  "The map reports what each step actually returned rather than what the session expected it to. Semantic: a prediction and a result read alike in the written text, so the blocks below catch a map silent about a step and not a map that guessed.",
+  "The capture the skill opens with ran. Unwired: a cold project gives capture nothing to persist, so it writes no file and returns no routed line, and the map owes it no mention either. The first run of this arm confirmed a conforming map that names capture nowhere, so the step is observable only in a tool-call list the harness does not supply.",
+  "No fourth section over the core three. Semantic: a negative, and an entry asserting what a run must not have written passes on every spelling that phrases it differently.",
+  "The three core sections appear in the order the standard fixes. Semantic: their bodies are free prose, so no single block spans two headings without pinning what a writer puts between them.",
+  "The map says which of the two commits the ref came from, the window having found none before it. Judgment: item 3 requires the writer to say which, never to echo the wording item 3 states it in, so a map reading that the ref is the only commit the repository holds satisfies the rule and fails any pin over the phrase. The fixture fixes no token here, since its one commit carries a hash that moves per run.",
+]
+
+# The frontmatter the standard fixes. `title` is the same string on every map, so
+# a generated catalog reads them alike, and `description` is what the board
+# cannot show plus the date.
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = '^title: Session map$'
+
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = '^description: \S'
+
+# The three core sections. A map missing one is non-conforming whatever else it
+# carries, and every session fills all three.
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = '^## State$'
+
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = '^## Mistakes worth not repeating$'
+
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = '^## Standing cautions$'
+
+# The first defect. The fixture carries no `claude/skills/` corpus, so the drift
+# verb refuses with a sentence it owns, and a map recording the refusal quotes
+# it. A session predicting a refusal reaches for the marketplace-cache wording or
+# for no history, since those are what a reader of the body would expect, and the
+# corpus sentence is the one only a run produces.
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = 'shipped skill corpus'
+
+# `## State` owes the reader any untracked file that needs committing, and the
+# fixture leaves exactly one. A map filled from what a session already knew
+# rather than from a read of the tree misses it.
+[[content]]
+path = ".claude/tasks/session-csv-export.md"
+pattern = 'export\.ts'

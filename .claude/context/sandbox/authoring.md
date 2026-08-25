@@ -67,6 +67,8 @@ Every stored file carries a `.fixture` suffix that the helper strips on copy. Th
 
 Stage numbering carries ordering, not identity. A stage exists because a commit or a branch switch has to happen before the next file lands.
 
+`stage_fixtures` is unavailable to a single-arm scenario. Its path takes four segments ending in an arm name, and a scenario with one unnamed arm has no segment to pass, so `claude/review`, `claude/write-human`, and `claude/session-map` all stage their tree from heredocs inside `stage_setup` instead. That is why a fixture folder for such a scenario holds `expect.toml` alone. Naming the arm to recover the helper is the alternative and it moves the declaration under that name too, so `aitk sandbox check <category>:<command>` with no arm then asserts nothing and reports a clean run.
+
 `scripts/sandbox/fixtures/anchor/create/` is the one tree outside the four-segment layout. It belongs to no single scenario, since all nine anchor scenarios provision from it, so `stage_anchor_tree` calls `create_from_fixtures` directly rather than going through `stage_fixtures`. It holds the minimum a scenario reads: `utils.js`, which `git/{pr,issue,followup}.sh` append to, plus a `.gitignore` matching what `init_empty_sandbox` writes. Three of the nine wipe the tree before staging their own and two overwrite what they need, so growing this fixture is warranted only when a scenario reads a file that is missing.
 
 ### Rewriting a file provisioning already wrote
