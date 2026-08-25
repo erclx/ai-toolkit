@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.9.0](https://github.com/erclx/aitk/compare/v3.8.0...v3.9.0) (2026-08-25)
+
+
+### Features
+
+* **claude:** gate skill creation on a written existence test ([#1111](https://github.com/erclx/aitk/issues/1111)) ([a748ea2](https://github.com/erclx/aitk/commit/a748ea2026ff93df0ced75b53f273db2a5656643))
+* **gov:** count the instructions stated on more than one surface ([#1112](https://github.com/erclx/aitk/issues/1112)) ([8e5ea48](https://github.com/erclx/aitk/commit/8e5ea481d2032f39c183ed0ce3809b2d6f7c522d))
+
 ## [3.8.0](https://github.com/erclx/aitk/compare/v3.7.0...v3.8.0) (2026-08-25)
 
 
