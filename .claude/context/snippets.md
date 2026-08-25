@@ -7,7 +7,7 @@ description: Reusable prompt snippets for Claude and Gemini
 
 ## Overview
 
-Owns the small reusable prompts stored as plain markdown, invoked from Claude or Gemini chat via the Chrome extension or directly in Claude Code with `@`. Authoring conventions live in `standards/bundled/snippets.md`, which this entry does not repeat.
+Owns the small reusable prompts stored as plain markdown, invoked from Claude or Gemini chat via the Chrome extension or directly in Claude Code with `@`. Authoring conventions live in `standards/snippets.md`, which this entry does not repeat.
 
 ## Layout
 
@@ -27,7 +27,7 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 ### Where a snippet lives
 
 - Who invokes a snippet decides where it lives, not what its topic is about. Filing a category by subject once put the orchestrator runbooks out of reach of the target projects running that role, and nothing failed, because a snippet the plugin does not ship produces no error anywhere.
-- Those three have since left the catalog altogether, per the runbook decision below. `standards/bundled/snippets.md` states the cadence and audience tests, and this repository holds the only copy of how they map onto folders.
+- Those three have since left the catalog altogether, per the runbook decision below. `standards/snippets.md` states the cadence and audience tests, and this repository holds the only copy of how they map onto folders.
 - The root and `claude/` split is that audience test at one more level of resolution. `snippets/` holds what carries its whole context in the message and runs in any chat, `snippets/claude/` what reads or writes the project's own files, and `internal/snippets/` what only this repository can run.
 - A snippet naming a `.claude/` path belongs in a folder rather than at the root, which is the checkable form of the rule
 - The cadence test turns down a one-shot audit, migration, or bootstrap prompt and says nothing about a prompt's subject. A prompt about authoring prompts still passes when it recurs across sessions, which is what keeps `meta-prompt` and `research-prompt` in the catalog. Reading "project work" into the rule adds a second test the standard does not state.
@@ -104,7 +104,7 @@ aitk snippets create
 
 Use `aitk snippets create`. It handles file and folder creation. For manual additions, create a `.md` file in the correct folder using a kebab-case name.
 
-The `create-snippet` skill writes one snippet, resolving the surface at either location: `snippets/` at the root when present, the toolkit repo, otherwise `.claude/snippets/`, a target project. On the project surface it writes one level deeper, under `.claude/snippets/project/`, which is the subfolder the snippets adapter declares so `aitk snippets sync` orphans the file by location rather than by a name the toolkit happens not to ship. It reaches the authoring conventions through `standards/bundled/snippets.md`, which names the skill in its `consumers` field so `bun run check` copies the file into the skill's `references/`.
+The `create-snippet` skill writes one snippet, resolving the surface at either location: `snippets/` at the root when present, the toolkit repo, otherwise `.claude/snippets/`, a target project. On the project surface it writes one level deeper, under `.claude/snippets/project/`, which is the subfolder the snippets adapter declares so `aitk snippets sync` orphans the file by location rather than by a name the toolkit happens not to ship. It reaches the authoring conventions through `standards/snippets.md`, cited at `${CLAUDE_SKILL_DIR}/../../standards/snippets.md`, the same fallback form every skill uses to reach a flat-root standard.
 
 ## Adding a category
 

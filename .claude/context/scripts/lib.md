@@ -43,7 +43,7 @@ Consumed by `scripts/tooling/{ref,verify,create}.sh` for discovery and name vali
 
 ## `frontmatter.sh`
 
-Sourced by `scripts/docs/list.sh`, `scripts/standards/list.sh`, and `scripts/core/regen-skill-references.sh`. The index engine that used to sit alongside this function is TypeScript now, in `src/indexes/`.
+Sourced by `scripts/docs/list.sh` and `scripts/standards/list.sh`. The index engine that used to sit alongside this function is TypeScript now, in `src/indexes/`.
 
 - `read_frontmatter_field`: read a YAML field from a markdown file's frontmatter. Strips wrapping quotes
 
