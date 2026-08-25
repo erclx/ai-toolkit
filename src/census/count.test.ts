@@ -1,5 +1,11 @@
 import { execaSync } from 'execa'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -90,6 +96,21 @@ describe('census', () => {
     expect(result.lines).toBe(1)
     expect(result.byExtension).toEqual(
       expect.arrayContaining([{ extension: 'bin', files: 1, lines: 0 }]),
+    )
+  })
+
+  it('should count an unreadable file toward files but skip it from lines, the same as a binary one', async () => {
+    write('a.ts', 'one\n')
+    symlinkSync(join(ROOT, 'missing-target'), join(ROOT, 'dangling.ts'))
+    git('add', '--all')
+
+    const result = measured(await census(ROOT))
+
+    expect(result.files).toBe(2)
+    expect(result.skipped).toBe(1)
+    expect(result.lines).toBe(1)
+    expect(result.byExtension).toEqual(
+      expect.arrayContaining([{ extension: 'ts', files: 2, lines: 1 }]),
     )
   })
 
