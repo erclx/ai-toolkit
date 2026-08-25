@@ -196,6 +196,33 @@ describe('planSync', () => {
     expect(plan.entries.map((entry) => entry.state)).toEqual(['drifted'])
   })
 
+  it('should orphan a file under the declared project subfolder', () => {
+    writeFixture(join(TARGET, '.claude/rules/project/900-local.md'), 'mine\n')
+
+    const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
+
+    expect(plan.entries[0].state).toBe('orphaned')
+  })
+
+  it('should orphan a project subfolder file by location even with a matching source', () => {
+    writeFixture(join(SOURCE, 'project/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, '.claude/rules/project/000-const.md'), 'same\n')
+
+    const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
+
+    expect(plan.entries[0].state).toBe('orphaned')
+    expect(plan.changes).toEqual([])
+  })
+
+  it('should keep the name inference for a file at the flat root', () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, '.claude/rules/core/000-const.md'), 'same\n')
+
+    const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
+
+    expect(plan.entries[0].state).toBe('matching')
+  })
+
   it('should queue a delete for each retired surface', () => {
     writeFixture(join(TARGET, '.claude/GOV.md'), 'retired\n')
 
@@ -765,6 +792,26 @@ describe('runDomainSync', () => {
 
     await runDomainSync(
       createAdapter({ stamp: { domain: 'governance', toolkitRoot: ROOT } }),
+      TARGET,
+      options,
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
+      [STAMPED_RULE]: hashContent('same\n'),
+    })
+  })
+
+  it('should keep a project subfolder file out of the stamp even with a matching source', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+    writeFixture(join(SOURCE, 'project/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, '.claude/rules/project/000-const.md'), 'same\n')
+
+    await runDomainSync(
+      createAdapter({
+        stamp: { domain: 'governance', toolkitRoot: ROOT },
+        projectSubdir: 'project',
+      }),
       TARGET,
       options,
     )

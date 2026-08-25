@@ -1,8 +1,18 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createGovAdapter, indexSourceRules } from '@/gov/adapter'
+import {
+  createGovAdapter,
+  indexSourceRules,
+  rulesSourceDir,
+} from '@/gov/adapter'
 import type { InstalledFile } from '@/sync/engine'
 
 let ROOT: string
@@ -116,5 +126,15 @@ describe('createGovAdapter', () => {
     const adapter = createGovAdapter(TOOLKIT)
 
     expect(adapter.collectRetired?.(TARGET)).toEqual([])
+  })
+
+  it('should declare project as the project-authored subfolder', () => {
+    expect(createGovAdapter(TOOLKIT).projectSubdir).toBe('project')
+  })
+
+  it('should not ship a project/ rule category, which the subfolder reserves for a target', () => {
+    expect(existsSync(join(rulesSourceDir(process.cwd()), 'project'))).toBe(
+      false,
+    )
   })
 })

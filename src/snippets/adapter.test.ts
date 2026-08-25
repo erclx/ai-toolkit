@@ -1,8 +1,15 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createSnippetsAdapter } from '@/snippets/adapter'
+import { snippetsSourceDir } from '@/snippets/categories'
 import type { InstalledFile } from '@/sync/engine'
 
 let ROOT: string
@@ -74,5 +81,15 @@ describe('createSnippetsAdapter', () => {
 
   it('should leave the retired hook unset', () => {
     expect(createSnippetsAdapter(TOOLKIT).collectRetired).toBeUndefined()
+  })
+
+  it('should declare project as the project-authored subfolder', () => {
+    expect(createSnippetsAdapter(TOOLKIT).projectSubdir).toBe('project')
+  })
+
+  it('should not ship a project/ snippet category, which the subfolder reserves for a target', () => {
+    expect(existsSync(join(snippetsSourceDir(process.cwd()), 'project'))).toBe(
+      false,
+    )
   })
 })

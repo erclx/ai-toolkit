@@ -121,6 +121,13 @@ export interface SyncAdapter {
   collectRetired?(target: string): RetiredSurface[]
   /** Dropped from the walk, so neither matching nor orphaned. */
   isExcluded?(file: InstalledFile): boolean
+  /**
+   * Top-level folder under `installedRoot` that is project-authored by
+   * location rather than by the name inference `locateSource` runs.
+   * Checked before `locateSource`, so a file here is orphaned even when its
+   * name also matches a toolkit source, and never enters the stamp.
+   */
+  readonly projectSubdir?: string
   /** Defaults to applying. */
   readonly nonInteractive?: NonInteractivePolicy
   /** Runs on a completed sync, including one with no changes. */
@@ -167,6 +174,11 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   for (const file of listInstalled(adapter.installedRoot(target), target)) {
     if (adapter.isExcluded?.(file) === true) continue
     walked.add(toStampKey(file.rel))
+
+    if (isProjectAuthored(adapter, file)) {
+      entries.push({ state: 'orphaned', rel: file.rel })
+      continue
+    }
 
     const source = adapter.locateSource(file)
 
@@ -439,6 +451,16 @@ function strandedByRelocation(
   return entries
 }
 
+/**
+ * `Bun.Glob` reports `relToRoot` with `/` separators regardless of platform,
+ * so the declared subfolder is compared against the walk's first segment
+ * rather than through a path-aware join.
+ */
+function isProjectAuthored(adapter: SyncAdapter, file: InstalledFile): boolean {
+  if (adapter.projectSubdir === undefined) return false
+  return file.relToRoot.split('/')[0] === adapter.projectSubdir
+}
+
 function isInside(target: string, path: string): boolean {
   const rel = relative(target, path)
   return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel)
@@ -457,7 +479,8 @@ function hasUnattributedDrift(plan: SyncPlan): boolean {
 /**
  * Records what the toolkit placed, after the copies land, so a partial apply
  * that throws leaves the previous stamp rather than a claim the target does not
- * meet. Files with no source are project-authored and stay out.
+ * meet. A file with no source, or one orphaned by location, is
+ * project-authored and stays out.
  *
  * Reads the installed tree rather than the caller's file list, so a partial
  * install still stamps the domain's whole installed set.
@@ -474,6 +497,7 @@ export async function recordStamp(
 
   for (const file of listInstalled(adapter.installedRoot(target), target)) {
     if (adapter.isExcluded?.(file) === true) continue
+    if (isProjectAuthored(adapter, file)) continue
 
     const source = adapter.locateSource(file)
     if (source === undefined || !existsSync(source)) continue
