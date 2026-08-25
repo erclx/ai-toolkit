@@ -11,7 +11,9 @@ The behavior notes behind the verbs listed in `commands.md`. Each one records wh
 
 `aitk gov sync` updates only rules already present under `.claude/rules/` and
 never adds new ones. A rule the toolkit does not ship is left alone, which is
-how project-authored rules survive. It also removes a stale `.claude/GOV.md`
+how project-authored rules survive, and one under `.claude/rules/project/`
+is left alone regardless of its name, since that subfolder is project-authored
+by location. It also removes a stale `.claude/GOV.md`
 from the retired build. Use `aitk gov install` to add rules.
 
 There is no `aitk standards sync` and no `aitk standards install`. The corpus
@@ -23,7 +25,9 @@ the catalog.
 `aitk snippets sync` matches by path relative to `.claude/snippets/`. It
 matches by path relative to that directory, so a snippet the toolkit no longer
 ships, or one authored directly in the target, is reported and skipped rather
-than deleted. It is not preset-aware, so a project that installed `essentials`
+than deleted, and a snippet under `.claude/snippets/project/` skips the same
+way regardless of path, since that subfolder is project-authored by location.
+It is not preset-aware, so a project that installed `essentials`
 does not grow new snippets on a sync. Use `aitk snippets install` to add them.
 
 ## Install guards
