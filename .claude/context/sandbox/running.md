@@ -106,7 +106,7 @@ Patterns use TOML literal strings (`'^- \[x\] done'`) so a regex needs no backsl
 
 Every pattern compiles with `m` and nothing else. An inline `(?i)` is not a flag in this engine, so a pattern carrying one fails to compile rather than matching case-insensitively, and the result names it invalid rather than unmatched. Spell the folding as character classes.
 
-Spelling one costs a gate, though, so prefer a case-stable substring where the fold is not load-bearing. cspell reads the tail of a class as a word and fails the spell stage of `bun run check`, which took `'[Oo]ldest commit'` as the unknown `ldest` and `'[Cc]aptur'` as `aptur` while writing the `claude:session-map` arm. Dropping the folded letter out of the pattern clears it, and adding either fragment to a dictionary would file a regex artifact as a term.
+Spelling one costs a gate, though, so prefer a case-stable substring where the fold is not load-bearing. cspell strips the bracketed pair and reads what follows as a word, so a pattern folding the first letter of an ordinary English word fails the spell stage of `bun run check` on the headless remainder. Two pins hit that while the `claude:session-map` arm was written, and both were fixed by dropping the folded letter out of the pattern. Adding the remainder to a dictionary files a regex artifact as a term, and quoting the failing pattern in prose reproduces the failure in the file describing it.
 
 A literal string cannot carry an apostrophe, which is what closes it. A pin over prose spells that character `.` instead, costing one character of precision per apostrophe. Switching to a basic string to escape it would reintroduce the backslash doubling the literal form exists to avoid.
 
