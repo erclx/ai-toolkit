@@ -15,6 +15,15 @@ import {
   resolveRules,
 } from '@/gov/stacks'
 import {
+  INSTRUCTIONS_REL,
+  type RestatedEntry,
+  type RestatedRefusal,
+  type RestatedReport,
+  readRestated,
+  SEED_REL,
+  SHIPPED_SKILLS_REL,
+} from '@/gov/restated'
+import {
   readSuperseded,
   SUPERSEDED_MARKER,
   type SupersededHit,
@@ -66,6 +75,17 @@ interface TestOrderOptions {
 interface SupersededOptions {
   readonly root?: string
   readonly json?: boolean
+}
+
+interface RestatedOptions {
+  readonly root?: string
+  readonly json?: boolean
+}
+
+/** What a reader does about each way the sweep produced no reading. */
+const RESTATED_REFUSALS: Record<RestatedRefusal, string> = {
+  'no-instructions': `No ${INSTRUCTIONS_REL} here, or it carries no bullet, so there is no instruction corpus to sweep.`,
+  'no-surfaces': `Neither ${SEED_REL} nor ${SHIPPED_SKILLS_REL}/ is here, so no second surface exists to match against.`,
 }
 
 export function register(program: Command): void {
@@ -245,6 +265,146 @@ export function register(program: Command): void {
         process.exitCode = await runSuperseded(superseded, replacement, opts)
       },
     )
+
+  gov
+    .command('restated')
+    .description(
+      'Report every instruction the always-loaded file states that a second surface states too',
+    )
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--root <path>', 'Tree to read, defaulting to the cwd')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        `Matches every bullet in ${INSTRUCTIONS_REL} against ${SEED_REL}`,
+        `and every ${SHIPPED_SKILLS_REL}/*/SKILL.md body. Matching is recall-first,`,
+        'keyed on distinctive tokens two statements share rather than on a phrase',
+        'they spell the same way, because the case this exists for was one rule',
+        'written three different ways.',
+        '',
+        'What it separates:',
+        '  mirror         a declared authoring-to-consumed pair, where repeating is the design',
+        '  repetition     two surfaces state one rule and neither is declared a copy',
+        '  contradiction  the prohibition falls on one surface alone, on a strong match',
+        '',
+        'The contradiction class is a polarity reading rather than a judgment',
+        'about meaning, so weigh each against the surfaces it names.',
+        '',
+        'What it does not measure:',
+        '  a rule stated in two skill bodies and never in the always-loaded file,',
+        '  since the bullets there are the subjects and the bodies are searched',
+        '',
+        'Exit codes:',
+        '  0  no instruction is restated outside a declared mirror',
+        '  1  refused, with the reason on stderr or in the JSON record',
+        '  2  at least one instruction is restated outside a declared mirror',
+        '',
+        'Examples:',
+        '  aitk gov restated',
+        '  aitk gov restated --json',
+        '',
+      ].join('\n'),
+    )
+    .action((opts: RestatedOptions) => {
+      process.exitCode = runRestated(opts)
+    })
+}
+
+/**
+ * Reports and never gates, matching the two sweeps above. A restatement is
+ * legitimate more often than not, so failing a push on one would fail on the
+ * ordinary case and teach contributors to route around the stage.
+ */
+function runRestated(opts: RestatedOptions): number {
+  const root = resolve(opts.root ?? process.cwd())
+  const report = readRestated(root)
+  const emitJson = opts.json ?? false
+
+  if (report.kind === 'unreadable') {
+    intro('aitk gov restated')
+    logStep('Refused')
+    logWarn(RESTATED_REFUSALS[report.reason])
+    outro()
+
+    if (emitJson) {
+      process.stdout.write(
+        `${JSON.stringify({
+          root,
+          reason: report.reason,
+          message: RESTATED_REFUSALS[report.reason],
+        })}\n`,
+      )
+    }
+
+    return 1
+  }
+
+  reportRestated(report, root)
+
+  if (emitJson) {
+    process.stdout.write(`${JSON.stringify({ root, ...report })}\n`)
+  }
+
+  const findings = report.counts.contradictions + report.counts.repetitions
+  return findings > 0 ? 2 : 0
+}
+
+function describeEntry(entry: RestatedEntry): string[] {
+  const lines = [`${entry.subject.file}:${entry.subject.line}`]
+
+  for (const surface of entry.surfaces) {
+    lines.push(
+      `  [${surface.restatement}] ${surface.file}:${surface.line} via ${surface.anchors.join(', ')}`,
+    )
+  }
+
+  return lines
+}
+
+function reportRestated(
+  report: Extract<RestatedReport, { kind: 'measured' }>,
+  root: string,
+): void {
+  intro('aitk gov restated')
+
+  // A count of what matched reads as a verdict on the repository unless the run
+  // also says how wide the corpus behind it was.
+  logStep('Corpus')
+  logInfo(
+    `${report.corpus.instructions} instruction(s) against ${report.corpus.candidates} statement(s) from the seed and ${report.corpus.bodies} shipped body/bodies in ${root}`,
+  )
+  logInfo(
+    `matched on ${report.matcher.anchors} weighted anchor(s), dropping any token in more than ${report.matcher.common} statements`,
+  )
+
+  // Named rather than counted. A polarity split is the only class claiming a
+  // defect, and a reader weighing one has to reach both surfaces.
+  logStep(
+    report.counts.contradictions === 0 ? 'No contradiction' : 'Contradictions',
+  )
+  if (report.counts.contradictions === 0) {
+    logInfo('no restatement puts a prohibition on one surface alone')
+  } else {
+    for (const entry of report.restatements) {
+      const carries = entry.surfaces.some(
+        (surface) => surface.restatement === 'contradiction',
+      )
+      if (!carries) continue
+      for (const line of describeEntry(entry)) logWarn(line)
+    }
+  }
+
+  logStep('Restated')
+  logInfo(
+    `${report.counts.repetitions} repetition(s) outside a declared mirror, and ${report.counts.mirrors} on one`,
+  )
+  logInfo(
+    `${report.counts.threeSurface} instruction(s) reach three surfaces or more`,
+  )
+
+  outro()
 }
 
 /**
