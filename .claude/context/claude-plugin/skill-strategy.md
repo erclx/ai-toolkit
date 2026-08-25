@@ -183,6 +183,7 @@ Every rename lands before the transcript window opens on 2026-07-27, so the tool
 ### What the census cannot count
 
 A zero or a near-zero above is not the same as nobody reaching the skill. Six score at or near zero here and are reached by something other than the operator typing its name: `create-rule` is cited by three sibling skill bodies, `setup-gov` and `claude-ux-measure` by two each, `migration-context` and `setup-verify` each carry a sandbox arm that exercises them with no typed invocation behind it, and `claude-teach` is named by a governance rule and by two docs. Read the numbers above as one input to a conversation about a skill's place. Read alone, they name a removal list nothing here endorses.
+
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.
