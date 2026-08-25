@@ -32,6 +32,7 @@ export const BACKED_FOLDERS = [
   'intake',
   'memory',
   'plans',
+  'proposals',
   'review',
   'tasks',
   'teach',

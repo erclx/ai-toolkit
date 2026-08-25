@@ -20,6 +20,7 @@ node_modules/
 .claude/intake/
 .claude/memory/
 .claude/plans/
+.claude/proposals/
 .claude/review/
 .claude/worktrees/
 .claude/tasks/
