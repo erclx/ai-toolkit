@@ -36,6 +36,7 @@ Poll GitHub for pull request movement by running <POLL_SCRIPT>, then act on what
 - SEEN: report it and stop. A pass already covers that head, whether it arrived out of band or before the poll first saw the pull request, so no review follows.
 - STALLED: read the last pass and report what it carried. The pass has sat open for hours with nothing following it, so a worker mid-task is already ruled out and the dispatch either never went out or the session holding it is gone. Confirm and re-send it under the dispatch rule below, whatever grades the pass carried. Do not re-run a review to correct the heading, since a pass on an unchanged head with no response behind it stops by design.
 - CONFLICT: report it and stop. The branch owner rebases, not this session.
+- UNMATCHED: report it and stop. A comment posted under a heading outside the known set reaches nobody automatically, so a person decides whether to answer it by hand or the set needs a sixth heading.
 - GONE: report it, then sweep the board by invoking the aitk:claude-orchestrate skill and following its queue-refill sweep.
 - A line starting `poll:`: report it verbatim and treat that pull request as unread this run. It is a failed query, not a state.
 - Nothing changed: say exactly "No movement." and nothing else.
@@ -51,7 +52,9 @@ The script exits non-zero and classifies nothing when the open pull request list
 
 The baseline lives at `.claude/.tmp/pr-poll/baseline.txt` under the main worktree root and is per-machine. A first run against a board already in flight reports each open pull request once before it settles.
 
-The four review headings the script matches are written by `claude-pr-review` and `claude-address-review`. A project that posts its reviews under different headings edits the three jq filters in the script to match, or every pull request reads as never reviewed.
+The five review headings the script matches are written by `claude-pr-review` and `claude-address-review`, and the whole set is stated once in the first. A project that posts its reviews under different headings edits the jq filters in the script to match, or every pull request reads as never reviewed.
+
+`UNMATCHED` is what a heading outside the five reaches, carried the same way `RESPONSE` is: a rising count against the baseline is what is new to this script, and the message names the heading so a person can tell whether to answer it by hand or add it to the set. It fires on a tracked pull request only, since a first sighting reports `SEEN` or `OPENED` and takes whatever count already sits on the thread as its starting baseline rather than flagging history the poll never watched.
 
 `RESPONSE` is qualified by recency as well as by count, so it means a reply the last pass has not already answered rather than one this script has not seen before. A worker answers a finding and the reviewing session posts its close-out seconds later, which is the ordinary handback rather than a race, so a count on its own reported the answered thread on the next run and the re-review it routed to stopped at its own guard. The state now fires when the newest reply is stamped later than the last pass, and on a pull request carrying no pass at all, which is a worker talking to nobody and worth the turn. A reply landing inside the same second as the pass is dropped, matching the comparison `claude-pr-review` makes on the same two fields.
 

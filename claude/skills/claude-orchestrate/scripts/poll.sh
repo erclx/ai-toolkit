@@ -32,16 +32,19 @@ if [ -z "$BASE_REF" ]; then
 fi
 BASE_BRANCH="${BASE_REF#origin/}"
 
-# These four strings are owned elsewhere and pinned here. `claude-pr-review`
-# writes `## Review` and `## Review closed`, and `claude-address-review` writes
-# `## Review response` and `## Rebase`. All three surfaces ship separately, so a
+# These five strings are owned elsewhere and pinned here. `claude-pr-review`
+# writes `## Review` and `## Review closed`, and states the full five-heading
+# set once, beside the threshold it already states once. `claude-address-review`
+# writes `## Review response`, `## Rebase`, and `## Post-review findings`, the
+# last for a finding a worker produces after a close-out rather than in answer
+# to one already on the thread. All three surfaces ship separately, so a
 # heading added in either skill breaks a test here that no check reaches across.
 #
-# Both families match on the first line alone so the two tests stay symmetric.
-# The reply family carries `## Rebase` because a run sent straight to the rebase
-# step posts under a heading deliberately kept outside the `## Review` family.
-# Widening one family without the other is what left the reply test narrow, so
-# a fifth heading is added here beside its sibling.
+# Both families match on the first line alone so the tests stay symmetric. The
+# reply family carries `## Rebase` and `## Post-review findings` beside
+# `## Review response` because neither answers a comment already on the thread,
+# which is why both were kept outside the `## Review` family rather than folded
+# into it.
 JQ_LAST_REVIEWED_HEAD='
   [ .reviews[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")
@@ -55,12 +58,35 @@ JQ_LAST_REVIEWED_HEAD='
 JQ_REPLY_STATE='
   [ .comments[]
     | select((.body // "") | split("\n")[0] | rtrimstr("\r")
-             | . == "## Review response" or . == "## Rebase")
+             | . == "## Review response" or . == "## Rebase"
+             or . == "## Post-review findings")
   ] as $replies
   | ($replies | length | tostring)
     + " "
     + ([ $replies[] | .createdAt // empty | fromdateiso8601 | floor ]
        | max // 0 | tostring)
+'
+# A comment matching neither family above is the gap this filter exists to
+# surface rather than absorb: a worker inventing a sixth heading used to reach
+# this script as silence, indistinguishable from no comment at all. The count
+# is read the same way the reply count is, a rising value against the baseline
+# being new to this script, and the newest heading's text rides along for the
+# report. Its spaces are swapped for `%20` because the snapshot line below is
+# space-separated and a real heading carries more than one word. `%20` rather
+# than `_` survives a heading that itself carries a literal underscore, since
+# an invented heading is free text and the report line is read by a person
+# deciding whether to answer it by hand.
+JQ_UNMATCHED_STATE='
+  [ .comments[]
+    | (.body // "") | split("\n")[0] | rtrimstr("\r")
+    | select(startswith("## "))
+    | select(. != "## Review" and . != "## Review closed"
+              and . != "## Review response" and . != "## Rebase"
+              and . != "## Post-review findings")
+  ] as $unclassified
+  | ($unclassified | length | tostring)
+    + " "
+    + (($unclassified | last) // "none" | gsub(" "; "%20"))
 '
 
 # `claude-pr-review` states the threshold and posts `## Review` exactly when a
@@ -176,6 +202,11 @@ snapshot() {
     # Three space-separated fields, so the line below carries them as its own
     # sixth, seventh, and eighth rather than needing a split.
     review_state=$(jq -r "$JQ_LAST_REVIEW_STATE" <<<"$payload")
+    # Split the same way as the reply state, carried as the line's tenth and
+    # eleventh fields.
+    unmatched_state=$(jq -r "$JQ_UNMATCHED_STATE" <<<"$payload")
+    unmatched_count=${unmatched_state%% *}
+    unmatched_heading=${unmatched_state#* }
 
     # `gh pr view --json mergeable` reports UNKNOWN until GitHub finishes
     # computing it, which is exactly when a poll asks. merge-tree answers
@@ -194,7 +225,7 @@ snapshot() {
       merges=conflict
     fi
 
-    echo "$n $head ${prior:-none} $resp $merges $review_state $reply_at"
+    echo "$n $head ${prior:-none} $resp $merges $review_state $reply_at $unmatched_count $unmatched_heading"
   done
 }
 
@@ -211,7 +242,7 @@ CHANGED=0
 # would fire on every later run and the board would never read "No movement."
 FINAL=""
 
-while read -r n head prior resp merges heading age pass_at reply_at; do
+while read -r n head prior resp merges heading age pass_at reply_at unmatched_count unmatched_heading; do
   [ -z "$n" ] && continue
   state=$heading
   old=$(grep "^$n " "$STATE" || true)
@@ -229,7 +260,7 @@ while read -r n head prior resp merges heading age pass_at reply_at; do
       echo "OPENED    #$n at ${head:0:7}, $merges against $BASE_BRANCH"
     fi
     CHANGED=1
-    FINAL+="$n $head $prior $resp $merges $state $age"$'\n'
+    FINAL+="$n $head $prior $resp $merges $state $unmatched_count"$'\n'
     continue
   fi
   old_head=$(echo "$old" | cut -d' ' -f2)
@@ -240,11 +271,25 @@ while read -r n head prior resp merges heading age pass_at reply_at; do
   # age decides the rest, so the first run after an upgrade needs no history and
   # classifies a thread already past the threshold rather than waiting a run.
   old_heading=$(echo "$old" | cut -d' ' -f6)
+  old_unmatched=$(echo "$old" | cut -d' ' -f7)
 
   # A conflict arrives from the base moving, not from the branch, so it is
   # reported on the transition rather than only when the head changes.
   if [ "$merges" = conflict ] && [ "$old_merges" != conflict ]; then
     echo "CONFLICT  #$n no longer merges into $BASE_BRANCH"
+    CHANGED=1
+  fi
+
+  # A rising count is what is new to this script, the same test RESPONSE
+  # below runs against the reply family. It fires on a tracked pull request
+  # only: a first sighting reports SEEN or OPENED and takes whatever count
+  # already sits on the thread as its starting baseline rather than flagging
+  # history retroactively. A carried line supplies neither, since
+  # carry_forward re-echoes the shorter baseline shape rather than a full
+  # snapshot line, so both sides default to zero the way old_unmatched
+  # already does.
+  if [ "${unmatched_count:-0}" -gt "${old_unmatched:-0}" ]; then
+    echo "UNMATCHED #$n posted under '${unmatched_heading//%20/ }'"
     CHANGED=1
   fi
 
@@ -312,7 +357,7 @@ while read -r n head prior resp merges heading age pass_at reply_at; do
     # re-enters next run and STALLED oscillates instead of reporting once.
     state=reported
   fi
-  FINAL+="$n $head $prior $resp $merges $state"$'\n'
+  FINAL+="$n $head $prior $resp $merges $state $unmatched_count"$'\n'
 done <<<"$NEW"
 
 while read -r n _rest; do
