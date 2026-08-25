@@ -61,6 +61,14 @@ Sharing a prefix across that family is why the detection matches the first line 
 
 A finding withdrawn on a reply's argument leaves that count too, so a pass withdrawing every finding it carried reads as a close-out while still owing a body the short close-out line cannot carry, since that line credits a fix nobody made. `.claude/context/claude-internal/orchestration.md` holds why a reply reaches the thread at all and which class of reply stays off it.
 
+### The full set, stated once
+
+Four headings shipped and only two reached `poll.sh`: the script matched `## Review response` and `## Rebase`, so a worker posting under anything else was invisible to it. A reply landed under `## Post-review findings` twelve seconds after a close-out and sat unread until the operator asked whether it had been, because no rule routed it and no state reported the miss as anything but no movement. Measured 2026-08-21.
+
+The fix names `## Post-review findings` as a fifth heading rather than leaving it invented, since a worker with something to report after a close-out already needed one and had none, and gives it the same routing `## Review response` gets: `poll.sh` reports it as a reply and sends a fresh pass. Which headings exist, which family each belongs to, and who posts each is stated once in `claude-pr-review`, beside the threshold that skill already states once, so `claude-address-review` and the poll cite it rather than carry their own copy.
+
+A comment posted under a heading outside the five is reported as unmatched rather than passed over. Silence and a match read alike otherwise, which is the shape of the miss this closes, so the poll now surfaces an invented heading as a state a person reads rather than absorbing it the way the fifth one was absorbed before it had a name.
+
 ### One threshold under the heading and the dispatch
 
 The threshold moved four times on 2026-08-14, and the defect this section records is the cost of each move rather than any one value it took. It ran as a heading on any finding with a dispatch floored at should-fix, then both at should-fix, then a heading at should-fix with a dispatch on any finding, and it now sits with both on any finding.

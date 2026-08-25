@@ -122,6 +122,10 @@ The script is tracked and its baseline is not. State lives at `.claude/.tmp/pr-p
 
 `JQ_LAST_REVIEW_STATE` emits the pass stamp as a third field beside the heading and the age, and `JQ_REPLY_STATE` emits the newest reply stamp beside the count, so neither test pays for a second filter over headings this script does not own. Both stamps ride at the end of the snapshot line and never enter the baseline. That is what keeps `cut -d' ' -f2,4,5,6` reading a baseline an older version wrote, and it leaves a carried line supplying neither, where the count test in front of them short-circuits before either is read as a number.
 
+`UNMATCHED` added a field with no count in front of it to short-circuit behind, since the field is itself a count: how many comments this run carry a heading outside the five `claude-pr-review` states. `unmatched_count`, unlike `pass_at` and `reply_at`, rides in the baseline rather than only at the end of the snapshot line, because the next run has to know whether a heading already reported is still the newest one.
+
+A carried line supplies neither an eighth nor a tenth field, so the comparison reading it defaults both sides explicitly, `${unmatched_count:-0}` against `${old_unmatched:-0}`, rather than leaning on an equality test the way `RESPONSE` does. Caught by `src/orchestrate-poll.test.ts` rather than by `bun run check`, which skips the suite on a run touching no TypeScript file and would have shipped the crash.
+
 `src/orchestrate-poll.test.ts` covers the classifier, which makes `poll.sh` the first shipped skill script in the repository under test. The harness builds a throwaway repository under `mktemp` and puts a stub `gh` first on `PATH`, answering `pr list`, `pr view`, and `repo view` out of fixture files a case rewrites between runs. Two calls over one baseline replay a thread, since the classifier reaches its elif chain only on the second sighting of a pull request. A fake head sha keeps `git cat-file` failing, so `merges` reports `unknown` and `git merge-tree` never runs against a base the fixture has no remote for.
 
 ## The handback dispatch

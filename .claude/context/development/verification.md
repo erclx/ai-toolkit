@@ -23,6 +23,10 @@ Measure CPU seconds and not wall clock when judging a stage's cost. The suite fa
 
 ## Gotchas
 
+### A shell script's own test file does not gate the script
+
+Types and tests run on any `src/` change, per the scoping rule above, so a shell script under `claude/skills/*/scripts/` gates only the Shell stage even when a `src/*.test.ts` file covers it. `claude/skills/claude-orchestrate/scripts/poll.sh` and `src/orchestrate-poll.test.ts` are one such pair. A branch touching only the script reports clean on `bun run check` and on `bash -n` alike while the classifier crashes on a carried line, caught only by running `bun test src/orchestrate-poll.test.ts` by hand. Run the specific test file for a `claude/skills/` script before trusting a green `bun run check` that never touched `src/`.
+
 ### The install gate
 
 `bun run check:install` runs `git clone` on the project root, so it verifies the last commit and never the working tree. An uncommitted fix, or an uncommitted regression, is invisible to it. Commit first or the result describes code you are not shipping.
