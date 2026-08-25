@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.11.0](https://github.com/erclx/aitk/compare/v3.10.0...v3.11.0) (2026-08-25)
+
+
+### Features
+
+* **audits:** write parseable records on every refusal path ([#1119](https://github.com/erclx/aitk/issues/1119)) ([b013ecc](https://github.com/erclx/aitk/commit/b013ecceee8d7437b171f687c0ad7c6b22b33a69))
+* **claude:** add claude-markdown-propose skill ([#1120](https://github.com/erclx/aitk/issues/1120)) ([5108e76](https://github.com/erclx/aitk/commit/5108e76336e5a1515346678620955db56662c23a))
+
 ## [3.10.0](https://github.com/erclx/aitk/compare/v3.9.0...v3.10.0) (2026-08-25)
 
 
