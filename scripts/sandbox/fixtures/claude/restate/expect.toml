@@ -14,9 +14,18 @@ paths = ["docs/retry.md"]
 
 # A correct run writes nothing, so this reports as skipped with the run wrote
 # nothing rather than as a pass. It is declared for the failing run: a body that
-# writes its restatement to a file lands outside this scope and goes red. The
-# source is admitted because a run rewriting it in place is caught by the content
-# pin below rather than by the scope.
+# writes its restatement to a file lands outside this scope and goes red.
+#
+# The source is admitted, and what catches a rewrite of it is narrower than the
+# scope. The three pins below reach the frontmatter, the hedge paragraph, and one
+# sentence, so a run that rewrote `## Operational notes` or appended to the file
+# passes every one of them and passes the scope with it. Admitting the source is
+# what keeps a legitimate in-place touch from reading as an escape, not a second
+# assertion over the file's whole content.
+#
+# `write_scope = []` is not the stricter form it looks like. `src/sandbox/expect.ts`
+# returns early on an empty array, so it asserts nothing at all and would drop the
+# check that catches a body writing its restatement to a file.
 write_scope = ["docs/retry.md"]
 
 # The reply names the source path and closes on the label the output template
