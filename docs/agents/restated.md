@@ -49,6 +49,12 @@ Every record names the anchors its match rested on, so a reader can weigh a find
 
 The contradiction floor sits above the match floor deliberately. A thin match says two statements touch the same subject, which is not enough to claim one forbids what the other prescribes, so a weak pair reports as a repetition and the loudest class is reserved for a pair sharing real identity.
 
+Two further rules decide where a prohibition counts, and both came out of false positives rather than from reasoning ahead of the corpus.
+
+Polarity is read off the clause the anchors landed in, and off the densest such clause rather than every one carrying an anchor. A statement states one rule across several clauses, so a union answers true whenever any clause anywhere carries a marker, which is the whole statement again under another name.
+
+The marker also has to open its clause, because an instruction leads with its verb. `Never delete a task file` prohibits where `a fallback never fires` reports, and no test reading the marker anywhere in the clause tells those apart. What that costs is a prohibition written mid-clause, which now reads as description and lands the pair in the repetition class, so both surfaces still reach the report and only the label is weaker.
+
 A mirror that disagrees stays a finding. The exclusion reaches a repetition alone, because the two files on a declared pair are meant to agree.
 
 ## Which surface is authoritative

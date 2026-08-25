@@ -150,6 +150,40 @@ describe('readRestated', () => {
     expect(report.counts.contradictions).toBe(1)
   })
 
+  it('reads polarity from the clause the anchors landed in, not the whole statement', () => {
+    write(
+      'CLAUDE.md',
+      '- The ban governs edits you make, not scripts under `scripts/`.',
+    )
+    write(
+      'tooling/claude/seeds/CLAUDE.md',
+      '- Edit a file with the file-editing tool, never a shell stream editor. This governs edits you make, not scripts under `scripts/`.',
+    )
+
+    const report = measured(readRestated(ROOT))
+    const entry = entryFor(report, 'The ban governs')
+
+    expect(entry.surfaces[0].restatement).toBe('mirror')
+    expect(report.counts.contradictions).toBe(0)
+  })
+
+  it('reads a mid-clause negation as description rather than as a prohibition', () => {
+    write(
+      'CLAUDE.md',
+      '- An unescaped `&` in a `sed` replacement expands to the whole match, so a fallback never fires.',
+    )
+    write(
+      'tooling/claude/seeds/CLAUDE.md',
+      '- An unescaped `&` in a `sed` replacement expands to the whole match, so both fail silently while reporting success.',
+    )
+
+    const report = measured(readRestated(ROOT))
+    const entry = entryFor(report, 'An unescaped')
+
+    expect(entry.surfaces[0].restatement).toBe('mirror')
+    expect(report.counts.contradictions).toBe(0)
+  })
+
   it('names the anchors a match rested on, so a finding is auditable', () => {
     write(
       'CLAUDE.md',

@@ -280,9 +280,84 @@ export function analyze(text: string): Analysis {
   }
 }
 
+/**
+ * Whether a clause instructs against something, rather than merely describing
+ * something that does not happen.
+ *
+ * The marker has to open the clause. A prohibition is an instruction, and an
+ * instruction leads with its verb, so `Never delete a task file` prohibits
+ * where `a fallback never fires` reports. Reading the marker anywhere in the
+ * clause cannot separate those two, and this corpus writes both: the third
+ * false contradiction found here was `so a || fallback never fires` against a
+ * seed clause saying the same thing in other words.
+ *
+ * What it costs is a prohibition written mid-clause, as in `edit with the tool,
+ * never a stream editor`, which now reads as description. That miss lands the
+ * pair in the repetition class rather than dropping it, so both surfaces still
+ * reach the report and only the label is weaker.
+ */
 function prohibits(text: string): boolean {
-  const lowered = text.toLowerCase()
-  return PROHIBITIONS.some((marker) => lowered.includes(marker))
+  const opening = text
+    .toLowerCase()
+    .replace(/^[^a-z]*/, '')
+    .replace(/^(and|but|so|then|also|however)[\s,]+/, '')
+
+  return PROHIBITIONS.some((marker) => opening.startsWith(marker))
+}
+
+/**
+ * The clauses a statement's polarity is read against.
+ *
+ * The trailing span is kept, where `splitSentences` in `src/markdown/structure.ts`
+ * drops one no punctuation closes. A bullet routinely ends without a period and
+ * its last clause is routinely the one carrying the prohibition, so dropping it
+ * would lose exactly the half this reads. The two contracts differ, which is why
+ * this is a second splitter rather than a shared one.
+ */
+function clauses(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((clause) => clause.trim())
+    .filter((clause) => clause !== '')
+}
+
+/**
+ * The clause a match landed in, which is where a prohibition has to sit before
+ * it says anything about the rule the two statements share.
+ *
+ * The densest clause rather than every clause carrying an anchor. A statement
+ * states one rule across several clauses, and a union answers true whenever any
+ * clause anywhere carries a marker, which is the whole statement again under
+ * another name.
+ *
+ * Both contradictions this repository reported were that defect. The
+ * always-loaded file splits the stream-editor rule across two bullets and the
+ * seed folds them into one, so the subject was the exception half alone while
+ * the seed's bullet carried the `never` from a clause the anchors never
+ * touched, and the two agreed completely.
+ */
+function anchoredClause(text: string, anchors: ReadonlySet<string>): string {
+  const parts = clauses(text)
+  if (parts.length <= 1) return text
+
+  let best = text
+  let bestHits = 0
+
+  for (const part of parts) {
+    const tokens = analyze(part).tokens
+    let hits = 0
+    for (const anchor of anchors) if (tokens.has(anchor)) hits += 1
+
+    if (hits > bestHits) {
+      bestHits = hits
+      best = part
+    }
+  }
+
+  // No clause carries an anchor, which a boundary landing inside a code span
+  // can produce. Reading the whole statement is what this did before the clause
+  // scope, so it degrades to that rather than to no polarity at all.
+  return bestHits === 0 ? text : best
 }
 
 function isMirrorPair(subject: string, surface: string): boolean {
@@ -444,14 +519,17 @@ function classify(
   subject: Statement,
   candidate: Candidate,
   weight: number,
+  anchors: ReadonlySet<string>,
 ): { restatement: Restatement; reason: string } {
-  const split = prohibits(subject.text) !== prohibits(candidate.text)
+  const split =
+    prohibits(anchoredClause(subject.text, anchors)) !==
+    prohibits(anchoredClause(candidate.text, anchors))
 
   if (split && weight >= CONTRADICTION_FLOOR) {
     return {
       restatement: 'contradiction',
       reason:
-        'one surface states this as a prohibition and the other does not, which is a polarity reading rather than a judgment about meaning',
+        'the clause each surface was matched on states this as a prohibition on one side alone, which is a polarity reading rather than a judgment about meaning',
     }
   }
 
@@ -466,7 +544,7 @@ function classify(
   return {
     restatement: 'repetition',
     reason: split
-      ? 'the prohibition falls on one surface alone, on a match too thin to read that as a disagreement'
+      ? 'the matched clause carries a prohibition on one surface alone, on a match too thin to read that as a disagreement'
       : 'two surfaces state one rule and neither is declared a copy of the other',
   }
 }
@@ -553,6 +631,7 @@ export function readRestated(root: string): RestatedReport {
         subject.statement,
         candidate.statement,
         weight,
+        new Set(shared),
       )
       const { authority, reason: why } = authorityFor(
         subject.statement,
