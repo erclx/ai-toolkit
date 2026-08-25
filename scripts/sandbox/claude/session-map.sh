@@ -165,7 +165,10 @@ EOF
   log_info "Expect:  declared in fixtures/claude/session-map/expect.toml"
   log_info "         Check it with: aitk sandbox check claude:session-map"
   log_info "         A map carrying the three core sections, the drift verb's own"
-  log_info "         refusal, which of the two commits the ref came from, and the"
-  log_info "         untracked file. The board ends the run untouched."
-  log_info "         Four expectations need a reader and report as unchecked."
+  log_info "         refusal, and the untracked file. The board ends the run"
+  log_info "         untouched."
+  log_info "         What the map says about the empty window is a reader"
+  log_info "         expectation, since item 3 fixes what a writer must say and"
+  log_info "         not the words to say it in."
+  log_info "         Five expectations need a reader and report as unchecked."
 }

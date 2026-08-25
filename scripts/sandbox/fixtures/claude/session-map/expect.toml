@@ -8,6 +8,11 @@
 # answered, and wrote the prediction into the map. That map read as conforming,
 # so an assertion over the artifact passes it. The content blocks below read
 # what the map says each step returned instead.
+#
+# Only the first defect is asserted. The second reproduces on every run, since
+# the fixture is always younger than any session window, and what a conforming
+# map says about it is a wording the run chooses rather than a token the fixture
+# fixes, so it sits in `manual` under `Judgment:` and a reader carries it.
 
 # Every top-level key sits above the first `[[content]]` block. A bare key below
 # one belongs to that table in TOML, so a `manual` array written at the bottom
@@ -55,6 +60,7 @@ manual = [
   "The capture the skill opens with ran. Unwired: a cold project gives capture nothing to persist, so it writes no file and returns no routed line, and the map owes it no mention either. The first run of this arm confirmed a conforming map that names capture nowhere, so the step is observable only in a tool-call list the harness does not supply.",
   "No fourth section over the core three. Semantic: a negative, and an entry asserting what a run must not have written passes on every spelling that phrases it differently.",
   "The three core sections appear in the order the standard fixes. Semantic: their bodies are free prose, so no single block spans two headings without pinning what a writer puts between them.",
+  "The map says which of the two commits the ref came from, the window having found none before it. Judgment: item 3 requires the writer to say which, never to echo the wording item 3 states it in, so a map reading that the ref is the only commit the repository holds satisfies the rule and fails any pin over the phrase. The fixture fixes no token here, since its one commit carries a hash that moves per run.",
 ]
 
 # The frontmatter the standard fixes. `title` is the same string on every map, so
@@ -90,14 +96,6 @@ pattern = '^## Standing cautions$'
 [[content]]
 path = ".claude/tasks/session-csv-export.md"
 pattern = 'shipped skill corpus'
-
-# The second defect. The sandbox repository is minutes old, so the elapsed-time
-# recovery in item 3 finds no commit before the window and falls back to the
-# oldest the history holds. Item 3 also requires saying which of the two the ref
-# came from, which is the sentence this pins.
-[[content]]
-path = ".claude/tasks/session-csv-export.md"
-pattern = 'oldest commit'
 
 # `## State` owes the reader any untracked file that needs committing, and the
 # fixture leaves exactly one. A map filled from what a session already knew
