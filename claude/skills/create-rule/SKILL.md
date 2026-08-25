@@ -1,11 +1,11 @@
 ---
 name: create-rule
-description: Scaffolds a project-specific governance rule into `.claude/rules/<subdir>/<n>-<slug>.md` with correct frontmatter and a non-colliding number. Use when asked to "add a rule", "create a governance rule", "write a project rule", or when a project needs a coding rule the toolkit does not ship. Do NOT use to edit toolkit source rules under `governance/rules/`.
+description: Scaffolds a project-specific governance rule into `.claude/rules/project/<subdir>/<n>-<slug>.md` with correct frontmatter and a non-colliding number. Use when asked to "add a rule", "create a governance rule", "write a project rule", or when a project needs a coding rule the toolkit does not ship. Do NOT use to edit toolkit source rules under `governance/rules/`.
 ---
 
 # Create rule
 
-Author a project-local governance rule. The rule lives in the target project, not the toolkit, so it is never overwritten by `aitk gov sync` (sync skips rules with no toolkit source match).
+Author a project-local governance rule. The rule lives in the target project, not the toolkit, so `aitk gov sync` never overwrites it: the sync engine orphans anything under `.claude/rules/project/` by location, before it ever checks the rule's name against the toolkit catalog.
 
 ## Guards
 
@@ -21,7 +21,7 @@ Resolve both from the request, and ask only for what is missing. Attach a propos
 
 ## Step 2: resolve band and subdir
 
-Pick the band from the topic. Each band owns a number range and a subdir under `.claude/rules/`:
+Pick the band from the topic. Each band owns a number range and a subdir under `.claude/rules/project/`:
 
 - `core/` 000-099: global persona, testing, error handling, planning. Always-on, no `paths:`.
 - `lang/` 100-199: one programming language.
@@ -34,15 +34,15 @@ Pick the band from the topic. Each band owns a number range and a subdir under `
 
 Pick the lowest unused number in the band that collides with neither the project nor the toolkit catalog:
 
-- Scan the target's `.claude/rules/<subdir>/` for used prefixes.
-- Run `aitk gov list --json 2>/dev/null` and read the shipped rule numbers in the same range, so a later `aitk gov install` cannot double-book the number.
-- If `aitk` is not on PATH, scan the target only and warn that a future toolkit install could collide.
+- Scan the target's `.claude/rules/project/<subdir>/` for used prefixes.
+- Run `aitk gov list --json 2>/dev/null` and read the shipped rule numbers in the same range, so the band stays readable against the toolkit's own numbering even though location already keeps a later `aitk gov install` from touching this file.
+- If `aitk` is not on PATH, scan the target only and warn that the band could read confusingly against a later toolkit install.
 
 ## Step 4: write the rule
 
 Read `${CLAUDE_SKILL_DIR}/../../standards/rule.md` for frontmatter, body shape, and voice before writing the body. Do not work the shape from memory.
 
-Write `.claude/rules/<subdir>/<n>-<slug>.md` where `<slug>` is a 1-to-3-word kebab topic. Preview the resolved path, band, number, and frontmatter, then write immediately. The tool permission dialog is the confirmation gate.
+Write `.claude/rules/project/<subdir>/<n>-<slug>.md` where `<slug>` is a 1-to-3-word kebab topic. Preview the resolved path, band, number, and frontmatter, then write immediately. The tool permission dialog is the confirmation gate.
 
 Frontmatter carries the Claude shape. Path-scoped rules emit one `paths:` entry per glob. Always-on rules omit `paths:` entirely.
 
@@ -65,4 +65,4 @@ Title casing is sentence case, with proper nouns keeping their own casing (`# Ty
 
 ## After writing
 
-Emit the full path on its own line: `.claude/rules/<subdir>/<n>-<slug>.md`. Remind the user that Claude Code loads path-scoped rules when it reads a matching file, and always-on rules every session.
+Emit the full path on its own line: `.claude/rules/project/<subdir>/<n>-<slug>.md`. Remind the user that Claude Code loads path-scoped rules when it reads a matching file, and always-on rules every session.

@@ -21,6 +21,7 @@ export function createSnippetsAdapter(root: string): SyncAdapter {
     unit: 'snippets',
     installedRoot: (target: string) => join(target, '.claude', 'snippets'),
     locateSource: (file: InstalledFile) => locateSource(sourceDir, file),
+    projectSubdir: 'project',
     stamp: { domain: 'snippets', toolkitRoot: root },
   }
 }

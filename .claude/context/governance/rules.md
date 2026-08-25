@@ -70,6 +70,6 @@ Glob the rule against every ecosystem it governs rather than only the one its st
 
 ## Project-local rules
 
-Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, picking a free number in the band that collides with neither the project nor the toolkit catalog.
+Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/project/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, picking a free number in the band that collides with neither the project nor the toolkit catalog.
 
-These rules live only in the target. `aitk gov sync` skips any rule with no toolkit source match, classified as `orphaned` by `planSync` in `src/sync/engine.ts`, so project-authored rules survive sync untouched. Numbering bands are shared with toolkit rules, so a project rule and a toolkit rule must not share a number within the same subdir.
+These rules live only in the target. `aitk gov sync` skips any rule with no toolkit source match, classified as `orphaned` by `planSync` in `src/sync/engine.ts`. A rule under `.claude/rules/project/`, which is where `create-rule` writes, is orphaned by location instead, since the gov adapter declares that subfolder on `SyncAdapter`, so it survives sync even if a later toolkit rule takes the same name. Numbering bands still avoid the toolkit catalog by convention, since a band sharing a number across the two trees reads as a coincidence rather than a collision, but nothing enforces it any more.
