@@ -405,6 +405,23 @@ function commentCounts(record: unknown): Record<string, number> | undefined {
   return { degradationHits }
 }
 
+/**
+ * Reads the census's three headline totals, leaving the extension breakdown
+ * out. The breakdown is what a caller reads for its own sake, and folding
+ * every extension into the retained baseline would grow the recorded key set
+ * with every language the tree ever picks up.
+ */
+function censusCounts(record: unknown): Record<string, number> | undefined {
+  const root = asObject(record)
+  if (root === undefined || !Array.isArray(root.byExtension)) return undefined
+
+  return allOf({
+    files: typeof root.files === 'number' ? root.files : undefined,
+    skipped: typeof root.skipped === 'number' ? root.skipped : undefined,
+    lines: typeof root.lines === 'number' ? root.lines : undefined,
+  })
+}
+
 function testOrderCounts(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -596,6 +613,17 @@ export const AUDITS: readonly AuditSpec[] = [
       'no-surfaces',
     ] satisfies RestatedRefusal[],
     counts: restatedCounts,
+  },
+  {
+    id: 'census',
+    label: 'Codebase census',
+    argv: ['census', '--json'],
+    // Reports rather than gates. A file count is a measure, not a judgment, so
+    // registering it here exists to retain growth against the baseline rather
+    // than to fail a push on a number moving.
+    gatingExits: [],
+    corpus: 'tracked',
+    counts: censusCounts,
   },
   {
     id: 'deps',
