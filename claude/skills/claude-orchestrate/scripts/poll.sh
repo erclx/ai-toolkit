@@ -71,11 +71,12 @@ JQ_REPLY_STATE='
 # this script as silence, indistinguishable from no comment at all. The count
 # is read the same way the reply count is, a rising value against the baseline
 # being new to this script, and the newest heading's text rides along for the
-# report. Its spaces are swapped for `%20` because the snapshot line below is
-# space-separated and a real heading carries more than one word. `%20` rather
-# than `_` survives a heading that itself carries a literal underscore, since
-# an invented heading is free text and the report line is read by a person
-# deciding whether to answer it by hand.
+# report. It carries its spaces intact rather than encoded, since it is the
+# last field on both sides of the pipe: `${unmatched_state#* }` below strips
+# only the first space, and `read -r` further down hands its last named
+# variable the rest of the line whole. Neither reads a heading's own spaces
+# as a field separator, so a heading round-trips verbatim into the report a
+# person reads when deciding whether to answer it by hand.
 JQ_UNMATCHED_STATE='
   [ .comments[]
     | (.body // "") | split("\n")[0] | rtrimstr("\r")
@@ -86,7 +87,7 @@ JQ_UNMATCHED_STATE='
   ] as $unclassified
   | ($unclassified | length | tostring)
     + " "
-    + (($unclassified | last) // "none" | gsub(" "; "%20"))
+    + (($unclassified | last) // "none")
 '
 
 # `claude-pr-review` states the threshold and posts `## Review` exactly when a
@@ -289,7 +290,7 @@ while read -r n head prior resp merges heading age pass_at reply_at unmatched_co
   # snapshot line, so both sides default to zero the way old_unmatched
   # already does.
   if [ "${unmatched_count:-0}" -gt "${old_unmatched:-0}" ]; then
-    echo "UNMATCHED #$n posted under '${unmatched_heading//%20/ }'"
+    echo "UNMATCHED #$n posted under '$unmatched_heading'"
     CHANGED=1
   fi
 
