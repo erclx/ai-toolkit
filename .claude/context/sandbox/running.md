@@ -106,6 +106,8 @@ Patterns use TOML literal strings (`'^- \[x\] done'`) so a regex needs no backsl
 
 Every pattern compiles with `m` and nothing else. An inline `(?i)` is not a flag in this engine, so a pattern carrying one fails to compile rather than matching case-insensitively, and the result names it invalid rather than unmatched. Spell the folding as character classes.
 
+Spelling one costs a gate, though, so prefer a case-stable substring where the fold is not load-bearing. cspell reads the tail of a class as a word and fails the spell stage of `bun run check`, which took `'[Oo]ldest commit'` as the unknown `ldest` and `'[Cc]aptur'` as `aptur` while writing the `claude:session-map` arm. Dropping the folded letter out of the pattern clears it, and adding either fragment to a dictionary would file a regex artifact as a term.
+
 A literal string cannot carry an apostrophe, which is what closes it. A pin over prose spells that character `.` instead, costing one character of precision per apostrophe. Switching to a basic string to escape it would reintroduce the backslash doubling the literal form exists to avoid.
 
 An entry carrying `*` is matched as a glob under all three of `paths`, `absent`, and `content`, and the result names the file that matched rather than the pattern that found it. That is what lets an arm name a file whose name a run derives rather than fixes, where pinning one spelling of the derived name passes vacuously against every other spelling and reads as coverage the arm does not have. It covers both directions: the per-session handoff `claude/orchestrate` must not write, and the numbered lesson `claude/teach` must, where the ordinal is the derivation worth asserting and the slug behind it is not.
@@ -127,6 +129,8 @@ A pin scores the whole reply rather than the slot it was written about. `claude:
 Declare only positives. An entry asserting what a run must not have said passes on every reply that phrases the thing differently, which is the vacuous pass `manual` is excluded from the count to prevent. Negatives stay in `manual`.
 
 Every `manual` entry states why it stays there, as a sentence appended to the claim. `Semantic:` marks a claim no string match can carry, and `Unwired:` marks one that needs an input the harness does not yet supply, such as stderr or the tool calls. `Judgment:` marks one a string match reaches perfectly well against a token the run chooses rather than one the fixture fixes, so the entry passes or fails on a wording. Without the label the bucket absorbs all three, and work with a mechanism waiting for it reads the same as work that will never have one.
+
+A step whose outcome reaches neither the tree nor the reply takes `Unwired:` rather than a pin over the artifact it feeds. `claude:session-map` opens by invoking capture, and a cold fixture gives capture nothing to persist, so it writes no memory file, returns no routed line, and the map owes it no mention either. Two passing runs on 2026-08-25 produced conforming maps naming capture nowhere, which is what a pin over the map would have failed. Admit the folder in `write_scope` so a run that did capture stays in bounds, and leave the step itself to a reader.
 
 ### Arms without an agent
 
