@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.8.0](https://github.com/erclx/aitk/compare/v3.7.0...v3.8.0) (2026-08-25)
+
+
+### Features
+
+* **skill:** add restate for a plain reading of a dense answer ([#1108](https://github.com/erclx/aitk/issues/1108)) ([5a0391f](https://github.com/erclx/aitk/commit/5a0391fd3704b7a02763c7faa571f5676040cc34))
+* **sync:** declare project-authored files by location ([#1109](https://github.com/erclx/aitk/issues/1109)) ([368802c](https://github.com/erclx/aitk/commit/368802cd1a57cf5a582241070e6c8684971050f7))
+
 ## [3.7.0](https://github.com/erclx/aitk/compare/v3.6.0...v3.7.0) (2026-08-21)
 
 
