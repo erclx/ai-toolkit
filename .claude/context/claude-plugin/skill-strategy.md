@@ -153,7 +153,7 @@ The redundancy audit below runs outward, against community counterparts. Nothing
 
 The third question, whether anything invokes the skill beyond the author typing its name, has no answer at creation time. It ships in the skill's own `REQUIREMENT.md` as a review criterion, read against the census below rather than gated on up front.
 
-The test has a shipped precedent. `fae01783` (pull request 516, merged 2026-05-21) dropped `git-stash` for wrapping a single git command that needed no skill body, and `release-changelog` for being low-frequency and invoked by no other skill. Those two sentences were the test, applied once, and stated only in the commit body until this entry.
+The test has a shipped precedent. `fae01783` (pull request `#516`, merged 2026-05-21) dropped `git-stash` for wrapping a single git command that needed no skill body, and `release-changelog` for being low-frequency and invoked by no other skill. Those two sentences were the test, applied once, and stated only in the commit body until this entry.
 
 ### The census
 
@@ -163,10 +163,10 @@ Two records answer usage, and both are per-machine readings rather than reposito
 
 The first pass over the typed history undercounted, because seven skill folders carry a name their own transcripts never mention. Folding the old spellings in moved one skill from zero to eleven and lifted three more off the floor.
 
-- `git-stash` and `release-changelog`: dropped rather than renamed, `fae01783` (PR 516), 2026-05-21
+- `git-stash` and `release-changelog`: dropped rather than renamed, `fae01783` (`#516`), 2026-05-21
 - `init-project` → `setup-init`, `gov-install` → `setup-gov`, `indexes-install` → `setup-indexes`, `verify-scaffold` → `setup-verify`: same commit as the drop above
-- `operator` → `toolkit-operator`: `e94c6951` (PR 528), 2026-06-11
-- `claude-context-migrate` → `migration-context`, `claude-standards-relocate` → `migration-standards`: `261b3da2` (PR 546), 2026-07-03
+- `operator` → `toolkit-operator`: `e94c6951` (`#528`), 2026-06-11
+- `claude-context-migrate` → `migration-context`, `claude-standards-relocate` → `migration-standards`: `261b3da2` (`#546`), 2026-07-03
 
 Every rename lands before the transcript window opens on 2026-07-27, so the tool-level record never carries an old spelling and the correction runs entirely off the typed history. `git log --diff-filter=R` over `claude/skills/` reports nine rename records against these seven. The other two are not a skill rename: `create-standard` and `create-snippet` swapped a shared `references/snippets.md` between them, which the rename detector reads the same way it reads a folder move. Take the count from the seven names, not from either number a raw `git log` or an untraced dump reports.
 
