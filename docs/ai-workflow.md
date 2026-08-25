@@ -288,6 +288,7 @@ This section is the corpus the coverage claim is measured against: every name `a
 | `aitk:youtube-transcripts` | When a video transcript is wanted in the repo as context                       |
 | `aitk:claude-teach`        | To learn a subject across sessions, in a workspace that holds the progress     |
 | `aitk:write-human`         | Before drafting or revising prose, for voice, rhythm, and density              |
+| `aitk:restate`             | When an answer or a document has to be read again in plain words               |
 
 Every row answers a question rather than marking a point in a project's life, so a phase above would send a reader to the wrong group.
 

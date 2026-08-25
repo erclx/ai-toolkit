@@ -137,6 +137,16 @@ Three references hold what a body cannot. `machine-tells.md` is a diagnostic cat
 
 What stays open is the same gap `claude-teach` records about option order. Cadence is a property of a passage over many sentences, nothing compares the output against these rules, and the sandbox arm therefore carries its rhythm claims as manual entries rather than asserting them.
 
+## The restatement surface is asked for by name, which is what separates it from its two neighbors
+
+`restate` takes a dense answer or a named markdown document and returns the plain version, and it is the sixty-second skill. The operator asked for it directly after a thread on writing quality ran abstract and a plain restatement of that thread read better than the thread had. Neither neighbor covers the request: `write-human` governs a passage being drafted or revised and arrives on a markdown edit, and `aitk markdown audit` reports sentence spread and repeated openings from package data. One writes and one measures, and a reader who stopped to decode an answer is served by neither.
+
+The task filing this row argued from an asymmetry that has since closed, and the row survives on the request rather than on the argument. `standards/prose.md` was retired into the `write-human` skill with `500-prose` routing every markdown edit to it, so the voice rules do reach a reader now, and `src/markdown/structure.ts` carries a cadence measure against a stated range. Writing the body from the recorded finding would have argued for a check that already ships.
+
+The name is the decision the row owns. `simplify` is the obvious pick and is a built-in whose subject is code cleanup, so taking it makes a description match ambiguous even though the slash form disambiguates. `plain-language` describes the output where the skill is named for the act. Model invocation stays on, unlike the eight bodies carrying `disable-model-invocation`, because the ask arrives in ordinary words far more often than as a command, and the description bars the one case the task forbade: the skill never fires on the model's own opinion of its own output.
+
+The body writes no file. A restatement is read once to reach a decision, and rewriting a document into a file is a proposal against the source rather than a restatement of it. That keeps the arm's mechanical half small, since what it can assert is that the tree was left alone and the reply named the source path and the `Cut:` label. Whether the plain version kept the deciding half is the judgment the skill exists to make and nothing checks it, so every claim about the content sits under `manual` rather than being padded into the count.
+
 ## Redundancy audit
 
 Five toolkit skills were compared against community counterparts. All five are kept and one took a borrowed section.
