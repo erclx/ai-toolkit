@@ -187,7 +187,21 @@ describe('readTestOrder', () => {
 
     expect(report.kind).toBe('unreadable')
     if (report.kind === 'unreadable') {
-      expect(report.reason).toContain('no-such-ref')
+      expect(report.reason).toBe('bad-base')
+      expect(report.message).toContain('no-such-ref')
     }
+  })
+
+  it('should write a parseable reason on every refusal path', () => {
+    const empty = mkdtempSync(join(tmpdir(), 'aitk-gov-test-order-empty-'))
+
+    const report = readTestOrder(empty)
+
+    expect(report.kind).toBe('unreadable')
+    if (report.kind === 'unreadable') {
+      expect(report.reason).toBe('no-history')
+      expect(report.message.length).toBeGreaterThan(0)
+    }
+    rmSync(empty, { recursive: true, force: true })
   })
 })

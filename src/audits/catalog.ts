@@ -1,4 +1,6 @@
+import type { SkillsAuditRefusal } from '@/claude/skills-audit'
 import type { ReachRefusal } from '@/claude/skills-reach'
+import type { ContextAuditRefusal } from '@/context/audit'
 import type { AuditRefusal } from '@/deps/audit'
 import type { RestatedRefusal } from '@/gov/restated'
 import type { LabelAuditRefusal } from '@/labels/audit'
@@ -465,6 +467,12 @@ export const AUDITS: readonly AuditSpec[] = [
     argv: ['context', 'audit', '--json'],
     gatingExits: [EXIT_FINDINGS],
     corpus: 'tracked',
+    // The one reason this verb refuses for that is an absence rather than a
+    // break, on the same test the reach check and the skill audit take: no
+    // target adopts `.claude/context/`, `.claude/diagrams/`, and
+    // `.claude/wireframes/` all at once, so without the allowance every such
+    // project reports the verb unmeasured on every run and never changes.
+    absentReasons: ['no-folders'] satisfies ContextAuditRefusal[],
     counts: contextCounts,
   },
   {
@@ -484,6 +492,10 @@ export const AUDITS: readonly AuditSpec[] = [
     argv: ['claude', 'skills', 'audit', '--json'],
     gatingExits: [EXIT_FINDINGS],
     corpus: 'tracked',
+    // The one reason this verb refuses for, and it is an absence for the same
+    // reason the reach check's is: a project carrying neither `claude/skills/`
+    // nor `.claude/skills/` has adopted no skill convention this audit reads.
+    absentReasons: ['no-corpus'] satisfies SkillsAuditRefusal[],
     counts: skillCounts,
   },
   {
@@ -520,6 +532,14 @@ export const AUDITS: readonly AuditSpec[] = [
     argv: ['records', 'validate', kind, '--json'],
     gatingExits: [],
     corpus,
+    // `standards` is the one tracked kind here, so it takes none of the
+    // per-machine default the other five inherit from their corpus. A target
+    // reads standards through `aitk standards` rather than a copy in its own
+    // tree, so carrying neither `standards/` nor `.claude/standards/` is the
+    // ordinary state of every project but this repository.
+    ...(kind === 'standards' && {
+      absentReasons: ['no-folder'] satisfies RecordRefusal[],
+    }),
     counts: findingsOnly,
   })),
   {

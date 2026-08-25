@@ -506,12 +506,12 @@ function runTestOrder(opts: TestOrderOptions): number {
   if (report.kind === 'unreadable') {
     intro('aitk gov test-order')
     logStep('Refused')
-    logError(report.reason)
+    logError(report.message)
     outro()
 
     if (emitJson) {
       process.stdout.write(
-        `${JSON.stringify({ ok: false, reason: report.reason })}\n`,
+        `${JSON.stringify({ root, reason: report.reason, message: report.message })}\n`,
       )
     }
 
