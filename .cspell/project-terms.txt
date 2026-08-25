@@ -120,6 +120,7 @@ skimmable
 softeria
 sonner
 ssot
+stopwords
 subdirs
 subfolders
 taylorwilsdon

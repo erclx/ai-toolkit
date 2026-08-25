@@ -85,6 +85,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk sandbox git:commit`,
     `${GREY}│${NC}    aitk gov install react`,
     `${GREY}│${NC}    aitk gov sync ../my-app`,
+    `${GREY}│${NC}    aitk gov restated --json`,
     `${GREY}│${NC}    aitk standards markdown`,
     `${GREY}│${NC}    aitk snippets install base ../my-app`,
     `${GREY}│${NC}    aitk snippets sync ../my-app`,
