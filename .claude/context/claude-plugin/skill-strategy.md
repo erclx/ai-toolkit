@@ -157,7 +157,9 @@ The test has a shipped precedent. `fae01783` (pull request `#516`, merged 2026-0
 
 ### The census
 
-Two records answer usage, and both are per-machine readings rather than repository facts: a typed-prompt history of 20,105 entries spanning 2026-02-28 to 2026-08-21, and 496 of 747 tool-level transcripts carrying a skill call, spanning the narrower window 2026-07-27 to 2026-08-21. Both cover the whole machine, 95 project folders across eight repositories, splitting 410 toolkit, 163 target-project, and 173 harness on the transcript side and 2,664 against 1,968 on the typed side, so a skill's zero is not an artifact of measuring the wrong tree. Folded together, ten of sixty-one shipped skills score zero and eight more sit at one or two.
+Two records answer usage, and both are per-machine readings rather than repository facts: a typed-prompt history of 20,105 entries spanning 2026-02-28 to 2026-08-21, and 496 of 747 tool-level transcripts carrying a skill call, spanning the narrower window 2026-07-27 to 2026-08-21. Both cover the whole machine, 95 project folders across eight repositories, splitting 410 toolkit, 163 target-project, and 173 harness on the transcript side and 2,664 against 1,968 on the typed side, so a skill's zero is not an artifact of measuring the wrong tree.
+
+Folded together, ten of the sixty-one skills shipped as of the typed history's close on 2026-08-21 score zero and eight more sit at one or two. Read the denominator as dated rather than standing, since a skill landing after that close scores zero in both records without yet belonging to a stale count.
 
 ### The rename map
 

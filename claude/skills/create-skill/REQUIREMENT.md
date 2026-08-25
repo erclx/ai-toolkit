@@ -35,4 +35,4 @@ A third failure is a folder created for a moment a rule, a verb, or an existing 
 ## Out of scope
 
 - Editing an existing skill, which the authoring standard and the skill's own requirement govern
-- Judging whether anything will invoke the new skill other than the author typing its name. That question is unanswerable before the skill has run, so it ships in the drafted `REQUIREMENT.md` as a review criterion rather than a creation-time refusal.
+- Whether anything ends up invoking the new skill: the usage census in `.claude/context/claude-plugin/skill-strategy.md`, read once the skill has run
