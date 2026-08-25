@@ -7,7 +7,7 @@ description: Why a project-local rule needs a band, a number checked against two
 
 ## Gap
 
-Without this skill, a project rule is written straight into the rules folder on a number already taken, so two rules collide and one loses. The subtler collision is with the toolkit itself. A number free in the target today can be the number a shipped rule lands on tomorrow, and the next install double-books it, so a rule the project wrote gets overwritten by one it never chose.
+Without this skill, a project rule is written straight into the rules folder on a number already taken, so two rules collide and one loses. The subtler collision was with the toolkit itself: a number free in the target today could be the number a shipped rule landed on tomorrow, and the next install double-booked it, so a rule the project wrote got overwritten by one it never chose. Writing under `.claude/rules/project/` closes that half regardless of the number, since the sync engine orphans the file by location before it ever compares names, but the band still needs a free number to stay readable against the toolkit's own numbering.
 
 The band gets picked by feel, so a UI copy rule lands in the always-on range and loads on every session for the rest of the project's life. The scope key fails in both directions. An always-on rule carrying a path scope fires only on files it was never about, and a path-scoped rule missing it loads constantly. Written from memory rather than from the rule standard, the body comes out in a shape the rest of the catalog does not share.
 
@@ -15,6 +15,7 @@ The band gets picked by feel, so a UI copy rule lands in the always-on range and
 
 - Resolve what the rule enforces and where it applies, asking only for what the request leaves missing
 - Pick the band from the topic and take its number range and folder from that choice
+- Write under `.claude/rules/project/`, the subfolder the sync engine reads as project-authored by location
 - Check both the target's used prefixes and the toolkit catalog before taking a number
 - Read the rule standard before writing the body
 - Emit the path scope for a path-scoped rule and omit the key entirely for an always-on one
