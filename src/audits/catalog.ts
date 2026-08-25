@@ -1,5 +1,6 @@
 import type { ReachRefusal } from '@/claude/skills-reach'
 import type { AuditRefusal } from '@/deps/audit'
+import type { RestatedRefusal } from '@/gov/restated'
 import type { LabelAuditRefusal } from '@/labels/audit'
 import type { ValidateRefusal as RecordRefusal } from '@/records/validate'
 import type { ScanRefusal } from '@/secrets/scan'
@@ -356,6 +357,33 @@ function labelCoverageCounts(
   return allOf({ uncovered: lengthOf(root.uncovered) })
 }
 
+/**
+ * Reads the two classes that are findings, leaving the declared mirrors out.
+ *
+ * A mirror is an authoring root and its consumed copy, which duplicate on
+ * purpose, so folding them in would report a corpus getting worse every time a
+ * seed is kept in step with the file it is authored from. Same reasoning the
+ * label audit drops its declined rows on.
+ *
+ * The reach count is left out for a different reason. It counts how many
+ * surfaces an instruction reached rather than whether anything is wrong, and it
+ * moves in lockstep with the two retained here, so a baseline carrying it would
+ * report one movement twice.
+ */
+function restatedCounts(record: unknown): Record<string, number> | undefined {
+  const counts = asObject(asObject(record)?.counts)
+  if (counts === undefined) return undefined
+
+  return allOf({
+    contradictions:
+      typeof counts.contradictions === 'number'
+        ? counts.contradictions
+        : undefined,
+    repetitions:
+      typeof counts.repetitions === 'number' ? counts.repetitions : undefined,
+  })
+}
+
 function findingsOnly(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -547,6 +575,27 @@ export const AUDITS: readonly AuditSpec[] = [
     // would report a pass over a branch nobody measured.
     absentReasons: ['no-map'] satisfies LabelAuditRefusal[],
     counts: labelCoverageCounts,
+  },
+  {
+    id: 'restated',
+    label: 'Restated instructions',
+    argv: ['gov', 'restated', '--json'],
+    // Reports rather than gates, on the split this file already draws. Whether
+    // a rule stated on two surfaces should be stated on one is a judgment the
+    // person owning the surface takes, and most restatements here are correct,
+    // so a push failing on one would fail on the ordinary case.
+    gatingExits: [],
+    corpus: 'tracked',
+    // Both reasons the sweep refuses for, and each is an absence rather than a
+    // break. A target holds neither the seed nor a shipped skills tree, so
+    // without the allowance every project installing this CLI reports the verb
+    // unmeasured on every run and never changes, which is the permanent signal
+    // the per-machine allowance exists against. Same shape as the reach verb.
+    absentReasons: [
+      'no-instructions',
+      'no-surfaces',
+    ] satisfies RestatedRefusal[],
+    counts: restatedCounts,
   },
   {
     id: 'deps',
