@@ -12,7 +12,7 @@ import { parseDraft } from '@/demo/beats'
 import type { DemoPlan } from '@/demo/compile'
 import { compilePlan } from '@/demo/compile'
 import { DEFAULT_CURSORS } from '@/demo/cursors'
-import { drive } from '@/demo/drive'
+import { CAPTION_ID, captionInitScript, drive, runStep } from '@/demo/drive'
 
 /**
  * Every spike behind this feature drove a file on disk, which left a port, a
@@ -89,7 +89,7 @@ function quicken(plan: DemoPlan, url: string, targets: string[]): DemoPlan {
   return {
     ...plan,
     url,
-    pointer: { steps: 12, typeDelayMs: 20 },
+    pointer: { travelMs: 80, typeDelayMs: 20 },
     steps: plan.steps.map((step, index) => ({
       ...step,
       target: targets[index] ?? '',
@@ -185,4 +185,60 @@ describe.skipIf(!hasBrowser)('drive against a served application', () => {
       1000,
     )
   }, 180_000)
+
+  it('should draw a caption once the overlay script sets one', async () => {
+    const { chromium } = await import('playwright-core')
+    const browser = await chromium.launch()
+    try {
+      const page = await browser.newPage()
+      await page.addInitScript({ content: captionInitScript() })
+      await page.goto('about:blank')
+
+      await page.evaluate((text) => {
+        window.__aitk_demo_caption__?.(text)
+      }, 'Name the card')
+
+      const shown = await page.evaluate(
+        (id) => document.getElementById(id)?.textContent,
+        CAPTION_ID,
+      )
+
+      expect(shown).toBe('Name the card')
+    } finally {
+      await browser.close()
+    }
+  }, 30_000)
+
+  it("should draw a beat's own caption after drive runs its step", async () => {
+    const parsed = parseDraft(DRAFT)
+    if (parsed.status !== 'parsed') return
+
+    const plan = quicken(
+      compilePlan(parsed.draft, { slug: 'hero-caption', outDir: 'frames' }),
+      `http://127.0.0.1:${server.port}/`,
+      ['', '#title', '#add'],
+    )
+    const heroStep = plan.steps.find((step) => step.still)
+    expect(heroStep?.caption).toBe('Name the card')
+    if (!heroStep) return
+
+    const { chromium } = await import('playwright-core')
+    const browser = await chromium.launch()
+    try {
+      const page = await browser.newPage()
+      await page.addInitScript({ content: captionInitScript() })
+      await page.goto(plan.url)
+
+      await runStep(page, plan, heroStep, {})
+
+      const shown = await page.evaluate(
+        (id) => document.getElementById(id)?.textContent,
+        CAPTION_ID,
+      )
+
+      expect(shown).toBe(heroStep.caption)
+    } finally {
+      await browser.close()
+    }
+  }, 30_000)
 })

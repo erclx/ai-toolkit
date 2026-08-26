@@ -19,6 +19,7 @@ The whole feature came out of `.claude/groundwork/demo-recorder/`, which measure
 - `src/demo/cursors.ts`: the bundled vector artwork for the three pointer states
 - `src/demo/theme.ts`: reads a cursor theme folder for `--cursor`
 - `src/demo/drive.ts`: every browser reference the feature adds
+- `src/demo/container.ts`: converts the webm the driver wrote into mp4, as a post-step the compiler and the driver never see
 - `src/commands/demo.ts`: wiring only, with the driver behind a dynamic import
 
 ## Decisions
@@ -29,6 +30,9 @@ The whole feature came out of `.claude/groundwork/demo-recorder/`, which measure
 - **The pointer moves through the engine's pointer, never the element-clicking helper.** The helper resolves a target and jumps to it. Interpolated movement is the entire trick, and one step is what makes a cursor teleport.
 - **`--out` names a directory in both verbs and never a root.** It first meant the directory on `compile` and a root on `run`, which resolved the plan's own directory a second time and nested the output path inside itself. `drive` now takes resolved paths rather than a root plus a relative path.
 - **The bundled artwork is drawn rather than lifted from a theme.** A theme lives on one machine, and a target has none to point at on first run. `--cursor` reads one for an operator who has it.
+- **Pointer travel is a duration, and the step count is derived rather than fixed.** A step is a round trip to the browser, so a fixed count set a message rate rather than a duration, and the same plan produced recordings 26 percent apart on byte-identical input. `compile.ts`'s `deriveSteps` divides the plan's `pointer.travelMs` by a round trip `drive.ts` measures on the first real move, not on a blank page, since layout, paint, and page script are what a step actually pays for.
+- **The caption is a DOM overlay next to the pointer's, not the engine's own annotation.** `showActions` names the Playwright call it made, never the beat's narration, so `drive.ts` installs a second `addInitScript` alongside the pointer's and updates it after each step's action runs, before the hold that follows.
+- **mp4 is a post-step, not a compiler or driver concern.** `container.ts` shells out to `ffmpeg` through `execa` once the driver has already written the webm, writes beside it rather than instead of it, and degrades a missing or failing converter to a warning rather than failing a run whose recording already succeeded.
 
 ## Gotchas
 
@@ -36,6 +40,6 @@ The whole feature came out of `.claude/groundwork/demo-recorder/`, which measure
 - **A repeated attribute in the bundled artwork renders as a broken image rather than raising.** A second `fill` on a path that already carried one produced a broken-image glyph in a recording and in a still, and nothing failed. `src/demo/pointer.test.ts` walks each state's markup for a repeated attribute because of it.
 - **Resolving a target through its bounding box assumes it is in the viewport.** A target below the fold needs a `scroll` step ahead of it, and a scrolled page moves the pointer under a fixed-position element in ways nothing has exercised.
 - **Three of nineteen cursor states are handled.** A drag, a resize, or a wait shows an arrow, and the two animated states have no still frame at all.
-- **Timing is unsolved.** The step count, the pauses, and the typing delay were tuned to look right on one fixture, and they are the difference between a demo that reads as deliberate and one that reads as slow.
+- **Pause and typing timing are still unsolved.** `HOLD_MS`, `FINAL_HOLD_MS`, and `TYPE_DELAY_MS` are tuned to look right on one fixture, and they are the difference between a demo that reads as deliberate and one that reads as slow. Pointer travel dropped off this list once it moved to a duration, covered under Decisions.
 - **CI does not run the browser test.** `src/demo/drive.e2e.test.ts` skips when no browser binary is present and CI installs none, so a green pipeline is not evidence it passed. Run it locally.
-- **Three browser launches in one file wedged.** Two sequential `drive` calls finish in about eleven seconds and a third timed out at two minutes while passing in isolation, so the suite covers the same ground in two runs. Nothing established the cause.
+- **The launch count in this file has grown past where it once wedged, without wedging again.** A third `drive` call once timed out at two minutes here after two finished clean, cause never found. Two caption cases since raised the count to five launches, and four separate local runs have each finished clean in eleven to twelve seconds. That clears this shape of the wedge, not the wedge itself.

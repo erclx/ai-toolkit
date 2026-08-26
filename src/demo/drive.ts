@@ -3,9 +3,16 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { chromium } from 'playwright-core'
 import type { Browser, BrowserContext, Page } from 'playwright-core'
+import { deriveSteps } from '@/demo/compile'
 import type { DemoPlan, DemoStep } from '@/demo/compile'
 import type { CursorSet } from '@/demo/pointer'
 import { pointerSource } from '@/demo/pointer'
+
+declare global {
+  interface Window {
+    __aitk_demo_caption__?: (text: string) => void
+  }
+}
 
 /**
  * Drives a running application and records what it did. Every browser reference
@@ -34,6 +41,10 @@ const POINTER_SIZE = 32
  */
 const START = { x: 8, y: 8 }
 const SETTLE_MS = 250
+/** Round trips sampled to price one, on the page a step is actually about to move across. */
+const CALIBRATION_STEPS = 8
+/** DOM id the caption bar installs under, read back by `drive.e2e.test.ts`. */
+export const CAPTION_ID = '__aitk_demo_caption_bar__'
 
 /**
  * The two output paths arrive resolved rather than as a root this re-resolves
@@ -118,8 +129,10 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     await context.addInitScript({
       content: pointerSource(options.cursors, POINTER_SIZE),
     })
+    await context.addInitScript({ content: captionInitScript() })
     const page = await context.newPage()
     const video = page.video()
+    const pace: PointerPace = {}
 
     // The opening navigate is skipped when the plan already starts with one,
     // because a draft written around an opening verb compiles to a `navigate`
@@ -130,7 +143,7 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     }
 
     for (const step of plan.steps) {
-      await runStep(page, plan, step)
+      await runStep(page, plan, step, pace)
       // The first marked step wins. One file holds one frame, so a plan a
       // person edited to mark several would otherwise write each over the last
       // and keep whichever ran last, with nothing saying so.
@@ -187,10 +200,24 @@ async function launch(): Promise<Launch> {
   }
 }
 
-async function runStep(
+/**
+ * Holds the round trip once a step has measured it, so every `moveTo` after
+ * the first reuses the same reading rather than re-timing on every move.
+ */
+export interface PointerPace {
+  roundTripMs?: number
+}
+
+/**
+ * Exported so `drive.e2e.test.ts` can drive one real step against a real
+ * caption and read it back, which is the integration a full `drive()` call
+ * cannot assert without decoding the video it writes.
+ */
+export async function runStep(
   page: Page,
   plan: DemoPlan,
   step: DemoStep,
+  pace: PointerPace,
 ): Promise<void> {
   switch (step.kind) {
     case 'navigate':
@@ -198,31 +225,45 @@ async function runStep(
       await page.mouse.move(START.x, START.y, { steps: 2 })
       break
     case 'click':
-      await moveTo(page, plan, step)
+      await moveTo(page, plan, step, pace)
       await page.mouse.down()
       await page.mouse.up()
       break
     case 'fill':
-      await moveTo(page, plan, step)
+      await moveTo(page, plan, step, pace)
       await page.mouse.down()
       await page.mouse.up()
       await page.keyboard.type(step.text, { delay: plan.pointer.typeDelayMs })
       break
     case 'hover':
-      await moveTo(page, plan, step)
+      await moveTo(page, plan, step, pace)
       break
     case 'scroll':
       await page.locator(step.target).first().scrollIntoViewIfNeeded()
       await page.waitForTimeout(SETTLE_MS)
-      await moveTo(page, plan, step)
+      await moveTo(page, plan, step, pace)
       break
     case 'wait':
     case 'hold':
       break
   }
 
+  // Set after the action rather than before it, so the caption shows for the
+  // hold that follows rather than for the page the action is about to leave.
+  await setCaption(page, step.caption)
   if (step.waitFor) await page.locator(step.waitFor).first().waitFor()
   await page.waitForTimeout(step.holdMs)
+}
+
+/**
+ * Timed on the page a `moveTo` is actually about to move across, never on the
+ * blank page before it, since layout, paint, and page script are what a step
+ * pays the round trip against and a blank page has none of the three.
+ */
+async function calibrateRoundTrip(page: Page): Promise<number> {
+  const startedAt = Date.now()
+  await page.mouse.move(START.x, START.y, { steps: CALIBRATION_STEPS })
+  return (Date.now() - startedAt) / CALIBRATION_STEPS
 }
 
 /**
@@ -237,14 +278,76 @@ async function moveTo(
   page: Page,
   plan: DemoPlan,
   step: DemoStep,
+  pace: PointerPace,
 ): Promise<void> {
+  pace.roundTripMs ??= await calibrateRoundTrip(page)
   const locator = page.locator(step.target).first()
   await locator.waitFor()
   const box = await locator.boundingBox()
   if (!box) throw new Error(`${step.target} has no box to point at`)
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
-    steps: plan.pointer.steps,
+    steps: deriveSteps(plan.pointer.travelMs, pace.roundTripMs),
   })
+}
+
+/**
+ * Playwright's own `showActions` overlay names the API call it made, not the
+ * beat's narration, so a caption needs an element of its own rather than
+ * reusing that annotation. Runs alongside `pointerSource`, guarded the same
+ * way against a page that already carries one.
+ */
+export function captionInitScript(): string {
+  return `(() => {
+  if (window.__aitk_demo_caption__) return;
+
+  let label;
+
+  const install = () => {
+    if (label || !document.body) return;
+    const bar = document.createElement('div');
+    bar.id = '${CAPTION_ID}';
+    bar.setAttribute('aria-hidden', 'true');
+    bar.style.cssText = [
+      'position:fixed',
+      'left:0',
+      'right:0',
+      'bottom:32px',
+      'display:flex',
+      'justify-content:center',
+      'pointer-events:none',
+      'z-index:2147483647',
+    ].join(';');
+    label = document.createElement('span');
+    label.style.cssText = [
+      'background:rgba(16,16,20,0.85)',
+      'color:#f4f4f5',
+      'font:600 20px/1.4 system-ui,sans-serif',
+      'padding:10px 22px',
+      'border-radius:8px',
+      'max-width:80vw',
+      'text-align:center',
+      'display:none',
+    ].join(';');
+    bar.appendChild(label);
+    document.body.appendChild(bar);
+    window.__aitk_demo_caption__ = (text) => {
+      label.textContent = text || '';
+      label.style.display = text ? 'inline-block' : 'none';
+    };
+  };
+
+  if (document.readyState === 'loading') {
+    addEventListener('DOMContentLoaded', install, { once: true });
+  } else {
+    install();
+  }
+})();`
+}
+
+async function setCaption(page: Page, caption: string): Promise<void> {
+  await page.evaluate((text) => {
+    window.__aitk_demo_caption__?.(text)
+  }, caption)
 }
 
 function failed(reason: DriveRefusal, error: unknown): DriveFailure {

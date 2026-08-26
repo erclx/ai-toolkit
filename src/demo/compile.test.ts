@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { Beat, Draft } from '@/demo/beats'
-import { compilePlan, parsePlan, unresolved } from '@/demo/compile'
+import {
+  compilePlan,
+  deriveSteps,
+  MAX_POINTER_STEPS,
+  MIN_POINTER_STEPS,
+  parsePlan,
+  unresolved,
+} from '@/demo/compile'
 
 function beat(index: number, overrides: Partial<Beat> = {}): Beat {
   return {
@@ -34,7 +41,7 @@ describe('compilePlan', () => {
   it('should seed the timing the beats never carried', () => {
     const plan = compilePlan(draft([beat(1)]), OPTIONS)
 
-    expect(plan.pointer).toEqual({ steps: 45, typeDelayMs: 110 })
+    expect(plan.pointer).toEqual({ travelMs: 400, typeDelayMs: 110 })
   })
 
   it('should compile a navigate verb into a navigate step', () => {
@@ -186,18 +193,43 @@ describe('parsePlan', () => {
 
     expect(parsed).toMatchObject({
       status: 'parsed',
-      plan: { pointer: { steps: 45, typeDelayMs: 110 } },
+      plan: { pointer: { travelMs: 400, typeDelayMs: 110 } },
     })
   })
 
   it('should keep a hand-tuned timing rather than overwriting it with the default', () => {
     const parsed = parsePlan(
-      '{"slug":"x","url":"http://x","pointer":{"steps":12,"typeDelayMs":40},"steps":[{"kind":"hold"}]}',
+      '{"slug":"x","url":"http://x","pointer":{"travelMs":900,"typeDelayMs":40},"steps":[{"kind":"hold"}]}',
     )
 
     expect(parsed).toMatchObject({
       status: 'parsed',
-      plan: { pointer: { steps: 12, typeDelayMs: 40 } },
+      plan: { pointer: { travelMs: 900, typeDelayMs: 40 } },
     })
+  })
+})
+
+describe('deriveSteps', () => {
+  it('should divide the travel time by the measured round trip', () => {
+    expect(deriveSteps(400, 10)).toBe(40)
+  })
+
+  it('should floor a slow round trip at the minimum rather than teleport', () => {
+    expect(deriveSteps(400, 1000)).toBe(MIN_POINTER_STEPS)
+  })
+
+  it('should cap a near-zero round trip rather than let the count run away', () => {
+    expect(deriveSteps(400, 0.001)).toBe(MAX_POINTER_STEPS)
+  })
+
+  it('should cap a round trip of zero the same way, treating it as unmeasurable', () => {
+    expect(deriveSteps(400, 0)).toBe(MAX_POINTER_STEPS)
+  })
+
+  it('should derive fewer steps on a loaded machine than an idle one for the same travel time', () => {
+    const idle = deriveSteps(400, 8)
+    const loaded = deriveSteps(400, 20)
+
+    expect(loaded).toBeLessThan(idle)
   })
 })
