@@ -34,6 +34,10 @@ The plan is committed, not scratch. Its timing is a starting point tuned by watc
 
 `aitk demo run` reads the plan, refuses if a field is still empty, and drives the application the plan's URL names. It records the whole run to `webm` and writes the still from the beat the draft calls the hero, falling back to the last beat, since a demo's final state is the payoff and a cold open is usually an empty screen.
 
+A step's caption from the draft renders as an overlay while its hold plays, so the narration a person wrote is what shows on screen rather than the name of the action the engine performed.
+
+When `ffmpeg` is on PATH, the run also writes an mp4 beside the webm, since webm plays in a `<video>` tag but nothing else accepts it. A target without `ffmpeg` still gets the webm and a line naming what to install, and the run does not fail over the missing converter.
+
 | Option           | Behavior                                                    |
 | ---------------- | ----------------------------------------------------------- |
 | `--out <dir>`    | Directory to write into, overriding what the plan names     |
@@ -48,7 +52,7 @@ A step waits on its `waitFor` selector becoming visible and then holds for its o
 
 The browser engine's own annotation draws a red dot at the moment of a click and an action label in a corner. It paints no cursor, so a run without more looks like the pointer teleports between targets.
 
-The recorder injects a pointer element before navigation and moves it through the engine's pointer with interpolated steps rather than through the element-clicking helper, which resolves a target and jumps to it. The step count is the whole difference between a cursor that travels and one that appears. The pointer reads the element under it on every move and switches between an arrow, a hand, and a text beam, so it reflects the page the way a real cursor does.
+The recorder injects a pointer element before navigation and moves it through the engine's pointer with interpolated steps rather than through the element-clicking helper, which resolves a target and jumps to it. The step count is the whole difference between a cursor that travels and one that appears, and how many steps a move takes is derived from the machine's own round-trip cost rather than fixed, so the same plan glides at roughly the same pace on a loaded machine as an idle one. It also reads the element under it on every move and switches between an arrow, a hand, and a text beam, so it reflects the page the way a real cursor does.
 
 `--cursor` points at a folder of Windows cursor resources and the browser decodes them directly, with no conversion step and no image tooling. Each resource carries a hotspot per size, and the largest entry's hotspot scaled to the drawn size is what puts the artwork's tip where the click lands. A theme contributes per state, so a folder holding an arrow and no hand still supplies its arrow and the bundled artwork covers the rest.
 
@@ -77,6 +81,6 @@ The cost is stated rather than hidden: the browser binary installs separately, s
 
 ## What it does not do
 
-A generated recording is a raw take. Nothing trims it, scores it, or narrates it, and the beat's caption does not reach the video, since the engine's overlay carries the action it performed rather than text from the draft.
+A generated recording is a raw take. Nothing trims it or scores it beyond the caption each beat already carries.
 
 It also does not replace a narrated screencast. That has a hero moment, a cut list, and a voice, none of which survives being generated. This answers the case where the alternative is recording nothing.

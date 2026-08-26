@@ -164,6 +164,12 @@ A call the operator's preference decides goes through the structured question su
 
 What the rule carves out is the half a twelve-entry rejection record was right about. The retired preference forbade the surface outright, and its twelve dated rejections name a pipeline reopening a question a written artifact had already answered as the trigger in nearly every one, which is a rule about the artifact rather than about the rendering. The escape hatch ships as a guarantee the surface supplies rather than an option to author, since `AskUserQuestion` appends its own and its contract forbids writing one, so a body told to author the escape would ship a duplicate the tool rejects. Measured at `942a32fd` on 2026-08-21.
 
+### Demo ships to targets, breaking the capture precedent
+
+`aitk demo` ships with the published package rather than staying toolkit-only, so a target installs a browser-driving command for the first time. `aitk capture` set the opposite precedent, staying out of the shipped package because it regenerates images this repository already commits. That reason does not carry to a command whose whole purpose is running inside someone else's project, so the toolkit-only alternative, keeping the driver here and asking an operator to record from this checkout, was declined.
+
+What it costs is a dependency the toolkit itself never carries: `bunx playwright install chromium` before a target's first run, plus the browser binary that command fetches. The toolkit-only alternative avoids that cost outright, at the price of moving the whole feature out of reach of the project it exists to demonstrate. Measured at `6b2c4ca4` on 2026-08-21.
+
 ## Risks / open questions
 
 - Skills and the CLI ship at two speeds. A skill merged to `main` reaches a `--plugin-dir` session immediately, while the CLI reaches a user only once a release cuts a tag and the publish job lands it on the registry. A skill calling a verb or flag that has not been published yet fails in a target, and nothing detects that call.
