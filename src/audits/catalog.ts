@@ -1,4 +1,5 @@
 import type { SkillsAuditRefusal } from '@/claude/skills-audit'
+import type { RankRefusal } from '@/claude/skills-rank'
 import type { ReachRefusal } from '@/claude/skills-reach'
 import type { ContextAuditRefusal } from '@/context/audit'
 import type { AuditRefusal } from '@/deps/audit'
@@ -306,6 +307,19 @@ function reachCounts(record: unknown): Record<string, number> | undefined {
   return allOf({ unqualifiedCitations: lengthOf(root.unqualified) })
 }
 
+/**
+ * Reads the routing measure's miss count alone, leaving `rank1` and `top3`
+ * out. Both move in lockstep with `misses` over a fixed-size corpus, so
+ * carrying them would report one movement three times, the same reasoning
+ * `restatedCounts` already takes over its own pair of derived totals.
+ */
+function rankCounts(record: unknown): Record<string, number> | undefined {
+  const root = asObject(record)
+  if (root === undefined) return undefined
+
+  return allOf({ misses: lengthOf(root.misses) })
+}
+
 function boardCounts(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
@@ -517,6 +531,22 @@ export const AUDITS: readonly AuditSpec[] = [
     // the permanent signal the per-machine allowance exists against.
     absentReasons: ['no-skills'] satisfies ReachRefusal[],
     counts: reachCounts,
+  },
+  {
+    id: 'skills-rank',
+    label: 'Skill routing measure',
+    argv: ['claude', 'skills', 'rank', '--json'],
+    // Reports rather than gates. The corpus is a first run with no baseline to
+    // fail a push against, and a lexical ranker bounds a necessary condition
+    // rather than reporting real routing behavior, so a push failing on a
+    // moved rank would teach a contributor to route around the stage.
+    gatingExits: [],
+    corpus: 'tracked',
+    // The one reason this verb refuses for, and it is an absence for the same
+    // reason the reach check's is: a project carrying no `claude/skills/` has
+    // adopted no skill convention this audit reads.
+    absentReasons: ['no-skills'] satisfies RankRefusal[],
+    counts: rankCounts,
   },
   {
     id: 'tasks',
