@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.17.0](https://github.com/erclx/aitk/compare/v3.16.0...v3.17.0) (2026-08-26)
+
+
+### Features
+
+* **claude:** ship a TF-IDF skill routing measure ([#1144](https://github.com/erclx/aitk/issues/1144)) ([60b6da5](https://github.com/erclx/aitk/commit/60b6da5e453b0c13da9d204e312045082ba8f8cd))
+
 ## [3.16.0](https://github.com/erclx/aitk/compare/v3.15.0...v3.16.0) (2026-08-26)
 
 
