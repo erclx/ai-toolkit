@@ -89,7 +89,7 @@ function quicken(plan: DemoPlan, url: string, targets: string[]): DemoPlan {
   return {
     ...plan,
     url,
-    pointer: { steps: 12, typeDelayMs: 20 },
+    pointer: { travelMs: 80, typeDelayMs: 20 },
     steps: plan.steps.map((step, index) => ({
       ...step,
       target: targets[index] ?? '',
@@ -183,6 +183,44 @@ describe.skipIf(!hasBrowser)('drive against a served application', () => {
     expect(result.videoPath).toBeUndefined()
     expect(readFileSync(result.stillPath ?? '').byteLength).toBeGreaterThan(
       1000,
+    )
+  }, 180_000)
+
+  it('should draw a different frame when the hero beat carries a caption', async () => {
+    const parsed = parseDraft(DRAFT)
+    if (parsed.status !== 'parsed') return
+
+    const url = `http://127.0.0.1:${server.port}/`
+    const targets = ['', '#title', '#add']
+    const withCaption = quicken(
+      compilePlan(parsed.draft, { slug: 'captioned', outDir: 'frames' }),
+      url,
+      targets,
+    )
+    const withoutCaption: DemoPlan = {
+      ...withCaption,
+      steps: withCaption.steps.map((step) => ({ ...step, caption: '' })),
+    }
+
+    const captioned = await drive({
+      plan: withCaption,
+      cursors: DEFAULT_CURSORS,
+      stillPath: join(root, 'frames', 'captioned.png'),
+    })
+    const bare = await drive({
+      plan: withoutCaption,
+      cursors: DEFAULT_CURSORS,
+      stillPath: join(root, 'frames', 'bare.png'),
+    })
+
+    expect(captioned).toMatchObject({ status: 'recorded' })
+    expect(bare).toMatchObject({ status: 'recorded' })
+    if (captioned.status !== 'recorded' || bare.status !== 'recorded') return
+
+    // A byte-identical still would mean the caption drew nothing, which is the
+    // engine's own action overlay carrying the narration rather than the beat.
+    expect(readFileSync(captioned.stillPath ?? '')).not.toEqual(
+      readFileSync(bare.stillPath ?? ''),
     )
   }, 180_000)
 })
