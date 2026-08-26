@@ -12,7 +12,7 @@ interface InitOptions {
   /** Always present: the option falls back to `DEFAULT_STACK`. */
   readonly stack: string
   readonly add?: string
-  readonly snippets: string
+  readonly snippets?: string
   readonly skip?: string
 }
 

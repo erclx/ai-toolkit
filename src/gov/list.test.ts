@@ -126,6 +126,17 @@ describe('buildGovCatalog', () => {
 
     expect(buildGovCatalog(root).unreferenced).toEqual(['300-orphan'])
   })
+
+  it('should report a rule in a folder no stack names as reached by no stack', () => {
+    seedRule('core', '000-a', '# a\n')
+    seedRule('snippets', '505-at-references', '# at-references\n')
+    seedStack('base', 'extends = ""\nrules = ["core"]\n')
+
+    expect(buildGovCatalog(root).unreferenced).toEqual(['505-at-references'])
+    expect(buildGovCatalog(root).rules.map((entry) => entry.name)).toContain(
+      '505-at-references',
+    )
+  })
 })
 
 describe('describeStack', () => {

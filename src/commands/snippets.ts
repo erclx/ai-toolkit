@@ -6,6 +6,7 @@ import { BASE_CATEGORY } from '@/snippets/categories'
 import {
   ALL_CATEGORY,
   installSnippets,
+  installSnippetsRule,
   installableCategories,
   resolveSnippets,
 } from '@/snippets/install'
@@ -174,6 +175,9 @@ async function runInstall(
 
   logStep('Installing snippets')
   for (const rel of await installSnippets(resolution.files, resolved)) {
+    logAdd(rel)
+  }
+  for (const rel of await installSnippetsRule(PROJECT_ROOT, resolved)) {
     logAdd(rel)
   }
   await recordStamp(createSnippetsAdapter(PROJECT_ROOT), resolved, new Date())

@@ -3,6 +3,8 @@ import { join } from 'node:path'
 import { isDirectory } from '@/target'
 
 export const BASE_CATEGORY = 'base'
+/** A real category resolving to zero entries, for a caller declining on purpose. */
+export const NONE_CATEGORY = 'none'
 
 export function snippetsSourceDir(root: string): string {
   return join(root, 'snippets')
@@ -39,8 +41,13 @@ export function categoryDir(root: string, category: string): string {
  * Tests for a directory rather than mere existence. `snippets/` holds files
  * alongside its category folders, so an argument naming one of them resolves
  * to a real path that cannot be scanned as a category.
+ *
+ * An empty category refuses rather than resolving, since `join(source, '')`
+ * is `source` and would otherwise report the base directory as the category,
+ * widening an unset value to every base entry instead of naming none.
  */
 export function categoryExists(root: string, category: string): boolean {
+  if (category === '') return false
   return isDirectory(categoryDir(root, category))
 }
 

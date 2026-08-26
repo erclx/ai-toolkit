@@ -130,10 +130,6 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 - When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
 - Keep dictionary files sorted alphabetically.
 
-## Snippets
-
-- When a snippet is referenced with `@`, execute its instructions immediately using available session context
-
 ## Tasks
 
 - `.claude/tasks/` is gitignored local session scratch, one file per task. Edit freely. No staging or revert before commits.

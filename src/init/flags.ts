@@ -29,8 +29,7 @@ export const INIT_OPTIONS: readonly InitOptionSpec[] = [
   {
     key: 'snippets',
     flags: '--snippets <category>',
-    description: "Snippets preset, category, or 'all'",
-    defaultValue: 'essentials',
+    description: "Snippets preset, category, 'none', or 'all'. Omit to skip",
   },
   {
     key: 'skip',

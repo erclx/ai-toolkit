@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { type InitFlags, parseSkip, planInit, resolveStack } from '@/init/plan'
+import {
+  type InitFlags,
+  parseSkip,
+  planInit,
+  resolveStack,
+  snippetsSkipReason,
+} from '@/init/plan'
 
 function flags(overrides: Partial<InitFlags> = {}): InitFlags {
   return {
-    snippets: 'essentials',
     skip: parseSkip(undefined),
     ...overrides,
   }
@@ -68,11 +73,42 @@ describe('parseSkip', () => {
     expect([...plan.skipped]).toEqual(['wiki'])
     expect(plan.unknown).toEqual([])
   })
+
+  it('should accept snippets as a skippable domain', () => {
+    const plan = parseSkip('snippets')
+
+    expect([...plan.skipped]).toEqual(['snippets'])
+    expect(plan.unknown).toEqual([])
+  })
+})
+
+describe('snippetsSkipReason', () => {
+  it('should skip when no --snippets flag was given', () => {
+    expect(snippetsSkipReason(flags())).toBe('no --snippets given')
+  })
+
+  it('should skip when --skip snippets was passed, even with a category', () => {
+    expect(
+      snippetsSkipReason(
+        flags({ snippets: 'all', skip: parseSkip('snippets') }),
+      ),
+    ).toBe('--skip snippets')
+  })
+
+  it('should not skip when a category was named and snippets was not skipped', () => {
+    expect(
+      snippetsSkipReason(flags({ snippets: 'essentials' })),
+    ).toBeUndefined()
+  })
+
+  it('should treat an explicit none category as a real run rather than a skip', () => {
+    expect(snippetsSkipReason(flags({ snippets: 'none' }))).toBeUndefined()
+  })
 })
 
 describe('planInit', () => {
-  it('should count five domains when no flags are given', () => {
-    expect(planInit(flags()).total).toBe(5)
+  it('should count four domains when no flags are given, snippets skipped by default', () => {
+    expect(planInit(flags()).total).toBe(4)
   })
 
   it('should install the default stack when none is named', () => {
@@ -86,7 +122,9 @@ describe('planInit', () => {
   })
 
   it('should warn about governance rather than counting it when skipped', () => {
-    const plan = planInit(flags({ skip: parseSkip('governance') }))
+    const plan = planInit(
+      flags({ snippets: 'essentials', skip: parseSkip('governance') }),
+    )
 
     expect(plan.total).toBe(4)
     expect(plan.preview).toContainEqual({
@@ -115,14 +153,18 @@ describe('planInit', () => {
   })
 
   it('should drop a skipped domain from the preview and the count', () => {
-    const plan = planInit(flags({ stack: 'base', skip: parseSkip('wiki') }))
+    const plan = planInit(
+      flags({ stack: 'base', snippets: 'essentials', skip: parseSkip('wiki') }),
+    )
 
     expect(plan.total).toBe(4)
     expect(texts(plan)).not.toContain('wiki (.claude/wiki/ with a stub index)')
   })
 
   it('should subtract every skip from the count', () => {
-    const plan = planInit(flags({ skip: parseSkip('wiki,governance') }))
+    const plan = planInit(
+      flags({ snippets: 'essentials', skip: parseSkip('wiki,governance') }),
+    )
 
     expect(plan.total).toBe(3)
   })
@@ -139,6 +181,32 @@ describe('planInit', () => {
     expect(texts(planInit(flags({ snippets: 'all' })))).toContain(
       'snippets (all)',
     )
+  })
+
+  it('should warn snippets as skipped rather than counting it by default', () => {
+    const plan = planInit(flags())
+
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'snippets (skipped)',
+    })
+  })
+
+  it('should warn snippets as skipped when explicitly declined', () => {
+    const plan = planInit(
+      flags({ snippets: 'all', skip: parseSkip('snippets') }),
+    )
+
+    expect(plan.preview).toContainEqual({
+      level: 'warn',
+      text: 'snippets (skipped)',
+    })
+  })
+
+  it('should count the none category as a run rather than a skip', () => {
+    const plan = planInit(flags({ snippets: 'none' }))
+
+    expect(texts(plan)).toContain('snippets (none)')
   })
 
   it('should treat an empty stack as unnamed rather than as a way to decline', () => {
