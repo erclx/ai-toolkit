@@ -31,7 +31,6 @@
 ## Indexes
 
 - Check a folder's `index.md` before grepping its source or reading its files, starting with `.claude/context/` for a domain and `.claude/wireframes/` for a UI surface. It orients faster than a blind search.
-- Editing an `index.md` loads `.claude/rules/claude/511-indexes.md`, which owns the regeneration verb, the frontmatter contract, and the hand-edit opt-out.
 
 ## Commands
 
@@ -58,10 +57,6 @@
 - `.claude/wiki/`: reference pages for tools, workflows, and concepts, indexed via `.claude/wiki/index.md`
 - `.claude/rules/`: path-scoped coding standards loaded by Claude Code on file match
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
-
-## Spelling
-
-- Adding a word to a dictionary loads `.claude/rules/core/065-spelling.md`, which owns which file it belongs in and the sort order.
 
 ## Tasks
 

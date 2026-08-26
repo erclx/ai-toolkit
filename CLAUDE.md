@@ -69,7 +69,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 - Before searching source in a domain, consult `.claude/context/index.md` and read the matching entry first. It orients faster than a blind grep.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- Editing an `index.md` loads `.claude/rules/claude/511-indexes.md`, which owns the regeneration verb, the frontmatter contract, and the hand-edit opt-out.
 
 ## Content ownership
 
@@ -123,10 +122,6 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 ## Commands
 
 - Run `bun run check` to verify and `bun run format` to auto-fix before committing. The pre-push hook runs `check` and may reformat files, so after `git push` run `git status` and commit any diff as `style(<scope>):`. Full script and hook reference in `.claude/context/development/index.md`.
-
-## Spelling
-
-- Adding a word to a dictionary loads `.claude/rules/core/065-spelling.md`, which owns which file it belongs in and the sort order.
 
 ## Tasks
 
