@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.12.1](https://github.com/erclx/aitk/compare/v3.12.0...v3.12.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* **gov:** report a rule a target's chain lists and lacks ([#1127](https://github.com/erclx/aitk/issues/1127)) ([da11192](https://github.com/erclx/aitk/commit/da111923ad1d6fc1b2e1b2e6f63ea519407c9bd9))
+
 ## [3.12.0](https://github.com/erclx/aitk/compare/v3.11.2...v3.12.0) (2026-08-26)
 
 
