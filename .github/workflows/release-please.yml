@@ -16,16 +16,16 @@ permissions:
   contents: write
   pull-requests: write
 
-concurrency:
-  group: release-please
-  cancel-in-progress: false
-
 jobs:
   release-please:
     name: 🏷️ Release Please
     runs-on: ubuntu-latest
     # A dispatch naming a tag republishes it, so no release is cut
     if: github.event_name == 'push' || inputs.tag == ''
+    # Scoped to this job alone, since publish must run to completion once started
+    concurrency:
+      group: release-please
+      cancel-in-progress: true
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
