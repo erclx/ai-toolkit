@@ -46,7 +46,7 @@ Every repository accumulates the same boilerplate: governance rules, prose stand
 
 - Replace human code review on risky changes. Agents augment the review loop. Humans still own the final call.
 - Ship runtime dependencies or application code to target projects. The toolkit ships configs, seeds, snippets, and rules. Native `aitk` commands may shell out to user-installed external binaries, which is distinct from installing code into a target project.
-- Ship first-class support for every AI coding tool. Claude Code is the platform the toolkit targets. Extending to another tool stays open (deferred), but no parallel surface is maintained without a concrete use case driving it.
+- Ship first-class support for every AI coding tool. Claude Code is the platform the toolkit targets. Extending to another tool stays open (deferred), but no parallel surface is maintained without a concrete use case driving it. A comparably-shaped project making the opposite call pays it directly: two skill trees, 29 identical files, 3,905 lines kept aligned by discipline alone.
 - Wrap framework scaffolding. Users run `bun init`, `npm create vite`, and similar themselves. The toolkit layers on top.
 - Provide a hosted service. Everything runs locally against local CLIs. Publishing an artifact to a registry someone else hosts stays in scope, since the boundary is where execution happens rather than where a download comes from.
 
