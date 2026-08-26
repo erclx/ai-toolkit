@@ -43,7 +43,7 @@ Does not govern:
 - `## Testing` (optional): specify exact commands or test cases run
 - Omit Testing for docs, config, or trivial sync changes
 - Use checkboxes, never prose. See Testing discipline for which box gets ticked.
-- `## For the reviewer` (optional): what the reviewer should confirm, one bullet per request
+- `## For the reviewer` (optional): what the reviewing session should confirm, one bullet per request
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
 ## Testing discipline

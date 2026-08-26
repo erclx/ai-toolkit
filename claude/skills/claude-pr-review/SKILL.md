@@ -15,7 +15,7 @@ review against the whole change, and every later pass reads only the commits
 added since. The heading reports state rather than pass number: a pass carrying
 anything owed takes `## Review`, and `## Review closed` covers a pass carrying
 none, so the most recent comment's heading reports whether any work is owed.
-Owed is a finding at any severity or a Testing question, defined once at Step 4. Every pass is this skill, and which one it is gets detected from
+Owed is a finding at any severity, a Testing question, or a reviewer request, defined once at Step 4. Every pass is this skill, and which one it is gets detected from
 the thread rather than named by the caller.
 
 ## Guards
@@ -89,6 +89,10 @@ Test every unchecked box against the testing discipline in `${CLAUDE_SKILL_DIR}/
 
 Ask rather than grade. Whether a human is genuinely required is a reading the branch author may hold a reason this session cannot see, so the question carries no severity and enters no count. What it does carry is the heading and the dispatch, on the rule Step 4 states, because a question the author never receives corrects nothing and the author is the only party who can answer it. Answering it closes it, and the answer may be that the requirement holds.
 
+Read `## For the reviewer` the same way, bounded to the bullets under that heading rather than the Summary or the Technical Context around it. Those two carry the author's argument for the change, and reading them while judging it is most of what an independent pass exists to avoid, so the read stops at the section itself.
+
+Answer each bullet in the body, on the same terms as a Testing question: no severity, no count, and owed under the heading and dispatch Step 4 states. A request nobody answers keeps the thread open exactly as an unanswered Testing box does.
+
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
 A later pass applies the same axes to the delta, and adds one check the first pass cannot make: did each prior finding land, and did the fix regress anything it touched. Findings of its own are normal findings, stated at the same severity and counted the same way. That count is one of the two things Step 4 reads to pick the heading, so a pass raising a finding of its own is not a close-out at any severity.
@@ -160,7 +164,15 @@ A Testing box the Step 3 check raised goes in a `**Testing**` block placed after
 
 Keep it to the boxes the check raised. Restating a box whose stated requirement holds teaches the branch author to skip the block.
 
-The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying anything owed takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Owed covers a finding at any severity and a Testing question alike, which is what keeps the two halves from separating. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while anything stays open, and `## Review closed` when nothing does.
+A `## For the reviewer` bullet Step 3 read goes in a `**For the reviewer**` block placed after the Testing block, one bullet per request, each followed by the answer. It carries no severity and enters no count, and it is still something owed, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. Say so on the summary line as `plus N reviewer request(s)`.
+
+```markdown
+**For the reviewer**
+
+- Confirm the 401 and 403 split reads correctly for the public API. Confirmed — `AuthService.authenticate()` returns 401 for an expired token and 403 for a missing scope, and both paths are covered under `## Testing`.
+```
+
+The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying anything owed takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Owed covers a finding at any severity, a Testing question, and a reviewer request alike, which is what keeps the two halves from separating. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while anything stays open, and `## Review closed` when nothing does.
 
 Keying either half on the grade was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low. Splitting the two halves so the dispatch fired lower than the heading was the other candidate, and it left a thread reading closed while work was owed on it. The Testing question was first written to sit outside both, which is that same split reached from the other side, and it left the one party who could answer the question with no route to it.
 
@@ -192,7 +204,7 @@ gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>
 
 A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No findings. Reviewed against project docs and the board.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
 
-A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. A pass carrying only Testing questions takes the same route for the same reason. Keep whichever scope sentence the pass owes on the summary line:
+A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. A pass carrying only Testing questions or reviewer requests takes the same route for the same reason. Keep whichever scope sentence the pass owes on the summary line:
 
 ```markdown
 ## Review
@@ -217,5 +229,7 @@ X critical, Y should-fix, Z minor. Posted to PR #<number>.
 ```
 
 Add `N Testing question(s) raised.` to that line when the Step 3 check raised any. The counts cover findings alone, so a pass whose only output was a question otherwise reports as silent to the session that drove it. That session is not who the question is addressed to, which is what the dispatch covers.
+
+Add `N reviewer request(s) answered.` to that line when the PR body carried a `## For the reviewer` section. The counts and the Testing question line both cover something else, so a pass that only answered a request otherwise reports as silent too.
 
 Report the merge decision as a plain recommendation in chat (merge, or address findings first). Do not merge.

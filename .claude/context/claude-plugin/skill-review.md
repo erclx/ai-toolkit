@@ -141,6 +141,16 @@ Sitting outside the heading and the dispatch as well was the first shape and it 
 
 What it tests against is `standards/pr.md`, which narrowed in the same change to say what makes a human required: a capability the agent lacks, never the cost of the run. A refusal the author actually met counts and names itself, and a refusal predicted and never met does not. `claude-pr-review` reads that file off the plugin root through the fallback citation form, the same route every skill citing it takes now that the fan-out and its `consumers` field are retired.
 
+## A request that reads the section rather than the body
+
+`standards/pr.md` defines `## For the reviewer` as what the reviewer should confirm, one bullet per request, and `claude-pr-review` read no section by that name. A request written there reached no reviewing session, measured across the eight most recent feature pull requests at the time: they carried 28 bullets between them and none reached a reviewing pass.
+
+Reading the whole body was the obvious fix and it was declined. The Summary and the Technical Context sections carry the author's argument for the change, and a reviewing pass reading that argument while judging the change is most of what an independent vantage exists to avoid. Step 3's fourth lens already drew this same bound at `## Testing`, so the fifth lens draws it at `## For the reviewer` and stops there, reading neither the sections around it nor the rest of the body.
+
+Answering a request took the Testing question's shape rather than new machinery, since the two problems match: an item that is not a finding still has to survive to a reader, still has to avoid the merge-blocking counts, and still has to keep the thread open until it is settled. No severity, no count, and owed under the same heading and dispatch, so a request nobody answers reads open exactly as an unanswered Testing box does. The output block sits beside the Testing block in Step 4 for the same reason the lens sits beside the Testing lens in Step 3: one part of the body a reviewing session is positioned to answer, next to another it already was.
+
+`standards/pr.md` named the reader as `the reviewer` without saying which one, so a person and a reviewing session both read the same sentence as naming them. It now names the reviewing session, closing the sentence the disagreement traced back to.
+
 ## A submitted review cannot be deleted
 
 A submitted pull request review is editable and never deletable. `DELETE /repos/{owner}/{repo}/pulls/{n}/reviews/{id}` returns 422 with `Can not delete a non-pending pull request review`, and dismissal covers approvals and change requests rather than comments, so a mistimed or malformed comment is repaired with `PUT` to the same path, which replaces the body and keeps its timestamp and position in the thread. When the repair leaves a comment that should no longer anchor the review state, strip its heading, since `claude-pr-review` scopes a later narrow pass by matching a comment's first line against `## Review` and `## Review closed` and would otherwise point the next pass at the wrong commit.
