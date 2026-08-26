@@ -19,7 +19,7 @@ Rules follow a numbering scheme by band, so a new rule's number states its domai
 | `100–199` | lang (TypeScript, Python, etc.)                                                                                                                                                   |
 | `200–299` | framework (React, Tailwind, FastAPI, etc.)                                                                                                                                        |
 | `300–399` | lib (testing libs, Zod, Pydantic, security, etc.)                                                                                                                                 |
-| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture)                                                                                                              |
+| `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                               |
 | `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring) |
 
 ### Two sources numbering into one folder
@@ -59,6 +59,8 @@ Always-on rules such as the core persona, testing, and error handling emit with 
 - `core/070-planning.md` is the only rule naming an `aitk` verb, which puts it on the wrong side of the two-speed gap `.claude/ARCHITECTURE.md` records. A rule reaches a target the moment an install copies it, while the verb it names reaches that target only once a release publishes, so a project on an older CLI reads an instruction its binary refuses. A rule citing a verb therefore owes the same release wait a skill body does, and nothing detects the skew.
 
 A rule that publishes a heading some command parses is program input, so adding one is a code change and the reading command runs against the tree before the commit. `src/comments/vocabulary.ts` reads its terms out of whichever rule publishes `## Degradation vocabulary`, so `governance/rules/core/090-code-comments.md` turned a sweep that had only ever reported skipped into one returning six hits, four of them against the matcher's own doc comment naming the terms it matches. Grep for a reader of the heading or filename before writing the rule, and read every hit before treating any as a defect.
+
+A `description` carrying a bare word, a colon, and a space breaks `Bun.YAML.parse` in `parseFrontmatter`, since YAML reads that shape as a nested mapping key rather than plain scalar text. The failure surfaces far from the cause: `aitk gov list --json` throws a stack trace pointing at `src/indexes/frontmatter.ts` rather than naming the rule file, and the Hero stage that depends on that catalog fails in turn with no mention of a colon. Rephrase the description to avoid the pattern rather than quoting it, since the frontmatter examples elsewhere in this repository are unquoted.
 
 ## Adding a rule
 
