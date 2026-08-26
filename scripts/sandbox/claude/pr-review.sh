@@ -300,8 +300,9 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
     log_info "Action:  /claude-pr-review"
     log_info "Expect:  sees the prior commit equal to headRefOid and scopes responses to the prior pass"
     log_info "         derives nothing, since every response pre-dates the close-out"
-    log_info "         stops with 'No response since the prior pass', posting no comment"
-    log_info "         does NOT reuse the close-out body name or re-derive its comment id"
+    log_info "         stops in Step 2, before reading a diff or writing a body, with"
+    log_info "         'The head is unchanged since the prior pass', posting no comment"
+    log_info "         does NOT reuse the close-out body name, re-derive its comment id, or post a second close-out"
     ;;
 
   "reviewer-request")

@@ -49,6 +49,12 @@ Selecting the response also has to be scoped by the prior pass's `submittedAt` r
 
 An empty derivation is a head repeating with no response behind it, so the pass has nothing to add and stops rather than writing a second body over one commit. Where a response does sit there, it is also the entire read: the equality that triggers the naming case makes Step 2's range empty, so the comment rather than the delta is what says whether a prior finding landed.
 
+### Where the stop had to sit
+
+The stop shipped inside Step 4's filename derivation and a duplicate close-out landed six days later anyway, four minutes after the one it repeated at the same commit. The rule was correct and the pass that produced the duplicate still reached `gh pr review`, because the derivation only runs on the path that composes a body. A pass reading the head as unchanged has nothing left to add, and nothing forced it through the one step that checked for that.
+
+The fix moved the check itself rather than restating it: Step 2 now runs the same response query the moment the ancestor test reports an unchanged head, ahead of the diff read and ahead of Step 3's review, and stops there when it comes back empty. That is the earliest point every path through the skill crosses, so a pass with nothing to add can no longer reach a `gh pr review --comment` call by skipping the step that used to catch it. Step 4 keeps deriving the third filename segment for a pass that does proceed, off the comment id Step 2 already resolved, since collision avoidance in the name is still owed once posting is decided.
+
 Deriving it also decides what a close-out reads. `gh pr view --json reviews` returns `commit.oid` per review, so the last comment the skill posted names the commit the prior pass covered, and the close-out reads that range to the head rather than the whole change. The same field settles the rebase case without a second mechanism: after a force-push the prior commit no longer reaches the head, `git merge-base --is-ancestor` exits non-zero, and the skill pays for a full pass and states that in the body. Scoping by the prior review's timestamp instead would have needed its own rebase test, since a commit's author date can predate the push that put it on the branch.
 
 ### The heading contract
