@@ -139,6 +139,18 @@ describe('readFolder', () => {
     expect(outcome.detail).toEqual(['a-dump'])
   })
 
+  it('should resolve a bare slug against a folder carrying an ordinal', async () => {
+    await seedFolder('07-a-dump', {
+      '01-domain.md': cluster(item({ label: '1' })),
+    })
+
+    const outcome = await readFolder(ROOT, 'a-dump')
+
+    expect(outcome.ok).toBe(true)
+    if (!outcome.ok) return
+    expect(outcome.clusters).toHaveLength(1)
+  })
+
   it('should group items by the cluster holding them', async () => {
     await seedFolder('a-dump', {
       '01-domain.md': cluster(item({ label: '1' })),
