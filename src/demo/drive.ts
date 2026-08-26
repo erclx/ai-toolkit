@@ -204,11 +204,16 @@ async function launch(): Promise<Launch> {
  * Holds the round trip once a step has measured it, so every `moveTo` after
  * the first reuses the same reading rather than re-timing on every move.
  */
-interface PointerPace {
+export interface PointerPace {
   roundTripMs?: number
 }
 
-async function runStep(
+/**
+ * Exported so `drive.e2e.test.ts` can drive one real step against a real
+ * caption and read it back, which is the integration a full `drive()` call
+ * cannot assert without decoding the video it writes.
+ */
+export async function runStep(
   page: Page,
   plan: DemoPlan,
   step: DemoStep,
