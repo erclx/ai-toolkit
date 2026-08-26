@@ -31,7 +31,7 @@ stage_setup() {
     log_info "Action:  /aitk:claude-intake file notes/dump.md as the cli-cleanup intake"
     log_info "Expect:  declared in fixtures/claude/intake/file/expect.toml"
     log_info "         Check it with: aitk sandbox check claude:intake file"
-    log_info "         A folder at .claude/intake/cli-cleanup/ with 00-overview.md"
+    log_info "         A folder at .claude/intake/01-cli-cleanup/ with 00-overview.md"
     log_info "         carrying frontmatter, a date, and links to numbered cluster"
     log_info "         files named for their domain. Every write lands inside the"
     log_info "         folder, and the reply reports the routing split."

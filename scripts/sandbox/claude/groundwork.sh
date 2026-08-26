@@ -161,7 +161,7 @@ EOF
     log_info "Context: three packages with drifted eslint and tsconfig, drift never measured"
     log_info "         Two or more approaches are live and no .claude/groundwork/ folder exists"
     log_info "Action:  /aitk:claude-groundwork tooling config drift across the three packages"
-    log_info "Expect:  qualifying test passes, folder created at .claude/groundwork/<slug>/"
+    log_info "Expect:  qualifying test passes, folder created at .claude/groundwork/<nn>-<slug>/"
     log_info "         README.md written first, then 01-current-state.md with measured drift"
     log_info "         NOTHING written to .claude/plans/, packages/, or any config file"
     log_info "         Output lists full relative paths and the open questions"
@@ -169,8 +169,8 @@ EOF
   "resume")
     seed_duplicated_workspace
 
-    mkdir -p .claude/groundwork/tooling-drift
-    cat <<'EOF' >.claude/groundwork/tooling-drift/README.md
+    mkdir -p .claude/groundwork/01-tooling-drift
+    cat <<'EOF' >.claude/groundwork/01-tooling-drift/README.md
 ---
 title: Tooling drift
 description: Whether the three packages should share a tooling preset, and how far their configs have drifted
@@ -204,7 +204,7 @@ External: not yet done. Shared-preset patterns from comparable workspaces are un
 None. This is the first pass at the question.
 EOF
 
-    cat <<'EOF' >.claude/groundwork/tooling-drift/01-current-state.md
+    cat <<'EOF' >.claude/groundwork/01-tooling-drift/01-current-state.md
 # Current state
 
 Verified facts only, measured 2026-07-20.
@@ -225,7 +225,7 @@ EOF
     git add . && git commit -m "feat(workspace): three packages with independent tooling" --no-verify -q
 
     log_step "Scenario ready: groundwork resume mode"
-    log_info "Context: .claude/groundwork/tooling-drift/ exists with README.md and 01-current-state.md"
+    log_info "Context: .claude/groundwork/01-tooling-drift/ exists with README.md and 01-current-state.md"
     log_info "         No 06-decision.md, so the folder is live"
     log_info "         01-current-state.md was measured at two packages and the workspace now has three"
     log_info "         It carries two open questions at the end"
