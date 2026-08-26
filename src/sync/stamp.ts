@@ -38,10 +38,12 @@ export interface DomainStamp {
   readonly syncedAt: string
   readonly files: DomainHashes
   /**
-   * Stack names the install resolved, nearest stack first. Present only for
-   * tooling. An ordered chain rather than the leaf name, because a stack that
-   * extends another cannot be reinstalled from its leaf alone, and a `--skip`
-   * run installs fewer layers than the leaf's own chain would reproduce.
+   * Stack names the install resolved. Tooling records the full ancestor chain,
+   * nearest stack first, because a stack that extends another cannot be
+   * reinstalled from its leaf alone, and a `--skip` run installs fewer layers
+   * than the leaf's own chain would reproduce. Governance records the single
+   * stack `aitk gov install` was given, since `resolveRules` walks its
+   * ancestors internally and a reader needs only the leaf to ask it again.
    */
   readonly chain?: readonly string[]
 }
@@ -54,6 +56,24 @@ export interface Stamp {
 
 export function stampPath(target: string): string {
   return join(target, '.claude', 'aitk', 'config.json')
+}
+
+/**
+ * Where `106115ba` moved the stamp from. No migration shipped with that move,
+ * so a target stamped before it still carries its config here, and `readStamp`
+ * falls back to this path when the current one is absent.
+ */
+export function legacyStampPath(target: string): string {
+  return join(target, '.claude', 'aitk.json')
+}
+
+/**
+ * Whether `readStamp` would resolve to the retired path, so a caller can
+ * report that a target's config still sits there. False when neither path
+ * exists, since there is nothing to migrate off of.
+ */
+export function isLegacyStamped(target: string): boolean {
+  return !existsSync(stampPath(target)) && existsSync(legacyStampPath(target))
 }
 
 export function hashContent(content: Buffer | string): string {
@@ -75,9 +95,17 @@ export function toStampKey(rel: string): string {
 /**
  * A missing or corrupt stamp reads as absent rather than failing, which is what
  * keeps every unstamped target on the existing unattributed path.
+ *
+ * Falls back to the retired path when the current one is absent, read only:
+ * nothing here migrates a target's config as a side effect of a report.
  */
 export function readStamp(target: string): Stamp | undefined {
-  const path = stampPath(target)
+  return (
+    readStampFile(stampPath(target)) ?? readStampFile(legacyStampPath(target))
+  )
+}
+
+function readStampFile(path: string): Stamp | undefined {
   if (!existsSync(path)) return undefined
 
   try {
@@ -105,17 +133,22 @@ export function stampedHashes(
 }
 
 /**
- * The stack chain tooling last installed. An empty result is the state every
- * target predating the tooling record sits in, and the report reads it as
- * unmeasured rather than as clean.
+ * The stack chain a domain's install last recorded. An empty result is the
+ * state every target predating that domain's chain recording sits in, and a
+ * reader treats it as unmeasured rather than as clean.
  */
-export function stampedChain(stamp: Stamp | undefined): readonly string[] {
-  return stamp?.domains.tooling?.chain ?? []
+export function stampedChain(
+  stamp: Stamp | undefined,
+  domain: StampDomain,
+): readonly string[] {
+  return stamp?.domains[domain]?.chain ?? []
 }
 
 /**
- * Replaces one domain's record and leaves the others untouched, because domains
- * install and sync independently but share the one file.
+ * Replaces one domain's file hashes and leaves the others, including that
+ * domain's own chain, untouched. Domains install and sync independently but
+ * share the one file, and a chain an install recorded is a separate fact a
+ * later file-only sync must not erase.
  */
 export async function writeStamp(
   target: string,
@@ -127,37 +160,35 @@ export async function writeStamp(
 }
 
 /**
- * Records what tooling installed. `files` stays empty because `src/tooling/`
- * never runs the sync engine, so there is no per-file attribution to store and
- * the chain is the whole record.
+ * Records the stack chain an install resolved and leaves that domain's file
+ * hashes untouched. Tooling calls this with no files ever recorded, since
+ * `src/tooling/` never runs the sync engine and the chain is its whole record.
+ * Governance calls it alongside `writeStamp`, since it records both.
  */
 export async function writeChainStamp(
   target: string,
-  toolkitRoot: string,
+  source: StampSource,
   chain: readonly string[],
   now: Date,
 ): Promise<void> {
-  await putDomain(
-    target,
-    { domain: 'tooling', toolkitRoot },
-    { files: {}, chain: [...chain] },
-    now,
-  )
+  await putDomain(target, source, { chain: [...chain] }, now)
 }
 
 async function putDomain(
   target: string,
   source: StampSource,
-  payload: Pick<DomainStamp, 'files' | 'chain'>,
+  payload: Partial<Pick<DomainStamp, 'files' | 'chain'>>,
   now: Date,
 ): Promise<void> {
   const previous = readStamp(target)
+  const previousRecord = previous?.domains[source.domain]
   const commit = await toolkitCommit(source.toolkitRoot)
 
   const record: DomainStamp = {
     ...(commit === undefined ? {} : { commit }),
     syncedAt: now.toISOString(),
-    ...payload,
+    files: payload.files ?? previousRecord?.files ?? {},
+    ...resolveChainField(payload.chain, previousRecord?.chain),
   }
 
   const domains = sortDomains({
@@ -201,6 +232,19 @@ async function readCommit(root: string): Promise<string | undefined> {
   return result.exitCode === 0 && result.stdout.trim() !== ''
     ? result.stdout.trim()
     : undefined
+}
+
+/**
+ * A write naming no chain keeps the domain's previous one rather than dropping
+ * it, since `writeStamp` and `writeChainStamp` each touch one half of a
+ * governance record and neither should erase what the other wrote.
+ */
+function resolveChainField(
+  chain: readonly string[] | undefined,
+  previous: readonly string[] | undefined,
+): Pick<DomainStamp, 'chain'> {
+  const resolved = chain ?? previous
+  return resolved === undefined ? {} : { chain: resolved }
 }
 
 /** Deterministic key order keeps a re-sync diff empty and a merge conflict local. */
