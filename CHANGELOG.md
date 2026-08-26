@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.14.2](https://github.com/erclx/aitk/compare/v3.14.1...v3.14.2) (2026-08-26)
+
+
+### Bug Fixes
+
+* **review:** stop a close-out repeat at an unchanged head ([#1140](https://github.com/erclx/aitk/issues/1140)) ([f41a35d](https://github.com/erclx/aitk/commit/f41a35de54d565959f79586fb7577b10eb15b562))
+
 ## [3.14.1](https://github.com/erclx/aitk/compare/v3.14.0...v3.14.1) (2026-08-26)
 
 
