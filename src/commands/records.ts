@@ -119,8 +119,8 @@ export function register(program: Command): void {
         '',
         'Exit codes:',
         '  0  nothing carries a known transform, or --write applied every one',
-        '  1  refused, with the reason on stderr or in the JSON record, or --write',
-        '     failed to repair a record it found',
+        '  1  refused, with the reason on stderr or in the JSON record, or every',
+        '     candidate it found failed to repair, whether or not --write ran',
         '  2  a record carries a known transform and --write was not passed',
         '',
         'It reports and never writes without --write, matching aitk records',
@@ -506,19 +506,31 @@ function describe(found: Finding): string {
   return `${scope}${found.subject} ${found.message}`
 }
 
-interface Repair {
+export interface Repair {
   readonly record: string
   readonly remedy: FindingRemedy
   readonly path: string
   readonly text: string
 }
 
-interface Refusal {
+export interface Refusal {
   readonly record: string
   readonly message: string
 }
 
-/** Runs every finding's transform, without writing anything back. */
+/** The message a rejected promise leaves, for a record whose read or write failed. */
+function describeFailure(reason: unknown): string {
+  return reason instanceof Error ? reason.message : String(reason)
+}
+
+/**
+ * Runs every finding's transform, without writing anything back.
+ *
+ * `Promise.allSettled` rather than `Promise.all`, so a record whose read
+ * fails, such as one deleted between `validate`'s listing and this read,
+ * becomes a refusal for that one record rather than an unhandled rejection
+ * that `program.parse()` has no top-level catch for.
+ */
 async function attemptMigrations(
   dir: string,
   findings: readonly Finding[],
@@ -528,7 +540,7 @@ async function attemptMigrations(
       found.remedy !== undefined,
   )
 
-  const attempts = await Promise.all(
+  const settled = await Promise.allSettled(
     candidates.map(async (found) => {
       const path = join(dir, found.record)
       const outcome = migrateRecord(
@@ -536,30 +548,63 @@ async function attemptMigrations(
         found.record,
         await readFile(path, 'utf8'),
       )
-      return { found, path, outcome }
+      return { record: found.record, remedy: found.remedy, path, outcome }
     }),
   )
 
   const repaired: Repair[] = []
   const refused: Refusal[] = []
 
-  for (const attempt of attempts) {
-    if (attempt.outcome.ok) {
-      repaired.push({
-        record: attempt.found.record,
-        remedy: attempt.found.remedy,
-        path: attempt.path,
-        text: attempt.outcome.text,
-      })
-    } else {
+  settled.forEach((result, index) => {
+    if (result.status === 'rejected') {
       refused.push({
-        record: attempt.found.record,
-        message: attempt.outcome.message,
+        record: candidates[index].record,
+        message: `could not be read: ${describeFailure(result.reason)}`,
       })
+      return
     }
-  }
+
+    const { record, remedy, path, outcome } = result.value
+
+    if (outcome.ok) {
+      repaired.push({ record, remedy, path, text: outcome.text })
+    } else {
+      refused.push({ record, message: outcome.message })
+    }
+  })
 
   return { repaired, refused }
+}
+
+/**
+ * Writes every repair, independently. `Promise.allSettled` so one record's
+ * write failing does not abort the writes that would otherwise have
+ * succeeded, per the concurrency standard's rule on batched partial failure.
+ */
+async function writeRepairs(
+  repaired: readonly Repair[],
+): Promise<{ written: Repair[]; failed: Refusal[] }> {
+  const settled = await Promise.allSettled(
+    repaired.map((entry) => writeFile(entry.path, entry.text, 'utf8')),
+  )
+
+  const written: Repair[] = []
+  const failed: Refusal[] = []
+
+  settled.forEach((result, index) => {
+    const entry = repaired[index]
+
+    if (result.status === 'fulfilled') {
+      written.push(entry)
+    } else {
+      failed.push({
+        record: entry.record,
+        message: `could not be written: ${describeFailure(result.reason)}`,
+      })
+    }
+  })
+
+  return { written, failed }
 }
 
 async function runMigrate(
@@ -592,13 +637,20 @@ async function runMigrate(
     outcome.findings,
   )
 
-  if (write && repaired.length > 0) {
-    await Promise.all(
-      repaired.map((entry) => writeFile(entry.path, entry.text, 'utf8')),
-    )
+  if (!write) {
+    return reportMigrate(root, outcome.kind, repaired, refused, write, emitJson)
   }
 
-  return reportMigrate(root, outcome.kind, repaired, refused, write, emitJson)
+  const { written, failed } = await writeRepairs(repaired)
+
+  return reportMigrate(
+    root,
+    outcome.kind,
+    written,
+    [...refused, ...failed],
+    write,
+    emitJson,
+  )
 }
 
 function reportMigrate(
@@ -651,7 +703,25 @@ function reportMigrate(
     outro()
   }
 
+  return migrateExitCode(repaired, refused, write)
+}
+
+/**
+ * `repaired` carries only records a transform actually fixed, whether this
+ * is a dry run or the set `--write` wrote, so exit 2 (a write is available)
+ * never fires when every candidate refused. A dry run reaching that state
+ * previously returned the same code as a genuine offer to write, telling a
+ * caller `--write` would repair something when it would repair nothing.
+ */
+export function migrateExitCode(
+  repaired: readonly Repair[],
+  refused: readonly Refusal[],
+  write: boolean,
+): number {
+  const total = repaired.length + refused.length
+
   if (total === 0) return 0
+  if (repaired.length === 0) return 1
   if (!write) return EXIT_MIGRATABLE
   return refused.length > 0 ? 1 : 0
 }

@@ -92,7 +92,7 @@ It writes nothing until `--write` is passed, matching the write-flag contract `a
 
 A transform runs only where the missing value is recoverable from the file itself. The one shipped today repairs a memory record missing `category` alone, deriving it from the same filename prefix `checkMemory` already reads it from. `title` and `description` are prose nobody wrote down, so a finding naming either carries no transform and stays for a session to fix by hand, and `validate` keeps reporting it. The transform re-reads the file rather than trusting a value captured at validate time, so a check and its repair cannot disagree about the same record.
 
-Exit codes: `0` nothing carried a known transform, or `--write` applied everything it found. `1` refused for a reason `validate` shares, or a repair failed under `--write`. `2` a record carries a known transform and `--write` was not passed.
+Exit codes: `0` nothing carried a known transform, or `--write` applied everything it found. `1` refused for a reason `validate` shares, or every candidate it found failed to repair, whether or not `--write` ran. `2` a record carries a known transform and `--write` was not passed.
 
 ## Size
 
