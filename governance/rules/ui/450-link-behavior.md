@@ -4,6 +4,7 @@ paths:
   - '**/*.tsx'
   - '**/*.jsx'
   - '**/*.astro'
+  - '**/*.html'
 ---
 
 # Link behavior standards
