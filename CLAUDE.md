@@ -69,8 +69,6 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 - Before searching source in a domain, consult `.claude/context/index.md` and read the matching entry first. It orients faster than a blind grep.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
-- Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
 
 ## Content ownership
 
@@ -124,11 +122,6 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 ## Commands
 
 - Run `bun run check` to verify and `bun run format` to auto-fix before committing. The pre-push hook runs `check` and may reformat files, so after `git push` run `git status` and commit any diff as `style(<scope>):`. Full script and hook reference in `.claude/context/development/index.md`.
-
-## Spelling
-
-- When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
-- Keep dictionary files sorted alphabetically.
 
 ## Tasks
 
