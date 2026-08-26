@@ -71,6 +71,8 @@ The runner installs no browser binary, so a test needing one skips rather than f
 
 `release-please.yml` runs on every push to `main` and keeps a release pull request open, rewriting it as commits land. Merging that pull request is what cuts a tag and writes `CHANGELOG.md`, so a release is a merge rather than a hand-run command. `standards/versioning.md` specified both surfaces long before either existed.
 
+The `concurrency` group cancels an in-progress run when a newer push arrives, rather than queuing behind it. A queued run still computes against the commit that triggered it, and two pushes landing close together let that commit stop being the branch head before the run finishes. Only the newest commit on the branch is worth releasing, so the older run cancels rather than writes a pull request, a branch, or a version computed against a commit main has already moved past.
+
 Two files configure it. `release-please-config.json` holds the release type and the extra-files wiring, and `.release-please-manifest.json` holds the current version and is the file the tool rewrites. Tags read `v<major>.<minor>.<patch>` because `include-component-in-tag` is false, which matches what the versioning standard specifies. The default would prefix the package name.
 
 The plugin manifest version is written through `extra-files` rather than by hand. `plugin.json` overrides the enclosing marketplace entry for both name and version, and `claude plugin tag` refuses to tag when the two disagree, so a version the release tool does not own is a version that goes stale on the first release nobody is watching.
