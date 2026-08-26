@@ -118,9 +118,10 @@ export function register(program: Command): void {
       [
         '',
         'Exit codes:',
-        '  0  nothing carries a known transform, or --write applied every one',
-        '  1  refused, with the reason on stderr or in the JSON record, or every',
-        '     candidate it found failed to repair, whether or not --write ran',
+        '  0  nothing carries a known transform, or --write repaired every one',
+        '  1  refused, with the reason on stderr or in the JSON record, every',
+        '     candidate it found failed to repair, or --write repaired only',
+        '     some of them',
         '  2  a record carries a known transform and --write was not passed',
         '',
         'It reports and never writes without --write, matching aitk records',
