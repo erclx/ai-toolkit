@@ -3,6 +3,7 @@ import { basename, dirname, extname, join, relative, resolve } from 'node:path'
 import type { Command } from 'commander'
 import { parseDraft } from '@/demo/beats'
 import { compilePlan, parsePlan, unresolved } from '@/demo/compile'
+import { convertToMp4, INSTALL_CONVERTER } from '@/demo/container'
 import { DEFAULT_CURSORS } from '@/demo/cursors'
 import { loadCursorTheme } from '@/demo/theme'
 import { intro, logError, logInfo, logStep, logWarn, outro, plural } from '@/ui'
@@ -88,6 +89,9 @@ export function register(program: Command): void {
         '',
         'Needs a browser binary. Install it with:',
         `  ${INSTALL_BROWSER}`,
+        '',
+        'Writes mp4 beside the webm when ffmpeg is on PATH, and skips it',
+        `otherwise without failing the run. Install it with: ${INSTALL_CONVERTER}`,
         '',
         'Exit codes:',
         '  0  the recording and the still were written',
@@ -278,6 +282,24 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
     return 1
   }
 
+  let mp4Path: string | undefined
+  let mp4Reason: string | undefined
+  if (result.videoPath) {
+    logStep('Container')
+    const converted = await convertToMp4(result.videoPath)
+    if (converted.status === 'converted') {
+      mp4Path = converted.mp4Path
+      logInfo(display(mp4Path))
+    } else if (converted.status === 'skipped') {
+      mp4Reason = converted.reason
+      logWarn('ffmpeg is not installed, so no mp4 was written.')
+      logWarn(`Install it with: ${INSTALL_CONVERTER}`)
+    } else {
+      mp4Reason = converted.reason
+      logWarn(`mp4 conversion failed: ${converted.reason}`)
+    }
+  }
+
   if (result.videoPath) logInfo(display(result.videoPath))
   if (result.stillPath) logInfo(`${display(result.stillPath)}  still`)
   logInfo(
@@ -288,9 +310,11 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
   emit(opts.json, {
     plan: source,
     video: result.videoPath ?? null,
+    mp4: mp4Path ?? null,
     still: result.stillPath ?? null,
     steps: result.steps,
     durationMs: result.durationMs,
+    ...(mp4Reason ? { mp4Reason } : {}),
   })
   return 0
 }

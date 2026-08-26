@@ -13,10 +13,33 @@ import type { Beat, Draft } from '@/demo/beats'
  */
 
 /** Hand-tuned in spike 2 against one fixture. Nothing establishes them in general. */
-const POINTER_STEPS = 45
+const POINTER_TRAVEL_MS = 400
 const TYPE_DELAY_MS = 110
 const HOLD_MS = 600
 const FINAL_HOLD_MS = 1200
+
+/**
+ * A step is a round trip to the browser, so a fixed count reproduces the
+ * defect under a new name if it does not respond to the round-trip cost
+ * measured at drive time. The bounds guard the extremes a bad measurement
+ * could produce: too few steps teleports rather than glides, and a
+ * near-zero measured cost cannot be trusted enough to let the count run
+ * away.
+ */
+export const MIN_POINTER_STEPS = 6
+export const MAX_POINTER_STEPS = 120
+
+/**
+ * Pure on purpose: the round-trip cost comes from a real browser and can
+ * only be measured at drive time, so this takes it as an argument rather
+ * than measuring it itself, which is what keeps it testable against a
+ * stubbed cost.
+ */
+export function deriveSteps(travelMs: number, roundTripMs: number): number {
+  if (roundTripMs <= 0) return MAX_POINTER_STEPS
+  const steps = Math.round(travelMs / roundTripMs)
+  return Math.min(MAX_POINTER_STEPS, Math.max(MIN_POINTER_STEPS, steps))
+}
 
 const VIEWPORT = { width: 1280, height: 720 } as const
 const ANNOTATIONS = {
@@ -82,7 +105,7 @@ export interface DemoPlan {
   readonly url: string
   readonly viewport: { readonly width: number; readonly height: number }
   readonly output: { readonly video: string; readonly still: string }
-  readonly pointer: { readonly steps: number; readonly typeDelayMs: number }
+  readonly pointer: { readonly travelMs: number; readonly typeDelayMs: number }
   readonly annotations: typeof ANNOTATIONS
   readonly steps: readonly DemoStep[]
 }
@@ -103,7 +126,7 @@ export function compilePlan(draft: Draft, options: CompileOptions): DemoPlan {
       video: `${options.outDir}/${options.slug}.webm`,
       still: `${options.outDir}/${options.slug}.png`,
     },
-    pointer: { steps: POINTER_STEPS, typeDelayMs: TYPE_DELAY_MS },
+    pointer: { travelMs: POINTER_TRAVEL_MS, typeDelayMs: TYPE_DELAY_MS },
     annotations: ANNOTATIONS,
     steps: draft.beats.map((beat, position) =>
       compileStep(beat, {
@@ -218,7 +241,7 @@ export function parsePlan(text: string): PlanParse {
         still: asText(output.still) || `demos/${slug || 'demo'}.png`,
       },
       pointer: {
-        steps: asNumber(pointer.steps, POINTER_STEPS),
+        travelMs: asNumber(pointer.travelMs, POINTER_TRAVEL_MS),
         typeDelayMs: asNumber(pointer.typeDelayMs, TYPE_DELAY_MS),
       },
       annotations: ANNOTATIONS,
