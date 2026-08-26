@@ -72,12 +72,22 @@ export const FINDING_KINDS = [
 
 export type FindingKind = (typeof FINDING_KINDS)[number]
 
+/**
+ * The transforms `migrate.ts` carries. Most finding kinds have none, since a
+ * transform is only safe where the old shape is recoverable from the file
+ * itself, so this stays optional on `Finding` rather than required.
+ */
+export const FINDING_REMEDIES = ['category-from-name'] as const
+
+export type FindingRemedy = (typeof FINDING_REMEDIES)[number]
+
 export interface Finding {
   readonly kind: FindingKind
   /** The record the finding sits in, relative to the validated folder. */
   readonly record: string
   readonly subject: string
   readonly message: string
+  readonly remedy?: FindingRemedy
 }
 
 export interface ValidateReport {
@@ -134,8 +144,9 @@ function finding(
   record: string,
   subject: string,
   message: string,
+  remedy?: FindingRemedy,
 ): Finding {
-  return { kind, record, subject, message }
+  return { kind, record, subject, message, remedy }
 }
 
 async function listMarkdown(dir: string): Promise<string[]> {
@@ -748,24 +759,39 @@ const MEMORY_FIELDS = ['title', 'description', 'category'] as const
  * catches a prefix outside the set, a field disagreeing with the prefix, and a
  * casing drift that would open a second group in the catalog.
  */
-const CATEGORY_BY_TYPE = {
+export const CATEGORY_BY_TYPE = {
   feedback: 'Feedback',
   project: 'Project',
   user: 'User',
   reference: 'Reference',
 } as const
 
-type MemoryType = keyof typeof CATEGORY_BY_TYPE
+export type MemoryType = keyof typeof CATEGORY_BY_TYPE
 
 const MEMORY_TYPES = Object.keys(CATEGORY_BY_TYPE) as readonly MemoryType[]
 
-const MEMORY_NAME = /^([a-z]+)-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/
+export const MEMORY_NAME = /^([a-z]+)-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/
 
 /** The two markers a rule-bearing body carries, on top of the rule line itself. */
 const MEMORY_MARKERS = ['**Why:**', '**How to apply:**'] as const
 
-function memoryType(value: string): MemoryType | undefined {
+export function memoryType(value: string): MemoryType | undefined {
   return MEMORY_TYPES.find((type) => type === value)
+}
+
+/**
+ * The one missing-field shape `migrate.ts` can repair: `category` alone,
+ * recoverable from the same filename prefix `checkMemory` already read it
+ * from. `title` and `description` are prose nobody wrote down, so a finding
+ * naming either carries no remedy.
+ */
+function memoryRemedy(
+  missing: readonly string[],
+  named: MemoryType | undefined,
+): FindingRemedy | undefined {
+  return named && missing.length === 1 && missing[0] === 'category'
+    ? 'category-from-name'
+    : undefined
 }
 
 export function checkMemory(name: string, text: string): Finding[] {
@@ -796,6 +822,7 @@ export function checkMemory(name: string, text: string): Finding[] {
         name,
         name,
         `carries no ${missing.join(' and no ')}.`,
+        memoryRemedy(missing, named),
       ),
     )
   }

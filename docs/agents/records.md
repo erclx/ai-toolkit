@@ -1,6 +1,6 @@
 ---
 title: Records
-description: Validating the session records under .claude/ and the standards corpus, the per-kind checks, the refusal reasons, reading each folder's size and growth, backing the folders to a private remote, and which root each kind defaults to
+description: Validating the session records under .claude/ and the standards corpus, the per-kind checks, the refusal reasons, migrating a record a frontmatter change orphaned, reading each folder's size and growth, backing the folders to a private remote, and which root each kind defaults to
 ---
 
 # Records
@@ -71,6 +71,28 @@ aitk records validate plans --json | jq -r '.findings[] | "\(.kind): \(.subject)
 ```
 
 For the shapes each check enforces, see `.claude/standards/plan.md`, `.claude/standards/groundwork.md`, `.claude/standards/intake.md`, `.claude/standards/memory.md`, and `.claude/standards/standard.md`.
+
+## Migrate
+
+`aitk records migrate <kind>` rewrites the records a `validate` finding names a transform for. A standard that redefines its own required frontmatter breaks every record already written to the old shape, and this is the repair `validate` could only report until now.
+
+```bash
+aitk records migrate memory
+aitk records migrate memory --write
+aitk records migrate memory --json
+```
+
+| Option          | Behavior                                                            |
+| --------------- | ------------------------------------------------------------------- |
+| `--json`        | Add a machine-readable record on stdout                             |
+| `--write`       | Rewrite every record a transform can repair                         |
+| `--root <path>` | Project root, defaulting to the main worktree except on `standards` |
+
+It writes nothing until `--write` is passed, matching the write-flag contract `aitk tooling sync` carries: a session record has no history to undo a wrong repair from, so naming a kind is not consent to rewrite every record inside it. A dry run reports which records it would touch and exits non-zero either way, headless or not, since there is nothing to prompt for.
+
+A transform runs only where the missing value is recoverable from the file itself. The one shipped today repairs a memory record missing `category` alone, deriving it from the same filename prefix `checkMemory` already reads it from. `title` and `description` are prose nobody wrote down, so a finding naming either carries no transform and stays for a session to fix by hand, and `validate` keeps reporting it. The transform re-reads the file rather than trusting a value captured at validate time, so a check and its repair cannot disagree about the same record.
+
+Exit codes: `0` nothing carried a known transform, or `--write` applied everything it found. `1` refused for a reason `validate` shares, or a repair failed under `--write`. `2` a record carries a known transform and `--write` was not passed.
 
 ## Size
 

@@ -37,6 +37,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk teach resource`      | Record sources and leads in a workspace, repeating `--read` or `--lead` as `<title>=<url>` (`--json`)                                          |
 | `aitk teach glossary`      | Add terms to a workspace glossary alphabetically, repeating `--term <term>=<definition>` (`--json`)                                            |
 | `aitk records validate`    | Report a session record or a standard against the standard governing it, per kind (`--json`)                                                   |
+| `aitk records migrate`     | Rewrite the records a validate finding names a recoverable transform for (`--write`, `--json`)                                                 |
 | `aitk records size`        | Report what each record folder holds and how much of it is recent, heaviest first (`--json`)                                                   |
 | `aitk records push`        | Commit the nine backed record folders and push them to a private records remote (`--json`)                                                     |
 | `aitk records pull`        | Fetch the records remote and write it back, refusing rather than discarding unpushed records (`--json`)                                        |
