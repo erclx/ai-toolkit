@@ -1,10 +1,14 @@
 ---
-description: Route .claude/intake/ edits to the intake standard for the item format, the answer contract, and numbering
+description: Route .claude/intake/ edits to the intake standard for the item format, the answer contract, and ordinal naming
 paths:
   - '.claude/intake/**'
 ---
 
 # Intake standards
+
+## Folder name
+
+- Name a new dump `.claude/intake/<nn>-<slug>/`, a two-digit zero-padded ordinal followed by a kebab-case slug. Take the ordinal from the highest one already present across both `.claude/intake/` and `.claude/groundwork/`, incremented. Never renumber an existing folder.
 
 ## The answer contract
 

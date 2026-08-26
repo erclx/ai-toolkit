@@ -14,8 +14,8 @@ Reference docs for consistent authoring across the toolkit and target projects.
 - [Design reference](design.md): Shape and content rules for .claude/DESIGN.md
 - [Diagram reference](diagrams.md): Shape and content rules for .claude/diagrams/<kind>.md files
 - [Glossary reference](glossary.md): Frontmatter, entry shape, ordering, and the rules deciding which terms a glossary carries
-- [Groundwork reference](groundwork.md): Folder layout, reserved numbering, frontmatter and dating, required file contents, and conventions for a measurement track
-- [Intake reference](intake.md): Folder layout, reserved index number, frontmatter and dating, the item template, the answer contract, and retrieval
+- [Groundwork reference](groundwork.md): Folder layout, ordinal naming, reserved numbering, frontmatter and dating, required file contents, and conventions for a measurement track
+- [Intake reference](intake.md): Folder layout, ordinal naming, reserved index number, frontmatter and dating, the item template, the answer contract, and retrieval
 - [Issue reference](issue.md): GitHub issue title, labels, and body conventions
 - [Markdown reference](markdown.md): Headings, paragraph and list structure, code spans, the date form, punctuation, emphasis, file references, banned words, and frontmatter wording
 - [Memory reference](memory.md): Filename and type prefix, frontmatter, the body shape per type, links between entries, and the lifecycle from write to retire

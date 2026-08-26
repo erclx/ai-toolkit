@@ -14,6 +14,7 @@ Two failure modes cost more than the rest. A track that fans out to subagents re
 ## Must
 
 - Detect open, resume, and close from the folder itself, matching the topic against tracks already there before deriving a slug
+- Name a newly opened folder with a two-digit ordinal ahead of the slug, taken from the highest one already present across groundwork and intake
 - Apply the qualifying test in open mode alone, so a track already measured is not refused by the test that admitted it
 - Measure the current state now rather than carrying a figure from a previous session
 - Carry a lean and the finding that would overturn it on every open question, or admit that a measurement is missing

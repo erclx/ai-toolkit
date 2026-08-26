@@ -1,6 +1,6 @@
 ---
 name: claude-groundwork
-description: Opens and runs a numbered groundwork folder under `.claude/groundwork/<slug>/` for a topic that has to be measured before it can be planned. Detects open, resume, and close from the folder itself. Use when asked to "research X", "dig into X", "work out what we should do about X", "measure this before we commit", or "open a groundwork folder". Do NOT use to write a feature plan or to implement. That is `claude-feature`.
+description: Opens and runs a numbered groundwork folder under `.claude/groundwork/<nn>-<slug>/` for a topic that has to be measured before it can be planned. Detects open, resume, and close from the folder itself. Use when asked to "research X", "dig into X", "work out what we should do about X", "measure this before we commit", or "open a groundwork folder". Do NOT use to write a feature plan or to implement. That is `claude-feature`.
 ---
 
 # Claude groundwork
@@ -19,10 +19,10 @@ Read `${CLAUDE_SKILL_DIR}/../../standards/groundwork.md` before writing any file
 
 ## Write scope
 
-- Write only inside `.claude/groundwork/<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
+- Write only inside `.claude/groundwork/<nn>-<slug>/`. A feature plan, source changes, a standard, a rule, and a reference doc all live outside that folder, so this one rule forbids every one of them.
 - One exception, at close only: write one task file recording what the track concluded.
 - A second exception, for what a spike reads: write an input under `.claude/.tmp/groundwork-fixtures/<slug>/`. Keep it out of `.claude/groundwork/` so mode detection never matches a fixture as a track. A fixture a headless run is pointed at goes outside the repository instead, per the rule in `## Running a spike`.
-- What a spike produces stays inside the track rather than joining the two exceptions above: write evidence a spike file cites under `.claude/groundwork/<slug>/evidence/`, which the first rule already permits. Mode detection matches entries at the top level of the tracks directory, so the sibling the fixtures rule guards against cannot be a folder nested inside a track, and the scratch path holds only what can be deleted without loss, which a recording a finding rests on is not.
+- What a spike produces stays inside the track rather than joining the two exceptions above: write evidence a spike file cites under `.claude/groundwork/<nn>-<slug>/evidence/`, which the first rule already permits. Mode detection matches entries at the top level of the tracks directory, so the sibling the fixtures rule guards against cannot be a folder nested inside a track, and the scratch path holds only what can be deleted without loss, which a recording a finding rests on is not.
 - Reading is not restricted. External research is in scope, so read documentation, comparable projects, and papers whenever a live question needs them.
 - Every claim about a source outside the project carries a link to it. A source found and not read is listed as a lead and is never cited.
 - Treat the folder as gitignored and unbacked. It dies with the machine, so `07-next-session.md` repeats what it needs instead of pointing at its siblings.
@@ -41,11 +41,11 @@ Record method, result, measured cost, and caveats in `08-spikes.md`. Put whateve
 
 ## Step 1: detect the mode
 
-List `.claude/groundwork/` from the project root and match the topic against the tracks already there before deriving anything. A resume pass rarely phrases the topic the way the folder was named, so a fresh slug derived from the wording would miss a live track and restart it.
+List `.claude/groundwork/` from the project root and match the topic against the slug half of each `<nn>-<slug>` folder already there before deriving anything. A resume pass rarely phrases the topic the way the folder was named, so a fresh slug derived from the wording would miss a live track and restart it.
 
 Never match against `.claude/` itself. That directory holds every other workflow surface, so a topic matched there lands on a folder that was never a track.
 
-With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `ts-migration` over `migration-research`. Then route on `.claude/groundwork/<slug>/`:
+With no match, derive a kebab-case slug named for the subject rather than the activity. Prefer `ts-migration` over `migration-research`. Also list `.claude/intake/` and take `<nn>` as the highest ordinal present across both listings, incremented, per `${CLAUDE_SKILL_DIR}/../../standards/groundwork.md`. Then route on `.claude/groundwork/<nn>-<slug>/`:
 
 - Folder absent: open
 - Folder present without `06-decision.md`: resume
@@ -72,7 +72,7 @@ The standard sets the open question format and requires it inside a topic file a
 
 ## Open mode
 
-1. Create `.claude/groundwork/<slug>/`.
+1. Create `.claude/groundwork/<nn>-<slug>/`, with `<nn>` and `<slug>` as derived in Step 1.
 2. Write `README.md` first. Writing it first forces the question of what the track is for.
 3. Write `01-current-state.md` by measuring now. Never carry a figure from a previous session or from recall without re-measuring it. Measure only what an open question in the folder needs. A number with no question attached is how groundwork turns into the work.
 4. Write `00-scope.md` when the track is large enough to run away. Skip it on a small track.
@@ -103,12 +103,12 @@ Emit the full relative path from the project root for every file written or upda
 Open and resume:
 
 ```plaintext
-📂 Opened .claude/groundwork/<slug>/
+📂 Opened .claude/groundwork/<nn>-<slug>/
 
 **Written:**
 
-- `.claude/groundwork/<slug>/README.md`
-- `.claude/groundwork/<slug>/01-current-state.md`
+- `.claude/groundwork/<nn>-<slug>/README.md`
+- `.claude/groundwork/<nn>-<slug>/01-current-state.md`
 
 **Open questions:**
 
@@ -122,12 +122,12 @@ Use `📂 Resumed` in place of `📂 Opened` on a resume pass.
 Close:
 
 ```plaintext
-✅ Closed .claude/groundwork/<slug>/
+✅ Closed .claude/groundwork/<nn>-<slug>/
 
 **Written:**
 
-- `.claude/groundwork/<slug>/06-decision.md`
-- `.claude/groundwork/<slug>/07-next-session.md`
+- `.claude/groundwork/<nn>-<slug>/06-decision.md`
+- `.claude/groundwork/<nn>-<slug>/07-next-session.md`
 
 **Uncited external claims:** <count, or none>
 
