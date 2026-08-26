@@ -136,13 +136,13 @@ function renderCheck(report: CheckReport): void {
     const { stale, customized, drifted, stranded, orphaned, missing } =
       domain.counts
     if (stale + customized + drifted + stranded === 0) {
-      const notes = [
-        ...(orphaned === 0 ? [] : [`${orphaned} local`]),
-        ...(missing === 0 ? [] : [`${missing} missing`]),
-      ]
-      logInfo(
-        notes.length === 0 ? 'up to date' : `up to date (${notes.join(', ')})`,
-      )
+      logInfo(orphaned === 0 ? 'up to date' : `up to date (${orphaned} local)`)
+    }
+    // A local file is not a deficiency and a missing rule is, so this never
+    // shares the up-to-date line's parenthetical. It prints on its own,
+    // regardless of whether anything above needs a sync.
+    if (missing > 0) {
+      logWarn(`${missing} listed by the stack, not installed`)
     }
 
     for (const commit of domain.upstream) {

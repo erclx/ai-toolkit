@@ -185,6 +185,19 @@ describe('readStamp', () => {
     )
   })
 
+  it('should read as absent rather than falling back when the current path exists but is corrupt', () => {
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'stale', files: {} } },
+      }),
+    )
+    writeFixture(stampPath(TARGET), '{ not json')
+
+    expect(readStamp(TARGET)).toBeUndefined()
+  })
+
   it('should fall back to the retired .claude/aitk.json when the current path is absent', () => {
     writeFixture(
       legacyStampPath(TARGET),

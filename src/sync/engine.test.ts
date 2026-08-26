@@ -272,7 +272,7 @@ describe('planSync', () => {
     ])
   })
 
-  it('should add a missing entry for each entitled surface the walk did not find', () => {
+  it('should add a missing entry for each entitled surface the walk did not find, carrying the adapter notice', () => {
     const plan = planSync(
       createAdapter({
         collectMissing: () => [
@@ -290,6 +290,7 @@ describe('planSync', () => {
       {
         state: 'missing',
         rel: join('.claude', 'rules', 'ui', '440-capture.md'),
+        notice: 'listed by astro, not installed',
       },
     ])
   })

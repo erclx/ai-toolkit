@@ -96,13 +96,18 @@ export function toStampKey(rel: string): string {
  * A missing or corrupt stamp reads as absent rather than failing, which is what
  * keeps every unstamped target on the existing unattributed path.
  *
- * Falls back to the retired path when the current one is absent, read only:
- * nothing here migrates a target's config as a side effect of a report.
+ * Falls back to the retired path only when the current one does not exist,
+ * read only: nothing here migrates a target's config as a side effect of a
+ * report. The check is existence rather than a successful parse, so a
+ * corrupt current stamp reads as absent rather than silently serving the
+ * retired one beside it. `isLegacyStamped` tests the same existence check,
+ * which is what keeps the two agreeing on which path a corrupt current file
+ * was read from.
  */
 export function readStamp(target: string): Stamp | undefined {
-  return (
-    readStampFile(stampPath(target)) ?? readStampFile(legacyStampPath(target))
-  )
+  return existsSync(stampPath(target))
+    ? readStampFile(stampPath(target))
+    : readStampFile(legacyStampPath(target))
 }
 
 function readStampFile(path: string): Stamp | undefined {

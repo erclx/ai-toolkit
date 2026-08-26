@@ -83,7 +83,7 @@ function collectMissingGov(root: string, target: string): RetiredSurface[] {
     return {
       path: dest,
       rel,
-      notice: `${rel} (listed by ${chain[0]}, not installed)`,
+      notice: `${rel} (listed by ${chain[0]}, not installed. Run aitk gov install ${chain[0]} to add it.)`,
     }
   })
 }

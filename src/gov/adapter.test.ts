@@ -164,7 +164,7 @@ describe('createGovAdapter', () => {
         {
           path: join(TARGET, '.claude', 'rules', 'ui', '440-capture.md'),
           rel: join('.claude', 'rules', 'ui', '440-capture.md'),
-          notice: `${join('.claude', 'rules', 'ui', '440-capture.md')} (listed by astro, not installed)`,
+          notice: `${join('.claude', 'rules', 'ui', '440-capture.md')} (listed by astro, not installed. Run aitk gov install astro to add it.)`,
         },
       ])
     })

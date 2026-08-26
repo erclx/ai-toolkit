@@ -80,6 +80,12 @@ export interface ScanEntry {
   readonly rel: string
   /** Toolkit revision this file's content came from, when history proved it. */
   readonly since?: string
+  /**
+   * Overrides `report`'s generic text for this entry's state. `collectMissing`
+   * is the one producer: a stack name is only known to the adapter that
+   * resolved it, and the generic `missing` line cannot carry one.
+   */
+  readonly notice?: string
 }
 
 export interface SyncPlan {
@@ -222,7 +228,7 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   entries.push(...strandedByRelocation(target, hashes, walked))
 
   for (const surface of adapter.collectMissing?.(target) ?? []) {
-    entries.push({ state: 'missing', rel: surface.rel })
+    entries.push({ state: 'missing', rel: surface.rel, notice: surface.notice })
   }
 
   const retired = adapter.collectRetired?.(target) ?? []
@@ -410,7 +416,9 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
     else if (entry.state === 'stranded')
       logWarn(`${entry.rel} (installed here by an older toolkit, now moved)`)
     else if (entry.state === 'missing')
-      logWarn(`${entry.rel} (listed by the stack, not installed)`)
+      logWarn(
+        entry.notice ?? `${entry.rel} (listed by the stack, not installed)`,
+      )
     else logWarn(`${entry.rel} (not in toolkit source, skipping)`)
   }
 
