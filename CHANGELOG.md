@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.11.2](https://github.com/erclx/aitk/compare/v3.11.1...v3.11.2) (2026-08-26)
+
+
+### Bug Fixes
+
+* **review:** answer the reviewer-request section in claude-pr-review ([#1124](https://github.com/erclx/aitk/issues/1124)) ([b85ffd8](https://github.com/erclx/aitk/commit/b85ffd8829fc329d4f5cee7cf51f20e8f051425d))
+
 ## [3.11.1](https://github.com/erclx/aitk/compare/v3.11.0...v3.11.1) (2026-08-25)
 
 
