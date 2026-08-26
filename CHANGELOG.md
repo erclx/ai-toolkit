@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.14.0](https://github.com/erclx/aitk/compare/v3.13.0...v3.14.0) (2026-08-26)
+
+
+### Features
+
+* **snippets:** make aitk init decline the domain by default ([#1135](https://github.com/erclx/aitk/issues/1135)) ([3e34711](https://github.com/erclx/aitk/commit/3e347119c281be0acfe9674bf984668144eec04f))
+
 ## [3.13.0](https://github.com/erclx/aitk/compare/v3.12.1...v3.13.0) (2026-08-26)
 
 
