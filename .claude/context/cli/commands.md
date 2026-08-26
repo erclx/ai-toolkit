@@ -74,6 +74,7 @@ Every `aitk` verb is registered in commander and either handled in TypeScript or
 - A drawn order reports the position it produced alongside the permutation. A caller handed only the permutation derives the answer index itself, which is a second place the same fact can be got wrong, so `orderQuiz` returns both and no caller computes either.
 - A reader over a prose corpus counts what it cannot answer apart from what it can. `aitk intake list` reports an item carrying no answer slot separately from unread and answered, because folding it into either one hides a malformed file behind a number that reads as work remaining or work done.
 - A folder identity gaining a prefix does not break the argument callers already type. `matchSlug` in `src/intake/folder.ts` tries an exact match against the bare argument first, then the one entry whose name is an ordinal ahead of it, so `aitk intake list toolkit-overview` keeps resolving once the folder becomes `21-toolkit-overview`. Every outcome reports `basename(opened)` rather than the caller's own argument, so `list`, `list <slug>`, and `answer <slug>` name the folder the same way in `--json`.
+- A suffix match that finds more than one folder is a collision, not an absence. `matchSlug` returns a discriminated `SlugMatch` rather than `string | undefined`, so `openFolder` refuses `ambiguous-slug` naming every match, distinct from `no-folder`, which is what lets a caller tell a typo from two dumps sharing a topic.
 
 ## Prompts and unattended callers
 

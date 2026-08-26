@@ -8,7 +8,7 @@ paths:
 
 ## Folder name
 
-- Name a new track `.claude/groundwork/<nn>-<slug>/`, a two-digit zero-padded ordinal followed by a kebab-case slug. Take the ordinal from the highest one already present across both `.claude/groundwork/` and `.claude/intake/`, incremented. Never renumber an existing folder.
+- Name a new track `.claude/groundwork/<nn>-<slug>/`, a two-digit zero-padded ordinal followed by a kebab-case slug. Take the ordinal from the highest one already present across both `.claude/groundwork/` and `.claude/intake/`, incremented, or `01` when neither folder holds an entry. Never renumber an existing folder.
 
 ## Measuring and closing
 

@@ -26,6 +26,7 @@ Does not govern:
 
 - Name the folder `<nn>-<slug>`, a two-digit zero-padded ordinal followed by a kebab-case slug. This is the folder's own ordinal, distinct from the `NN-<domain>.md` numbering a cluster file carries inside it.
 - Take the ordinal from the highest one already present across both `.claude/intake/` and `.claude/groundwork/`, incremented. A listing then sorts by when each folder opened rather than alphabetically, and the count includes both kinds because the two share one creation-order line.
+- With neither folder holding an entry, the first one opened takes `01`. Do not read this off the numbering inside a dump, which starts at `00` and disagrees with groundwork's own first required file.
 - Never renumber an existing folder. The ordinal is the order it opened, and a later reader cites it by that name.
 
 ## What a working intake looks like

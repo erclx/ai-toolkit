@@ -60,7 +60,7 @@ One call writes one cluster. A call per selection is the alternative, and severa
 
 An item already carrying an answer refuses rather than being overwritten, and one filled item refuses the whole batch, so a partly applied write never lands. Drop the named item and send the rest.
 
-Exit codes: `0` every named item now carries its answer, `1` refused. The `reason` field carries `no-intake`, `no-folder`, `no-cluster`, `no-item`, `answered`, or `bad-input`.
+Exit codes: `0` every named item now carries its answer, `1` refused. The `reason` field carries `no-intake`, `no-folder`, `ambiguous-slug`, `no-cluster`, `no-item`, `answered`, or `bad-input`. A bare slug matching more than one ordinal-prefixed folder refuses as `ambiguous-slug` rather than `no-folder`, naming every match in `detail`.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `reason` rather than the exit when a skill consumes this, which matters most here because the verb writes.
 

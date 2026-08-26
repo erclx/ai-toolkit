@@ -13,6 +13,7 @@ import {
 export const INTAKE_REFUSALS = [
   'no-intake',
   'no-folder',
+  'ambiguous-slug',
   'no-cluster',
   'no-item',
   'answered',
@@ -110,21 +111,30 @@ async function listSlugs(dir: string): Promise<string[]> {
     .sort()
 }
 
+type SlugMatch =
+  | { readonly kind: 'matched'; readonly name: string }
+  | { readonly kind: 'ambiguous'; readonly names: readonly string[] }
+  | { readonly kind: 'none' }
+
 /**
  * A folder carries a `<nn>-<slug>` name, but a caller names the topic alone.
  * An exact match wins first, since it is what a name with no ordinal, or one
  * already copied in full from a listing, resolves against. Otherwise the one
  * entry whose name is an ordinal ahead of the given slug wins, which is what
- * lets a topic keep working as its folder's identity gains a prefix.
+ * lets a topic keep working as its folder's identity gains a prefix. Two or
+ * more such entries is a collision the caller needs told apart from a typo,
+ * not a folder silently picked or silently missing.
  */
-function matchSlug(names: readonly string[], slug: string): string | undefined {
-  if (names.includes(slug)) return slug
+function matchSlug(names: readonly string[], slug: string): SlugMatch {
+  if (names.includes(slug)) return { kind: 'matched', name: slug }
 
   const suffixed = names.filter(
     (name) => name === `${extractOrdinal(name)}-${slug}`,
   )
 
-  return suffixed.length === 1 ? suffixed[0] : undefined
+  if (suffixed.length === 1) return { kind: 'matched', name: suffixed[0] }
+  if (suffixed.length > 1) return { kind: 'ambiguous', names: suffixed }
+  return { kind: 'none' }
 }
 
 function extractOrdinal(name: string): string {
@@ -142,13 +152,21 @@ async function openFolder(
   }
 
   const names = await listSlugs(dir)
-  const matched = matchSlug(names, slug)
+  const match = matchSlug(names, slug)
 
-  if (matched === undefined) {
+  if (match.kind === 'none') {
     return refuse('no-folder', `No intake folder named ${slug}.`, names)
   }
 
-  return join(dir, matched)
+  if (match.kind === 'ambiguous') {
+    return refuse(
+      'ambiguous-slug',
+      `More than one intake folder matches ${slug}.`,
+      match.names,
+    )
+  }
+
+  return join(dir, match.name)
 }
 
 /** Counts per folder, which is what a session picks a folder to work from. */
