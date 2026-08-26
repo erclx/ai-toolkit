@@ -130,7 +130,7 @@ function renderCheck(report: CheckReport): void {
 
     for (const entry of domain.entries) {
       if (entry.state === 'matching' || entry.state === 'orphaned') continue
-      logWarn(`${entry.rel} (${entry.state})`)
+      logWarn(entry.notice ?? `${entry.rel} (${entry.state})`)
     }
 
     const { stale, customized, drifted, stranded, orphaned, missing } =
