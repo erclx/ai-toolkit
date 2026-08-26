@@ -103,6 +103,7 @@ Append rows:
 | `bun run test:run` | Run Vitest once with verbose reporter. |
 | `bun run test:coverage` | Run Vitest with coverage. |
 | `bun run test:e2e` | Run Playwright E2E tests. |
+| `bun run test:e2e:changed` | Run Playwright E2E tests for specs the import graph reaches from the current diff. |
 | `bun run screenshot` | Build, preview, then capture screenshots. |
 
 `aitk tooling verify <stack>` is the only automated caller of `bun run screenshot`, running it for any stack whose `package.json` declares the script and asserting that PNG files land under `screenshots/`. It counts them with a recursive find carrying no depth limit, so the section folders the seed writes satisfy the assertion without a change to it. Do not flatten the layout to protect that check. No ship chain captures a screenshot, so the output path the seed writes is a contract that one verifier reads rather than a default a ship step depends on.
