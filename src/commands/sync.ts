@@ -99,6 +99,12 @@ function renderCheck(report: CheckReport): void {
 
   renderSkew(report)
 
+  if (report.stampAtLegacyPath) {
+    logWarn(
+      'Stamp found at the retired .claude/aitk.json. Move it to .claude/aitk/config.json.',
+    )
+  }
+
   if (!report.managed) {
     logStep('Not a toolkit project')
     logWarn('No .claude/ directory and no CLAUDE.md at the target.')
@@ -127,9 +133,16 @@ function renderCheck(report: CheckReport): void {
       logWarn(`${entry.rel} (${entry.state})`)
     }
 
-    const { stale, customized, drifted, stranded, orphaned } = domain.counts
+    const { stale, customized, drifted, stranded, orphaned, missing } =
+      domain.counts
     if (stale + customized + drifted + stranded === 0) {
-      logInfo(orphaned === 0 ? 'up to date' : `up to date (${orphaned} local)`)
+      const notes = [
+        ...(orphaned === 0 ? [] : [`${orphaned} local`]),
+        ...(missing === 0 ? [] : [`${missing} missing`]),
+      ]
+      logInfo(
+        notes.length === 0 ? 'up to date' : `up to date (${notes.join(', ')})`,
+      )
     }
 
     for (const commit of domain.upstream) {
@@ -168,10 +181,10 @@ function renderCheck(report: CheckReport): void {
   if (report.newRules.length > 0) {
     logStep('New rules, never installed')
     for (const name of report.newRules) logWarn(name)
-    // Names the stack as the reader's to supply, since no target records one
-    // and `--add` layers onto a resolved stack rather than standing in for it.
+    // `install` re-resolves the whole stack rather than adding one rule, so
+    // the remedy names both routes rather than assuming the reader wants all.
     logInfo(
-      'Run `aitk gov install <stack>`, naming the stack yourself since no target records it. Add `--add <rule>` to take one.',
+      'Run `aitk gov install <stack>` to take the whole stack again, or `--add <rule>` to take one.',
     )
   }
 

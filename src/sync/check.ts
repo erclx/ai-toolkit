@@ -3,7 +3,7 @@ import { basename, join, sep } from 'node:path'
 import { execa } from 'execa'
 import { gitEnv } from '@/git-env'
 import { createGovAdapter, rulesSourceDir } from '@/gov/adapter'
-import { loadGovStack } from '@/gov/stacks'
+import { loadGovStack, resolveMissingRules, resolveRules } from '@/gov/stacks'
 import { createSnippetsAdapter } from '@/snippets/adapter'
 import { planSync, type ScanEntry, type SyncAdapter } from '@/sync/engine'
 import {
@@ -19,6 +19,7 @@ import {
 } from '@/sync/reverse'
 import { buildSeedsReport, type SeedsReport } from '@/sync/seeds-report'
 import {
+  isLegacyStamped,
   readStamp,
   type Stamp,
   stampedChain,
@@ -71,6 +72,7 @@ export interface StateCounts {
   readonly drifted: number
   readonly orphaned: number
   readonly stranded: number
+  readonly missing: number
 }
 
 export interface DomainReport {
@@ -139,6 +141,12 @@ const UNMEASURED_TOOLING: ToolingReport = {
 
 export interface CheckReport {
   readonly covers: readonly StampDomain[]
+  /**
+   * True when the stamp `readStamp` found sits at the retired
+   * `.claude/aitk.json` path rather than the current one. Read only: nothing
+   * in the check migrates a target's config as a side effect of reporting it.
+   */
+  readonly stampAtLegacyPath: boolean
   /** False when the target is not a toolkit project, so every section stays empty. */
   readonly managed: boolean
   readonly domains: readonly DomainReport[]
@@ -204,7 +212,7 @@ export function buildToolingReport(
   target: string,
   stamp: Stamp | undefined,
 ): ToolingReport {
-  const chain = stampedChain(stamp)
+  const chain = stampedChain(stamp, 'tooling')
   const manifests = chain
     .map((name) => loadManifest(toolkitRoot, name))
     .filter((manifest) => manifest !== undefined)
@@ -270,6 +278,7 @@ export function countStates(entries: readonly ScanEntry[]): StateCounts {
     drifted: count(entries, 'drifted'),
     orphaned: count(entries, 'orphaned'),
     stranded: count(entries, 'stranded'),
+    missing: count(entries, 'missing'),
   }
 }
 
@@ -293,6 +302,11 @@ export function countStates(entries: readonly ScanEntry[]): StateCounts {
  * a file the project may own. `detectUnmigrated` already shipped that exact
  * false positive once, failing a push with no action that cleared it, and a
  * walk that reports `unattributed` by design would repeat it.
+ *
+ * `missing` is excluded on the same grounds `newRules` already reports on: a
+ * sync that adds a rule silently changes what a project is governed by, and
+ * nobody chose that, so gating CI on the count would pressure a target into
+ * adopting a rule nobody picked.
  */
 export function hasDrift(report: CheckReport): boolean {
   if (report.unmigrated.length > 0) return true
@@ -338,6 +352,7 @@ export async function buildCheckReport(
   if (!managed) {
     return {
       covers: [],
+      stampAtLegacyPath: isLegacyStamped(target),
       managed,
       domains: [],
       tooling: UNMEASURED_TOOLING,
@@ -353,6 +368,7 @@ export async function buildCheckReport(
 
   return {
     covers: stamp?.covers ?? [],
+    stampAtLegacyPath: isLegacyStamped(target),
     managed,
     domains,
     tooling: buildToolingReport(toolkitRoot, target, stamp),
@@ -360,11 +376,7 @@ export async function buildCheckReport(
     superseded: collectSuperseded(target),
     unmigrated,
     newSkills: await readNewSkills(toolkitRoot, anchors),
-    newRules: await readNewRules(
-      toolkitRoot,
-      target,
-      stampedCommit(stamp, 'governance'),
-    ),
+    newRules: await readNewRules(toolkitRoot, target, stamp),
     reverse: buildReverseReport(toolkitRoot, target),
     skew: await skewRead,
   }
@@ -529,14 +541,23 @@ export function baseBands(root: string): Set<string> {
 }
 
 /**
- * Rules are domain-scoped, so this measures from governance's own anchor rather
- * than from the oldest anchor across domains the way `readNewSkills` does. A
- * shared anchor would let a snippets sync move the revision rules are measured
- * from and drop a rule out of the read.
+ * A recorded chain answers this without the anchor at all: `resolveMissingRules`
+ * compares the entitled set against what the target holds right now, so a rule
+ * that shipped before the target's anchor is not a permanent blind spot the
+ * way the diff below leaves it. This is the primary path, and it is also what
+ * `collectMissing` reports per file through the domain scan, so a rule the
+ * chain names and the target lacks reaches both surfaces the same way.
  *
- * A target carrying no governance anchor reports nothing. It has no date to
- * measure against, and diffing from the beginning of history would read every
- * rule the toolkit ships as new.
+ * The diff-and-bands path stays as the fallback for a target stamped before
+ * governance recorded a chain. Rules are domain-scoped there too, so it
+ * measures from governance's own anchor rather than from the oldest anchor
+ * across domains the way `readNewSkills` does. A shared anchor would let a
+ * snippets sync move the revision rules are measured from and drop a rule out
+ * of the read.
+ *
+ * A target carrying no chain and no governance anchor reports nothing. It has
+ * no date to measure against, and diffing from the beginning of history would
+ * read every rule the toolkit ships as new.
  *
  * An anchor this clone cannot resolve reports nothing by a different route and
  * says so nowhere. `read` yields an empty string on a non-zero exit, so a stamp
@@ -544,12 +565,29 @@ export function baseBands(root: string): Set<string> {
  * as a target holding everything. `readNewSkills` carries the same gap, and
  * neither has the `historyUnavailable` flag the per-domain scan uses to tell an
  * unmeasured result from a clean one.
+ *
+ * A recorded chain naming a stack the toolkit no longer ships falls through to
+ * the band-based path below rather than reporting the empty list an
+ * unresolved chain would otherwise produce. That empty list reads exactly
+ * like a target holding everything, which is the same failure this function
+ * exists to close, so a retired stack name is read the same as no chain at
+ * all instead of reintroducing it.
  */
 export async function readNewRules(
   root: string,
   target: string,
-  since: string | undefined,
+  stamp: Stamp | undefined,
 ): Promise<string[]> {
+  const chain = stampedChain(stamp, 'governance')
+  const stack = chain[0]
+
+  if (stack !== undefined && resolveRules(root, stack).ok) {
+    return resolveMissingRules(root, target, chain)
+      .map((source) => source.rule)
+      .sort()
+  }
+
+  const since = stampedCommit(stamp, 'governance')
   if (since === undefined) return []
 
   const paths = await read(root, [
