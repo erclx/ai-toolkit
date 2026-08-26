@@ -86,6 +86,12 @@ describe('categoryExists', () => {
 
     expect(categoryExists(root, 'snippets.toml')).toBe(false)
   })
+
+  it('should refuse an empty category rather than resolving to the source root', () => {
+    seedSnippet('a-one.md')
+
+    expect(categoryExists(root, '')).toBe(false)
+  })
 })
 
 describe('listEntries', () => {

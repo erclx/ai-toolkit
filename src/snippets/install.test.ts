@@ -13,6 +13,7 @@ import { snippetsSourceDir } from '@/snippets/categories'
 import {
   deriveDestRelPath,
   installSnippets,
+  installSnippetsRule,
   installableCategories,
   resolveSnippets,
 } from '@/snippets/install'
@@ -126,6 +127,27 @@ describe('resolveSnippets', () => {
       unknownCategory: 'snippets.toml',
     })
   })
+
+  it('should resolve none to zero files rather than an unknown category', () => {
+    seedSnippet('a-one.md')
+
+    expect(resolveSnippets(root, 'none')).toEqual({
+      ok: true,
+      step: 'Resolving category: none',
+      files: [],
+      missing: [],
+    })
+  })
+
+  it('should refuse an empty category rather than widening to every base entry', () => {
+    seedSnippet('a-one.md')
+    seedSnippet('b-two.md')
+
+    expect(resolveSnippets(root, '')).toEqual({
+      ok: false,
+      unknownCategory: '',
+    })
+  })
 })
 
 describe('installableCategories', () => {
@@ -171,5 +193,33 @@ describe('installSnippets', () => {
 
     expect((await stat(dest)).mode & 0o777).toBe(0o600)
     expect(await readFile(dest, 'utf8')).toBe('New')
+  })
+})
+
+function seedRule(relPath: string, body = 'Rule'): void {
+  const path = join(root, 'governance', 'rules', 'snippets', relPath)
+  mkdirSync(dirname(path), { recursive: true })
+  writeFileSync(path, body)
+}
+
+describe('installSnippetsRule', () => {
+  it('should install every rule under governance/rules/snippets/', async () => {
+    seedRule('505-at-references.md', 'Convention')
+
+    const installed = await installSnippetsRule(root, target)
+
+    expect(installed).toEqual([
+      join('.claude', 'rules', 'snippets', '505-at-references.md'),
+    ])
+    expect(
+      await readFile(
+        join(target, '.claude', 'rules', 'snippets', '505-at-references.md'),
+        'utf8',
+      ),
+    ).toBe('Convention')
+  })
+
+  it('should install nothing when the toolkit carries no snippets rule folder', async () => {
+    expect(await installSnippetsRule(root, target)).toEqual([])
   })
 })

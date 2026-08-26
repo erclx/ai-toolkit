@@ -70,7 +70,7 @@ Each diagram entry records the commit and date it was last verified against, and
 
 ### Stack decision
 
-The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, governance core rules, and snippets, and scaffolds an empty `.claude/wiki/`. Most projects need nothing more.
+The default path is `base`. `aitk init` on `base` installs base tooling configs, Claude seeds, and governance core rules, and scaffolds an empty `.claude/wiki/`. Most projects need nothing more.
 
 Escalate only for real web apps. The `setup-init` skill reads `package.json` and root configs, then picks the matching tooling stack (`vite-react` today) and the matching governance stack (`react`, `astro`, `node`).
 
@@ -84,13 +84,16 @@ Run `aitk tooling list --json` and `aitk gov list --json` to see the current cat
 
 ### Core domains and skips
 
-`aitk init` installs base tooling, Claude workflow, governance, and snippets, and scaffolds `.claude/wiki/`. Governance defaults to the `base` stack, so a bare init carries the rules that route a project. Pass `--stack <name>` to install a framework stack instead.
+`aitk init` installs base tooling, Claude workflow, and governance, and scaffolds `.claude/wiki/`. Governance defaults to the `base` stack, so a bare init carries the rules that route a project. Pass `--stack <name>` to install a framework stack instead.
 
 No standard is written into the project. Each governance rule's authority line names `aitk standards <name>`, which answers from the corpus inside the CLI's own package, and every toolkit skill names the copy in its own plugin root. `aitk markdown audit` needs no standard at all, its ban sets and checkpoints shipping with the package as data.
 
-`governance` and `wiki` are skippable:
+Snippets does not install by default. Pass `--snippets <category>`, such as `--snippets essentials`, to take it. Its own rule describing the `@` reference convention installs alongside it, so a project that declines snippets never receives a rule for a behavior it holds no snippet to exercise.
+
+`governance`, `snippets`, and `wiki` are skippable:
 
 - `--skip governance`: leave `.claude/rules/` empty, so no coding standard loads on a file match. The preview names any `--add` rules the skip drops, and the run prints the `aitk gov install <stack> <path>` command to add rules afterward, carrying those extras so one paste restores what the skip declined.
+- `--skip snippets`: the explicit spelling for what a bare init already does, since `--snippets` carries no default. Both print the `aitk snippets install essentials <path>` command afterward.
 - `--skip wiki`: skip the `.claude/wiki/` scaffold. A target that already carries a root `wiki/` keeps it, since the verb reports that folder rather than migrating it.
 
 The plugin corpus carries runtime behavior rather than reference prose alone, because the pre-publish scan and the branch-slug transform each have a standard of their own, `publish.md` and `slug.md`, cited by the skills that run them.

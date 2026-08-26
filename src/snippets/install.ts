@@ -7,9 +7,11 @@ import {
   categoryExists,
   listCategories,
   listEntries,
+  NONE_CATEGORY,
   snippetsSourceDir,
 } from '@/snippets/categories'
 import { findPreset, loadPresets } from '@/snippets/presets'
+import { isDirectory } from '@/target'
 
 export const ALL_CATEGORY = 'all'
 
@@ -72,6 +74,15 @@ export function resolveSnippets(
     return { ok: true, step: 'Resolving all categories', files, missing: [] }
   }
 
+  if (category === NONE_CATEGORY) {
+    return {
+      ok: true,
+      step: 'Resolving category: none',
+      files: [],
+      missing: [],
+    }
+  }
+
   const preset = findPreset(root, category)
   if (preset) {
     const files: SnippetFile[] = []
@@ -119,6 +130,42 @@ export async function installSnippets(
   for (const file of files) {
     await copyPreservingMode(file.src, join(destDir, file.relPath))
     installed.push(join('.claude', 'snippets', file.relPath))
+  }
+
+  return installed
+}
+
+function snippetsRuleSourceDir(root: string): string {
+  return join(root, 'governance', 'rules', 'snippets')
+}
+
+function installedSnippetsRuleDir(target: string): string {
+  return join(target, '.claude', 'rules', 'snippets')
+}
+
+/**
+ * Installs the `@`-reference convention rule alongside the snippets a caller
+ * took. No stack names this folder, so a project that declined snippets never
+ * receives a rule describing a behavior it holds no snippet to exercise.
+ */
+export async function installSnippetsRule(
+  root: string,
+  target: string,
+): Promise<string[]> {
+  const dir = snippetsRuleSourceDir(root)
+  if (!isDirectory(dir)) return []
+
+  const installed: string[] = []
+
+  for (const rel of new Bun.Glob('*.md').scanSync({
+    cwd: dir,
+    onlyFiles: true,
+  })) {
+    await copyPreservingMode(
+      join(dir, rel),
+      join(installedSnippetsRuleDir(target), rel),
+    )
+    installed.push(join('.claude', 'rules', 'snippets', rel))
   }
 
   return installed

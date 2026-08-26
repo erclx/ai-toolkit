@@ -25,6 +25,7 @@ paths = [
   "CLAUDE.md",
   ".claude/rules/core/000-constitution.md",
   ".claude/snippets/meta-prompt.md",
+  ".claude/rules/snippets/505-at-references.md",
   ".claude/wiki/index.md",
   "commitlint.config.js",
 ]

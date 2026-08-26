@@ -9,4 +9,4 @@
 # Rules under `internal/rules/` install alongside these and need no entry.
 
 stack = "node"
-add = ["300-testing-ts"]
+add = ["300-testing-ts", "505-at-references"]

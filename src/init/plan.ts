@@ -1,4 +1,4 @@
-export const SKIPPABLE_DOMAINS = ['wiki', 'governance'] as const
+export const SKIPPABLE_DOMAINS = ['wiki', 'governance', 'snippets'] as const
 
 export type SkippableDomain = (typeof SKIPPABLE_DOMAINS)[number]
 
@@ -30,8 +30,21 @@ export interface InitPlan {
 export interface InitFlags {
   readonly stack?: string
   readonly add?: string
-  readonly snippets: string
+  /** Absent when `--snippets` was never passed, which installs none. */
+  readonly snippets?: string
   readonly skip: SkipPlan
+}
+
+/**
+ * Reads why the snippets step will not run, or `undefined` when it will.
+ * Omitting `--snippets` reaches the same skip as `--skip snippets` explicitly,
+ * so a plain `aitk init` installs none and both routes share one recovery
+ * line rather than two behaviors with one spelling each.
+ */
+export function snippetsSkipReason(flags: InitFlags): string | undefined {
+  if (flags.skip.skipped.has('snippets')) return '--skip snippets'
+  if (flags.snippets === undefined) return 'no --snippets given'
+  return undefined
 }
 
 /**
@@ -98,7 +111,11 @@ export function planInit(flags: InitFlags): InitPlan {
     })
   }
 
-  preview.push({ level: 'info', text: `snippets (${flags.snippets})` })
+  if (snippetsSkipReason(flags) !== undefined) {
+    preview.push({ level: 'warn', text: 'snippets (skipped)' })
+  } else {
+    preview.push({ level: 'info', text: `snippets (${flags.snippets})` })
+  }
 
   if (!flags.skip.skipped.has('wiki')) {
     preview.push({
