@@ -8,7 +8,7 @@ description: Ships a small self-review edit on the current PR branch by staging,
 Ship a small self-review edit on the current PR branch in one pass.
 
 When invoked with `reply-owned`, a caller such as `claude-address-review` posts
-its own reply, so skip the comment in step 6. The push and body sync still run.
+its own reply, so skip the comment in step 7. The push and body sync still run.
 
 ## Guards
 
@@ -30,10 +30,14 @@ A missing tracking ref is no longer a guard. An open pull request proves the bra
    The lease is what stops the force from overwriting a commit this session never read. Run the ancestry test only where an upstream resolves, since it reads `@{u}`.
 
 5. Check for existing review comments: `gh api 'repos/{owner}/{repo}/pulls/<number>/comments' --jq 'length'`, resolving `<number>` from `gh pr view --json number`.
-6. Route on the invocation and the comment count.
-   - When invoked with `reply-owned`, skip this step's comment: the caller posts the reply.
+6. Sync the body and title on every invocation, before the routing below decides on the reply.
+   - Run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
+   - A fix commit answering a review changes what shipped exactly as much as an ordinary followup does, so the sync cannot wait on the invocation or the comment count below.
+   - A body a person edited by hand between rounds gets no special handling: judge it against the tree the same way regardless of who wrote it last, since a hand-edit the fix commit has made stale is the exact drift this sync exists to close.
+7. Route on the invocation and the comment count for the reply alone.
+   - When invoked with `reply-owned`, skip this step: the caller posts its own reply.
    - Otherwise, if the count is above zero, the followup addresses review feedback: post a one-line summary of the fix with `gh pr comment --body`, first running the scan in `${CLAUDE_SKILL_DIR}/../../standards/publish.md` against it, since the hook does not see an inline comment body.
-   - If it is zero, run `gh pr view --json url,title,body` and update the body with `gh pr edit --body` when the new commit changes scope, and the title with `gh pr edit --title` when the scope shifted enough to make it inaccurate.
+   - If it is zero, nothing further runs. The sync in step 6 already did this branch's job.
 
 ## After completion
 

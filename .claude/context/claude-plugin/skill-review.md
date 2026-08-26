@@ -141,6 +141,12 @@ Sitting outside the heading and the dispatch as well was the first shape and it 
 
 What it tests against is `standards/pr.md`, which narrowed in the same change to say what makes a human required: a capability the agent lacks, never the cost of the run. A refusal the author actually met counts and names itself, and a refusal predicted and never met does not. `claude-pr-review` reads that file off the plugin root through the fallback citation form, the same route every skill citing it takes now that the fan-out and its `consumers` field are retired.
 
+The lens later gained a fifth check reading the opposite half of the same section: a ticked box rather than an unchecked one. A box stays true only as long as what it names does, and a fix commit landing after review is what breaks that, so a box naming a test a later commit replaced reached the merge record with nothing positioned to catch it.
+
+Bounded to a box naming a file or a command, since a claim carrying no artifact has nothing this lens can confirm, and testing that the named artifact still exists rather than re-running what the box claims, which keeps the check from turning a review into a test run. Unlike the Testing question above, a stale ticked box carries severity and enters the count, since it is a factual claim the body still makes rather than a judgment call the author is owed a chance to defend.
+
+Confirming a file's existence has to key off `<headRefOid>` rather than local `HEAD`. `claude-pr-review` never checks out the branch it reviews: Step 2 reads the diff and file contents through `gh pr diff`, `gh api`, and `git fetch -q origin pull/<number>/head`, resolving the branch tip from `gh pr view --json headRefOid` rather than from a checkout. A read against `HEAD` resolves the reviewing session's own branch instead of the pull request, which is a silent wrong answer rather than a missing one, since `HEAD` always resolves to something.
+
 ## A request that reads the section rather than the body
 
 `standards/pr.md` defines `## For the reviewer` as what the reviewer should confirm, one bullet per request, and `claude-pr-review` read no section by that name. A request written there reached no reviewing session, measured across the eight most recent feature pull requests at the time: they carried 28 bullets between them and none reached a reviewing pass.

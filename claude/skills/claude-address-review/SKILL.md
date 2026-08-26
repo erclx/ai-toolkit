@@ -78,11 +78,14 @@ the `git-followup` skill, invoked with `reply-owned` so it stages, commits,
 pushes, and refreshes the open PR body without posting its own comment. This
 skill owns the reply. Do not reimplement that flow here.
 
-For in-place fixes to files the PR body already covers, `git-followup` leaves the body untouched and
-the reply comment carries the fix log. A rebase in step 5 rewrote the branch, so
-that push is a force-push and `git-followup` resolves it from the tracking
-branch. Worker branches are single-owner here, which is what makes overwriting
-the remote safe.
+`git-followup` syncs the body and title against the fix commit on every
+invocation, including `reply-owned`, so the merge record reflects what this pass
+changed rather than only what opened the PR. The reply comment still carries the
+fix log mapped to each finding, since the two serve different readers: the body
+is the merge record and the reply is the review's own thread. A rebase in step 5
+rewrote the branch, so that push is a force-push and `git-followup` resolves it
+from the tracking branch. Worker branches are single-owner here, which is what
+makes overwriting the remote safe.
 
 `git-followup` stops on an unchanged tree. A run that answered every finding as a
 conscious-accept and whose rebase left the generated files alone has nothing for

@@ -11,6 +11,8 @@ Without this skill, an edit made after a pull request is already open ships as a
 
 A caller that rebased the branch before handing over hits a rejected push, since the tracking branch no longer reaches the head. A branch entered through a worktree hits the opposite shape, carrying an open pull request with no tracking ref at all, which read as a branch that had never been pushed.
 
+A fix commit answering a review is the sharpest case of the first paragraph, since it always changes what shipped. The routing that once picked whether to sync the body keyed off the same branch that decides whether to reply, so reaching `reply-owned` or a nonzero comment count meant the sync never ran at all. The description a merge record carries was true when the pull request opened and false by the time review finished, with nothing between the two that read it back.
+
 ## Must
 
 - Refuse unless the branch has an open pull request, since every later step addresses it

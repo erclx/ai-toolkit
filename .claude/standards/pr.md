@@ -51,6 +51,7 @@ Does not govern:
 - Run the check before writing its line. A `- [ ]` reports a check that has not run rather than one that is planned.
 - Tick the box and state the observed result. `- [x] npm test passes, 42 tests` beats `- [ ] run npm test`.
 - Quote the count or output the run reported, never a figure carried from elsewhere.
+- A ticked box describes the tree as it stands, not as it stood when it was written. A later commit that removes or replaces what it names makes the box false, and the branch that made that commit corrects it in the same pass, the same as any other stale claim in the body.
 - Leave a box unchecked only when a human is required, and name which human and why on the same line.
 - Human-only covers visual or aesthetic judgment, anything needing credentials or a live third-party service, anything needing a second machine or a fresh OS, and judgment about whether a boundary or an abstraction reads correctly. The agent runs everything else.
 - What makes a human required is a capability the agent lacks, never the cost of the run. Authorizing a spend is the operator's and performing the run is not, so an arm the repository ships a harness for gets driven once the operator has cleared the spend, and the box records what it returned.

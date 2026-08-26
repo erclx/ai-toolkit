@@ -103,10 +103,12 @@ EOF
 }
 
 open_pull_request() {
+  local body="${1:-Adds the POST /tasks handler for v0.1.}"
+
   git push --force origin HEAD -q
 
   pr_url=$(gh pr create --draft --title "feat(api): add create handler" \
-    --body "Adds the POST /tasks handler for v0.1." --head feat/create-endpoint --base main 2>/dev/null ||
+    --body "$body" --head feat/create-endpoint --base main 2>/dev/null ||
     gh pr view feat/create-endpoint --json url -q .url 2>/dev/null)
 
   # Seed a review finding the worker must address.
@@ -116,10 +118,11 @@ open_pull_request() {
 }
 
 stage_setup() {
-  log_info "findings : open PR with one should-fix finding, branch still merges"
-  log_info "stale    : same PR, plus a sibling merged into main the branch conflicts with"
+  log_info "findings  : open PR with one should-fix finding, branch still merges"
+  log_info "stale     : same PR, plus a sibling merged into main the branch conflicts with"
+  log_info "body-sync : same PR, the fix invalidates a claim the body itself makes"
 
-  select_or_route_scenario "Which scenario?" "findings" "stale"
+  select_or_route_scenario "Which scenario?" "findings" "stale" "body-sync"
 
   log_step "Configuring address-review environment ($ANCHOR_REPO)"
 
@@ -218,6 +221,31 @@ EOF
     log_info "         keeps both the handler and rate-limit sentences in api.md"
     log_info "         leaves index.md to bun run check, which lists api, handlers, and limits"
     log_info "         force-pushes once and names the rebase in the reply comment"
+    ;;
+  "body-sync")
+    start_feature_branch
+
+    stale_body=$(
+      cat <<'BODY'
+## Summary
+
+Adds the POST /tasks handler for v0.1, taking any title with no validation.
+
+## Testing
+
+- [x] `bun run check` passes.
+BODY
+    )
+
+    open_pull_request "$stale_body"
+
+    log_step "Scenario ready: the review fix invalidates the PR body's own claim"
+    log_info "Context: open PR body says the handler takes any title with no validation"
+    log_info "  the posted finding asks for exactly the guard that claim says does not exist"
+    log_info "Action:  /claude-address-review"
+    log_info "Expect:  adds the empty-title guard, verify passes"
+    log_info "         git-followup syncs the PR body so it no longer claims no validation runs"
+    log_info "         pushes a follow-up commit, then posts a summary reply comment, does NOT merge"
     ;;
   esac
 }
