@@ -363,9 +363,17 @@ which is what makes it scriptable.
 
 `--stack` defaults to `base`, and the default
 does not read as a passed flag, so a bare `aitk init` installs governance and
-still prompts. `--skip` takes `wiki` and `governance`, and warns without aborting
-on any other value. There is no `--standards`, since no run writes a standard
-into the target.
+still prompts. `--skip` takes `wiki`, `governance`, and `snippets`, and warns
+without aborting on any other value. There is no `--standards`, since no run
+writes a standard into the target.
+
+`--snippets` carries no default. A bare `aitk init` installs no snippets and
+reports the domain as skipped, the same way an explicit `--skip snippets`
+does, both naming `aitk snippets install essentials <target>` as the recovery
+command. `--snippets none` is a distinct, deliberate way to reach the same
+zero-file result while still running the step, which is what lets a scripted
+caller assert "install nothing" without depending on an empty string, which
+`aitk snippets install` refuses.
 
 ## Unguarded tooling primitives
 

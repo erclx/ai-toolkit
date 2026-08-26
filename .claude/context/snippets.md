@@ -23,6 +23,9 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - The root is the authoring source and `.claude/snippets/` is a generated consumed copy, matching the `standards/` split so paths resolve identically here and in a target.
 - Presets are virtual curated subsets defined in `snippets.toml`, while categories are auto-derived from folders. Adding a folder adds a category with no registration step.
 - Every folder under `snippets/` is publishable, so nothing filters. The ones no entry point reads live in `internal/snippets/`.
+- `aitk init` installs no snippets unless `--snippets <category>` names one. Omitting the flag reaches the same skip step as `--skip snippets`, which is the only other domain-declining spelling `SKIPPABLE_DOMAINS` in `src/init/plan.ts` did not already carry, and both print a recovery command naming `essentials`.
+- `none` is a real category, not a synonym for omitting the flag. `resolveSnippets` in `src/snippets/install.ts` resolves it to zero files directly, and `categoryExists` in `src/snippets/categories.ts` refuses an empty string rather than reading `join(source, '')` as the source directory itself, which used to widen an unset value to every base entry.
+- The `@`-reference convention that used to sit in `CLAUDE.md`'s `## Snippets` section now ships as `governance/rules/snippets/505-at-references.md`, installed by `installSnippetsRule` in `src/snippets/install.ts` alongside any non-empty snippets resolution, never by `aitk gov install`. See `.claude/context/governance/rules.md` for why the folder carries no stack entry.
 
 ### Where a snippet lives
 
@@ -65,7 +68,7 @@ Counting what depends on a prose contract means scanning `snippets/` alongside `
 
 Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Both are valid arguments to `aitk snippets install`. Run `aitk snippets list` for the catalog of both, and `--entries` for the slugs in each.
 
-`essentials` is the default for `aitk init` when `--snippets` is omitted.
+`aitk init` installs no snippets when `--snippets` is omitted. `essentials` is the preset the skip and default recovery commands both suggest, not a default value any flag carries.
 
 ## CLI
 
