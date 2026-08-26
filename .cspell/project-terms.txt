@@ -99,6 +99,7 @@ recompiles
 recomputable
 regen
 repoint
+repointing
 repoints
 rescope
 resequence
