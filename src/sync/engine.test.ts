@@ -271,6 +271,45 @@ describe('planSync', () => {
       'delete',
     ])
   })
+
+  it('should add a missing entry for each entitled surface the walk did not find', () => {
+    const plan = planSync(
+      createAdapter({
+        collectMissing: () => [
+          {
+            path: join(TARGET, '.claude/rules/ui/440-capture.md'),
+            rel: join('.claude', 'rules', 'ui', '440-capture.md'),
+            notice: 'listed by astro, not installed',
+          },
+        ],
+      }),
+      TARGET,
+    )
+
+    expect(plan.entries).toEqual([
+      {
+        state: 'missing',
+        rel: join('.claude', 'rules', 'ui', '440-capture.md'),
+      },
+    ])
+  })
+
+  it('should queue no change for a missing entry, since installing stays a separate command', () => {
+    const plan = planSync(
+      createAdapter({
+        collectMissing: () => [
+          {
+            path: join(TARGET, '.claude/rules/ui/440-capture.md'),
+            rel: join('.claude', 'rules', 'ui', '440-capture.md'),
+            notice: 'listed by astro, not installed',
+          },
+        ],
+      }),
+      TARGET,
+    )
+
+    expect(plan.changes).toEqual([])
+  })
 })
 
 describe('planSync attribution', () => {
