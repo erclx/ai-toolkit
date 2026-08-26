@@ -31,6 +31,7 @@ A rule whose source no stack names never installs, and the drift assertion still
 
 ## Gotchas
 
+- `runInstall` writes two stamp records after copying rules: `recordStamp` for the file hashes a sync would refresh, and `writeChainStamp` for the single stack name the operator gave, alongside `{domain: 'governance', toolkitRoot: PROJECT_ROOT}`. The second is what lets a later sync answer what the target's stack lists without re-deriving it from installed band folders, since `resolveRules` walks that stack's own `extends` ancestors when a reader asks it again.
 - `aitk gov sync` diffs before applying and requires confirmation, so it is safe to run repeatedly.
 - `aitk gov install` and `aitk gov sync` refuse to run against the toolkit root, because a target's rules are the operator's to edit. `aitk gov regen` runs against it on purpose, since the destination there is produced output.
 - `scripts/lib/gov.sh` is narrowed to `rule_subdir` alone. It is called once per rule file inside a loop, so routing it through the CLI would cost a process per file, and it stays permanently because four of its five callers are sandbox scripts.

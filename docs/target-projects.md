@@ -124,7 +124,7 @@ The report opens by naming the binary running it. The installed version reads ag
 
 A `stale` file still matches what the toolkit installed, so the update is mechanical. A `customized` file carries local edits, so taking the upstream version is a decision and `aitk:claude-seed-sync` is the tool for it. A `stranded` file sits where an older toolkit installed it and the toolkit has since moved, which is what `aitk:migration-standards` handles.
 
-That attribution comes from `.claude/aitk/config.json`, a stamp every install and sync writes. Snippets and governance record a hash per installed file. Tooling records the stack chain it resolved instead, since its install runs no per-file walk to attribute.
+That attribution comes from `.claude/aitk/config.json`, a stamp every install and sync writes. A target stamped before that path shipped is read from the retired `.claude/aitk.json` instead, reported rather than migrated. Snippets and governance record a hash per installed file. Governance also records the stack `aitk gov install` was given, and tooling records the stack chain it resolved instead of any file hash, since its install runs no per-file walk to attribute.
 
 Each domain holds its own toolkit commit, so syncing governance today does not move the revision snippets measures against, and each domain reports the upstream commits touching its own source path. Running any sync stamps that domain, and the report names the ones still unstamped.
 
@@ -136,13 +136,15 @@ That third one matters most on an older project. Before it existed, a target hol
 
 #### Rules you never received
 
-A sync refreshes the files you already hold and adds none, so your rule set is frozen at the date you installed governance while every file in it reports as current. `newRules` names the rules the toolkit has authored since then, which is the one section that reads your absence rather than your contents.
+A sync refreshes the files you already hold and adds none, so your rule set is frozen at the date you installed governance while every file in it reports as current. `newRules` names a rule you could receive that your tree does not hold, which is the one section that reads your absence rather than your contents. `aitk gov sync` reports the same rules per file, marked `missing`, so you see them either way you check.
 
 Take a clean section as reporting rather than as delivering. Nothing here installs, and it counts toward nothing, so pick the rules up with `aitk gov install <stack>` or take one with `--add <rule>`. That separation is deliberate: adopting a rule changes what your project is governed by, which is a choice a sync has no business making for you.
 
-The list is filtered to what your stack can receive, read off the rule folders you already carry plus the folders the base stack takes whole. A rule under `lang/` or `ui/` belongs to some stacks and not others, so an unfiltered list would name rules you can never install. A target that has never stamped governance reports nothing at all, since there is no date to measure against.
+Since `aitk gov install` records the stack you gave it, the list is read by comparing that stack's current rules against what you hold right now, with no date involved at all. That is what lets it name a rule the toolkit shipped before you last synced: nothing here depends on when you installed. A target stamped before this recording shipped falls back to the older read below.
 
-An empty section is not proof either way when the toolkit running the check is not a full git clone. The read needs history to reach your anchor, and an install from the registry ships none, so the section goes quiet rather than saying it could not measure. Run the check from a clone before reading a clean result as a complete one.
+The fallback filters to what your stack can receive, read off the rule folders you already carry plus the folders the base stack takes whole. A rule under `lang/` or `ui/` belongs to some stacks and not others, so an unfiltered list would name rules you can never install. A target with neither a recorded stack nor a governance anchor reports nothing at all, since there is no date to measure against either.
+
+In the fallback, an empty section is not proof either way when the toolkit running the check is not a full git clone. The read needs history to reach your anchor, and an install from the registry ships none, so the section goes quiet rather than saying it could not measure. Run the check from a clone before reading a clean result as a complete one. The stack-based read above is untouched by this, since it consults no history.
 
 This also closes the case where a rule arrives citing a sibling you do not have. A sync refreshing a rule can land a version pointing at a file it never installs, and the section names the missing sibling rather than the broken citation, which is enough to act on.
 
@@ -177,7 +179,7 @@ Standards take no part in that run. Nothing installed them, so there is no copy 
 ### Targeted
 
 - Claude seed docs such as `CLAUDE.md` and `.claude/REQUIREMENTS.md`: invoke `aitk:claude-seed-sync`. The skill splits each file into a preamble (between the H1 and the first H2) plus one part per `##` section, then diffs part by part and proposes per-part edits. User customizations are preserved.
-- Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules
+- Governance rules already installed: `aitk gov sync <path>` diffs and applies, and never adds new rules. A rule your recorded stack lists reports as `missing` instead.
 - Tooling configs and seeds: `aitk tooling <stack> <path>` overwrites golden configs and merges seeds
 - Reference docs for a stack: `aitk tooling ref <stack> <path>`
 - Index regeneration after markdown edits: `aitk indexes regen`

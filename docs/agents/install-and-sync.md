@@ -16,6 +16,15 @@ is left alone regardless of its name, since that subfolder is project-authored
 by location. It also removes a stale `.claude/GOV.md`
 from the retired build. Use `aitk gov install` to add rules.
 
+When the target's install recorded a stack, `aitk gov sync` also reports a
+rule that stack lists and `.claude/rules/` does not hold, as a `missing` entry
+carrying no change. This is what makes a target whose recorded sync point
+postdates a rule joining its stack still see that rule: the report reads the
+target's current entitlement against its current tree rather than diffing
+from an anchor a later sync could advance past the rule's own commit. A
+target whose install predates the recorded chain falls back to the same
+band-inference `newRules` uses in `aitk sync --check`.
+
 There is no `aitk standards sync` and no `aitk standards install`. The corpus
 installs into no project, so the domain has nothing in a target to reconcile.
 `aitk standards <name>` prints one, resolving `standards/` at the working root
@@ -94,16 +103,23 @@ It also refuses a target whose working tree is dirty, so commit or stash first.
 and is safe to run at any time. Each file is classified as `stale` when it still
 matches what the toolkit installed, `customized` when the project edited it,
 `stranded` when it sits at a path the toolkit no longer installs to, `orphaned`
-when the project authored it, or `drifted` when no stamp covers it.
+when the project authored it, or `drifted` when no stamp covers it. Governance
+also reports `missing`, for a rule the target's recorded stack lists that its
+tree does not hold at all.
 
 Use `--json` for the machine-readable report and `--exit-code` to fail a CI job. Orphaned
-files are excluded from that exit code, since a project-authored rule never
-converges. Attribution reads `.claude/aitk/config.json`, which every install and
-sync writes.
+and missing files are both excluded from that exit code: a project-authored
+rule never converges, and a sync that added a missing one silently changes
+what the project is governed by, which stays a separate command an operator
+chooses to run. Attribution reads `.claude/aitk/config.json`, which every
+install and sync writes.
 
-A target installed before stamping shipped has no such file, and neither does one
-stamped before the file moved into `.claude/aitk/`, which is read as absent
-rather than migrated. Both fall back to the toolkit's own git history.
+A target installed before stamping shipped has no such file, and neither does
+that fallback do anything to migrate it. A target stamped before the file
+moved into `.claude/aitk/` still carries it at the retired
+`.claude/aitk.json`, and `aitk sync --check` reads that path when the current
+one is absent, reporting it rather than moving it. Only a target carrying
+neither path falls back to the toolkit's own git history.
 Installed content matching any
 version that history ever published proves the file is untouched, so it reports
 `stale` naming the commit it came from, and content matching no published
@@ -207,10 +223,10 @@ file and proposes relocating the lot.
 
 #### Rules the target never received
 
-`newRules` names a rule the toolkit authored after this target last synced
-governance. A sync refreshes the files a target already holds and adds none, so
-without this section a project's rule set freezes at its install date while every
-file it does hold reports as current. That is the report's most confident wrong
+`newRules` names a rule the target could receive and its tree does not hold. A
+sync refreshes the files a target already holds and adds none, so without this
+section a project's rule set freezes at its install date while every file it
+does hold reports as current. That is the report's most confident wrong
 answer, since a clean result reads as a target holding everything the toolkit
 publishes.
 
@@ -225,11 +241,22 @@ installs, nothing counts toward `--exit-code`, and a target can read the list an
 act on none of it. The value stops at an operator reading it, which is the same
 contract the skills list already sets.
 
-The measurement anchors on governance's own stamp rather than on the oldest
-anchor across domains, since rules are domain-scoped and a shared anchor would
-let a snippets sync move the revision rules are measured from. A target carrying
-no governance anchor reports nothing at all: it has no date to measure against,
-and diffing from the start of history would read the whole catalog as new.
+Since `aitk gov install` records the stack it resolved, a target carrying that
+record answers this by comparing its current entitlement against its current
+tree, with no anchor and no git diff involved. That is what lets the section
+name a rule that shipped before the target's last sync: the anchor a sync
+advances plays no part in the read, where an anchor-bound diff can never see a
+rule on the far side of a window a later sync moved past it. The per-file
+`missing` state `aitk gov sync` reports comes from the same comparison, so a
+rule the chain lists reaches both surfaces the same way.
+
+A target stamped before governance recorded a chain falls back to the older
+band-inference read below. The measurement there anchors on governance's own
+stamp rather than on the oldest anchor across domains, since rules are
+domain-scoped and a shared anchor would let a snippets sync move the revision
+rules are measured from. A target carrying no chain and no governance anchor
+reports nothing at all: it has no date to measure against, and diffing from the
+start of history would read the whole catalog as new.
 
 An anchor this toolkit cannot resolve reports nothing by the same route, and that
 one is not visible. A stamp naming a revision the running clone has never seen,
@@ -238,22 +265,22 @@ fails the read and yields an empty list rather than a stated absence. It looks
 identical to a target holding every rule the toolkit publishes. `newSkills`
 behaves the same way, and neither carries the `historyUnavailable` flag the
 per-domain scan uses to separate the two. Treat an empty section on a toolkit
-that is not a full clone as unmeasured rather than clean.
+that is not a full clone as unmeasured rather than clean. This gap does not
+reach the chain-based read above, since it consults no anchor at all.
 
-Entitlement is filtered, because a stack does not receive every rule. The base
-stack takes the `core` and `claude` folders whole and every other stack extends
-it with individually named rules, so an unfiltered list would tell a base
-consumer about rules it can never receive and train the reader to skip the
-section.
+In the fallback, entitlement is filtered, because a stack does not receive
+every rule. The base stack takes the `core` and `claude` folders whole and
+every other stack extends it with individually named rules, so an unfiltered
+list would tell a base consumer about rules it can never receive and train the
+reader to skip the section.
 
 The filter accepts a band on either of two grounds. A folder the base stack takes
 whole is entitled to every target, read from the stack file so a folder added to
 base later needs no code change. Every other band is read off the folders the
-target already carries, since `aitk gov install` records file hashes and never
-the stack it resolved, which leaves the installed tree as the only evidence of
-what a chain reached. One band can be reached by more than one stack, so the test
-over-reports inside a folder the target holds, which costs a line where
-under-reporting would cost the section its point.
+target already carries, which is the fallback's only evidence of what a target
+was entitled to before it recorded a chain. One band can be reached by more than
+one stack, so the test over-reports inside a folder the target holds, which
+costs a line where under-reporting would cost the section its point.
 
 A rule the target already holds is dropped by name. That is what keeps a rule the
 toolkit moved between band folders out of the list, since a rename reaches this
