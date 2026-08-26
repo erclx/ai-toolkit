@@ -121,6 +121,7 @@ skimmable
 softeria
 sonner
 ssot
+stopword
 stopwords
 subdirs
 subfolders
