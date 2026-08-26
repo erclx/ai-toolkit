@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.14.1](https://github.com/erclx/aitk/compare/v3.14.0...v3.14.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* **review:** sync the pr body and catch stale testing claims ([#1134](https://github.com/erclx/aitk/issues/1134)) ([08945f7](https://github.com/erclx/aitk/commit/08945f7520fae7098f431e5d45d96fa5d55d9891))
+
 ## [3.14.0](https://github.com/erclx/aitk/compare/v3.13.0...v3.14.0) (2026-08-26)
 
 
