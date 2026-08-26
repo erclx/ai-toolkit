@@ -12,7 +12,7 @@ import { parseDraft } from '@/demo/beats'
 import type { DemoPlan } from '@/demo/compile'
 import { compilePlan } from '@/demo/compile'
 import { DEFAULT_CURSORS } from '@/demo/cursors'
-import { drive } from '@/demo/drive'
+import { CAPTION_ID, captionInitScript, drive } from '@/demo/drive'
 
 /**
  * Every spike behind this feature drove a file on disk, which left a port, a
@@ -186,41 +186,26 @@ describe.skipIf(!hasBrowser)('drive against a served application', () => {
     )
   }, 180_000)
 
-  it('should draw a different frame when the hero beat carries a caption', async () => {
-    const parsed = parseDraft(DRAFT)
-    if (parsed.status !== 'parsed') return
+  it("should draw a beat's caption text into the page rather than nothing", async () => {
+    const { chromium } = await import('playwright-core')
+    const browser = await chromium.launch()
+    try {
+      const page = await browser.newPage()
+      await page.addInitScript({ content: captionInitScript() })
+      await page.goto('about:blank')
 
-    const url = `http://127.0.0.1:${server.port}/`
-    const targets = ['', '#title', '#add']
-    const withCaption = quicken(
-      compilePlan(parsed.draft, { slug: 'captioned', outDir: 'frames' }),
-      url,
-      targets,
-    )
-    const withoutCaption: DemoPlan = {
-      ...withCaption,
-      steps: withCaption.steps.map((step) => ({ ...step, caption: '' })),
+      await page.evaluate((text) => {
+        window.__aitk_demo_caption__?.(text)
+      }, 'Name the card')
+
+      const shown = await page.evaluate(
+        (id) => document.getElementById(id)?.textContent,
+        CAPTION_ID,
+      )
+
+      expect(shown).toBe('Name the card')
+    } finally {
+      await browser.close()
     }
-
-    const captioned = await drive({
-      plan: withCaption,
-      cursors: DEFAULT_CURSORS,
-      stillPath: join(root, 'frames', 'captioned.png'),
-    })
-    const bare = await drive({
-      plan: withoutCaption,
-      cursors: DEFAULT_CURSORS,
-      stillPath: join(root, 'frames', 'bare.png'),
-    })
-
-    expect(captioned).toMatchObject({ status: 'recorded' })
-    expect(bare).toMatchObject({ status: 'recorded' })
-    if (captioned.status !== 'recorded' || bare.status !== 'recorded') return
-
-    // A byte-identical still would mean the caption drew nothing, which is the
-    // engine's own action overlay carrying the narration rather than the beat.
-    expect(readFileSync(captioned.stillPath ?? '')).not.toEqual(
-      readFileSync(bare.stillPath ?? ''),
-    )
-  }, 180_000)
+  }, 30_000)
 })

@@ -282,6 +282,12 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
     return 1
   }
 
+  if (result.videoPath) logInfo(display(result.videoPath))
+  if (result.stillPath) logInfo(`${display(result.stillPath)}  still`)
+  logInfo(
+    `${result.steps} steps in ${Math.round(result.durationMs / 100) / 10}s`,
+  )
+
   let mp4Path: string | undefined
   let mp4Reason: string | undefined
   if (result.videoPath) {
@@ -300,11 +306,6 @@ async function runDrive(planPath: string, opts: RunOptions): Promise<number> {
     }
   }
 
-  if (result.videoPath) logInfo(display(result.videoPath))
-  if (result.stillPath) logInfo(`${display(result.stillPath)}  still`)
-  logInfo(
-    `${result.steps} steps in ${Math.round(result.durationMs / 100) / 10}s`,
-  )
   outro()
 
   emit(opts.json, {

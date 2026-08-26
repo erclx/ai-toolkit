@@ -41,8 +41,10 @@ const POINTER_SIZE = 32
  */
 const START = { x: 8, y: 8 }
 const SETTLE_MS = 250
-/** Round trips sampled to price one, on the blank page before anything is on screen. */
+/** Round trips sampled to price one, on the page a step is actually about to move across. */
 const CALIBRATION_STEPS = 8
+/** DOM id the caption bar installs under, read back by `drive.e2e.test.ts`. */
+export const CAPTION_ID = '__aitk_demo_caption_bar__'
 
 /**
  * The two output paths arrive resolved rather than as a root this re-resolves
@@ -130,7 +132,7 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     await context.addInitScript({ content: captionInitScript() })
     const page = await context.newPage()
     const video = page.video()
-    const roundTripMs = await calibrateRoundTrip(page)
+    const pace: PointerPace = {}
 
     // The opening navigate is skipped when the plan already starts with one,
     // because a draft written around an opening verb compiles to a `navigate`
@@ -141,7 +143,7 @@ export async function drive(options: DriveOptions): Promise<DriveResult> {
     }
 
     for (const step of plan.steps) {
-      await runStep(page, plan, step, roundTripMs)
+      await runStep(page, plan, step, pace)
       // The first marked step wins. One file holds one frame, so a plan a
       // person edited to mark several would otherwise write each over the last
       // and keep whichever ran last, with nothing saying so.
@@ -198,11 +200,19 @@ async function launch(): Promise<Launch> {
   }
 }
 
+/**
+ * Holds the round trip once a step has measured it, so every `moveTo` after
+ * the first reuses the same reading rather than re-timing on every move.
+ */
+interface PointerPace {
+  roundTripMs?: number
+}
+
 async function runStep(
   page: Page,
   plan: DemoPlan,
   step: DemoStep,
-  roundTripMs: number,
+  pace: PointerPace,
 ): Promise<void> {
   switch (step.kind) {
     case 'navigate':
@@ -210,23 +220,23 @@ async function runStep(
       await page.mouse.move(START.x, START.y, { steps: 2 })
       break
     case 'click':
-      await moveTo(page, plan, step, roundTripMs)
+      await moveTo(page, plan, step, pace)
       await page.mouse.down()
       await page.mouse.up()
       break
     case 'fill':
-      await moveTo(page, plan, step, roundTripMs)
+      await moveTo(page, plan, step, pace)
       await page.mouse.down()
       await page.mouse.up()
       await page.keyboard.type(step.text, { delay: plan.pointer.typeDelayMs })
       break
     case 'hover':
-      await moveTo(page, plan, step, roundTripMs)
+      await moveTo(page, plan, step, pace)
       break
     case 'scroll':
       await page.locator(step.target).first().scrollIntoViewIfNeeded()
       await page.waitForTimeout(SETTLE_MS)
-      await moveTo(page, plan, step, roundTripMs)
+      await moveTo(page, plan, step, pace)
       break
     case 'wait':
     case 'hold':
@@ -241,9 +251,9 @@ async function runStep(
 }
 
 /**
- * Timed on the blank page before any content is on screen, so the sample
- * move never competes with a beat for space in the recording and nothing it
- * paints is visible.
+ * Timed on the page a `moveTo` is actually about to move across, never on the
+ * blank page before it, since layout, paint, and page script are what a step
+ * pays the round trip against and a blank page has none of the three.
  */
 async function calibrateRoundTrip(page: Page): Promise<number> {
   const startedAt = Date.now()
@@ -263,14 +273,15 @@ async function moveTo(
   page: Page,
   plan: DemoPlan,
   step: DemoStep,
-  roundTripMs: number,
+  pace: PointerPace,
 ): Promise<void> {
+  pace.roundTripMs ??= await calibrateRoundTrip(page)
   const locator = page.locator(step.target).first()
   await locator.waitFor()
   const box = await locator.boundingBox()
   if (!box) throw new Error(`${step.target} has no box to point at`)
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
-    steps: deriveSteps(plan.pointer.travelMs, roundTripMs),
+    steps: deriveSteps(plan.pointer.travelMs, pace.roundTripMs),
   })
 }
 
@@ -280,7 +291,7 @@ async function moveTo(
  * reusing that annotation. Runs alongside `pointerSource`, guarded the same
  * way against a page that already carries one.
  */
-function captionInitScript(): string {
+export function captionInitScript(): string {
   return `(() => {
   if (window.__aitk_demo_caption__) return;
 
@@ -289,6 +300,7 @@ function captionInitScript(): string {
   const install = () => {
     if (label || !document.body) return;
     const bar = document.createElement('div');
+    bar.id = '${CAPTION_ID}';
     bar.setAttribute('aria-hidden', 'true');
     bar.style.cssText = [
       'position:fixed',

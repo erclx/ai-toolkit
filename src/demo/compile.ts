@@ -25,6 +25,14 @@ const FINAL_HOLD_MS = 1200
  * could produce: too few steps teleports rather than glides, and a
  * near-zero measured cost cannot be trusted enough to let the count run
  * away.
+ *
+ * Measured on 2026-08-26 against a served fixture, post-navigation: 10
+ * rounds of `page.mouse.move` averaged 16.6 milliseconds a step, well short
+ * of either bound at the 400 millisecond default (about 24 steps). A
+ * machine landing under `POINTER_TRAVEL_MS / MAX_POINTER_STEPS`, 3.33
+ * milliseconds a step here, hits the cap and stops responding to a faster
+ * one still. Nothing measured here establishes where a real machine sits
+ * relative to that boundary in general.
  */
 export const MIN_POINTER_STEPS = 6
 export const MAX_POINTER_STEPS = 120
