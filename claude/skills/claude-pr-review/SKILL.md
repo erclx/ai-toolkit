@@ -166,7 +166,7 @@ Keep it to the boxes the check raised. Restating a box whose stated requirement 
 
 Every `## For the reviewer` bullet Step 3 read goes in a `**For the reviewer**` block placed after the Testing block, one bullet per request, each followed by its answer or, where the pass could not answer it, by what would settle it. It carries no severity and enters no count.
 
-An unanswered bullet is owed the same way an unanswered Testing box is, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. A bullet the pass answered is not owed, since the answer is discharged in the same comment that carries it. Say so on the summary line as `plus N reviewer request(s)` whenever the block is non-empty.
+An unanswered bullet is owed the same way an unanswered Testing box is, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. A bullet the pass answered is not owed, since the answer is discharged in the same comment that carries it. A pass still posting a numeric summary line, because a finding, a Testing question, or an unanswered bullet already forces one, says so there as `plus N reviewer request(s)`. The all-answered close-out below carries the block in place of that line and needs no addition to it.
 
 ```markdown
 **For the reviewer**
