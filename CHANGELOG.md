@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.13.0](https://github.com/erclx/aitk/compare/v3.12.1...v3.13.0) (2026-08-26)
+
+
+### Features
+
+* **gov:** lift three sibling rules into base, react, and astro ([#1133](https://github.com/erclx/aitk/issues/1133)) ([e1f34bb](https://github.com/erclx/aitk/commit/e1f34bbc395fcdaa68b4733c3f86730c835bb023))
+
 ## [3.12.1](https://github.com/erclx/aitk/compare/v3.12.0...v3.12.1) (2026-08-26)
 
 
