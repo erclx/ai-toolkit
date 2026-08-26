@@ -308,16 +308,21 @@ function reachCounts(record: unknown): Record<string, number> | undefined {
 }
 
 /**
- * Reads the routing measure's miss count alone, leaving `rank1` and `top3`
- * out. Both move in lockstep with `misses` over a fixed-size corpus, so
- * carrying them would report one movement three times, the same reasoning
- * `restatedCounts` already takes over its own pair of derived totals.
+ * Reads the routing measure's miss and unmeasurable counts, leaving `rank1`
+ * and `top3` out. Both move in lockstep with `misses` over a fixed-size
+ * corpus, so carrying them would report one movement three times, the same
+ * reasoning `restatedCounts` already takes over its own pair of derived
+ * totals. `unmeasurable` is retained separately, since it counts a defect in
+ * the instrument rather than a collision the catalog itself carries.
  */
 function rankCounts(record: unknown): Record<string, number> | undefined {
   const root = asObject(record)
   if (root === undefined) return undefined
 
-  return allOf({ misses: lengthOf(root.misses) })
+  return allOf({
+    misses: lengthOf(root.misses),
+    unmeasurable: lengthOf(root.unmeasurable),
+  })
 }
 
 function boardCounts(record: unknown): Record<string, number> | undefined {

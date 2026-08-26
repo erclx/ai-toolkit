@@ -911,6 +911,7 @@ function runSkillsRank(
         rank1: report.rank1,
         top3: report.top3,
         misses: report.misses,
+        unmeasurable: report.unmeasurable,
       })}\n`,
     )
   }
@@ -934,8 +935,17 @@ function reportRank(report: Extract<RankReport, { kind: 'measured' }>): void {
     `rank one: ${report.rank1}/${report.cases}, top three: ${report.top3}/${report.cases}`,
   )
 
+  if (report.unmeasurable.length > 0) {
+    logWarn(plural(report.unmeasurable.length, 'unmeasurable case'))
+    pipeOutput(
+      report.unmeasurable
+        .map((skillCase) => `${skillCase.expect}  ${skillCase.prompt}`)
+        .join('\n'),
+    )
+  }
+
   if (report.misses.length === 0) {
-    logInfo('Every case ranked its expected skill first.')
+    logInfo('Every measurable case ranked its expected skill first.')
     return
   }
 

@@ -54,6 +54,8 @@ export type RankReport =
       readonly rank1: number
       readonly top3: number
       readonly misses: readonly Miss[]
+      /** Cases whose prompt carried no vocabulary to score. */
+      readonly unmeasurable: readonly SkillCase[]
     }
   | { readonly kind: 'refused'; readonly reason: RankRefusal }
 
@@ -147,6 +149,13 @@ export function buildModel(catalog: readonly RankedSkill[]): RankModel {
   return {
     rank: (prompt: string): readonly RankedResult[] => {
       const promptVector = tfIdfVector(termCounts(tokenize(prompt)), idf)
+      // A prompt built entirely from stopwords and short words tokenizes to
+      // nothing, so every skill would score 0 and the sort would fall through
+      // to `localeCompare`, handing the alphabetically first skill a win no
+      // description earned. Reporting no ranking at all is what keeps that
+      // tie-break from reading as a measurement.
+      if (promptVector.size === 0) return []
+
       return [...vectors]
         .map(([name, vector]) => ({
           name,
@@ -172,14 +181,21 @@ export function measureCases(
   readonly rank1: number
   readonly top3: number
   readonly misses: readonly Miss[]
+  readonly unmeasurable: readonly SkillCase[]
 } {
   const model = buildModel(catalog)
   let rank1 = 0
   let top3 = 0
   const misses: Miss[] = []
+  const unmeasurable: SkillCase[] = []
 
   for (const skillCase of cases) {
     const ranked = model.rank(skillCase.prompt)
+    if (ranked.length === 0) {
+      unmeasurable.push(skillCase)
+      continue
+    }
+
     const at = ranked.findIndex((entry) => entry.name === skillCase.expect) + 1
 
     if (at === 1) rank1 += 1
@@ -194,7 +210,7 @@ export function measureCases(
     }
   }
 
-  return { rank1, top3, misses }
+  return { rank1, top3, misses, unmeasurable }
 }
 
 /**
@@ -210,7 +226,7 @@ export function scanRank(
   if (!existsSync(skillsRoot)) return { kind: 'refused', reason: 'no-skills' }
 
   const catalog = loadCatalog(root)
-  const { rank1, top3, misses } = measureCases(catalog, cases)
+  const { rank1, top3, misses, unmeasurable } = measureCases(catalog, cases)
 
   return {
     kind: 'measured',
@@ -219,5 +235,6 @@ export function scanRank(
     rank1,
     top3,
     misses,
+    unmeasurable,
   }
 }

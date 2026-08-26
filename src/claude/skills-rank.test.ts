@@ -95,6 +95,13 @@ describe('buildModel', () => {
 
     expect(ranked.map((entry) => entry.name)).toEqual(['alpha', 'zeta'])
   })
+
+  it('should return no ranking for a prompt that tokenizes to nothing', () => {
+    const model = buildModel(FIXTURE)
+
+    expect(model.rank('is it so')).toEqual([])
+    expect(model.rank('why is it')).toEqual([])
+  })
 })
 
 describe('measureCases', () => {
@@ -147,6 +154,16 @@ describe('measureCases', () => {
         rank: 0,
       },
     ])
+  })
+
+  it('should mark a case unmeasurable rather than crediting it a false rank one', () => {
+    const skillCase = { prompt: 'is it so', expect: 'bash-script' }
+    const result = measureCases(FIXTURE, [skillCase])
+
+    expect(result.rank1).toBe(0)
+    expect(result.top3).toBe(0)
+    expect(result.misses).toEqual([])
+    expect(result.unmeasurable).toEqual([skillCase])
   })
 })
 
