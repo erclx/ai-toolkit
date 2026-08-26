@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.16.0](https://github.com/erclx/aitk/compare/v3.15.0...v3.16.0) (2026-08-26)
+
+
+### Features
+
+* **records:** add a migrate verb for recoverable frontmatter findings ([#1142](https://github.com/erclx/aitk/issues/1142)) ([d85f3b7](https://github.com/erclx/aitk/commit/d85f3b7e60d95c6c7f412be4393af2866892fb05))
+
 ## [3.15.0](https://github.com/erclx/aitk/compare/v3.14.2...v3.15.0) (2026-08-26)
 
 
