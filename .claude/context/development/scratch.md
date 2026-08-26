@@ -17,6 +17,8 @@ The verification reads the heredoc body as well as the command around it. A revi
 
 A third trigger reads the command string itself, so a token sitting inside a path can be taken for the shell construct it spells. Listing the harness folder under `scripts/` whose name is also a shell builtin was refused as running a string through that builtin, and a plain read of a file under the matching context subfolder was refused the same way, both entirely inside the worktree and neither writing anywhere. A shell loop reading several files went the same way under the complexity reason, which puts a read-only command inside the rule the paragraph above states for writes. Reach for a form that avoids the token, such as a `find` with a path pattern, rather than rewording the path. Measured 2026-08-21.
 
+A `cat <<'EOF' > file` heredoc was refused twice more against a main-root path, once carrying a multi-paragraph body and once carrying one line of plain prose with no shell syntax at all, so the shape rather than the length or the content was what fired. A single-line `printf '%s\n' "line one" "line two" ... > file` carrying the same content wrote without complaint, which is a third route beside the two the section below names, usable wherever the file is short enough to spell as `printf` arguments. Measured 2026-08-26.
+
 ### The two write routes
 
 Two write kinds therefore take two routes. Creating a whole file is a heredoc through `Bash`, which is why a plan, a review report, and a memory entry need no code behind them. A body the verification above refuses falls back to `Write` into the worktree followed by a two-argument `cp` out to the main root, which carries no syntax to inspect and needs no verb. Changing a line inside a file that already exists has no shell route, because the stream editors that would do it are banned for rewriting the line they anchored to and for exiting zero on a non-match, so it runs through an `aitk` verb resolving the main root in-process.
@@ -67,7 +69,7 @@ The exile rule keeps the half of its reason that holds. Mode detection lists `.c
 
 Intake needs no equivalent, and the reason is structural rather than an oversight. `claude-intake` routes any finding needing an experiment away to a track, so an intake pass never runs a spike and never produces an artifact to place. Its own gap is separate and smaller: `standards/intake.md` enumerates items and an index and says nothing about a subfolder, while one live folder already carries two, both holding markdown. That is recorded here rather than fixed, since it is a different question from where evidence lives.
 
-Two tracks were patched by hand on 2026-08-19, `demo-recorder` and `diagrams`, and both chose `evidence/` before any rule named it. They are left alone. Conforming them would be a no-op, and the agreement is what settles the folder name, since a repair made without the rule and a rule written after it landed on the same shape.
+Two tracks were patched by hand on 2026-08-19, `38-demo-recorder` and `15-diagrams`, and both chose `evidence/` before any rule named it. They are left alone. Conforming them would be a no-op, and the agreement is what settles the folder name, since a repair made without the rule and a rule written after it landed on the same shape.
 
 ### Backing the eight off the disk
 
