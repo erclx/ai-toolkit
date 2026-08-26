@@ -43,7 +43,7 @@ Does not govern:
 - `## Testing` (optional): specify exact commands or test cases run
 - Omit Testing for docs, config, or trivial sync changes
 - Use checkboxes, never prose. See Testing discipline for which box gets ticked.
-- `## For the reviewer` (optional): what the reviewer should confirm, one bullet per request
+- `## For the reviewer` (optional): what the reviewing session should confirm, one bullet per request
 - Visuals: include only when they clarify architecture, UI, or complex logic flows
 
 ## Testing discipline
@@ -88,7 +88,7 @@ Does not govern:
 
 ## For the reviewer
 
-- <What the reviewer should confirm>
+- <What the reviewing session should confirm>
 ```
 
 ### Correct
@@ -134,5 +134,5 @@ This PR updates the authentication system to be more robust. # "This PR" opener 
 
 - Tested manually # no specific command or case
 - [ ] `npm run test:auth` # unchecked box for a check the agent can run
-- [ ] Reviewer confirms the error split reads correctly # a reviewer request, belongs under `## For the reviewer`
+- [ ] The reviewing session confirms the error split reads correctly # a reviewer request, belongs under `## For the reviewer`
 ```

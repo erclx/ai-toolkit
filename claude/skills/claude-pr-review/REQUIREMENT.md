@@ -11,6 +11,8 @@ Without this skill, a pull request is reviewed only by the session that wrote it
 
 A finding also stops being true by argument rather than by a fix. A worker naming the plan question that already declined it, or a constraint the pass could not see, settles it in the exchange that carried the answer, and the pass that accepts the argument drops the finding from its next body. A reader then sees a finding raised once and never mentioned again, which is indistinguishable from one everyone forgot.
 
+A request written under `## For the reviewer` also reached no reader. The authoring standard names it as what the reviewing session should confirm, and nothing on this side read the section by that name, so a branch author's question sat in the body until this skill answered it.
+
 ## Must
 
 - Post until the review closes. A first pass opens against the whole change, and each later pass checks whether the prior findings landed.
@@ -22,6 +24,7 @@ A finding also stops being true by argument rather than by a fix. A worker namin
 - State a withdrawal or a regrade on the thread with the fact that settled it, since a finding dropped in silence reads the same as one nobody answered
 - Key the body file on the pull request number and the head commit, and on the response it answers once the head repeats, so no two passes overwrite each other
 - Scan the comment for banned characters and internal phase labels before posting, since a finding phrased against a phase label reaches a reader with no task board
+- Answer a `## For the reviewer` bullet in the body, bounded to the section itself rather than the Summary or the Technical Context around it, so the independent vantage stays clear of the author's framing
 
 ## Must not
 

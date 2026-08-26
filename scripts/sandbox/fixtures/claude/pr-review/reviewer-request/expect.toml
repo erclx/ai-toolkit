@@ -1,0 +1,54 @@
+# What a correct `/aitk:claude-pr-review` run leaves behind on the
+# reviewer-request arm. Read by `aitk sandbox check`. Patterns use TOML
+# literal strings so a regex needs no backslash escaping.
+#
+# The diff is clean (the handler already validates the title), so the only
+# thing this pass owes is the `## For the reviewer` bullet, and answering it
+# from the diff owes nothing further. The heading this proves is the fix
+# `59fd6f1` made: an answered bullet takes `## Review closed` with the block
+# standing in for the canned line, rather than forcing the review open.
+
+# Same absence the `review` arm asserts, for the same reason: no target here
+# installed the corpus, so `${CLAUDE_SKILL_DIR}/../../standards/pr.md` is the
+# only route left, and a local copy would silently swap the standard the pass
+# read the Testing discipline from.
+absent = [".claude/standards/pr.md", "standards/pr.md"]
+
+# The short-sha segment is derived from the PR's head commit, so only the
+# prefix is fixed.
+paths = [".claude/.tmp/pr-review/body-*.md"]
+
+# The only file this arm's diff has any business touching.
+write_scope = [".claude/.tmp/pr-review/**"]
+
+# Fixed by Step 5's own output template, not chosen by the run, the same test
+# `claude:restate`'s `Cut:` pin already applies.
+reply = ["reviewer request"]
+
+# No max_turns yet. A clean pass on 2026-08-26 came in at 25 against the
+# default cap of 30, one run short of the several the standard wants before
+# a ceiling is set from a cost that holds rather than from one sample.
+
+manual = [
+  "The block's answer correctly reports that `handleCreate` validates the title before calling `createTask`. Semantic: whether the stated answer is correct is a judgment no substring can carry, though its presence is asserted below",
+]
+
+# Every key above this line is top level. A bare key written below a
+# `[[content]]` header belongs to that table in TOML, so anything moved down
+# here would parse clean and assert nothing.
+
+# The heading this arm exists to prove: an all-answered `## For the reviewer`
+# block takes the closed heading rather than forcing the review open.
+[[content]]
+path = ".claude/.tmp/pr-review/body-*.md"
+pattern = '^## Review closed'
+
+[[content]]
+path = ".claude/.tmp/pr-review/body-*.md"
+pattern = '\*\*For the reviewer\*\*'
+
+# The bullet as the author wrote it, proving the pass read the section itself
+# rather than paraphrasing it into a new question.
+[[content]]
+path = ".claude/.tmp/pr-review/body-*.md"
+pattern = 'Confirm handleCreate rejects a missing or empty title'

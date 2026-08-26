@@ -85,8 +85,89 @@ EOF
     gh pr view feat/create-endpoint --json url -q .url 2>/dev/null)
 }
 
+# Seeds a clean diff (the handler validates the title) so the only thing this
+# pass has to report is the ## For the reviewer bullet, answered from the diff.
+seed_reviewer_request_pr() {
+  configure_sandbox_anchor_remote
+
+  find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+
+  printf 'node_modules\n.claude/plans/\n.claude/review/\n.claude/memory/\n.claude/.tmp/\n' >.gitignore
+
+  cat <<'EOF' >package.json
+{
+  "name": "sandbox-pr-review",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "echo 'lint ok' && echo 'typecheck ok'"
+  }
+}
+EOF
+
+  cat <<'EOF' >CLAUDE.md
+# My App
+
+Task API. Route handlers live in `src/`.
+
+## Commands
+
+- `bun run check`: lint and typecheck
+EOF
+
+  mkdir -p .claude
+  cat <<'EOF' >.claude/REQUIREMENTS.md
+# Requirements
+
+## MVP features
+
+1. List tasks: GET /tasks returns all tasks
+2. Create task: POST /tasks adds a task
+EOF
+
+  mkdir -p src
+  cat <<'EOF' >src/tasks.ts
+export function createTask(title: string) {
+  return { id: crypto.randomUUID(), title };
+}
+EOF
+
+  git add . && git commit --allow-empty -m "feat(api): task list endpoint" --no-verify -q
+  git push --force origin HEAD:main
+
+  git push origin --delete feat/reviewer-request -q 2>/dev/null || true
+  git checkout -b feat/reviewer-request -q
+
+  cat <<'EOF' >src/tasks.ts
+export function createTask(title: string) {
+  return { id: crypto.randomUUID(), title };
+}
+
+export function handleCreate(body: { title?: string } | undefined) {
+  const title = body?.title?.trim() ?? "";
+  if (!title) {
+    throw new Error("title is required");
+  }
+  return createTask(title);
+}
+EOF
+
+  git add . && git commit -m "feat(api): add create handler" --no-verify -q
+  git push --force origin HEAD -q
+
+  PR_URL=$(gh pr create --draft --title "feat(api): add create handler" \
+    --body "Adds the POST /tasks handler for v0.1.
+
+## For the reviewer
+
+- Confirm handleCreate rejects a missing or empty title before it reaches createTask." \
+    --head feat/reviewer-request --base main 2>/dev/null ||
+    gh pr view feat/reviewer-request --json url -q .url 2>/dev/null)
+}
+
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head"
+  select_or_route_scenario "Which scenario?" "first-pass" "close-out" "unchanged-head" "answered-head" "reviewer-request"
 
   case "$SELECTED_OPTION" in
   "first-pass")
@@ -221,6 +302,19 @@ Accepted as recorded. No status field is added, since nothing consumes one and t
     log_info "         derives nothing, since every response pre-dates the close-out"
     log_info "         stops with 'No response since the prior pass', posting no comment"
     log_info "         does NOT reuse the close-out body name or re-derive its comment id"
+    ;;
+
+  "reviewer-request")
+    log_step "Configuring pr-review reviewer-request environment ($ANCHOR_REPO)"
+    seed_reviewer_request_pr
+
+    log_step "Scenario ready: a body carrying ## For the reviewer, no other finding"
+    log_info "Context: open draft PR on feat/reviewer-request, one confirmable bullet, clean diff"
+    log_info "Action:  /claude-pr-review"
+    log_info "Expect:  reads ## For the reviewer bounded to its own bullets, answers it from the diff"
+    log_info "         posts a **For the reviewer** block carrying the answer"
+    log_info "         posts under ## Review closed, since the bullet is answered and nothing else is owed"
+    log_info "         writes the body to .claude/.tmp/pr-review/body-<number>-<short-sha>.md, does NOT merge"
     ;;
 
   *)
