@@ -9,7 +9,7 @@ description: Beats compiler and browser driver behind aitk demo, why the plan is
 
 `aitk demo` drives a project's running application and writes a recording and a still. The command surface, its flags, and its refusal reasons live in `docs/agents/demo.md`. This entry holds why it is shaped the way it is.
 
-The whole feature came out of `.claude/groundwork/demo-recorder/`, which measured three spikes on 2026-08-19 and settled that the browser engine already in this repository can produce a video from a driven page with no editor and no desktop recorder. Read `06-decision.md` there before changing anything structural.
+The whole feature came out of `.claude/groundwork/38-demo-recorder/`, which measured three spikes on 2026-08-19 and settled that the browser engine already in this repository can produce a video from a driven page with no editor and no desktop recorder. Read `06-decision.md` there before changing anything structural.
 
 ## Layout
 

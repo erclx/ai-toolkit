@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
-import { join, relative } from 'node:path'
+import { basename, join, relative } from 'node:path'
 import {
   INDEX_FILE,
   type IntakeItem,
@@ -13,6 +13,7 @@ import {
 export const INTAKE_REFUSALS = [
   'no-intake',
   'no-folder',
+  'ambiguous-slug',
   'no-cluster',
   'no-item',
   'answered',
@@ -110,6 +111,36 @@ async function listSlugs(dir: string): Promise<string[]> {
     .sort()
 }
 
+type SlugMatch =
+  | { readonly kind: 'matched'; readonly name: string }
+  | { readonly kind: 'ambiguous'; readonly names: readonly string[] }
+  | { readonly kind: 'none' }
+
+/**
+ * A folder carries a `<nn>-<slug>` name, but a caller names the topic alone.
+ * An exact match wins first, since it is what a name with no ordinal, or one
+ * already copied in full from a listing, resolves against. Otherwise the one
+ * entry whose name is an ordinal ahead of the given slug wins, which is what
+ * lets a topic keep working as its folder's identity gains a prefix. Two or
+ * more such entries is a collision the caller needs told apart from a typo,
+ * not a folder silently picked or silently missing.
+ */
+function matchSlug(names: readonly string[], slug: string): SlugMatch {
+  if (names.includes(slug)) return { kind: 'matched', name: slug }
+
+  const suffixed = names.filter(
+    (name) => name === `${extractOrdinal(name)}-${slug}`,
+  )
+
+  if (suffixed.length === 1) return { kind: 'matched', name: suffixed[0] }
+  if (suffixed.length > 1) return { kind: 'ambiguous', names: suffixed }
+  return { kind: 'none' }
+}
+
+function extractOrdinal(name: string): string {
+  return /^\d{2,}-/.exec(name)?.[0].slice(0, -1) ?? ''
+}
+
 async function openFolder(
   root: string,
   slug: string,
@@ -120,17 +151,22 @@ async function openFolder(
     return refuse('no-intake', `No intake at ${relative(root, dir)}.`)
   }
 
-  const folder = join(dir, slug)
+  const names = await listSlugs(dir)
+  const match = matchSlug(names, slug)
 
-  if (!existsSync(folder)) {
+  if (match.kind === 'none') {
+    return refuse('no-folder', `No intake folder named ${slug}.`, names)
+  }
+
+  if (match.kind === 'ambiguous') {
     return refuse(
-      'no-folder',
-      `No intake folder named ${slug}.`,
-      await listSlugs(dir),
+      'ambiguous-slug',
+      `More than one intake folder matches ${slug}.`,
+      match.names,
     )
   }
 
-  return folder
+  return join(dir, match.name)
 }
 
 /** Counts per folder, which is what a session picks a folder to work from. */
@@ -180,7 +216,11 @@ export async function readFolder(
   const opened = await openFolder(root, slug)
   if (typeof opened !== 'string') return opened
 
-  return { ok: true, slug, clusters: await readClusters(opened) }
+  return {
+    ok: true,
+    slug: basename(opened),
+    clusters: await readClusters(opened),
+  }
 }
 
 /**
@@ -272,7 +312,7 @@ export async function answerItems(
 
   return {
     ok: true,
-    slug,
+    slug: basename(opened),
     cluster: name,
     path,
     answered: selections,

@@ -9,6 +9,8 @@ description: Reading intake folder counts and items, the three read states an it
 
 `aitk intake list` reports the intake folders under `.claude/intake/`, or the items one folder holds. It reads and never writes, because an answer belongs to the operator and a verb that filled one would decide what the folder exists to ask.
 
+A folder carries a two-digit ordinal ahead of its slug, as in `21-toolkit-overview`, so a listing sorts by when each opened. A bare slug still resolves: passing `toolkit-overview` matches the one folder whose name is an ordinal ahead of it, and the folder's real name is what every command reports back.
+
 ```bash
 aitk intake list
 aitk intake list toolkit-overview --unread --json
@@ -58,7 +60,7 @@ One call writes one cluster. A call per selection is the alternative, and severa
 
 An item already carrying an answer refuses rather than being overwritten, and one filled item refuses the whole batch, so a partly applied write never lands. Drop the named item and send the rest.
 
-Exit codes: `0` every named item now carries its answer, `1` refused. The `reason` field carries `no-intake`, `no-folder`, `no-cluster`, `no-item`, `answered`, or `bad-input`.
+Exit codes: `0` every named item now carries its answer, `1` refused. The `reason` field carries `no-intake`, `no-folder`, `ambiguous-slug`, `no-cluster`, `no-item`, `answered`, or `bad-input`. A bare slug matching more than one ordinal-prefixed folder refuses as `ambiguous-slug` rather than `no-folder`, naming every match in `detail`.
 
 An exit code says nothing about a call made from a session, since a shell profile may wrap the binary in a function taking its status from a later command. Read the record's `reason` rather than the exit when a skill consumes this, which matters most here because the verb writes.
 

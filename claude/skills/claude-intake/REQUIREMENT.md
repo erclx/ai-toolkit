@@ -22,6 +22,7 @@ A session with no numbering convention re-decides the folder shape per dump, so 
 - Close every item with a verdict, and pair every open question with a suggested pick
 - Treat an empty operator slot as unread rather than as agreement
 - Reserve the index number and carry the domain in every other filename, leaving the rest of the numbering as read order
+- Name a newly opened folder with a two-digit ordinal ahead of the slug, taken from the highest one already present across intake and groundwork
 - Keep answers on items alone, with the index pointing at them
 - Name the heading and the act beside every path the pass wrote
 - Confine writes to the intake folder

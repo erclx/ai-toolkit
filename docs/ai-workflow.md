@@ -44,8 +44,8 @@ One session works for most features. Prefer splitting across two sessions only w
 
 Work in Claude Code directly. It reads `CLAUDE.md` automatically and has full file access, no pasting needed.
 
-- When the input is a pile of findings rather than one feature, invoke `aitk:claude-intake` first. It files the dump into `.claude/intake/<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled.
-- When the current state is unmeasured and more than one approach is live, invoke `aitk:claude-groundwork` first. It opens a track folder under `.claude/groundwork/<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
+- When the input is a pile of findings rather than one feature, invoke `aitk:claude-intake` first. It files the dump into `.claude/intake/<nn>-<slug>/`, one item per finding carrying a problem measured against the tree, a proposed fix, and a verdict, then names which items are plan-ready, which need measuring, and which are already settled.
+- When the current state is unmeasured and more than one approach is live, invoke `aitk:claude-groundwork` first. It opens a track folder under `.claude/groundwork/<nn>-<slug>/` and ends in a decision, which may be to do nothing. Skip it when the approach is already settled.
 - Invoke `aitk:claude-feature` to scan for code-level conflicts and ambiguities, confirm approach before proceeding
 - Implement the feature, then Claude Code runs the commands defined in `CLAUDE.md`, fixes failures, and iterates until all pass
 - For UI changes, invoke `aitk:claude-ui-test` to generate and run Playwright e2e tests
