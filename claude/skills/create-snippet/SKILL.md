@@ -1,6 +1,6 @@
 ---
 name: create-snippet
-description: Creates a new snippet file in `snippets/` or `.claude/snippets/`. Use when asked to create a snippet, add a snippet, write a reusable prompt, or make a new snippet. Do NOT use to edit an existing snippet.
+description: Creates a new snippet file in `snippets/` or `.claude/snippets/`. Use when asked to "create a snippet", add a snippet, write a reusable prompt, or make a new snippet. Do NOT use to edit an existing snippet.
 ---
 
 # Create snippet

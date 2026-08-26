@@ -1,6 +1,6 @@
 ---
 name: cli-script
-description: Generates non-interactive Bash scripts for automation, CI, and agent-run tasks. Lean functional style with structured logging, strict error handling, and a clean stdout, no interactive UI. Use when asked for an automation script, a CI or cron script, a pipeline helper, or a non-interactive shell script. Do NOT use for a human-facing interactive tool with prompts or a visual timeline UI, that is `bash-script`.
+description: Generates non-interactive Bash scripts for automation, CI, and agent-run tasks. Lean functional style with structured logging, strict error handling, and a clean stdout, no interactive UI. Use when asked for "a non-interactive shell script", an automation script, a CI or cron script, or a pipeline helper. Do NOT use for a human-facing interactive tool with prompts or a visual timeline UI, that is `bash-script`.
 ---
 
 # CLI script

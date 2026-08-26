@@ -1,6 +1,6 @@
 ---
 name: youtube-transcripts
-description: Fetches a YouTube video transcript with metadata frontmatter into the current repo via `aitk transcripts`. Use when the user pastes a YouTube URL and asks to grab the transcript, pull captions, or save a transcript for context. Do NOT use for downloading the video file, summarizing a transcript that already exists, or non-YouTube links.
+description: Fetches a YouTube video transcript with metadata frontmatter into the current repo via `aitk transcripts`. Use when the user pastes a YouTube URL and asks to "grab the transcript", pull captions, or save a transcript for context. Do NOT use for downloading the video file, summarizing a transcript that already exists, or non-YouTube links.
 ---
 
 # YouTube transcripts

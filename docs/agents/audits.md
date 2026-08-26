@@ -22,11 +22,11 @@ aitk audits list --json
 
 ## What it runs
 
-Eighteen verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
+Nineteen verbs, listed by `aitk audits list`. Each runs once in its fullest form, and the aggregate reads that verb's own record rather than imposing a shared envelope on it. Every one of those records already has consumers naming its keys, so a common shape would be a breaking change bought for tidiness.
 
 The verbs walk separate trees and share no state, so they run together. Measured on the authoring machine at twelve verbs, a run finished in 0.8 seconds of wall clock against 4.4 seconds of processor, which is under every other stage in `bun run check`. `aitk deps audit` is the one that changes that reading, since it reaches a network rather than a tree and its latency is the index's rather than this machine's.
 
-Fifteen of the eighteen read a tree on this disk, the one added by `restated.md` and the one added by `census.md` among them, since the first reads three such trees against each other and the second counts every file in one. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction, and the one added by `label-coverage.md` reads a branch range against a map the project declares.
+Sixteen of the nineteen read a tree on this disk, the one added by `restated.md` and the one added by `census.md` among them, since the first reads three such trees against each other and the second counts every file in one. The two added by `state-scoped-risk.md` read committed state rather than an arriving change, which is the gap every review surface here leaves by construction, and the one added by `label-coverage.md` reads a branch range against a map the project declares.
 
 Each is invoked as the CLI the caller is running rather than as a global `aitk`. A globally installed binary resolves to the main checkout no matter which worktree is executing, so the aggregate would measure a tree the branch never touched and report a pass over it.
 
@@ -57,7 +57,7 @@ The verdict is published as a field as well as an exit code. A reader branching 
 
 A per-machine folder that is not on this disk reports as `absent` and moves neither the verdict nor the exit code. Every one of those folders is gitignored, so a fresh clone and every CI run carry none of them, and counting six expected absences as failures pins the verdict at `incomplete` forever. A signal that never changes is one nobody reads after the second time they see it.
 
-Which refusals count as an absence is declared per audit rather than inferred from the corpus alone. A per-machine corpus counts a missing folder. An upstream corpus counts every reason the advisory verb publishes, since each of the three means there is nothing resolved to measure. Several tracked audits override that default too, wherever the corpus not being there is the ordinary state of a target rather than a broken checkout: the secret scan for a project that publishes nothing, the skill corpora and the citation reach check for a project holding no skills tree, and the context audit for a project that adopted none of the folders it measures.
+Which refusals count as an absence is declared per audit rather than inferred from the corpus alone. A per-machine corpus counts a missing folder. An upstream corpus counts every reason the advisory verb publishes, since each of the three means there is nothing resolved to measure. Several tracked audits override that default too, wherever the corpus not being there is the ordinary state of a target rather than a broken checkout: the secret scan for a project that publishes nothing, the skill corpora, the citation reach check, and the routing measure for a project holding no skills tree, and the context audit for a project that adopted none of the folders it measures.
 
 Everything else stays `unmeasured`. That covers a tree git cannot list, which is a broken checkout, and a package declaring no `files` field, where a publish would pack the whole tree and the scan read none of it. Both are a corpus that exists and went unread, so softening either would report a pass over a shipped tree nobody measured.
 

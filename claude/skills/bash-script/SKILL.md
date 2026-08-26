@@ -1,6 +1,6 @@
 ---
 name: bash-script
-description: Generates production Bash scripts with a visual timeline UI, state-based interactive prompts, and strict error handling. Use when asked to write an interactive or human-facing bash or shell script, or a DevOps tool with framed terminal output. Do NOT use for a non-interactive automation, CI, or pipeline script, that is `cli-script`.
+description: Generates production Bash scripts with a visual timeline UI, state-based interactive prompts, and strict error handling. Use when asked for "a human-facing shell tool", an interactive bash script, or a DevOps tool with framed terminal output. Do NOT use for a non-interactive automation, CI, or pipeline script, that is `cli-script`.
 ---
 
 # Bash script

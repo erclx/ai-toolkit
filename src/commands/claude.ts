@@ -34,6 +34,12 @@ import {
   type ReachReport,
   scanReach,
 } from '@/claude/skills-reach'
+import { SKILL_CASES } from '@/claude/cases/all'
+import {
+  type RankRefusal,
+  type RankReport,
+  scanRank,
+} from '@/claude/skills-rank'
 import {
   planSettings,
   readSettings,
@@ -82,6 +88,10 @@ interface SkillsDriftOptions {
 }
 
 interface SkillsReachOptions {
+  readonly json?: boolean
+}
+
+interface SkillsRankOptions {
   readonly json?: boolean
 }
 
@@ -215,15 +225,18 @@ export function register(program: Command): void {
 
   const skills = claude
     .command('skills')
-    .description('Plugin skill catalog (list, audit, drift, reach)')
-    .argument('[subcommand]', "One of 'list', 'audit', 'drift', or 'reach'")
+    .description('Plugin skill catalog (list, audit, drift, reach, rank)')
+    .argument(
+      '[subcommand]',
+      "One of 'list', 'audit', 'drift', 'reach', or 'rank'",
+    )
     .helpOption('-h, --help', 'Show this help message')
     .action((subcommand: string | undefined) => {
       intro('aitk claude')
       logError(
         subcommand === undefined
-          ? "Missing subcommand. Use 'list', 'audit', 'drift', or 'reach'."
-          : `Unknown subcommand: ${subcommand}. Use 'list', 'audit', 'drift', or 'reach'.`,
+          ? "Missing subcommand. Use 'list', 'audit', 'drift', 'reach', or 'rank'."
+          : `Unknown subcommand: ${subcommand}. Use 'list', 'audit', 'drift', 'reach', or 'rank'.`,
       )
       outro()
       process.exitCode = 1
@@ -350,6 +363,42 @@ export function register(program: Command): void {
     )
     .action((path: string | undefined, opts: SkillsReachOptions) => {
       process.exitCode = runSkillsReach(path, opts)
+    })
+
+  skills
+    .command('rank')
+    .description('Score the shipped catalog against the routing case corpus')
+    .argument('[path]', 'Repository root, defaulting to the current directory')
+    .helpOption('-h, --help', 'Show this help message')
+    .option('--json', 'Add a machine-readable record on stdout')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Scope:',
+        '  TF-IDF cosine similarity over every claude/skills/*/SKILL.md',
+        '  frontmatter description, scored against the hand-authored corpus',
+        '  at src/claude/cases/. A necessary condition rather than a report of',
+        '  real routing behavior: it asks whether the descriptions are',
+        '  separable by the words they use, and Claude Code does not route',
+        '  this way.',
+        '',
+        'Exit codes:',
+        '  0  the catalog was read, whether or not a case missed rank one',
+        '  1  refused, with the reason on stderr',
+        '',
+        'Reports rather than gates. The corpus is a first run with no',
+        'baseline to fail a push against, so `aitk audits run` registers',
+        'this with no gating exit and joins the ratchet instead.',
+        '',
+        'Examples:',
+        '  aitk claude skills rank',
+        '  aitk claude skills rank --json',
+        '',
+      ].join('\n'),
+    )
+    .action((path: string | undefined, opts: SkillsRankOptions) => {
+      process.exitCode = runSkillsRank(path, opts)
     })
 }
 
@@ -812,6 +861,101 @@ function reportReach(report: Extract<ReachReport, { kind: 'measured' }>): void {
   pipeOutput(
     report.unqualified
       .map((citation) => `${citation.file}:${citation.line}  ${citation.path}`)
+      .join('\n'),
+  )
+}
+
+/** What a reader does about the one way the measure fails to build. */
+const RANK_REFUSALS: Record<RankRefusal, string> = {
+  'no-skills':
+    'No claude/skills/ here, so this tree ships no plugin body to measure.',
+}
+
+/**
+ * Measures the cwd rather than the toolkit root, matching the reach and audit
+ * verbs, so a linked worktree reads its own branch instead of `main`. The
+ * case corpus is the toolkit's own, since a target project ships no cases of
+ * its own for a catalog it did not author.
+ */
+function runSkillsRank(
+  path: string | undefined,
+  opts: SkillsRankOptions,
+): number {
+  const root = resolve(path ?? process.cwd())
+  const report = scanRank(root, SKILL_CASES)
+
+  if (report.kind === 'refused') {
+    frameError(RANK_REFUSALS[report.reason])
+    if (opts.json) {
+      process.stdout.write(
+        `${JSON.stringify({
+          root,
+          reason: report.reason,
+          message: RANK_REFUSALS[report.reason],
+        })}\n`,
+      )
+    }
+    return 1
+  }
+
+  intro('aitk claude skills rank')
+  reportRank(report)
+  outro()
+
+  if (opts.json) {
+    process.stdout.write(
+      `${JSON.stringify({
+        root,
+        skills: report.skills,
+        cases: report.cases,
+        rank1: report.rank1,
+        top3: report.top3,
+        misses: report.misses,
+        unmeasurable: report.unmeasurable,
+      })}\n`,
+    )
+  }
+
+  return 0
+}
+
+/**
+ * States the corpus and both counts on every run, including a clean one. A
+ * miss list alone reads as a verdict on the catalog unless the run also says
+ * how many skills and cases it measured against.
+ */
+function reportRank(report: Extract<RankReport, { kind: 'measured' }>): void {
+  logStep('Corpus')
+  logInfo(
+    `${plural(report.skills, 'skill')} scored against ${plural(report.cases, 'case')}`,
+  )
+
+  logStep('Score')
+  logInfo(
+    `rank one: ${report.rank1}/${report.cases}, top three: ${report.top3}/${report.cases}`,
+  )
+
+  if (report.unmeasurable.length > 0) {
+    logWarn(plural(report.unmeasurable.length, 'unmeasurable case'))
+    pipeOutput(
+      report.unmeasurable
+        .map((skillCase) => `${skillCase.expect}  ${skillCase.prompt}`)
+        .join('\n'),
+    )
+  }
+
+  if (report.misses.length === 0) {
+    logInfo('Every measurable case ranked its expected skill first.')
+    return
+  }
+
+  logWarn(plural(report.misses.length, 'collision'))
+  pipeOutput(
+    report.misses
+      .map(
+        (miss) =>
+          `${miss.expect} lost to ${miss.won} (rank ${miss.rank})  ${miss.prompt}`,
+      )
       .join('\n'),
   )
 }
