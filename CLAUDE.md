@@ -69,8 +69,7 @@ Worldview and goals live in `.claude/REQUIREMENTS.md`. The rules below derive fr
 
 - Before searching source in a domain, consult `.claude/context/index.md` and read the matching entry first. It orients faster than a blind grep.
 - When a folder has an `index.md`, check it before reading individual files in that folder.
-- For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
-- Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
+- Editing an `index.md` loads `.claude/rules/claude/511-indexes.md`, which owns the regeneration verb, the frontmatter contract, and the hand-edit opt-out.
 
 ## Content ownership
 
@@ -127,8 +126,7 @@ The per-domain context catalog is always loaded so the entries are discoverable 
 
 ## Spelling
 
-- When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
-- Keep dictionary files sorted alphabetically.
+- Adding a word to a dictionary loads `.claude/rules/core/065-spelling.md`, which owns which file it belongs in and the sort order.
 
 ## Tasks
 

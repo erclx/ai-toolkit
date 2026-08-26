@@ -62,6 +62,8 @@ A rule that publishes a heading some command parses is program input, so adding 
 
 A `description` carrying a bare word, a colon, and a space breaks `Bun.YAML.parse` in `parseFrontmatter`, since YAML reads that shape as a nested mapping key rather than plain scalar text. The failure surfaces far from the cause: `aitk gov list --json` throws a stack trace pointing at `src/indexes/frontmatter.ts` rather than naming the rule file, and the Hero stage that depends on that catalog fails in turn with no mention of a colon. Rephrase the description to avoid the pattern rather than quoting it, since the frontmatter examples elsewhere in this repository are unquoted.
 
+`claude/511-indexes.md` globs `**/index.md`, the first rule reaching every folder in the tree rather than one named folder's contents. `core/065-spelling.md` globs `.cspell/**`, the first rule reaching a folder outside `.claude/` or a project's own source, since the dictionaries four stacks seed there had been governed by prose in the always-loaded file rather than by any rule.
+
 ## Adding a rule
 
 Create a `.md` file anywhere under `governance/rules/` using the numbering convention above. It is auto-discovered with no other changes needed.

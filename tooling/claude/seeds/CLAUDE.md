@@ -31,8 +31,7 @@
 ## Indexes
 
 - Check a folder's `index.md` before grepping its source or reading its files, starting with `.claude/context/` for a domain and `.claude/wireframes/` for a UI surface. It orients faster than a blind search.
-- For folders where an agent browses to pick a document, `index.md` is regenerated from each file's frontmatter. Do not hand-edit `index.md`. Code folders and scratch folders do not need one.
-- Every `index.md` carries its own frontmatter (`title`, `subtitle`) that the walker preserves. To keep a folder's `index.md` hand-edited, add `auto: false` to its frontmatter.
+- Editing an `index.md` loads `.claude/rules/claude/511-indexes.md`, which owns the regeneration verb, the frontmatter contract, and the hand-edit opt-out.
 
 ## Commands
 
@@ -62,8 +61,7 @@
 
 ## Spelling
 
-- When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
-- Keep dictionary files sorted alphabetically
+- Adding a word to a dictionary loads `.claude/rules/core/065-spelling.md`, which owns which file it belongs in and the sort order.
 
 ## Tasks
 
