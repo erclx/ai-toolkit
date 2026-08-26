@@ -15,7 +15,7 @@ review against the whole change, and every later pass reads only the commits
 added since. The heading reports state rather than pass number: a pass carrying
 anything owed takes `## Review`, and `## Review closed` covers a pass carrying
 none, so the most recent comment's heading reports whether any work is owed.
-Owed is a finding at any severity, a Testing question, or a reviewer request, defined once at Step 4. Every pass is this skill, and which one it is gets detected from
+Owed is a finding at any severity, a Testing question, or a reviewer request nobody has answered, defined once at Step 4. Every pass is this skill, and which one it is gets detected from
 the thread rather than named by the caller.
 
 ## Guards
@@ -91,7 +91,7 @@ Ask rather than grade. Whether a human is genuinely required is a reading the br
 
 Read `## For the reviewer` the same way, bounded to the bullets under that heading rather than the Summary or the Technical Context around it. Those two carry the author's argument for the change, and reading them while judging it is most of what an independent pass exists to avoid, so the read stops at the section itself.
 
-Answer each bullet in the body, on the same terms as a Testing question: no severity, no count, and owed under the heading and dispatch Step 4 states. A request nobody answers keeps the thread open exactly as an unanswered Testing box does.
+Answer each bullet in the body, on the same terms as a Testing question: no severity, no count. A request nobody can answer stays owed under the heading and dispatch Step 4 states, keeping the thread open exactly as an unanswered Testing box does. One the pass does answer carries no further weight, since the answer is discharged in the same comment that carries it.
 
 Apply the high-signal filter: flag only what will cause incorrect behavior, break a documented rule, or mislead a downstream feature. If uncertain, do not flag.
 
@@ -164,7 +164,9 @@ A Testing box the Step 3 check raised goes in a `**Testing**` block placed after
 
 Keep it to the boxes the check raised. Restating a box whose stated requirement holds teaches the branch author to skip the block.
 
-A `## For the reviewer` bullet Step 3 read goes in a `**For the reviewer**` block placed after the Testing block, one bullet per request, each followed by the answer. It carries no severity and enters no count, and it is still something owed, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. Say so on the summary line as `plus N reviewer request(s)`.
+Every `## For the reviewer` bullet Step 3 read goes in a `**For the reviewer**` block placed after the Testing block, one bullet per request, each followed by its answer or, where the pass could not answer it, by what would settle it. It carries no severity and enters no count.
+
+An unanswered bullet is owed the same way an unanswered Testing box is, so a pass carrying one takes `## Review` and the full body rather than either ✅ line. A bullet the pass answered is not owed, since the answer is discharged in the same comment that carries it. Say so on the summary line as `plus N reviewer request(s)` whenever the block is non-empty.
 
 ```markdown
 **For the reviewer**
@@ -172,7 +174,7 @@ A `## For the reviewer` bullet Step 3 read goes in a `**For the reviewer**` bloc
 - Confirm the 401 and 403 split reads correctly for the public API. Confirmed — `AuthService.authenticate()` returns 401 for an expired token and 403 for a missing scope, and both paths are covered under `## Testing`.
 ```
 
-The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying anything owed takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Owed covers a finding at any severity, a Testing question, and a reviewer request alike, which is what keeps the two halves from separating. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while anything stays open, and `## Review closed` when nothing does.
+The threshold is stated here and nowhere else, and every other surface acting on it cites this skill rather than restating the grades. One rule governs both the heading and the dispatch: a pass carrying anything owed takes `## Review` and owes a dispatch to the session holding the branch, and a pass carrying nothing at all takes `## Review closed` and owes none. Owed covers a finding at any severity, a Testing question, and a reviewer request nobody has answered alike, which is what keeps the two halves from separating. Sending that dispatch is `claude-orchestrate`'s step rather than this one, which posts and stops. Post the open heading whether it is the first pass or the fourth. A pull request thread then reads as `## Review`, the worker's answer under `## Review response` from `claude-address-review`, another `## Review` while anything stays open, and `## Review closed` when nothing does.
 
 Keying either half on the grade was measured wrong: across 8 findings on one archived pass, 3 were posted as minor and 2 of those were defects a worker fixed rather than recorded, so a floor at should-fix loses real fixes to a grade that runs low. Splitting the two halves so the dispatch fired lower than the heading was the other candidate, and it left a thread reading closed while work was owed on it. The Testing question was first written to sit outside both, which is that same split reached from the other side, and it left the one party who could answer the question with no route to it.
 
@@ -204,7 +206,7 @@ gh pr review <number> --comment --body-file .claude/.tmp/pr-review/body-<number>
 
 A pass carrying nothing at all takes `## Review closed` and a short body, with the footer line included either way. On a first pass, post `✅ No findings. Reviewed against project docs and the board.` On a later pass, post `✅ Prior findings addressed. Re-reviewed <short-sha>, N commits since the prior pass.`
 
-A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. A pass carrying only Testing questions or reviewer requests takes the same route for the same reason. Keep whichever scope sentence the pass owes on the summary line:
+A pass carrying only minors is an ordinary finding-carrying pass, so it takes the open heading and the full shape rather than either short line, since the minors have to be readable and neither line reports them. A pass carrying only Testing questions, or only an unanswered reviewer request, takes the same route for the same reason. Keep whichever scope sentence the pass owes on the summary line:
 
 ```markdown
 ## Review
@@ -219,6 +221,8 @@ A pass carrying only minors is an ordinary finding-carrying pass, so it takes th
 ```
 
 A pass that closed by withdrawing a finding rather than by reading its fix takes neither ✅ line, per the withdrawal rule in Step 3. Both claim a fix landed, and the second names it, so posting either over a withdrawal credits work nobody did on the one comment a reader treats as the verdict. Write the withdrawal and the fact that settled it in place of the canned line, keeping the heading and the footer.
+
+A pass whose only content is a `## For the reviewer` block with every bullet answered, and that owes nothing else, takes the same shape: `## Review closed`, the block in place of the canned line, and the footer. The heading reports what the branch author still owes rather than what the pass did, and an answer discharged in the same comment owes nothing back.
 
 Post a close-out even when there is nothing to report. A review left with no closing comment reads as one nobody answered.
 
