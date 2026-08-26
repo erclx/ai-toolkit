@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.12.0](https://github.com/erclx/aitk/compare/v3.11.2...v3.12.0) (2026-08-26)
+
+
+### Features
+
+* **demo:** derive pointer travel, render captions, and convert to mp4 ([#1126](https://github.com/erclx/aitk/issues/1126)) ([8ab5d6e](https://github.com/erclx/aitk/commit/8ab5d6eacefcb43799de319aeebb0bfd1ad0d58e))
+
 ## [3.11.2](https://github.com/erclx/aitk/compare/v3.11.1...v3.11.2) (2026-08-26)
 
 
