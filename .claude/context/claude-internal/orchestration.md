@@ -106,7 +106,7 @@ The runbook carries the two ways a re-test returns a confident wrong answer rath
 
 ## The review trigger
 
-`claude-orchestrate/scripts/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand, and the runbook's routing block decides what each report earns. A first pass, a re-review, and the handback dispatch all run from that block, so the operator triggers none of them. What stays fixed is where the pass runs rather than who starts it: `.claude/groundwork/review-automation/06-decision.md` records that it belongs in this warm session, since a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
+`claude-orchestrate/scripts/poll.sh` reports pull request movement so the orchestrator learns a branch moved without checking by hand, and the runbook's routing block decides what each report earns. A first pass, a re-review, and the handback dispatch all run from that block, so the operator triggers none of them. What stays fixed is where the pass runs rather than who starts it: `.claude/groundwork/23-review-automation/06-decision.md` records that it belongs in this warm session, since a reviewer holding one diff produces neither of the two cross-pull-request findings that justified a reviewer at all.
 
 `orchestrator-poll.md` is a runbook of the kind above and sits with the others, while the script it invokes takes `scripts/` per `.claude/standards/skill.md`, which splits detail from deterministic operations. Placing both on an internal surface was tried first and it strands a target, which installs an orchestrator carrying four runbooks and no review trigger while the skill body names neither the poll nor the script.
 
