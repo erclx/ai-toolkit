@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.15.0](https://github.com/erclx/aitk/compare/v3.14.2...v3.15.0) (2026-08-26)
+
+
+### Features
+
+* **governance:** add index and dictionary path-scoped rules ([#1141](https://github.com/erclx/aitk/issues/1141)) ([aca0c9b](https://github.com/erclx/aitk/commit/aca0c9b8b74fc5060c377788cf8f1d60439c8049))
+
 ## [3.14.2](https://github.com/erclx/aitk/compare/v3.14.1...v3.14.2) (2026-08-26)
 
 
