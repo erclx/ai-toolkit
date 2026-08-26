@@ -10,6 +10,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  installedRuleNames,
   installRules,
   lookupRules,
   ruleSubdir,
@@ -126,5 +127,20 @@ describe('installRules', () => {
     await installRules(found, target)
 
     expect((await stat(dest)).mode & 0o777).toBe(0o600)
+  })
+})
+
+describe('installedRuleNames', () => {
+  it('should name every installed rule by its basename', async () => {
+    seedRule(join('core', '000-a.md'), 'A')
+    seedRule(join('lang', '100-b.md'), 'B')
+    const { found } = lookupRules(root, ['000-a', '100-b'])
+    await installRules(found, target)
+
+    expect([...installedRuleNames(target)].sort()).toEqual(['000-a', '100-b'])
+  })
+
+  it('should return an empty set when nothing is installed', () => {
+    expect(installedRuleNames(target)).toEqual(new Set())
   })
 })

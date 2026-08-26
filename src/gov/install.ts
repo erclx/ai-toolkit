@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { basename, dirname, join, relative } from 'node:path'
 import { copyPreservingMode } from '@/copy'
 
 export interface RuleSource {
@@ -19,6 +19,27 @@ export function rulesSourceDir(root: string): string {
 
 export function installedRulesDir(target: string): string {
   return join(target, '.claude', 'rules')
+}
+
+/**
+ * Rule names a target already holds, read off the installed tree by basename
+ * rather than off a recorded stack, since a target may hold rules `--add`
+ * layered on that no stack lists.
+ */
+export function installedRuleNames(target: string): Set<string> {
+  const dir = installedRulesDir(target)
+  const names = new Set<string>()
+  if (!existsSync(dir)) return names
+
+  for (const rel of new Bun.Glob('**/*.md').scanSync({
+    cwd: dir,
+    onlyFiles: true,
+    dot: true,
+  })) {
+    names.add(basename(rel, '.md'))
+  }
+
+  return names
 }
 
 /**

@@ -1,6 +1,12 @@
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { listRuleSourcePaths, rulesSourceDir } from '@/gov/install'
+import {
+  installedRuleNames,
+  listRuleSourcePaths,
+  lookupRules,
+  type RuleSource,
+  rulesSourceDir,
+} from '@/gov/install'
 
 export interface GovStack {
   readonly name: string
@@ -149,6 +155,32 @@ export function unreferencedRules(root: string): string[] {
     .map((rel) => basename(rel, '.md'))
     .filter((rule) => !reached.has(rule))
     .sort()
+}
+
+/**
+ * Rules the target's recorded chain entitles it to that its installed tree
+ * does not hold. `resolveRules` already walks a stack's `extends` ancestors,
+ * so reading its leaf entry is enough; no second walk resolves the chain
+ * itself. A stack the toolkit no longer ships resolves to nothing rather than
+ * throwing, the same way `readNewRules`'s band fallback already treats it.
+ */
+export function resolveMissingRules(
+  root: string,
+  target: string,
+  chain: readonly string[],
+): readonly RuleSource[] {
+  const stack = chain[0]
+  if (stack === undefined) return []
+
+  const resolution = resolveRules(root, stack)
+  if (!resolution.ok) return []
+
+  const { found } = lookupRules(root, resolution.rules)
+  const held = installedRuleNames(target)
+
+  return found
+    .filter((source) => !held.has(source.rule))
+    .sort((left, right) => left.rule.localeCompare(right.rule))
 }
 
 /**
