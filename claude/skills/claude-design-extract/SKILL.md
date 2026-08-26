@@ -30,7 +30,7 @@ The greenfield path needs a personality paragraph to propose against, and stops 
 
 Read these on both paths, skipping any that do not exist:
 
-- `CLAUDE.md`: voice, personality, spelling rules
+- `CLAUDE.md`: voice and personality
 - `.claude/REQUIREMENTS.md`: the `## Personality` paragraph, worldview, non-goals
 - `${CLAUDE_SKILL_DIR}/../../standards/markdown.md`: word, punctuation, and formatting constraints
 - The `write-human` skill: tone and sentence construction constraints
