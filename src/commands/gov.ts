@@ -35,6 +35,7 @@ import {
   type TestOrderReport,
 } from '@/gov/test-order'
 import { recordStamp, runDomainSync } from '@/sync/engine'
+import { writeChainStamp } from '@/sync/stamp'
 import { resolveTarget } from '@/target'
 import {
   intro,
@@ -757,7 +758,15 @@ async function runInstall(
 
   logStep('Installing rules')
   for (const rel of await installRules(found, resolved)) logAdd(rel)
-  await recordStamp(createGovAdapter(PROJECT_ROOT), resolved, new Date())
+
+  const now = new Date()
+  await recordStamp(createGovAdapter(PROJECT_ROOT), resolved, now)
+  await writeChainStamp(
+    resolved,
+    { domain: 'governance', toolkitRoot: PROJECT_ROOT },
+    [selected],
+    now,
+  )
 
   const { GREEN, NC } = palette(process.stderr)
   outro()

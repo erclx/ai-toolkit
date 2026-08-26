@@ -7,11 +7,13 @@ import {
   listGovStacks,
   loadGovStack,
   mergeExtraRules,
+  resolveMissingRules,
   resolveRules,
   unreferencedRules,
 } from '@/gov/stacks'
 
 let root: string
+let target: string
 
 function seedStack(name: string, body: string): void {
   const dir = join(root, 'governance', 'stacks')
@@ -25,12 +27,20 @@ function seedRule(folder: string, name: string): void {
   writeFileSync(join(dir, `${name}.md`), `# ${name}\n`)
 }
 
+function installRule(folder: string, name: string): void {
+  const dir = join(target, '.claude', 'rules', folder)
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(join(dir, `${name}.md`), `# ${name}\n`)
+}
+
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'aitk-gov-stacks-'))
+  target = mkdtempSync(join(tmpdir(), 'aitk-gov-stacks-target-'))
 })
 
 afterEach(() => {
   rmSync(root, { recursive: true, force: true })
+  rmSync(target, { recursive: true, force: true })
 })
 
 describe('loadGovStack', () => {
@@ -164,6 +174,56 @@ describe('resolveRules with folder entries', () => {
       ok: true,
       rules: ['000-a', '010-b'],
     })
+  })
+})
+
+describe('resolveMissingRules', () => {
+  it('should name a rule the leaf chain entry lists that the target lacks', () => {
+    seedRule('ui', '400-ui')
+    seedRule('ui', '440-capture')
+    seedStack('astro', 'extends = ""\nrules = ["400-ui", "440-capture"]\n')
+    installRule('ui', '400-ui')
+
+    const missing = resolveMissingRules(root, target, ['astro'])
+
+    expect(missing.map((source) => source.rule)).toEqual(['440-capture'])
+  })
+
+  it('should resolve the chain leaf through its extends ancestors', () => {
+    seedRule('core', '000-a')
+    seedRule('ui', '400-ui')
+    seedStack('base', 'extends = ""\nrules = ["core"]\n')
+    seedStack('astro', 'extends = "base"\nrules = ["400-ui"]\n')
+
+    const missing = resolveMissingRules(root, target, ['astro'])
+
+    expect(missing.map((source) => source.rule)).toEqual(['000-a', '400-ui'])
+  })
+
+  it('should return nothing when the target already holds every entitled rule', () => {
+    seedRule('ui', '400-ui')
+    seedStack('astro', 'extends = ""\nrules = ["400-ui"]\n')
+    installRule('ui', '400-ui')
+
+    expect(resolveMissingRules(root, target, ['astro'])).toEqual([])
+  })
+
+  it('should return nothing for an empty chain', () => {
+    expect(resolveMissingRules(root, target, [])).toEqual([])
+  })
+
+  it('should return nothing when the leaf names a stack the toolkit no longer ships', () => {
+    expect(resolveMissingRules(root, target, ['ghost'])).toEqual([])
+  })
+
+  it('should ignore a rule an extra the target added installs that no stack lists', () => {
+    seedRule('ui', '400-ui')
+    seedStack('astro', 'extends = ""\nrules = ["400-ui"]\n')
+    installRule('lib', '300-extra')
+
+    const missing = resolveMissingRules(root, target, ['astro'])
+
+    expect(missing.map((source) => source.rule)).toEqual(['400-ui'])
   })
 })
 

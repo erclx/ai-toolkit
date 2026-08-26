@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs'
 import { basename, join, relative, resolve } from 'node:path'
+import { resolveMissingRules } from '@/gov/stacks'
 import type { InstalledFile, RetiredSurface, SyncAdapter } from '@/sync/engine'
+import { readStamp, stampedChain } from '@/sync/stamp'
 
 const RETIRED_GOV_FILE = join('.claude', 'GOV.md')
 
@@ -54,9 +56,36 @@ export function createGovAdapter(root: string): SyncAdapter {
     locateSource: (file: InstalledFile) =>
       index.get(basename(file.path, '.md')),
     collectRetired: (target: string) => collectRetiredGov(target),
+    collectMissing: (target: string) => collectMissingGov(root, target),
     projectSubdir: 'project',
     stamp: { domain: 'governance', toolkitRoot: root },
   }
+}
+
+/**
+ * Rules the target's recorded chain entitles it to and its tree does not
+ * hold. Reports as `notice` text through the same shape `collectRetired`
+ * already returns, since both are surfaces the file walk cannot see: one an
+ * absence to remove, this one an absence to add.
+ */
+function collectMissingGov(root: string, target: string): RetiredSurface[] {
+  const chain = stampedChain(readStamp(target), 'governance')
+
+  return resolveMissingRules(root, target, chain).map((source) => {
+    const dest = join(
+      target,
+      '.claude',
+      'rules',
+      source.subdir,
+      `${source.rule}.md`,
+    )
+    const rel = relative(target, dest)
+    return {
+      path: dest,
+      rel,
+      notice: `${rel} (listed by ${chain[0]}, not installed. Run aitk gov install ${chain[0]} to add it.)`,
+    }
+  })
 }
 
 function collectRetiredGov(target: string): RetiredSurface[] {

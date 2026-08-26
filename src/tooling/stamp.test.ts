@@ -80,7 +80,10 @@ describe('recordToolingChain', () => {
     )
 
     expect(recorded).toBe(true)
-    expect(stampedChain(readStamp(TARGET))).toEqual(['vite-react', 'base'])
+    expect(stampedChain(readStamp(TARGET), 'tooling')).toEqual([
+      'vite-react',
+      'base',
+    ])
   })
 
   it('should record nothing for a workspace root', async () => {

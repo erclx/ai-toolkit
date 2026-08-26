@@ -11,6 +11,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   hashContent,
   hashFile,
+  isLegacyStamped,
+  legacyStampPath,
   readStamp,
   type StampSource,
   stampedChain,
@@ -32,6 +34,7 @@ const GOVERNANCE: StampSource = {
   toolkitRoot: '/nowhere',
 }
 const SNIPPETS: StampSource = { domain: 'snippets', toolkitRoot: '/nowhere' }
+const TOOLING: StampSource = { domain: 'tooling', toolkitRoot: '/nowhere' }
 
 function writeFixture(path: string, content: string): void {
   mkdirSync(dirname(path), { recursive: true })
@@ -181,6 +184,81 @@ describe('readStamp', () => {
       NOW.toISOString(),
     )
   })
+
+  it('should read as absent rather than falling back when the current path exists but is corrupt', () => {
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'stale', files: {} } },
+      }),
+    )
+    writeFixture(stampPath(TARGET), '{ not json')
+
+    expect(readStamp(TARGET)).toBeUndefined()
+  })
+
+  it('should fall back to the retired .claude/aitk.json when the current path is absent', () => {
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'then', files: {} } },
+      }),
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.syncedAt).toBe('then')
+  })
+
+  it('should prefer the current path over the retired one when both exist', () => {
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'old', files: {} } },
+      }),
+    )
+    writeFixture(
+      stampPath(TARGET),
+      JSON.stringify({
+        covers: ['governance'],
+        domains: { governance: { syncedAt: 'new', files: {} } },
+      }),
+    )
+
+    expect(readStamp(TARGET)?.domains.governance?.syncedAt).toBe('new')
+  })
+})
+
+describe('isLegacyStamped', () => {
+  it('should return false when neither path exists', () => {
+    expect(isLegacyStamped(TARGET)).toBe(false)
+  })
+
+  it('should return false when only the current path exists', async () => {
+    await writeStamp(TARGET, GOVERNANCE, {}, NOW)
+
+    expect(isLegacyStamped(TARGET)).toBe(false)
+  })
+
+  it('should return true when only the retired path exists', () => {
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({ covers: [], domains: {} }),
+    )
+
+    expect(isLegacyStamped(TARGET)).toBe(true)
+  })
+
+  it('should return false when both paths exist', async () => {
+    await writeStamp(TARGET, GOVERNANCE, {}, NOW)
+    writeFixture(
+      legacyStampPath(TARGET),
+      JSON.stringify({ covers: [], domains: {} }),
+    )
+
+    expect(isLegacyStamped(TARGET)).toBe(false)
+  })
 })
 
 describe('writeStamp', () => {
@@ -249,7 +327,7 @@ describe('writeStamp', () => {
 
 describe('writeChainStamp', () => {
   it('should record the chain in the order it was given', async () => {
-    await writeChainStamp(TARGET, '/nowhere', ['vite-react', 'base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['vite-react', 'base'], NOW)
 
     expect(readStamp(TARGET)?.domains.tooling?.chain).toEqual([
       'vite-react',
@@ -258,20 +336,20 @@ describe('writeChainStamp', () => {
   })
 
   it('should record no file hashes, since tooling attributes none', async () => {
-    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['base'], NOW)
 
     expect(readStamp(TARGET)?.domains.tooling?.files).toEqual({})
   })
 
   it('should add tooling to covers', async () => {
-    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['base'], NOW)
 
     expect(readStamp(TARGET)?.covers).toEqual(['tooling'])
   })
 
   it('should leave the other domain records untouched', async () => {
     await writeStamp(TARGET, GOVERNANCE, { 'a.md': 'sha256:aa' }, NOW)
-    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['base'], NOW)
 
     const stamp = readStamp(TARGET)
 
@@ -280,28 +358,53 @@ describe('writeChainStamp', () => {
   })
 
   it('should replace an earlier chain rather than merge into it', async () => {
-    await writeChainStamp(TARGET, '/nowhere', ['vite-react', 'base'], NOW)
-    await writeChainStamp(TARGET, '/nowhere', ['base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['vite-react', 'base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['base'], NOW)
 
     expect(readStamp(TARGET)?.domains.tooling?.chain).toEqual(['base'])
+  })
+
+  it('should record a single-stack chain for a domain other than tooling', async () => {
+    await writeChainStamp(TARGET, GOVERNANCE, ['astro'], NOW)
+
+    expect(readStamp(TARGET)?.domains.governance?.chain).toEqual(['astro'])
+  })
+
+  it('should preserve a file-only domain when the chain is written after', async () => {
+    await writeStamp(TARGET, GOVERNANCE, { 'a.md': 'sha256:aa' }, NOW)
+    await writeChainStamp(TARGET, GOVERNANCE, ['astro'], NOW)
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
+      'a.md': 'sha256:aa',
+    })
+  })
+
+  it('should preserve a chain when a later file-only write does not name one', async () => {
+    await writeChainStamp(TARGET, GOVERNANCE, ['astro'], NOW)
+    await writeStamp(TARGET, GOVERNANCE, { 'a.md': 'sha256:aa' }, NOW)
+
+    expect(readStamp(TARGET)?.domains.governance?.chain).toEqual(['astro'])
   })
 })
 
 describe('stampedChain', () => {
   it('should return an empty chain when the stamp is absent', () => {
-    expect(stampedChain(undefined)).toEqual([])
+    expect(stampedChain(undefined, 'tooling')).toEqual([])
   })
 
   it('should return an empty chain when only other domains are stamped', async () => {
     await writeStamp(TARGET, GOVERNANCE, {}, NOW)
 
-    expect(stampedChain(readStamp(TARGET))).toEqual([])
+    expect(stampedChain(readStamp(TARGET), 'tooling')).toEqual([])
   })
 
   it('should return the recorded chain', async () => {
-    await writeChainStamp(TARGET, '/nowhere', ['vite-react', 'base'], NOW)
+    await writeChainStamp(TARGET, TOOLING, ['vite-react', 'base'], NOW)
 
-    expect(stampedChain(readStamp(TARGET))).toEqual(['vite-react', 'base'])
+    expect(stampedChain(readStamp(TARGET), 'tooling')).toEqual([
+      'vite-react',
+      'base',
+    ])
   })
 })
 

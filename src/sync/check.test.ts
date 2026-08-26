@@ -31,6 +31,7 @@ function buildReport(
 ): CheckReport {
   return {
     covers: ['snippets'],
+    stampAtLegacyPath: false,
     managed: true,
     domains: [
       {
@@ -270,6 +271,7 @@ describe('countStates', () => {
       { state: 'drifted', rel: 'e.md' },
       { state: 'orphaned', rel: 'f.md' },
       { state: 'stranded', rel: 'g.md' },
+      { state: 'missing', rel: 'h.md' },
     ])
 
     expect(counts).toEqual({
@@ -279,6 +281,7 @@ describe('countStates', () => {
       drifted: 1,
       orphaned: 1,
       stranded: 1,
+      missing: 1,
     })
   })
 
@@ -290,6 +293,7 @@ describe('countStates', () => {
       drifted: 0,
       orphaned: 0,
       stranded: 0,
+      missing: 0,
     })
   })
 })
@@ -307,6 +311,12 @@ describe('hasDrift', () => {
 
   it('should not report drift for a project-authored file', () => {
     expect(hasDrift(buildReport([{ state: 'orphaned', rel: 'a.md' }]))).toBe(
+      false,
+    )
+  })
+
+  it('should not report drift for a rule the stack lists and the tree lacks', () => {
+    expect(hasDrift(buildReport([{ state: 'missing', rel: 'a.md' }]))).toBe(
       false,
     )
   })
@@ -554,6 +564,42 @@ describe('readNewRules', () => {
     return git('rev-parse', '--short', 'HEAD').trim()
   }
 
+  /** A stamp naming only the anchor, so the diff-and-bands fallback runs. */
+  function commitStamp(commit: string): Stamp {
+    return {
+      covers: ['governance'],
+      domains: { governance: { syncedAt: 'irrelevant', files: {}, commit } },
+    }
+  }
+
+  /** A stamp naming only the chain, so the anchor never enters the read. */
+  function chainStamp(chain: readonly string[]): Stamp {
+    return {
+      covers: ['governance'],
+      domains: { governance: { syncedAt: 'irrelevant', files: {}, chain } },
+    }
+  }
+
+  /** A stamp naming both, for a chain that fails to resolve and falls through. */
+  function chainAndCommitStamp(
+    chain: readonly string[],
+    commit: string,
+  ): Stamp {
+    return {
+      covers: ['governance'],
+      domains: {
+        governance: { syncedAt: 'irrelevant', files: {}, chain, commit },
+      },
+    }
+  }
+
+  function writeStack(name: string, body: string): void {
+    const path = join('governance', 'stacks', `${name}.toml`)
+    const full = join(TOOLKIT, path)
+    mkdirSync(dirname(full), { recursive: true })
+    writeFileSync(full, body)
+  }
+
   function install(rel: string): void {
     const full = join(TARGET, '.claude', 'rules', rel)
     mkdirSync(dirname(full), { recursive: true })
@@ -586,9 +632,9 @@ describe('readNewRules', () => {
     authorRule(join('core', '080-observability.md'), 'add observability')
     install(join('core', '000-constitution.md'))
 
-    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([
-      '080-observability',
-    ])
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp(anchor)),
+    ).resolves.toEqual(['080-observability'])
   })
 
   it('should ignore a rule authored before the anchor', async () => {
@@ -596,7 +642,9 @@ describe('readNewRules', () => {
     const anchor = authorRule(join('core', '010-testing.md'), 'add testing')
     install(join('core', '000-constitution.md'))
 
-    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([])
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp(anchor)),
+    ).resolves.toEqual([])
   })
 
   it('should ignore a rule outside the bands the target carries', async () => {
@@ -604,7 +652,9 @@ describe('readNewRules', () => {
     authorRule(join('ui', '400-ui.md'), 'add ui')
     install(join('core', '000-constitution.md'))
 
-    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([])
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp(anchor)),
+    ).resolves.toEqual([])
   })
 
   it('should report nothing when the target carries no anchor', async () => {
@@ -619,7 +669,9 @@ describe('readNewRules', () => {
     authorRule(join('core', '000-constitution.md'), 'base')
     install(join('core', '000-constitution.md'))
 
-    await expect(readNewRules(TOOLKIT, TARGET, '1234567')).resolves.toEqual([])
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp('1234567')),
+    ).resolves.toEqual([])
   })
 
   /**
@@ -632,9 +684,9 @@ describe('readNewRules', () => {
     writeBaseStack('core', 'claude', 'security')
     install(join('core', '000-constitution.md'))
 
-    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([
-      '600-secrets',
-    ])
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp(anchor)),
+    ).resolves.toEqual(['600-secrets'])
   })
 
   it('should ignore a new band no stack file takes whole', async () => {
@@ -643,7 +695,70 @@ describe('readNewRules', () => {
     writeBaseStack('core', 'claude')
     install(join('core', '000-constitution.md'))
 
-    await expect(readNewRules(TOOLKIT, TARGET, anchor)).resolves.toEqual([])
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp(anchor)),
+    ).resolves.toEqual([])
+  })
+
+  /**
+   * The reproduction this row exists for: a rule shipped and joined a stack
+   * before the target's recorded anchor, which the diff-and-bands fallback
+   * above can never see since its window only opens after the anchor.
+   */
+  it('should name a rule the recorded chain lists that predates the anchor', async () => {
+    writeStack('astro', 'extends = ""\nrules = ["400-ui", "440-capture"]\n')
+    authorRule(join('ui', '400-ui.md'), 'add ui')
+    const anchor = authorRule(join('ui', '440-capture.md'), 'add capture')
+    install(join('ui', '400-ui.md'))
+
+    await expect(
+      readNewRules(TOOLKIT, TARGET, chainStamp(['astro'])),
+    ).resolves.toEqual(['440-capture'])
+
+    // The same target read through the anchor-bound fallback misses it, which
+    // is the defect a recorded chain exists to close.
+    await expect(
+      readNewRules(TOOLKIT, TARGET, commitStamp(anchor)),
+    ).resolves.toEqual([])
+  })
+
+  it('should name nothing when the target already holds everything the chain lists', async () => {
+    writeStack('astro', 'extends = ""\nrules = ["400-ui"]\n')
+    authorRule(join('ui', '400-ui.md'), 'add ui')
+    install(join('ui', '400-ui.md'))
+
+    await expect(
+      readNewRules(TOOLKIT, TARGET, chainStamp(['astro'])),
+    ).resolves.toEqual([])
+  })
+
+  it('should read nothing for a recorded chain naming a stack the toolkit no longer ships, and no anchor to fall back on', async () => {
+    authorRule(join('ui', '400-ui.md'), 'add ui')
+
+    await expect(
+      readNewRules(TOOLKIT, TARGET, chainStamp(['retired-stack'])),
+    ).resolves.toEqual([])
+  })
+
+  /**
+   * A stack the toolkit retired or renamed between install and this read must
+   * not silently report nothing when an anchor is available to fall back on,
+   * since that empty list would read identically to a target holding
+   * everything, the exact defect a recorded chain exists to close.
+   */
+  it('should fall through to the anchor-bound path when the recorded chain no longer resolves', async () => {
+    const anchor = authorRule(join('core', '000-constitution.md'), 'base rule')
+    authorRule(join('security', '600-secrets.md'), 'add secrets')
+    writeBaseStack('core', 'claude', 'security')
+    install(join('core', '000-constitution.md'))
+
+    await expect(
+      readNewRules(
+        TOOLKIT,
+        TARGET,
+        chainAndCommitStamp(['retired-stack'], anchor),
+      ),
+    ).resolves.toEqual(['600-secrets'])
   })
 })
 

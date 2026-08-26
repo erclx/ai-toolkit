@@ -61,6 +61,10 @@ export type SyncChange =
  * separate because they need opposite treatment. A project-authored file is
  * orphaned and stays that way forever. A stamped file the toolkit no longer
  * installs to is stranded, which is a relocation waiting on a decision.
+ *
+ * `missing` is the one state the walk cannot produce on its own, since the
+ * walk only iterates files that exist. It comes from `collectMissing`
+ * instead, an adapter naming an entitled file the target does not hold.
  */
 export type EntryState =
   | 'matching'
@@ -69,12 +73,19 @@ export type EntryState =
   | 'drifted'
   | 'orphaned'
   | 'stranded'
+  | 'missing'
 
 export interface ScanEntry {
   readonly state: EntryState
   readonly rel: string
   /** Toolkit revision this file's content came from, when history proved it. */
   readonly since?: string
+  /**
+   * Overrides `report`'s generic text for this entry's state. `collectMissing`
+   * is the one producer: a stack name is only known to the adapter that
+   * resolved it, and the generic `missing` line cannot carry one.
+   */
+  readonly notice?: string
 }
 
 export interface SyncPlan {
@@ -119,6 +130,12 @@ export interface SyncAdapter {
   locateSource(file: InstalledFile): string | undefined
   /** Surfaces the file walk cannot see, such as a retired doc to delete. */
   collectRetired?(target: string): RetiredSurface[]
+  /**
+   * Entitled files the walk cannot see because they do not exist yet.
+   * Reported as `missing` and queued as no change, since installing one
+   * changes what the project is governed by and stays a separate command.
+   */
+  collectMissing?(target: string): RetiredSurface[]
   /** Dropped from the walk, so neither matching nor orphaned. */
   isExcluded?(file: InstalledFile): boolean
   /**
@@ -209,6 +226,10 @@ export function planSync(adapter: SyncAdapter, target: string): SyncPlan {
   const historyUnavailable = recoverAttribution(adapter, entries, unattributed)
 
   entries.push(...strandedByRelocation(target, hashes, walked))
+
+  for (const surface of adapter.collectMissing?.(target) ?? []) {
+    entries.push({ state: 'missing', rel: surface.rel, notice: surface.notice })
+  }
 
   const retired = adapter.collectRetired?.(target) ?? []
   for (const surface of retired) {
@@ -394,6 +415,10 @@ function report(adapter: SyncAdapter, plan: SyncPlan): void {
       logWarn(`${entry.rel} (locally customized)`)
     else if (entry.state === 'stranded')
       logWarn(`${entry.rel} (installed here by an older toolkit, now moved)`)
+    else if (entry.state === 'missing')
+      logWarn(
+        entry.notice ?? `${entry.rel} (listed by the stack, not installed)`,
+      )
     else logWarn(`${entry.rel} (not in toolkit source, skipping)`)
   }
 

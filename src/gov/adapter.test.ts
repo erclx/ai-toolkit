@@ -14,6 +14,7 @@ import {
   rulesSourceDir,
 } from '@/gov/adapter'
 import type { InstalledFile } from '@/sync/engine'
+import { writeChainStamp } from '@/sync/stamp'
 
 let ROOT: string
 let TOOLKIT: string
@@ -136,5 +137,42 @@ describe('createGovAdapter', () => {
     expect(existsSync(join(rulesSourceDir(process.cwd()), 'project'))).toBe(
       false,
     )
+  })
+
+  describe('collectMissing', () => {
+    it('should name a rule the recorded chain lists that the target does not hold', async () => {
+      writeFixture(join(TOOLKIT, 'governance/rules/ui/400-ui.md'), '# 400-ui\n')
+      writeFixture(
+        join(TOOLKIT, 'governance/rules/ui/440-capture.md'),
+        '# 440-capture\n',
+      )
+      writeFixture(
+        join(TOOLKIT, 'governance/stacks/astro.toml'),
+        'extends = ""\nrules = ["400-ui", "440-capture"]\n',
+      )
+      writeFixture(join(TARGET, '.claude/rules/ui/400-ui.md'), '# 400-ui\n')
+      await writeChainStamp(
+        TARGET,
+        { domain: 'governance', toolkitRoot: TOOLKIT },
+        ['astro'],
+        new Date('2026-08-26T00:00:00.000Z'),
+      )
+
+      const adapter = createGovAdapter(TOOLKIT)
+
+      expect(adapter.collectMissing?.(TARGET)).toEqual([
+        {
+          path: join(TARGET, '.claude', 'rules', 'ui', '440-capture.md'),
+          rel: join('.claude', 'rules', 'ui', '440-capture.md'),
+          notice: `${join('.claude', 'rules', 'ui', '440-capture.md')} (listed by astro, not installed. Run aitk gov install astro to add it.)`,
+        },
+      ])
+    })
+
+    it('should report nothing when the target carries no recorded chain', () => {
+      const adapter = createGovAdapter(TOOLKIT)
+
+      expect(adapter.collectMissing?.(TARGET)).toEqual([])
+    })
   })
 })

@@ -32,7 +32,7 @@ export async function recordToolingChain(
 
   await writeChainStamp(
     target,
-    toolkitRoot,
+    { domain: 'tooling', toolkitRoot },
     chain.map((manifest) => manifest.name),
     now,
   )
