@@ -217,7 +217,7 @@ Phase-label format and where labels may appear are governed by `standards/versio
 
 `Plan:` points at `../plans/feature-<slug>.md` while the task is open. Once the task ships and the plan is archived, it points at `../plans/archive/feature-<slug>.md`, and at `../../plans/archive/feature-<slug>.md` once the task itself is archived a folder deeper. Retarget both halves of the link rather than dropping it, so a completed task still leads to the reasoning behind it.
 
-A project that archived plans before the folder nested under `.claude/plans/` holds closed tasks pointing at `../plans-archive/`, or at `../.tmp/plans-archive/` from before the durable records left the scratch tree. Each form resolves against the files it names, so leave those pointers where they are. Nothing migrates them, and a task retargeted without its plan moving leads nowhere.
+A project that archived plans before the folder nested under `.claude/plans/` holds closed tasks pointing at `../plans-archive/`, or at `../.tmp/plans-archive/` from before the durable records left the scratch tree. Each form resolves against the files it names, so leave those pointers where they are. A named route now moves the folder and retargets its pointers together, but no automation runs it, so an unmigrated project keeps holding the old spelling until someone does, and a task retargeted without its plan moving leads nowhere.
 
 One plan per task. A plan cited by two tasks is a misfile rather than a shape to design for, which is why the sweep counts citations before archiving: the count is a guard against the misfile stranding a pointer, not support for the shape.
 
@@ -248,6 +248,8 @@ The line is what lets a merge close its own task. Every merge on `main` is a squ
 ## Archiving
 
 Never delete a task file. A shipped task moves to `.claude/tasks/archive/` under its own name, and the live index regenerates without it. `aitk tasks archive` owns the move, the ordering-row removal, and the index regen as one unit.
+
+The archive nests inside `.claude/tasks/` rather than sitting beside it as a flat `.claude/task-archive/`. Nesting is what lets a reader tell the two shapes apart on sight: the flat sibling is what a binary predating this convention still writes, so meeting one names an older checkout rather than a second archive to reconcile against this one.
 
 Two callers reach that command. The `claude-tasks` skill runs it inside a session, and the `post-merge` hook runs it unattended after a pull that merged the work. Both go through the command rather than moving the file themselves, so the two paths cannot drift into archiving differently. Every gate the command applies refuses with a non-zero exit rather than reporting, because a caller with nobody watching cannot act on a warning.
 

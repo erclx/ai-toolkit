@@ -57,6 +57,16 @@ A path convention over these folders takes effect on disk the moment a branch ap
 
 A binary predating the convention does more than write the old path. `resolveLivePlan` without an archive subtraction reads a `Plan:` line pointing into `.claude/plans/archive/` as live and refuses with `plan-unswept`, so the installed `aitk tasks archive` declines every task whose plan has already shipped until a release lands. It fails closed rather than corrupting the board, which is the safe direction and still stops the archiving.
 
+The task archive verb itself takes the opposite path on the same skew. A stale binary still finds `.claude/tasks/`, still writes the file, and lands it in `.claude/task-archive/` beside the live folder rather than `.claude/tasks/archive/` inside it, with neither the board count nor the exit code reporting anything wrong.
+
+That reached this repository on 2026-08-27, not only a target. A worker archiving a shipped task wrote it into the flat sibling, which was untracked and unignored where the nested folder is gitignored, one `git add` away from committing session scratch into history. Recovered by hand the same day, found because the untracked folder showed in a status read rather than because anything looked for it.
+
+Ignoring the two flat spellings was tried and dropped. It would have removed the one signal that caught this instance, since an ignored folder never shows in a status read, and `RETIRED_FOLDERS` in `src/records/backup.ts` already names both spellings as paths that moved rather than paths still live, which a live ignore entry would contradict. The folders stay untracked and unignored on purpose, so the next stray write is visible the same way this one was.
+
+`standards/tasks.md` and `standards/plan.md` state the nested position as a convention a project receives rather than this repository's own habit, so both failure modes above are what an old binary produces against either layout, not a defect in either standard.
+
+The move off the older layout is named rather than worked out per visit: `git mv` both archive folders onto the nested path, retarget every citing pointer onto the new spelling in the same commit, then run `aitk tasks archive` in that checkout to confirm it resolves against the moved folder. That is the order the standards repair already used, and it runs inside the project that owns the files, on its own branch, never from this checkout.
+
 ### What a spike leaves behind
 
 `claude-groundwork` sent every experiment artifact to `.claude/.tmp/groundwork-fixtures/<slug>/`, and `.claude/ARCHITECTURE.md` defines the scratch tree as holding only what can be deleted without loss. A recording an `08-spikes.md` entry cites as proof of a finding fails that test, so the two rules disagreed and the artifact was what lost. The skill now splits an input a spike reads from evidence a spike produces, and sends each where its own lifetime puts it: the fixtures path keeps the input, and `evidence/` inside the track keeps the output.
