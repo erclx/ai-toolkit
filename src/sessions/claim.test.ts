@@ -57,7 +57,12 @@ describe('checkClaim', () => {
       }),
     })
 
-    expect(report).toEqual({ claimed: false, worktree: null, sessions: [] })
+    expect(report).toEqual({
+      claimed: false,
+      worktree: null,
+      sessions: [],
+      sessionsReadable: true,
+    })
   })
 
   it('should report a branch claimed by an existing worktree', async () => {
@@ -112,12 +117,29 @@ describe('checkClaim', () => {
     expect(report.sessions).toHaveLength(0)
   })
 
-  it('should report unclaimed when the session registry is absent', async () => {
+  it('should report the session roster as unreadable when the registry is absent', async () => {
     const report = await checkClaim('feat/parser', {
       cwd: ROOT,
       resolve: async () => ({ kind: 'absent', dir: '/registry' }),
     })
 
-    expect(report).toEqual({ claimed: false, worktree: null, sessions: [] })
+    expect(report).toEqual({
+      claimed: false,
+      worktree: null,
+      sessions: [],
+      sessionsReadable: false,
+    })
+  })
+
+  it('should still report a worktree claim when the session roster is unreadable', async () => {
+    git('worktree', 'add', '--quiet', '-b', 'feat/parser', 'wt-linked')
+
+    const report = await checkClaim('feat/parser', {
+      cwd: ROOT,
+      resolve: async () => ({ kind: 'absent', dir: '/registry' }),
+    })
+
+    expect(report.claimed).toBe(true)
+    expect(report.sessionsReadable).toBe(false)
   })
 })

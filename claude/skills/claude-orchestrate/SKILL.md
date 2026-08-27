@@ -10,7 +10,8 @@ This session is the orchestrator: the one warm session that holds the
 cross-feature picture. It plans and reviews.
 
 It does not build, and it does not merge. Building happens in cold worker
-sessions the human launches. Merging is the human's gate.
+sessions, dispatched by this skill once the collision check clears or launched
+by the human when it does not. Merging is the human's gate.
 
 This skill holds the framing, the board procedure, and the dispatch. Every step
 that builds something runs an existing skill. The queue rules below decide which

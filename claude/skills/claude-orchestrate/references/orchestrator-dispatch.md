@@ -14,8 +14,8 @@ Resolve `<slug>` from the row's plan the way `claude-worktree` Step 2 resolves a
 Run `aitk sessions list --branch <type>/<slug> --json` and read `claimed` off the record.
 
 - `claimed: true`: the row is not free. Report what holds it, `worktree` when it names a path and `sessions` when it carries a row, and move to the next candidate rather than colliding.
-- `claimed: false`: proceed to the cap check.
-- The command refuses, or the record carries no `claimed` key (`reason` reads `no-registry` or `no-repository`): treat the candidate as unverified rather than clear. Report the refusal and fall back to the human-launch line below. Dispatching on a check that could not be read reproduces the exact collision this exists to prevent.
+- `claimed: false` and `sessionsReadable: true`: proceed to the cap check.
+- `claimed: false` and `sessionsReadable: false`, or the command refuses, or the record carries no `claimed` key (`reason` reads `no-registry` or `no-repository`): treat the candidate as unverified rather than clear. Report the refusal and fall back to the human-launch line below. Dispatching on a check that could not be read reproduces the exact collision this exists to prevent.
 
 Reading `claimed` off the record is what keeps this a check rather than a rule a session can talk itself out of. The field is already the composed answer across the worktree listing and the live session listing, so nothing here re-derives the OR.
 
@@ -31,7 +31,7 @@ Three already out: report the cap and stop dispatching for this pass, leaving th
 claude --bg -n "orchestrator-<slug>" "/aitk:claude-autoship .claude/tasks/<task-file>.md"
 ```
 
-`claude-autoship`'s own Step 0 enters the worktree, so this session never does. Confirm the background-session flags against `claude --bg --help` before the first dispatch of a run, since a surface this skill does not pin can gain or lose a flag between releases.
+`claude-autoship`'s own Step 0 enters the worktree, so this session never does. `--bg, --background` starts the session as a background agent and returns immediately, and `-n, --name` sets the display name `aitk sessions list` reads back for the worker cap.
 
 Report the dispatch as loudly as the human-launch line it replaces: name the branch, the task, and the session name, so a person reading the transcript can follow what fired without watching it happen.
 

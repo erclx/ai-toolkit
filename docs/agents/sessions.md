@@ -42,6 +42,8 @@ Read `claimed` rather than composing the two fields by hand. A worktree can outl
 
 `worktree` and `claimed` are `null` on a bare run with no `--branch`, since neither question has a branch to answer about. A refusal (`no-registry` or `no-repository`) carries neither key at all, which a caller should read as unverified rather than as clear.
 
+`sessionsReadable` is `false` when the session roster could not be read, which leaves `claimed` covering the worktree half alone. A `false` here is a report that ran short of evidence, not a report that the branch is clear, so a caller reads it as unverified alongside `claimed` rather than trusting `claimed` on its own.
+
 ## Why the verb exists
 
 A session listing reports a name, a kind, a status, and how long each session has been running. None of those names a branch. Resolving a branch to a session therefore meant ordering the roster by start time and matching it against the order the worktrees were created, which is an inference that fails whenever two sessions start inside the same minute.

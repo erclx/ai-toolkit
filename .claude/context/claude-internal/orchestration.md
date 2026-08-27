@@ -156,6 +156,8 @@ Step 4 of the loop can now launch a background `claude --bg` worker itself for a
 
 The check reads `claimed` off that record rather than composing a worktree read and a session read itself. The field already answers across both surfaces, since a worktree can outlive the session that made it and a session can hold a branch before a worktree exists for it, and reading a pre-composed field is what keeps the check a verb rather than a rule the model can talk itself out of. `src/sessions/claim.ts` is the composition, joining the session roster against `listWorktrees()` in `src/worktree.ts`.
 
+An unreadable session roster carries its own field, `sessionsReadable`, rather than folding into `claimed` as a silent `false`. An absent registry once left `claimed` covering the worktree half alone with nothing distinguishing that from a genuinely clear branch, and a dispatcher reading one boolean could not tell the two apart. The check now reads both fields, treating `sessionsReadable: false` the same as a refusal: unverified rather than clear.
+
 The worker cap counts live sessions named `orchestrator-<slug>`, a prefix only a self-dispatch writes, filtered to the current repository. A worker the operator launches by hand carries no such name and is never counted against it, so the cap binds the one path nobody is watching rather than the whole loop.
 
 Spawning a worker with the Agent tool stays forbidden, since an in-process subagent cannot be steered or reached independently. The `claude --bg` dispatch is a separate process with its own worktree and its own pull request, which is the property the boundary protects rather than the mechanism it happens to name.

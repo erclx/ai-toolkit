@@ -10,6 +10,8 @@ export interface ClaimReport {
   readonly claimed: boolean
   readonly worktree: string | null
   readonly sessions: readonly ResolvedSession[]
+  /** False when the session roster could not be read, so `claimed` covers the worktree half alone and cannot be trusted as a clean "unclaimed". */
+  readonly sessionsReadable: boolean
 }
 
 export interface ClaimOptions {
@@ -52,5 +54,6 @@ export async function checkClaim(
     claimed: worktree !== null || sessions.length > 0,
     worktree,
     sessions,
+    sessionsReadable: report.kind === 'resolved',
   }
 }
