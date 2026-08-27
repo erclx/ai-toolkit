@@ -227,12 +227,14 @@ describe('scanCounts', () => {
     expect(report.findings).toEqual([])
   })
 
-  it('should still match a subset qualified by an adjective, an accepted cost of the article gate', async () => {
+  it('should match a subset qualified by an adjective when the sentence carries no date', async () => {
     // The trade the article gate carries: `flat` fills the same
     // optional-word slot `sixty-one shipped skills` needs to match at all,
     // so a named subset (skills outside some other group) reads the same as
-    // a restated whole. No syntactic rule tells the two apart, and this
-    // pins the accepted behavior rather than a desired one.
+    // a restated whole. No syntactic rule tells the two apart, so the real
+    // fix for a case like this is dating the clause as a past state, not
+    // narrowing the matcher, which is what the equivalent instance in
+    // `.claude/context/standards/destinations.md` was repaired with.
     seedSkills(27)
     write(
       'docs/history.md',

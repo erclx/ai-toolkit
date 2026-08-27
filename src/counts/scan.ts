@@ -108,13 +108,14 @@ const ASSERTION_VERBS = [
  *
  * The article is looser than the verb list, and re-running against the tree
  * once it widened produced the class this trades for the miss above: `the 21
- * flat standards` reads a real subset (a standard outside the retired
+ * flat standards` read a real subset (a standard outside the retired
  * `standards/bundled/` fan-out) as a claim about the whole catalog, since
  * `flat` fills the same optional-word slot `sixty-one shipped skills` needs to
  * match at all. No syntactic rule tells a qualifier that narrows a catalog
- * from one that only restates it, so this is read as an accepted cost rather
- * than fixed, the same way the plausibility bound and the verb list both
- * carry a measured rather than a zero false-positive rate.
+ * from one that only restates it, and the sentence was true when written, so
+ * the fix was not a narrower matcher: the clause was dated as a past state,
+ * the way `.claude/ARCHITECTURE.md` dates its own figures, which is the class
+ * the date exclusion below already reads past.
  */
 const ARTICLES = ['the', 'a', 'an']
 
