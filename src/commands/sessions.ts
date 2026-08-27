@@ -60,16 +60,22 @@ export function register(program: Command): void {
         'so a caller filtering by hand has something that identifies one.',
         '',
         'With --branch, the JSON also carries "worktree" (the path of any',
-        'worktree already checked out to it, or null) and "claimed" (true when',
-        'either a worktree or a live session already holds it). A dispatcher',
-        'reads "claimed" rather than composing the two fields itself, since',
-        'either one alone can miss a real claim: a worktree can outlive the',
-        'session that made it, and a session can hold a branch before a',
-        'worktree exists for it.',
+        'worktree already checked out to it, or null), "refs" (the refs that',
+        'already name it, local head and origin remote-tracking alike), and',
+        '"claimed" (true when a worktree, a live session, or an existing ref',
+        'holds it). A dispatcher reads "claimed" rather than composing the',
+        'three fields itself, since each alone misses a real claim: a worktree',
+        'can outlive the session that made it, a session can hold a branch',
+        'before a worktree exists for it, and a branch behind a merged pull',
+        'request has neither while still being taken.',
         '',
-        '"sessionsReadable" is false when the session roster could not be read,',
-        'which leaves "claimed" covering the worktree half alone. Treat that',
+        '"sessionsReadable" is false when the session roster could not be read',
+        'and "refsReadable" is false when the ref read failed. Either one',
+        'leaves "claimed" covering the readings around it alone. Treat that',
         'case as unverified rather than as a clean "false".',
+        '',
+        'The ref read sees the remote at whatever the last fetch left, so a',
+        'branch pushed from another machine since then reads absent here.',
         '',
         'The match can return more than one session. Read the count rather than',
         'the first row, since two sessions can hold one branch.',
@@ -166,8 +172,10 @@ async function runList(opts: ListCommandOptions): Promise<number> {
         branch: opts.branch ?? null,
         repository,
         worktree: claim?.worktree ?? null,
+        refs: claim?.refs ?? null,
         claimed: claim?.claimed ?? null,
         sessionsReadable: claim?.sessionsReadable ?? null,
+        refsReadable: claim?.refsReadable ?? null,
         sessions: shown,
       })}\n`,
     )
@@ -261,11 +269,21 @@ function reportClaim(claim: ClaimReport): void {
     logInfo(`Worktree: ${claim.worktree}`)
   }
 
+  if (claim.refs.length > 0) {
+    logInfo(`Refs: ${claim.refs.join(', ')}`)
+  }
+
   logInfo(claim.claimed ? 'Claimed.' : 'Unclaimed.')
 
   if (!claim.sessionsReadable) {
     logWarn(
-      'The session roster could not be read, so this reads the worktree listing alone. Treat the session half as unverified rather than clear.',
+      'The session roster could not be read, so this leaves the session half out. Treat it as unverified rather than clear.',
+    )
+  }
+
+  if (!claim.refsReadable) {
+    logWarn(
+      'The ref read failed, so this cannot say whether the branch already exists. Treat it as unverified rather than clear.',
     )
   }
 }

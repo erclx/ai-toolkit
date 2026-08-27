@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path'
 import { $ } from 'bun'
 import type { Command } from 'commander'
 import { exitCodeFor, type RegenResult, regenOne } from '@/indexes/regen'
+import { gitEnv } from '@/git-env'
 import { findIndexedAncestor, isIgnored, listIndexes } from '@/indexes/walk'
 import { intro, logAdd, logInfo, logStep, logWarn, outro } from '@/ui'
 
@@ -164,6 +165,7 @@ async function stage(path: string, rel: string, root: string): Promise<void> {
   if (await isIgnored(root, path)) return
 
   const staged = await $`git -C ${root} add -- ${path}`
+    .env(gitEnv())
     .quiet()
     .nothrow()
     .then((result) => result.exitCode === 0)

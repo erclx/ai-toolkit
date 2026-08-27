@@ -61,8 +61,68 @@ describe('checkClaim', () => {
       claimed: false,
       worktree: null,
       sessions: [],
+      refs: [],
       sessionsReadable: true,
+      refsReadable: true,
     })
+  })
+
+  // The branch behind a merged pull request has no worktree and no session, and
+  // read across those two alone it answered clear. Dispatching onto it opens a
+  // second pull request against a head GitHub already shows merged.
+  it('should report a branch claimed by a local ref that no worktree or session holds', async () => {
+    git('branch', 'feat/parser')
+
+    const report = await checkClaim('feat/parser', {
+      cwd: ROOT,
+      resolve: async () => ({
+        kind: 'resolved',
+        dir: '/registry',
+        confidence: 'confirmed',
+        sessions: [],
+      }),
+    })
+
+    expect(report.claimed).toBe(true)
+    expect(report.refs).toEqual(['refs/heads/feat/parser'])
+    expect(report.worktree).toBeNull()
+    expect(report.sessions).toHaveLength(0)
+  })
+
+  // A sibling dispatcher that pushed seconds earlier leaves the remote-tracking
+  // ref behind and nothing else this machine can see.
+  it('should report a branch claimed by an origin remote-tracking ref alone', async () => {
+    git('update-ref', 'refs/remotes/origin/feat/parser', 'HEAD')
+
+    const report = await checkClaim('feat/parser', {
+      cwd: ROOT,
+      resolve: async () => ({
+        kind: 'resolved',
+        dir: '/registry',
+        confidence: 'confirmed',
+        sessions: [],
+      }),
+    })
+
+    expect(report.claimed).toBe(true)
+    expect(report.refs).toEqual(['refs/remotes/origin/feat/parser'])
+  })
+
+  it('should report the ref read as unreadable rather than reporting a clean unclaimed', async () => {
+    const report = await checkClaim('feat/parser', {
+      cwd: ROOT,
+      resolve: async () => ({
+        kind: 'resolved',
+        dir: '/registry',
+        confidence: 'confirmed',
+        sessions: [],
+      }),
+      branchRefs: async () => ({ readable: false, refs: [] }),
+    })
+
+    expect(report.refsReadable).toBe(false)
+    expect(report.sessionsReadable).toBe(true)
+    expect(report.refs).toEqual([])
   })
 
   it('should report a branch claimed by an existing worktree', async () => {
@@ -127,7 +187,9 @@ describe('checkClaim', () => {
       claimed: false,
       worktree: null,
       sessions: [],
+      refs: [],
       sessionsReadable: false,
+      refsReadable: true,
     })
   })
 

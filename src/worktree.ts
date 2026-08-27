@@ -50,6 +50,59 @@ export interface WorktreeEntry {
   readonly branch: string | null
 }
 
+export interface RefReport {
+  /** False when the ref read itself failed, so an empty `refs` says nothing about whether the branch exists. */
+  readonly readable: boolean
+  readonly refs: readonly string[]
+}
+
+/**
+ * Reports which of the local head and the `origin` remote-tracking ref already
+ * name a branch, separating an absent branch from a read that failed.
+ *
+ * `git for-each-ref` is what carries that separation. `git show-ref --verify`
+ * handed the same two ref paths exits 128 when one of them is missing, which is
+ * the code it also exits when the directory is no repository, so a caller
+ * cannot tell a half match from an unreadable tree. `for-each-ref` exits zero
+ * with empty output for absent and non-zero only for a failed read.
+ *
+ * A ref path is a pattern here rather than an exact name, so `refs/heads/x`
+ * also matches `refs/heads/x/y`. Git forbids both existing at once, so the
+ * over-match names the branch that blocks the candidate rather than a wrong
+ * one.
+ *
+ * The remote-tracking ref is read at whatever the last fetch left, so a branch
+ * pushed from another machine since then is invisible here. Closing that needs
+ * `git ls-remote`, measured at 0.438s against 0.001s for a local read.
+ */
+export async function branchRefs(
+  branch: string,
+  cwd: string = process.cwd(),
+): Promise<RefReport> {
+  // Every argument is interpolated rather than written inline, since Bun's
+  // shell parses the bare parentheses in `%(refname)` as syntax of its own.
+  const args = [
+    '--format=%(refname)',
+    `refs/heads/${branch}`,
+    `refs/remotes/origin/${branch}`,
+  ]
+
+  const result = await $`git -C ${cwd} for-each-ref ${args}`
+    .env(gitEnv())
+    .quiet()
+    .nothrow()
+  if (result.exitCode !== 0) return { readable: false, refs: [] }
+
+  return {
+    readable: true,
+    refs: result.stdout
+      .toString()
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0),
+  }
+}
+
 /**
  * Parses `git worktree list --porcelain`, which emits one block per worktree
  * separated by a blank line. A detached worktree carries no `branch` line,
