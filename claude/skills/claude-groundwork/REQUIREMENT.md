@@ -11,6 +11,8 @@ Without this skill, a question nobody has measured is answered with a plan. The 
 
 Two failure modes cost more than the rest. A track that fans out to subagents returns findings without the reasoning that makes the folder worth keeping, which turns a conversation into a search result. And an experiment fixture written under the project root loads that project's own instruction files through the ancestor chain, so the arm measures the repository instead of the question, and the result reads as evidence either way.
 
+A track that closes with several separable findings writes only one task, and the rest have no stated route out of the folder. Without one, a finding sits until the operator asks whether filing it elsewhere is the next step, which is how a track that measured everything correctly still lost work between sessions.
+
 ## Must
 
 - Detect open, resume, and close from the folder itself, matching the topic against tracks already there before deriving a slug
@@ -19,6 +21,7 @@ Two failure modes cost more than the rest. A track that fans out to subagents re
 - Measure the current state now rather than carrying a figure from a previous session
 - Carry a lean and the finding that would overturn it on every open question, or admit that a measurement is missing
 - Confine writes to the track folder, with the close-time task file and the experiment fixture as the only exceptions
+- Route a closing-track finding the required task does not cover through `claude-intake`, rather than leaving it to be asked about
 - Link every claim about a source outside the project, and list an unread source as a lead rather than citing it
 - Put a fixture a headless run is pointed at outside the repository
 - Write the next-session file self-contained, since the folder is unbacked and dies with the machine
