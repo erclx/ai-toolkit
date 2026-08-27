@@ -117,7 +117,18 @@ async function mergedPullRequests(cwd: string): Promise<MergedReport> {
   ]
 
   try {
-    const result = await execa('gh', args, { cwd, timeout: GH_TIMEOUT_MS })
+    // `gh` resolves its repository through git, so it reads the same
+    // resolution variables a hook exports and they take precedence over `cwd`.
+    // A run from inside one would answer with another repository's merged
+    // branches, and a branch name that recurs across repositories would then
+    // match a merge that happened somewhere else and read a live worktree as
+    // reclaimable, which is the unsafe direction on an unrecoverable removal.
+    const result = await execa('gh', args, {
+      cwd,
+      timeout: GH_TIMEOUT_MS,
+      env: gitEnv(),
+      extendEnv: false,
+    })
     const rows = JSON.parse(result.stdout) as readonly {
       headRefName: string
       number: number

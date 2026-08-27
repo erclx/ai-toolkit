@@ -182,6 +182,8 @@ Reclaimable takes all three of a merged pull request, a clean working tree, and 
 
 The pull request read is one `gh pr list --state merged` for the repository rather than one call per worktree, which is a network round trip inside a loop at nine directories. It covers the most recent 200 merges, so an older worktree reads as having none and is refused, which fails in the keeping direction.
 
+That read strips the git resolution variables through `gitEnv()` the way every git read in the file does, because `gh` resolves its repository through git and those variables take precedence over the working directory it is handed. Measured on 2026-08-27: with `GIT_DIR` naming a remote-less repository, the stripped call read this repository's merges while a bare `gh repo view` beside it answered `no git remotes found`. A run from inside a hook would otherwise match a branch name against another repository's merges, and branch names recur, so the wrong answer arrives in the direction that removes a live worktree. `src/github.ts` carries the only other `gh` call in the tree and has not taken the same pair.
+
 An unreadable input refuses the whole reading rather than producing verdicts around it. This is the `refsReadable` argument from the self-dispatch check one reading over: an absent merge state and a branch with no merged pull request produce the same empty answer, as do an absent roster and a worktree nobody holds, and reporting the second when it was the first is a false clean that ends in a removal rather than in a duplicate dispatch. Two flags beside the verdicts was the alternative and it puts the same false clean behind a boolean a caller has to remember to read.
 
 ## Reclaiming without removing
