@@ -12,9 +12,9 @@ const SHIPPED_SKILLS = join('claude', 'skills')
  * The authoring roots this repository owns and no install channel delivers.
  *
  * Every entry is a folder a target never holds under that spelling. Standards
- * install nowhere and are reached through the plugin corpus, rules install
- * under `.claude/rules/`, snippets under `.claude/snippets/`, and the rest are
- * this repository's own source, docs, and catalogs.
+ * and snippets install nowhere and are reached through the plugin corpus,
+ * rules install under `.claude/rules/`, and the rest are this repository's
+ * own source, docs, and catalogs.
  *
  * `src/`, `scripts/`, and bare `docs/` are deliberately absent. A body naming
  * one of those is describing the reader's own tree, so listing them would

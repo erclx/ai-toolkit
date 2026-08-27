@@ -21,13 +21,15 @@ SANDBOX_UNDECLARED_CEILING=47
 
 # Rules no stack reaches, space separated and sorted the way `aitk gov list`
 # emits them. `260-shadcn` and `320-tanstack-query` are opt-in libraries a
-# project may not want; `505-at-references` ships with no stack on purpose,
-# since a rule under `claude/` would reach every base consumer through the
-# folder-whole entry, and only `aitk snippets install` writes it, alongside
-# the snippets a caller took. All three are recorded here rather than in a
-# config file: the list is what a reader compares a new arrival against, and a
-# config file would absorb the arrival silently.
-GOV_EXPECTED_UNREFERENCED="260-shadcn 320-tanstack-query 505-at-references"
+# project may not want. `505-at-references` used to sit here too, shipping
+# with no stack on purpose since a rule under `claude/` would reach every
+# base consumer through the folder-whole entry there. Its own install
+# channel, `aitk snippets install`, retired with nothing left to deliver it,
+# so `base` now carries `snippets` as a folder-whole entry of its own and the
+# rule reaches every base consumer through that instead. Both are recorded
+# here rather than in a config file: the list is what a reader compares a
+# new arrival against, and a config file would absorb the arrival silently.
+GOV_EXPECTED_UNREFERENCED="260-shadcn 320-tanstack-query"
 
 # The retained counts the audit stage compares each run against. Spelled here
 # rather than derived, because this script only ever names the file in a remedy

@@ -9,7 +9,7 @@ use_config() {
 }
 
 stage_setup() {
-  select_or_route_scenario "Which scenario?" "fresh" "installed" "unmigrated" "audits" "gitignore" "unclaimed"
+  select_or_route_scenario "Which scenario?" "fresh" "audits" "gitignore" "unclaimed"
 
   case "$SELECTED_OPTION" in
   "fresh")
@@ -28,45 +28,6 @@ EOF
     log_info "Action:  /aitk:toolkit-operator then 'help me set up this project'"
     log_info "Expect:  orients via aitk docs, routes first-time scaffold to setup-init"
     log_info "Assert:  declared in fixtures/claude/toolkit-operator/fresh/expect.toml"
-    ;;
-  "installed")
-    # Snippets rather than standards. The corpus installs into no target, so
-    # there is no installed standard to make stale and no verb to route to.
-    stage_toolkit_markdown "$PROJECT_ROOT/snippets" .claude/snippets 2
-    while IFS= read -r file; do
-      echo "<!-- stale -->" >>"$file"
-    done < <(find .claude/snippets -maxdepth 1 -type f -name "*.md" | sort)
-
-    git add . && git commit -m "chore(sandbox): project with stale snippets for toolkit-operator" --no-verify -q
-
-    log_step "Scenario ready: toolkit-operator skill on a project with installed snippets"
-    log_info "Context: .claude/snippets/ present with two stale files"
-    log_info "Action:  /aitk:toolkit-operator then 'sync my snippets'"
-    log_info "Expect:  orients via aitk docs, reads catalogs, routes to aitk snippets sync"
-    log_info "Assert:  declared in fixtures/claude/toolkit-operator/installed/expect.toml"
-    ;;
-  "unmigrated")
-    stage_toolkit_markdown "$PROJECT_ROOT/snippets" snippets 3
-
-    # The arm scores a route the report drives, so a fixture staging nothing
-    # would produce a report correctly finding no unmigrated domain and the
-    # failure would read as a defect in the skill rather than in the fixture.
-    local staged
-    staged=$(find snippets -maxdepth 1 -type f -name "*.md" | wc -l | tr -d ' ')
-    if [ "$staged" -eq 0 ]; then
-      log_error "Fixture staged no root-layout files. The arm would score a route with nothing to route."
-      return 1
-    fi
-
-    git add . && git commit -m "chore(sandbox): root-layout project for toolkit-operator" --no-verify -q
-
-    log_step "Scenario ready: toolkit-operator skill on a root-layout project"
-    log_info "Context: snippets/ at the root, nothing under .claude/"
-    log_info "  $staged toolkit-owned files in the one domain that still relocates"
-    log_info "  This is the state three of six real targets sit in"
-    log_info "Action:  /aitk:toolkit-operator then 'what is this project behind on'"
-    log_info "Expect:  diagnose reports the domain as unmigrated, routes to migration-standards"
-    log_info "Assert:  declared in fixtures/claude/toolkit-operator/unmigrated/expect.toml"
     ;;
   "audits")
     mkdir -p .claude/context .claude/plans

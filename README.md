@@ -116,7 +116,7 @@ git init
 aitk init
 ```
 
-`aitk init` installs base tooling configs, Claude seeds, and governance rules in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/`. Each rule names the standard it answers to and reads it with `aitk standards <name>`, so no corpus is copied into your project. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. Snippets install only when you name a category with `--snippets <category>`, such as `--snippets essentials`. Run `aitk tooling list --json` to see the catalog.
+`aitk init` installs base tooling configs, Claude seeds, and governance rules in one pass, and scaffolds a `.claude/wiki/` stub for your project's own reference pages. Governance defaults to the `base` stack, so a bare init lands the coding and doc-authoring rules in `.claude/rules/`. Each rule names the standard it answers to and reads it with `aitk standards <name>`, so no corpus is copied into your project. Pass `--stack <name>` for a framework stack, or `--skip governance` to leave rules out. A snippet resolves the same way, reached at its `@` reference through the plugin's live `claude/snippets` symlink rather than a copy. Run `aitk tooling list --json` to see the catalog.
 
 For the full journey from scaffold through adding a domain later to syncing upstream drift, see [target projects](docs/target-projects.md).
 

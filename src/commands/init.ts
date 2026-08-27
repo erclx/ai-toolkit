@@ -12,7 +12,6 @@ interface InitOptions {
   /** Always present: the option falls back to `DEFAULT_STACK`. */
   readonly stack: string
   readonly add?: string
-  readonly snippets?: string
   readonly skip?: string
 }
 
@@ -35,7 +34,6 @@ export function register(program: Command): void {
         '  aitk init ../my-app',
         '  aitk init --stack astro --add 260-shadcn ../my-app',
         '  aitk init --skip governance ../my-app',
-        '  aitk init --snippets all ../my-app',
         '',
       ].join('\n'),
     )
@@ -62,7 +60,6 @@ async function runInit(
   const flags: InitFlags = {
     stack: options.stack,
     add: options.add,
-    snippets: options.snippets,
     skip,
   }
 

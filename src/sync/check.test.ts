@@ -30,12 +30,12 @@ function buildReport(
   overrides: Partial<CheckReport> = {},
 ): CheckReport {
   return {
-    covers: ['snippets'],
+    covers: ['governance'],
     stampAtLegacyPath: false,
     managed: true,
     domains: [
       {
-        domain: 'snippets',
+        domain: 'governance',
         stamped: true,
         counts: countStates(entries),
         entries,
@@ -216,19 +216,18 @@ describe('installedStampDomains', () => {
   })
 
   it('should report only the domains present on disk', () => {
-    mkdirSync(join(TARGET, '.claude/snippets'), { recursive: true })
     mkdirSync(join(TARGET, '.claude/rules'), { recursive: true })
 
-    expect(installedStampDomains(TARGET)).toEqual(['snippets', 'governance'])
+    expect(installedStampDomains(TARGET)).toEqual(['governance'])
   })
 })
 
 describe('isManagedTarget', () => {
   const rootLayout = [
     {
-      domain: 'snippets' as const,
-      rootPath: 'snippets',
-      installPath: join('.claude', 'snippets'),
+      domain: 'governance' as const,
+      rootPath: 'governance',
+      installPath: join('.claude', 'rules'),
       files: 9,
     },
   ]
@@ -362,9 +361,9 @@ describe('hasDrift', () => {
     const report = buildReport([{ state: 'matching', rel: 'a.md' }], {
       unmigrated: [
         {
-          domain: 'snippets',
-          rootPath: 'snippets',
-          installPath: join('.claude', 'snippets'),
+          domain: 'governance',
+          rootPath: 'governance',
+          installPath: join('.claude', 'rules'),
           files: 9,
         },
       ],

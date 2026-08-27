@@ -79,26 +79,6 @@ describe('detectUnmigrated', () => {
     expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([])
   })
 
-  it('should report a domain installed at the root with nothing under .claude', () => {
-    writeFixture(join('snippets', 'diff.md'))
-
-    expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([
-      {
-        domain: 'snippets',
-        rootPath: 'snippets',
-        installPath: join('.claude', 'snippets'),
-        files: 1,
-      },
-    ])
-  })
-
-  it('should report nothing once the domain also sits under .claude', () => {
-    writeFixture(join('snippets', 'diff.md'))
-    writeFixture(join('.claude', 'snippets', 'diff.md'))
-
-    expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([])
-  })
-
   it('should leave a root standards folder alone, since no corpus installs', () => {
     writeFixture(join('standards', 'prose.md'))
     writeFixture(join('standards', 'tasks.md'))
@@ -106,29 +86,9 @@ describe('detectUnmigrated', () => {
     expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([])
   })
 
-  it('should ignore an empty root folder carrying no markdown', () => {
-    mkdirSync(join(TARGET, 'snippets'), { recursive: true })
-
-    expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([])
-  })
-
-  it('should not claim a root folder holding only project-authored files', () => {
-    writeFixture(join('snippets', 'our-house-style.md'))
-    writeFixture(join('snippets', 'onboarding.md'))
-
-    expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([])
-  })
-
-  it('should count only the files the toolkit ships for that domain', () => {
-    writeFixture(join('snippets', 'diff.md'))
-    writeFixture(join('snippets', 'our-house-style.md'))
-
-    expect(detectUnmigrated(TOOLKIT, TARGET)[0]?.files).toBe(1)
-  })
-
-  it('should match a nested snippet against its flattened root copy', () => {
+  it('should leave a root snippets folder alone, since no corpus installs', () => {
     writeFixture(join('snippets', 'diff.md'))
 
-    expect(detectUnmigrated(TOOLKIT, TARGET)[0]?.domain).toBe('snippets')
+    expect(detectUnmigrated(TOOLKIT, TARGET)).toEqual([])
   })
 })

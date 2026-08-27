@@ -53,6 +53,8 @@ The `route` arm asserts a refusal instead of an artifact. Its three `absent` ent
 
 ### The routing arms
 
+`claude:toolkit-operator/unmigrated`, `claude:toolkit-operator/installed`, and the whole of `claude/migration-standards.sh` are retired along with `aitk snippets install`/`sync` and the `migration-standards` skill. `ROOT_LAYOUTS` in `src/sync/layout.ts` now permanently reports no unmigrated domain, so the routing those two arms scored can never fire again. The counts and costs through the rest of this section describe the state before that retirement and need a fresh run to correct, which this pass did not do.
+
 `claude/toolkit-operator.sh` and `claude/migration-standards.sh` are the first arms whose subject is a decision rather than an artifact. Almost everything the operator routes ends in a handoff or a report, so a rule selecting on what a wrong run leaves behind exempts nearly all of it, and the damage is real either way: a target sent to the seed reconciler instead of the installer, or to a domain sync for a domain that has nothing installed to sync. The ignore-only route is the single exception, since it runs `aitk tooling inject --gitignore` itself and the file it merges into is the artifact.
 
 What let them be asserted at all is `reply`. Seven arms pin the skill or command each route names, which is the mechanism `05-testability.md` called for and the arms shipped beside the drift report did not use, so the report was verified against three arms and six real targets while the router reading it had never been executed. Splitting the route from the proposal is what keeps each arm scoring one decision: `claude:toolkit-operator/unmigrated` asserts that the reply reaches `migration-standards`, and `claude:migration-standards/root-layout` asserts what that skill then produces.
@@ -199,7 +201,7 @@ The prompt survives where evidence of a scenario outlives both spellings. Eleven
 
 `setup-gov` against `infra/gov.sh` is a real pairing. `setup-indexes` against `infra/indexes.sh` is the other, and it settles what the file alone cannot, since the scenario declares a `bootstrap` arm whose own log line names the skill it seeds for. Neither spelling reaches either one, because no `setup` category exists and both sit under `infra/`.
 
-`migration-standards` against `infra/standards.sh` was the case that showed the prompt can offer a vacuous one, since that scenario stages the install and sync trees the `aitk standards` CLI walks and exercises nothing the skill decides. That skill now pairs to `claude/migration-standards.sh` and leaves the prompt behind, which is the ordinary way a wrong pairing retires. An internal skill draws no prompt at all, being absent from the denominator above by construction rather than unknown.
+`migration-standards` against `infra/standards.sh` was the case that showed the prompt can offer a vacuous one, since that scenario stages the install and sync trees the `aitk standards` CLI walks and exercises nothing the skill decides. That skill paired to `claude/migration-standards.sh` afterward, which was the ordinary way a wrong pairing retires. Both the skill and that scenario are gone now: the install channel `migration-standards` relocated snippets out of closed, leaving nothing left to propose. An internal skill draws no prompt at all, being absent from the denominator above by construction rather than unknown.
 
 ### Exemptions
 

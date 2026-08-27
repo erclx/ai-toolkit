@@ -11,17 +11,9 @@ Plugin skills that shell out to the CLI follow a consistent pattern: read the to
 
 ### Reading a report rather than rediscovering
 
-`migration-standards` extends the pattern past the catalog. Its detection now comes from the `unmigrated` array in `aitk sync --check --json`, where it used to list `standards/` and `snippets/` with `ls`. The two answer different questions.
+`toolkit-operator` reads `aitk sync --check --json` rather than walking the tree itself, and treats an absent report key as unread rather than as an empty answer. Reading an absent key as empty is the failure a report field introduces that a folder listing never had: the run exits zero, takes the nothing-to-report branch, and reports a clean target the CLI never actually measured. An absent key and an empty array are separate states, and a current CLI reporting an empty array has looked and found nothing.
 
-A listing counts every markdown file in the folder, and a project that keeps its own docs at `standards/` has that folder proposed for relocation under `.claude/`, where a sync then walks files nobody installed. `detectUnmigrated` claims a root folder only when it holds a file whose basename the toolkit ships, so the count the proposal reports is the toolkit-owned subset.
-
-Reading the same report the router read is the other half of it. `toolkit-operator` routes here off `unmigrated`, so a skill rediscovering by its own rule can disagree with the report that sent the session to it, and the disagreement surfaces as a proposal the operator's own diagnosis does not support.
-
-The `ls` path stays as the fallback, on three triggers rather than one, and the body says the counts are unfiltered when it fires. Two are the obvious ones, `aitk` off `PATH` and a non-zero exit. The third is a report that parses and carries no `unmigrated` key, which is what a CLI older than `0.46.0` returns, since the field reached a release there.
-
-Reading an absent key as an empty answer is the failure taking detection from a command introduces and a folder listing never had: the run exits zero, takes the nothing-to-relocate branch, and reports a clean layout to a project whose every domain sits at the root. An absent key and an empty array are therefore separate states, and a current CLI reporting `"unmigrated": []` has looked and found nothing.
-
-That skew is the general shape rather than one skill's problem. A skill reaches a target through whichever CLI the machine has, while the skill itself loads live from the plugin, so a body written against a field can run against a binary predating it. `ARCHITECTURE.md` carries the two-speed release as a standing risk, and this is the first skill to answer it with a per-field test rather than assuming the surface it reads.
+That skew is the general shape rather than one skill's problem. A skill reaches a target through whichever CLI the machine has, while the skill itself loads live from the plugin, so a body written against a field can run against a binary predating it. `ARCHITECTURE.md` carries the two-speed release as a standing risk.
 
 The fallback deliberately does not key on `historyUnavailable`, which was the shape borrowed from `claude-seed-sync` when the change was planned. That field reports failed attribution on a domain or on `seeds`, and `unmigrated` is a filesystem read carrying no attribution at all, so keying on it would drop a correct detection whenever an unrelated half of the report could not be dated.
 

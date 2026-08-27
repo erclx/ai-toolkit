@@ -33,7 +33,6 @@ const GOVERNANCE: StampSource = {
   domain: 'governance',
   toolkitRoot: '/nowhere',
 }
-const SNIPPETS: StampSource = { domain: 'snippets', toolkitRoot: '/nowhere' }
 const TOOLING: StampSource = { domain: 'tooling', toolkitRoot: '/nowhere' }
 
 function writeFixture(path: string, content: string): void {
@@ -143,11 +142,11 @@ describe('readStamp', () => {
       }),
     )
 
-    await writeStamp(TARGET, SNIPPETS, {}, NOW)
+    await writeStamp(TARGET, TOOLING, {}, NOW)
 
     expect(Object.keys(readRaw(TARGET).domains as object)).toEqual([
-      'snippets',
       'governance',
+      'tooling',
     ])
   })
 
@@ -272,12 +271,12 @@ describe('writeStamp', () => {
 
   it('should preserve other domains when one domain is rewritten', async () => {
     await writeStamp(TARGET, GOVERNANCE, { 'a.md': 'sha256:aa' }, NOW)
-    await writeStamp(TARGET, SNIPPETS, { 'b.md': 'sha256:bb' }, NOW)
+    await writeStamp(TARGET, TOOLING, { 'b.md': 'sha256:bb' }, NOW)
 
     const stamp = readStamp(TARGET)
 
     expect(stamp?.domains.governance?.files).toEqual({ 'a.md': 'sha256:aa' })
-    expect(stamp?.domains.snippets?.files).toEqual({ 'b.md': 'sha256:bb' })
+    expect(stamp?.domains.tooling?.files).toEqual({ 'b.md': 'sha256:bb' })
   })
 
   it('should replace a domain rather than merge into it', async () => {
@@ -312,10 +311,10 @@ describe('writeStamp', () => {
   })
 
   it('should grow covers as each domain is stamped', async () => {
+    await writeStamp(TARGET, TOOLING, {}, NOW)
     await writeStamp(TARGET, GOVERNANCE, {}, NOW)
-    await writeStamp(TARGET, SNIPPETS, {}, NOW)
 
-    expect(readStamp(TARGET)?.covers).toEqual(['snippets', 'governance'])
+    expect(readStamp(TARGET)?.covers).toEqual(['governance', 'tooling'])
   })
 
   it('should end the file with a newline', async () => {
@@ -413,9 +412,9 @@ describe('stampedCommit', () => {
     writeFixture(
       stampPath(TARGET),
       JSON.stringify({
-        covers: ['snippets', 'governance'],
+        covers: ['governance', 'tooling'],
         domains: {
-          snippets: { commit: 'old1111', syncedAt: 'then', files: {} },
+          tooling: { commit: 'old1111', syncedAt: 'then', files: {} },
           governance: { commit: 'new2222', syncedAt: 'now', files: {} },
         },
       }),
@@ -423,7 +422,7 @@ describe('stampedCommit', () => {
 
     const stamp = readStamp(TARGET)
 
-    expect(stampedCommit(stamp, 'snippets')).toBe('old1111')
+    expect(stampedCommit(stamp, 'tooling')).toBe('old1111')
     expect(stampedCommit(stamp, 'governance')).toBe('new2222')
   })
 
@@ -438,7 +437,7 @@ describe('stampedCommit', () => {
       }),
     )
 
-    await writeStamp(TARGET, SNIPPETS, {}, NOW)
+    await writeStamp(TARGET, TOOLING, {}, NOW)
 
     expect(stampedCommit(readStamp(TARGET), 'governance')).toBe('old1111')
   })
@@ -454,7 +453,7 @@ describe('stampedHashes', () => {
   })
 
   it('should return an empty map when the domain is unstamped', async () => {
-    await writeStamp(TARGET, SNIPPETS, { 'a.md': 'sha256:aa' }, NOW)
+    await writeStamp(TARGET, TOOLING, { 'a.md': 'sha256:aa' }, NOW)
 
     expect(stampedHashes(readStamp(TARGET), 'governance')).toEqual({})
   })

@@ -71,7 +71,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | Domain      | Subcommands                                                                                                                           |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                                                                |
-| `snippets`  | `list`, `install`, `sync`, `create`                                                                                                   |
+| `snippets`  | `list`, `create`                                                                                                                      |
 | `standards` | `list`, `<name>`                                                                                                                      |
 | `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                                               |
 | `claude`    | `init`, `sync`, `routing`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `skills rank`, `setup [dest]` |

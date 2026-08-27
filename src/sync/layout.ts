@@ -1,7 +1,6 @@
 import { existsSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { SUBDIRS } from '@/claude/seeds'
-import { snippetsSourceDir } from '@/snippets/categories'
 import type { StampDomain } from '@/sync/stamp'
 
 const CLAUDE_DIR = '.claude'
@@ -10,18 +9,22 @@ const CLAUDE_DIR = '.claude'
  * Domains an older toolkit installed at the project root, each with the source
  * folder naming what it owns. Governance is absent because its rules have always
  * landed under `.claude/rules/`, so there is no earlier location to be stranded
- * at. Standards is absent because no copy installs into a target at all now, so
- * a root `standards/` folder there is the project's own authoring surface and
- * reporting it as unmigrated would propose moving files nothing installed.
+ * at. Standards and snippets are absent because no copy installs into a target
+ * at all now, so a root `standards/` or `snippets/` folder there is the
+ * project's own authoring surface and reporting it as unmigrated would propose
+ * moving files nothing installed.
  *
  * A tuple array rather than a partial record, so the domain key stays typed
- * without asserting an `Object.entries` result back into the union.
+ * without asserting an `Object.entries` result back into the union. Empty
+ * now that both former entries retired their install channels. A future
+ * domain installing at a target's root, the way an older toolkit installed
+ * standards and snippets there, would be the next entry to add.
  */
 const ROOT_LAYOUTS: readonly (readonly [
   StampDomain,
   string,
   (root: string) => string,
-])[] = [['snippets', 'snippets', snippetsSourceDir]]
+])[] = []
 
 /**
  * A target file that a shipped seed folder replaced. Carries no source and

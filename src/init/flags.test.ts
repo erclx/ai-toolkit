@@ -26,6 +26,10 @@ describe('applyInitOptions', () => {
     expect(INIT_OPTIONS.map((option) => option.key)).not.toContain('standards')
   })
 
+  it('should declare no snippets selection, since the corpus never installs', () => {
+    expect(INIT_OPTIONS.map((option) => option.key)).not.toContain('snippets')
+  })
+
   it('should offer governance as a skippable domain in the help text', () => {
     const skip = INIT_OPTIONS.find((option) => option.key === 'skip')
 
@@ -50,7 +54,7 @@ describe('flagsProvided', () => {
     expect(readFlagsProvided(['--skip', 'wiki'])).toBe(true)
   })
 
-  it('should read an explicitly passed snippets category as operator-provided', () => {
-    expect(readFlagsProvided(['--snippets', 'all'])).toBe(true)
+  it('should read an explicitly passed add list as operator-provided', () => {
+    expect(readFlagsProvided(['--add', '260-shadcn'])).toBe(true)
   })
 })

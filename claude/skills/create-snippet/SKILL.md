@@ -17,14 +17,14 @@ Creates one snippet file. Read these files in parallel:
 
 ## Steps
 
-1. Resolve the write surface: `snippets/` at the root if present, which is the toolkit's own authoring source. Otherwise `.claude/snippets/`, a target project's installed copy.
+1. Resolve the write surface: `snippets/` at the root if present, which is the toolkit's own authoring source. Otherwise `.claude/snippets/`, a stale copy a target project holds from before its install channel retired.
 2. Draft the content from the user's description. The snippet reference governs structure, invocation, and authoring conventions.
 3. Confirm the slug and full content with the user before writing
-4. Write the file. On the root surface: `<surface>/<category>/<slug>.md`, or `<surface>/<slug>.md` when the snippet takes no category. On the `.claude/` surface: the same shape nested one level deeper under `project/`, so the sync engine's location rule holds it apart from a toolkit-installed snippet regardless of what its name matches.
+4. Write the file. On the root surface: `<surface>/<category>/<slug>.md`, or `<surface>/<slug>.md` when the snippet takes no category. On the `.claude/` surface: the same shape nested one level deeper under `project/`, a convention kept for its own sake now that nothing syncs that folder.
 
 ## After writing
 
 Emit the full path on its own line.
 
 - Root surface: this is the toolkit's authoring source. Remind the user to run `bun run check` to regenerate the consumed copy under `.claude/`.
-- `.claude/` surface: the file is project-local, under `.claude/snippets/project/`. `aitk snippets sync` leaves everything there alone by location rather than by a name it fails to recognize. Remind the user to copy it to the toolkit repo, under `snippets/<category>/<name>.md`, if it should ship to every project.
+- `.claude/` surface: the file is project-local, under `.claude/snippets/project/`. Remind the user to copy it to the toolkit repo, under `snippets/<category>/<name>.md`, if it should ship to every project.

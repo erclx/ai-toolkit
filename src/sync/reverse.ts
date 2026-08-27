@@ -47,8 +47,7 @@ export interface UnclaimedFolder {
 
 /**
  * A proposal-only skill with a live case in this target. The skills propose and
- * never execute, so the report names one rather than queueing a change, which
- * is the treatment `unmigrated` already gives `migration-standards`.
+ * never execute, so the report names one rather than queueing a change.
  */
 export interface MigrationCandidate {
   readonly skill: string
@@ -208,9 +207,8 @@ function covers(index: HistoryIndex, sourceRel: string): boolean {
 }
 
 /**
- * Live cases for the two proposal-only skills no report field has ever named.
- * `migration-standards` reaches an operator through `unmigrated`, and without
- * this its two siblings are documented and unreachable.
+ * Live cases for the two proposal-only skills no other report field names.
+ * Without this, both are documented and unreachable.
  *
  * Both tests read what the skill itself acts on, so a proposal the report makes
  * is one the skill has work to do for. A context tier that already holds files

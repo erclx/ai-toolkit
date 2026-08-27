@@ -19,13 +19,14 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 
 ## Decisions
 
-- Folder structure is preserved on install, so `claude/figma-steps.md` installs as `.claude/snippets/claude/figma-steps.md` and is invoked as `@.claude/snippets/claude/figma-steps`. The invocation path is derivable from the source path with no mapping table.
-- The root is the authoring source and `.claude/snippets/` is a generated consumed copy, matching the `standards/` split so paths resolve identically here and in a target.
-- Presets are virtual curated subsets defined in `snippets.toml`, while categories are auto-derived from folders. Adding a folder adds a category with no registration step.
+- Folder structure was preserved on install, so `claude/figma-steps.md` installed as `.claude/snippets/claude/figma-steps.md` and was invoked as `@.claude/snippets/claude/figma-steps`. A target now carries no such copy: `claude/snippets` is a symlink to this folder, the same live-resolve mechanism `claude/standards` uses, so a plugin session reaches a snippet at `@claude/snippets/claude/figma-steps` with no install step in between.
+- The root is the authoring source. A target's `.claude/snippets/` is a stale copy from before `aitk snippets install` retired rather than anything a current toolkit writes, matching the `standards/` split.
+- `aitk snippets install` and `aitk snippets sync` are retired, the same ground `.claude/ARCHITECTURE.md` retired `aitk standards install` on: a copied corpus drifted with nothing able to refresh it, and the live symlink now serves every plugin cache instead. `src/snippets/install.ts` and `src/snippets/adapter.ts` are gone with their subcommands, and `aitk init` carries no `--snippets` flag or install step.
+- Presets are virtual curated subsets defined in `snippets.toml`, while categories are auto-derived from folders. Adding a folder adds a category with no registration step. Both still resolve through `aitk snippets create`, the one command left that writes into a folder.
 - Every folder under `snippets/` is publishable, so nothing filters. The ones no entry point reads live in `internal/snippets/`.
-- `aitk init` installs no snippets unless `--snippets <category>` names one. Omitting the flag reaches the same skip step as `--skip snippets`, which is the only other domain-declining spelling `SKIPPABLE_DOMAINS` in `src/init/plan.ts` did not already carry, and both print a recovery command naming `essentials`.
-- `none` is a real category, not a synonym for omitting the flag. `resolveSnippets` in `src/snippets/install.ts` resolves it to zero files directly, and `categoryExists` in `src/snippets/categories.ts` refuses an empty string rather than reading `join(source, '')` as the source directory itself, which used to widen an unset value to every base entry.
-- The `@`-reference convention that used to sit in `CLAUDE.md`'s `## Snippets` section now ships as `governance/rules/snippets/505-at-references.md`, installed by `installSnippetsRule` in `src/snippets/install.ts` alongside any non-empty snippets resolution, never by `aitk gov install`. See `.claude/context/governance/rules.md` for why the folder carries no stack entry.
+- The retrieval half of the retirement is the cost the delivery half does not carry. A standard is read by `aitk standards <name>`, which resolves against the package from anywhere, so closing its install cost a reader nothing. A snippet is reached by a path a person types after `@`, and a plugin cache path can be typed but not discovered, so a target that stops holding `.claude/snippets/` may leave its snippets reachable in principle and unreachable in practice. `aitk snippets list` is the catalog a reader without a memorized path falls back to.
+- `governance/rules/snippets/505-at-references.md`, the `@`-reference convention rule, used to install only through `installSnippetsRule` inside the now-retired `aitk snippets install`. Losing that channel left the rule no delivery path at all, so `base` now carries `snippets` as a folder-whole entry (see `.claude/context/governance/rules.md`), reaching every base consumer through `aitk gov install`/`sync` instead.
+- `migration-standards`, the skill that proposed moving a root `snippets/` folder into `.claude/snippets/`, is retired with the install channel it existed to backfill. `.claude/snippets/` is no longer a legitimate destination for anything, the same way `.claude/standards/` was not before it.
 
 ### Where a snippet lives
 
@@ -46,18 +47,13 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 - The two channels are what forced it: a skill loads live from the plugin root while a snippet is copied by a CLI command, so a skill citing an installed path breaks for a project that added the plugin and ran no install, and nothing reports it. A reference travels with the body that cites it, so long as that body is the only reader.
 - What the move costs is the typed entry point, since a person fires a snippet by path and cannot type a reference, so the skill body routes a request for either compaction side to the runbook that serves it. An invocation word was the first attempt and `.claude/standards/skill.md` bans it, because a flag selecting an alternate flow is the shape the model misreads on its way to the vanilla path.
 
-### Sync and the boundary
+### The boundary
 
-- Sync updates only what is already present and never adds. A project that installed `essentials` does not silently grow new snippets on the next sync.
-- Sync runs on the shared engine in `src/sync/engine.ts` via `src/snippets/adapter.ts`. The adapter locates a source by relative path where the gov adapter locates one by rule name, which is the only axis the two differ on. It sets no `collectRetired`, so snippets is the proof that hook is optional. It does declare `projectSubdir`, so a snippet the toolkit finds no source for, outside `.claude/snippets/project/`, is offered the path under that subfolder it would take. `.claude/context/cli/sync.md` owns why the offer is conditional rather than a claim about who wrote the file.
-- No code filters an internal category out of a publishable one. The plugin symlinks `snippets/` wholesale and an installer dereferences it, so the one consumer that could carry no filter is the one that ships the content, and a filter at any other entry point only looks like a boundary. Location is what enforces it, and `scripts/core/check-plugin-boundary.sh` asserts the result.
+No code filters an internal category out of a publishable one. The plugin symlinks `snippets/` wholesale and a session reading through it resolves the symlink, so the one consumer that could carry no filter is the one that ships the content, and a filter at any other entry point only looks like a boundary. Location is what enforces it, and `scripts/core/check-plugin-boundary.sh` asserts the result.
 
 ## Gotchas
 
-- Sync is not category-aware. It diffs every `.md` already in the target against the toolkit source, regardless of which preset installed it.
-- Matching depends on install and sync agreeing on the destination layout. `deriveDestRelPath` in `src/snippets/install.ts` keeps only the immediate parent, so a snippet nested two levels deep would install to a path sync cannot match. Nothing in the tree is that deep today.
-- A snippet authored directly in a target's `.claude/snippets/` is project-local and survives sync, because sync only touches filenames it recognizes from the toolkit source.
-- Deleting a source snippet strands every copy already installed, since sync skips rather than deletes. The next sync does report it as not in toolkit source, so the project is told, but that line reads identically for a snippet the project authored itself. A deletion note is what separates the two, because the report alone cannot say whether the file is retired or project-local.
+- A target's `.claude/snippets/` predates this retirement if it exists at all. Nothing writes it now, nothing reads it in preference to the live symlink, and nothing reconciles it against the source. Treat it as a stale copy rather than as the current install surface.
 - The three orchestrator runbooks are the live instance, so a project that installed the `orchestrator` preset in the window it existed still holds all three under `.claude/snippets/claude/` and can delete them once the skill carries the same text
 - The toolkit-feedback flow is the `toolkit-feedback` plugin skill plus the `aitk feedback` CLI, not a snippet.
 - The memory review phases (challenge, discuss, apply, cleanup) live in the `claude-memory-review` skill body rather than in snippets of their own. Re-ping the skill with the matching phase phrase.
@@ -66,32 +62,23 @@ Counting what depends on a prose contract means scanning `snippets/` alongside `
 
 ## Presets and categories
 
-Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Both are valid arguments to `aitk snippets install`. Run `aitk snippets list` for the catalog of both, and `--entries` for the slugs in each.
-
-`aitk init` installs no snippets when `--snippets` is omitted. `essentials` is the preset the skip and default recovery commands both suggest, not a default value any flag carries.
+Presets are virtual curated subsets defined in `snippets.toml`. Categories are auto-derived from folders. Run `aitk snippets list` for the catalog of both, and `--entries` for the slugs in each. Neither resolves against an install argument any more, since nothing installs. Both exist now to help a reader find the `@`-reference path a snippet resolves at.
 
 ## CLI
 
-| Command                 | Description                                                   |
-| ----------------------- | ------------------------------------------------------------- |
-| `aitk snippets install` | Copy slugs for a preset or category, use `all` for everything |
-| `aitk snippets sync`    | Update snippets already present, never adds new               |
-| `aitk snippets create`  | Create a new snippet file in the correct category folder      |
-| `aitk snippets list`    | Emit catalog of presets, categories, and entries              |
+| Command                | Description                                              |
+| ---------------------- | -------------------------------------------------------- |
+| `aitk snippets create` | Create a new snippet file in the correct category folder |
+| `aitk snippets list`   | Emit catalog of presets, categories, and entries         |
 
 Flags and arguments live in `docs/agents/index.md`. `aitk snippets` with no args prints help, since each verb is registered by name rather than routed through a dispatcher.
 
-`install`, `sync`, and `list` are TypeScript, with `sync` built on the shared sync engine. `create` is registered by name and forwards to `scripts/snippets/create.sh`, keeping its own `--help`.
-
-The one argument to `install` resolves three ways, in order: `all`, then a preset name, then a folder. A folder sharing a preset name resolves to the preset. The picker refuses headlessly rather than defaulting, since its first option was `all`.
+`list` is TypeScript. `create` is registered by name and forwards to `scripts/snippets/create.sh`, keeping its own `--help`.
 
 ## Workflow
 
 ```bash
-aitk snippets install essentials ../my-app   # the default preset
-aitk snippets install claude ../my-app       # one category
-aitk snippets install all ../my-app          # everything installable
-aitk snippets sync ../my-app                 # update what is already there
+aitk snippets list                # catalog of presets, categories, and entries
 ```
 
 To create a new snippet:
@@ -107,7 +94,7 @@ aitk snippets create
 
 Use `aitk snippets create`. It handles file and folder creation. For manual additions, create a `.md` file in the correct folder using a kebab-case name.
 
-The `create-snippet` skill writes one snippet, resolving the surface at either location: `snippets/` at the root when present, the toolkit repo, otherwise `.claude/snippets/`, a target project. On the project surface it writes one level deeper, under `.claude/snippets/project/`, which is the subfolder the snippets adapter declares so `aitk snippets sync` orphans the file by location rather than by a name the toolkit happens not to ship. It reaches the authoring conventions through `standards/snippets.md`, cited at `${CLAUDE_SKILL_DIR}/../../standards/snippets.md`, the same fallback form every skill uses to reach a flat-root standard.
+The `create-snippet` skill writes one snippet, resolving the surface at either location: `snippets/` at the root when present, the toolkit repo, otherwise `.claude/snippets/`, a target project that still holds one from before the install channel retired. On the project surface it writes one level deeper, under `.claude/snippets/project/`, a convention now kept for its own sake rather than for a sync that no longer runs. It reaches the authoring conventions through `standards/snippets.md`, cited at `${CLAUDE_SKILL_DIR}/../../standards/snippets.md`, the same fallback form every skill uses to reach a flat-root standard.
 
 ## Adding a category
 

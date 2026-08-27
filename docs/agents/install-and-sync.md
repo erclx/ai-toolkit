@@ -26,10 +26,8 @@ rules, skills, and docs may cite. `aitk standards rule` carries the reserved
 number bands behind that placement, where `900-999` is the range a
 project-authored rule takes and everything below it belongs to the toolkit.
 
-`aitk snippets sync` reports the same way for a snippet outside
-`.claude/snippets/project/`, since both adapters declare the subfolder.
-`aitk sync --check` does not. It skips every orphaned entry, so the destination
-reaches the two domain sync verbs alone.
+`aitk sync --check` does not report an orphaned entry. It skips every one, so
+the destination reaches `aitk gov sync` alone, the one domain sync verb left.
 
 When the target's install recorded a stack, `aitk gov sync` also reports a
 rule that stack lists and `.claude/rules/` does not hold, as a `missing` entry
@@ -46,30 +44,27 @@ installs into no project, so the domain has nothing in a target to reconcile.
 and then the corpus inside the package, and `aitk standards list --json` carries
 the catalog.
 
-`aitk snippets sync` matches by path relative to `.claude/snippets/`. It
-matches by path relative to that directory, so a snippet the toolkit no longer
-ships, or one authored directly in the target, is reported and skipped rather
-than deleted, and a snippet under `.claude/snippets/project/` skips the same
-way regardless of path, since that subfolder is project-authored by location.
-It is not preset-aware, so a project that installed `essentials`
-does not grow new snippets on a sync. Use `aitk snippets install` to add them.
+There is no `aitk snippets sync` and no `aitk snippets install` either, on the
+same ground: `claude/snippets` in the plugin cache symlinks live to the
+toolkit's own `snippets/`, so a session reaches one at its `@` reference with
+no copy to reconcile. `aitk snippets list --json` carries the catalog and
+`aitk snippets create` is the one verb left that still writes a file.
 
 ## Install guards
 
-`aitk gov install` and `aitk snippets install` require their first argument
-under `AITK_NON_INTERACTIVE=1`. Both used to fall back to an interactive picker
-that resolved to its first option headlessly, so `aitk gov install` with no
-stack installed whichever stack sorted first and `aitk snippets install` with no
-category installed every category. Each now reports the valid names on stderr
-and exits 1.
+`aitk gov install` requires its first argument under
+`AITK_NON_INTERACTIVE=1`. It used to fall back to an interactive picker that
+resolved to its first option headlessly, so a call with no stack installed
+whichever stack sorted first. It now reports the valid names on stderr and
+exits 1.
 
 Every documented agent path already passes the argument, including
 `aitk init`. The confirm-then-apply prompt after it still resolves to `Yes`
-headlessly, so a call that names its stack or category is unchanged.
+headlessly, so a call that names its stack is unchanged.
 
-`aitk gov install` also refuses the toolkit root as a target, matching
-`aitk snippets install`. Both resolve the target before anything else, so a path
-that does not exist fails rather than being scaffolded.
+`aitk gov install` also refuses the toolkit root as a target. It resolves the
+target before anything else, so a path that does not exist fails rather than
+being scaffolded.
 
 ## Standards resolution
 
@@ -227,14 +222,13 @@ refusal rather than a shape nobody stated.
 to, with nothing at the path the current one reads. It carries `rootPath`,
 `installPath`, and a file count. Without it a project holding `standards/` at its
 root reports zero entries for that domain and reads as clean, which is the most
-misleading state the report can produce. Route it to `migration-standards`.
+misleading state the report can produce.
 
-That skill reads this field rather than listing the folder itself, so the entry
-is the detection on both sides of the handoff and the two cannot disagree. The
-count is what makes the difference visible: it counts only files whose basename
-the toolkit ships, so a root folder holding the project's own documents beside
-the installed ones reports the installed subset, where a listing reports every
-file and proposes relocating the lot.
+The field currently names no domain. Standards and snippets are the two the
+toolkit ever installed at a project root, and both closed their install channel,
+so a project still holding a root `standards/` or `snippets/` folder is carrying
+its own authoring surface rather than an unfinished install. Nothing proposes
+moving either, and no command relocates the content. Move it yourself.
 
 #### Rules the target never received
 
@@ -268,8 +262,8 @@ rule the chain lists reaches both surfaces the same way.
 A target stamped before governance recorded a chain falls back to the older
 band-inference read below. The measurement there anchors on governance's own
 stamp rather than on the oldest anchor across domains, since rules are
-domain-scoped and a shared anchor would let a snippets sync move the revision
-rules are measured from. A target carrying no chain and no governance anchor
+domain-scoped and a shared anchor would let another domain's sync move the
+revision rules are measured from. A target carrying no chain and no governance anchor
 reports nothing at all: it has no date to measure against, and diffing from the
 start of history would read the whole catalog as new.
 
@@ -343,9 +337,8 @@ colliding on a retired name costs the walk no reads. The cost is that a file the
 toolkit shipped and the target renamed goes unmatched, the same limit the
 `unmigrated` count carries.
 
-`migrations` names a proposal-only skill with a live case in this target, which
-is the treatment `unmigrated` already gives `migration-standards`. It fires on a
-`CLAUDE.md` past 250 lines for `migration-claude-md`, and on a `docs/` folder
+`migrations` names a proposal-only skill with a live case in this target. It
+fires on a `CLAUDE.md` past 250 lines for `migration-claude-md`, and on a `docs/` folder
 holding markdown with no populated `.claude/context/` for `migration-context`.
 Each entry carries the skill name and the measurement behind it, so a consumer
 can check the proposal before running it. Without the field both skills are
@@ -371,24 +364,16 @@ so this section reports and gates nothing.
 
 ## Bootstrap
 
-`aitk init` installs up to six core domains and reports each one independently. A
+`aitk init` installs up to four core domains and reports each one independently. A
 domain that fails does not abort the run, so the command finishes the rest and
 exits 1 naming the failures. Passing any flag skips the confirmation prompt,
 which is what makes it scriptable.
 
 `--stack` defaults to `base`, and the default
 does not read as a passed flag, so a bare `aitk init` installs governance and
-still prompts. `--skip` takes `wiki`, `governance`, and `snippets`, and warns
-without aborting on any other value. There is no `--standards`, since no run
-writes a standard into the target.
-
-`--snippets` carries no default. A bare `aitk init` installs no snippets and
-reports the domain as skipped, the same way an explicit `--skip snippets`
-does, both naming `aitk snippets install essentials <target>` as the recovery
-command. `--snippets none` is a distinct, deliberate way to reach the same
-zero-file result while still running the step, which is what lets a scripted
-caller assert "install nothing" without depending on an empty string, which
-`aitk snippets install` refuses.
+still prompts. `--skip` takes `wiki` and `governance`, and warns
+without aborting on any other value. There is no `--standards` and no
+`--snippets`, since no run writes either corpus into the target.
 
 ## Unguarded tooling primitives
 

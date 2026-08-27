@@ -106,12 +106,6 @@ aitk tooling inject base /path/to/project --configs --seeds
 # Prints the number removed on stdout, diagnostics on stderr
 aitk tooling prune-gitignore base /path/to/project
 
-# Install a snippet preset
-AITK_NON_INTERACTIVE=1 aitk snippets install essentials /path/to/project
-
-# Update snippets already installed, leaving project-authored ones alone
-AITK_NON_INTERACTIVE=1 aitk snippets sync /path/to/project
-
 # Print one standard. Nothing installs the corpus, so this is how a target reads one
 AITK_NON_INTERACTIVE=1 aitk standards slug >slug.md
 

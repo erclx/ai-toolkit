@@ -1,4 +1,4 @@
-import { type InitFlags, resolveStack, snippetsSkipReason } from '@/init/plan'
+import { type InitFlags, resolveStack } from '@/init/plan'
 import type { DomainStep } from '@/init/run'
 
 /** Builds the child-process invocation for one domain. */
@@ -45,26 +45,6 @@ export function buildSteps(
       kind: 'run',
       label: 'Governance',
       run: child(govArgs(stack, flags.add, resolved)),
-    })
-  }
-
-  // `snippets === undefined` here can never fire on its own: `snippetsSkipReason`
-  // already returns a reason whenever `flags.snippets` is undefined. It is what
-  // narrows `snippets` to `string` for the child() call below, since TypeScript
-  // cannot narrow a property through a function call.
-  const snippets = flags.snippets
-  const skipReason = snippetsSkipReason(flags)
-  if (skipReason !== undefined || snippets === undefined) {
-    steps.push({
-      kind: 'skip',
-      label: 'Snippets',
-      notice: `Skipped: ${skipReason ?? 'no --snippets given'}. Run 'aitk snippets install essentials ${target}' to install snippets.`,
-    })
-  } else {
-    steps.push({
-      kind: 'run',
-      label: 'Snippets',
-      run: child(['snippets', 'install', snippets, resolved]),
     })
   }
 
