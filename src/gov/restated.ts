@@ -11,6 +11,17 @@ export const SEED_REL = join('tooling', 'claude', 'seeds', 'CLAUDE.md')
 export const SHIPPED_SKILLS_REL = join('claude', 'skills')
 
 /**
+ * Path-scoped rules, read from the authoring root rather than the consumed
+ * copy under `.claude/rules/`. A stack takes a whole rule folder, so a bullet
+ * landing anywhere under here ships to every target the stack reaches, the
+ * same way a bullet in the always-loaded file or the seed does. That is what
+ * makes a rule an instruction surface rather than a place a rule is merely
+ * quoted, and it is why a bullet moved here from the seed still belongs to
+ * the corpus this sweep reads rather than leaving it.
+ */
+export const RULES_REL = join('governance', 'rules')
+
+/**
  * Path pairs whose duplication is deliberate and already recorded.
  *
  * The seed is authored from the always-loaded file and `claude-seed-sync`
@@ -168,7 +179,7 @@ export type RestatedRefusal = 'no-instructions' | 'no-surfaces'
 export type Restatement = 'mirror' | 'repetition' | 'contradiction'
 
 /** Which surface a restatement was found on, before any class is assigned. */
-export type SurfaceKind = 'seed' | 'skill'
+export type SurfaceKind = 'seed' | 'skill' | 'rule'
 
 /**
  * Which surface a later edit starts from.
@@ -220,7 +231,9 @@ export type RestatedReport =
         readonly instructions: number
         readonly seed: number
         readonly bodies: number
-        /** Statements the two further surfaces offered, which bounds recall. */
+        /** Distinct rule files a bullet was read from, counted like `bodies`. */
+        readonly rules: number
+        /** Statements the three further surfaces offered, which bounds recall. */
         readonly candidates: number
       }
       readonly matcher: {
@@ -399,6 +412,26 @@ function readBullets(root: string, relative: string): Statement[] {
 }
 
 /**
+ * Every top-level bullet across every rule file, keyed to the file it came
+ * from rather than folded into one corpus. A rule reads as bullets under the
+ * same convention the always-loaded file and the seed use, so `readBullets`
+ * is reused per file rather than rebuilt for prose, and frontmatter is read
+ * past for the same reason it is: no line there starts with `- `.
+ */
+function readRuleFiles(root: string, rulesRoot: string): Statement[] {
+  const files = [
+    ...new Bun.Glob('**/*.md').scanSync({ cwd: rulesRoot, onlyFiles: true }),
+  ].sort()
+
+  return files.flatMap((file) =>
+    readBullets(
+      root,
+      `${RULES_REL.replaceAll('\\', '/')}/${file.replaceAll('\\', '/')}`,
+    ),
+  )
+}
+
+/**
  * Every prose line and bullet in a shipped body.
  *
  * Wider than the bullet rule above because the motivating case was stated in a
@@ -550,13 +583,21 @@ function classify(
 }
 
 /**
- * Every instruction in the always-loaded file that a second surface also states.
+ * Every instruction the always-loaded file or a path-scoped rule states that a
+ * further surface also states.
  *
  * Matching is recall-first, keyed on distinctive tokens two statements share
  * rather than on a phrase they spell the same way. The motivating case was one
  * rule written three different ways, so a near-exact matcher would miss the
  * defect the sweep exists for, and a recall-first reading can be narrowed from
  * real output where the reverse cannot.
+ *
+ * The always-loaded file and every rule each open the search as a subject, and
+ * the seed, the shipped bodies, and every rule again close it as a candidate.
+ * A rule sits on both sides because a stack ships a whole rule folder, so a
+ * bullet duplicated between two rules reaches a target exactly as a bullet
+ * duplicated between the always-loaded file and a rule does, and neither shape
+ * is visible from one side alone.
  *
  * It reports and never gates. A restatement is legitimate more often than not,
  * so a push failing on one would fail on the ordinary case.
@@ -574,14 +615,31 @@ export function readRestated(root: string): RestatedReport {
 
   const skillsRoot = join(root, SHIPPED_SKILLS_REL)
   const bodies = existsSync(skillsRoot) ? readBodyLines(root, skillsRoot) : []
-
   const bodyFiles = new Set(bodies.map((candidate) => candidate.file)).size
-  if (seed.length === 0 && bodies.length === 0) {
+
+  const rulesRoot = join(root, RULES_REL)
+  const ruleStatements = existsSync(rulesRoot)
+    ? readRuleFiles(root, rulesRoot)
+    : []
+  const rules: Candidate[] = ruleStatements.map((statement) => ({
+    ...statement,
+    kind: 'rule' as const,
+  }))
+  const ruleFiles = new Set(ruleStatements.map((statement) => statement.file))
+    .size
+
+  if (seed.length === 0 && bodies.length === 0 && rules.length === 0) {
     return { kind: 'unreadable', reason: 'no-surfaces' }
   }
 
-  const subjects = instructions.map(index)
-  const candidates = [...seed, ...bodies].map(index)
+  // A rule states a directive directly, the same as the always-loaded file, so
+  // it joins the subjects a match is searched from rather than sitting only on
+  // the candidate side. Without this, an instruction that moved out of the
+  // always-loaded file and into two rules has no subject left carrying it, and
+  // the pair the seed move produced would stay invisible to this sweep the
+  // same way it did before this corpus widened.
+  const subjects = [...instructions, ...rules].map(index)
+  const candidates = [...seed, ...bodies, ...rules].map(index)
   const frequency = documentFrequency([subjects, candidates])
 
   const distinctive = (analysis: Analysis): Set<string> =>
@@ -606,11 +664,33 @@ export function readRestated(root: string): RestatedReport {
   let mirrors = 0
   let threeSurface = 0
 
+  // A rule bullet sits on both sides now, so the pair it forms with another
+  // rule bullet would otherwise surface twice: once with each end read as the
+  // subject. Recording the pair the first time it is found and skipping it
+  // the second keeps one entry per duplicate regardless of which side a
+  // reader lands on, the way a seed-versus-body pair never could collide,
+  // since only a rule occupies both roles.
+  const reportedPairs = new Set<string>()
+  const pairKey = (a: Statement, b: Statement): string => {
+    const left = `${a.file}:${a.line}`
+    const right = `${b.file}:${b.line}`
+    return left < right ? `${left}|${right}` : `${right}|${left}`
+  }
+
   for (const subject of subjects) {
     const rare = distinctive(subject.analysis)
     const surfaces: Surface[] = []
 
     for (const candidate of rareCandidates) {
+      // A second surface is a second file. Two bullets sharing anchors inside
+      // one rule are adjacent instructions on one topic rather than the same
+      // rule shipped twice, and only a rule can reach this branch at all,
+      // since it is the one kind read as both a subject and a candidate.
+      if (candidate.statement.file === subject.statement.file) continue
+
+      const key = pairKey(subject.statement, candidate.statement)
+      if (reportedPairs.has(key)) continue
+
       const shared = [...candidate.rare]
         .filter((token) => rare.has(token))
         .sort()
@@ -626,6 +706,7 @@ export function readRestated(root: string): RestatedReport {
       )
 
       if (weight < ANCHOR_FLOOR) continue
+      reportedPairs.add(key)
 
       const { restatement, reason } = classify(
         subject.statement,
@@ -675,6 +756,7 @@ export function readRestated(root: string): RestatedReport {
       instructions: instructions.length,
       seed: seed.length,
       bodies: bodyFiles,
+      rules: ruleFiles,
       candidates: candidates.length,
     },
     matcher: {
