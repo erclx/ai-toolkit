@@ -22,6 +22,7 @@ cspell
 dataclass
 dataclasses
 dedupe
+domcontentloaded
 dotglob
 dunder
 elif
