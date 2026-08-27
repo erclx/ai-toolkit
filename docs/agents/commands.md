@@ -59,10 +59,21 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk census [path]`       | Report tracked file count, a breakdown by extension, and a line total that skips whatever reads as binary (`--json`)                                                 |
 | `aitk audits run`          | Run every audit as one set, report per check under one verdict, and compare each count to the recorded baseline (`--json`, `--record`)                               |
 | `aitk audits list`         | List every audit the set runs, with the corpus each reads and whether it gates (`--json`)                                                                            |
+| `aitk inventory [subject]` | Walk every route a project declares and group its elements by the property each computes, as a listing rather than a gate (`--json`)                                 |
 | `aitk capture [source]`    | Render HTML capture sources to PNG, toolkit-only and absent from an installed package                                                                                |
 | `aitk upgrade`             | Reinstall the CLI globally with the package manager the install path names (`--json`)                                                                                |
 
 `aitk demo` is the second browser command and the one that ships, since its purpose is running in a target rather than regenerating what this repository commits. It needs a browser binary the package does not carry, installed once with `bunx playwright install chromium`.
+
+`aitk inventory` is the third and takes the same answer for the same reason. It reads `inventory.toml` at the project root for its base URL, its routes, and the element query each subject runs over, so what it walks comes from the project rather than from the toolkit. It reports how many different answers a site gives for one property and never gates, because whether five focus rings across four routes is a defect is a judgment. A missing server and an unmatched query are both refusals rather than empty listings, since a listing with no rows reads as one consistent answer.
+
+```toml
+base-url = "http://localhost:4173"
+routes = ["/", "/pricing", "/docs"]
+
+[subjects.focus]
+query = "button, a[href], input, select, textarea, [tabindex]"
+```
 
 ## Domain commands
 
@@ -76,6 +87,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                                               |
 | `claude`    | `init`, `sync`, `routing`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `skills rank`, `setup [dest]` |
 | `demo`      | `compile`, `run`                                                                                                                      |
+| `inventory` | `run`                                                                                                                                 |
 | `wiki`      | `init`                                                                                                                                |
 | `design`    | `render`                                                                                                                              |
 | `slides`    | `render`, `list`                                                                                                                      |
