@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.25.1](https://github.com/erclx/aitk/compare/v3.25.0...v3.25.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **context:** honest refusal and a citation check that reaches a verdict ([#1169](https://github.com/erclx/aitk/issues/1169)) ([7308cb8](https://github.com/erclx/aitk/commit/7308cb8b3b52474854d10028d488f6e6910305cb))
+
 ## [3.25.0](https://github.com/erclx/aitk/compare/v3.24.0...v3.25.0) (2026-08-27)
 
 
