@@ -37,6 +37,8 @@ Scope selection goes through an `--all` argument rather than a third environment
 
 CI is what makes a scoped local gate safe, and it is worth naming the path that holds on. `verify.yml` triggers on `pull_request`, on pushes to `main`, and on `workflow_dispatch`, so the backstop covers the merge as well as the pull request that preceded it. A wrong scoping decision costs a red pull request rather than a regression reaching `main`. Scoping still baselines on `origin/main`, so a branch is gated against what it will merge into rather than against its own tip.
 
+The `Checkout` step passes `fetch-depth: 0` for the same reason. `actions/checkout@v4` defaults to a shallow, single-ref fetch on a `pull_request` event, so `origin/main` never resolves and every stage reading a merge base refuses. The Standard success criteria stage was the first to reach that read, since every earlier stage scans the whole tree rather than a diff. Measured against run `33089443464`, which failed on `✗ No merge base against main resolved.` before the flag was added.
+
 The push trigger exists to give the README's CI badge a default-branch run to report. A badge filtered to `main` reads `no status` while the workflow runs on pull requests alone, and an unfiltered one reports whichever branch happened to run last. The second cost is the useful one: a squash merge now runs the full gate against the merged result, which no pull request run observes.
 
 The types stage runs in CI rather than only in the pre-push hook because a missing or wrong import is the failure mode the bash migration produces most, and no other stage catches it. The test suite only catches one where a test happens to cover the caller. In `verify.sh` it sits before the tests for the same reason, since it reports in about a second and the suite does not.
@@ -118,23 +120,24 @@ The dispatch path also skips the credential preflight, which sits in the skipped
 
 Defined in `.github/workflows/verify.yml`, which runs one step, `bun run check:ci`. That resolves to `scripts/core/verify.sh` with `VERIFY_WRITE=false` and `--all`, so the stage list lives in the script rather than the workflow and every stage runs regardless of what the branch touched. Two stages qualify that, and the table marks both.
 
-| Stage              | Command                                                  | What it asserts                                                                                    |
-| ------------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Format check       | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
-| Indexes            | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
-| Consumed copies    | `scripts/core/regen-claude-copies.sh`                    | `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules` match source      |
-| Hero               | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and both stamp digests match the pair beside them        |
-| Skill paths        | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
-| Plugin boundary    | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
-| Context citations  | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                                  |
-| Seed standards     | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds, skipped per root carrying no `.claude/` |
-| Skill requirements | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                                      |
-| Sandbox coverage   | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `verify.sh` pins                                 |
-| Plugin manifests   | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed, skipped when the tree carries none           |
-| Spelling           | `bun run check:spell`                                    | cspell passes against dictionaries                                                                 |
-| Shell              | `bun run check:shell`                                    | shellcheck passes at warning level                                                                 |
-| Types              | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                               |
-| Tests              | `bun run test`                                           | the vitest suite passes                                                                            |
+| Stage                     | Command                                                  | What it asserts                                                                                    |
+| ------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Format check              | `bun run check:format`                                   | prettier and shfmt are clean                                                                       |
+| Indexes                   | `scripts/core/regen-indexes.sh`                          | no `index.md` was committed stale or left untracked                                                |
+| Consumed copies           | `scripts/core/regen-claude-copies.sh`                    | `.claude/standards`, `.claude/snippets`, `.claude/internal`, and `.claude/rules` match source      |
+| Hero                      | `scripts/core/regen-hero.sh`                             | `assets/hero.html` carries current counts and both stamp digests match the pair beside them        |
+| Skill paths               | `scripts/core/check-skill-paths.sh`                      | no shipped skill cites a repo-local path                                                           |
+| Plugin boundary           | `scripts/core/check-plugin-boundary.sh`                  | nothing the plugin ships resolves under `internal/`                                                |
+| Context citations         | `bun src/cli.ts context audit --citations-only`          | every cited context path resolves                                                                  |
+| Seed standards            | `bun src/cli.ts context audit --gate` per root           | no seed breaks the standard governing the folder it seeds, skipped per root carrying no `.claude/` |
+| Skill requirements        | `bun src/cli.ts claude skills audit --requirements-only` | every skill folder carries a `REQUIREMENT.md`                                                      |
+| Standard success criteria | `bun src/cli.ts standards audit --arrivals-only`         | a standard new to the branch carries a `## Success criterion` section                              |
+| Sandbox coverage          | `bun src/cli.ts sandbox coverage --json`                 | undeclared scenarios stay at or under the ceiling `verify.sh` pins                                 |
+| Plugin manifests          | `claude plugin validate --strict`                        | every plugin and marketplace manifest is well-formed, skipped when the tree carries none           |
+| Spelling                  | `bun run check:spell`                                    | cspell passes against dictionaries                                                                 |
+| Shell                     | `bun run check:shell`                                    | shellcheck passes at warning level                                                                 |
+| Types                     | `bun run check:types`                                    | `tsc --noEmit` passes against `src/`                                                               |
+| Tests                     | `bun run test`                                           | the vitest suite passes                                                                            |
 
 Two rows can report a skip under `check:ci`, and both condition on discovery rather than on the environment: a seed root that carries no `.claude/` seeds nothing a standard governs, and a tree carrying no manifest has nothing to validate. Sandbox coverage skips on a contributor's machine alone. A coverage command that does not report under CI fails the stage, on the same reasoning Plugin manifests uses for an absent `claude` binary. Shell, types, and tests skip on the changed-file set locally and never in CI, which is what `--all` buys.
 
