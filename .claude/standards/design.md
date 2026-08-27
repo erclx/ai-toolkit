@@ -18,14 +18,14 @@ Does not govern:
 
 ## What goes in
 
-- Tokens described as intent ("mid gray, muted text"), not computed values. Exact values live in code.
+- A token's exact value, anchored to the surface it was read from and tagged per `## The uncertainty tag` when unconfirmed. Fall back to intent language ("mid gray, muted text") only where no source exists yet to anchor from.
 - Layout constraints and sizing rules not obvious from wireframes
 - Visual rules a developer could get wrong without guidance
 - Non-obvious omissions ("no motion", "no custom icons") that prevent scope creep
 
 ## What does not go in
 
-- CSS classes, computed values, component filenames, and prop names. Those live in code.
+- CSS classes and prop names. Those live in code.
 - Anything that needs updating every time the code is refactored
 
 ## Format
