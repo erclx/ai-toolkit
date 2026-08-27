@@ -1,7 +1,9 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { execSync } from 'node:child_process'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { gitEnv } from '@/git-env'
 import {
   auditCitations,
   citationPattern,
@@ -96,6 +98,65 @@ describe('auditCitations', () => {
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
+  })
+})
+
+describe('auditCitations against a real tree', () => {
+  let root: string
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), 'aitk-citations-tree-'))
+    // A git hook exports GIT_DIR into every process it runs, and it takes
+    // precedence over `cwd`, so an inherited environment initializes the
+    // repository somewhere other than the fixture and every case reads empty.
+    execSync('git init --quiet', { cwd: root, env: gitEnv() })
+    mkdirSync(join(root, '.claude', 'context'), { recursive: true })
+    writeFileSync(join(root, '.claude', 'context', 'cli.md'), '# CLI\n')
+  })
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true })
+  })
+
+  it('should report a citation naming a path that does not exist', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      'See `.claude/context/missing.md` for the layout.\n',
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({
+      kind: 'scanned',
+      unresolved: [
+        {
+          file: 'README.md',
+          path: '.claude/context/missing.md',
+        },
+      ],
+    })
+  })
+
+  it('should leave a citation naming a path that exists unresolved-free', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      'See `.claude/context/cli.md` for the layout.\n',
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({ kind: 'scanned', unresolved: [] })
+  })
+
+  it('should skip a broken path carrying the ignore marker', async () => {
+    writeFileSync(
+      join(root, 'README.md'),
+      `Cite it as \`.claude/context/X.md\`. <!-- ${IGNORE_MARKER} -->\n`,
+    )
+
+    const report = await auditCitations(root, ['context'])
+
+    expect(report).toMatchObject({ kind: 'scanned', unresolved: [] })
   })
 })
 

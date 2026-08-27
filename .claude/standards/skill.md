@@ -235,7 +235,7 @@ A skill reads from two roots. Know which one a file lives under before referenci
 No standard installs into a project, so a body cites one place rather than choosing between two.
 
 - Cite `${CLAUDE_SKILL_DIR}/../../standards/X.md`. The plugin ships the whole standards folder beside `skills/`, so the path resolves in every install and needs no fallback behind it.
-- Never cite `.claude/standards/X.md` from a shipped body. A target holds no such folder, and one left behind by an older toolkit is a stale copy no resolver reads.
+- Never cite `.claude/standards/X.md` from a shipped body. A target holds no such folder, and one left behind by an older toolkit is a stale copy no resolver reads. <!-- audit-ignore-citations -->
 - Name `aitk standards X` instead where the body wants the document rather than a path to open, such as a value it captures or reports. That verb resolves `standards/` at the project root and then the corpus inside the package.
 - State the path once per body, at the site that reads the standard. A later mention of a standard the body already read stays bare, since repeating the path at every mention is noise rather than instruction.
 - A guard on a standard's presence names the file rather than the folder holding it, since a folder test answers for a sibling that happens to be there.

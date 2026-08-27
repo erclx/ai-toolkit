@@ -31,7 +31,7 @@ The fallback deliberately does not key on `historyUnavailable`, which was the sh
 
 A listing of `.claude/*.md` also reaches `ARCHITECTURE.md`, `REQUIREMENTS.md`, and `DESIGN.md`, each a single file the layout intends to stay one, so the fallback that costs a count on one skill costs three shredded documents on the other. A fallback is worth having when its failure is an imprecision and worth refusing when its failure is a proposal nobody can undo.
 
-The destination standard is the second place the skill declines a route every sibling takes. `skill.md` has a body cite `.claude/standards/X.md` first and name the plugin copy under `${CLAUDE_SKILL_DIR}` as the fallback, which is correct for a standard the skill follows itself. Here the standard is the project's own agreement about the shape of a folder, resolved by matching the replacement path against the `appliesTo` the standards catalog declares.
+The destination standard is the second place the skill declines a route every sibling takes. `skill.md` has a body cite `.claude/standards/X.md` first and name the plugin copy under `${CLAUDE_SKILL_DIR}` as the fallback, which is correct for a standard the skill follows itself. <!-- audit-ignore-citations --> Here the standard is the project's own agreement about the shape of a folder, resolved by matching the replacement path against the `appliesTo` the standards catalog declares.
 
 A proposal drawn from the plugin copy would hand back a shape the project never adopted, against content only the user can place, so an absent standard names itself and the install command and proposes nothing. Resolving through `appliesTo` rather than through the folder stem is what lets the four seed folders nobody has observed degrade by mechanism, since `.claude/hooks/` matches no entry and earns a decline rather than a guessed shape.
 
@@ -141,7 +141,7 @@ The read sites were left alone. `Read` resolves against the main root normally, 
 
 ### The drift gate stages a file that mis-scopes the review
 
-Two documented behaviors meet on any branch editing an authoring surface, and the result is a review of the wrong file set. The Consumed copies stage clears only on a staged regeneration, so a branch that edits `standards/X.md` has to stage `.claude/standards/X.md` before `bun run check` passes. `claude-review` Step 2 then takes a non-empty `git diff --staged` as its diff scope, which is the generated mirror alone and none of the files carrying the change.
+Two documented behaviors meet on any branch editing an authoring surface, and the result is a review of the wrong file set. The Consumed copies stage clears only on a staged regeneration, so a branch that edits `standards/X.md` has to stage `.claude/standards/X.md` before `bun run check` passes. <!-- audit-ignore-citations --> `claude-review` Step 2 then takes a non-empty `git diff --staged` as its diff scope, which is the generated mirror alone and none of the files carrying the change.
 
 Nothing reports it, since the review runs, writes a receipt, and reads clean. On a branch before its first commit the branch pair is empty too, so `git diff HEAD` is the only read at correct scope and the staged-set rule has to be overridden by hand. Measured 2026-08-20, where the staged set held one file against four the branch had changed.
 
