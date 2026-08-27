@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.30.0](https://github.com/erclx/aitk/compare/v3.29.1...v3.30.0) (2026-08-27)
+
+
+### Features
+
+* **standards:** gate arriving standards on a success criterion ([#1186](https://github.com/erclx/aitk/issues/1186)) ([54b901d](https://github.com/erclx/aitk/commit/54b901d0db4e231c9207101874c5f1ef17db33a2))
+
 ## [3.29.1](https://github.com/erclx/aitk/compare/v3.29.0...v3.29.1) (2026-08-27)
 
 
