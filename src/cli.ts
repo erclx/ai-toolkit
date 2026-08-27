@@ -16,6 +16,7 @@ import { register as design } from '@/commands/design'
 import { register as slides } from '@/commands/slides'
 import { register as capture } from '@/commands/capture'
 import { register as demo } from '@/commands/demo'
+import { register as inventory } from '@/commands/inventory'
 import { register as feedback } from '@/commands/feedback'
 import { register as transcripts } from '@/commands/transcripts'
 import { register as tasks } from '@/commands/tasks'
@@ -59,6 +60,7 @@ function showHelp(): void {
     `${GREY}│${NC}    slides [cmd]       ${GREY}# Slide deck commands (render, list)${NC}`,
     `${GREY}│${NC}    capture [source]   ${GREY}# Render HTML capture sources to PNG${NC}`,
     `${GREY}│${NC}    demo [cmd]         ${GREY}# Record a running app (compile, run)${NC}`,
+    `${GREY}│${NC}    inventory [subj]   ${GREY}# Report one computed property across every route${NC}`,
     `${GREY}│${NC}    feedback           ${GREY}# Write toolkit feedback from stdin to .claude/review/feedback/${NC}`,
     `${GREY}│${NC}    transcripts <url>  ${GREY}# Fetch a YouTube transcript with metadata frontmatter${NC}`,
     `${GREY}│${NC}    tasks [cmd]        ${GREY}# Task board commands (archive)${NC}`,
@@ -102,6 +104,7 @@ function showHelp(): void {
     `${GREY}│${NC}    aitk slides render`,
     `${GREY}│${NC}    aitk slides list --json`,
     `${GREY}│${NC}    aitk capture assets/install.html`,
+    `${GREY}│${NC}    aitk inventory focus --json`,
     `${GREY}│${NC}    pbpaste | aitk feedback`,
     `${GREY}│${NC}    aitk transcripts https://youtu.be/VIDEO_ID`,
     `${GREY}│${NC}    aitk tasks archive --pull-request 673 --json`,
@@ -153,6 +156,7 @@ design(program)
 slides(program)
 capture(program)
 demo(program)
+inventory(program)
 feedback(program)
 transcripts(program)
 tasks(program)
