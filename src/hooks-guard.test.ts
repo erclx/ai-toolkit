@@ -43,10 +43,18 @@ const INERT_PAYLOAD = JSON.stringify({
 // session. Both trees run the same hook against one fixture, so a shared id
 // silences whichever loses the race.
 interface ActingCase {
+  /** Exit code the acting branch leaves, where a blocking hook leaves 2. */
+  readonly code?: number
   readonly expect: string
   readonly payload: (nonce: string) => string
   /** Prepended to the stripped PATH, for a hook whose acting branch shells out. */
   readonly path?: string
+  /**
+   * Where the verdict lands. A hook reaching the session by blocking writes its
+   * reason to stderr, since an event that carries no `additionalContext` sends
+   * exit-0 output to the debug log alone.
+   */
+  readonly stream?: 'stderr' | 'stdout'
 }
 
 interface Run {
@@ -58,6 +66,7 @@ interface Run {
 
 let fixture: string
 let hookPath: string
+let readOnlyRoot: string
 let acting: Record<string, ActingCase>
 
 // `aitk indexes regen` succeeds on the index hooks where the CLI is installed
@@ -133,10 +142,13 @@ beforeAll(() => {
     join(fixture, 'bin-empty-set'),
     join(fixture, 'bin-no-record'),
     join(fixture, 'no-source'),
+    join(fixture, 'read-only'),
     join(fixture, 'elsewhere/tmp'),
   ]) {
     mkdirSync(dir, { recursive: true })
   }
+
+  readOnlyRoot = join(fixture, 'read-only')
 
   // The degradation branch needs a PATH carrying neither runner, and it still
   // has to carry what the run itself depends on: `bash` to spawn the hook, and
@@ -254,6 +266,16 @@ beforeAll(() => {
           tool_name: 'Write',
         }),
     },
+    'precompact-handoff.sh': {
+      code: 2,
+      expect: 'Run the aitk:session-map skill',
+      payload: (nonce) =>
+        payloadFor({
+          hook_event_name: 'PreCompact',
+          session_id: nonce,
+        }),
+      stream: 'stderr',
+    },
     'scratch-guard.sh': {
       expect: 'Temporary file write outside',
       payload: (nonce) =>
@@ -281,9 +303,16 @@ beforeAll(() => {
         }),
     },
   }
+
+  // Last, so nothing else in this setup is writing into it any more. A root the
+  // hook cannot create its marker under is what reaches the fail-open branch,
+  // and the mode is the only way to produce that without mocking the script.
+  chmodSync(readOnlyRoot, 0o555)
 })
 
 afterAll(() => {
+  // Restored first, so the recursive remove is not the thing the mode refuses.
+  chmodSync(readOnlyRoot, 0o755)
   rmSync(fixture, { force: true, recursive: true })
 })
 
@@ -334,8 +363,8 @@ for (const tree of TREES) {
             expected.path,
           )
 
-          expect(result.stdout).toContain(expected.expect)
-          expect(result.code).toBe(0)
+          expect(result[expected.stream ?? 'stdout']).toContain(expected.expect)
+          expect(result.code).toBe(expected.code ?? 0)
         },
       )
     }
@@ -547,6 +576,79 @@ describe('seeds standards-audit.sh runner', () => {
 
       expect(result.stdout).toContain('nothing checked')
       expect(result.stdout).toContain('no record')
+      expect(result.code).toBe(0)
+    },
+  )
+})
+
+// The block is the only channel this event has, so the cases deciding whether
+// it is safe are the ones the acting case above cannot reach: an automatic
+// compaction has to pass through untouched, and a manual one has to stop asking
+// after the first refusal. Blocking every `/compact` would trap the session
+// that answered and the session that declined alike.
+describe('.claude/hooks/precompact-handoff.sh', () => {
+  const hook = join(ROOT, '.claude/hooks/precompact-handoff.sh')
+
+  const payload = (fields: Record<string, unknown>): string =>
+    JSON.stringify({ hook_event_name: 'PreCompact', ...fields })
+
+  it.concurrent(
+    'should leave an automatic compaction untouched',
+    async ({ expect }) => {
+      const result = await run(
+        hook,
+        payload({ session_id: 'precompact-auto', trigger: 'auto' }),
+      )
+
+      expect(result.stderr).toBe('')
+      expect(result.stdout).toBe('')
+      expect(result.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should block a manual compaction once and let the next one through',
+    async ({ expect }) => {
+      const once = payload({ session_id: 'precompact-repeat' })
+
+      const first = await run(hook, once)
+      const second = await run(hook, once)
+
+      expect(first.stderr).toContain('Run the aitk:session-map skill')
+      expect(first.code).toBe(2)
+      expect(second.stderr).toBe('')
+      expect(second.code).toBe(0)
+    },
+  )
+
+  it.concurrent(
+    'should keep the blocking reason off stdout',
+    async ({ expect }) => {
+      // Exit 2 makes stderr the blocking reason, and stdout on this event
+      // reaches the debug log alone. Writing there would put the message
+      // where nobody reads it while the block itself stayed unexplained.
+      const result = await run(hook, payload({ session_id: 'precompact-out' }))
+
+      expect(result.stdout).toBe('')
+      expect(result.code).toBe(2)
+    },
+  )
+
+  it.concurrent(
+    'should carry on rather than block when the marker cannot be written',
+    async ({ expect }) => {
+      // The marker is what ends the block, so blocking without recording it
+      // would refuse every compaction the session takes. A project root the
+      // hook cannot write to is the case that reaches that, and it has to fail
+      // open: one unasked handoff costs less than a session that cannot compact.
+      const result = await run(
+        hook,
+        payload({ session_id: 'precompact-readonly' }),
+        undefined,
+        readOnlyRoot,
+      )
+
+      expect(result.stdout).toBe('')
       expect(result.code).toBe(0)
     },
   )
