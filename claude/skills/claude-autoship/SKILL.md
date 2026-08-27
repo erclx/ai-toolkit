@@ -1,6 +1,6 @@
 ---
 name: claude-autoship
-description: Chains implement → verify → review → ship after a feature plan is approved. Reads the plan for the current branch, runs the full pipeline in one session, and stops on any failure or non-minor review finding. Use when asked to "autoship", "ship this feature end to end", or "run the chain". Do NOT auto-trigger. Requires an approved plan file.
+description: Chains implement → verify → review → ship after a feature plan is approved. Reads the plan the caller names, or the plan for the current branch when none is named, runs the full pipeline in one session, and stops on any failure or non-minor review finding. Use when asked to "autoship", "ship this feature end to end", or "run the chain". Do NOT auto-trigger. Requires an approved plan file.
 disable-model-invocation: true
 ---
 
@@ -11,8 +11,8 @@ Chain the post-plan pipeline in a single run. Every step has a stop condition. S
 ## Guards
 
 - All `.claude/plans/` and `.claude/review/` reads resolve at the main worktree root, not the current worktree. See Worktrees in `CLAUDE.md`.
-- Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. This skill takes the stop rather than the `latest` fallback, since it commits and opens a pull request. If empty, stop: `❌ Detached HEAD. Checkout the feature branch first.`
-- If `.claude/plans/feature-<slug>.md` does not exist at the main worktree root, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
+- Derive `<slug>` per `${CLAUDE_SKILL_DIR}/../../standards/slug.md`. This skill takes the stop rather than the `latest` fallback, since it commits and opens a pull request. If empty, stop: `❌ Detached HEAD. Checkout the feature branch first.` Every later step keys its output on this slug, being the worktree, the review receipt, the branch, and the memory proposal, regardless of which plan Step 1 reads.
+- Resolve `<plan>` in Step 1, ahead of any other read.
 - If the working tree has uncommitted changes unrelated to the plan, stop: `❌ Uncommitted changes outside the plan. Commit or stash before autoshipping.`
 
 ## Diff baseline
@@ -39,7 +39,12 @@ If the two commands differ, the session is already in a linked worktree. Continu
 
 ## Step 1: read the plan
 
-Read `.claude/plans/feature-<slug>.md` at the main worktree root. This file is the scope for this run.
+Resolve `<plan>` in this order, stopping at the first match:
+
+1. **Caller-supplied.** The invocation carried an argument. Accept it as a plan path or a bare slug, in the same position `claude-worktree` tier 0 accepts its name. A bare slug resolves to `.claude/plans/feature-<slug>.md`, and a path is taken as given, relative to the main worktree root. If it does not resolve to a file, stop: `❌ No plan at <path>. Path was supplied, not derived, so check it and re-run.`
+2. **Derived.** `.claude/plans/feature-<slug>.md`, from the `<slug>` the Guards derived. If it does not exist, stop: `❌ No approved plan at .claude/plans/feature-<slug>.md. Run /claude-feature first.`
+
+Read `<plan>` at the main worktree root. This file is the scope for this run.
 
 Its sections and its answer contract are fixed by `${CLAUDE_SKILL_DIR}/../../standards/plan.md`. A blank `- Answer:` accepts the `- Suggested:` line above it, so an unanswered question is a decision this run executes rather than a reason to stop.
 
@@ -152,7 +157,8 @@ Every stop point leaves recoverable state. The user resumes manually from the ap
 
 | Stop point                         | Recovery                                                                                                                                       |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| No plan                            | Run `/claude-feature` to create one                                                                                                            |
+| No plan (derived)                  | Run `/claude-feature` to create one                                                                                                            |
+| No plan (caller-supplied)          | Check the path or slug passed to autoship, then re-run                                                                                         |
 | No diff baseline                   | Fetch origin so a merge base resolves against `main`, then re-run autoship                                                                     |
 | Empty changed-file list            | Re-run once the plan produces tracked output. Ship gitignored output outside the chain, never by tracking it.                                  |
 | Branch collision on worktree entry | `claude-worktree` Step 5 found `<slug>` already as a local branch. Resolve manually (rename or delete the stale branch), then re-run autoship. |
