@@ -36,7 +36,7 @@ The other is the refusal that ends rather than routes. An existing project, an i
 
 ## Out of scope
 
-- Installing governance rules alone: `setup-gov`. This skill installs governance beside tooling, standards, snippets, and the seeds.
+- Installing governance rules alone: `setup-gov`. This skill installs governance beside tooling and the seeds.
 - Bootstrapping the `index.md` system: `setup-indexes`. Neither `aitk init` nor this chain performs it.
 - Provisioning Claude Code plugins: `setup-plugins`. Those install once per machine rather than into a project, so no project-scoped chain can carry them.
 - Running the verification scripts, which `setup-verify` owns and this chain invokes as its last step

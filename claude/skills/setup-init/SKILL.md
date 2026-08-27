@@ -1,6 +1,6 @@
 ---
 name: setup-init
-description: Detects a new project's type and runs `aitk init` with a resolved stack and snippets in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
+description: Detects a new project's type and runs `aitk init` with a resolved stack in one shot. Use when bootstrapping a new project with the toolkit, or when asked to "init this project", "bootstrap the toolkit", "set up toolkit", or "one-shot install". Assumes the `aitk` CLI is on PATH. Do NOT use when only installing governance rules. Use `setup-gov` instead.
 ---
 
 # Init project
@@ -30,8 +30,6 @@ Run from the target project's current directory. Do not cd into the toolkit sour
 
 ```bash
 aitk gov list --json 2>/dev/null
-aitk snippets list --json 2>/dev/null
-aitk standards list --json 2>/dev/null
 aitk tooling list --json 2>/dev/null
 ```
 
@@ -49,8 +47,7 @@ Read these from the project root in parallel, skipping any that do not exist:
 - **Stack:** pick the closest governance stack by matching detected runtime or framework against stack names in the catalog. If nothing matches, fall back to `base` and carry the fallback into the preview.
 - **Tooling stack:** pick the closest tooling stack from `aitk tooling list --json` (e.g. `vite-react`, `astro`). Distinct from the governance stack. Fall back to `base` if no framework match, and carry that fallback into the preview too.
 - **Extras:** identify technologies not already covered by the picked stack. For each, find a rule whose `description` or `paths` points at that technology and pass it via `--add`. Do not add a rule the stack already pulls in.
-- **Snippets:** default to `all`. Narrow only if the user asked for a specific category.
-- **Skip (`--skip`):** `standards` and `wiki` are core and install by default. Add `--skip standards` or `--skip wiki` only when the user explicitly wants them left out.
+- **Skip (`--skip`):** `wiki` installs by default. Add `--skip wiki` only when the user explicitly wants it left out.
 
 ## Gap handling
 
@@ -59,7 +56,7 @@ If a detected technology has no matching rule or stack, do not guess. Surface th
 1. Defer to `setup-gov`. Author a rule in the toolkit, then re-run this skill.
 2. Proceed with the matched layer, listing the gap in the final report.
 
-Rules, snippets, and stacks are authored in the toolkit repo, never in the target project on the fly.
+Rules and stacks are authored in the toolkit repo, never in the target project on the fly.
 
 ## Preview
 
@@ -69,7 +66,6 @@ Before executing, output:
 - **Stack:** picked governance stack + resolved rule count. Mark it `fallback` when no detected runtime or framework matched a catalog name.
 - **Tooling stack:** picked tooling stack. Mark it `fallback` on the same test, and name what `base` lands: configs, seeds, and gitignore entries in every case, plus the JavaScript development dependencies, scripts, and hook activation wherever a `package.json` exists to carry them. A project outside that ecosystem runs none of the second group and keeps the first.
 - **Extras:** each `--add` rule with a one-line reason
-- **Snippets:** resolved category
 - **Skip:** any `--skip` entries with reason
 - **Target:** resolved target path
 - **Commands:** the full chain that will run
@@ -80,13 +76,12 @@ A resolved name and a fallback read alike once written, so mark the fallback her
 
 Run the chain in order, starting immediately after the preview. Each step's permission dialog is the confirmation gate. Do not pause for additional confirmation. Run from the target project's current directory.
 
-Step 1: `aitk init` installs base tooling, claude seeds, governance rules, standards, snippets, and wiki.
+Step 1: `aitk init` installs base tooling, claude seeds, governance rules, and wiki.
 
 ```bash
 AITK_NON_INTERACTIVE=1 aitk init \
   --stack <stack> \
   --add <rules> \
-  --snippets <category> \
   <target>
 ```
 

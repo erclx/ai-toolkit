@@ -38,7 +38,6 @@ The last is the two-speed release skew arriving as a confident wrong answer. `su
 
 ## Out of scope
 
-- Relocating root `snippets/` into `.claude/`: `migration-standards`
 - Classifying `CLAUDE.md` sections into the three-tier model: `migration-claude-md`
 - Relocating `docs/` files by audience: `migration-context`
 - Reconciling a seed file against its source section by section, which diffs two files rather than splitting one into a folder: `claude-seed-sync`

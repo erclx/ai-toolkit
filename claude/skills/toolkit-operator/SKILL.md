@@ -42,7 +42,7 @@ Map the stated intent, or what `## Diagnose` found, to one lifecycle phase, then
 
 The two can name different rows, and a reply answers both rather than picking one. Run or hand off what the finding names, then answer the intent in the same reply. A measurement intent therefore reaches the audit offers below even on a target whose diagnostic found scaffold work, which is the case a session leaving from the scaffold row would otherwise never read.
 
-- A domain in `unmigrated`: hand off to `migration-standards`
+- A domain in `unmigrated`: name it, the root path, and the install path. No command moves it, so the user runs the relocation themselves
 - An entry in `migrations`: hand off to the skill its `skill` field names, spelled as the report spells it. Both of them propose without writing, so the handoff is where this stops
 - Anything in `superseded`: name which files and what replaced them, then hand off to `migration-superseded`. Both skills propose, so neither moves nor deletes the file
 - A folder in `unclaimed`: name it and the attribution it carries. No command moves it and the content may be the project's own, so the decision is the user's

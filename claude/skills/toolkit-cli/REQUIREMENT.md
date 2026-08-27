@@ -15,7 +15,7 @@ The inverse failure is quieter. A session that assumes a sync will pick up a cha
 
 Being reachable is a separate problem from being right. This is a pure reference whose moment happens inside another skill's run, so nothing brings it up unless a body names it. Three sibling requirement files named it and routed nothing, because Claude Code loads `SKILL.md` as the entry and never opens the sibling. A route lives in a body or it does not exist, and a fourth requirement mention would repeat the same defect.
 
-The three bodies now carrying an inline pointer are `claude-seed-sync`, `migration-standards`, and `toolkit-operator`, each at the point it runs or prints an overwriting command.
+The two bodies now carrying an inline pointer are `claude-seed-sync` and `toolkit-operator`, each at the point it runs or prints an overwriting command.
 
 ## Must
 
@@ -38,5 +38,4 @@ The three bodies now carrying an inline pointer are `claude-seed-sync`, `migrati
 
 - Executing the sync, which the user runs or `toolkit-operator` routes
 - Reconciling a customized seed section by section: `claude-seed-sync`
-- Relocating a project's folders into the layout a newer version expects: `migration-standards`
 - Deciding which stack, rule, or standard a project should install, which the setup skills resolve from live catalogs
