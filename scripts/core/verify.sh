@@ -460,6 +460,14 @@ main() {
   run_check "cd $PROJECT_ROOT && bun src/cli.ts claude skills audit --requirements-only" "A skill folder carries no REQUIREMENT.md. Run bun src/cli.ts claude skills audit."
   log_info "Skill requirements present"
 
+  # Scoped to arrival rather than the corpus, since standards/standard.md
+  # forbids writing a criterion into an existing standard outside the change
+  # that exercises it. Gating the 26 known gaps would fail every push until
+  # someone closed them all, which is the sweep that rule exists to prevent.
+  log_step "Standard success criteria"
+  run_check "cd $PROJECT_ROOT && bun src/cli.ts standards audit --arrivals-only" "A standard new to this branch carries no ## Success criterion section. Run bun src/cli.ts standards audit."
+  log_info "Arriving standards carry a success criterion"
+
   # `aitk sandbox coverage` moves only when a person runs it, so a scenario added
   # with no expectation ships unnoticed. The gate is an absolute count of
   # undeclared scenarios rather than a ratio or a floor under the declared count.

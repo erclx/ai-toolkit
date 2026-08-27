@@ -46,6 +46,7 @@ Full help: `aitk <command> --help`. Behavior notes for the install and sync verb
 | `aitk context audit`       | Report required sections, length, cited paths, reference form, catalog tables, provenance, superseded-decision narration, and index drift                            |
 | `aitk markdown audit`      | Fail any markdown path on a banned character, word, or spelling, and report the structural checkpoints                                                               |
 | `aitk claude skills audit` | Report both skill corpora against the mechanical rules in `standards/skill.md`                                                                                       |
+| `aitk standards audit`     | Report the corpus against the `## Success criterion` gate, failing only on a standard new to the branch (`--json`, `--arrivals-only`)                                |
 | `aitk claude skills drift` | Name the shipped skill bodies rewritten between a given ref and `HEAD`, and the installed version against the newest published (`--json`)                            |
 | `aitk claude skills reach` | Report the shipped bodies citing a toolkit path no target project receives, exiting 2 on an unqualified one                                                          |
 | `aitk claude skills rank`  | Score the shipped catalog's descriptions against a hand-authored case corpus by TF-IDF cosine similarity, reporting rank-one and top-three                           |
@@ -83,7 +84,7 @@ Each domain exposes a consistent shape where applicable: `list`, `install`, `syn
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `tooling`   | `list`, `sync`, `ref`, `create`, `verify`, `inject`, `prune-gitignore`                                                                |
 | `snippets`  | `list`, `create`                                                                                                                      |
-| `standards` | `list`, `<name>`                                                                                                                      |
+| `standards` | `list`, `audit`, `<name>`                                                                                                             |
 | `gov`       | `list`, `install`, `sync`, `build`, `regen`, `test-order`, `superseded`                                                               |
 | `claude`    | `init`, `sync`, `routing`, `seeds list`, `skills list`, `skills audit`, `skills drift`, `skills reach`, `skills rank`, `setup [dest]` |
 | `demo`      | `compile`, `run`                                                                                                                      |
