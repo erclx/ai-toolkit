@@ -15,7 +15,3 @@ paths:
 
 - Before silencing a hook's output, name the stage that catches the same failure. A hook that is the only enforcer of a rule makes its documented guarantee false when it discards that output.
 - Where no other stage catches the failure, capture the output into a variable, exit 0 on success, and emit the error lines as `additionalContext`.
-
-## Authority
-
-- Follow `.claude/context/development/hooks.md` for the reasoning behind both conventions and every other hook convention. It is the single source.
