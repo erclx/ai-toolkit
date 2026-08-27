@@ -15,6 +15,7 @@
 
 ## Commands
 
+- These conventions came from a toolkit with its own CLI. A rule or standard naming a command is naming that CLI, present only where this project installed it.
 - Run `bun run check` before committing. Full script reference in the development entry under `.claude/context/`.
 
 ## Key paths
