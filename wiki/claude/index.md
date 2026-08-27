@@ -7,6 +7,7 @@ subtitle: Claude Code features and the adjacent Anthropic products, one page per
 
 Claude Code features and the adjacent Anthropic products, one page per subject Anthropic owns
 
+- [Claude Code agent view](claude-agent-view.md): Managing background sessions, their groups, peek and attach, filter syntax, pinning, the shell verbs beside the view, and its operational limits
 - [Claude Code](claude-code.md): CLI flags, CLAUDE.md, hooks, memory, and MCP
 - [Claude Code commands](claude-commands.md): Full built-in slash command reference
 - [Claude Design](claude-design.md): Anthropic's hosted design product, its capabilities, and how it hands off to Claude Code

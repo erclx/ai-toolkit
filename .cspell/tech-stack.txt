@@ -97,6 +97,7 @@ realpath
 repr
 rerank
 reranker
+respawn
 rlength
 rstart
 rtrimstr

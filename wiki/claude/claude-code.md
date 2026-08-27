@@ -44,7 +44,7 @@ Automation:
 - `--max-budget-usd <n>`: cap spend (print mode only)
 - `--json-schema <path>`: enforce structured JSON output (print mode only)
 - `--worktree [name]`: run in an isolated git worktree under `<repo>/.claude/worktrees/`. Pass `#<pr>` or a PR URL to branch from that PR
-- `--bg` or `--background`: start as a background agent, returning immediately with a session ID managed from agent view
+- `--bg` or `--background`: start as a background agent, returning immediately with a session ID managed from [agent view](claude-agent-view.md)
 - `--bare`: minimal startup, skips auto-discovery of hooks, skills, plugins, MCP servers, auto-memory, and CLAUDE.md
 - `--safe-mode`: disable all customizations to troubleshoot broken config
 - `--teleport`: pull a web session into the terminal
