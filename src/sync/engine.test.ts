@@ -223,6 +223,53 @@ describe('planSync', () => {
     expect(plan.entries[0].state).toBe('matching')
   })
 
+  it('should name the project subfolder for an orphan sitting outside it', () => {
+    writeFixture(
+      join(TARGET, '.claude/rules/claude/561-self-check.md'),
+      'mine\n',
+    )
+
+    const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
+
+    expect(plan.entries[0].notice).toBe(
+      `${join('.claude', 'rules', 'claude', '561-self-check.md')} (not in toolkit source, skipping. Move it to ${join('.claude', 'rules', 'project', 'claude', '561-self-check.md')} if the project authored it.)`,
+    )
+  })
+
+  it('should queue no change for an orphan sitting outside the project subfolder', () => {
+    writeFixture(
+      join(TARGET, '.claude/rules/claude/561-self-check.md'),
+      'mine\n',
+    )
+
+    const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
+
+    expect(plan.entries[0].state).toBe('orphaned')
+    expect(plan.changes).toEqual([])
+  })
+
+  it('should leave an orphan unnamed when the adapter declares no project subfolder', () => {
+    writeFixture(
+      join(TARGET, '.claude/rules/claude/561-self-check.md'),
+      'mine\n',
+    )
+
+    const plan = planSync(createAdapter(), TARGET)
+
+    expect(plan.entries[0].notice).toBeUndefined()
+  })
+
+  it('should leave an orphan already under the project subfolder unnamed', () => {
+    writeFixture(
+      join(TARGET, '.claude/rules/project/claude/900-local.md'),
+      'mine\n',
+    )
+
+    const plan = planSync(createAdapter({ projectSubdir: 'project' }), TARGET)
+
+    expect(plan.entries[0].notice).toBeUndefined()
+  })
+
   it('should queue a delete for each retired surface', () => {
     writeFixture(join(TARGET, '.claude/GOV.md'), 'retired\n')
 
@@ -743,6 +790,21 @@ describe('runDomainSync', () => {
     expect(contentAtHook).toBe('new\n')
   })
 
+  it('should leave a misplaced project-authored file on disk', async () => {
+    const dest = join(TARGET, '.claude/rules/claude/561-self-check.md')
+    writeFixture(dest, 'mine\n')
+
+    const code = await runDomainSync(
+      createAdapter({ projectSubdir: 'project' }),
+      TARGET,
+      options,
+    )
+
+    expect(code).toBe(0)
+    expect(readFileSync(dest, 'utf8')).toBe('mine\n')
+    expect(existsSync(join(TARGET, '.claude/rules/project'))).toBe(false)
+  })
+
   it('should refuse to run against the protected root', async () => {
     mkdirSync(TARGET, { recursive: true })
 
@@ -823,6 +885,21 @@ describe('runDomainSync', () => {
     expect(readStamp(TARGET)?.domains.governance?.files).toEqual({
       [STAMPED_RULE]: hashContent('same\n'),
     })
+  })
+
+  it('should drop a file the toolkit stopped shipping from the stamp', async () => {
+    writeFixture(join(SOURCE, 'core/000-const.md'), 'same\n')
+    writeFixture(join(TARGET, STAMPED_RULE), 'same\n')
+    const adapter = createAdapter({
+      stamp: { domain: 'governance', toolkitRoot: ROOT },
+      projectSubdir: 'project',
+    })
+
+    await runDomainSync(adapter, TARGET, options)
+    rmSync(join(SOURCE, 'core/000-const.md'))
+    await runDomainSync(adapter, TARGET, options)
+
+    expect(readStamp(TARGET)?.domains.governance?.files).toEqual({})
   })
 
   it('should keep project-authored files out of the stamp', async () => {

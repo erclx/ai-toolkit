@@ -49,7 +49,7 @@ Owns the small reusable prompts stored as plain markdown, invoked from Claude or
 ### Sync and the boundary
 
 - Sync updates only what is already present and never adds. A project that installed `essentials` does not silently grow new snippets on the next sync.
-- Sync runs on the shared engine in `src/sync/engine.ts` via `src/snippets/adapter.ts`. The adapter locates a source by relative path where the gov adapter locates one by rule name, which is the only axis the two differ on. It sets no `collectRetired`, so snippets is the proof that hook is optional.
+- Sync runs on the shared engine in `src/sync/engine.ts` via `src/snippets/adapter.ts`. The adapter locates a source by relative path where the gov adapter locates one by rule name, which is the only axis the two differ on. It sets no `collectRetired`, so snippets is the proof that hook is optional. It does declare `projectSubdir`, so a snippet the toolkit finds no source for, outside `.claude/snippets/project/`, is offered the path under that subfolder it would take. `.claude/context/cli/sync.md` owns why the offer is conditional rather than a claim about who wrote the file.
 - No code filters an internal category out of a publishable one. The plugin symlinks `snippets/` wholesale and an installer dereferences it, so the one consumer that could carry no filter is the one that ships the content, and a filter at any other entry point only looks like a boundary. Location is what enforces it, and `scripts/core/check-plugin-boundary.sh` asserts the result.
 
 ## Gotchas

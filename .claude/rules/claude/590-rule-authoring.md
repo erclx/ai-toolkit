@@ -8,8 +8,10 @@ paths:
 
 ## Numbering
 
-- Name a rule `.claude/rules/<subdirectory>/<n>-<slug>.md`, taking a number that collides with neither the project's rules nor any installed shared set.
-- Give every rule a numeric prefix and keep the slug to one to three kebab words.
+- Name a rule `.claude/rules/<subdirectory>/<n>-<slug>.md`. Give every rule a numeric prefix and keep the slug to one to three kebab words.
+- Treat `000-899` as reserved for a rule set that ships to targets, `000-599` across the shared subdirectories and `600-899` held for ones it has not added.
+- Number a rule the project authored itself in `900-999` and write it at `.claude/rules/project/<subdirectory>/<n>-<slug>.md`.
+- Do not take a reserved number for a project-authored rule because nothing installed holds it today. A later release can ship into it.
 
 ## Body
 

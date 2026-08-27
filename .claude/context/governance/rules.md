@@ -22,11 +22,15 @@ Rules follow a numbering scheme by band, so a new rule's number states its domai
 | `400–499` | ui (UI copy, accessibility, forms, UX completeness, surface capture, link behavior)                                                                                               |
 | `500–599` | claude (markdown prose, markdown mechanics, .claude/ context, wireframe, canonical-doc, task-board, learning workspace, session map, skill, readme, rule, and standard authoring) |
 
+A seventh range sits outside the table. `900-999` is reserved for a rule a target authored itself, and no shipped rule takes a number in it. `600-899` is unallocated headroom between the two, held for categories the toolkit has not added.
+
 ### Two sources numbering into one folder
 
 `internal/rules/` takes the top of a band and `governance/rules/` takes the gaps between the tens, so the two sources cannot collide silently. The core band is already full at every ten, which is what forces the split rather than leaving it to convention.
 
-`standards/rule.md` states the division as a rule an authoring session reads, since a target project splitting its own rules against an installed set faces the same collision. Nothing checks it in either place.
+A target's own rules are the third source and they are divided by reservation rather than by that convention. Neither of the two bands the toolkit crowds most has room left for a top-of-band claim: `core/` runs to 090 with internal at 095 through 097, and `claude/` runs to 592 with internal at 595 through 598, leaving three free numbers in the band where the collision was actually measured. `standards/rule.md` states `900-999` instead, which no release can reach.
+
+`standards/rule.md` also keeps the top-of-band division for a pair the reservation does not cover, which is the internal-against-shipped split above. Nothing checks either one.
 
 ### What the number supplies
 
@@ -76,6 +80,12 @@ Glob the rule against every ecosystem it governs rather than only the one its st
 
 ## Project-local rules
 
-Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/project/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, picking a free number in the band that collides with neither the project nor the toolkit catalog.
+Target projects author their own rules that the toolkit does not ship. The `create-rule` plugin skill scaffolds one into `.claude/rules/project/<subdir>/<n>-<slug>.md` with the Claude frontmatter shape, taking the lowest free number at or above 900.
 
-These rules live only in the target. `aitk gov sync` skips any rule with no toolkit source match, classified as `orphaned` by `planSync` in `src/sync/engine.ts`. A rule under `.claude/rules/project/`, which is where `create-rule` writes, is orphaned by location instead, since the gov adapter declares that subfolder on `SyncAdapter`, so it survives sync even if a later toolkit rule takes the same name. Numbering bands still avoid the toolkit catalog by convention, since a band sharing a number across the two trees reads as a coincidence rather than a collision, but nothing enforces it any more.
+These rules live only in the target. `aitk gov sync` skips any rule with no toolkit source match, classified as `orphaned` by `planSync` in `src/sync/engine.ts`. A rule under `.claude/rules/project/`, which is where `create-rule` writes, is orphaned by location instead, since the gov adapter declares that subfolder on `SyncAdapter`, so it survives sync even if a later toolkit rule takes the same name.
+
+An orphan the name inference caught rather than the location test now carries a notice naming the path under `project/` it would take, since that is the shape the two measured targets are in. Seven files across `career` and `erclx.dev` sit at flat toolkit paths, two of them at 561 and 562, which the toolkit later shipped as `561-teach` and `562-session`. The report names the destination and moves nothing, because a rule's installed path is one the project's own rules and docs may cite, and the seven were reported rather than migrated for the same reason.
+
+The notice offers that destination on a condition rather than asserting the project wrote the file, because no source name matching is also what a rule the toolkit shipped and later renamed looks like. Moving one of those into `project/` marks it the project's permanently. The stamp does not separate the two: `recordStamp` skips a file whose source is gone and `writeStamp` replaces the domain's whole `files` map, so a renamed rule's entry survives exactly one sync past the rename, and a target installed before stamping shipped carries no entry at all. `src/sync/engine.test.ts` holds that as a test rather than a comment, since it is the reason the wording is conditional.
+
+The band is what keeps a number from reading as a coincidence, and location is what keeps a file from being overwritten. Neither is checked at write time. The report is the only thing that names a rule sitting on the wrong side of either, and it names location alone, since nothing reads a number back against the reserved range.
